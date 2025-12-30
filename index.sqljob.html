@@ -1,0 +1,2267 @@
+<!DOCTYPE html>
+<html lang="fr">
+<!--Begin of sqljob notebook -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iHateXcel - sqljob</title>
+    <link href="https://unpkg.com/tabulator-tables@5.5.2/dist/css/tabulator_simple.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/tabulator-tables@5.5.2/dist/js/tabulator.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-3.3.0.min.js"></script>
+    <script>
+        var duckdbLibraryVersion = '1.28.0';
+        var duckDbLibraryUrl = `https://cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@${duckdbLibraryVersion}/+esm`;
+    </script>
+    <style>
+        :root {
+            --bg-primary: #1a1a2e;
+            --bg-secondary: #16213e;
+            --bg-cell: #0f3460;
+            --accent: #e94560;
+            --accent-hover: #ff6b6b;
+            --text-primary: #eaeaea;
+            --text-secondary: #a0a0a0;
+            --border: #2a2a4a;
+            --success: #4ade80;
+            --warning: #fbbf24;
+            --error: #f87171;
+        }
+        
+        * { box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Segoe UI', system-ui, sans-serif; 
+            padding: 0; 
+            margin: 0; 
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+        
+        .app-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 4rem 1rem 2rem;
+        }
+        
+        /* Header fixe */
+        #fixedButtonsContainer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 0.75rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .header-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--accent);
+        }
+        
+        .header-right {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        
+        .btn-header {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border);
+            background: var(--bg-cell);
+            color: var(--text-primary);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+        
+        .btn-header:hover:not(:disabled) {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+        
+        .btn-header:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* Cellules */
+        .cells-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .cell {
+            background: var(--bg-cell);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+        
+        .cell:hover {
+            border-color: var(--accent);
+        }
+        
+        .cell.running {
+            border-color: var(--warning);
+            box-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
+        }
+        
+        .cell.success {
+            border-color: var(--success);
+        }
+        
+        .cell.error {
+            border-color: var(--error);
+        }
+        
+        .cell-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .cell-type-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        
+        .cell-type-icon {
+            font-size: 1rem;
+        }
+        
+        .cell-actions {
+            display: flex;
+            gap: 0.25rem;
+        }
+        
+        .btn-cell {
+            padding: 0.35rem 0.5rem;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+        
+        .btn-cell:hover:not(:disabled) {
+            background: var(--border);
+            color: var(--text-primary);
+        }
+        
+        .btn-cell:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        
+        .btn-cell.play:hover:not(:disabled) {
+            color: var(--success);
+        }
+        
+        .btn-cell.delete:hover:not(:disabled) {
+            color: var(--error);
+        }
+        
+        .cell-body {
+            padding: 1rem;
+        }
+        
+        /* Markdown Cell */
+        .markdown-content {
+            line-height: 1.6;
+        }
+        
+        .markdown-content h1 { 
+            font-size: 1.75rem; 
+            margin: 0 0 0.5rem; 
+            color: var(--accent);
+        }
+        
+        .markdown-content h2 { 
+            font-size: 1.4rem; 
+            margin: 0.5rem 0; 
+            color: var(--text-primary);
+        }
+        
+        .markdown-content p { margin: 0.5rem 0; }
+        .markdown-content code { 
+            background: var(--bg-secondary); 
+            padding: 0.2rem 0.4rem; 
+            border-radius: 4px;
+            font-family: 'Consolas', monospace;
+        }
+        
+        /* Sources Cell */
+        .sources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        
+        .source-item {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 1rem;
+        }
+        
+        .source-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .source-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .drop-zone {
+            border: 2px dashed var(--border);
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s;
+            color: var(--text-secondary);
+        }
+        
+        .drop-zone:hover {
+            border-color: var(--accent);
+            color: var(--text-primary);
+        }
+        
+        .drop-zone.drag-over {
+            border-color: var(--accent);
+            background: rgba(233, 69, 96, 0.1);
+        }
+        
+        .drop-zone.has-file {
+            border-style: solid;
+            border-color: var(--success);
+            background: rgba(74, 222, 128, 0.1);
+        }
+        
+        .file-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .file-name {
+            font-size: 0.9rem;
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .file-input { display: none; }
+        
+        /* SQL Cell */
+        .sql-editor {
+            width: 100%;
+            min-height: 80px;
+            padding: 0.75rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            resize: vertical;
+        }
+        
+        .sql-editor:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        /* Table Cell */
+        .table-container {
+            background: white;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        /* Plot Cell */
+        .plot-container {
+            background: white;
+            border-radius: 6px;
+            padding: 1rem;
+            min-height: 300px;
+        }
+        
+        /* Iframe Cell */
+        .iframe-container iframe {
+            width: 100%;
+            min-height: 400px;
+            border: none;
+            border-radius: 6px;
+            background: white;
+        }
+        
+        /* Add Cell Button */
+        .add-cell-container {
+            display: flex;
+            justify-content: center;
+            padding: 1rem;
+        }
+        
+        .btn-add-cell {
+            padding: 0.75rem 1.5rem;
+            border: 2px dashed var(--border);
+            background: transparent;
+            color: var(--text-secondary);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+        
+        .btn-add-cell:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: var(--bg-cell);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .modal-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+        
+        .modal-close:hover {
+            color: var(--text-primary);
+        }
+        
+        .modal-body {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .form-field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .form-field label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        .form-field input,
+        .form-field textarea,
+        .form-field select {
+            padding: 0.75rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+        
+        .form-field input:focus,
+        .form-field textarea:focus,
+        .form-field select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        .form-field textarea {
+            min-height: 100px;
+            font-family: 'Consolas', monospace;
+            resize: vertical;
+        }
+        
+        .modal-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+        }
+        
+        .btn-modal {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .btn-modal.primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+        
+        .btn-modal.secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+        
+        /* DevMode Toggle */
+        .devmode-toggle {
+            position: fixed;
+            bottom: 1rem;
+            left: 1rem;
+            z-index: 1500;
+        }
+        
+        .devmode-btn {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--border);
+            background: var(--bg-cell);
+            color: var(--text-secondary);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.2s;
+        }
+        
+        .devmode-btn:hover {
+            background: var(--bg-secondary);
+            border-color: var(--accent);
+            color: var(--text-primary);
+        }
+        
+        .devmode-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+        
+        @media print {
+            .devmode-toggle {
+                display: none !important;
+            }
+        }
+        
+        /* Status */
+        .status-bar {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            z-index: 1500;
+            animation: fadeIn 0.3s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .status-bar.loading {
+            background: var(--warning);
+            color: #000;
+        }
+        
+        .status-bar.success {
+            background: var(--success);
+            color: #000;
+        }
+        
+        .status-bar.error {
+            background: var(--error);
+            color: white;
+        }
+        
+        /* Cell result info */
+        .cell-result-info {
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            background: var(--bg-secondary);
+            border-radius: 4px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+        
+        /* Print styles */
+        @media print {
+            #fixedButtonsContainer, .cell-header, .add-cell-container, footer, .status-bar {
+                display: none !important;
+            }
+            
+            body {
+                background: white;
+                color: black;
+            }
+            
+            .cell {
+                border: none;
+                box-shadow: none;
+                page-break-inside: avoid;
+            }
+            
+            .cell-body {
+                padding: 0.5rem 0;
+            }
+            
+            .plot-container, .table-container {
+                box-shadow: none;
+            }
+        }
+        
+        /* Checkbox style */
+        .checkbox-field {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .checkbox-field input[type="checkbox"] {
+            width: 1.25rem;
+            height: 1.25rem;
+            accent-color: var(--accent);
+        }
+        
+        /* Dropdown Export */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background: var(--bg-cell);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            min-width: 150px;
+            z-index: 1100;
+            margin-top: 0.25rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .dropdown.open .dropdown-content {
+            display: block;
+        }
+        
+        .dropdown-item {
+            display: block;
+            width: 100%;
+            padding: 0.6rem 1rem;
+            border: none;
+            background: transparent;
+            color: var(--text-primary);
+            text-align: left;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+        
+        .dropdown-item:hover {
+            background: var(--border);
+        }
+        
+        .dropdown-item:first-child {
+            border-radius: 6px 6px 0 0;
+        }
+        
+        .dropdown-item:last-child {
+            border-radius: 0 0 6px 6px;
+        }
+    </style>
+    <script type="application/octet-stream" id="defaultConfigBase64">ewogICJqb2IiOiB7CiAgICAiYXV0b0V4ZWN1dGVXaXRob3V0U291cmNlcyI6IGZhbHNlLAogICAgImNlbGxzIjogWwogICAgICB7CiAgICAgICAgInR5cGUiOiAibWFya2Rvd24iLAogICAgICAgICJjb250ZW50IjogIiMgc3FsSm9iIOKaofCfkrtcbiMjIEkgSGF0ZSBFeGNlbCwgc28gSSBidWlsdCBhIHNpbXBsZSwgY2xpZW50LXNpZGUgU1FMIGpvYiBydW5uZXIuIPCfm6DvuI9cbvCfk6UgTG9hZCwg8J+UhCB0cmFuc2Zvcm0sIGFuZCDwn5OKIHZpc3VhbGl6ZSB5b3VyIGRhdGEgZGlyZWN0bHkgaW4gdGhlIGJyb3dzZXLigJRubyBzZXR1cCwgbm8gZnVzcy4g8J+agCIKICAgICAgfSwKICAgICAgewogICAgICAgICJ0eXBlIjogInNvdXJjZXMiLAogICAgICAgICJhdXRvUnVuTmV4dENlbGxzIjogdHJ1ZSwKICAgICAgICAic291cmNlcyI6IFsKICAgICAgICAgIHsKICAgICAgICAgICAgIm5hbWUiOiAic291cmNlMSIsCiAgICAgICAgICAgICJpbXBvcnRUZXh0IjogIkdsaXNzZXotZMOpcG9zZXogdm90cmUgZmljaGllciBpY2kiLAogICAgICAgICAgICAicXVlcnkiOiAiQ1JFQVRFIE9SIFJFUExBQ0UgVEFCTEUgc291cmNlMSBBUyBTRUxFQ1QgKiBGUk9NIHJlYWRfY3N2X2F1dG8oJ3tmaWxlTmFtZVVwbG9hZH0nLCBBTExfVkFSQ0hBUj10cnVlLCBIRUFERVI9dHJ1ZSkiLAogICAgICAgICAgICAieGxzeCI6IHsKICAgICAgICAgICAgICAib3B0aW9ucyI6IHsKICAgICAgICAgICAgICAgICJ0eXBlIjogImFycmF5IiwKICAgICAgICAgICAgICAgICJyYXciOiBmYWxzZSwKICAgICAgICAgICAgICAgICJkYXRlTkYiOiAiZGQvbW0veXl5eSIsCiAgICAgICAgICAgICAgICAiY2VsbERhdGVzIjogdHJ1ZSwKICAgICAgICAgICAgICAgICJjZWxsTkYiOiBmYWxzZSwKICAgICAgICAgICAgICAgICJjZWxsVGV4dCI6IGZhbHNlCiAgICAgICAgICAgICAgfSwKICAgICAgICAgICAgICAidG9Dc3ZPcHRpb25zIjogewogICAgICAgICAgICAgICAgImRhdGVORiI6ICJkZC9tbS95eXl5IiwKICAgICAgICAgICAgICAgICJGUyI6ICIsIiwKICAgICAgICAgICAgICAgICJSUyI6ICJcbiIKICAgICAgICAgICAgICB9LAogICAgICAgICAgICAgICJzaGVldFNlbGVjdGlvbiI6IHsKICAgICAgICAgICAgICAgICJ0eXBlIjogewogICAgICAgICAgICAgICAgICAiYXV0byI6IHRydWUsCiAgICAgICAgICAgICAgICAgICJpbmRleCI6IGZhbHNlLAogICAgICAgICAgICAgICAgICAibmFtZSI6IGZhbHNlCiAgICAgICAgICAgICAgICB9LAogICAgICAgICAgICAgICAgImluZGV4IjogMCwKICAgICAgICAgICAgICAgICJuYW1lIjogIiIKICAgICAgICAgICAgICB9CiAgICAgICAgICAgIH0KICAgICAgICAgIH0KICAgICAgICBdCiAgICAgIH0sCiAgICAgIHsKICAgICAgICAidHlwZSI6ICJ0YWJsZSIsCiAgICAgICAgInF1ZXJ5IjogIlNFTEVDVCAqIEZST00gc291cmNlMSBMSU1JVCAxMDAiLAogICAgICAgICJtYXhSb3dzIjogMTAwMAogICAgICB9LAogICAgICB7CiAgICAgICAgInR5cGUiOiAic3FsRXhwb3J0IiwKICAgICAgICAicXVlcnkiOiAiQ09QWSAoU0VMRUNUICogZnJvbSBzb3VyY2UxKSBUTyAne2ZpbGVOYW1lfScgKEZPUk1BVCBDU1YsIEhFQURFUiwgREVMSU1JVEVSICc7JykiLAogICAgICAgICJmaWxlTmFtZVF1ZXJ5IjogIlNFTEVDVCAnZXhwb3J0XycgfHwgY3VycmVudF90aW1lc3RhbXA6OnRleHQgfHwgJy5jc3YnIGFzIGZpbGVfbmFtZSIsCiAgICAgICAgIm1pbWVUeXBlIjogIiIKICAgICAgfSwKICAgICAgewogICAgICAgICJ0eXBlIjogInBsb3QiLAogICAgICAgICJxdWVyeSI6ICIvLyBWYXJpYWJsZXM6IGNvbnRhaW5lciwgUGxvdGx5LCArIGxlcyB0YWJsZXMgY29uZmlndXLDqWVzXG5jb25zdCBsaW1pdGVkU291cmNlID0gc291cmNlMS5zbGljZSgwLCAxMDAwKTtcbmNvbnN0IHggPSBsaW1pdGVkU291cmNlLm1hcChyID0+IE9iamVjdC52YWx1ZXMocilbMF0pO1xuY29uc3QgeSA9IGxpbWl0ZWRTb3VyY2UubWFwKHIgPT4gT2JqZWN0LnZhbHVlcyhyKVsxXSk7XG5cblBsb3RseS5uZXdQbG90KGNvbnRhaW5lciwgW3tcbiAgICB4OiB4LFxuICAgIHk6IHksXG4gICAgdHlwZTogXCJiYXJcIlxufV0sIHsgdGl0bGU6IFwiR3JhcGhpcXVlXCIgfSk7IiwKICAgICAgICAidGFibGVzIjogInNvdXJjZTEiCiAgICAgIH0KICAgIF0KICB9LAogICJ1aSI6IHsKICAgICJkZXZNb2RlIjogdHJ1ZQogIH0KfQ==</script>
+</head>
+<body>
+    <div id="app-container"></div>
+
+    <script>
+        // ═══════════════════════════════════════════════════════════════════════════
+        // ARCHITECTURE NOTEBOOK - Système de cellules
+        // ═══════════════════════════════════════════════════════════════════════════
+
+        // ═══════════════════════════════════════════════════════════════════════════
+        // CLASSE 1: ConfigManager
+        // ═══════════════════════════════════════════════════════════════════════════
+        class ConfigManager {
+            static getDefaultConfig() {
+                try {
+                    const scriptElement = document.getElementById('defaultConfigBase64');
+                    const defaultConfigBase64 = scriptElement?.textContent?.trim();
+                    
+                    if (!defaultConfigBase64) return { job: { cells: [] } };
+                    
+                    try {
+                        const base64Decoded = atob(defaultConfigBase64);
+                        const decoded = decodeURIComponent(escape(base64Decoded));
+                        return JSON.parse(decoded);
+                    } catch {
+                        return JSON.parse(atob(defaultConfigBase64));
+                    }
+                } catch (error) {
+                    console.error('Erreur de décodage config:', error);
+                    return { job: { cells: [] } };
+                }
+            }
+
+            static encodeUTF8ToBase64(str) {
+                return btoa(unescape(encodeURIComponent(str)));
+            }
+
+            static deepMerge(target, source) {
+                const output = { ...target };
+                if (target && typeof target === 'object' && source && typeof source === 'object') {
+                    Object.keys(source).forEach(key => {
+                        if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
+                            output[key] = ConfigManager.deepMerge(target[key] || {}, source[key]);
+                        } else {
+                            output[key] = source[key];
+                        }
+                    });
+                }
+                return output;
+            }
+
+            /**
+             * Charge la configuration depuis un Gist GitHub si présent dans l'URL
+             */
+            static async loadConfigFromGist() {
+                const gistId = (() => {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const gistParam = urlParams.get('gist');
+                    if (gistParam && /^[a-f0-9]{32}$/i.test(gistParam)) return gistParam;
+                    if (gistParam) {
+                        const match = gistParam.match(/gist\.github\.com\/[^\/]+\/([a-f0-9]{32})/i);
+                        if (match) return match[1];
+                    }
+                    const configParam = urlParams.get('config');
+                    if (configParam) {
+                        const match = configParam.match(/gist\.github\.com\/[^\/]+\/([a-f0-9]{32})/i);
+                        if (match) return match[1];
+                    }
+                    const fullUrlMatch = window.location.href.match(/gist\.github\.com\/[^\/]+\/([a-f0-9]{32})/i);
+                    if (fullUrlMatch) return fullUrlMatch[1];
+                    return null;
+                })();
+
+                if (gistId) {
+                    try {
+                        console.log('🔗 Détection d\'un Gist dans l\'URL, chargement de la configuration...', gistId);
+                        const apiUrl = `https://api.github.com/gists/${gistId}`;
+                        const response = await fetch(apiUrl);
+                        if (response.ok) {
+                            const gistData = await response.json();
+                            const files = Object.values(gistData.files || {});
+                            const jsonFile = files.find(file => 
+                                file.filename.toLowerCase().endsWith('.json') || 
+                                file.type === 'application/json'
+                            );
+                            if (jsonFile) {
+                                try {
+                                    const config = JSON.parse(jsonFile.content);
+                                    console.log('✅ Configuration chargée depuis le Gist:', config);
+                                    return ConfigManager.deepMerge(ConfigManager.getDefaultConfig(), config);
+                                } catch (parseError) {
+                                    console.error('❌ Erreur de parsing JSON du Gist:', parseError);
+                                    throw new Error(`Le fichier JSON du Gist est invalide. Erreur: ${parseError.message}`);
+                                }
+                            } else {
+                                console.warn('⚠️ Aucun fichier JSON trouvé dans le Gist');
+                            }
+                        } else {
+                            console.error('❌ Erreur HTTP lors du chargement du Gist:', response.status, response.statusText);
+                        }
+                    } catch (error) {
+                        console.error('❌ Erreur lors du chargement du Gist:', error);
+                    }
+                }
+                
+                return ConfigManager.getDefaultConfig();
+            }
+
+            static buildConfigFromState(cells, devMode = true, autoExecuteWithoutSources = false) {
+                const cleanCells = cells.map(cell => {
+                    const cleanCell = { type: cell.type };
+                    
+                    switch (cell.type) {
+                        case 'markdown':
+                            cleanCell.content = cell.content;
+                            break;
+                        case 'sources':
+                            cleanCell.autoRunNextCells = cell.autoRunNextCells;
+                            cleanCell.sources = (cell.sources || []).map(s => ({
+                                name: s.name,
+                                importText: s.importText,
+                                query: s.query,
+                                xlsx: s.xlsx
+                            }));
+                            break;
+                        case 'sql':
+                            cleanCell.query = cell.query;
+                            break;
+                        case 'sqlExport':
+                            cleanCell.query = cell.query;
+                            cleanCell.fileNameQuery = cell.fileNameQuery;
+                            cleanCell.mimeType = cell.mimeType;
+                            break;
+                        case 'table':
+                            cleanCell.query = cell.query;
+                            cleanCell.maxRows = cell.maxRows;
+                            break;
+                        case 'plot':
+                            cleanCell.query = cell.query;
+                            cleanCell.tables = cell.tables;
+                            break;
+                        case 'iframe':
+                            cleanCell.query = cell.query;
+                            break;
+                    }
+                    
+                    return cleanCell;
+                });
+                
+                return { 
+                    job: { 
+                        autoExecuteWithoutSources: autoExecuteWithoutSources,
+                        cells: cleanCells 
+                    },
+                    ui: { devMode: devMode }
+                };
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════════════════
+        // CLASSE 2: FileHandler
+        // ═══════════════════════════════════════════════════════════════════════════
+        class FileHandler {
+            static getMimeTypeFromFileName(fileName) {
+                const ext = fileName.split('.').pop().toLowerCase();
+                const mimeTypes = {
+                    'csv': 'text/csv',
+                    'parquet': 'application/octet-stream',
+                    'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                    'xls': 'application/vnd.ms-excel'
+                };
+                return mimeTypes[ext] || 'application/octet-stream';
+            }
+
+            static async compressGzip(arrayBuffer) {
+                if (typeof CompressionStream === 'undefined') {
+                    throw new Error('CompressionStream non supporté');
+                }
+                
+                const compressionStream = new CompressionStream('gzip');
+                const reader = compressionStream.readable.getReader();
+                const chunks = [];
+                
+                const readPromise = (async () => {
+                    let done = false;
+                    while (!done) {
+                        const { value, done: streamDone } = await reader.read();
+                        done = streamDone;
+                        if (value) chunks.push(value);
+                    }
+                })();
+                
+                const writer = compressionStream.writable.getWriter();
+                await writer.write(new Uint8Array(arrayBuffer));
+                await writer.close();
+                await readPromise;
+                
+                return await new Blob(chunks).arrayBuffer();
+            }
+
+            static async decompressGzip(compressedData) {
+                if (typeof DecompressionStream === 'undefined') {
+                    throw new Error('DecompressionStream non supporté');
+                }
+                
+                const decompressionStream = new DecompressionStream('gzip');
+                const reader = decompressionStream.readable.getReader();
+                const chunks = [];
+                
+                const readPromise = (async () => {
+                    let done = false;
+                    while (!done) {
+                        const { value, done: streamDone } = await reader.read();
+                        done = streamDone;
+                        if (value) chunks.push(value);
+                    }
+                })();
+                
+                const writer = decompressionStream.writable.getWriter();
+                await writer.write(compressedData);
+                await writer.close();
+                await readPromise;
+                
+                return await new Blob(chunks).arrayBuffer();
+            }
+
+            static arrayBufferToBase64(arrayBuffer) {
+                const bytes = new Uint8Array(arrayBuffer);
+                let binary = '';
+                for (let i = 0; i < bytes.length; i++) {
+                    binary += String.fromCharCode(bytes[i]);
+                }
+                return btoa(binary);
+            }
+
+            static base64ToUint8Array(base64) {
+                const binaryString = atob(base64);
+                const bytes = new Uint8Array(binaryString.length);
+                for (let i = 0; i < binaryString.length; i++) {
+                    bytes[i] = binaryString.charCodeAt(i);
+                }
+                return bytes;
+            }
+
+            static async processExcelFile(file, xlsxOptions, xlsxToCsvOptions, xlsxSheetSelection) {
+                const workbook = XLSX.read(await file.arrayBuffer(), { type: 'array', ...xlsxOptions });
+                
+                let selectedSheetName = workbook.SheetNames[0];
+                const sheetSelection = xlsxSheetSelection || { type: { auto: true } };
+                
+                if (sheetSelection.type?.name && sheetSelection.name) {
+                    if (workbook.SheetNames.includes(sheetSelection.name)) {
+                        selectedSheetName = sheetSelection.name;
+                    }
+                } else if (sheetSelection.type?.index && sheetSelection.index > 0) {
+                    if (sheetSelection.index < workbook.SheetNames.length) {
+                        selectedSheetName = workbook.SheetNames[sheetSelection.index];
+                    }
+                }
+                
+                const selectedSheet = workbook.Sheets[selectedSheetName];
+                const csv = XLSX.utils.sheet_to_csv(selectedSheet, xlsxToCsvOptions || {});
+                
+                return {
+                    csv,
+                    csvFileName: file.name.replace(/\.(xlsx|xls)$/i, '.csv'),
+                    sheetName: selectedSheetName
+                };
+            }
+
+            static downloadFile(blob, fileName) {
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = fileName;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════════════════
+        // CLASSE 3: DuckDBManager
+        // ═══════════════════════════════════════════════════════════════════════════
+        class DuckDBManager {
+            static dbInstance = null;
+            static connInstance = null;
+            static duckdbModuleRef = null;
+
+            static async initDuckDB(onStatus) {
+                if (DuckDBManager.dbInstance && DuckDBManager.connInstance) {
+                    return { db: DuckDBManager.dbInstance, conn: DuckDBManager.connInstance };
+                }
+                
+                onStatus?.('Initialisation de DuckDB...', 'loading');
+                
+                const duckdb = await import(window.duckDbLibraryUrl);
+                window.duckdbModule = duckdb;
+                DuckDBManager.duckdbModuleRef = duckdb;
+                
+                const JSDELIVR_BUNDLES = duckdb.getJsDelivrBundles();
+                const bundle = await duckdb.selectBundle(JSDELIVR_BUNDLES);
+
+                const worker_url = URL.createObjectURL(
+                    new Blob([`importScripts("${bundle.mainWorker}");`], { type: 'text/javascript' })
+                );
+                const worker = new Worker(worker_url);
+                const logger = new duckdb.ConsoleLogger(duckdb.LogLevel.INFO);
+                
+                DuckDBManager.dbInstance = new duckdb.AsyncDuckDB(logger, worker);
+                URL.revokeObjectURL(worker_url);
+
+                await DuckDBManager.dbInstance.instantiate(bundle.mainModule, bundle.pthreadWorker);
+                DuckDBManager.connInstance = await DuckDBManager.dbInstance.connect();
+                
+                onStatus?.('DuckDB prêt', 'success');
+                
+                return { db: DuckDBManager.dbInstance, conn: DuckDBManager.connInstance };
+            }
+
+            static async executeQuery(query) {
+                if (!DuckDBManager.connInstance) {
+                    throw new Error('DuckDB non initialisé');
+                }
+                const result = await DuckDBManager.connInstance.query(query);
+                return result.toArray().map(row => Object.fromEntries(row));
+            }
+
+            static async registerFile(fileName, file) {
+                if (!DuckDBManager.dbInstance || !DuckDBManager.duckdbModuleRef) {
+                    throw new Error('DuckDB non initialisé');
+                }
+                await DuckDBManager.dbInstance.registerFileHandle(
+                    fileName, 
+                    file, 
+                    DuckDBManager.duckdbModuleRef.DuckDBDataProtocol.BROWSER_FILEREADER, 
+                    true
+                );
+            }
+
+            static async copyFileToBuffer(fileName) {
+                return await DuckDBManager.dbInstance.copyFileToBuffer(fileName);
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════════════════
+        // CLASSE 4: PlotlyManager
+        // ═══════════════════════════════════════════════════════════════════════════
+        class PlotlyManager {
+            static cleanData(data) {
+                if (!data || data.length === 0) return [];
+                
+                return data.map(row => {
+                    const cleanRow = {};
+                    for (const [key, value] of Object.entries(row)) {
+                        if (typeof value === 'bigint') {
+                            cleanRow[key] = Number(value);
+                        } else if (typeof value === 'string' && value.trim() !== '' && !isNaN(value)) {
+                            cleanRow[key] = parseFloat(value);
+                        } else {
+                            cleanRow[key] = value;
+                        }
+                    }
+                    return cleanRow;
+                });
+            }
+
+            static async createPlot(code, tablesData, container) {
+                // Nettoyer toutes les tables
+                const cleanTables = {};
+                for (const [tableName, tableData] of Object.entries(tablesData)) {
+                    cleanTables[tableName] = PlotlyManager.cleanData(tableData);
+                }
+                
+                container.innerHTML = '';
+
+                try {
+                    // Créer les variables pour chaque table
+                    const tableVars = Object.entries(cleanTables)
+                        .map(([name, arr]) => `const ${name} = ${JSON.stringify(arr)};`)
+                        .join('\n');
+                    
+                    const executeCode = async (container, Plotly) => {
+                        return eval(`(async () => { 
+                            ${tableVars}
+                            ${code} 
+                        })()`);
+                    };
+                    
+                    await executeCode(container, Plotly);
+                } catch (error) {
+                    console.error('Erreur Plotly:', error);
+                    container.innerHTML = `<p style="color: red; text-align: center;">Erreur: ${error.message}</p>`;
+                    throw error;
+                }
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════════════════
+        // TEMPLATE HTML
+        // ═══════════════════════════════════════════════════════════════════════════
+        function generateAppHTML() {
+            return `
+    <div x-data="notebookApp()" x-init="init()">
+        <!-- Header fixe -->
+        <div id="fixedButtonsContainer">
+            <div class="header-left">
+                <span class="header-title">🦆 sqlJob Notebook</span>
+            </div>
+            <div class="header-right">
+                <button class="btn-header" @click="runAllCells()" :disabled="isLoading">
+                    ▶️ Tout exécuter
+                </button>
+                <!-- Mode dev : menu export complet -->
+                <template x-if="devMode">
+                    <div class="dropdown" :class="{ 'open': exportDropdownOpen }" @click.away="exportDropdownOpen = false">
+                        <button class="btn-header" @click="exportDropdownOpen = !exportDropdownOpen">
+                            📤 Export ▾
+                        </button>
+                        <div class="dropdown-content">
+                            <button class="dropdown-item" @click="exportHTML(); exportDropdownOpen = false" :disabled="isLoading">
+                                💾 HTML
+                            </button>
+                            <button class="dropdown-item" @click="exportConfig(); exportDropdownOpen = false">
+                                📦 JSON
+                            </button>
+                            <button class="dropdown-item" @click="exportConfigBase64(); exportDropdownOpen = false">
+                                🔐 Base64
+                            </button>
+                            <button class="dropdown-item" @click="exportPDF(); exportDropdownOpen = false">
+                                📄 PDF
+                            </button>
+                        </div>
+                    </div>
+                </template>
+                <!-- Mode non-dev : seulement PDF -->
+                <template x-if="!devMode">
+                    <button class="btn-header" @click="exportPDF()">
+                        📄 PDF
+                    </button>
+                </template>
+                <!-- Import JSON : seulement en mode dev -->
+                <label x-show="devMode" class="btn-header" style="cursor: pointer;">
+                    📂 Import JSON
+                    <input type="file" accept=".json" @change="loadConfig($event)" style="display: none;">
+                </label>
+            </div>
+        </div>
+        
+        <div class="app-container">
+            <div class="cells-container">
+                <template x-for="(cell, index) in cells" :key="cell._id">
+                    <!-- Masquer complètement les cellules SQL en mode non-dev -->
+                    <div class="cell" 
+                         x-show="devMode || cell.type !== 'sql'"
+                         :class="{ 'running': cell._status === 'running', 'success': cell._status === 'success', 'error': cell._status === 'error' }">
+                        <!-- Cell header : visible seulement en mode dev -->
+                        <div class="cell-header" x-show="devMode">
+                            <div class="cell-type-badge">
+                                <span class="cell-type-icon" x-text="getCellIcon(cell.type)"></span>
+                                <span x-text="cell.type"></span>
+                                <span x-show="cell._status === 'running'" style="color: var(--warning);">⏳</span>
+                            </div>
+                            <div class="cell-actions">
+                                <button class="btn-cell play" @click="runCell(index)" :disabled="isLoading" title="Exécuter">
+                                    ▶️
+                                </button>
+                                <button class="btn-cell" @click="openCellConfig(index)" title="Configurer">
+                                    ⚙️
+                                </button>
+                                <button class="btn-cell" @click="moveCell(index, -1)" :disabled="index === 0" title="Monter">
+                                    ⬆️
+                                </button>
+                                <button class="btn-cell" @click="moveCell(index, 1)" :disabled="index === cells.length - 1" title="Descendre">
+                                    ⬇️
+                                </button>
+                                <button class="btn-cell delete" @click="deleteCell(index)" title="Supprimer">
+                                    🗑️
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="cell-body">
+                            <!-- MARKDOWN CELL -->
+                            <template x-if="cell.type === 'markdown'">
+                                <div class="markdown-content" x-html="renderMarkdown(cell.content)"></div>
+                            </template>
+                            
+                            <!-- SOURCES CELL -->
+                            <template x-if="cell.type === 'sources'">
+                                <div>
+                                    <div class="sources-grid">
+                                        <template x-for="(source, sIndex) in cell.sources" :key="source.name + '_' + sIndex">
+                                            <div class="source-item">
+                                                <div class="source-header">
+                                                    <span class="source-name" x-text="'📂 ' + source.name"></span>
+                                                    <button class="btn-cell" @click="openSourceConfig(index, sIndex)" title="Configurer">⚙️</button>
+                                                </div>
+                                                <div class="drop-zone" 
+                                                     :class="{ 'drag-over': source._isDragging, 'has-file': source._fileName }"
+                                                     @click="!source._fileName && document.getElementById('fileInput_' + cell._id + '_' + sIndex).click()"
+                                                     @dragover.prevent="source._isDragging = true"
+                                                     @dragleave.prevent="source._isDragging = false"
+                                                     @drop.prevent="handleSourceDrop($event, index, sIndex)">
+                                                    <template x-if="!source._fileName">
+                                                        <div>
+                                                            <div>📁</div>
+                                                            <p x-text="source.importText || 'Glissez-déposez ici'"></p>
+                                                        </div>
+                                                    </template>
+                                                    <template x-if="source._fileName">
+                                                        <div class="file-info">
+                                                            <span class="file-name">
+                                                                ✅ <span x-text="source._fileName"></span>
+                                                            </span>
+                                                            <button class="btn-cell delete" @click.stop="removeSourceFile(index, sIndex)">❌</button>
+                                                        </div>
+                                                    </template>
+                                                </div>
+                                                <input type="file" 
+                                                       class="file-input"
+                                                       :id="'fileInput_' + cell._id + '_' + sIndex"
+                                                       accept=".csv,.parquet,.xlsx,.xls"
+                                                       @change="handleSourceFileSelect($event, index, sIndex)">
+                                            </div>
+                                        </template>
+                                    </div>
+                                    <button x-show="devMode" class="btn-add-cell" style="margin-top: 1rem; width: auto;" @click="addSourceToCell(index)">
+                                        ➕ Ajouter une source
+                                    </button>
+                                </div>
+                            </template>
+                            
+                            <!-- SQL CELL -->
+                            <template x-if="cell.type === 'sql'">
+                                <div>
+                                    <textarea class="sql-editor" 
+                                              x-model="cell.query"
+                                              placeholder="SELECT * FROM source1 LIMIT 100"></textarea>
+                                    <template x-if="cell._resultInfo">
+                                        <div class="cell-result-info" x-text="cell._resultInfo"></div>
+                                    </template>
+                                </div>
+                            </template>
+                            
+                            <!-- SQL EXPORT CELL -->
+                            <template x-if="cell.type === 'sqlExport'">
+                                <div>
+                                    <textarea x-show="devMode" class="sql-editor" 
+                                              x-model="cell.query"
+                                              placeholder="COPY (SELECT * from source1) TO &#39;{fileName}&#39; (FORMAT CSV, HEADER)"></textarea>
+                                    <template x-if="cell._resultInfo">
+                                        <div class="cell-result-info" x-text="cell._resultInfo"></div>
+                                    </template>
+                                </div>
+                            </template>
+                            
+                            <!-- TABLE CELL -->
+                            <template x-if="cell.type === 'table'">
+                                <div>
+                                    <textarea x-show="devMode" class="sql-editor" 
+                                              x-model="cell.query"
+                                              placeholder="SELECT * FROM source1 LIMIT 100"></textarea>
+                                    <div class="table-container" :id="'table-' + cell._id" x-show="cell._results"></div>
+                                    <template x-if="cell._resultInfo">
+                                        <div class="cell-result-info" x-text="cell._resultInfo"></div>
+                                    </template>
+                                </div>
+                            </template>
+                            
+                            <!-- PLOT CELL -->
+                            <template x-if="cell.type === 'plot'">
+                                <div>
+                                    <div class="plot-container" :id="'plot-' + cell._id">
+                                        <p x-show="devMode" style="text-align: center; color: var(--text-secondary); padding: 2rem;">
+                                            📈 Cliquez sur ⚙️ pour configurer le graphique
+                                        </p>
+                                    </div>
+                                </div>
+                            </template>
+                            
+                            <!-- IFRAME CELL -->
+                            <template x-if="cell.type === 'iframe'">
+                                <div>
+                                    <textarea x-show="devMode" class="sql-editor" 
+                                              x-model="cell.query"
+                                              placeholder="SELECT &#39;&lt;!DOCTYPE html&gt;...&#39; as html"></textarea>
+                                    <div class="iframe-container">
+                                        <iframe :id="'iframe-' + cell._id"></iframe>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+            </div>
+            
+            <div x-show="devMode" class="add-cell-container">
+                <button class="btn-add-cell" @click="openAddCellModal()">
+                    ➕ Ajouter une cellule
+                </button>
+            </div>
+        </div>
+        
+        <!-- Modal ajout cellule -->
+        <template x-if="showAddCellModal">
+            <div class="modal-overlay" @click.self="showAddCellModal = false">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <span class="modal-title">➕ Ajouter une cellule</span>
+                        <button class="modal-close" @click="showAddCellModal = false">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+                            <template x-for="cellType in cellTypes" :key="cellType.type">
+                                <button class="btn-header" style="justify-content: flex-start; padding: 1rem;" @click="addCell(cellType.type)">
+                                    <span x-text="cellType.icon"></span>
+                                    <span x-text="cellType.label"></span>
+                                </button>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+        
+        <!-- Modal configuration cellule -->
+        <template x-if="cellConfigModal.open">
+            <div class="modal-overlay" @click.self="closeCellConfig()">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <span class="modal-title">⚙️ Configuration de la cellule</span>
+                        <button class="modal-close" @click="closeCellConfig()">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-field">
+                            <label>Type de cellule</label>
+                            <select x-ref="typeSelect"
+                                    x-effect="if (cellConfigModal.open && cellConfigModal.index !== null) $refs.typeSelect.value = cells[cellConfigModal.index]?.type"
+                                    @change="cells[cellConfigModal.index].type = $event.target.value; onCellTypeChange(cellConfigModal.index)">
+                                <option value="markdown">📝 Markdown</option>
+                                <option value="sources">📂 Sources</option>
+                                <option value="sql">🗄️ SQL</option>
+                                <option value="sqlExport">📤 SQL Export</option>
+                                <option value="table">📊 Tableau</option>
+                                <option value="plot">📈 Graphique</option>
+                                <option value="iframe">🖼️ HTML/Iframe</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Config spécifique markdown -->
+                        <template x-if="cells[cellConfigModal.index]?.type === 'markdown'">
+                            <div class="form-field">
+                                <label>Contenu Markdown</label>
+                                <textarea x-model="cells[cellConfigModal.index].content" rows="5"></textarea>
+                            </div>
+                        </template>
+                        
+                        <!-- Config spécifique sources -->
+                        <template x-if="cells[cellConfigModal.index]?.type === 'sources'">
+                            <div class="form-field checkbox-field">
+                                <input type="checkbox" x-model="cells[cellConfigModal.index].autoRunNextCells">
+                                <label>Exécuter automatiquement les cellules suivantes</label>
+                            </div>
+                        </template>
+                        
+                        <!-- Config spécifique sqlExport -->
+                        <template x-if="cells[cellConfigModal.index]?.type === 'sqlExport'">
+                            <div>
+                                <div class="form-field">
+                                    <label>Requête nom de fichier</label>
+                                    <textarea x-model="cells[cellConfigModal.index].fileNameQuery" rows="2"
+                                              placeholder="SELECT &#39;export.csv&#39; as file_name"></textarea>
+                                </div>
+                                <div class="form-field">
+                                    <label>Type MIME (optionnel)</label>
+                                    <input type="text" x-model="cells[cellConfigModal.index].mimeType" placeholder="text/csv">
+                                </div>
+                            </div>
+                        </template>
+                        
+                        <!-- Config spécifique table -->
+                        <template x-if="cells[cellConfigModal.index]?.type === 'table'">
+                            <div class="form-field">
+                                <label>Nombre max de lignes</label>
+                                <input type="number" x-model.number="cells[cellConfigModal.index].maxRows" placeholder="1000">
+                            </div>
+                        </template>
+                        
+                        <!-- Config spécifique plot -->
+                        <template x-if="cells[cellConfigModal.index]?.type === 'plot'">
+                            <div>
+                                <div class="form-field">
+                                    <label>Tables à charger</label>
+                                    <p style="font-size: 0.8rem; color: var(--text-secondary); margin: 0 0 0.5rem;">
+                                        Noms des tables DuckDB à utiliser, séparés par des virgules (ex: <code>source1, clients, ventes</code>)
+                                    </p>
+                                    <input type="text" x-model="cells[cellConfigModal.index].tables" 
+                                           placeholder="data, clients, ventes">
+                                </div>
+                                <div class="form-field">
+                                    <label>Code Plotly.js</label>
+                                    <p style="font-size: 0.8rem; color: var(--text-secondary); margin: 0 0 0.5rem;">
+                                        Variables disponibles : <code>container</code> (élément DOM), <code>Plotly</code>, et les tables configurées ci-dessus
+                                    </p>
+                                    <textarea x-model="cells[cellConfigModal.index].query" rows="10"
+                                              style="min-height: 200px;"
+                                              placeholder="// Exemple de graphique (utilise la table 'source1')
+const limitedSource = source1.slice(0, 1000);
+const x = limitedSource.map(r => Object.values(r)[0]);
+const y = limitedSource.map(r => Object.values(r)[1]);
+
+Plotly.newPlot(container, [{
+    x: x,
+    y: y,
+    type: 'bar'
+}], {
+    title: 'Mon graphique'
+});"></textarea>
+                                </div>
+                            </div>
+                        </template>
+                        
+                        <!-- Config spécifique iframe -->
+                        <template x-if="cells[cellConfigModal.index]?.type === 'iframe'">
+                            <div class="form-field">
+                                <label>Requête SQL (doit retourner du HTML)</label>
+                                <textarea x-model="cells[cellConfigModal.index].query" rows="3"
+                                          placeholder="SELECT '&lt;html&gt;...&lt;/html&gt;' as html"></textarea>
+                            </div>
+                        </template>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn-modal secondary" @click="closeCellConfig()">Fermer</button>
+                    </div>
+                </div>
+            </div>
+        </template>
+        
+        <!-- Modal configuration source -->
+        <template x-if="sourceConfigModal.open">
+            <div class="modal-overlay" @click.self="closeSourceConfig()">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <span class="modal-title">⚙️ Configuration de la source</span>
+                        <button class="modal-close" @click="closeSourceConfig()">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-field">
+                            <label>Nom de la source (nom de table)</label>
+                            <input type="text" x-model="cells[sourceConfigModal.cellIndex].sources[sourceConfigModal.sourceIndex].name">
+                        </div>
+                        <div class="form-field">
+                            <label>Texte de la zone d'import</label>
+                            <input type="text" x-model="cells[sourceConfigModal.cellIndex].sources[sourceConfigModal.sourceIndex].importText">
+                        </div>
+                        <div class="form-field">
+                            <label>Requête d'import (utilise {fileNameUpload})</label>
+                            <textarea x-model="cells[sourceConfigModal.cellIndex].sources[sourceConfigModal.sourceIndex].query" rows="3"></textarea>
+                        </div>
+                        <div class="form-field">
+                            <label>Configuration Excel (JSON)</label>
+                            <textarea :value="JSON.stringify(cells[sourceConfigModal.cellIndex].sources[sourceConfigModal.sourceIndex].xlsx || {}, null, 2)"
+                                      @input="updateSourceXlsx($event.target.value)" rows="5"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn-modal secondary" style="color: var(--error);" @click="removeSourceFromCell()">🗑️ Supprimer</button>
+                        <button class="btn-modal secondary" @click="closeSourceConfig()">Fermer</button>
+                    </div>
+                </div>
+            </div>
+        </template>
+        
+        <!-- DevMode Toggle -->
+        <div class="devmode-toggle">
+            <button class="devmode-btn" :class="{ 'active': devMode }" @click="devMode = !devMode">
+                <span x-text="devMode ? '🔧' : '👁️'"></span>
+                <span x-text="devMode ? 'Dev' : 'View'"></span>
+            </button>
+        </div>
+        
+        <!-- Status bar -->
+        <template x-if="status">
+            <div class="status-bar" :class="statusType" x-text="status"></div>
+        </template>
+        
+        <footer>
+            iHateXcel - sqlJob - Made with ❤️ by Théo Nobella-Pichonnier
+        </footer>
+    </div>`;
+        }
+
+        // ═══════════════════════════════════════════════════════════════════════════
+        // APPLICATION ALPINE.JS
+        // ═══════════════════════════════════════════════════════════════════════════
+        function notebookApp() {
+            // Utiliser la config chargée depuis le Gist si disponible, sinon la config par défaut
+            const config = window._loadedConfig || ConfigManager.getDefaultConfig();
+            
+            // Initialiser les cellules depuis la config
+            const initCells = (config.job?.cells || []).map((cell, index) => ({
+                ...cell,
+                _id: 'cell_' + Date.now() + '_' + index,
+                _status: null,
+                _results: null,
+                _resultInfo: null,
+                // Initialiser les sources avec leurs propriétés runtime
+                sources: cell.type === 'sources' ? (cell.sources || []).map(s => ({
+                    ...s,
+                    _fileName: '',
+                    _currentFile: null,
+                    _isDragging: false,
+                    _loaded: false
+                })) : undefined
+            }));
+            
+            // Mode développeur (true = affichage complet, false = mode utilisateur simplifié)
+            const devMode = config.ui?.devMode !== false;
+            
+            // Auto-exécution si pas de sources
+            const autoExecuteWithoutSources = config.job?.autoExecuteWithoutSources === true;
+            
+            return {
+                cells: initCells,
+                isLoading: false,
+                status: '',
+                statusType: '',
+                devMode: devMode,
+                autoExecuteWithoutSources: autoExecuteWithoutSources,
+                
+                // Modals & Dropdowns
+                showAddCellModal: false,
+                cellConfigModal: { open: false, index: null },
+                sourceConfigModal: { open: false, cellIndex: null, sourceIndex: null },
+                exportDropdownOpen: false,
+                
+                // Types de cellules disponibles
+                cellTypes: [
+                    { type: 'markdown', label: 'Markdown', icon: '📝' },
+                    { type: 'sources', label: 'Sources', icon: '📂' },
+                    { type: 'sql', label: 'SQL', icon: '🗄️' },
+                    { type: 'sqlExport', label: 'SQL Export', icon: '📤' },
+                    { type: 'table', label: 'Tableau', icon: '📊' },
+                    { type: 'plot', label: 'Graphique', icon: '📈' },
+                    { type: 'iframe', label: 'HTML/Iframe', icon: '🖼️' }
+                ],
+                
+                // Tables Tabulator par cellule
+                _tables: {},
+                
+                // Cache des données des tables DuckDB pour les plots
+                _tablesDataCache: {},
+                _tablesDataCacheValid: false,
+                
+                // ─────────────────────────────────────────────────────────────────
+                // INITIALISATION
+                // ─────────────────────────────────────────────────────────────────
+                async init() {
+                    try {
+                        await DuckDBManager.initDuckDB((msg, type) => this.setStatus(msg, type));
+                        // Charger les fichiers embarqués dans le HTML
+                        await this.loadEmbeddedFiles();
+                        
+                        // Auto-exécution si pas de cellule sources et option activée
+                        if (this.autoExecuteWithoutSources) {
+                            const hasSourcesCell = this.cells.some(cell => cell.type === 'sources');
+                            if (!hasSourcesCell) {
+                                console.log('⚡ Auto-exécution : aucune cellule sources détectée');
+                                await this.runAllCells();
+                            }
+                        }
+                    } catch (error) {
+                        this.setStatus('Erreur d\'initialisation: ' + error.message, 'error');
+                    }
+                },
+                
+                async loadEmbeddedFiles() {
+                    // Chercher toutes les balises script avec les fichiers embarqués
+                    const sourceFileScripts = document.querySelectorAll('script[id^="sourceFile_"]');
+                    
+                    if (sourceFileScripts.length === 0) {
+                        return; // Pas de fichiers embarqués, c'est normal
+                    }
+                    
+                    console.info('📂 ' + sourceFileScripts.length + ' fichier(s) embarqué(s) trouvé(s)');
+                    
+                    for (const script of sourceFileScripts) {
+                        const sourceName = script.dataset.sourceName;
+                        const fileName = script.dataset.fileName;
+                        const base64Data = script.textContent.trim();
+                        
+                        if (!sourceName || !fileName || !base64Data) {
+                            console.warn('Script source incomplet:', script.id);
+                            continue;
+                        }
+                        
+                        // Trouver la cellule sources et la source correspondante
+                        let targetCell = null;
+                        let targetCellIndex = -1;
+                        let targetSource = null;
+                        let targetSourceIndex = -1;
+                        
+                        for (let i = 0; i < this.cells.length; i++) {
+                            const cell = this.cells[i];
+                            if (cell.type === 'sources' && cell.sources) {
+                                for (let j = 0; j < cell.sources.length; j++) {
+                                    if (cell.sources[j].name === sourceName) {
+                                        targetCell = cell;
+                                        targetCellIndex = i;
+                                        targetSource = cell.sources[j];
+                                        targetSourceIndex = j;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (targetSource) break;
+                        }
+                        
+                        if (!targetSource) {
+                            console.warn(`Source "${sourceName}" non trouvée dans les cellules`);
+                            continue;
+                        }
+                        
+                        try {
+                            this.setStatus(`Chargement de ${sourceName}...`, 'loading');
+                            
+                            // Décoder et décompresser
+                            const bytes = FileHandler.base64ToUint8Array(base64Data);
+                            const decompressedBuffer = await FileHandler.decompressGzip(bytes);
+                            
+                            // Créer un File object
+                            const blob = new Blob([decompressedBuffer]);
+                            const file = new File([blob], fileName, {
+                                type: FileHandler.getMimeTypeFromFileName(fileName)
+                            });
+                            
+                            // Charger le fichier dans la source
+                            await this.loadSourceFile(file, targetCellIndex, targetSourceIndex);
+                            
+                            console.log(`✅ Fichier "${fileName}" chargé pour la source "${sourceName}"`);
+                        } catch (error) {
+                            console.error(`Erreur chargement fichier embarqué ${sourceName}:`, error);
+                            this.setStatus(`Erreur: ${error.message}`, 'error');
+                        }
+                    }
+                    
+                    this.setStatus('Fichiers embarqués chargés', 'success');
+                },
+                
+                // ─────────────────────────────────────────────────────────────────
+                // HELPERS
+                // ─────────────────────────────────────────────────────────────────
+                setStatus(message, type) {
+                    this.status = message;
+                    this.statusType = type;
+                    if (type !== 'loading') {
+                        setTimeout(() => { this.status = ''; this.statusType = ''; }, 4000);
+                    }
+                },
+                
+                renderMarkdown(content) {
+                    if (!content) return '';
+                    return typeof marked !== 'undefined' ? marked.parse(content, { breaks: true, gfm: true }) : content;
+                },
+                
+                getCellIcon(type) {
+                    const found = this.cellTypes.find(ct => ct.type === type);
+                    return found ? found.icon : '📄';
+                },
+                
+                generateCellId() {
+                    return 'cell_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                },
+                
+                // ─────────────────────────────────────────────────────────────────
+                // GESTION DES CELLULES
+                // ─────────────────────────────────────────────────────────────────
+                openAddCellModal() {
+                    this.showAddCellModal = true;
+                },
+                
+                addCell(type) {
+                    const newCell = {
+                        _id: this.generateCellId(),
+                        _status: null,
+                        _results: null,
+                        _resultInfo: null,
+                        type
+                    };
+                    
+                    switch (type) {
+                        case 'markdown':
+                            newCell.content = '# Nouvelle section';
+                            break;
+                        case 'sources':
+                            newCell.autoRunNextCells = false;
+                            newCell.sources = [{
+                                name: 'source1',
+                                importText: 'Glissez-déposez votre fichier ici',
+                                query: "CREATE OR REPLACE TABLE source1 AS SELECT * FROM read_csv_auto('{fileNameUpload}', ALL_VARCHAR=true, HEADER=true)",
+                                xlsx: {
+                                    options: { type: 'array', raw: false, dateNF: 'dd/mm/yyyy', cellDates: true },
+                                    toCsvOptions: { dateNF: 'dd/mm/yyyy', FS: ',', RS: '\n' },
+                                    sheetSelection: { type: { auto: true }, index: 0, name: '' }
+                                },
+                                _fileName: '',
+                                _currentFile: null,
+                                _isDragging: false,
+                                _loaded: false
+                            }];
+                            break;
+                        case 'sql':
+                            newCell.query = 'SELECT * FROM source1 LIMIT 100';
+                            break;
+                        case 'sqlExport':
+                            newCell.query = "COPY (SELECT * from source1) TO '{fileName}' (FORMAT CSV, HEADER, DELIMITER ';')";
+                            newCell.fileNameQuery = "SELECT 'export_' || current_timestamp::text || '.csv' as file_name";
+                            newCell.mimeType = '';
+                            break;
+                        case 'table':
+                            newCell.query = 'SELECT * FROM source1 LIMIT 100';
+                            newCell.maxRows = 1000;
+                            break;
+                        case 'plot':
+                            newCell.query = '// Variables: container, Plotly, + les tables configurées\nconst limitedSource = source1.slice(0, 1000);\nconst x = limitedSource.map(r => Object.values(r)[0]);\nconst y = limitedSource.map(r => Object.values(r)[1]);\n\nPlotly.newPlot(container, [{\n    x: x,\n    y: y,\n    type: "bar"\n}], { title: "Graphique" });';
+                            newCell.tables = 'source1';
+                            break;
+                        case 'iframe':
+                            newCell.query = 'SELECT \'<html><body><h1>Hello</h1></body></html>\' as html';
+                            break;
+                    }
+                    
+                    this.cells.push(newCell);
+                    this.showAddCellModal = false;
+                },
+                
+                deleteCell(index) {
+                    if (confirm('Supprimer cette cellule ?')) {
+                        const cell = this.cells[index];
+                        if (this._tables[cell._id]) {
+                            this._tables[cell._id].destroy();
+                            delete this._tables[cell._id];
+                        }
+                        this.cells.splice(index, 1);
+                    }
+                },
+                
+                moveCell(index, direction) {
+                    const newIndex = index + direction;
+                    if (newIndex >= 0 && newIndex < this.cells.length) {
+                        const temp = this.cells[index];
+                        this.cells[index] = this.cells[newIndex];
+                        this.cells[newIndex] = temp;
+                    }
+                },
+                
+                openCellConfig(index) {
+                    this.cellConfigModal = { open: true, index };
+                    // Forcer la mise à jour du select après le rendu
+                    setTimeout(() => {
+                        const select = document.querySelector('.modal-body select');
+                        if (select && this.cells[index]) {
+                            select.value = this.cells[index].type;
+                        }
+                    }, 50);
+                },
+                
+                closeCellConfig() {
+                    this.cellConfigModal = { open: false, index: null };
+                },
+                
+                onCellTypeChange(index) {
+                    const cell = this.cells[index];
+                    // Réinitialiser les propriétés spécifiques au type
+                    cell._results = null;
+                    cell._resultInfo = null;
+                    
+                    // Ajouter les propriétés manquantes selon le type
+                    if (cell.type === 'sources' && !cell.sources) {
+                        cell.sources = [];
+                        cell.autoRunNextCells = false;
+                    }
+                    if (cell.type === 'table' && !cell.maxRows) {
+                        cell.maxRows = 1000;
+                    }
+                    if (cell.type === 'plot' && !cell.tables) {
+                        cell.tables = 'source1';
+                    }
+                    if (cell.type === 'sqlExport') {
+                        if (!cell.fileNameQuery) cell.fileNameQuery = "SELECT 'export.csv' as file_name";
+                        if (!cell.mimeType) cell.mimeType = '';
+                    }
+                },
+                
+                // ─────────────────────────────────────────────────────────────────
+                // GESTION DES SOURCES
+                // ─────────────────────────────────────────────────────────────────
+                addSourceToCell(cellIndex) {
+                    const cell = this.cells[cellIndex];
+                    if (cell.type !== 'sources') return;
+                    
+                    const newName = 'source' + (cell.sources.length + 1);
+                    cell.sources.push({
+                        name: newName,
+                        importText: `Glissez-déposez ici (${newName})`,
+                        query: `CREATE OR REPLACE TABLE ${newName} AS SELECT * FROM read_csv_auto('{fileNameUpload}', ALL_VARCHAR=true, HEADER=true)`,
+                        xlsx: {
+                            options: { type: 'array', raw: false, dateNF: 'dd/mm/yyyy', cellDates: true },
+                            toCsvOptions: { dateNF: 'dd/mm/yyyy', FS: ',', RS: '\n' },
+                            sheetSelection: { type: { auto: true }, index: 0, name: '' }
+                        },
+                        _fileName: '',
+                        _currentFile: null,
+                        _isDragging: false,
+                        _loaded: false
+                    });
+                },
+                
+                openSourceConfig(cellIndex, sourceIndex) {
+                    this.sourceConfigModal = { open: true, cellIndex, sourceIndex };
+                },
+                
+                closeSourceConfig() {
+                    this.sourceConfigModal = { open: false, cellIndex: null, sourceIndex: null };
+                },
+                
+                updateSourceXlsx(jsonString) {
+                    try {
+                        const xlsx = JSON.parse(jsonString);
+                        this.cells[this.sourceConfigModal.cellIndex].sources[this.sourceConfigModal.sourceIndex].xlsx = xlsx;
+                    } catch (e) {
+                        console.warn('JSON invalide pour xlsx config');
+                    }
+                },
+                
+                removeSourceFromCell() {
+                    const { cellIndex, sourceIndex } = this.sourceConfigModal;
+                    this.cells[cellIndex].sources.splice(sourceIndex, 1);
+                    this.closeSourceConfig();
+                },
+                
+                handleSourceDrop(e, cellIndex, sourceIndex) {
+                    const source = this.cells[cellIndex].sources[sourceIndex];
+                    source._isDragging = false;
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        this.loadSourceFile(files[0], cellIndex, sourceIndex);
+                    }
+                },
+                
+                handleSourceFileSelect(e, cellIndex, sourceIndex) {
+                    const files = e.target.files;
+                    if (files.length > 0) {
+                        this.loadSourceFile(files[0], cellIndex, sourceIndex);
+                    }
+                },
+                
+                async loadSourceFile(file, cellIndex, sourceIndex) {
+                    const cell = this.cells[cellIndex];
+                    const source = cell.sources[sourceIndex];
+                    
+                    source._fileName = file.name;
+                    source._currentFile = file;
+                    this.isLoading = true;
+                    cell._status = 'running';
+                    this.setStatus(`Chargement de ${source.name}...`, 'loading');
+                    
+                    try {
+                        await DuckDBManager.registerFile(file.name, file);
+                        
+                        let loadQuery = (source.query || '').trim();
+                        const ext = file.name.split('.').pop().toLowerCase();
+                        const tableName = source.name || 'source1';
+                        
+                        if (ext === 'xlsx' || ext === 'xls') {
+                            this.setStatus('Conversion Excel...', 'loading');
+                            const { csv, csvFileName } = await FileHandler.processExcelFile(
+                                file, 
+                                source.xlsx?.options,
+                                source.xlsx?.toCsvOptions,
+                                source.xlsx?.sheetSelection
+                            );
+                            
+                            const csvBlob = new Blob([csv], { type: 'text/csv' });
+                            await DuckDBManager.registerFile(csvFileName, csvBlob);
+                            
+                            loadQuery = loadQuery 
+                                ? loadQuery.replace(/\{fileNameUpload\}/g, csvFileName)
+                                : `CREATE OR REPLACE TABLE ${tableName} AS SELECT * FROM read_csv_auto('${csvFileName}', ALL_VARCHAR=true, HEADER=true)`;
+                        } else {
+                            loadQuery = loadQuery 
+                                ? loadQuery.replace(/\{fileNameUpload\}/g, file.name)
+                                : `CREATE OR REPLACE TABLE ${tableName} AS SELECT * FROM read_csv_auto('${file.name}', ALL_VARCHAR=true, HEADER=true)`;
+                        }
+                        
+                        await DuckDBManager.executeQuery(loadQuery);
+                        source._loaded = true;
+                        cell._status = 'success';
+                        this.setStatus(`${source.name} chargé!`, 'success');
+                        
+                        // Invalider le cache des tables car les données ont changé
+                        this.invalidateTablesCache();
+                        
+                        // Vérifier si toutes les sources sont chargées et autoRunNextCells
+                        if (cell.autoRunNextCells && this.allSourcesLoaded(cellIndex)) {
+                            await this.runCellsFromIndex(cellIndex + 1);
+                        }
+                    } catch (error) {
+                        cell._status = 'error';
+                        this.setStatus('Erreur: ' + error.message, 'error');
+                        source._fileName = '';
+                        source._currentFile = null;
+                    } finally {
+                        this.isLoading = false;
+                    }
+                },
+                
+                removeSourceFile(cellIndex, sourceIndex) {
+                    const source = this.cells[cellIndex].sources[sourceIndex];
+                    source._fileName = '';
+                    source._currentFile = null;
+                    source._loaded = false;
+                },
+                
+                allSourcesLoaded(cellIndex) {
+                    const cell = this.cells[cellIndex];
+                    if (cell.type !== 'sources') return true;
+                    return cell.sources.every(s => s._loaded);
+                },
+                
+                // Invalider le cache des tables (à appeler quand les données changent)
+                invalidateTablesCache() {
+                    this._tablesDataCacheValid = false;
+                    this._tablesDataCache = {};
+                },
+                
+                // Charger des tables spécifiques depuis DuckDB
+                async loadSpecificTables(tableNames) {
+                    const tablesData = {};
+                    
+                    for (const tableName of tableNames) {
+                        const trimmedName = tableName.trim();
+                        if (!trimmedName) continue;
+                        
+                        // Vérifier si déjà en cache
+                        if (this._tablesDataCache[trimmedName]) {
+                            tablesData[trimmedName] = this._tablesDataCache[trimmedName];
+                            console.log(`  📦 ${trimmedName}: depuis le cache`);
+                            continue;
+                        }
+                        
+                        try {
+                            const tableData = await DuckDBManager.executeQuery(`SELECT * FROM "${trimmedName}"`);
+                            tablesData[trimmedName] = tableData;
+                            // Mettre en cache
+                            this._tablesDataCache[trimmedName] = tableData;
+                            console.log(`  ✅ ${trimmedName}: ${tableData.length} lignes chargées`);
+                        } catch (error) {
+                            console.warn(`  ⚠️ Erreur lecture table ${trimmedName}:`, error.message);
+                            tablesData[trimmedName] = [];
+                        }
+                    }
+                    
+                    return tablesData;
+                },
+                
+                // ─────────────────────────────────────────────────────────────────
+                // EXÉCUTION DES CELLULES
+                // ─────────────────────────────────────────────────────────────────
+                async runCell(index) {
+                    const cell = this.cells[index];
+                    cell._status = 'running';
+                    this.isLoading = true;
+                    
+                    try {
+                        switch (cell.type) {
+                            case 'markdown':
+                                // Rien à exécuter
+                                break;
+                            case 'sources':
+                                // Les sources sont chargées via le drop
+                                break;
+                            case 'sql':
+                                await this.executeSqlCell(cell);
+                                break;
+                            case 'sqlExport':
+                                await this.executeSqlExportCell(cell);
+                                break;
+                            case 'table':
+                                await this.executeTableCell(cell);
+                                break;
+                            case 'plot':
+                                await this.executePlotCell(cell);
+                                break;
+                            case 'iframe':
+                                await this.executeIframeCell(cell);
+                                break;
+                        }
+                        
+                        cell._status = 'success';
+                    } catch (error) {
+                        cell._status = 'error';
+                        cell._resultInfo = 'Erreur: ' + error.message;
+                        this.setStatus('Erreur: ' + error.message, 'error');
+                    } finally {
+                        this.isLoading = false;
+                    }
+                },
+                
+                async executeSqlCell(cell) {
+                    if (!cell.query?.trim()) return;
+                    
+                    this.setStatus('Exécution SQL...', 'loading');
+                    const results = await DuckDBManager.executeQuery(cell.query);
+                    cell._results = results;
+                    cell._resultInfo = `✅ ${results.length} ligne(s) affectée(s)`;
+                    
+                    // Invalider le cache car la requête peut avoir modifié des tables
+                    this.invalidateTablesCache();
+                    
+                    this.setStatus('SQL exécuté', 'success');
+                },
+                
+                async executeSqlExportCell(cell) {
+                    if (!cell.query?.trim()) return;
+                    
+                    this.setStatus('Export en cours...', 'loading');
+                    
+                    // Obtenir le nom de fichier
+                    const fileNameQuery = cell.fileNameQuery || "SELECT 'export.csv' as file_name";
+                    const fileNameResult = await DuckDBManager.executeQuery(fileNameQuery);
+                    const fileNameRow = fileNameResult[0];
+                    const keys = Object.keys(fileNameRow);
+                    const fileKey = keys.find(k => k.toLowerCase().includes('file'));
+                    let outputFile = fileKey ? fileNameRow[fileKey] : Object.values(fileNameRow)[0];
+                    outputFile = String(outputFile).replace(/[^\w.\-\/]/g, '_');
+                    
+                    // Construire et exécuter la requête COPY
+                    let copyQuery = cell.query.replace(/\{fileName\}/g, outputFile);
+                    
+                    await DuckDBManager.executeQuery(copyQuery);
+                    
+                    const buffer = await DuckDBManager.copyFileToBuffer(outputFile);
+                    
+                    let mime = cell.mimeType?.trim() || 'text/csv;charset=utf-8;';
+                    const blob = new Blob([buffer], { type: mime });
+                    FileHandler.downloadFile(blob, outputFile.split('/').pop());
+                    
+                    cell._resultInfo = `✅ Fichier exporté: ${outputFile}`;
+                    this.setStatus('Export réussi!', 'success');
+                },
+                
+                async executeTableCell(cell) {
+                    if (!cell.query?.trim()) return;
+                    
+                    this.setStatus('Chargement tableau...', 'loading');
+                    const results = await DuckDBManager.executeQuery(cell.query);
+                    
+                    const maxRows = cell.maxRows || 1000;
+                    const truncated = results.length > maxRows;
+                    cell._results = results.slice(0, maxRows);
+                    cell._resultInfo = `${results.length} ligne(s)` + (truncated ? ` (limité à ${maxRows})` : '');
+                    
+                    await this.$nextTick();
+                    
+                    const containerId = 'table-' + cell._id;
+                    const container = document.getElementById(containerId);
+                    
+                    if (container && cell._results.length > 0) {
+                        if (this._tables[cell._id]) {
+                            this._tables[cell._id].destroy();
+                        }
+                        
+                        const columns = Object.keys(cell._results[0]).map(key => ({
+                            title: key,
+                            field: key
+                        }));
+                        
+                        this._tables[cell._id] = new Tabulator('#' + containerId, {
+                            data: cell._results,
+                            columns: columns,
+                            layout: 'fitDataStretch',
+                            pagination: true,
+                            paginationSize: 50,
+                            height: '400px',
+                            placeholder: 'Aucune donnée'
+                        });
+                    }
+                    
+                    this.setStatus('Tableau chargé', 'success');
+                },
+                
+                async executePlotCell(cell) {
+                    if (!cell.query?.trim()) return;
+                    
+                    // Parser les tables configurées (séparées par des virgules)
+                    const tablesConfig = cell.tables || 'source1';
+                    const tableNames = tablesConfig.split(',').map(t => t.trim()).filter(t => t);
+                    
+                    if (tableNames.length === 0) {
+                        tableNames.push('source1'); // Fallback par défaut
+                    }
+                    
+                    this.setStatus(`Chargement des tables: ${tableNames.join(', ')}...`, 'loading');
+                    
+                    // Charger uniquement les tables configurées
+                    const tablesData = await this.loadSpecificTables(tableNames);
+                    
+                    this.setStatus('Création graphique...', 'loading');
+                    
+                    await this.$nextTick();
+                    
+                    const containerId = 'plot-' + cell._id;
+                    const container = document.getElementById(containerId);
+                    
+                    if (container) {
+                        await PlotlyManager.createPlot(cell.query, tablesData, container);
+                    }
+                    
+                    this.setStatus('Graphique créé', 'success');
+                },
+                
+                async executeIframeCell(cell) {
+                    if (!cell.query?.trim()) return;
+                    
+                    this.setStatus('Chargement HTML...', 'loading');
+                    const results = await DuckDBManager.executeQuery(cell.query);
+                    
+                    const htmlContent = results.map(row => Object.values(row).join('')).join('\n');
+                    
+                    await this.$nextTick();
+                    
+                    const iframe = document.getElementById('iframe-' + cell._id);
+                    if (iframe) {
+                        const doc = iframe.contentDocument || iframe.contentWindow.document;
+                        doc.open();
+                        doc.write(htmlContent);
+                        doc.close();
+                    }
+                    
+                    this.setStatus('HTML chargé', 'success');
+                },
+                
+                async runCellsFromIndex(startIndex) {
+                    for (let i = startIndex; i < this.cells.length; i++) {
+                        await this.runCell(i);
+                    }
+                },
+                
+                async runAllCells() {
+                    this.isLoading = true;
+                    this.setStatus('Exécution de toutes les cellules...', 'loading');
+                    
+                    // Invalider le cache des tables pour qu'il soit rafraîchi
+                    this.invalidateTablesCache();
+                    
+                    for (let i = 0; i < this.cells.length; i++) {
+                        const cell = this.cells[i];
+                        // Skip sources car elles dépendent des fichiers uploadés
+                        if (cell.type !== 'sources') {
+                            await this.runCell(i);
+                        }
+                    }
+                    
+                    this.isLoading = false;
+                    this.setStatus('Toutes les cellules exécutées', 'success');
+                },
+                
+                // ─────────────────────────────────────────────────────────────────
+                // EXPORT / IMPORT
+                // ─────────────────────────────────────────────────────────────────
+                exportPDF() {
+                    window.print();
+                },
+                
+                exportConfig() {
+                    try {
+                        const config = ConfigManager.buildConfigFromState(this.cells, this.devMode, this.autoExecuteWithoutSources);
+                        const jsonString = JSON.stringify(config, null, 2);
+                        const blob = new Blob([jsonString], { type: 'application/json' });
+                        FileHandler.downloadFile(blob, 'notebook-config.json');
+                        this.setStatus('Configuration exportée', 'success');
+                    } catch (error) {
+                        this.setStatus('Erreur export: ' + error.message, 'error');
+                    }
+                },
+                
+                exportConfigBase64() {
+                    try {
+                        const config = ConfigManager.buildConfigFromState(this.cells, this.devMode, this.autoExecuteWithoutSources);
+                        const jsonString = JSON.stringify(config, null, 2);
+                        const base64String = ConfigManager.encodeUTF8ToBase64(jsonString);
+                        const blob = new Blob([base64String], { type: 'text/plain' });
+                        FileHandler.downloadFile(blob, 'notebook-config.base64.txt');
+                        this.setStatus('Configuration exportée en Base64', 'success');
+                    } catch (error) {
+                        this.setStatus('Erreur export Base64: ' + error.message, 'error');
+                    }
+                },
+                
+                async loadConfig(event) {
+                    const file = event.target.files[0];
+                    if (!file) return;
+                    
+                    try {
+                        const text = await file.text();
+                        const config = JSON.parse(text);
+                        
+                        this.cells = (config.job?.cells || []).map((cell, index) => ({
+                            ...cell,
+                            _id: this.generateCellId(),
+                            _status: null,
+                            _results: null,
+                            _resultInfo: null,
+                            sources: cell.type === 'sources' ? (cell.sources || []).map(s => ({
+                                ...s,
+                                _fileName: '',
+                                _currentFile: null,
+                                _isDragging: false,
+                                _loaded: false
+                            })) : undefined
+                        }));
+                        
+                        this.setStatus('Configuration chargée', 'success');
+                    } catch (error) {
+                        this.setStatus('Erreur import: ' + error.message, 'error');
+                    }
+                },
+                
+                async exportHTML() {
+                    this.isLoading = true;
+                    this.setStatus('Génération HTML...', 'loading');
+                    
+                    try {
+                        const config = ConfigManager.buildConfigFromState(this.cells, this.devMode, this.autoExecuteWithoutSources);
+                        const jsonString = JSON.stringify(config, null, 2);
+                        const configBase64 = ConfigManager.encodeUTF8ToBase64(jsonString);
+                        
+                        // Mettre à jour la config base64 dans le DOM
+                        document.getElementById('defaultConfigBase64')?.remove();
+                        const configScript = document.createElement('script');
+                        configScript.type = 'application/octet-stream';
+                        configScript.id = 'defaultConfigBase64';
+                        configScript.textContent = configBase64;
+                        document.head.appendChild(configScript);
+                        
+                        // Collecter les fichiers des sources
+                        for (const cell of this.cells) {
+                            if (cell.type === 'sources') {
+                                for (const source of cell.sources) {
+                                    if (source._currentFile) {
+                                        const safeSourceName = source.name.replace(/[^a-zA-Z0-9_]/g, '_');
+                                        
+                                        // Supprimer l'ancienne balise
+                                        document.querySelectorAll(`script[id^="sourceFile_${safeSourceName}"]`).forEach(s => s.remove());
+                                        
+                                        // Compresser et encoder le fichier
+                                        const arrayBuffer = await source._currentFile.arrayBuffer();
+                                        const compressedBuffer = await FileHandler.compressGzip(arrayBuffer);
+                                        const fileBase64 = FileHandler.arrayBufferToBase64(compressedBuffer);
+                                        
+                                        // Créer la balise script
+                                        const script = document.createElement('script');
+                                        script.type = 'application/octet-stream';
+                                        script.id = `sourceFile_${safeSourceName}`;
+                                        script.dataset.sourceName = source.name;
+                                        script.dataset.fileName = source._fileName;
+                                        script.textContent = fileBase64;
+                                        document.head.appendChild(script);
+                                    }
+                                }
+                            }
+                        }
+                        
+                        // Récupérer le HTML complet
+                        let htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+                        htmlContent = htmlContent.replace(/<html[^>]*>/i, '<html lang="fr">');
+                        
+                        const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+                        FileHandler.downloadFile(blob, 'index.sqljob.html');
+                        
+                        this.setStatus('HTML exporté', 'success');
+                    } catch (error) {
+                        this.setStatus('Erreur export HTML: ' + error.message, 'error');
+                    } finally {
+                        this.isLoading = false;
+                    }
+                }
+            };
+        }
+
+        // ═══════════════════════════════════════════════════════════════════════════
+        // INITIALISATION
+        // ═══════════════════════════════════════════════════════════════════════════
+        (async function main() {
+            // Charger la config depuis le Gist si présent dans l'URL
+            window._loadedConfig = await ConfigManager.loadConfigFromGist();
+            
+            const container = document.getElementById('app-container');
+            if (container) {
+                container.innerHTML = generateAppHTML();
+            }
+            
+            window.notebookApp = notebookApp;
+            console.log('🦆 sqlJob Notebook initialisé');
+        })();
+    </script>
+</body>
+</html>
