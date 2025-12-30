@@ -54,6 +54,7 @@
 git clone https://github.com/ihatexcel/sqljob.git
 cd sqljob
 # Open index.html in your browser - that's it!
+```
 ---
 
 ## 🎯 Use Cases
