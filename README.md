@@ -102,7 +102,7 @@ cd sqljob
 
 This project draws inspiration from:
 
-- [**SQLrooms**](https://sqlrooms.com/) - Production-ready data webapp leveraging DuckDB-WASM
+- [**SQLrooms**](https://sqlrooms.org/) - Production-ready data webapp leveraging DuckDB-WASM
 - [**Perspective.js**](https://perspective.finos.org/) - Streaming data visualization (note: Plotly.js used here requires intermediate arrays, not streaming-capable)
 - [**Huey**](https://github.com/rpbouman/huey) - Vanilla JS approach to DuckDB-WASM (no framework overhead)
 - [**Power Query (Excel)**](https://support.microsoft.com/en-us/office/about-power-query-in-excel-7104fbee-9e62-4cb9-a02e-5bfb1a6c536a) - ETL for the masses
