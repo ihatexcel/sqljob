@@ -41,7 +41,7 @@
 ## 🚀 Quick Start
 
 ### Option 1: Download & Open
-1. Download [`index.sqljob.html`](https://github.com/ihatexcel/sqljob/releases/latest)
+1. Download [`index.html`](https://github.com/ihatexcel/sqljob/releases/latest)
 2. Open it in your browser
 3. Drag & drop your CSV/Excel file
 4. Start querying with SQL!
@@ -206,7 +206,7 @@ sqlJob uses a JSON configuration format for cells:
 ### File Structure
 ```
 sqljob/
-├── index.sqljob.html              # Main notebook interface
+├── index.html              # Main notebook interface
 ├── README.md
 ├── LICENSE
 ```
