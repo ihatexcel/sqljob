@@ -256,5 +256,5 @@ If this project helped you, consider giving it a star! ⭐
 
 ---
 
-**Made with ❤️ and 🦆 by Théo Nobella-Pichonnier**
+**Made with ❤️ by Théo Nobella-Pichonnier**
 *"I hate Excel, so I built this."* 
