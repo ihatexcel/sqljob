@@ -195,7 +195,7 @@ sqlJob uses a JSON configuration format for cells:
 ### Export Formats
 
 - **JSON Config**: Portable configuration file
-- **Base64 Config**: Embed in URLs/documentation
+- **Base64 Config**: Embed in file
 - **Standalone HTML**: Fully self-contained with embedded data
 - **PDF**: Print-ready reports via browser print
 
