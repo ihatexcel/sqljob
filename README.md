@@ -244,7 +244,7 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 **Théo Nobella-Pichonnier**
 
-- 💼 LinkedIn: [Linkedin](https://fr.linkedin.com/in/th%C3%A9o-nobella-97a9b3157)
+- 💼 [Linkedin](https://fr.linkedin.com/in/th%C3%A9o-nobella-97a9b3157)
 
 ---
 
