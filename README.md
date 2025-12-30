@@ -26,7 +26,7 @@
 
 ## ⚠️ Early Development Notice
 
-**This project started on December 19, 2024 and is far from finalized.**
+**This project started on December 19, 2025 and is far from finalized.**
 
 - 🚧 **Not production-ready** - Active development, APIs may change
 - 🐛 **Expect bugs** - Testing and stabilization ongoing
