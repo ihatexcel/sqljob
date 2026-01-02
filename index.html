@@ -16,21 +16,50 @@
         var duckDbLibraryUrl = `https://cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@${duckdbLibraryVersion}/+esm`;
     </script>
     <style>
+        /* Light Mode (par défaut) */
         :root {
-            --bg-primary: #1a1a2e;
-            --bg-secondary: #16213e;
-            --bg-cell: #0f3460;
-            --accent: #e94560;
-            --accent-hover: #ff6b6b;
-            --text-primary: #eaeaea;
-            --text-secondary: #a0a0a0;
-            --border: #2a2a4a;
+            --bg-primary: #f5f7fa;
+            --bg-secondary: #ffffff;
+            --bg-cell: #ffffff;
+            --accent: #6366f1;
+            --accent-hover: #4f46e5;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --shadow: rgba(0, 0, 0, 0.06);
+            --overlay: rgba(0, 0, 0, 0.4);
+            --accent-bg: rgba(99, 102, 241, 0.08);
+            --success-bg: rgba(34, 197, 94, 0.08);
+        }
+        
+        /* Dark Mode */
+        [data-theme="dark"] {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-cell: #1e293b;
+            --accent: #818cf8;
+            --accent-hover: #a5b4fc;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border: #334155;
             --success: #4ade80;
             --warning: #fbbf24;
             --error: #f87171;
+            --shadow: rgba(0, 0, 0, 0.25);
+            --overlay: rgba(0, 0, 0, 0.7);
+            --accent-bg: rgba(129, 140, 248, 0.15);
+            --success-bg: rgba(74, 222, 128, 0.15);
         }
         
         * { box-sizing: border-box; }
+        
+        /* Transition fluide pour le changement de thème */
+        *, *::before, *::after {
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+        }
         
         body { 
             font-family: 'Segoe UI', system-ui, sans-serif; 
@@ -60,6 +89,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            box-shadow: 0 1px 3px var(--shadow);
         }
         
         .header-left {
@@ -104,23 +134,67 @@
             cursor: not-allowed;
         }
         
-        /* Cellules */
-        .cells-container {
+        /* Lignes (rows) */
+        .rows-container {
             display: flex;
             flex-direction: column;
             gap: 1rem;
         }
         
+        .row {
+            display: flex;
+            gap: 1rem;
+            align-items: stretch;
+            position: relative;
+        }
+        
+        .row-cells {
+            display: flex;
+            gap: 1rem;
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .row-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            padding: 0.5rem 0;
+        }
+        
+        .btn-row-add {
+            padding: 0.5rem;
+            border: 2px dashed var(--border);
+            background: transparent;
+            color: var(--text-secondary);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        
+        .btn-row-add:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--accent-bg);
+        }
+        
+        /* Cellules */
         .cell {
             background: var(--bg-cell);
             border: 1px solid var(--border);
             border-radius: 8px;
             overflow: hidden;
-            transition: border-color 0.2s;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            flex: 1;
+            min-width: 200px;
+            box-shadow: 0 1px 3px var(--shadow);
         }
         
         .cell:hover {
             border-color: var(--accent);
+            box-shadow: 0 4px 12px var(--shadow);
         }
         
         .cell.running {
@@ -228,10 +302,11 @@
         }
         
         .source-item {
-            background: var(--bg-secondary);
+            background: var(--bg-primary);
             border: 1px solid var(--border);
             border-radius: 6px;
             padding: 1rem;
+            box-shadow: 0 1px 2px var(--shadow);
         }
         
         .source-header {
@@ -263,13 +338,13 @@
         
         .drop-zone.drag-over {
             border-color: var(--accent);
-            background: rgba(233, 69, 96, 0.1);
+            background: var(--accent-bg);
         }
         
         .drop-zone.has-file {
             border-style: solid;
             border-color: var(--success);
-            background: rgba(74, 222, 128, 0.1);
+            background: var(--success-bg);
         }
         
         .file-info {
@@ -293,7 +368,7 @@
             width: 100%;
             min-height: 80px;
             padding: 0.75rem;
-            background: var(--bg-secondary);
+            background: var(--bg-primary);
             border: 1px solid var(--border);
             border-radius: 6px;
             color: var(--text-primary);
@@ -305,6 +380,7 @@
         .sql-editor:focus {
             outline: none;
             border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-bg);
         }
         
         /* Table Cell */
@@ -331,11 +407,145 @@
             background: white;
         }
         
-        /* Add Cell Button */
-        .add-cell-container {
+        /* Séparateurs interactifs (entre lignes et cellules) */
+        .row-separator {
+            position: relative;
+            height: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin: -0.25rem 0;
+            z-index: 10;
+        }
+        
+        .row-separator::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 2px;
+            background: transparent;
+            border-radius: 1px;
+            transition: background 0.2s, width 0.2s;
+        }
+        
+        .row-separator:hover::before {
+            background: var(--accent);
+            width: 80%;
+        }
+        
+        .row-separator .separator-btn {
+            opacity: 0;
+            transform: scale(0.8);
+            transition: opacity 0.2s, transform 0.2s;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 1.5rem;
+            height: 1.5rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px var(--shadow);
+            z-index: 11;
+        }
+        
+        .row-separator:hover .separator-btn {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .row-separator .separator-btn:hover {
+            background: var(--accent-hover);
+        }
+        
+        .cell-separator {
+            position: relative;
+            width: 1rem;
+            min-width: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin: 0 -0.25rem;
+            z-index: 10;
+            align-self: stretch;
+        }
+        
+        .cell-separator::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 2px;
+            height: 60%;
+            background: transparent;
+            border-radius: 1px;
+            transition: background 0.2s, height 0.2s;
+        }
+        
+        .cell-separator:hover::before {
+            background: var(--accent);
+            height: 80%;
+        }
+        
+        .cell-separator .separator-btn {
+            opacity: 0;
+            transform: scale(0.8);
+            transition: opacity 0.2s, transform 0.2s;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 1.5rem;
+            height: 1.5rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px var(--shadow);
+            z-index: 11;
+        }
+        
+        .cell-separator:hover .separator-btn {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .cell-separator .separator-btn:hover {
+            background: var(--accent-hover);
+        }
+        
+        /* Add Row/Cell Button */
+        .add-row-container {
             display: flex;
             justify-content: center;
             padding: 1rem;
+        }
+        
+        .btn-add-row {
+            padding: 0.75rem 1.5rem;
+            border: 2px dashed var(--border);
+            background: transparent;
+            color: var(--text-secondary);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+        
+        .btn-add-row:hover {
+            border-color: var(--accent);
+            color: var(--accent);
         }
         
         .btn-add-cell {
@@ -357,6 +567,45 @@
             color: var(--accent);
         }
         
+        /* Row header (dev mode) */
+        .row-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.25rem 0.5rem;
+            background: var(--bg-secondary);
+            border-radius: 6px 6px 0 0;
+            margin-bottom: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        
+        .row-header-actions {
+            display: flex;
+            gap: 0.25rem;
+        }
+        
+        .btn-row {
+            padding: 0.25rem 0.4rem;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        
+        .btn-row:hover:not(:disabled) {
+            background: var(--border);
+            color: var(--text-primary);
+        }
+        
+        .btn-row:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        
         /* Modal */
         .modal-overlay {
             position: fixed;
@@ -364,7 +613,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
+            background: var(--overlay);
             z-index: 2000;
             display: flex;
             align-items: center;
@@ -379,6 +628,7 @@
             width: 90%;
             max-height: 80vh;
             overflow-y: auto;
+            box-shadow: 0 25px 50px -12px var(--shadow);
         }
         
         .modal-header {
@@ -475,7 +725,51 @@
             color: var(--text-primary);
         }
         
-        /* DevMode Toggle */
+        /* Bottom Left Controls */
+        .bottom-controls {
+            position: fixed;
+            bottom: 1rem;
+            left: 1rem;
+            z-index: 1500;
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        
+        .control-btn {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--border);
+            background: var(--bg-cell);
+            color: var(--text-secondary);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px var(--shadow);
+        }
+        
+        .control-btn:hover {
+            background: var(--bg-secondary);
+            border-color: var(--accent);
+            color: var(--text-primary);
+        }
+        
+        .control-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+        
+        /* Theme toggle specific */
+        .theme-btn {
+            font-size: 1rem;
+            padding: 0.5rem 0.6rem;
+        }
+        
+        /* DevMode Toggle (legacy class for compatibility) */
         .devmode-toggle {
             position: fixed;
             bottom: 1rem;
@@ -495,6 +789,7 @@
             align-items: center;
             gap: 0.4rem;
             transition: all 0.2s;
+            box-shadow: 0 2px 8px var(--shadow);
         }
         
         .devmode-btn:hover {
@@ -510,6 +805,7 @@
         }
         
         @media print {
+            .bottom-controls,
             .devmode-toggle {
                 display: none !important;
             }
@@ -621,7 +917,7 @@
             min-width: 150px;
             z-index: 1100;
             margin-top: 0.25rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 12px var(--shadow);
         }
         
         .dropdown.open .dropdown-content {
@@ -653,7 +949,7 @@
             border-radius: 0 0 6px 6px;
         }
     </style>
-    <script type="application/octet-stream" id="defaultConfigBase64">ewogICJqb2IiOiB7CiAgICAiYXV0b0V4ZWN1dGVXaXRob3V0U291cmNlcyI6IGZhbHNlLAogICAgImNlbGxzIjogWwogICAgICB7CiAgICAgICAgInR5cGUiOiAibWFya2Rvd24iLAogICAgICAgICJjb250ZW50IjogIiMgc3FsSm9iIOKaofCfkrtcbiMjIEkgSGF0ZSBFeGNlbCwgc28gSSBidWlsdCBhIHNpbXBsZSwgY2xpZW50LXNpZGUgU1FMIGpvYiBydW5uZXIuIPCfm6DvuI9cbvCfk6UgTG9hZCwg8J+UhCB0cmFuc2Zvcm0sIGFuZCDwn5OKIHZpc3VhbGl6ZSB5b3VyIGRhdGEgZGlyZWN0bHkgaW4gdGhlIGJyb3dzZXLigJRubyBzZXR1cCwgbm8gZnVzcy4g8J+agCIKICAgICAgfSwKICAgICAgewogICAgICAgICJ0eXBlIjogInNvdXJjZXMiLAogICAgICAgICJhdXRvUnVuTmV4dENlbGxzIjogdHJ1ZSwKICAgICAgICAic291cmNlcyI6IFsKICAgICAgICAgIHsKICAgICAgICAgICAgIm5hbWUiOiAic291cmNlMSIsCiAgICAgICAgICAgICJpbXBvcnRUZXh0IjogIkdsaXNzZXotZMOpcG9zZXogdm90cmUgZmljaGllciBpY2kiLAogICAgICAgICAgICAicXVlcnkiOiAiQ1JFQVRFIE9SIFJFUExBQ0UgVEFCTEUgc291cmNlMSBBUyBTRUxFQ1QgKiBGUk9NIHJlYWRfY3N2X2F1dG8oJ3tmaWxlTmFtZVVwbG9hZH0nLCBBTExfVkFSQ0hBUj10cnVlLCBIRUFERVI9dHJ1ZSkiLAogICAgICAgICAgICAieGxzeCI6IHsKICAgICAgICAgICAgICAib3B0aW9ucyI6IHsKICAgICAgICAgICAgICAgICJ0eXBlIjogImFycmF5IiwKICAgICAgICAgICAgICAgICJyYXciOiBmYWxzZSwKICAgICAgICAgICAgICAgICJkYXRlTkYiOiAiZGQvbW0veXl5eSIsCiAgICAgICAgICAgICAgICAiY2VsbERhdGVzIjogdHJ1ZSwKICAgICAgICAgICAgICAgICJjZWxsTkYiOiBmYWxzZSwKICAgICAgICAgICAgICAgICJjZWxsVGV4dCI6IGZhbHNlCiAgICAgICAgICAgICAgfSwKICAgICAgICAgICAgICAidG9Dc3ZPcHRpb25zIjogewogICAgICAgICAgICAgICAgImRhdGVORiI6ICJkZC9tbS95eXl5IiwKICAgICAgICAgICAgICAgICJGUyI6ICIsIiwKICAgICAgICAgICAgICAgICJSUyI6ICJcbiIKICAgICAgICAgICAgICB9LAogICAgICAgICAgICAgICJzaGVldFNlbGVjdGlvbiI6IHsKICAgICAgICAgICAgICAgICJ0eXBlIjogewogICAgICAgICAgICAgICAgICAiYXV0byI6IHRydWUsCiAgICAgICAgICAgICAgICAgICJpbmRleCI6IGZhbHNlLAogICAgICAgICAgICAgICAgICAibmFtZSI6IGZhbHNlCiAgICAgICAgICAgICAgICB9LAogICAgICAgICAgICAgICAgImluZGV4IjogMCwKICAgICAgICAgICAgICAgICJuYW1lIjogIiIKICAgICAgICAgICAgICB9CiAgICAgICAgICAgIH0KICAgICAgICAgIH0KICAgICAgICBdCiAgICAgIH0sCiAgICAgIHsKICAgICAgICAidHlwZSI6ICJ0YWJsZSIsCiAgICAgICAgInF1ZXJ5IjogIlNFTEVDVCAqIEZST00gc291cmNlMSBMSU1JVCAxMDAiLAogICAgICAgICJtYXhSb3dzIjogMTAwMAogICAgICB9LAogICAgICB7CiAgICAgICAgInR5cGUiOiAic3FsRXhwb3J0IiwKICAgICAgICAicXVlcnkiOiAiQ09QWSAoU0VMRUNUICogZnJvbSBzb3VyY2UxKSBUTyAne2ZpbGVOYW1lfScgKEZPUk1BVCBDU1YsIEhFQURFUiwgREVMSU1JVEVSICc7JykiLAogICAgICAgICJmaWxlTmFtZVF1ZXJ5IjogIlNFTEVDVCAnZXhwb3J0XycgfHwgY3VycmVudF90aW1lc3RhbXA6OnRleHQgfHwgJy5jc3YnIGFzIGZpbGVfbmFtZSIsCiAgICAgICAgIm1pbWVUeXBlIjogIiIKICAgICAgfSwKICAgICAgewogICAgICAgICJ0eXBlIjogInBsb3QiLAogICAgICAgICJxdWVyeSI6ICIvLyBWYXJpYWJsZXM6IGNvbnRhaW5lciwgUGxvdGx5LCArIGxlcyB0YWJsZXMgY29uZmlndXLDqWVzXG5jb25zdCBsaW1pdGVkU291cmNlID0gc291cmNlMS5zbGljZSgwLCAxMDAwKTtcbmNvbnN0IHggPSBsaW1pdGVkU291cmNlLm1hcChyID0+IE9iamVjdC52YWx1ZXMocilbMF0pO1xuY29uc3QgeSA9IGxpbWl0ZWRTb3VyY2UubWFwKHIgPT4gT2JqZWN0LnZhbHVlcyhyKVsxXSk7XG5cblBsb3RseS5uZXdQbG90KGNvbnRhaW5lciwgW3tcbiAgICB4OiB4LFxuICAgIHk6IHksXG4gICAgdHlwZTogXCJiYXJcIlxufV0sIHsgdGl0bGU6IFwiR3JhcGhpcXVlXCIgfSk7IiwKICAgICAgICAidGFibGVzIjogInNvdXJjZTEiCiAgICAgIH0KICAgIF0KICB9LAogICJ1aSI6IHsKICAgICJkZXZNb2RlIjogdHJ1ZQogIH0KfQ==</script>
+    <script type="application/octet-stream" id="defaultConfigBase64">ewogICJqb2IiOiB7CiAgICAiYXV0b0V4ZWN1dGVXaXRob3V0U291cmNlcyI6IGZhbHNlLAogICAgInJvd3MiOiBbCiAgICAgIHsKICAgICAgICAic3R5bGUiOiAiIiwKICAgICAgICAiY2VsbHMiOiBbCiAgICAgICAgICB7CiAgICAgICAgICAgICJ0eXBlIjogIm1hcmtkb3duIiwKICAgICAgICAgICAgImNvbnRlbnQiOiAiIyBzcWxKb2Ig4pqh8J+Su1xuIyMgSSBIYXRlIEV4Y2VsLCBzbyBJIGJ1aWx0IGEgc2ltcGxlLCBjbGllbnQtc2lkZSBTUUwgam9iIHJ1bm5lci4g8J+boO+4j1xu8J+TpSBMb2FkLCDwn5SEIHRyYW5zZm9ybSwgYW5kIPCfk4ogdmlzdWFsaXplIHlvdXIgZGF0YSBkaXJlY3RseSBpbiB0aGUgYnJvd3NlcuKAlG5vIHNldHVwLCBubyBmdXNzLiDwn5qAIgogICAgICAgICAgfQogICAgICAgIF0KICAgICAgfSwKICAgICAgewogICAgICAgICJzdHlsZSI6ICIiLAogICAgICAgICJjZWxscyI6IFsKICAgICAgICAgIHsKICAgICAgICAgICAgInR5cGUiOiAic291cmNlcyIsCiAgICAgICAgICAgICJhdXRvUnVuTmV4dENlbGxzIjogdHJ1ZSwKICAgICAgICAgICAgInNvdXJjZXMiOiBbCiAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgIm5hbWUiOiAic291cmNlMSIsCiAgICAgICAgICAgICAgICAiaW1wb3J0VGV4dCI6ICJHbGlzc2V6LWTDqXBvc2V6IHZvdHJlIGZpY2hpZXIgaWNpIiwKICAgICAgICAgICAgICAgICJxdWVyeSI6ICJDUkVBVEUgT1IgUkVQTEFDRSBUQUJMRSBzb3VyY2UxIEFTIFNFTEVDVCAqIEZST00gcmVhZF9jc3ZfYXV0bygne2ZpbGVOYW1lVXBsb2FkfScsIEFMTF9WQVJDSEFSPXRydWUsIEhFQURFUj10cnVlKSIsCiAgICAgICAgICAgICAgICAieGxzeCI6IHsKICAgICAgICAgICAgICAgICAgIm9wdGlvbnMiOiB7CiAgICAgICAgICAgICAgICAgICAgInR5cGUiOiAiYXJyYXkiLAogICAgICAgICAgICAgICAgICAgICJyYXciOiBmYWxzZSwKICAgICAgICAgICAgICAgICAgICAiZGF0ZU5GIjogImRkL21tL3l5eXkiLAogICAgICAgICAgICAgICAgICAgICJjZWxsRGF0ZXMiOiB0cnVlLAogICAgICAgICAgICAgICAgICAgICJjZWxsTkYiOiBmYWxzZSwKICAgICAgICAgICAgICAgICAgICAiY2VsbFRleHQiOiBmYWxzZQogICAgICAgICAgICAgICAgICB9LAogICAgICAgICAgICAgICAgICAidG9Dc3ZPcHRpb25zIjogewogICAgICAgICAgICAgICAgICAgICJkYXRlTkYiOiAiZGQvbW0veXl5eSIsCiAgICAgICAgICAgICAgICAgICAgIkZTIjogIiwiLAogICAgICAgICAgICAgICAgICAgICJSUyI6ICJcbiIKICAgICAgICAgICAgICAgICAgfSwKICAgICAgICAgICAgICAgICAgInNoZWV0U2VsZWN0aW9uIjogewogICAgICAgICAgICAgICAgICAgICJ0eXBlIjogewogICAgICAgICAgICAgICAgICAgICAgImF1dG8iOiB0cnVlLAogICAgICAgICAgICAgICAgICAgICAgImluZGV4IjogZmFsc2UsCiAgICAgICAgICAgICAgICAgICAgICAibmFtZSI6IGZhbHNlCiAgICAgICAgICAgICAgICAgICAgfSwKICAgICAgICAgICAgICAgICAgICAiaW5kZXgiOiAwLAogICAgICAgICAgICAgICAgICAgICJuYW1lIjogIiIKICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgIH0KICAgICAgICAgICAgXQogICAgICAgICAgfQogICAgICAgIF0KICAgICAgfSwKICAgICAgewogICAgICAgICJzdHlsZSI6ICIiLAogICAgICAgICJjZWxscyI6IFsKICAgICAgICAgIHsKICAgICAgICAgICAgInR5cGUiOiAidGFibGUiLAogICAgICAgICAgICAicXVlcnkiOiAiU0VMRUNUICogRlJPTSBzb3VyY2UxIExJTUlUIDEwMCIsCiAgICAgICAgICAgICJtYXhSb3dzIjogMTAwMAogICAgICAgICAgfQogICAgICAgIF0KICAgICAgfSwKICAgICAgewogICAgICAgICJzdHlsZSI6ICIiLAogICAgICAgICJjZWxscyI6IFsKICAgICAgICAgIHsKICAgICAgICAgICAgInR5cGUiOiAic3FsRXhwb3J0IiwKICAgICAgICAgICAgInF1ZXJ5IjogIkNPUFkgKFNFTEVDVCAqIGZyb20gc291cmNlMSkgVE8gJ3tmaWxlTmFtZX0nIChGT1JNQVQgQ1NWLCBIRUFERVIsIERFTElNSVRFUiAnOycpIiwKICAgICAgICAgICAgImZpbGVOYW1lUXVlcnkiOiAiU0VMRUNUICdleHBvcnRfJyB8fCBjdXJyZW50X3RpbWVzdGFtcDo6dGV4dCB8fCAnLmNzdicgYXMgZmlsZV9uYW1lIiwKICAgICAgICAgICAgIm1pbWVUeXBlIjogIiIKICAgICAgICAgIH0KICAgICAgICBdCiAgICAgIH0sCiAgICAgIHsKICAgICAgICAic3R5bGUiOiAiIiwKICAgICAgICAiY2VsbHMiOiBbCiAgICAgICAgICB7CiAgICAgICAgICAgICJ0eXBlIjogInBsb3QiLAogICAgICAgICAgICAicXVlcnkiOiAiLy8gVmFyaWFibGVzOiBjb250YWluZXIsIFBsb3RseSwgKyBsZXMgdGFibGVzIGNvbmZpZ3Vyw6llc1xuY29uc3QgbGltaXRlZFNvdXJjZSA9IHNvdXJjZTEuc2xpY2UoMCwgMTAwMCk7XG5jb25zdCB4ID0gbGltaXRlZFNvdXJjZS5tYXAociA9PiBPYmplY3QudmFsdWVzKHIpWzBdKTtcbmNvbnN0IHkgPSBsaW1pdGVkU291cmNlLm1hcChyID0+IE9iamVjdC52YWx1ZXMocilbMV0pO1xuXG5QbG90bHkubmV3UGxvdChjb250YWluZXIsIFt7XG4gICAgeDogeCxcbiAgICB5OiB5LFxuICAgIHR5cGU6IFwiYmFyXCJcbn1dLCB7IHRpdGxlOiBcIkdyYXBoaXF1ZVwiIH0pOyIsCiAgICAgICAgICAgICJ0YWJsZXMiOiAic291cmNlMSIKICAgICAgICAgIH0KICAgICAgICBdCiAgICAgIH0KICAgIF0KICB9LAogICJ1aSI6IHsKICAgICJkZXZNb2RlIjogdHJ1ZQogIH0KfQ==</script>
 </head>
 <body>
     <div id="app-container"></div>
@@ -762,51 +1058,56 @@
                 return ConfigManager.getDefaultConfig();
             }
 
-            static buildConfigFromState(cells, devMode = true, autoExecuteWithoutSources = false) {
-                const cleanCells = cells.map(cell => {
-                    const cleanCell = { type: cell.type };
-                    
-                    switch (cell.type) {
-                        case 'markdown':
-                            cleanCell.content = cell.content;
-                            break;
-                        case 'sources':
-                            cleanCell.autoRunNextCells = cell.autoRunNextCells;
-                            cleanCell.sources = (cell.sources || []).map(s => ({
-                                name: s.name,
-                                importText: s.importText,
-                                query: s.query,
-                                xlsx: s.xlsx
-                            }));
-                            break;
-                        case 'sql':
-                            cleanCell.query = cell.query;
-                            break;
-                        case 'sqlExport':
-                            cleanCell.query = cell.query;
-                            cleanCell.fileNameQuery = cell.fileNameQuery;
-                            cleanCell.mimeType = cell.mimeType;
-                            break;
-                        case 'table':
-                            cleanCell.query = cell.query;
-                            cleanCell.maxRows = cell.maxRows;
-                            break;
-                        case 'plot':
-                            cleanCell.query = cell.query;
-                            cleanCell.tables = cell.tables;
-                            break;
-                        case 'iframe':
-                            cleanCell.query = cell.query;
-                            break;
-                    }
-                    
-                    return cleanCell;
-                });
+            static cleanCell(cell) {
+                const cleanCell = { type: cell.type };
+                
+                switch (cell.type) {
+                    case 'markdown':
+                        cleanCell.content = cell.content;
+                        break;
+                    case 'sources':
+                        cleanCell.autoRunNextCells = cell.autoRunNextCells;
+                        cleanCell.sources = (cell.sources || []).map(s => ({
+                            name: s.name,
+                            importText: s.importText,
+                            query: s.query,
+                            xlsx: s.xlsx
+                        }));
+                        break;
+                    case 'sql':
+                        cleanCell.query = cell.query;
+                        break;
+                    case 'sqlExport':
+                        cleanCell.query = cell.query;
+                        cleanCell.fileNameQuery = cell.fileNameQuery;
+                        cleanCell.mimeType = cell.mimeType;
+                        break;
+                    case 'table':
+                        cleanCell.query = cell.query;
+                        cleanCell.maxRows = cell.maxRows;
+                        break;
+                    case 'plot':
+                        cleanCell.query = cell.query;
+                        cleanCell.tables = cell.tables;
+                        break;
+                    case 'iframe':
+                        cleanCell.query = cell.query;
+                        break;
+                }
+                
+                return cleanCell;
+            }
+
+            static buildConfigFromState(rows, devMode = true, autoExecuteWithoutSources = false) {
+                const cleanRows = rows.map(row => ({
+                    style: row.style || '',
+                    cells: row.cells.map(cell => ConfigManager.cleanCell(cell))
+                }));
                 
                 return { 
                     job: { 
                         autoExecuteWithoutSources: autoExecuteWithoutSources,
-                        cells: cleanCells 
+                        rows: cleanRows 
                     },
                     ui: { devMode: devMode }
                 };
@@ -1065,7 +1366,7 @@
                 <span class="header-title">🦆 sqlJob Notebook</span>
             </div>
             <div class="header-right">
-                <button class="btn-header" @click="runAllCells()" :disabled="isLoading">
+                <button class="btn-header" @click="runAllRows()" :disabled="isLoading">
                     ▶️ Tout exécuter
                 </button>
                 <!-- Mode dev : menu export complet -->
@@ -1105,172 +1406,290 @@
         </div>
         
         <div class="app-container">
-            <div class="cells-container">
-                <template x-for="(cell, index) in cells" :key="cell._id">
-                    <!-- Masquer complètement les cellules SQL en mode non-dev -->
-                    <div class="cell" 
-                         x-show="devMode || cell.type !== 'sql'"
-                         :class="{ 'running': cell._status === 'running', 'success': cell._status === 'success', 'error': cell._status === 'error' }">
-                        <!-- Cell header : visible seulement en mode dev -->
-                        <div class="cell-header" x-show="devMode">
-                            <div class="cell-type-badge">
-                                <span class="cell-type-icon" x-text="getCellIcon(cell.type)"></span>
-                                <span x-text="cell.type"></span>
-                                <span x-show="cell._status === 'running'" style="color: var(--warning);">⏳</span>
-                            </div>
-                            <div class="cell-actions">
-                                <button class="btn-cell play" @click="runCell(index)" :disabled="isLoading" title="Exécuter">
+            <div class="rows-container">
+                <template x-for="(row, rowIndex) in rows" :key="row._id">
+                    <div class="row-wrapper">
+                        <!-- Séparateur avant la ligne (sauf pour la première) -->
+                        <div class="row-separator" x-show="devMode && rowIndex > 0" @click="openInsertRowModal(rowIndex)">
+                            <button class="separator-btn" title="Insérer une ligne ici">+</button>
+                        </div>
+                        
+                        <!-- Row header en mode dev -->
+                        <div class="row-header" x-show="devMode">
+                            <span>📋 Ligne <span x-text="rowIndex + 1"></span></span>
+                            <div class="row-header-actions">
+                                <button class="btn-row" @click="runRow(rowIndex)" :disabled="isLoading" title="Exécuter la ligne">
                                     ▶️
                                 </button>
-                                <button class="btn-cell" @click="openCellConfig(index)" title="Configurer">
+                                <button class="btn-row" @click="openRowConfig(rowIndex)" title="Configurer le style">
                                     ⚙️
                                 </button>
-                                <button class="btn-cell" @click="moveCell(index, -1)" :disabled="index === 0" title="Monter">
+                                <button class="btn-row" @click="moveRow(rowIndex, -1)" :disabled="rowIndex === 0" title="Monter">
                                     ⬆️
                                 </button>
-                                <button class="btn-cell" @click="moveCell(index, 1)" :disabled="index === cells.length - 1" title="Descendre">
+                                <button class="btn-row" @click="moveRow(rowIndex, 1)" :disabled="rowIndex === rows.length - 1" title="Descendre">
                                     ⬇️
                                 </button>
-                                <button class="btn-cell delete" @click="deleteCell(index)" title="Supprimer">
+                                <button class="btn-row" @click="deleteRow(rowIndex)" title="Supprimer la ligne" style="color: var(--error);">
                                     🗑️
                                 </button>
                             </div>
                         </div>
                         
-                        <div class="cell-body">
-                            <!-- MARKDOWN CELL -->
-                            <template x-if="cell.type === 'markdown'">
-                                <div class="markdown-content" x-html="renderMarkdown(cell.content)"></div>
-                            </template>
-                            
-                            <!-- SOURCES CELL -->
-                            <template x-if="cell.type === 'sources'">
-                                <div>
-                                    <div class="sources-grid">
-                                        <template x-for="(source, sIndex) in cell.sources" :key="source.name + '_' + sIndex">
-                                            <div class="source-item">
-                                                <div class="source-header">
-                                                    <span class="source-name" x-text="'📂 ' + source.name"></span>
-                                                    <button class="btn-cell" @click="openSourceConfig(index, sIndex)" title="Configurer">⚙️</button>
-                                                </div>
-                                                <div class="drop-zone" 
-                                                     :class="{ 'drag-over': source._isDragging, 'has-file': source._fileName }"
-                                                     @click="!source._fileName && document.getElementById('fileInput_' + cell._id + '_' + sIndex).click()"
-                                                     @dragover.prevent="source._isDragging = true"
-                                                     @dragleave.prevent="source._isDragging = false"
-                                                     @drop.prevent="handleSourceDrop($event, index, sIndex)">
-                                                    <template x-if="!source._fileName">
-                                                        <div>
-                                                            <div>📁</div>
-                                                            <p x-text="source.importText || 'Glissez-déposez ici'"></p>
-                                                        </div>
-                                                    </template>
-                                                    <template x-if="source._fileName">
-                                                        <div class="file-info">
-                                                            <span class="file-name">
-                                                                ✅ <span x-text="source._fileName"></span>
-                                                            </span>
-                                                            <button class="btn-cell delete" @click.stop="removeSourceFile(index, sIndex)">❌</button>
-                                                        </div>
-                                                    </template>
-                                                </div>
-                                                <input type="file" 
-                                                       class="file-input"
-                                                       :id="'fileInput_' + cell._id + '_' + sIndex"
-                                                       accept=".csv,.parquet,.xlsx,.xls"
-                                                       @change="handleSourceFileSelect($event, index, sIndex)">
+                        <!-- Contenu de la ligne -->
+                        <div class="row" :style="row.style">
+                            <div class="row-cells">
+                                <template x-for="(cell, cellIndex) in row.cells" :key="cell._id">
+                                    <div class="cell-with-separator" style="display: contents;">
+                                        <!-- Séparateur avant la cellule (sauf pour la première) -->
+                                        <div class="cell-separator" x-show="devMode && cellIndex > 0" @click="openInsertCellModal(rowIndex, cellIndex)">
+                                            <button class="separator-btn" title="Insérer une cellule ici">+</button>
+                                        </div>
+                                        
+                                        <!-- Masquer complètement les cellules SQL en mode non-dev -->
+                                        <div class="cell" 
+                                         x-show="devMode || cell.type !== 'sql'"
+                                         :class="{ 'running': cell._status === 'running', 'success': cell._status === 'success', 'error': cell._status === 'error' }">
+                                        <!-- Cell header : visible seulement en mode dev -->
+                                        <div class="cell-header" x-show="devMode">
+                                            <div class="cell-type-badge">
+                                                <span class="cell-type-icon" x-text="getCellIcon(cell.type)"></span>
+                                                <span x-text="cell.type"></span>
+                                                <span x-show="cell._status === 'running'" style="color: var(--warning);">⏳</span>
                                             </div>
-                                        </template>
+                                            <div class="cell-actions">
+                                                <button class="btn-cell play" @click="runCellAt(rowIndex, cellIndex)" :disabled="isLoading" title="Exécuter">
+                                                    ▶️
+                                                </button>
+                                                <button class="btn-cell" @click="openCellConfig(rowIndex, cellIndex)" title="Configurer">
+                                                    ⚙️
+                                                </button>
+                                                <button class="btn-cell" @click="moveCellInRow(rowIndex, cellIndex, -1)" :disabled="cellIndex === 0" title="Déplacer à gauche">
+                                                    ⬅️
+                                                </button>
+                                                <button class="btn-cell" @click="moveCellInRow(rowIndex, cellIndex, 1)" :disabled="cellIndex === row.cells.length - 1" title="Déplacer à droite">
+                                                    ➡️
+                                                </button>
+                                                <button class="btn-cell delete" @click="deleteCellAt(rowIndex, cellIndex)" title="Supprimer">
+                                                    🗑️
+                                                </button>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="cell-body">
+                                            <!-- MARKDOWN CELL -->
+                                            <template x-if="cell.type === 'markdown'">
+                                                <div class="markdown-content" x-html="renderMarkdown(cell.content)"></div>
+                                            </template>
+                                            
+                                            <!-- SOURCES CELL -->
+                                            <template x-if="cell.type === 'sources'">
+                                                <div>
+                                                    <div class="sources-grid">
+                                                        <template x-for="(source, sIndex) in cell.sources" :key="source.name + '_' + sIndex">
+                                                            <div class="source-item">
+                                                                <div class="source-header">
+                                                                    <span class="source-name" x-text="'📂 ' + source.name"></span>
+                                                                    <button class="btn-cell" @click="openSourceConfig(rowIndex, cellIndex, sIndex)" title="Configurer">⚙️</button>
+                                                                </div>
+                                                                <div class="drop-zone" 
+                                                                     :class="{ 'drag-over': source._isDragging, 'has-file': source._fileName }"
+                                                                     @click="!source._fileName && document.getElementById('fileInput_' + cell._id + '_' + sIndex).click()"
+                                                                     @dragover.prevent="source._isDragging = true"
+                                                                     @dragleave.prevent="source._isDragging = false"
+                                                                     @drop.prevent="handleSourceDrop($event, rowIndex, cellIndex, sIndex)">
+                                                                    <template x-if="!source._fileName">
+                                                                        <div>
+                                                                            <div>📁</div>
+                                                                            <p x-text="source.importText || 'Glissez-déposez ici'"></p>
+                                                                        </div>
+                                                                    </template>
+                                                                    <template x-if="source._fileName">
+                                                                        <div class="file-info">
+                                                                            <span class="file-name">
+                                                                                ✅ <span x-text="source._fileName"></span>
+                                                                            </span>
+                                                                            <button class="btn-cell delete" @click.stop="removeSourceFile(rowIndex, cellIndex, sIndex)">❌</button>
+                                                                        </div>
+                                                                    </template>
+                                                                </div>
+                                                                <input type="file" 
+                                                                       class="file-input"
+                                                                       :id="'fileInput_' + cell._id + '_' + sIndex"
+                                                                       accept=".csv,.parquet,.xlsx,.xls"
+                                                                       @change="handleSourceFileSelect($event, rowIndex, cellIndex, sIndex)">
+                                                            </div>
+                                                        </template>
+                                                    </div>
+                                                    <button x-show="devMode" class="btn-add-cell" style="margin-top: 1rem; width: auto;" @click="addSourceToCell(rowIndex, cellIndex)">
+                                                        ➕ Ajouter une source
+                                                    </button>
+                                                </div>
+                                            </template>
+                                            
+                                            <!-- SQL CELL -->
+                                            <template x-if="cell.type === 'sql'">
+                                                <div>
+                                                    <textarea class="sql-editor" 
+                                                              x-model="cell.query"
+                                                              placeholder="SELECT * FROM source1 LIMIT 100"></textarea>
+                                                    <template x-if="cell._resultInfo">
+                                                        <div class="cell-result-info" x-text="cell._resultInfo"></div>
+                                                    </template>
+                                                </div>
+                                            </template>
+                                            
+                                            <!-- SQL EXPORT CELL -->
+                                            <template x-if="cell.type === 'sqlExport'">
+                                                <div>
+                                                    <textarea x-show="devMode" class="sql-editor" 
+                                                              x-model="cell.query"
+                                                              placeholder="COPY (SELECT * from source1) TO &#39;{fileName}&#39; (FORMAT CSV, HEADER)"></textarea>
+                                                    <template x-if="cell._resultInfo">
+                                                        <div class="cell-result-info" x-text="cell._resultInfo"></div>
+                                                    </template>
+                                                </div>
+                                            </template>
+                                            
+                                            <!-- TABLE CELL -->
+                                            <template x-if="cell.type === 'table'">
+                                                <div>
+                                                    <textarea x-show="devMode" class="sql-editor" 
+                                                              x-model="cell.query"
+                                                              placeholder="SELECT * FROM source1 LIMIT 100"></textarea>
+                                                    <div class="table-container" :id="'table-' + cell._id" x-show="cell._results"></div>
+                                                    <template x-if="cell._resultInfo">
+                                                        <div class="cell-result-info" x-text="cell._resultInfo"></div>
+                                                    </template>
+                                                </div>
+                                            </template>
+                                            
+                                            <!-- PLOT CELL -->
+                                            <template x-if="cell.type === 'plot'">
+                                                <div>
+                                                    <div class="plot-container" :id="'plot-' + cell._id">
+                                                        <p x-show="devMode" style="text-align: center; color: var(--text-secondary); padding: 2rem;">
+                                                            📈 Cliquez sur ⚙️ pour configurer le graphique
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                            
+                                            <!-- IFRAME CELL -->
+                                            <template x-if="cell.type === 'iframe'">
+                                                <div>
+                                                    <textarea x-show="devMode" class="sql-editor" 
+                                                              x-model="cell.query"
+                                                              placeholder="SELECT &#39;&lt;!DOCTYPE html&gt;...&#39; as html"></textarea>
+                                                    <div class="iframe-container">
+                                                        <iframe :id="'iframe-' + cell._id"></iframe>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                        </div>
                                     </div>
-                                    <button x-show="devMode" class="btn-add-cell" style="margin-top: 1rem; width: auto;" @click="addSourceToCell(index)">
-                                        ➕ Ajouter une source
-                                    </button>
-                                </div>
-                            </template>
-                            
-                            <!-- SQL CELL -->
-                            <template x-if="cell.type === 'sql'">
-                                <div>
-                                    <textarea class="sql-editor" 
-                                              x-model="cell.query"
-                                              placeholder="SELECT * FROM source1 LIMIT 100"></textarea>
-                                    <template x-if="cell._resultInfo">
-                                        <div class="cell-result-info" x-text="cell._resultInfo"></div>
-                                    </template>
-                                </div>
-                            </template>
-                            
-                            <!-- SQL EXPORT CELL -->
-                            <template x-if="cell.type === 'sqlExport'">
-                                <div>
-                                    <textarea x-show="devMode" class="sql-editor" 
-                                              x-model="cell.query"
-                                              placeholder="COPY (SELECT * from source1) TO &#39;{fileName}&#39; (FORMAT CSV, HEADER)"></textarea>
-                                    <template x-if="cell._resultInfo">
-                                        <div class="cell-result-info" x-text="cell._resultInfo"></div>
-                                    </template>
-                                </div>
-                            </template>
-                            
-                            <!-- TABLE CELL -->
-                            <template x-if="cell.type === 'table'">
-                                <div>
-                                    <textarea x-show="devMode" class="sql-editor" 
-                                              x-model="cell.query"
-                                              placeholder="SELECT * FROM source1 LIMIT 100"></textarea>
-                                    <div class="table-container" :id="'table-' + cell._id" x-show="cell._results"></div>
-                                    <template x-if="cell._resultInfo">
-                                        <div class="cell-result-info" x-text="cell._resultInfo"></div>
-                                    </template>
-                                </div>
-                            </template>
-                            
-                            <!-- PLOT CELL -->
-                            <template x-if="cell.type === 'plot'">
-                                <div>
-                                    <div class="plot-container" :id="'plot-' + cell._id">
-                                        <p x-show="devMode" style="text-align: center; color: var(--text-secondary); padding: 2rem;">
-                                            📈 Cliquez sur ⚙️ pour configurer le graphique
-                                        </p>
                                     </div>
-                                </div>
-                            </template>
+                                </template>
+                            </div>
                             
-                            <!-- IFRAME CELL -->
-                            <template x-if="cell.type === 'iframe'">
-                                <div>
-                                    <textarea x-show="devMode" class="sql-editor" 
-                                              x-model="cell.query"
-                                              placeholder="SELECT &#39;&lt;!DOCTYPE html&gt;...&#39; as html"></textarea>
-                                    <div class="iframe-container">
-                                        <iframe :id="'iframe-' + cell._id"></iframe>
-                                    </div>
-                                </div>
-                            </template>
+                            <!-- Bouton ajouter cellule à droite -->
+                            <div class="row-actions" x-show="devMode">
+                                <button class="btn-row-add" @click="openAddCellToRowModal(rowIndex)" title="Ajouter une cellule à droite">
+                                    ➕
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </template>
             </div>
             
-            <div x-show="devMode" class="add-cell-container">
-                <button class="btn-add-cell" @click="openAddCellModal()">
-                    ➕ Ajouter une cellule
+            <div x-show="devMode" class="add-row-container">
+                <button class="btn-add-row" @click="openAddRowModal()">
+                    ➕ Ajouter une ligne
                 </button>
             </div>
         </div>
         
-        <!-- Modal ajout cellule -->
-        <template x-if="showAddCellModal">
-            <div class="modal-overlay" @click.self="showAddCellModal = false">
+        <!-- Modal ajout ligne -->
+        <template x-if="showAddRowModal">
+            <div class="modal-overlay" @click.self="showAddRowModal = false">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <span class="modal-title">➕ Ajouter une cellule</span>
-                        <button class="modal-close" @click="showAddCellModal = false">×</button>
+                        <span class="modal-title">➕ Ajouter une ligne</span>
+                        <button class="modal-close" @click="showAddRowModal = false">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <p style="margin-bottom: 1rem; color: var(--text-secondary);">Choisissez le type de cellule pour la nouvelle ligne :</p>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+                            <template x-for="cellType in cellTypes" :key="cellType.type">
+                                <button class="btn-header" style="justify-content: flex-start; padding: 1rem;" @click="addRow(cellType.type)">
+                                    <span x-text="cellType.icon"></span>
+                                    <span x-text="cellType.label"></span>
+                                </button>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+        
+        <!-- Modal ajout cellule à une ligne -->
+        <template x-if="addCellToRowModal.open">
+            <div class="modal-overlay" @click.self="addCellToRowModal.open = false">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <span class="modal-title">➕ Ajouter une cellule à la ligne <span x-text="addCellToRowModal.rowIndex + 1"></span></span>
+                        <button class="modal-close" @click="addCellToRowModal.open = false">×</button>
                     </div>
                     <div class="modal-body">
                         <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
                             <template x-for="cellType in cellTypes" :key="cellType.type">
-                                <button class="btn-header" style="justify-content: flex-start; padding: 1rem;" @click="addCell(cellType.type)">
+                                <button class="btn-header" style="justify-content: flex-start; padding: 1rem;" @click="addCellToRow(addCellToRowModal.rowIndex, cellType.type)">
+                                    <span x-text="cellType.icon"></span>
+                                    <span x-text="cellType.label"></span>
+                                </button>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+        
+        <!-- Modal insertion ligne entre deux lignes -->
+        <template x-if="insertRowModal.open">
+            <div class="modal-overlay" @click.self="insertRowModal.open = false">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <span class="modal-title">➕ Insérer une ligne à la position <span x-text="insertRowModal.atIndex + 1"></span></span>
+                        <button class="modal-close" @click="insertRowModal.open = false">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <p style="margin-bottom: 1rem; color: var(--text-secondary);">Choisissez le type de cellule pour la nouvelle ligne :</p>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+                            <template x-for="cellType in cellTypes" :key="cellType.type">
+                                <button class="btn-header" style="justify-content: flex-start; padding: 1rem;" @click="insertRowAt(insertRowModal.atIndex, cellType.type)">
+                                    <span x-text="cellType.icon"></span>
+                                    <span x-text="cellType.label"></span>
+                                </button>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+        
+        <!-- Modal insertion cellule entre deux cellules -->
+        <template x-if="insertCellModal.open">
+            <div class="modal-overlay" @click.self="insertCellModal.open = false">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <span class="modal-title">➕ Insérer une cellule à la position <span x-text="insertCellModal.atCellIndex + 1"></span></span>
+                        <button class="modal-close" @click="insertCellModal.open = false">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+                            <template x-for="cellType in cellTypes" :key="cellType.type">
+                                <button class="btn-header" style="justify-content: flex-start; padding: 1rem;" @click="insertCellAt(insertCellModal.rowIndex, insertCellModal.atCellIndex, cellType.type)">
                                     <span x-text="cellType.icon"></span>
                                     <span x-text="cellType.label"></span>
                                 </button>
@@ -1293,8 +1712,8 @@
                         <div class="form-field">
                             <label>Type de cellule</label>
                             <select x-ref="typeSelect"
-                                    x-effect="if (cellConfigModal.open && cellConfigModal.index !== null) $refs.typeSelect.value = cells[cellConfigModal.index]?.type"
-                                    @change="cells[cellConfigModal.index].type = $event.target.value; onCellTypeChange(cellConfigModal.index)">
+                                    x-effect="if (cellConfigModal.open && cellConfigModal.rowIndex !== null) $refs.typeSelect.value = getCell(cellConfigModal.rowIndex, cellConfigModal.cellIndex)?.type"
+                                    @change="getCell(cellConfigModal.rowIndex, cellConfigModal.cellIndex).type = $event.target.value; onCellTypeChange(cellConfigModal.rowIndex, cellConfigModal.cellIndex)">
                                 <option value="markdown">📝 Markdown</option>
                                 <option value="sources">📂 Sources</option>
                                 <option value="sql">🗄️ SQL</option>
@@ -1306,53 +1725,53 @@
                         </div>
                         
                         <!-- Config spécifique markdown -->
-                        <template x-if="cells[cellConfigModal.index]?.type === 'markdown'">
+                        <template x-if="getCell(cellConfigModal.rowIndex, cellConfigModal.cellIndex)?.type === 'markdown'">
                             <div class="form-field">
                                 <label>Contenu Markdown</label>
-                                <textarea x-model="cells[cellConfigModal.index].content" rows="5"></textarea>
+                                <textarea x-model="getCell(cellConfigModal.rowIndex, cellConfigModal.cellIndex).content" rows="5"></textarea>
                             </div>
                         </template>
                         
                         <!-- Config spécifique sources -->
-                        <template x-if="cells[cellConfigModal.index]?.type === 'sources'">
+                        <template x-if="getCell(cellConfigModal.rowIndex, cellConfigModal.cellIndex)?.type === 'sources'">
                             <div class="form-field checkbox-field">
-                                <input type="checkbox" x-model="cells[cellConfigModal.index].autoRunNextCells">
-                                <label>Exécuter automatiquement les cellules suivantes</label>
+                                <input type="checkbox" x-model="getCell(cellConfigModal.rowIndex, cellConfigModal.cellIndex).autoRunNextCells">
+                                <label>Exécuter automatiquement les lignes suivantes</label>
                             </div>
                         </template>
                         
                         <!-- Config spécifique sqlExport -->
-                        <template x-if="cells[cellConfigModal.index]?.type === 'sqlExport'">
+                        <template x-if="getCell(cellConfigModal.rowIndex, cellConfigModal.cellIndex)?.type === 'sqlExport'">
                             <div>
                                 <div class="form-field">
                                     <label>Requête nom de fichier</label>
-                                    <textarea x-model="cells[cellConfigModal.index].fileNameQuery" rows="2"
+                                    <textarea x-model="getCell(cellConfigModal.rowIndex, cellConfigModal.cellIndex).fileNameQuery" rows="2"
                                               placeholder="SELECT &#39;export.csv&#39; as file_name"></textarea>
                                 </div>
                                 <div class="form-field">
                                     <label>Type MIME (optionnel)</label>
-                                    <input type="text" x-model="cells[cellConfigModal.index].mimeType" placeholder="text/csv">
+                                    <input type="text" x-model="getCell(cellConfigModal.rowIndex, cellConfigModal.cellIndex).mimeType" placeholder="text/csv">
                                 </div>
                             </div>
                         </template>
                         
                         <!-- Config spécifique table -->
-                        <template x-if="cells[cellConfigModal.index]?.type === 'table'">
+                        <template x-if="getCell(cellConfigModal.rowIndex, cellConfigModal.cellIndex)?.type === 'table'">
                             <div class="form-field">
                                 <label>Nombre max de lignes</label>
-                                <input type="number" x-model.number="cells[cellConfigModal.index].maxRows" placeholder="1000">
+                                <input type="number" x-model.number="getCell(cellConfigModal.rowIndex, cellConfigModal.cellIndex).maxRows" placeholder="1000">
                             </div>
                         </template>
                         
                         <!-- Config spécifique plot -->
-                        <template x-if="cells[cellConfigModal.index]?.type === 'plot'">
+                        <template x-if="getCell(cellConfigModal.rowIndex, cellConfigModal.cellIndex)?.type === 'plot'">
                             <div>
                                 <div class="form-field">
                                     <label>Tables à charger</label>
                                     <p style="font-size: 0.8rem; color: var(--text-secondary); margin: 0 0 0.5rem;">
                                         Noms des tables DuckDB à utiliser, séparés par des virgules (ex: <code>source1, clients, ventes</code>)
                                     </p>
-                                    <input type="text" x-model="cells[cellConfigModal.index].tables" 
+                                    <input type="text" x-model="getCell(cellConfigModal.rowIndex, cellConfigModal.cellIndex).tables" 
                                            placeholder="data, clients, ventes">
                                 </div>
                                 <div class="form-field">
@@ -1360,7 +1779,7 @@
                                     <p style="font-size: 0.8rem; color: var(--text-secondary); margin: 0 0 0.5rem;">
                                         Variables disponibles : <code>container</code> (élément DOM), <code>Plotly</code>, et les tables configurées ci-dessus
                                     </p>
-                                    <textarea x-model="cells[cellConfigModal.index].query" rows="10"
+                                    <textarea x-model="getCell(cellConfigModal.rowIndex, cellConfigModal.cellIndex).query" rows="10"
                                               style="min-height: 200px;"
                                               placeholder="// Exemple de graphique (utilise la table 'source1')
 const limitedSource = source1.slice(0, 1000);
@@ -1379,16 +1798,41 @@ Plotly.newPlot(container, [{
                         </template>
                         
                         <!-- Config spécifique iframe -->
-                        <template x-if="cells[cellConfigModal.index]?.type === 'iframe'">
+                        <template x-if="getCell(cellConfigModal.rowIndex, cellConfigModal.cellIndex)?.type === 'iframe'">
                             <div class="form-field">
                                 <label>Requête SQL (doit retourner du HTML)</label>
-                                <textarea x-model="cells[cellConfigModal.index].query" rows="3"
+                                <textarea x-model="getCell(cellConfigModal.rowIndex, cellConfigModal.cellIndex).query" rows="3"
                                           placeholder="SELECT '&lt;html&gt;...&lt;/html&gt;' as html"></textarea>
                             </div>
                         </template>
                     </div>
                     <div class="modal-footer">
                         <button class="btn-modal secondary" @click="closeCellConfig()">Fermer</button>
+                    </div>
+                </div>
+            </div>
+        </template>
+        
+        <!-- Modal configuration ligne -->
+        <template x-if="rowConfigModal.open">
+            <div class="modal-overlay" @click.self="rowConfigModal.open = false">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <span class="modal-title">⚙️ Configuration de la ligne <span x-text="rowConfigModal.rowIndex + 1"></span></span>
+                        <button class="modal-close" @click="rowConfigModal.open = false">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-field">
+                            <label>Style CSS de la ligne</label>
+                            <p style="font-size: 0.8rem; color: var(--text-secondary); margin: 0 0 0.5rem;">
+                                Ex: <code>flex-direction: column;</code> pour empiler les cellules verticalement
+                            </p>
+                            <textarea x-model="rows[rowConfigModal.rowIndex].style" rows="3"
+                                      placeholder="flex-direction: row;"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn-modal secondary" @click="rowConfigModal.open = false">Fermer</button>
                     </div>
                 </div>
             </div>
@@ -1405,19 +1849,19 @@ Plotly.newPlot(container, [{
                     <div class="modal-body">
                         <div class="form-field">
                             <label>Nom de la source (nom de table)</label>
-                            <input type="text" x-model="cells[sourceConfigModal.cellIndex].sources[sourceConfigModal.sourceIndex].name">
+                            <input type="text" x-model="getCell(sourceConfigModal.rowIndex, sourceConfigModal.cellIndex).sources[sourceConfigModal.sourceIndex].name">
                         </div>
                         <div class="form-field">
                             <label>Texte de la zone d'import</label>
-                            <input type="text" x-model="cells[sourceConfigModal.cellIndex].sources[sourceConfigModal.sourceIndex].importText">
+                            <input type="text" x-model="getCell(sourceConfigModal.rowIndex, sourceConfigModal.cellIndex).sources[sourceConfigModal.sourceIndex].importText">
                         </div>
                         <div class="form-field">
                             <label>Requête d'import (utilise {fileNameUpload})</label>
-                            <textarea x-model="cells[sourceConfigModal.cellIndex].sources[sourceConfigModal.sourceIndex].query" rows="3"></textarea>
+                            <textarea x-model="getCell(sourceConfigModal.rowIndex, sourceConfigModal.cellIndex).sources[sourceConfigModal.sourceIndex].query" rows="3"></textarea>
                         </div>
                         <div class="form-field">
                             <label>Configuration Excel (JSON)</label>
-                            <textarea :value="JSON.stringify(cells[sourceConfigModal.cellIndex].sources[sourceConfigModal.sourceIndex].xlsx || {}, null, 2)"
+                            <textarea :value="JSON.stringify(getCell(sourceConfigModal.rowIndex, sourceConfigModal.cellIndex).sources[sourceConfigModal.sourceIndex].xlsx || {}, null, 2)"
                                       @input="updateSourceXlsx($event.target.value)" rows="5"></textarea>
                         </div>
                     </div>
@@ -1430,10 +1874,14 @@ Plotly.newPlot(container, [{
         </template>
         
         <!-- DevMode Toggle -->
-        <div class="devmode-toggle">
-            <button class="devmode-btn" :class="{ 'active': devMode }" @click="devMode = !devMode">
-                <span x-text="devMode ? '🔧' : '👁️'"></span>
-                <span x-text="devMode ? 'Dev' : 'View'"></span>
+        <div class="bottom-controls">
+            <!-- Bouton switch Light/Dark -->
+            <button class="control-btn theme-btn" @click="toggleTheme()" :title="isDarkMode ? 'Passer en mode clair' : 'Passer en mode sombre'">
+                <span x-text="isDarkMode ? '☀️' : '🌙'"></span>
+            </button>
+            <!-- Bouton Dev/View -->
+            <button class="control-btn" :class="{ 'active': devMode }" @click="devMode = !devMode">
+                <span x-text="devMode ? '👁️' : '🔧'"></span>
             </button>
         </div>
         
@@ -1455,14 +1903,13 @@ Plotly.newPlot(container, [{
             // Utiliser la config chargée depuis le Gist si disponible, sinon la config par défaut
             const config = window._loadedConfig || ConfigManager.getDefaultConfig();
             
-            // Initialiser les cellules depuis la config
-            const initCells = (config.job?.cells || []).map((cell, index) => ({
+            // Helper pour initialiser une cellule avec ses propriétés runtime
+            const initCell = (cell, cellIndex) => ({
                 ...cell,
-                _id: 'cell_' + Date.now() + '_' + index,
+                _id: 'cell_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
                 _status: null,
                 _results: null,
                 _resultInfo: null,
-                // Initialiser les sources avec leurs propriétés runtime
                 sources: cell.type === 'sources' ? (cell.sources || []).map(s => ({
                     ...s,
                     _fileName: '',
@@ -1470,6 +1917,13 @@ Plotly.newPlot(container, [{
                     _isDragging: false,
                     _loaded: false
                 })) : undefined
+            });
+            
+            // Initialiser les lignes depuis la config
+            const initRows = (config.job?.rows || []).map((row, rowIndex) => ({
+                _id: 'row_' + Date.now() + '_' + rowIndex,
+                style: row.style || '',
+                cells: (row.cells || []).map((cell, cellIndex) => initCell(cell, cellIndex))
             }));
             
             // Mode développeur (true = affichage complet, false = mode utilisateur simplifié)
@@ -1478,18 +1932,30 @@ Plotly.newPlot(container, [{
             // Auto-exécution si pas de sources
             const autoExecuteWithoutSources = config.job?.autoExecuteWithoutSources === true;
             
+            // Gestion du thème (light par défaut)
+            const savedTheme = localStorage.getItem('sqljob-theme');
+            const isDarkMode = savedTheme === 'dark';
+            if (isDarkMode) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+            
             return {
-                cells: initCells,
+                rows: initRows,
                 isLoading: false,
                 status: '',
                 statusType: '',
                 devMode: devMode,
                 autoExecuteWithoutSources: autoExecuteWithoutSources,
+                isDarkMode: isDarkMode,
                 
                 // Modals & Dropdowns
-                showAddCellModal: false,
-                cellConfigModal: { open: false, index: null },
-                sourceConfigModal: { open: false, cellIndex: null, sourceIndex: null },
+                showAddRowModal: false,
+                addCellToRowModal: { open: false, rowIndex: null },
+                insertRowModal: { open: false, atIndex: null },
+                insertCellModal: { open: false, rowIndex: null, atCellIndex: null },
+                cellConfigModal: { open: false, rowIndex: null, cellIndex: null },
+                sourceConfigModal: { open: false, rowIndex: null, cellIndex: null, sourceIndex: null },
+                rowConfigModal: { open: false, rowIndex: null },
                 exportDropdownOpen: false,
                 
                 // Types de cellules disponibles
@@ -1521,10 +1987,10 @@ Plotly.newPlot(container, [{
                         
                         // Auto-exécution si pas de cellule sources et option activée
                         if (this.autoExecuteWithoutSources) {
-                            const hasSourcesCell = this.cells.some(cell => cell.type === 'sources');
+                            const hasSourcesCell = this.rows.some(row => row.cells.some(cell => cell.type === 'sources'));
                             if (!hasSourcesCell) {
                                 console.log('⚡ Auto-exécution : aucune cellule sources détectée');
-                                await this.runAllCells();
+                                await this.runAllRows();
                             }
                         }
                     } catch (error) {
@@ -1552,24 +2018,28 @@ Plotly.newPlot(container, [{
                             continue;
                         }
                         
-                        // Trouver la cellule sources et la source correspondante
-                        let targetCell = null;
+                        // Trouver la cellule sources et la source correspondante dans les rows
+                        let targetRowIndex = -1;
                         let targetCellIndex = -1;
                         let targetSource = null;
                         let targetSourceIndex = -1;
                         
-                        for (let i = 0; i < this.cells.length; i++) {
-                            const cell = this.cells[i];
-                            if (cell.type === 'sources' && cell.sources) {
-                                for (let j = 0; j < cell.sources.length; j++) {
-                                    if (cell.sources[j].name === sourceName) {
-                                        targetCell = cell;
-                                        targetCellIndex = i;
-                                        targetSource = cell.sources[j];
-                                        targetSourceIndex = j;
-                                        break;
+                        for (let ri = 0; ri < this.rows.length; ri++) {
+                            const row = this.rows[ri];
+                            for (let ci = 0; ci < row.cells.length; ci++) {
+                                const cell = row.cells[ci];
+                                if (cell.type === 'sources' && cell.sources) {
+                                    for (let si = 0; si < cell.sources.length; si++) {
+                                        if (cell.sources[si].name === sourceName) {
+                                            targetRowIndex = ri;
+                                            targetCellIndex = ci;
+                                            targetSource = cell.sources[si];
+                                            targetSourceIndex = si;
+                                            break;
+                                        }
                                     }
                                 }
+                                if (targetSource) break;
                             }
                             if (targetSource) break;
                         }
@@ -1593,7 +2063,7 @@ Plotly.newPlot(container, [{
                             });
                             
                             // Charger le fichier dans la source
-                            await this.loadSourceFile(file, targetCellIndex, targetSourceIndex);
+                            await this.loadSourceFile(file, targetRowIndex, targetCellIndex, targetSourceIndex);
                             
                             console.log(`✅ Fichier "${fileName}" chargé pour la source "${sourceName}"`);
                         } catch (error) {
@@ -1630,14 +2100,31 @@ Plotly.newPlot(container, [{
                     return 'cell_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
                 },
                 
-                // ─────────────────────────────────────────────────────────────────
-                // GESTION DES CELLULES
-                // ─────────────────────────────────────────────────────────────────
-                openAddCellModal() {
-                    this.showAddCellModal = true;
+                generateRowId() {
+                    return 'row_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
                 },
                 
-                addCell(type) {
+                // Helper pour accéder à une cellule par ses indices
+                getCell(rowIndex, cellIndex) {
+                    return this.rows[rowIndex]?.cells[cellIndex];
+                },
+                
+                // ─────────────────────────────────────────────────────────────────
+                // GESTION DES LIGNES (ROWS)
+                // ─────────────────────────────────────────────────────────────────
+                openAddRowModal() {
+                    this.showAddRowModal = true;
+                },
+                
+                openAddCellToRowModal(rowIndex) {
+                    this.addCellToRowModal = { open: true, rowIndex };
+                },
+                
+                openRowConfig(rowIndex) {
+                    this.rowConfigModal = { open: true, rowIndex };
+                },
+                
+                createNewCell(type) {
                     const newCell = {
                         _id: this.generateCellId(),
                         _status: null,
@@ -1688,47 +2175,135 @@ Plotly.newPlot(container, [{
                             break;
                     }
                     
-                    this.cells.push(newCell);
-                    this.showAddCellModal = false;
+                    return newCell;
                 },
                 
-                deleteCell(index) {
-                    if (confirm('Supprimer cette cellule ?')) {
-                        const cell = this.cells[index];
-                        if (this._tables[cell._id]) {
-                            this._tables[cell._id].destroy();
-                            delete this._tables[cell._id];
+                addRow(cellType) {
+                    const newRow = {
+                        _id: this.generateRowId(),
+                        style: '',
+                        cells: [this.createNewCell(cellType)]
+                    };
+                    
+                    this.rows.push(newRow);
+                    this.showAddRowModal = false;
+                },
+                
+                addCellToRow(rowIndex, cellType) {
+                    const row = this.rows[rowIndex];
+                    if (row) {
+                        row.cells.push(this.createNewCell(cellType));
+                    }
+                    this.addCellToRowModal = { open: false, rowIndex: null };
+                },
+                
+                // Ouvrir le modal pour insérer une ligne à une position
+                openInsertRowModal(atIndex) {
+                    this.insertRowModal = { open: true, atIndex: atIndex };
+                },
+                
+                // Insérer une ligne à une position spécifique
+                insertRowAt(atIndex, cellType) {
+                    const newRow = {
+                        _id: this.generateRowId(),
+                        style: '',
+                        cells: [this.createNewCell(cellType)]
+                    };
+                    this.rows.splice(atIndex, 0, newRow);
+                    this.insertRowModal = { open: false, atIndex: null };
+                },
+                
+                // Ouvrir le modal pour insérer une cellule à une position
+                openInsertCellModal(rowIndex, atCellIndex) {
+                    this.insertCellModal = { open: true, rowIndex: rowIndex, atCellIndex: atCellIndex };
+                },
+                
+                // Insérer une cellule à une position spécifique
+                insertCellAt(rowIndex, atCellIndex, cellType) {
+                    const row = this.rows[rowIndex];
+                    if (row) {
+                        row.cells.splice(atCellIndex, 0, this.createNewCell(cellType));
+                    }
+                    this.insertCellModal = { open: false, rowIndex: null, atCellIndex: null };
+                },
+                
+                deleteRow(rowIndex) {
+                    if (confirm('Supprimer cette ligne et toutes ses cellules ?')) {
+                        const row = this.rows[rowIndex];
+                        // Nettoyer les tables Tabulator
+                        for (const cell of row.cells) {
+                            if (this._tables[cell._id]) {
+                                this._tables[cell._id].destroy();
+                                delete this._tables[cell._id];
+                            }
                         }
-                        this.cells.splice(index, 1);
+                        this.rows.splice(rowIndex, 1);
                     }
                 },
                 
-                moveCell(index, direction) {
-                    const newIndex = index + direction;
-                    if (newIndex >= 0 && newIndex < this.cells.length) {
-                        const temp = this.cells[index];
-                        this.cells[index] = this.cells[newIndex];
-                        this.cells[newIndex] = temp;
+                moveRow(rowIndex, direction) {
+                    const newIndex = rowIndex + direction;
+                    if (newIndex >= 0 && newIndex < this.rows.length) {
+                        const temp = this.rows[rowIndex];
+                        this.rows[rowIndex] = this.rows[newIndex];
+                        this.rows[newIndex] = temp;
                     }
                 },
                 
-                openCellConfig(index) {
-                    this.cellConfigModal = { open: true, index };
+                // ─────────────────────────────────────────────────────────────────
+                // GESTION DES CELLULES
+                // ─────────────────────────────────────────────────────────────────
+                deleteCellAt(rowIndex, cellIndex) {
+                    const row = this.rows[rowIndex];
+                    if (!row) return;
+                    
+                    if (row.cells.length === 1) {
+                        // Si c'est la dernière cellule de la ligne, supprimer la ligne
+                        this.deleteRow(rowIndex);
+                    } else {
+                        if (confirm('Supprimer cette cellule ?')) {
+                            const cell = row.cells[cellIndex];
+                            if (this._tables[cell._id]) {
+                                this._tables[cell._id].destroy();
+                                delete this._tables[cell._id];
+                            }
+                            row.cells.splice(cellIndex, 1);
+                        }
+                    }
+                },
+                
+                moveCellInRow(rowIndex, cellIndex, direction) {
+                    const row = this.rows[rowIndex];
+                    if (!row) return;
+                    
+                    const newIndex = cellIndex + direction;
+                    if (newIndex >= 0 && newIndex < row.cells.length) {
+                        const temp = row.cells[cellIndex];
+                        row.cells[cellIndex] = row.cells[newIndex];
+                        row.cells[newIndex] = temp;
+                    }
+                },
+                
+                openCellConfig(rowIndex, cellIndex) {
+                    this.cellConfigModal = { open: true, rowIndex, cellIndex };
                     // Forcer la mise à jour du select après le rendu
                     setTimeout(() => {
                         const select = document.querySelector('.modal-body select');
-                        if (select && this.cells[index]) {
-                            select.value = this.cells[index].type;
+                        const cell = this.getCell(rowIndex, cellIndex);
+                        if (select && cell) {
+                            select.value = cell.type;
                         }
                     }, 50);
                 },
                 
                 closeCellConfig() {
-                    this.cellConfigModal = { open: false, index: null };
+                    this.cellConfigModal = { open: false, rowIndex: null, cellIndex: null };
                 },
                 
-                onCellTypeChange(index) {
-                    const cell = this.cells[index];
+                onCellTypeChange(rowIndex, cellIndex) {
+                    const cell = this.getCell(rowIndex, cellIndex);
+                    if (!cell) return;
+                    
                     // Réinitialiser les propriétés spécifiques au type
                     cell._results = null;
                     cell._resultInfo = null;
@@ -1753,9 +2328,9 @@ Plotly.newPlot(container, [{
                 // ─────────────────────────────────────────────────────────────────
                 // GESTION DES SOURCES
                 // ─────────────────────────────────────────────────────────────────
-                addSourceToCell(cellIndex) {
-                    const cell = this.cells[cellIndex];
-                    if (cell.type !== 'sources') return;
+                addSourceToCell(rowIndex, cellIndex) {
+                    const cell = this.getCell(rowIndex, cellIndex);
+                    if (!cell || cell.type !== 'sources') return;
                     
                     const newName = 'source' + (cell.sources.length + 1);
                     cell.sources.push({
@@ -1774,47 +2349,58 @@ Plotly.newPlot(container, [{
                     });
                 },
                 
-                openSourceConfig(cellIndex, sourceIndex) {
-                    this.sourceConfigModal = { open: true, cellIndex, sourceIndex };
+                openSourceConfig(rowIndex, cellIndex, sourceIndex) {
+                    this.sourceConfigModal = { open: true, rowIndex, cellIndex, sourceIndex };
                 },
                 
                 closeSourceConfig() {
-                    this.sourceConfigModal = { open: false, cellIndex: null, sourceIndex: null };
+                    this.sourceConfigModal = { open: false, rowIndex: null, cellIndex: null, sourceIndex: null };
                 },
                 
                 updateSourceXlsx(jsonString) {
                     try {
                         const xlsx = JSON.parse(jsonString);
-                        this.cells[this.sourceConfigModal.cellIndex].sources[this.sourceConfigModal.sourceIndex].xlsx = xlsx;
+                        const cell = this.getCell(this.sourceConfigModal.rowIndex, this.sourceConfigModal.cellIndex);
+                        if (cell && cell.sources) {
+                            cell.sources[this.sourceConfigModal.sourceIndex].xlsx = xlsx;
+                        }
                     } catch (e) {
                         console.warn('JSON invalide pour xlsx config');
                     }
                 },
                 
                 removeSourceFromCell() {
-                    const { cellIndex, sourceIndex } = this.sourceConfigModal;
-                    this.cells[cellIndex].sources.splice(sourceIndex, 1);
+                    const { rowIndex, cellIndex, sourceIndex } = this.sourceConfigModal;
+                    const cell = this.getCell(rowIndex, cellIndex);
+                    if (cell && cell.sources) {
+                        cell.sources.splice(sourceIndex, 1);
+                    }
                     this.closeSourceConfig();
                 },
                 
-                handleSourceDrop(e, cellIndex, sourceIndex) {
-                    const source = this.cells[cellIndex].sources[sourceIndex];
+                handleSourceDrop(e, rowIndex, cellIndex, sourceIndex) {
+                    const cell = this.getCell(rowIndex, cellIndex);
+                    if (!cell || !cell.sources) return;
+                    
+                    const source = cell.sources[sourceIndex];
                     source._isDragging = false;
                     const files = e.dataTransfer.files;
                     if (files.length > 0) {
-                        this.loadSourceFile(files[0], cellIndex, sourceIndex);
+                        this.loadSourceFile(files[0], rowIndex, cellIndex, sourceIndex);
                     }
                 },
                 
-                handleSourceFileSelect(e, cellIndex, sourceIndex) {
+                handleSourceFileSelect(e, rowIndex, cellIndex, sourceIndex) {
                     const files = e.target.files;
                     if (files.length > 0) {
-                        this.loadSourceFile(files[0], cellIndex, sourceIndex);
+                        this.loadSourceFile(files[0], rowIndex, cellIndex, sourceIndex);
                     }
                 },
                 
-                async loadSourceFile(file, cellIndex, sourceIndex) {
-                    const cell = this.cells[cellIndex];
+                async loadSourceFile(file, rowIndex, cellIndex, sourceIndex) {
+                    const cell = this.getCell(rowIndex, cellIndex);
+                    if (!cell || !cell.sources) return;
+                    
                     const source = cell.sources[sourceIndex];
                     
                     source._fileName = file.name;
@@ -1860,8 +2446,8 @@ Plotly.newPlot(container, [{
                         this.invalidateTablesCache();
                         
                         // Vérifier si toutes les sources sont chargées et autoRunNextCells
-                        if (cell.autoRunNextCells && this.allSourcesLoaded(cellIndex)) {
-                            await this.runCellsFromIndex(cellIndex + 1);
+                        if (cell.autoRunNextCells && this.allSourcesLoadedInCell(rowIndex, cellIndex)) {
+                            await this.runRowsFromIndex(rowIndex + 1);
                         }
                     } catch (error) {
                         cell._status = 'error';
@@ -1873,16 +2459,19 @@ Plotly.newPlot(container, [{
                     }
                 },
                 
-                removeSourceFile(cellIndex, sourceIndex) {
-                    const source = this.cells[cellIndex].sources[sourceIndex];
+                removeSourceFile(rowIndex, cellIndex, sourceIndex) {
+                    const cell = this.getCell(rowIndex, cellIndex);
+                    if (!cell || !cell.sources) return;
+                    
+                    const source = cell.sources[sourceIndex];
                     source._fileName = '';
                     source._currentFile = null;
                     source._loaded = false;
                 },
                 
-                allSourcesLoaded(cellIndex) {
-                    const cell = this.cells[cellIndex];
-                    if (cell.type !== 'sources') return true;
+                allSourcesLoadedInCell(rowIndex, cellIndex) {
+                    const cell = this.getCell(rowIndex, cellIndex);
+                    if (!cell || cell.type !== 'sources') return true;
                     return cell.sources.every(s => s._loaded);
                 },
                 
@@ -1925,8 +2514,10 @@ Plotly.newPlot(container, [{
                 // ─────────────────────────────────────────────────────────────────
                 // EXÉCUTION DES CELLULES
                 // ─────────────────────────────────────────────────────────────────
-                async runCell(index) {
-                    const cell = this.cells[index];
+                async runCellAt(rowIndex, cellIndex) {
+                    const cell = this.getCell(rowIndex, cellIndex);
+                    if (!cell) return;
+                    
                     cell._status = 'running';
                     this.isLoading = true;
                     
@@ -1963,6 +2554,25 @@ Plotly.newPlot(container, [{
                     } finally {
                         this.isLoading = false;
                     }
+                },
+                
+                // Exécuter toutes les cellules d'une ligne (de gauche à droite)
+                async runRow(rowIndex) {
+                    const row = this.rows[rowIndex];
+                    if (!row) return;
+                    
+                    this.setStatus(`Exécution de la ligne ${rowIndex + 1}...`, 'loading');
+                    
+                    // Exécuter les cellules de gauche à droite
+                    for (let cellIndex = 0; cellIndex < row.cells.length; cellIndex++) {
+                        const cell = row.cells[cellIndex];
+                        // Skip sources car elles dépendent des fichiers uploadés
+                        if (cell.type !== 'sources') {
+                            await this.runCellAt(rowIndex, cellIndex);
+                        }
+                    }
+                    
+                    this.setStatus(`Ligne ${rowIndex + 1} exécutée`, 'success');
                 },
                 
                 async executeSqlCell(cell) {
@@ -2099,33 +2709,45 @@ Plotly.newPlot(container, [{
                     this.setStatus('HTML chargé', 'success');
                 },
                 
-                async runCellsFromIndex(startIndex) {
-                    for (let i = startIndex; i < this.cells.length; i++) {
-                        await this.runCell(i);
+                // Exécuter les lignes à partir d'un index donné
+                async runRowsFromIndex(startRowIndex) {
+                    for (let rowIndex = startRowIndex; rowIndex < this.rows.length; rowIndex++) {
+                        await this.runRow(rowIndex);
                     }
                 },
                 
-                async runAllCells() {
+                // Exécuter toutes les lignes (ligne par ligne, cellule par cellule de gauche à droite)
+                async runAllRows() {
                     this.isLoading = true;
-                    this.setStatus('Exécution de toutes les cellules...', 'loading');
+                    this.setStatus('Exécution de toutes les lignes...', 'loading');
                     
                     // Invalider le cache des tables pour qu'il soit rafraîchi
                     this.invalidateTablesCache();
                     
-                    for (let i = 0; i < this.cells.length; i++) {
-                        const cell = this.cells[i];
-                        // Skip sources car elles dépendent des fichiers uploadés
-                        if (cell.type !== 'sources') {
-                            await this.runCell(i);
-                        }
+                    for (let rowIndex = 0; rowIndex < this.rows.length; rowIndex++) {
+                        await this.runRow(rowIndex);
                     }
                     
                     this.isLoading = false;
-                    this.setStatus('Toutes les cellules exécutées', 'success');
+                    this.setStatus('Toutes les lignes exécutées', 'success');
                 },
                 
                 // ─────────────────────────────────────────────────────────────────
                 // EXPORT / IMPORT
+                // ─────────────────────────────────────────────────────────────────
+                // THEME TOGGLE
+                // ─────────────────────────────────────────────────────────────────
+                toggleTheme() {
+                    this.isDarkMode = !this.isDarkMode;
+                    if (this.isDarkMode) {
+                        document.documentElement.setAttribute('data-theme', 'dark');
+                        localStorage.setItem('sqljob-theme', 'dark');
+                    } else {
+                        document.documentElement.removeAttribute('data-theme');
+                        localStorage.setItem('sqljob-theme', 'light');
+                    }
+                },
+                
                 // ─────────────────────────────────────────────────────────────────
                 exportPDF() {
                     window.print();
@@ -2133,7 +2755,7 @@ Plotly.newPlot(container, [{
                 
                 exportConfig() {
                     try {
-                        const config = ConfigManager.buildConfigFromState(this.cells, this.devMode, this.autoExecuteWithoutSources);
+                        const config = ConfigManager.buildConfigFromState(this.rows, this.devMode, this.autoExecuteWithoutSources);
                         const jsonString = JSON.stringify(config, null, 2);
                         const blob = new Blob([jsonString], { type: 'application/json' });
                         FileHandler.downloadFile(blob, 'notebook-config.json');
@@ -2145,7 +2767,7 @@ Plotly.newPlot(container, [{
                 
                 exportConfigBase64() {
                     try {
-                        const config = ConfigManager.buildConfigFromState(this.cells, this.devMode, this.autoExecuteWithoutSources);
+                        const config = ConfigManager.buildConfigFromState(this.rows, this.devMode, this.autoExecuteWithoutSources);
                         const jsonString = JSON.stringify(config, null, 2);
                         const base64String = ConfigManager.encodeUTF8ToBase64(jsonString);
                         const blob = new Blob([base64String], { type: 'text/plain' });
@@ -2164,7 +2786,8 @@ Plotly.newPlot(container, [{
                         const text = await file.text();
                         const config = JSON.parse(text);
                         
-                        this.cells = (config.job?.cells || []).map((cell, index) => ({
+                        // Helper pour initialiser une cellule
+                        const initCell = (cell) => ({
                             ...cell,
                             _id: this.generateCellId(),
                             _status: null,
@@ -2177,6 +2800,12 @@ Plotly.newPlot(container, [{
                                 _isDragging: false,
                                 _loaded: false
                             })) : undefined
+                        });
+                        
+                        this.rows = (config.job?.rows || []).map((row, rowIndex) => ({
+                            _id: this.generateRowId(),
+                            style: row.style || '',
+                            cells: (row.cells || []).map(cell => initCell(cell))
                         }));
                         
                         this.setStatus('Configuration chargée', 'success');
@@ -2190,7 +2819,7 @@ Plotly.newPlot(container, [{
                     this.setStatus('Génération HTML...', 'loading');
                     
                     try {
-                        const config = ConfigManager.buildConfigFromState(this.cells, this.devMode, this.autoExecuteWithoutSources);
+                        const config = ConfigManager.buildConfigFromState(this.rows, this.devMode, this.autoExecuteWithoutSources);
                         const jsonString = JSON.stringify(config, null, 2);
                         const configBase64 = ConfigManager.encodeUTF8ToBase64(jsonString);
                         
@@ -2202,29 +2831,31 @@ Plotly.newPlot(container, [{
                         configScript.textContent = configBase64;
                         document.head.appendChild(configScript);
                         
-                        // Collecter les fichiers des sources
-                        for (const cell of this.cells) {
-                            if (cell.type === 'sources') {
-                                for (const source of cell.sources) {
-                                    if (source._currentFile) {
-                                        const safeSourceName = source.name.replace(/[^a-zA-Z0-9_]/g, '_');
-                                        
-                                        // Supprimer l'ancienne balise
-                                        document.querySelectorAll(`script[id^="sourceFile_${safeSourceName}"]`).forEach(s => s.remove());
-                                        
-                                        // Compresser et encoder le fichier
-                                        const arrayBuffer = await source._currentFile.arrayBuffer();
-                                        const compressedBuffer = await FileHandler.compressGzip(arrayBuffer);
-                                        const fileBase64 = FileHandler.arrayBufferToBase64(compressedBuffer);
-                                        
-                                        // Créer la balise script
-                                        const script = document.createElement('script');
-                                        script.type = 'application/octet-stream';
-                                        script.id = `sourceFile_${safeSourceName}`;
-                                        script.dataset.sourceName = source.name;
-                                        script.dataset.fileName = source._fileName;
-                                        script.textContent = fileBase64;
-                                        document.head.appendChild(script);
+                        // Collecter les fichiers des sources depuis toutes les lignes
+                        for (const row of this.rows) {
+                            for (const cell of row.cells) {
+                                if (cell.type === 'sources') {
+                                    for (const source of cell.sources) {
+                                        if (source._currentFile) {
+                                            const safeSourceName = source.name.replace(/[^a-zA-Z0-9_]/g, '_');
+                                            
+                                            // Supprimer l'ancienne balise
+                                            document.querySelectorAll(`script[id^="sourceFile_${safeSourceName}"]`).forEach(s => s.remove());
+                                            
+                                            // Compresser et encoder le fichier
+                                            const arrayBuffer = await source._currentFile.arrayBuffer();
+                                            const compressedBuffer = await FileHandler.compressGzip(arrayBuffer);
+                                            const fileBase64 = FileHandler.arrayBufferToBase64(compressedBuffer);
+                                            
+                                            // Créer la balise script
+                                            const script = document.createElement('script');
+                                            script.type = 'application/octet-stream';
+                                            script.id = `sourceFile_${safeSourceName}`;
+                                            script.dataset.sourceName = source.name;
+                                            script.dataset.fileName = source._fileName;
+                                            script.textContent = fileBase64;
+                                            document.head.appendChild(script);
+                                        }
                                     }
                                 }
                             }
