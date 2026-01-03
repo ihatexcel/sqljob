@@ -364,6 +364,53 @@
         .file-input { display: none; }
         
         /* SQL Cell */
+        .sql-editor-container {
+            position: relative;
+            width: 100%;
+        }
+        
+        .sql-editor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .sql-editor-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .sql-editor-toggle {
+            display: flex;
+            gap: 0.25rem;
+        }
+        
+        .sql-editor-toggle button {
+            padding: 0.25rem 0.5rem;
+            border: 1px solid var(--border);
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: all 0.2s;
+        }
+        
+        .sql-editor-toggle button:hover {
+            border-color: var(--accent);
+            color: var(--text-primary);
+        }
+        
+        .sql-editor-toggle button.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+        
         .sql-editor {
             width: 100%;
             min-height: 80px;
@@ -381,6 +428,33 @@
             outline: none;
             border-color: var(--accent);
             box-shadow: 0 0 0 3px var(--accent-bg);
+        }
+        
+        .sql-parsed-view {
+            width: 100%;
+            min-height: 80px;
+            max-height: 300px;
+            padding: 0.75rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--accent);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            overflow: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        
+        .sql-parsed-badge {
+            display: inline-block;
+            padding: 0.15rem 0.4rem;
+            background: var(--accent-bg);
+            color: var(--accent);
+            border-radius: 3px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
         }
         
         /* Table Cell */
@@ -948,6 +1022,76 @@
         .dropdown-item:last-child {
             border-radius: 0 0 6px 6px;
         }
+        
+        /* uiParameter Cell */
+        .ui-parameter-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .ui-parameter-description {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+        
+        .ui-parameter-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 0.25rem;
+        }
+        
+        .ui-parameter-input {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        
+        .ui-parameter-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-bg);
+        }
+        
+        .ui-parameter-select {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        
+        .ui-parameter-select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-bg);
+        }
+        
+        .ui-parameter-loading {
+            padding: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            text-align: center;
+        }
+        
+        .ui-parameter-error {
+            padding: 0.5rem;
+            color: var(--error);
+            font-size: 0.85rem;
+            background: rgba(239, 68, 68, 0.1);
+            border-radius: 4px;
+        }
     </style>
     <script type="application/octet-stream" id="defaultConfigBase64">ewogICJqb2IiOiB7CiAgICAiYXV0b0V4ZWN1dGVXaXRob3V0U291cmNlcyI6IGZhbHNlLAogICAgInJvd3MiOiBbCiAgICAgIHsKICAgICAgICAic3R5bGUiOiAiIiwKICAgICAgICAiY2VsbHMiOiBbCiAgICAgICAgICB7CiAgICAgICAgICAgICJ0eXBlIjogIm1hcmtkb3duIiwKICAgICAgICAgICAgImNvbnRlbnQiOiAiIyBzcWxKb2Ig4pqh8J+Su1xuIyMgSSBIYXRlIEV4Y2VsLCBzbyBJIGJ1aWx0IGEgc2ltcGxlLCBjbGllbnQtc2lkZSBTUUwgam9iIHJ1bm5lci4g8J+boO+4j1xu8J+TpSBMb2FkLCDwn5SEIHRyYW5zZm9ybSwgYW5kIPCfk4ogdmlzdWFsaXplIHlvdXIgZGF0YSBkaXJlY3RseSBpbiB0aGUgYnJvd3NlcuKAlG5vIHNldHVwLCBubyBmdXNzLiDwn5qAIgogICAgICAgICAgfQogICAgICAgIF0KICAgICAgfSwKICAgICAgewogICAgICAgICJzdHlsZSI6ICIiLAogICAgICAgICJjZWxscyI6IFsKICAgICAgICAgIHsKICAgICAgICAgICAgInR5cGUiOiAic291cmNlcyIsCiAgICAgICAgICAgICJhdXRvUnVuTmV4dENlbGxzIjogdHJ1ZSwKICAgICAgICAgICAgInNvdXJjZXMiOiBbCiAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgIm5hbWUiOiAic291cmNlMSIsCiAgICAgICAgICAgICAgICAiaW1wb3J0VGV4dCI6ICJHbGlzc2V6LWTDqXBvc2V6IHZvdHJlIGZpY2hpZXIgaWNpIiwKICAgICAgICAgICAgICAgICJxdWVyeSI6ICJDUkVBVEUgT1IgUkVQTEFDRSBUQUJMRSBzb3VyY2UxIEFTIFNFTEVDVCAqIEZST00gcmVhZF9jc3ZfYXV0bygne2ZpbGVOYW1lVXBsb2FkfScsIEFMTF9WQVJDSEFSPXRydWUsIEhFQURFUj10cnVlKSIsCiAgICAgICAgICAgICAgICAieGxzeCI6IHsKICAgICAgICAgICAgICAgICAgIm9wdGlvbnMiOiB7CiAgICAgICAgICAgICAgICAgICAgInR5cGUiOiAiYXJyYXkiLAogICAgICAgICAgICAgICAgICAgICJyYXciOiBmYWxzZSwKICAgICAgICAgICAgICAgICAgICAiZGF0ZU5GIjogImRkL21tL3l5eXkiLAogICAgICAgICAgICAgICAgICAgICJjZWxsRGF0ZXMiOiB0cnVlLAogICAgICAgICAgICAgICAgICAgICJjZWxsTkYiOiBmYWxzZSwKICAgICAgICAgICAgICAgICAgICAiY2VsbFRleHQiOiBmYWxzZQogICAgICAgICAgICAgICAgICB9LAogICAgICAgICAgICAgICAgICAidG9Dc3ZPcHRpb25zIjogewogICAgICAgICAgICAgICAgICAgICJkYXRlTkYiOiAiZGQvbW0veXl5eSIsCiAgICAgICAgICAgICAgICAgICAgIkZTIjogIiwiLAogICAgICAgICAgICAgICAgICAgICJSUyI6ICJcbiIKICAgICAgICAgICAgICAgICAgfSwKICAgICAgICAgICAgICAgICAgInNoZWV0U2VsZWN0aW9uIjogewogICAgICAgICAgICAgICAgICAgICJ0eXBlIjogewogICAgICAgICAgICAgICAgICAgICAgImF1dG8iOiB0cnVlLAogICAgICAgICAgICAgICAgICAgICAgImluZGV4IjogZmFsc2UsCiAgICAgICAgICAgICAgICAgICAgICAibmFtZSI6IGZhbHNlCiAgICAgICAgICAgICAgICAgICAgfSwKICAgICAgICAgICAgICAgICAgICAiaW5kZXgiOiAwLAogICAgICAgICAgICAgICAgICAgICJuYW1lIjogIiIKICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgIH0KICAgICAgICAgICAgXQogICAgICAgICAgfQogICAgICAgIF0KICAgICAgfSwKICAgICAgewogICAgICAgICJzdHlsZSI6ICIiLAogICAgICAgICJjZWxscyI6IFsKICAgICAgICAgIHsKICAgICAgICAgICAgInR5cGUiOiAidGFibGUiLAogICAgICAgICAgICAicXVlcnkiOiAiU0VMRUNUICogRlJPTSBzb3VyY2UxIExJTUlUIDEwMCIsCiAgICAgICAgICAgICJtYXhSb3dzIjogMTAwMAogICAgICAgICAgfQogICAgICAgIF0KICAgICAgfSwKICAgICAgewogICAgICAgICJzdHlsZSI6ICIiLAogICAgICAgICJjZWxscyI6IFsKICAgICAgICAgIHsKICAgICAgICAgICAgInR5cGUiOiAic3FsRXhwb3J0IiwKICAgICAgICAgICAgInF1ZXJ5IjogIkNPUFkgKFNFTEVDVCAqIGZyb20gc291cmNlMSkgVE8gJ3tmaWxlTmFtZX0nIChGT1JNQVQgQ1NWLCBIRUFERVIsIERFTElNSVRFUiAnOycpIiwKICAgICAgICAgICAgImZpbGVOYW1lUXVlcnkiOiAiU0VMRUNUICdleHBvcnRfJyB8fCBjdXJyZW50X3RpbWVzdGFtcDo6dGV4dCB8fCAnLmNzdicgYXMgZmlsZV9uYW1lIiwKICAgICAgICAgICAgIm1pbWVUeXBlIjogIiIKICAgICAgICAgIH0KICAgICAgICBdCiAgICAgIH0sCiAgICAgIHsKICAgICAgICAic3R5bGUiOiAiIiwKICAgICAgICAiY2VsbHMiOiBbCiAgICAgICAgICB7CiAgICAgICAgICAgICJ0eXBlIjogInBsb3QiLAogICAgICAgICAgICAicXVlcnkiOiAiLy8gVmFyaWFibGVzOiBjb250YWluZXIsIFBsb3RseSwgKyBsZXMgdGFibGVzIGNvbmZpZ3Vyw6llc1xuY29uc3QgbGltaXRlZFNvdXJjZSA9IHNvdXJjZTEuc2xpY2UoMCwgMTAwMCk7XG5jb25zdCB4ID0gbGltaXRlZFNvdXJjZS5tYXAociA9PiBPYmplY3QudmFsdWVzKHIpWzBdKTtcbmNvbnN0IHkgPSBsaW1pdGVkU291cmNlLm1hcChyID0+IE9iamVjdC52YWx1ZXMocilbMV0pO1xuXG5QbG90bHkubmV3UGxvdChjb250YWluZXIsIFt7XG4gICAgeDogeCxcbiAgICB5OiB5LFxuICAgIHR5cGU6IFwiYmFyXCJcbn1dLCB7IHRpdGxlOiBcIkdyYXBoaXF1ZVwiIH0pOyIsCiAgICAgICAgICAgICJ0YWJsZXMiOiAic291cmNlMSIKICAgICAgICAgIH0KICAgICAgICBdCiAgICAgIH0KICAgIF0KICB9LAogICJ1aSI6IHsKICAgICJkZXZNb2RlIjogdHJ1ZQogIH0KfQ==</script>
 </head>
@@ -1092,6 +1236,13 @@
                         break;
                     case 'iframe':
                         cleanCell.query = cell.query;
+                        break;
+                    case 'uiParameter':
+                        cleanCell.paramName = cell.paramName;
+                        cleanCell.paramType = cell.paramType;
+                        cleanCell.description = cell.description;
+                        cleanCell.initQuery = cell.initQuery;
+                        cleanCell.optionsQuery = cell.optionsQuery;
                         break;
                 }
                 
@@ -1530,9 +1681,28 @@
                                             <!-- SQL CELL -->
                                             <template x-if="cell.type === 'sql'">
                                                 <div>
-                                                    <textarea class="sql-editor" 
-                                                              x-model="cell.query"
-                                                              placeholder="SELECT * FROM source1 LIMIT 100"></textarea>
+                                                    <!-- SQL Editor avec switch édition/parsé -->
+                                                    <div class="sql-editor-container">
+                                                        <div class="sql-editor-header">
+                                                            <span class="sql-editor-label">
+                                                                <template x-if="cell._showParsedQuery">
+                                                                    <span class="sql-parsed-badge">Parsé</span>
+                                                                </template>
+                                                                <span x-text="cell._showParsedQuery ? 'Requête envoyée à DuckDB' : 'Requête SQL'"></span>
+                                                            </span>
+                                                            <div class="sql-editor-toggle">
+                                                                <button :class="{ 'active': !cell._showParsedQuery }" @click="cell._showParsedQuery = false" title="Mode édition">✏️ Éditer</button>
+                                                                <button :class="{ 'active': cell._showParsedQuery }" @click="cell._showParsedQuery = true" title="Voir la requête parsée">👁️ Parsé</button>
+                                                            </div>
+                                                        </div>
+                                                        <textarea x-show="!cell._showParsedQuery" 
+                                                                  class="sql-editor" 
+                                                                  x-model="cell.query"
+                                                                  placeholder="SELECT * FROM source1 LIMIT 100"></textarea>
+                                                        <div x-show="cell._showParsedQuery" 
+                                                             class="sql-parsed-view" 
+                                                             x-text="getParsedSqlQuery(cell.query)"></div>
+                                                    </div>
                                                     <template x-if="cell._resultInfo">
                                                         <div class="cell-result-info" x-text="cell._resultInfo"></div>
                                                     </template>
@@ -1542,9 +1712,28 @@
                                             <!-- SQL EXPORT CELL -->
                                             <template x-if="cell.type === 'sqlExport'">
                                                 <div>
-                                                    <textarea x-show="devMode" class="sql-editor" 
-                                                              x-model="cell.query"
-                                                              placeholder="COPY (SELECT * from source1) TO &#39;{fileName}&#39; (FORMAT CSV, HEADER)"></textarea>
+                                                    <!-- SQL Editor avec switch édition/parsé -->
+                                                    <div x-show="devMode" class="sql-editor-container">
+                                                        <div class="sql-editor-header">
+                                                            <span class="sql-editor-label">
+                                                                <template x-if="cell._showParsedQuery">
+                                                                    <span class="sql-parsed-badge">Parsé</span>
+                                                                </template>
+                                                                <span x-text="cell._showParsedQuery ? 'Requête envoyée à DuckDB' : 'Requête SQL'"></span>
+                                                            </span>
+                                                            <div class="sql-editor-toggle">
+                                                                <button :class="{ 'active': !cell._showParsedQuery }" @click="cell._showParsedQuery = false" title="Mode édition">✏️ Éditer</button>
+                                                                <button :class="{ 'active': cell._showParsedQuery }" @click="cell._showParsedQuery = true" title="Voir la requête parsée">👁️ Parsé</button>
+                                                            </div>
+                                                        </div>
+                                                        <textarea x-show="!cell._showParsedQuery" 
+                                                                  class="sql-editor" 
+                                                                  x-model="cell.query"
+                                                                  placeholder="COPY (SELECT * from source1) TO '{fileName}' (FORMAT CSV, HEADER)"></textarea>
+                                                        <div x-show="cell._showParsedQuery" 
+                                                             class="sql-parsed-view" 
+                                                             x-text="getParsedSqlQuery(cell.query)"></div>
+                                                    </div>
                                                     <template x-if="cell._resultInfo">
                                                         <div class="cell-result-info" x-text="cell._resultInfo"></div>
                                                     </template>
@@ -1554,9 +1743,28 @@
                                             <!-- TABLE CELL -->
                                             <template x-if="cell.type === 'table'">
                                                 <div>
-                                                    <textarea x-show="devMode" class="sql-editor" 
-                                                              x-model="cell.query"
-                                                              placeholder="SELECT * FROM source1 LIMIT 100"></textarea>
+                                                    <!-- SQL Editor avec switch édition/parsé -->
+                                                    <div x-show="devMode" class="sql-editor-container">
+                                                        <div class="sql-editor-header">
+                                                            <span class="sql-editor-label">
+                                                                <template x-if="cell._showParsedQuery">
+                                                                    <span class="sql-parsed-badge">Parsé</span>
+                                                                </template>
+                                                                <span x-text="cell._showParsedQuery ? 'Requête envoyée à DuckDB' : 'Requête SQL'"></span>
+                                                            </span>
+                                                            <div class="sql-editor-toggle">
+                                                                <button :class="{ 'active': !cell._showParsedQuery }" @click="cell._showParsedQuery = false" title="Mode édition">✏️ Éditer</button>
+                                                                <button :class="{ 'active': cell._showParsedQuery }" @click="cell._showParsedQuery = true" title="Voir la requête parsée">👁️ Parsé</button>
+                                                            </div>
+                                                        </div>
+                                                        <textarea x-show="!cell._showParsedQuery" 
+                                                                  class="sql-editor" 
+                                                                  x-model="cell.query"
+                                                                  placeholder="SELECT * FROM source1 LIMIT 100"></textarea>
+                                                        <div x-show="cell._showParsedQuery" 
+                                                             class="sql-parsed-view" 
+                                                             x-text="getParsedSqlQuery(cell.query)"></div>
+                                                    </div>
                                                     <div class="table-container" :id="'table-' + cell._id" x-show="cell._results"></div>
                                                     <template x-if="cell._resultInfo">
                                                         <div class="cell-result-info" x-text="cell._resultInfo"></div>
@@ -1578,12 +1786,72 @@
                                             <!-- IFRAME CELL -->
                                             <template x-if="cell.type === 'iframe'">
                                                 <div>
-                                                    <textarea x-show="devMode" class="sql-editor" 
-                                                              x-model="cell.query"
-                                                              placeholder="SELECT &#39;&lt;!DOCTYPE html&gt;...&#39; as html"></textarea>
+                                                    <!-- SQL Editor avec switch édition/parsé -->
+                                                    <div x-show="devMode" class="sql-editor-container">
+                                                        <div class="sql-editor-header">
+                                                            <span class="sql-editor-label">
+                                                                <template x-if="cell._showParsedQuery">
+                                                                    <span class="sql-parsed-badge">Parsé</span>
+                                                                </template>
+                                                                <span x-text="cell._showParsedQuery ? 'Requête envoyée à DuckDB' : 'Requête SQL'"></span>
+                                                            </span>
+                                                            <div class="sql-editor-toggle">
+                                                                <button :class="{ 'active': !cell._showParsedQuery }" @click="cell._showParsedQuery = false" title="Mode édition">✏️ Éditer</button>
+                                                                <button :class="{ 'active': cell._showParsedQuery }" @click="cell._showParsedQuery = true" title="Voir la requête parsée">👁️ Parsé</button>
+                                                            </div>
+                                                        </div>
+                                                        <textarea x-show="!cell._showParsedQuery" 
+                                                                  class="sql-editor" 
+                                                                  x-model="cell.query"
+                                                                  placeholder="SELECT '<!DOCTYPE html>...' as html"></textarea>
+                                                        <div x-show="cell._showParsedQuery" 
+                                                             class="sql-parsed-view" 
+                                                             x-text="getParsedSqlQuery(cell.query)"></div>
+                                                    </div>
                                                     <div class="iframe-container">
                                                         <iframe :id="'iframe-' + cell._id"></iframe>
                                                     </div>
+                                                </div>
+                                            </template>
+                                            
+                                            <!-- UIPARAMETER CELL -->
+                                            <template x-if="cell.type === 'uiParameter'">
+                                                <div class="ui-parameter-container">
+                                                    <template x-if="cell.description">
+                                                        <div class="ui-parameter-description" x-text="cell.description"></div>
+                                                    </template>
+                                                    <div class="ui-parameter-name" x-text="'$' + cell.paramName"></div>
+                                                    
+                                                    <!-- Type INPUT -->
+                                                    <template x-if="cell.paramType === 'input'">
+                                                        <input type="text" 
+                                                               class="ui-parameter-input"
+                                                               x-model="cell._value"
+                                                               @change="onParameterValueChange(cell)"
+                                                               :placeholder="'Valeur de ' + cell.paramName">
+                                                    </template>
+                                                    
+                                                    <!-- Type DROPDOWN -->
+                                                    <template x-if="cell.paramType === 'dropdown'">
+                                                        <div>
+                                                            <template x-if="cell._options && cell._options.length > 0">
+                                                                <select class="ui-parameter-select"
+                                                                        x-model="cell._value"
+                                                                        @change="onParameterValueChange(cell)">
+                                                                    <template x-for="opt in cell._options" :key="opt">
+                                                                        <option :value="opt" x-text="opt"></option>
+                                                                    </template>
+                                                                </select>
+                                                            </template>
+                                                            <template x-if="!cell._options || cell._options.length === 0">
+                                                                <div class="ui-parameter-loading">⏳ Exécutez la cellule pour charger les options</div>
+                                                            </template>
+                                                        </div>
+                                                    </template>
+                                                    
+                                                    <template x-if="cell._paramError">
+                                                        <div class="ui-parameter-error" x-text="cell._paramError"></div>
+                                                    </template>
                                                 </div>
                                             </template>
                                         </div>
@@ -1716,6 +1984,7 @@
                                     @change="getCell(cellConfigModal.rowIndex, cellConfigModal.cellIndex).type = $event.target.value; onCellTypeChange(cellConfigModal.rowIndex, cellConfigModal.cellIndex)">
                                 <option value="markdown">📝 Markdown</option>
                                 <option value="sources">📂 Sources</option>
+                                <option value="uiParameter">🎛️ Paramètre UI</option>
                                 <option value="sql">🗄️ SQL</option>
                                 <option value="sqlExport">📤 SQL Export</option>
                                 <option value="table">📊 Tableau</option>
@@ -1805,6 +2074,61 @@ Plotly.newPlot(container, [{
                                           placeholder="SELECT '&lt;html&gt;...&lt;/html&gt;' as html"></textarea>
                             </div>
                         </template>
+                        
+                        <!-- Config spécifique uiParameter -->
+                        <template x-if="getCell(cellConfigModal.rowIndex, cellConfigModal.cellIndex)?.type === 'uiParameter'">
+                            <div>
+                                <div class="form-field">
+                                    <label>Nom du paramètre (unique)</label>
+                                    <p style="font-size: 0.8rem; color: var(--text-secondary); margin: 0 0 0.5rem;">
+                                        Utilisez <code>$nomParametre</code> dans vos requêtes SQL
+                                    </p>
+                                    <input type="text" 
+                                           x-model="getCell(cellConfigModal.rowIndex, cellConfigModal.cellIndex).paramName"
+                                           @blur="validateParamName(cellConfigModal.rowIndex, cellConfigModal.cellIndex)"
+                                           placeholder="monParametre">
+                                </div>
+                                <div class="form-field">
+                                    <label>Type de composant</label>
+                                    <select x-model="getCell(cellConfigModal.rowIndex, cellConfigModal.cellIndex).paramType">
+                                        <option value="input">📝 Champ texte (input)</option>
+                                        <option value="dropdown">📋 Liste déroulante (dropdown)</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- Config INPUT -->
+                                <template x-if="getCell(cellConfigModal.rowIndex, cellConfigModal.cellIndex)?.paramType === 'input'">
+                                    <div class="form-field">
+                                        <label>Requête SQL d'initialisation (facultative)</label>
+                                        <p style="font-size: 0.8rem; color: var(--text-secondary); margin: 0 0 0.5rem;">
+                                            La première colonne de la première ligne sera utilisée comme valeur initiale
+                                        </p>
+                                        <textarea x-model="getCell(cellConfigModal.rowIndex, cellConfigModal.cellIndex).initQuery" 
+                                                  rows="2"
+                                                  placeholder="SELECT 'valeur par défaut' as init_value"></textarea>
+                                    </div>
+                                </template>
+                                
+                                <!-- Config DROPDOWN -->
+                                <template x-if="getCell(cellConfigModal.rowIndex, cellConfigModal.cellIndex)?.paramType === 'dropdown'">
+                                    <div class="form-field">
+                                        <label>Requête SQL des options</label>
+                                        <p style="font-size: 0.8rem; color: var(--text-secondary); margin: 0 0 0.5rem;">
+                                            Seule la première colonne sera utilisée. Chaque ligne = une option. La première option sera sélectionnée par défaut.
+                                        </p>
+                                        <textarea x-model="getCell(cellConfigModal.rowIndex, cellConfigModal.cellIndex).optionsQuery" 
+                                                  rows="3"
+                                                  placeholder="SELECT DISTINCT categorie FROM ma_table ORDER BY categorie"></textarea>
+                                    </div>
+                                </template>
+                                <div class="form-field">
+                                    <label>Description (facultative)</label>
+                                    <textarea x-model="getCell(cellConfigModal.rowIndex, cellConfigModal.cellIndex).description" 
+                                              rows="2"
+                                              placeholder="Description affichée au-dessus du composant"></textarea>
+                                </div>
+                            </div>
+                        </template>
                     </div>
                     <div class="modal-footer">
                         <button class="btn-modal secondary" @click="closeCellConfig()">Fermer</button>
@@ -1849,7 +2173,12 @@ Plotly.newPlot(container, [{
                     <div class="modal-body">
                         <div class="form-field">
                             <label>Nom de la source (nom de table)</label>
-                            <input type="text" x-model="getCell(sourceConfigModal.rowIndex, sourceConfigModal.cellIndex).sources[sourceConfigModal.sourceIndex].name">
+                            <p style="font-size: 0.8rem; color: var(--text-secondary); margin: 0 0 0.5rem;">
+                                Ce nom doit être unique et sera utilisé comme nom de table SQL
+                            </p>
+                            <input type="text" 
+                                   x-model="getCell(sourceConfigModal.rowIndex, sourceConfigModal.cellIndex).sources[sourceConfigModal.sourceIndex].name"
+                                   @blur="validateSourceName(sourceConfigModal.rowIndex, sourceConfigModal.cellIndex, sourceConfigModal.sourceIndex)">
                         </div>
                         <div class="form-field">
                             <label>Texte de la zone d'import</label>
@@ -1904,20 +2233,39 @@ Plotly.newPlot(container, [{
             const config = window._loadedConfig || ConfigManager.getDefaultConfig();
             
             // Helper pour initialiser une cellule avec ses propriétés runtime
-            const initCell = (cell, cellIndex) => ({
-                ...cell,
-                _id: 'cell_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
-                _status: null,
-                _results: null,
-                _resultInfo: null,
-                sources: cell.type === 'sources' ? (cell.sources || []).map(s => ({
-                    ...s,
-                    _fileName: '',
-                    _currentFile: null,
-                    _isDragging: false,
-                    _loaded: false
-                })) : undefined
-            });
+            const initCell = (cell, cellIndex) => {
+                const newCell = {
+                    ...cell,
+                    _id: 'cell_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                    _status: null,
+                    _results: null,
+                    _resultInfo: null
+                };
+                
+                if (cell.type === 'sources') {
+                    newCell.sources = (cell.sources || []).map(s => ({
+                        ...s,
+                        _fileName: '',
+                        _currentFile: null,
+                        _isDragging: false,
+                        _loaded: false
+                    }));
+                }
+                
+                if (cell.type === 'uiParameter') {
+                    newCell._value = '';
+                    newCell._options = [];
+                    newCell._initialized = false;
+                    newCell._paramError = null;
+                }
+                
+                // Cellules avec SQL editor : ajouter le flag de vue parsée
+                if (['sql', 'sqlExport', 'table', 'iframe'].includes(cell.type)) {
+                    newCell._showParsedQuery = false;
+                }
+                
+                return newCell;
+            };
             
             // Initialiser les lignes depuis la config
             const initRows = (config.job?.rows || []).map((row, rowIndex) => ({
@@ -1962,6 +2310,7 @@ Plotly.newPlot(container, [{
                 cellTypes: [
                     { type: 'markdown', label: 'Markdown', icon: '📝' },
                     { type: 'sources', label: 'Sources', icon: '📂' },
+                    { type: 'uiParameter', label: 'Paramètre UI', icon: '🎛️' },
                     { type: 'sql', label: 'SQL', icon: '🗄️' },
                     { type: 'sqlExport', label: 'SQL Export', icon: '📤' },
                     { type: 'table', label: 'Tableau', icon: '📊' },
@@ -2091,6 +2440,17 @@ Plotly.newPlot(container, [{
                     return typeof marked !== 'undefined' ? marked.parse(content, { breaks: true, gfm: true }) : content;
                 },
                 
+                // Toggle entre mode édition et vue parsée pour les cellules SQL
+                toggleSqlView(cell) {
+                    cell._showParsedQuery = !cell._showParsedQuery;
+                },
+                
+                // Obtenir la requête SQL parsée (avec les paramètres remplacés)
+                getParsedSqlQuery(query) {
+                    if (!query) return '';
+                    return this.parseQueryWithParameters(query);
+                },
+                
                 getCellIcon(type) {
                     const found = this.cellTypes.find(ct => ct.type === type);
                     return found ? found.icon : '📄';
@@ -2138,11 +2498,12 @@ Plotly.newPlot(container, [{
                             newCell.content = '# Nouvelle section';
                             break;
                         case 'sources':
+                            const sourceName = this.generateUniqueSourceName();
                             newCell.autoRunNextCells = false;
                             newCell.sources = [{
-                                name: 'source1',
+                                name: sourceName,
                                 importText: 'Glissez-déposez votre fichier ici',
-                                query: "CREATE OR REPLACE TABLE source1 AS SELECT * FROM read_csv_auto('{fileNameUpload}', ALL_VARCHAR=true, HEADER=true)",
+                                query: `CREATE OR REPLACE TABLE ${sourceName} AS SELECT * FROM read_csv_auto('{fileNameUpload}', ALL_VARCHAR=true, HEADER=true)`,
                                 xlsx: {
                                     options: { type: 'array', raw: false, dateNF: 'dd/mm/yyyy', cellDates: true },
                                     toCsvOptions: { dateNF: 'dd/mm/yyyy', FS: ',', RS: '\n' },
@@ -2156,15 +2517,18 @@ Plotly.newPlot(container, [{
                             break;
                         case 'sql':
                             newCell.query = 'SELECT * FROM source1 LIMIT 100';
+                            newCell._showParsedQuery = false;
                             break;
                         case 'sqlExport':
                             newCell.query = "COPY (SELECT * from source1) TO '{fileName}' (FORMAT CSV, HEADER, DELIMITER ';')";
                             newCell.fileNameQuery = "SELECT 'export_' || current_timestamp::text || '.csv' as file_name";
                             newCell.mimeType = '';
+                            newCell._showParsedQuery = false;
                             break;
                         case 'table':
                             newCell.query = 'SELECT * FROM source1 LIMIT 100';
                             newCell.maxRows = 1000;
+                            newCell._showParsedQuery = false;
                             break;
                         case 'plot':
                             newCell.query = '// Variables: container, Plotly, + les tables configurées\nconst limitedSource = source1.slice(0, 1000);\nconst x = limitedSource.map(r => Object.values(r)[0]);\nconst y = limitedSource.map(r => Object.values(r)[1]);\n\nPlotly.newPlot(container, [{\n    x: x,\n    y: y,\n    type: "bar"\n}], { title: "Graphique" });';
@@ -2172,6 +2536,17 @@ Plotly.newPlot(container, [{
                             break;
                         case 'iframe':
                             newCell.query = 'SELECT \'<html><body><h1>Hello</h1></body></html>\' as html';
+                            newCell._showParsedQuery = false;
+                            break;
+                        case 'uiParameter':
+                            newCell.paramName = this.generateUniqueParamName();
+                            newCell.paramType = 'input'; // 'input' ou 'dropdown'
+                            newCell.description = '';
+                            newCell.initQuery = ''; // Requête SQL pour initialiser la valeur (input)
+                            newCell.optionsQuery = ''; // Requête SQL pour les options du dropdown
+                            newCell._value = ''; // Valeur actuelle du paramètre (runtime)
+                            newCell._options = []; // Options du dropdown (runtime)
+                            newCell._initialized = false; // Indique si le paramètre a été initialisé
                             break;
                     }
                     
@@ -2323,16 +2698,104 @@ Plotly.newPlot(container, [{
                         if (!cell.fileNameQuery) cell.fileNameQuery = "SELECT 'export.csv' as file_name";
                         if (!cell.mimeType) cell.mimeType = '';
                     }
+                    if (cell.type === 'uiParameter') {
+                        if (!cell.paramName) cell.paramName = this.generateUniqueParamName();
+                        if (!cell.paramType) cell.paramType = 'input';
+                        if (cell.description === undefined) cell.description = '';
+                        if (!cell.initQuery) cell.initQuery = '';
+                        if (!cell.optionsQuery) cell.optionsQuery = '';
+                        if (cell._value === undefined) cell._value = '';
+                        if (!cell._options) cell._options = [];
+                        cell._initialized = false;
+                    }
+                    // Cellules avec SQL editor
+                    if (['sql', 'sqlExport', 'table', 'iframe'].includes(cell.type)) {
+                        if (cell._showParsedQuery === undefined) cell._showParsedQuery = false;
+                    }
                 },
                 
                 // ─────────────────────────────────────────────────────────────────
                 // GESTION DES SOURCES
                 // ─────────────────────────────────────────────────────────────────
+                
+                // Générer un nom de source unique (source1, source2, source3...)
+                generateUniqueSourceName() {
+                    // Collecter tous les noms de sources existants
+                    const existingNames = new Set();
+                    for (const row of this.rows) {
+                        for (const cell of row.cells) {
+                            if (cell.type === 'sources' && cell.sources) {
+                                for (const source of cell.sources) {
+                                    if (source.name) {
+                                        existingNames.add(source.name);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Trouver le prochain numéro disponible
+                    let num = 1;
+                    while (existingNames.has('source' + num)) {
+                        num++;
+                    }
+                    
+                    return 'source' + num;
+                },
+                
+                // Valider l'unicité du nom de source
+                validateSourceName(rowIndex, cellIndex, sourceIndex) {
+                    const cell = this.getCell(rowIndex, cellIndex);
+                    if (!cell || cell.type !== 'sources' || !cell.sources) return;
+                    
+                    const source = cell.sources[sourceIndex];
+                    if (!source) return;
+                    
+                    const currentName = source.name?.trim();
+                    if (!currentName) {
+                        this.setStatus('Le nom de la source ne peut pas être vide', 'error');
+                        source.name = this.generateUniqueSourceName();
+                        return;
+                    }
+                    
+                    // Vérifier le format (alphanumériques et underscores seulement)
+                    if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(currentName)) {
+                        this.setStatus('Le nom doit commencer par une lettre ou _ et ne contenir que des lettres, chiffres et _', 'error');
+                        source.name = currentName.replace(/[^a-zA-Z0-9_]/g, '_').replace(/^([0-9])/, '_$1');
+                        return;
+                    }
+                    
+                    // Vérifier l'unicité
+                    let duplicateFound = false;
+                    for (const row of this.rows) {
+                        for (const c of row.cells) {
+                            if (c.type === 'sources' && c.sources) {
+                                for (let si = 0; si < c.sources.length; si++) {
+                                    const otherSource = c.sources[si];
+                                    // Ne pas comparer avec soi-même
+                                    if (c._id === cell._id && si === sourceIndex) continue;
+                                    if (otherSource.name === currentName) {
+                                        duplicateFound = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (duplicateFound) break;
+                        }
+                        if (duplicateFound) break;
+                    }
+                    
+                    if (duplicateFound) {
+                        this.setStatus(`Le nom de source "${currentName}" est déjà utilisé`, 'error');
+                        source.name = this.generateUniqueSourceName();
+                    }
+                },
+                
                 addSourceToCell(rowIndex, cellIndex) {
                     const cell = this.getCell(rowIndex, cellIndex);
                     if (!cell || cell.type !== 'sources') return;
                     
-                    const newName = 'source' + (cell.sources.length + 1);
+                    const newName = this.generateUniqueSourceName();
                     cell.sources.push({
                         name: newName,
                         importText: `Glissez-déposez ici (${newName})`,
@@ -2544,6 +3007,9 @@ Plotly.newPlot(container, [{
                             case 'iframe':
                                 await this.executeIframeCell(cell);
                                 break;
+                            case 'uiParameter':
+                                await this.executeUiParameterCell(cell);
+                                break;
                         }
                         
                         cell._status = 'success';
@@ -2579,7 +3045,8 @@ Plotly.newPlot(container, [{
                     if (!cell.query?.trim()) return;
                     
                     this.setStatus('Exécution SQL...', 'loading');
-                    const results = await DuckDBManager.executeQuery(cell.query);
+                    const parsedQuery = this.parseQueryWithParameters(cell.query);
+                    const results = await DuckDBManager.executeQuery(parsedQuery);
                     cell._results = results;
                     cell._resultInfo = `✅ ${results.length} ligne(s) affectée(s)`;
                     
@@ -2596,15 +3063,17 @@ Plotly.newPlot(container, [{
                     
                     // Obtenir le nom de fichier
                     const fileNameQuery = cell.fileNameQuery || "SELECT 'export.csv' as file_name";
-                    const fileNameResult = await DuckDBManager.executeQuery(fileNameQuery);
+                    const parsedFileNameQuery = this.parseQueryWithParameters(fileNameQuery);
+                    const fileNameResult = await DuckDBManager.executeQuery(parsedFileNameQuery);
                     const fileNameRow = fileNameResult[0];
                     const keys = Object.keys(fileNameRow);
                     const fileKey = keys.find(k => k.toLowerCase().includes('file'));
                     let outputFile = fileKey ? fileNameRow[fileKey] : Object.values(fileNameRow)[0];
                     outputFile = String(outputFile).replace(/[^\w.\-\/]/g, '_');
                     
-                    // Construire et exécuter la requête COPY
-                    let copyQuery = cell.query.replace(/\{fileName\}/g, outputFile);
+                    // Construire et exécuter la requête COPY (parser les paramètres d'abord)
+                    let copyQuery = this.parseQueryWithParameters(cell.query);
+                    copyQuery = copyQuery.replace(/\{fileName\}/g, outputFile);
                     
                     await DuckDBManager.executeQuery(copyQuery);
                     
@@ -2622,7 +3091,8 @@ Plotly.newPlot(container, [{
                     if (!cell.query?.trim()) return;
                     
                     this.setStatus('Chargement tableau...', 'loading');
-                    const results = await DuckDBManager.executeQuery(cell.query);
+                    const parsedQuery = this.parseQueryWithParameters(cell.query);
+                    const results = await DuckDBManager.executeQuery(parsedQuery);
                     
                     const maxRows = cell.maxRows || 1000;
                     const truncated = results.length > maxRows;
@@ -2692,7 +3162,8 @@ Plotly.newPlot(container, [{
                     if (!cell.query?.trim()) return;
                     
                     this.setStatus('Chargement HTML...', 'loading');
-                    const results = await DuckDBManager.executeQuery(cell.query);
+                    const parsedQuery = this.parseQueryWithParameters(cell.query);
+                    const results = await DuckDBManager.executeQuery(parsedQuery);
                     
                     const htmlContent = results.map(row => Object.values(row).join('')).join('\n');
                     
@@ -2707,6 +3178,161 @@ Plotly.newPlot(container, [{
                     }
                     
                     this.setStatus('HTML chargé', 'success');
+                },
+                
+                async executeUiParameterCell(cell) {
+                    cell._paramError = null;
+                    
+                    try {
+                        if (cell.paramType === 'dropdown') {
+                            // Charger les options depuis la requête SQL
+                            if (!cell.optionsQuery?.trim()) {
+                                cell._paramError = 'Aucune requête SQL configurée pour les options';
+                                return;
+                            }
+                            
+                            this.setStatus(`Chargement options ${cell.paramName}...`, 'loading');
+                            const results = await DuckDBManager.executeQuery(cell.optionsQuery);
+                            
+                            if (results.length === 0) {
+                                cell._options = [];
+                                cell._value = '';
+                                cell._paramError = 'La requête n\'a retourné aucun résultat';
+                                return;
+                            }
+                            
+                            // Extraire la première colonne de chaque ligne
+                            const firstColumnKey = Object.keys(results[0])[0];
+                            cell._options = results.map(row => String(row[firstColumnKey]));
+                            
+                            // Initialiser avec la première valeur si pas déjà défini
+                            if (!cell._value || !cell._options.includes(cell._value)) {
+                                cell._value = cell._options[0] || '';
+                            }
+                            
+                            cell._initialized = true;
+                            this.setStatus(`Options ${cell.paramName} chargées`, 'success');
+                            
+                        } else if (cell.paramType === 'input') {
+                            // Charger la valeur initiale si une requête est définie
+                            if (cell.initQuery?.trim() && !cell._initialized) {
+                                this.setStatus(`Initialisation ${cell.paramName}...`, 'loading');
+                                const results = await DuckDBManager.executeQuery(cell.initQuery);
+                                
+                                if (results.length > 0) {
+                                    const firstColumnKey = Object.keys(results[0])[0];
+                                    cell._value = String(results[0][firstColumnKey]);
+                                }
+                                
+                                cell._initialized = true;
+                                this.setStatus(`${cell.paramName} initialisé`, 'success');
+                            }
+                        }
+                    } catch (error) {
+                        cell._paramError = 'Erreur: ' + error.message;
+                        this.setStatus('Erreur: ' + error.message, 'error');
+                    }
+                },
+                
+                onParameterValueChange(cell) {
+                    // Appelé quand l'utilisateur change la valeur d'un paramètre
+                    console.log(`🎛️ Paramètre ${cell.paramName} = "${cell._value}"`);
+                },
+                
+                // Collecter tous les paramètres définis dans les cellules uiParameter
+                getParameters() {
+                    const params = {};
+                    for (const row of this.rows) {
+                        for (const cell of row.cells) {
+                            if (cell.type === 'uiParameter' && cell.paramName) {
+                                params[cell.paramName] = cell._value || '';
+                            }
+                        }
+                    }
+                    return params;
+                },
+                
+                // Parser une requête SQL et remplacer les $paramètre par leurs valeurs
+                parseQueryWithParameters(query) {
+                    if (!query) return query;
+                    
+                    const params = this.getParameters();
+                    let parsedQuery = query;
+                    
+                    // Remplacer tous les $paramName par leurs valeurs
+                    // Pattern: $suivi de caractères alphanumériques ou underscore
+                    for (const [paramName, paramValue] of Object.entries(params)) {
+                        // Échapper les caractères spéciaux pour la regex
+                        const escapedName = paramName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                        // Pattern qui match $paramName mais pas si suivi d'un caractère alphanumérique
+                        const regex = new RegExp('\\$' + escapedName + '(?![a-zA-Z0-9_])', 'g');
+                        // Échapper les apostrophes dans la valeur pour éviter les injections SQL
+                        const escapedValue = String(paramValue).replace(/'/g, "''");
+                        parsedQuery = parsedQuery.replace(regex, escapedValue);
+                    }
+                    
+                    return parsedQuery;
+                },
+                
+                // Générer un nom de paramètre unique (param1, param2, param3...)
+                generateUniqueParamName() {
+                    // Collecter tous les noms de paramètres existants
+                    const existingNames = new Set();
+                    for (const row of this.rows) {
+                        for (const cell of row.cells) {
+                            if (cell.type === 'uiParameter' && cell.paramName) {
+                                existingNames.add(cell.paramName);
+                            }
+                        }
+                    }
+                    
+                    // Trouver le prochain numéro disponible
+                    let num = 1;
+                    while (existingNames.has('param' + num)) {
+                        num++;
+                    }
+                    
+                    return 'param' + num;
+                },
+                
+                // Valider l'unicité du nom de paramètre
+                validateParamName(rowIndex, cellIndex) {
+                    const cell = this.getCell(rowIndex, cellIndex);
+                    if (!cell || cell.type !== 'uiParameter') return;
+                    
+                    const currentName = cell.paramName?.trim();
+                    if (!currentName) {
+                        this.setStatus('Le nom du paramètre ne peut pas être vide', 'error');
+                        cell.paramName = this.generateUniqueParamName();
+                        return;
+                    }
+                    
+                    // Vérifier le format (alphanumériques et underscores seulement)
+                    if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(currentName)) {
+                        this.setStatus('Le nom doit commencer par une lettre ou _ et ne contenir que des lettres, chiffres et _', 'error');
+                        cell.paramName = currentName.replace(/[^a-zA-Z0-9_]/g, '_').replace(/^([0-9])/, '_$1');
+                        return;
+                    }
+                    
+                    // Vérifier l'unicité
+                    let duplicateFound = false;
+                    for (let ri = 0; ri < this.rows.length; ri++) {
+                        for (let ci = 0; ci < this.rows[ri].cells.length; ci++) {
+                            const otherCell = this.rows[ri].cells[ci];
+                            if (otherCell.type === 'uiParameter' && 
+                                otherCell._id !== cell._id && 
+                                otherCell.paramName === currentName) {
+                                duplicateFound = true;
+                                break;
+                            }
+                        }
+                        if (duplicateFound) break;
+                    }
+                    
+                    if (duplicateFound) {
+                        this.setStatus(`Le nom de paramètre "${currentName}" est déjà utilisé`, 'error');
+                        cell.paramName = this.generateUniqueParamName();
+                    }
                 },
                 
                 // Exécuter les lignes à partir d'un index donné
@@ -2787,20 +3413,39 @@ Plotly.newPlot(container, [{
                         const config = JSON.parse(text);
                         
                         // Helper pour initialiser une cellule
-                        const initCell = (cell) => ({
-                            ...cell,
-                            _id: this.generateCellId(),
-                            _status: null,
-                            _results: null,
-                            _resultInfo: null,
-                            sources: cell.type === 'sources' ? (cell.sources || []).map(s => ({
-                                ...s,
-                                _fileName: '',
-                                _currentFile: null,
-                                _isDragging: false,
-                                _loaded: false
-                            })) : undefined
-                        });
+                        const initCell = (cell) => {
+                            const newCell = {
+                                ...cell,
+                                _id: this.generateCellId(),
+                                _status: null,
+                                _results: null,
+                                _resultInfo: null
+                            };
+                            
+                            if (cell.type === 'sources') {
+                                newCell.sources = (cell.sources || []).map(s => ({
+                                    ...s,
+                                    _fileName: '',
+                                    _currentFile: null,
+                                    _isDragging: false,
+                                    _loaded: false
+                                }));
+                            }
+                            
+                            if (cell.type === 'uiParameter') {
+                                newCell._value = '';
+                                newCell._options = [];
+                                newCell._initialized = false;
+                                newCell._paramError = null;
+                            }
+                            
+                            // Cellules avec SQL editor
+                            if (['sql', 'sqlExport', 'table', 'iframe'].includes(cell.type)) {
+                                newCell._showParsedQuery = false;
+                            }
+
+                            return newCell;
+                        };
                         
                         this.rows = (config.job?.rows || []).map((row, rowIndex) => ({
                             _id: this.generateRowId(),
