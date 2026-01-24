@@ -852,7 +852,12 @@
                                         <span class="source-file-icon">✅</span>
                                         <span class="source-file-name" x-text="cellItem.cell._fileName"></span>
                                         <span class="source-file-table" x-text="'→ ' + cellItem.cell.name"></span>
-                                        <button class="btn btn-xs" @click.stop="removeSingleSourceFile(${pathExpr}, ${cellIdxExpr})" title="Supprimer">❌</button>
+                                        <button class="btn btn-ghost" @click.stop="downloadSourceFile(${pathExpr}, ${cellIdxExpr})" title="Télécharger">
+                                            <span class="iconify" data-icon="material-symbols:download" style="font-size: 1.25rem;"></span>
+                                        </button>
+                                        <button class="btn btn-ghost btn-error" @click.stop="removeSingleSourceFile(${pathExpr}, ${cellIdxExpr})" title="Supprimer">
+                                            <span class="iconify" data-icon="material-symbols:close" style="font-size: 1.5rem;"></span>
+                                        </button>
                                     </div>
                                 </template>
                                 <input type="file" hidden
@@ -1133,7 +1138,12 @@
         <!-- Header fixe -->
         <div  class="navbar fixed top-0 left-0 right-0 z-50 bg-base-100 shadow-sm">
             <div class="navbar-start">
-                <a class="btn btn-ghost text-xl">🦆 sqlJob Notebook</a>
+                <a class="btn btn-ghost text-xl flex items-center gap-2">
+                    <img src="https://raw.githubusercontent.com/ihatexcel/sqljob/main/ihatexcel.svg" 
+                        alt="I Hate Excel" 
+                        class="h-8 w-8">
+                    sqlJob
+                </a>
             </div>
             
             <!-- Menu desktop (caché sur mobile) -->
@@ -1751,11 +1761,11 @@
         <div class="fixed bottom-4 left-4 z-[1500] flex gap-2 items-center join">
             <!-- Bouton switch Light/Dark -->
             <button class="btn btn-sm btn-ghost join-item" @click="toggleTheme()" :title="isDarkMode ? 'Passer en mode clair' : 'Passer en mode sombre'">
-                <span x-text="isDarkMode ? '☀️' : '🌙'"></span>
+                <span class="iconify" :data-icon="isDarkMode ? 'material-symbols:dark-mode' : 'material-symbols:light-mode'" style="font-size: 1.25rem;"></span>
             </button>
             <!-- Bouton Dev/View -->
-            <button class="btn btn-sm join-item" :class="devMode ? 'btn-primary' : 'btn-ghost'" @click="devMode = !devMode">
-                <span x-text="devMode ? '👁️' : '🔧'"></span>
+            <button class="btn btn-sm join-item" :class="devMode ? 'btn-soft' : 'btn-ghost'" @click="devMode = !devMode">
+                    <span class="iconify" :data-icon="devMode ? 'material-symbols:eye-tracking-outline-sharp' : 'material-symbols:settings-outline'" style="font-size: 1.25rem;"></span>
             </button>
         </div>
         
@@ -2145,6 +2155,30 @@
                 // Helper pour accéder à une cellule par ses indices
                 getCell(groupIndex, cellIndex) {
                     return this.groups[groupIndex]?.cells[cellIndex];
+                },
+
+                // Télécharger le fichier source d'une cellule
+                downloadSourceFile(pathOrIndex, cellIndex) {
+                    const path = Array.isArray(pathOrIndex) ? pathOrIndex : [pathOrIndex];
+                    const cell = this.getCellAtPath(path, cellIndex);
+
+                    if (!cell || cell.type !== 'source') {
+                        this.setStatus('Cellule source introuvable', 'error');
+                        return;
+                    }
+
+                    if (!cell._currentFile || !cell._fileName) {
+                        this.setStatus('Aucun fichier à télécharger', 'error');
+                        return;
+                    }
+
+                    try {
+                        // Télécharger le fichier
+                        FileHandler.downloadFile(cell._currentFile, cell._fileName);
+                        this.setStatus('Fichier téléchargé', 'success');
+                    } catch (error) {
+                        this.setStatus('Erreur lors du téléchargement: ' + error.message, 'error');
+                    }
                 },
 
                 // ─────────────────────────────────────────────────────────────────
