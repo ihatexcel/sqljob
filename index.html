@@ -6,20 +6,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>iHateXcel - sqljob</title>
-    <link id="tabulator-theme-light" href="https://unpkg.com/tabulator-tables@5.5.2/dist/css/tabulator_simple.min.css"
-        rel="stylesheet">
-    <link id="tabulator-theme-dark" href="https://unpkg.com/tabulator-tables@5.5.2/dist/css/tabulator_midnight.min.css"
-        rel="stylesheet" disabled>
+    <link rel="icon" href="https://raw.githubusercontent.com/ihatexcel/sqljob/main/ihatexcel.ico" type="image/x-icon">
+    <link href="https://cdn.jsdelivr.net/npm/simple-datatables@10.2.0/dist/style.min.css" rel="stylesheet">
 
     <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5/themes.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/focus@3.x.x/dist/cdn.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <script type="text/javascript" src="https://unpkg.com/tabulator-tables@5.5.2/dist/js/tabulator.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@10.2.0/dist/umd/simple-datatables.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.plot.ly/plotly-3.3.0.min.js"></script>
     <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pizzip@3.2.0/dist/pizzip.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docxtemplater@3.67.6/build/docxtemplater.min.js"></script>
+    <script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <script src="https://unpkg.com/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
     <script>
         var duckdbLibraryVersion = '1.33.1-dev18.0';
         var duckDbLibraryUrl = `https://cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@${duckdbLibraryVersion}/+esm`;
@@ -61,6 +65,21 @@
             --overlay: rgba(0, 0, 0, 0.7);
             --accent-bg: rgba(129, 140, 248, 0.15);
             --success-bg: rgba(74, 222, 128, 0.15);
+        }
+
+        /* Simple-datatables dark mode fix */
+        .datatable-wrapper,
+        .datatable-top,
+        .datatable-bottom,
+        .datatable-container {
+            background: transparent !important;
+        }
+        
+        .datatable-input,
+        .datatable-selector {
+            background: oklch(var(--b1)) !important;
+            color: oklch(var(--bc)) !important;
+            border-color: oklch(var(--b3)) !important;
         }
 
         /* Container query pour le responsive */
@@ -212,37 +231,6 @@
 
 <body class="min-h-screen font-sans bg-base-100 text-base-content transition-colors duration-200">
     <div id="app-container"></div>
-
-    <script>
-        // Gestion du changement de thème Tabulator.js selon le mode clair/sombre
-        function updateTabulatorTheme() {
-            const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark' ||
-                document.body.getAttribute('data-theme') === 'dark';
-            const lightTheme = document.getElementById('tabulator-theme-light');
-            const darkTheme = document.getElementById('tabulator-theme-dark');
-
-            if (lightTheme && darkTheme) {
-                lightTheme.disabled = isDarkMode;
-                darkTheme.disabled = !isDarkMode;
-            }
-        }
-
-        // Observer les changements de thème sur le document
-        const themeObserver = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme') {
-                    updateTabulatorTheme();
-                }
-            });
-        });
-
-        // Observer à la fois <html> et <body> pour data-theme
-        themeObserver.observe(document.documentElement, { attributes: true });
-        themeObserver.observe(document.body, { attributes: true });
-
-        // Initialiser le thème au chargement
-        updateTabulatorTheme();
-    </script>
 
     <script>
         // ═══════════════════════════════════════════════════════════════════════════
@@ -439,7 +427,7 @@
                 return ConfigManager.getDefaultConfig();
             }
 
-            static cleanCell(cell) {
+            static async cleanCell(cell, includeFileData = false) {
                 const cleanCell = { type: cell.type };
 
                 switch (cell.type) {
@@ -452,6 +440,16 @@
                         cleanCell.query = cell.query;
                         cleanCell.xlsx = cell.xlsx;
                         cleanCell.autoRunNextCells = cell.autoRunNextCells;
+                        // Ajouter le fichier base64 si demandé et si un fichier est chargé
+                        if (includeFileData && cell._currentFile && cell._fileName) {
+                            try {
+                                const arrayBuffer = await cell._currentFile.arrayBuffer();
+                                cleanCell.fileBase64 = FileHandler.arrayBufferToBase64(arrayBuffer);
+                                cleanCell.fileName = cell._fileName;
+                            } catch (e) {
+                                console.warn('Impossible de lire le fichier source:', e);
+                            }
+                        }
                         break;
                     case 'buttonRunNextCells':
                         cleanCell.buttonLabel = cell.buttonLabel;
@@ -484,6 +482,20 @@
                         cleanCell.query = cell.query;
                         if (cell.inputType) cleanCell.inputType = cell.inputType;
                         break;
+                    case 'publipostageWord':
+                        cleanCell.query = cell.query;
+                        cleanCell.query2 = cell.query2;
+                        // Ajouter le fichier base64 si demandé et si un template est chargé
+                        if (includeFileData && cell.docxTemplateBase64 && cell.docxTemplateFileName) {
+                            cleanCell.fileBase64 = cell.docxTemplateBase64;
+                            cleanCell.fileName = cell.docxTemplateFileName;
+                        }
+                        break;
+                    case 'jsPDF':
+                        cleanCell.query = cell.query;
+                        cleanCell.jsPdfConfig = cell.jsPdfConfig;
+                        cleanCell.pdfFileName = cell.pdfFileName;
+                        break;
                 }
 
                 const orderValue = ConfigManager.normalizeOrder(cell._order ?? cell.order, undefined);
@@ -499,12 +511,22 @@
                 return cleanCell;
             }
 
-            static cleanGroup(group) {
+            static async cleanGroup(group, includeFileData = false) {
                 const cleanGroup = {
                     direction: group.direction || 'row',
                     style: group.style || '',
-                    cells: (group.cells || []).map(cell => ConfigManager.cleanCell(cell))
+                    cells: await Promise.all((group.cells || []).map(cell => ConfigManager.cleanCell(cell, includeFileData)))
                 };
+
+                // Ajouter la config de loop si elle existe
+                if (group.loop && group.loop.enabled) {
+                    cleanGroup.loop = {
+                        enabled: true,
+                        query: group.loop.query || '',
+                        zip: group.loop.zip || false,
+                        zipQuery: group.loop.zipQuery || ''
+                    };
+                }
 
                 // Ajouter le type ("core" ou "link")
                 const groupType = group.type || group._type || 'core';
@@ -523,15 +545,15 @@
 
                 // Récursivement nettoyer les children
                 if (group.children && group.children.length > 0) {
-                    cleanGroup.children = group.children.map(child => ConfigManager.cleanGroup(child));
+                    cleanGroup.children = await Promise.all(group.children.map(child => ConfigManager.cleanGroup(child, includeFileData)));
                 }
 
                 return cleanGroup;
             }
 
-            static buildConfigFromState(groups, linkGroups, devMode = true, autoExecuteWithoutSources = false) {
-                const cleanGroups = groups.map(group => ConfigManager.cleanGroup(group));
-                const cleanLinkGroups = (linkGroups || []).map(group => ConfigManager.cleanGroup(group));
+            static async buildConfigFromState(groups, linkGroups, devMode = true, autoExecuteWithoutSources = false, displayAdvancedSettings = true, includeFileData = false, theme = 'light') {
+                const cleanGroups = await Promise.all(groups.map(group => ConfigManager.cleanGroup(group, includeFileData)));
+                const cleanLinkGroups = await Promise.all((linkGroups || []).map(group => ConfigManager.cleanGroup(group, includeFileData)));
 
                 // Merger groups et linkGroups dans un seul tableau
                 const allGroups = [...cleanGroups, ...cleanLinkGroups];
@@ -541,7 +563,11 @@
                         autoExecuteWithoutSources: autoExecuteWithoutSources,
                         groups: allGroups
                     },
-                    ui: { devMode: devMode }
+                    ui: { 
+                        devMode: devMode,
+                        displayAdvancedSettings: displayAdvancedSettings,
+                        theme: theme
+                    }
                 };
             }
         }
@@ -868,14 +894,19 @@
                         
                         <!-- SQL RECURSIVE PARSE CELL -->
                         <template x-if="cellItem.cell.type === 'sqlRecursiveParse'">
-                            <div x-html="renderSqlQueryEditor(cellItem.cell, 'SELECT {{ SELECT string_agg(column_name, \', \') FROM information_schema.columns }} FROM table', true)"></div>
+                            <div>
+                                <div x-show="devMode" x-html="renderSqlQueryEditor(cellItem.cell, 'SELECT * FROM source1 LIMIT 100', false)"></div>
+                                <template x-if="cellItem.cell._resultInfo">
+                                    <div class="mt-2 p-2 bg-base-200 rounded text-sm text-base-content/70" x-text="cellItem.cell._resultInfo"></div>
+                                </template>
+                            </div>
                         </template>
                         
                         <!-- TABLE CELL -->
                         <template x-if="cellItem.cell.type === 'table'">
                             <div>
                                 <div x-show="devMode" x-html="renderSqlQueryEditor(cellItem.cell, 'SELECT * FROM source1 LIMIT 100', false)"></div>
-                                <div class="bg-white rounded-lg overflow-hidden" :id="'table-' + cellItem.cell._id" ></div>
+                                <div class="bg-base-100 rounded-lg overflow-x-auto" :id="'table-' + cellItem.cell._id" ></div>
                                 <template x-if="cellItem.cell._resultInfo">
                                     <div class="mt-2 p-2 bg-base-200 rounded text-sm text-base-content/70" x-text="cellItem.cell._resultInfo"></div>
                                 </template>
@@ -908,7 +939,7 @@
                         <template x-if="cellItem.cell.type === 'uiParameter'">
                             <div class="flex flex-col gap-3">
                                 <div x-show="devMode" class="text-sm font-semibold text-primary mb-1" x-text="'$' + cellItem.cell.paramName"></div>
-                                <div x-show="devMode" x-html="renderSqlQueryEditor(cellItem.cell, 'SELECT {{ SELECT string_agg(column_name, \', \') FROM information_schema.columns }} FROM source1', true)"></div>
+                                <div x-show="devMode" x-html="renderSqlQueryEditor(cellItem.cell, 'SELECT * from source1', true)"></div>
                                 <template x-if="cellItem.cell.paramType === 'input'">
                                     <fieldset class="fieldset">
                                         <legend class="fieldset-legend" x-text="cellItem.cell.label"></legend>
@@ -973,6 +1004,88 @@
                             </div>
                         </template>
                         
+                        <!-- PUBLIPOSTAGE WORD CELL -->
+                        <template x-if="cellItem.cell.type === 'publipostageWord'">
+                            <div class="flex flex-col gap-3">
+                                <!-- Template Word drop zone -->
+                                <div class="source-drop-zone"
+                                     :class="{ 'drag-over': cellItem.cell._isDragging, 'has-file': cellItem.cell.docxTemplateFileName }"
+                                     @click="!cellItem.cell.docxTemplateFileName && document.getElementById('docxInput_' + cellItem.cell._id).click()"
+                                     @dragover.prevent="cellItem.cell._isDragging = true"
+                                     @dragleave.prevent="cellItem.cell._isDragging = false"
+                                     @drop.prevent="handleDocxTemplateDrop($event, ${pathExpr}, ${cellIdxExpr})">
+                                    <template x-if="!cellItem.cell.docxTemplateFileName">
+                                        <div class="source-drop-content">
+                                            <div class="source-drop-icon">📄</div>
+                                            <p class="source-drop-text">Glissez-déposez votre template Word (.docx)</p>
+                                            <p class="source-drop-hint">Template de publipostage</p>
+                                        </div>
+                                    </template>
+                                    <template x-if="cellItem.cell.docxTemplateFileName">
+                                        <div class="source-file-loaded">
+                                            <span class="source-file-icon">✅</span>
+                                            <span class="source-file-name" x-text="cellItem.cell.docxTemplateFileName"></span>
+                                            <button class="btn btn-ghost" @click.stop="downloadDocxTemplate(${pathExpr}, ${cellIdxExpr})" title="Télécharger">
+                                                <span class="iconify" data-icon="material-symbols:download" style="font-size: 1.25rem;"></span>
+                                            </button>
+                                            <button class="btn btn-ghost btn-error" @click.stop="removeDocxTemplate(${pathExpr}, ${cellIdxExpr})" title="Supprimer">
+                                                <span class="iconify" data-icon="material-symbols:close" style="font-size: 1.5rem;"></span>
+                                            </button>
+                                        </div>
+                                    </template>
+                                    <input type="file" hidden
+                                           :id="'docxInput_' + cellItem.cell._id"
+                                           accept=".docx"
+                                           @change="handleDocxTemplateFileSelect($event, ${pathExpr}, ${cellIdxExpr})">
+                                </div>
+                                
+                                <!-- Query 1: Data query -->
+                                <div x-show="devMode">
+                                    <div class="text-sm font-semibold text-primary mb-1">Requête de données</div>
+                                    <div x-html="renderSqlQueryEditor(cellItem.cell, 'SELECT * FROM source1 LIMIT 10', true)"></div>
+                                </div>
+                                
+                                <!-- Query 2: Filename query -->
+                                <div x-show="devMode">
+                                    <div class="text-sm font-semibold text-primary mb-1">Requête de nom de fichier</div>
+                                    <div x-html="renderSqlQueryEditor(cellItem.cell, 'SELECT \\'document_\\' || row_number() OVER () || \\'.docx\\' as filename FROM source1 LIMIT 10', true, 'query2', '_showParsedQuery2')"></div>
+                                </div>
+                                
+                                <!-- Execute button -->
+                                <div class="flex justify-center">
+                                    <button class="btn btn-primary btn-sm" 
+                                            @click="runCellAt(${pathExpr}, ${cellIdxExpr})"
+                                            :disabled="isLoading || !cellItem.cell.docxTemplateFileName">
+                                        📄 Générer les documents
+                                    </button>
+                                </div>
+                                
+                                <template x-if="cellItem.cell._resultInfo">
+                                    <div class="mt-2 p-2 bg-base-200 rounded text-sm text-base-content/70" x-text="cellItem.cell._resultInfo"></div>
+                                </template>
+                            </div>
+                        </template>
+                        
+                        <!-- JSPDF CELL -->
+                        <template x-if="cellItem.cell.type === 'jsPDF'">
+                            <div class="flex flex-col gap-3">
+                                <div x-show="devMode" x-html="renderSqlQueryEditor(cellItem.cell, 'SELECT * FROM source1 LIMIT 100', true)"></div>
+                                
+                                <!-- Execute button -->
+                                <div class="flex justify-center">
+                                    <button class="btn btn-primary btn-sm" 
+                                            @click="runCellAt(${pathExpr}, ${cellIdxExpr})"
+                                            :disabled="isLoading">
+                                        📑 Générer le PDF
+                                    </button>
+                                </div>
+                                
+                                <template x-if="cellItem.cell._resultInfo">
+                                    <div class="mt-2 p-2 bg-base-200 rounded text-sm text-base-content/70" x-text="cellItem.cell._resultInfo"></div>
+                                </template>
+                            </div>
+                        </template>
+                        
                         <!-- CLIENT MODE BUTTON: Open child group modal if cell has childGroupId -->
                         <template x-if="!devMode && cellItem.cell.childGroupId">
                             <div class="mt-0 flex justify-center">
@@ -997,7 +1110,7 @@
         // ═══════════════════════════════════════════════════════════════════════════
         function generateAppHTML() {
             return `
-    <div x-data="notebookApp()" x-init="init()" class="drawer drawer-end">
+    <div x-data="notebookApp()" x-init="init()" @keydown.window.ctrl.comma.prevent="displayAdvancedSettings = !displayAdvancedSettings" class="drawer drawer-end">
         <input id="mobile-drawer" type="checkbox" class="drawer-toggle" />
         <div class="drawer-side">
             <label for="mobile-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
@@ -1028,7 +1141,7 @@
         </div>
         <div class="drawer-content">
         <!-- Header fixe -->
-        <div  class="navbar fixed top-0 left-0 right-0 z-50 bg-base-100 shadow-sm">
+        <div  class="navbar fixed top-0 left-0 right-0 z-50 bg-base-100 shadow-sm" x-show="displayAdvancedSettings">
             <div class="navbar-start">
                 <a class="btn btn-ghost text-xl flex items-center gap-2">
                     <img src="https://raw.githubusercontent.com/ihatexcel/sqljob/main/ihatexcel.svg" 
@@ -1077,7 +1190,7 @@
                 </template>
             </div>
         </div>
-        <div class="max-w-7xl mx-auto px-4 mt-6 pt-16 pb-8">
+        <div class="max-w-7xl mx-auto px-4 mt-6 pb-8" :class="displayAdvancedSettings ? 'pt-16' : 'pt-0'">
             <div class="flex flex-col" :class="devMode ? 'gap-4' : 'gap-0'">
                 <!-- Rendu unifié de tous les groupes de niveau 0 -->
                 <template x-for="item in getFlattenedGroups()" :key="item.pathKey">
@@ -1124,6 +1237,7 @@
                                     <button class="btn btn-xs join-item" @click="toggleGroupDirection(item.path)" :title="item.group.direction === 'column' ? 'Passer en ligne' : 'Passer en colonne'">
                                         <span x-text="item.group.direction === 'column' ? '⇵' : '⇄'"></span>
                                     </button>
+                                    <button class="btn btn-xs join-item" :class="item.group.loop?.enabled ? 'btn-info' : ''" @click="openLoopConfigModal(item.path)" title="Configurer la boucle">🔁</button>
                                     <button class="btn btn-xs btn-success join-item" @click="runGroupAtPath(item.path)" :disabled="isLoading" title="Exécuter">▶️</button>
                                     <button class="btn btn-xs join-item" @click="moveGroupAtPath(item.path, -1)" :disabled="item.isFirst" title="Monter">⬆️</button>
                                     <button class="btn btn-xs join-item" @click="moveGroupAtPath(item.path, 1)" :disabled="item.isLast" title="Descendre">⬇️</button>
@@ -1135,6 +1249,7 @@
                                     <div tabindex="0" role="button" class="btn btn-xs">⋮</div>
                                     <ul tabindex="-1" class="dropdown-content menu menu-xs bg-base-100 rounded-box z-[1] w-48 p-2 shadow-sm">
                                         <li><button @click="toggleGroupDirection(item.path)"><span x-text="item.group.direction === 'column' ? '⇵ Passer en ligne' : '⇄ Passer en colonne'"></span></button></li>
+                                        <li><button @click="openLoopConfigModal(item.path)">🔁 Configurer la boucle</button></li>
                                         <li><button @click="runGroupAtPath(item.path)" :disabled="isLoading">▶️ Exécuter</button></li>
                                         <li><button @click="moveGroupAtPath(item.path, -1)" :disabled="item.isFirst">⬆️ Monter</button></li>
                                         <li><button @click="moveGroupAtPath(item.path, 1)" :disabled="item.isLast">⬇️ Descendre</button></li>
@@ -1281,6 +1396,84 @@
                                 </button>
                             </template>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+        
+        <!-- Modal configuration loop -->
+        <template x-if="loopConfigModal.open">
+            <div class="modal modal-open z-[2100]" @click.self="loopConfigModal.open = false" role="presentation">
+                <div class="modal-box max-w-2xl" role="dialog" aria-modal="true" aria-labelledby="modal-loop-config-title"
+                     x-trap.noscroll="loopConfigModal.open">
+                    <div class="flex items-center justify-between gap-2">
+                        <h3 class="text-lg font-semibold" id="modal-loop-config-title">🔁 Configuration de la boucle</h3>
+                        <button class="btn btn-sm btn-ghost" @click="loopConfigModal.open = false">✕</button>
+                    </div>
+                    <div class="mt-4" x-data="{ group: getGroupAtPath(loopConfigModal.path) }">
+                        <div class="form-control mb-4">
+                            <label class="label cursor-pointer justify-start gap-3">
+                                <input type="checkbox" class="toggle toggle-primary" x-model="group.loop.enabled" />
+                                <span class="label-text">Activer la boucle sur ce groupe</span>
+                            </label>
+                        </div>
+                        
+                        <div x-show="group.loop.enabled" x-transition>
+                            <div class="alert alert-info mb-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <div>
+                                    <p class="text-sm">La requête doit retourner une colonne. Chaque valeur de la première colonne sera utilisée comme variable <code class="badge badge-neutral">$loop</code> pour chaque itération du groupe.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-semibold">Requête SQL de la boucle</span>
+                                </label>
+                                <textarea 
+                                    class="textarea textarea-bordered w-full font-mono min-h-32 text-sm"
+                                    x-model="group.loop.query"
+                                    placeholder="SELECT DISTINCT colonne FROM source1 LIMIT 10;"></textarea>
+                            </div>
+                            
+                            <div class="mt-2 mb-4">
+                                <button class="btn btn-sm btn-outline" @click="group.loop.query = getDefaultLoopQuery()">
+                                    📝 Requête par défaut
+                                </button>
+                            </div>
+
+                            <div class="divider"></div>
+
+                            <!-- Option ZIP -->
+                            <div class="form-control mb-4">
+                                <label class="label cursor-pointer justify-start gap-3">
+                                    <input type="checkbox" class="toggle toggle-secondary" x-model="group.loop.zip" />
+                                    <span class="label-text">📦 Zipper les fichiers générés</span>
+                                </label>
+                                <p class="text-xs text-base-content/60 ml-12">Les fichiers produits (SQL COPY, Publipostage Word, jsPDF) seront regroupés dans un ZIP à la fin de la boucle.</p>
+                            </div>
+
+                            <div x-show="group.loop.zip" x-transition>
+                                <div class="form-control">
+                                    <label class="label">
+                                        <span class="label-text font-semibold">Requête SQL pour le nom du fichier ZIP</span>
+                                    </label>
+                                    <textarea 
+                                        class="textarea textarea-bordered w-full font-mono min-h-16 text-sm"
+                                        x-model="group.loop.zipQuery"
+                                        placeholder="SELECT 'export.zip' as filename;"></textarea>
+                                </div>
+                                
+                                <div class="mt-2">
+                                    <button class="btn btn-sm btn-outline" @click="group.loop.zipQuery = getDefaultZipQuery()">
+                                        📝 Requête par défaut
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-action">
+                        <button class="btn" @click="loopConfigModal.open = false">Fermer</button>
                     </div>
                 </div>
             </div>
@@ -1529,6 +1722,45 @@
                                 </div>
                             </div>
                         </template>
+                        
+                        <!-- Config spécifique jsPDF -->
+                        <template x-if="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex)?.type === 'jsPDF'">
+                            <div>
+                                <div class="flex flex-col gap-2">
+                                    <label>Requête SQL (données pour le PDF)</label>
+                                    <p style="font-size: 0.8rem; color: var(--text-secondary); margin: 0 0 0.5rem;">
+                                        La requête doit retourner les données à afficher dans le PDF. Support des requêtes récursives avec {{ }}
+                                    </p>
+                                    <textarea class="textarea textarea-bordered w-full" 
+                                              x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).query" 
+                                              rows="3"
+                                              placeholder="SELECT * FROM source1 LIMIT 100"></textarea>
+                                </div>
+                                <div class="flex flex-col gap-2 mt-4">
+                                    <label>Configuration jsPDF</label>
+                                    <p style="font-size: 0.8rem; color: var(--text-secondary); margin: 0 0 0.5rem;">
+                                        Variables disponibles : <code>doc</code> (instance jsPDF), <code>autoTable</code> (fonction), <code>data</code> (résultat SQL en JSON)
+                                    </p>
+                                    <textarea class="textarea textarea-bordered w-full font-mono text-sm" 
+                                              x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).jsPdfConfig" 
+                                              rows="15"
+                                              style="min-height: 300px;"
+                                              placeholder="// Exemple avec autoTable:
+autoTable(doc, {
+    head: [Object.keys(data[0] || {})],
+    body: data.map(row => Object.values(row)),
+    startY: 20
+});"></textarea>
+                                </div>
+                                <div class="flex flex-col gap-2 mt-4">
+                                    <label>Nom du fichier PDF</label>
+                                    <input type="text" 
+                                           class="input input-bordered input-sm w-full" 
+                                           x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).pdfFileName" 
+                                           placeholder="export.pdf">
+                                </div>
+                            </div>
+                        </template>
                     </div>
                     <div class="modal-action">
                         <button class="btn" @click="closeCellConfig()">Fermer</button>
@@ -1632,11 +1864,20 @@
     
         
         <!-- DevMode Toggle -->
-        <div class="fixed bottom-4 left-4 z-[1500] flex gap-2 items-center join">
-            <!-- Bouton switch Light/Dark -->
-            <button class="btn btn-sm btn-ghost join-item" @click="toggleTheme()" :title="isDarkMode ? 'Passer en mode clair' : 'Passer en mode sombre'">
-                <span class="iconify" :data-icon="isDarkMode ? 'material-symbols:dark-mode' : 'material-symbols:light-mode'" style="font-size: 1.25rem;"></span>
-            </button>
+        <div class="fixed bottom-4 left-4 z-[1500] flex gap-2 items-center join" x-show="displayAdvancedSettings">
+            <!-- Sélecteur de thème (devMode uniquement) -->
+            <div class="dropdown dropdown-top" x-show="devMode">
+                <div tabindex="0" role="button" class="btn btn-sm btn-ghost">
+                    <span class="iconify" data-icon="material-symbols:palette" style="font-size: 1.25rem;"></span>
+                </div>
+                <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-40 p-2 shadow max-h-60 overflow-y-auto">
+                    <template x-for="themeName in availableThemes" :key="themeName">
+                        <li>
+                            <button @click="setTheme(themeName)" :class="currentTheme === themeName ? 'active' : ''" x-text="themeName"></button>
+                        </li>
+                    </template>
+                </ul>
+            </div>
             <!-- Bouton Dev/View -->
             <button class="btn btn-sm join-item" :class="devMode ? 'btn-soft' : 'btn-ghost'" @click="devMode = !devMode">
                     <span class="iconify" :data-icon="devMode ? 'material-symbols:eye-tracking-outline-sharp' : 'material-symbols:settings-outline'" style="font-size: 1.25rem;"></span>
@@ -1653,7 +1894,7 @@
             </div>
         </template>
         
-        <footer class="footer sm:footer-horizontal footer-center bg-base-300 text-base-content p-4">
+        <footer class="footer sm:footer-horizontal footer-center bg-base-300 text-base-content p-4" x-show="displayAdvancedSettings">
             <aside>
                 <p>iHateXcel - sqlJob - Made with ❤️ by Théo Nobella-Pichonnier</p>
             </aside>
@@ -1711,7 +1952,14 @@
                     direction: group.direction || 'row',
                     style: group.style || '',
                     _order: ConfigManager.normalizeOrder(group._order ?? group.order, groupIndex), // Utiliser l'_order existant, l'order config, ou l'index
-                    cells: (group.cells || []).map((cell, cellIndex) => initCell(cell, cellIndex))
+                    cells: (group.cells || []).map((cell, cellIndex) => initCell(cell, cellIndex)),
+                    // Config de loop
+                    loop: group.loop ? {
+                        enabled: group.loop.enabled || false,
+                        query: group.loop.query || '',
+                        zip: group.loop.zip || false,
+                        zipQuery: group.loop.zipQuery || ''
+                    } : { enabled: false, query: '', zip: false, zipQuery: '' }
                 };
 
                 // Récursivement initialiser les children avec leur _order
@@ -1739,12 +1987,24 @@
             // Auto-exécution si pas de source
             const autoExecuteWithoutSources = config.job?.autoExecuteWithoutSources === true;
 
-            // Gestion du thème (light par défaut)
+            // Affichage des paramètres avancés (navbar et boutons bottom-left)
+            const displayAdvancedSettings = config.ui?.displayAdvancedSettings !== false;
+
+            // Liste des thèmes daisyUI disponibles
+            const availableThemes = [
+                'light', 'dark', 'cupcake', 'bumblebee', 'emerald', 'corporate',
+                'synthwave', 'retro', 'cyberpunk', 'valentine', 'halloween',
+                'garden', 'forest', 'aqua', 'lofi', 'pastel', 'fantasy',
+                'wireframe', 'black', 'luxury', 'dracula', 'cmyk', 'autumn',
+                'business', 'acid', 'lemonade', 'night', 'coffee', 'winter',
+                'dim', 'nord', 'sunset'
+            ];
+
+            // Gestion du thème (priorité: config > localStorage > light)
             const savedTheme = localStorage.getItem('sqljob-theme');
-            const isDarkMode = savedTheme === 'dark';
-            if (isDarkMode) {
-                document.documentElement.setAttribute('data-theme', 'dark');
-            }
+            const configTheme = config.ui?.theme;
+            const currentTheme = configTheme || savedTheme || 'light';
+            document.documentElement.setAttribute('data-theme', currentTheme);
 
             return {
                 groups: initGroups,
@@ -1754,7 +2014,9 @@
                 statusType: '',
                 devMode: devMode,
                 autoExecuteWithoutSources: autoExecuteWithoutSources,
-                isDarkMode: isDarkMode,
+                displayAdvancedSettings: displayAdvancedSettings,
+                availableThemes: availableThemes,
+                currentTheme: currentTheme,
 
                 // Détermine si une cellule doit être affichée (fix pour les cases vides en mode view)
                 shouldShowCell(cell) {
@@ -1793,7 +2055,15 @@
                 insertCellModal: { open: false, groupIndex: null, atCellIndex: null },
                 cellConfigModal: { open: false, groupIndex: null, cellIndex: null },
                 childGroupModal: { open: false, path: null, cellIndex: null, group: null },
+                loopConfigModal: { open: false, path: null },
                 exportDropdownOpen: false,
+
+                // Variable $loop courante (utilisée pendant l'exécution d'un groupe en boucle)
+                _currentLoopValue: null,
+
+                // Fichiers collectés pendant une loop avec zip activé
+                _zipFiles: [],
+                _zipMode: false,
 
                 // Drag & Drop state (unifié avec path)
                 draggedCellPath: null, // { path: [], cellIndex }
@@ -1813,10 +2083,12 @@
                     { type: 'table', label: 'Tableau', icon: '📊' },
                     { type: 'plot', label: 'Graphique', icon: '📈' },
                     { type: 'iframe', label: 'HTML/Iframe', icon: '🖼️' },
-                    { type: 'sqlStat', label: 'Stat SQL', icon: '📊' }
+                    { type: 'sqlStat', label: 'Stat SQL', icon: '📊' },
+                    { type: 'publipostageWord', label: 'Publipostage Word', icon: '📄' },
+                    { type: 'jsPDF', label: 'PDF (jsPDF)', icon: '📑' }
                 ],
 
-                // Tables Tabulator par cellule
+                // Tables simple-datatables par cellule
                 _tables: {},
 
                 // Cache des données des tables DuckDB pour les plots
@@ -1841,7 +2113,6 @@
                                 group.cells.some(cell => cell.type === 'source')
                             );
                             if (!hasSourceCell) {
-                                console.log('⚡ Auto-exécution : aucune cellule source détectée');
                                 await this.runAllGroups();
                             }
                         }
@@ -1853,12 +2124,13 @@
                 async loadEmbeddedFiles() {
                     // Chercher toutes les balises script avec les fichiers embarqués
                     const sourceFileScripts = document.querySelectorAll('script[id^="sourceFile_"]');
+                    const docxTemplateScripts = document.querySelectorAll('script[id^="docxTemplate_"]');
 
-                    if (sourceFileScripts.length === 0) {
+                    if (sourceFileScripts.length === 0 && docxTemplateScripts.length === 0) {
                         return; // Pas de fichiers embarqués, c'est normal
                     }
 
-                    console.info('📂 ' + sourceFileScripts.length + ' fichier(s) embarqué(s) trouvé(s)');
+                    console.info('📂 ' + (sourceFileScripts.length + docxTemplateScripts.length) + ' fichier(s) embarqué(s) trouvé(s)');
 
                     // Helper pour trouver la source récursivement
                     const findSourceRecursive = (groups, sourceName, currentPath) => {
@@ -1881,6 +2153,51 @@
                         return null;
                     };
 
+                    // Helper pour trouver une cellule publipostageWord par chemin
+                    const findCellByPath = (groups, targetPath) => {
+                        try {
+                            let current = groups;
+                            let group = null;
+                            
+                            // Naviguer jusqu'au groupe contenant la cellule
+                            for (let i = 0; i < targetPath.length - 1; i++) {
+                                const index = targetPath[i];
+                                if (index === -1) {
+                                    // LinkGroups
+                                    current = this.linkGroups;
+                                    continue;
+                                }
+                                
+                                if (!current[index]) return null;
+                                
+                                if (i === 0) {
+                                    group = current[index];
+                                    current = group.children || [];
+                                } else {
+                                    group = current[index];
+                                    current = group.children || [];
+                                }
+                            }
+                            
+                            // Récupérer la cellule
+                            const cellIndex = targetPath[targetPath.length - 1];
+                            const finalGroup = targetPath.length === 1 ? current[targetPath[0]] : group;
+                            
+                            if (!finalGroup || !finalGroup.cells || !finalGroup.cells[cellIndex]) {
+                                return null;
+                            }
+                            
+                            return {
+                                cell: finalGroup.cells[cellIndex],
+                                cellIndex: cellIndex
+                            };
+                        } catch (e) {
+                            console.error('Error finding cell by path:', e);
+                            return null;
+                        }
+                    };
+
+                    // Charger les fichiers source
                     for (const script of sourceFileScripts) {
                         const sourceName = script.dataset.sourceName;
                         const fileName = script.dataset.fileName;
@@ -1921,6 +2238,42 @@
                         }
                     }
 
+                    // Charger les templates docx pour publipostageWord
+                    for (const script of docxTemplateScripts) {
+                        const cellPath = script.dataset.cellPath;
+                        const fileName = script.dataset.fileName;
+                        const base64Data = script.textContent.trim();
+
+                        if (!cellPath || !fileName || !base64Data) {
+                            console.warn('Script docx template incomplet:', script.id);
+                            continue;
+                        }
+
+                        // Convertir le cellPath en array d'indices
+                        const pathArray = cellPath.split('_').map(n => parseInt(n, 10));
+                        const found = findCellByPath(this.groups, pathArray);
+
+                        if (!found) {
+                            console.warn(`Cellule publipostageWord au chemin "${cellPath}" non trouvée`);
+                            continue;
+                        }
+
+                        if (found.cell.type !== 'publipostageWord') {
+                            console.warn(`La cellule au chemin "${cellPath}" n'est pas de type publipostageWord`);
+                            continue;
+                        }
+
+                        try {
+                            // Charger directement le base64 dans la cellule (pas de décompression pour docx)
+                            found.cell.docxTemplateBase64 = base64Data;
+                            found.cell.docxTemplateFileName = fileName;
+
+                            console.log(`✅ Template Word "${fileName}" chargé pour la cellule au chemin "${cellPath}"`);
+                        } catch (error) {
+                            console.error(`Erreur chargement template docx ${cellPath}:`, error);
+                        }
+                    }
+
                     this.setStatus('Fichiers embarqués chargés', 'success');
                 },
 
@@ -1958,8 +2311,6 @@
 
                     // Trier par order
                     cellsToInit.sort((a, b) => a.order - b.order);
-
-                    console.log(`🎛️ Initialisation de ${cellsToInit.length} paramètre(s) UI au démarrage`);
 
                     // Exécuter les requêtes d'init dans l'ordre
                     for (const item of cellsToInit) {
@@ -2163,7 +2514,8 @@
                         style: '',
                         cells: [],
                         children: [],
-                        _order: 0 // Sera ajusté lors de l'ajout au parent
+                        _order: 0, // Sera ajusté lors de l'ajout au parent
+                        loop: { enabled: false, query: '', zip: false, zipQuery: '' }
                     };
                 },
 
@@ -2192,6 +2544,33 @@
                     if (group) {
                         group.direction = group.direction === 'column' ? 'row' : 'column';
                     }
+                },
+
+                // Ouvrir la modale de configuration de loop
+                openLoopConfigModal(path) {
+                    const group = this.getGroupAtPath(path);
+                    if (group) {
+                        // S'assurer que loop existe
+                        if (!group.loop) {
+                            group.loop = { enabled: false, query: '' };
+                        }
+                        this.loopConfigModal = { open: true, path: path };
+                    }
+                },
+
+                // Générer la requête par défaut pour la loop
+                getDefaultLoopQuery() {
+                    return `SELECT DISTINCT {{ SELECT column_name
+    FROM information_schema.columns
+    WHERE table_name = 'source1'
+    ORDER BY ordinal_position
+    LIMIT 1}}
+FROM source1 LIMIT 10;`;
+                },
+
+                // Générer la requête par défaut pour le nom du fichier zip
+                getDefaultZipQuery() {
+                    return `SELECT 'export_' || current_timestamp::text || '.zip' as filename;`;
                 },
 
                 // Supprimer un groupe par chemin
@@ -2302,6 +2681,16 @@
                     const group = this.getGroupAtPath(path);
                     if (!group) return;
 
+                    // Vérifier si le groupe a une loop activée
+                    if (group.loop && group.loop.enabled && group.loop.query) {
+                        await this.runGroupWithLoop(path, group);
+                    } else {
+                        await this.runGroupOnce(path, group);
+                    }
+                },
+
+                // Exécuter un groupe une seule fois (sans loop)
+                async runGroupOnce(path, group) {
                     this.setStatus('Exécution du groupe...', 'loading');
 
                     // Exécuter selon l'ordre visuel (_order) en intercalant cellules et sous-groupes
@@ -2321,6 +2710,203 @@
                     this.setStatus('Groupe exécuté', 'success');
                 },
 
+                // Parser une requête de loop (avec paramètres et imbrications {{ }})
+                async parseLoopQuery(query) {
+                    // Parse la requête avec les paramètres d'abord
+                    let currentQuery = this.parseQueryWithParameters(query);
+                    const maxLevels = 10;
+                    let level = 0;
+
+                    // Fonction récursive pour trouver et exécuter les requêtes imbriquées
+                    const parseRecursive = async (q) => {
+                        if (level >= maxLevels) {
+                            throw new Error('Nombre maximum de niveaux d\'imbrication atteint (10)');
+                        }
+
+                        const regex = /\{\{([^{}]+)\}\}/;
+                        const match = q.match(regex);
+
+                        if (!match) {
+                            return q;
+                        }
+
+                        const innerQuery = match[1].trim();
+                        level++;
+
+                        const resolvedInnerQuery = await parseRecursive(innerQuery);
+                        const results = await DuckDBManager.executeQuery(resolvedInnerQuery);
+
+                        if (!results || results.length === 0) {
+                            throw new Error(`Niveau ${level}: La requête n'a retourné aucun résultat`);
+                        }
+
+                        const firstRow = results[0];
+                        const replacement = Object.values(firstRow)[0];
+
+                        if (replacement === null || replacement === undefined) {
+                            throw new Error(`Niveau ${level}: Le résultat est null ou undefined`);
+                        }
+
+                        const newQuery = q.replace(match[0], String(replacement));
+                        return await parseRecursive(newQuery);
+                    };
+
+                    return await parseRecursive(currentQuery);
+                },
+
+                // Ajouter un fichier à la collection zip (utilisé par les cellules de génération de fichiers)
+                addFileToZip(filename, content, type = 'blob') {
+                    if (this._zipMode) {
+                        this._zipFiles.push({ filename, content, type });
+                        return true; // Fichier ajouté au zip, ne pas télécharger
+                    }
+                    return false; // Mode normal, télécharger directement
+                },
+
+                // Télécharger un fichier (ou l'ajouter au zip si mode zip actif)
+                downloadOrZipFile(filename, content, mimeType = 'application/octet-stream') {
+                    if (this._zipMode) {
+                        this._zipFiles.push({ filename, content, type: 'blob' });
+                        return true;
+                    }
+                    const blob = content instanceof Blob ? content : new Blob([content], { type: mimeType });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    return false;
+                },
+
+                // Exécuter un groupe avec loop
+                async runGroupWithLoop(path, group) {
+                    this.setStatus('Initialisation de la boucle...', 'loading');
+
+                    // Activer le mode zip si configuré
+                    const zipEnabled = group.loop.zip === true;
+                    if (zipEnabled) {
+                        this._zipMode = true;
+                        this._zipFiles = [];
+                    }
+
+                    try {
+                        // Exécuter la requête de loop pour obtenir les valeurs
+                        const loopQuery = group.loop.query;
+                        const parsedLoopQuery = await this.parseLoopQuery(loopQuery);
+                        const loopResults = await DuckDBManager.executeQuery(parsedLoopQuery);
+
+                        if (!loopResults || loopResults.length === 0) {
+                            this.setStatus('Boucle: aucune valeur trouvée', 'warning');
+                            this._zipMode = false;
+                            this._zipFiles = [];
+                            return;
+                        }
+
+                        // Récupérer la première colonne pour les valeurs de loop
+                        const firstColumnName = Object.keys(loopResults[0])[0];
+                        const loopValues = loopResults.map(row => row[firstColumnName]);
+
+                        this.setStatus(`Boucle: ${loopValues.length} itérations`, 'loading');
+
+                        // Exécuter le groupe pour chaque valeur de loop
+                        for (let i = 0; i < loopValues.length; i++) {
+                            const loopValue = loopValues[i];
+                            this._currentLoopValue = loopValue;
+                            this.setStatus(`Boucle ${i + 1}/${loopValues.length}: $loop = ${loopValue}`, 'loading');
+
+                            // Exécuter le contenu du groupe
+                            const orderedItems = this.getAllItemsSorted(group);
+                            for (const item of orderedItems) {
+                                if (item.type === 'child') {
+                                    await this.runGroupAtPath([...path, item.originalIndex]);
+                                    continue;
+                                }
+
+                                const cell = item.item;
+                                if (cell.type !== 'source') {
+                                    await this.runCellAtPath(path, item.originalIndex);
+                                }
+                            }
+                        }
+
+                        // Réinitialiser la valeur de loop
+                        this._currentLoopValue = null;
+
+                        // Générer le ZIP si mode zip actif et fichiers collectés
+                        if (zipEnabled && this._zipFiles.length > 0) {
+                            await this.generateAndDownloadZip(group);
+                        }
+
+                        this.setStatus(`Boucle terminée: ${loopValues.length} itérations` + (zipEnabled ? ` - ${this._zipFiles.length} fichier(s) zippé(s)` : ''), 'success');
+
+                    } catch (error) {
+                        this._currentLoopValue = null;
+                        this.setStatus('Erreur boucle: ' + error.message, 'error');
+                        console.error('Erreur lors de l\'exécution de la boucle:', error);
+                    } finally {
+                        // Toujours réinitialiser le mode zip
+                        this._zipMode = false;
+                        this._zipFiles = [];
+                    }
+                },
+
+                // Générer et télécharger le fichier ZIP
+                async generateAndDownloadZip(group) {
+                    this.setStatus('Génération du fichier ZIP...', 'loading');
+
+                    try {
+                        // Déterminer le nom du fichier ZIP
+                        let zipFilename = 'export.zip';
+                        if (group.loop.zipQuery) {
+                            const parsedZipQuery = await this.parseLoopQuery(group.loop.zipQuery);
+                            const zipResults = await DuckDBManager.executeQuery(parsedZipQuery);
+                            if (zipResults && zipResults.length > 0) {
+                                const firstValue = Object.values(zipResults[0])[0];
+                                if (firstValue) {
+                                    zipFilename = String(firstValue);
+                                    if (!zipFilename.toLowerCase().endsWith('.zip')) {
+                                        zipFilename += '.zip';
+                                    }
+                                }
+                            }
+                        }
+
+                        // Créer le ZIP avec JSZip
+                        const zip = new JSZip();
+
+                        for (const file of this._zipFiles) {
+                            if (file.content instanceof Blob) {
+                                zip.file(file.filename, file.content);
+                            } else if (file.content instanceof ArrayBuffer) {
+                                zip.file(file.filename, file.content);
+                            } else if (typeof file.content === 'string') {
+                                zip.file(file.filename, file.content);
+                            } else {
+                                zip.file(file.filename, file.content);
+                            }
+                        }
+
+                        // Générer et télécharger le ZIP
+                        const zipBlob = await zip.generateAsync({ type: 'blob' });
+                        const url = URL.createObjectURL(zipBlob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = zipFilename;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+
+                        this.setStatus(`ZIP généré: ${zipFilename} (${this._zipFiles.length} fichiers)`, 'success');
+                    } catch (error) {
+                        console.error('Erreur lors de la génération du ZIP:', error);
+                        throw new Error('Erreur ZIP: ' + error.message);
+                    }
+                },
+
                 // Exécuter une cellule par chemin
                 async runCellAtPath(path, cellIndex) {
                     const cell = this.getCellAtPath(path, cellIndex);
@@ -2334,6 +2920,7 @@
                             case 'plot': await this.executePlotCell(cell); break;
                             case 'iframe': await this.executeIframeCell(cell); break;
                             case 'uiParameter': await this.executeUIParameterCell(cell); break;
+                            case 'publipostageWord': await this.executePublipostageWordCell(cell); break;
                         }
                         cell._status = 'success';
                     } catch (error) {
@@ -2491,6 +3078,7 @@
                                 <button class="btn btn-xs join-item" @click="toggleGroupDirection(${pathJSON})" :title="getGroupAtPath(${pathJSON})?.direction === 'column' ? 'Passer en ligne' : 'Passer en colonne'">
                                     <span x-text="getGroupAtPath(${pathJSON})?.direction === 'column' ? '⇵' : '⇄'"></span>
                                 </button>
+                                <button class="btn btn-xs join-item" :class="getGroupAtPath(${pathJSON})?.loop?.enabled ? 'btn-info' : ''" @click="openLoopConfigModal(${pathJSON})" title="Configurer la boucle">🔁</button>
                                 <button class="btn btn-xs btn-success join-item" @click="runGroupAtPath(${pathJSON})" :disabled="isLoading" title="Exécuter">▶️</button>
                                 <button class="btn btn-xs join-item" @click="moveItemInGroup(${parentPathJSON}, 'child', ${originalIndex}, -1)" :disabled="isFirstInGroup(getGroupAtPath(${parentPathJSON}), 'child', ${originalIndex})" title="Monter">⬆️</button>
                                 <button class="btn btn-xs join-item" @click="moveItemInGroup(${parentPathJSON}, 'child', ${originalIndex}, 1)" :disabled="isLastInGroup(getGroupAtPath(${parentPathJSON}), 'child', ${originalIndex})" title="Descendre">⬇️</button>
@@ -2502,6 +3090,7 @@
                                 <div tabindex="0" role="button" class="btn btn-xs">⋮</div>
                                 <ul tabindex="-1" class="dropdown-content menu menu-xs bg-base-100 rounded-box z-[1] w-48 p-2 shadow-sm">
                                     <li><button @click="toggleGroupDirection(${pathJSON})"><span x-text="getGroupAtPath(${pathJSON})?.direction === 'column' ? '⇵ Passer en ligne' : '⇄ Passer en colonne'"></span></button></li>
+                                    <li><button @click="openLoopConfigModal(${pathJSON})">🔁 Configurer la boucle</button></li>
                                     <li><button @click="runGroupAtPath(${pathJSON})" :disabled="isLoading">▶️ Exécuter</button></li>
                                     <li><button @click="moveItemInGroup(${parentPathJSON}, 'child', ${originalIndex}, -1)" :disabled="isFirstInGroup(getGroupAtPath(${parentPathJSON}), 'child', ${originalIndex})">⬆️ Monter</button></li>
                                     <li><button @click="moveItemInGroup(${parentPathJSON}, 'child', ${originalIndex}, 1)" :disabled="isLastInGroup(getGroupAtPath(${parentPathJSON}), 'child', ${originalIndex})">⬇️ Descendre</button></li>
@@ -2651,9 +3240,8 @@
                             newCell.buttonLabel = '▶️ Exécuter';
                             break;
                         case 'sqlRecursiveParse':
-                            newCell.query = 'SELECT {{ SELECT string_agg(column_name, \', \') FROM information_schema.columns WHERE table_name = \'source1\' }} FROM source1';
+                            newCell.query = 'SELECT * FROM source1 LIMIT 100';
                             newCell._showParsedQuery = false;
-                            newCell._parseLevels = [];
                             break;
                         case 'table':
                             newCell.query = 'SELECT * FROM source1 LIMIT 100';
@@ -2678,6 +3266,34 @@
                             newCell._value = ''; // Valeur actuelle du paramètre (runtime)
                             newCell._options = []; // Options du dropdown (runtime)
                             newCell._initialized = false; // Indique si le paramètre a été initialisé
+                            break;
+                        case 'publipostageWord':
+                            newCell.query = 'SELECT * FROM source1 LIMIT 10';
+                            newCell.query2 = 'SELECT \'document_\' || STRFTIME(current_timestamp::TIMESTAMP, \'%Y-%m-%d_%H-%M-%S\') || \'.docx\' AS filename;';
+                            newCell.docxTemplateBase64 = null;
+                            newCell.docxTemplateFileName = '';
+                            newCell._showParsedQuery = false;
+                            newCell._showParsedQuery2 = false;
+                            newCell._parseLevels = [];
+                            newCell._parseLevels2 = [];
+                            newCell._isDragging = false;
+                            break;
+                        case 'jsPDF':
+                            newCell.query = 'SELECT * FROM source1 LIMIT 100';
+                            newCell.jsPdfConfig = `// Variables disponibles: doc (jsPDF), autoTable, data (résultat SQL)
+// Exemple avec autoTable:
+autoTable(doc, {
+    head: [Object.keys(data[0] || {})],
+    body: data.map(row => Object.values(row)),
+    startY: 20,
+    styles: { fontSize: 8 },
+    headStyles: { fillColor: [99, 102, 241] }
+});
+
+doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 10);`;
+                            newCell.pdfFileName = 'export.pdf';
+                            newCell._showParsedQuery = false;
+                            newCell._parseLevels = [];
                             break;
                     }
 
@@ -2859,8 +3475,19 @@
                         if (!cell._options) cell._options = [];
                         cell._initialized = false;
                     }
+                    if (cell.type === 'publipostageWord') {
+                        if (!cell.query) cell.query = 'SELECT * FROM source1 LIMIT 10';
+                        if (!cell.query2) cell.query2 = 'SELECT \'document_\' || STRFTIME(current_timestamp::TIMESTAMP, \'%Y-%m-%d_%H-%M-%S\') || \'.docx\' AS filename;';
+                        if (cell.docxTemplateBase64 === undefined) cell.docxTemplateBase64 = null;
+                        if (cell.docxTemplateFileName === undefined) cell.docxTemplateFileName = '';
+                        if (cell._showParsedQuery === undefined) cell._showParsedQuery = false;
+                        if (cell._showParsedQuery2 === undefined) cell._showParsedQuery2 = false;
+                        if (!cell._parseLevels) cell._parseLevels = [];
+                        if (!cell._parseLevels2) cell._parseLevels2 = [];
+                        if (cell._isDragging === undefined) cell._isDragging = false;
+                    }
                     // Cellules avec SQL editor
-                    if (['sqlRecursiveParse', 'table', 'iframe'].includes(cell.type)) {
+                    if (['sqlRecursiveParse', 'table', 'iframe', 'publipostageWord'].includes(cell.type)) {
                         if (cell._showParsedQuery === undefined) cell._showParsedQuery = false;
                     }
                 },
@@ -3068,6 +3695,99 @@
                     this._tablesDataCache = {};
                 },
 
+                // ─────────────────────────────────────────────────────────────────
+                // GESTION DU TEMPLATE DOCX (publipostageWord)
+                // ─────────────────────────────────────────────────────────────────
+                handleDocxTemplateDrop(e, path, cellIndex) {
+                    const cell = this.getCellAtPath(path, cellIndex);
+                    if (!cell || cell.type !== 'publipostageWord') return;
+
+                    cell._isDragging = false;
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        this.loadDocxTemplate(files[0], path, cellIndex);
+                    }
+                },
+
+                handleDocxTemplateFileSelect(e, path, cellIndex) {
+                    const files = e.target.files;
+                    if (files.length > 0) {
+                        this.loadDocxTemplate(files[0], path, cellIndex);
+                    }
+                },
+
+                async loadDocxTemplate(file, path, cellIndex) {
+                    const cell = this.getCellAtPath(path, cellIndex);
+                    if (!cell || cell.type !== 'publipostageWord') return;
+
+                    if (!file.name.endsWith('.docx')) {
+                        this.setStatus('Seuls les fichiers .docx sont acceptés', 'error');
+                        return;
+                    }
+
+                    try {
+                        this.setStatus('Chargement du template Word...', 'loading');
+                        
+                        // Lire le fichier en ArrayBuffer
+                        const arrayBuffer = await file.arrayBuffer();
+                        
+                        // Encoder en base64
+                        const base64 = FileHandler.arrayBufferToBase64(arrayBuffer);
+                        
+                        // Stocker dans la cellule
+                        cell.docxTemplateBase64 = base64;
+                        cell.docxTemplateFileName = file.name;
+                        
+                        this.setStatus('Template Word chargé', 'success');
+                    } catch (error) {
+                        this.setStatus('Erreur lors du chargement du template: ' + error.message, 'error');
+                    }
+                },
+
+                downloadDocxTemplate(path, cellIndex) {
+                    const cell = this.getCellAtPath(path, cellIndex);
+                    if (!cell || cell.type !== 'publipostageWord') return;
+
+                    if (!cell.docxTemplateBase64 || !cell.docxTemplateFileName) {
+                        this.setStatus('Aucun template à télécharger', 'error');
+                        return;
+                    }
+
+                    try {
+                        // Décoder le base64 en Uint8Array
+                        const uint8Array = FileHandler.base64ToUint8Array(cell.docxTemplateBase64);
+                        
+                        // Créer un blob
+                        const blob = new Blob([uint8Array], {
+                            type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                        });
+                        
+                        // Télécharger le fichier
+                        FileHandler.downloadFile(blob, cell.docxTemplateFileName);
+                        
+                        this.setStatus('Template Word téléchargé', 'success');
+                    } catch (error) {
+                        this.setStatus('Erreur lors du téléchargement: ' + error.message, 'error');
+                    }
+                },
+
+                removeDocxTemplate(path, cellIndex) {
+                    const cell = this.getCellAtPath(path, cellIndex);
+                    if (!cell || cell.type !== 'publipostageWord') return;
+
+                    // Réinitialiser l'élément input file
+                    const fileInput = document.getElementById('docxInput_' + cell._id);
+                    if (fileInput) {
+                        fileInput.value = '';
+                    }
+
+                    // Supprimer les données du template
+                    cell.docxTemplateBase64 = null;
+                    cell.docxTemplateFileName = '';
+                    
+                    this.setStatus('Template Word supprimé', 'success');
+                },
+
                 // Charger des tables spécifiques depuis DuckDB
                 async loadSpecificTables(tableNames) {
                     const tablesData = {};
@@ -3079,7 +3799,6 @@
                         // Vérifier si déjà en cache
                         if (this._tablesDataCache[trimmedName]) {
                             tablesData[trimmedName] = this._tablesDataCache[trimmedName];
-                            console.log(`  📦 ${trimmedName}: depuis le cache`);
                             continue;
                         }
 
@@ -3088,7 +3807,6 @@
                             tablesData[trimmedName] = tableData;
                             // Mettre en cache
                             this._tablesDataCache[trimmedName] = tableData;
-                            console.log(`  ✅ ${trimmedName}: ${tableData.length} lignes chargées`);
                         } catch (error) {
                             console.warn(`  ⚠️ Erreur lecture table ${trimmedName}:`, error.message);
                             tablesData[trimmedName] = [];
@@ -3106,7 +3824,10 @@
                 async runCellAt(pathOrIndex, cellIndex) {
                     const path = Array.isArray(pathOrIndex) ? pathOrIndex : [pathOrIndex];
                     const cell = this.getCellAtPath(path, cellIndex);
-                    if (!cell) return;
+                    if (!cell) {
+                        console.error('❌ Cell not found!');
+                        return;
+                    }
 
                     cell._status = 'running';
                     this.isLoading = true;
@@ -3137,6 +3858,14 @@
                             case 'sqlStat':
                                 await this.executeSqlStatCell(cell);
                                 break;
+                            case 'publipostageWord':
+                                await this.executePublipostageWordCell(cell);
+                                break;
+                            case 'jsPDF':
+                                await this.executeJsPdfCell(cell);
+                                break;
+                            default:
+                                console.warn('⚠️ Unknown cell type:', cell.type);
                         }
 
                         cell._status = 'success';
@@ -3241,7 +3970,11 @@
                 },
 
                 async executeSqlRecursiveParseCell(cell) {
-                    if (!cell.query?.trim()) return;
+                    
+                    if (!cell.query?.trim()) {
+                        console.warn('❌ cell.query est vide ou undefined!');
+                        return;
+                    }
 
                     this.setStatus('Parsing récursif...', 'loading');
 
@@ -3275,9 +4008,10 @@
                                 mime = 'application/json;charset=utf-8;';
                             }
 
-                            // Télécharger le fichier
+                            // Télécharger le fichier (ou l'ajouter au zip si mode zip actif)
                             const blob = new Blob([buffer], { type: mime });
-                            FileHandler.downloadFile(blob, fileName.split('/').pop());
+                            const downloadFileName = fileName.split('/').pop();
+                            this.downloadOrZipFile(downloadFileName, blob, mime);
 
                             cell._results = [];
                             cell._resultInfo = `✅ Fichier exporté: ${fileName} - ${cell._parseLevels.length - 1} niveau(x) de parsing`;
@@ -3333,14 +4067,92 @@
                                 field: key
                             }));
 
-                            this._tables[cell._id] = new Tabulator('#' + containerId, {
-                                data: cell._results,
-                                columns: columns,
-                                layout: 'fitDataStretch',
-                                pagination: true,
-                                paginationSize: 10,
-                                height: '300px',
-                                placeholder: 'Aucune donnée'
+                            const tableData = {
+                                headings: Object.keys(cell._results[0]),
+                                data: cell._results.map(row => Object.values(row))
+                            };
+
+                            this._tables[cell._id] = new simpleDatatables.DataTable('#' + containerId, {
+                                data: tableData,
+                                perPage: 10,
+                                perPageSelect: [5, 10, 25, 50],
+                                searchable: true,
+                                sortable: true,
+                                labels: {
+                                    placeholder: "Rechercher...",
+                                    perPage: "entrées par page",
+                                    noRows: "Aucune donnée",
+                                    info: "Affichage de {start} à {end} sur {rows} entrées"
+                                },
+                                tableRender: (_data, table, type) => {
+                                    if (type === "print") {
+                                        return table;
+                                    }
+                                    
+                                    // Classes DaisyUI/Tailwind sur la table
+                                    table.attributes = table.attributes || {};
+                                    table.attributes.class = "table table-zebra table-pin-rows w-full";
+                                    
+                                    const tHead = table.childNodes[0];
+                                    const tBody = table.childNodes[1];
+                                    
+                                    // Style header
+                                    if (tHead && tHead.childNodes) {
+                                        tHead.childNodes.forEach((tr, trIndex) => {
+                                            tr.attributes = tr.attributes || {};
+                                            tr.attributes.class = "bg-base-200";
+                                            if (tr.childNodes) {
+                                                tr.childNodes.forEach((th, thIndex) => {
+                                                    th.attributes = th.attributes || {};
+                                                    const stickyClass = thIndex === 0 ? " sticky left-0 z-10 bg-base-200" : "";
+                                                    th.attributes.class = "text-base-content font-semibold text-sm px-3 py-2" + stickyClass;
+                                                });
+                                            }
+                                        });
+                                    }
+                                    
+                                    // Style body rows
+                                    if (tBody && tBody.childNodes) {
+                                        tBody.childNodes.forEach(tr => {
+                                            tr.attributes = tr.attributes || {};
+                                            tr.attributes.class = "hover:bg-base-200 transition-colors";
+                                            if (tr.childNodes) {
+                                                tr.childNodes.forEach((td, tdIndex) => {
+                                                    td.attributes = td.attributes || {};
+                                                    const stickyClass = tdIndex === 0 ? " sticky left-0 z-10 bg-base-100" : "";
+                                                    td.attributes.class = "text-base-content text-sm px-3 py-2" + stickyClass;
+                                                });
+                                            }
+                                        });
+                                    }
+                                    
+                                    // Ajouter ligne de filtres par colonne
+                                    const filterHeaders = {
+                                        nodeName: "TR",
+                                        attributes: { class: "bg-base-100" },
+                                        childNodes: tHead.childNodes[0].childNodes.map(
+                                            (_th, index) => ({
+                                                nodeName: "TH",
+                                                attributes: { 
+                                                    class: "px-2 py-1" + (index === 0 ? " sticky left-0 z-10 bg-base-100" : "")
+                                                },
+                                                childNodes: [
+                                                    {
+                                                        nodeName: "INPUT",
+                                                        attributes: {
+                                                            class: "input input-bordered input-xs w-full",
+                                                            type: "search",
+                                                            placeholder: "Filtrer...",
+                                                            "data-columns": `[${index}]`
+                                                        }
+                                                    }
+                                                ]
+                                            })
+                                        )
+                                    };
+                                    tHead.childNodes.push(filterHeaders);
+                                    return table;
+                                }
                             });
                         }
 
@@ -3454,7 +4266,7 @@
                         const finalQuery = await this.parseQueryRecursively(cell);
 
                         this.setStatus('Exécution de la requête finale...', 'loading');
-                        const results = await DuckDBManager.executeQuery(cell.query);
+                        const results = await DuckDBManager.executeQuery(finalQuery);
                         if (cell.paramType === 'dropdown') {
                             if (results.length === 0) {
                                 cell._options = [];
@@ -3493,9 +4305,209 @@
                     }
                 },
 
-                onParameterValueChange(cell) {
-                    // Appelé quand l'utilisateur change la valeur d'un paramètre
-                    console.log(`🎛️ Paramètre ${cell.paramName} = "${cell._value}"`);
+                // Parser query2 de manière récursive (pour publipostageWord)
+                async parseQueryRecursively2(cell) {
+                    cell._parseLevels2 = [];
+
+                    // Parse la requête avec les paramètres d'abord
+                    let currentQuery = this.parseQueryWithParameters(cell.query2 || '');
+
+                    let level = 1;
+                    const maxLevels = 10;
+
+                    // Tant qu'il y a des {{ }} à parser
+                    while (currentQuery.includes('{{') && level <= maxLevels) {
+                        const regex = /\{\{([^}]+)\}\}/;
+                        const match = currentQuery.match(regex);
+
+                        if (!match) break;
+
+                        const innerQuery = match[1].trim();
+                        cell._parseLevels2.push({ level, innerQuery, replacement: null });
+
+                        this.setStatus(`Parsing niveau ${level} (query2)...`, 'loading');
+                        const results = await DuckDBManager.executeQuery(innerQuery);
+
+                        let replacement = '';
+                        if (results.length > 0) {
+                            const firstRow = results[0];
+                            const firstValue = Object.values(firstRow)[0];
+                            replacement = firstValue !== null && firstValue !== undefined ? String(firstValue) : '';
+                        }
+
+                        cell._parseLevels2[cell._parseLevels2.length - 1].replacement = replacement;
+                        currentQuery = currentQuery.replace(regex, replacement);
+                        level++;
+                    }
+
+                    cell._parseLevels2.push({ level: 'final', innerQuery: currentQuery, replacement: null });
+                    return currentQuery;
+                },
+
+                async executePublipostageWordCell(cell) {
+                    
+                    if (!cell.docxTemplateBase64) {
+                        console.error('❌ No template loaded');
+                        throw new Error('Aucun template Word chargé');
+                    }
+
+                    if (!cell.query?.trim()) {
+                        console.error('❌ No data query');
+                        throw new Error('Requête de données manquante');
+                    }
+
+                    if (!cell.query2?.trim()) {
+                        console.error('❌ No filename query');
+                        throw new Error('Requête de nom de fichier manquante');
+                    }
+
+                    this.setStatus('Exécution du publipostage Word...', 'loading');
+
+                    try {
+                        // Parser et exécuter query (données)
+                        const finalQuery = await this.parseQueryRecursively(cell);
+                        
+                        this.setStatus('Récupération des données...', 'loading');
+                        const dataResults = await DuckDBManager.executeQuery(finalQuery);
+
+                        if (!dataResults || dataResults.length === 0) {
+                            cell._resultInfo = 'Aucune donnée à traiter';
+                            return;
+                        }
+
+                        // Parser et exécuter query2 (noms de fichiers)
+                        const finalQuery2 = await this.parseQueryRecursively2(cell);
+                        
+                        this.setStatus('Récupération des noms de fichiers...', 'loading');
+                        const filenameResults = await DuckDBManager.executeQuery(finalQuery2);
+
+                        if (!filenameResults || filenameResults.length === 0) {
+                            throw new Error('La requête de nom de fichier n\'a retourné aucun résultat');
+                        }
+
+                        // Vérifier que le nombre de lignes correspond
+                        if (dataResults.length !== filenameResults.length) {
+                            throw new Error(`Nombre de lignes différent: ${dataResults.length} données vs ${filenameResults.length} noms de fichiers`);
+                        }
+
+                        // Décoder le template
+                        const templateArrayBuffer = FileHandler.base64ToUint8Array(cell.docxTemplateBase64).buffer;
+
+                        // Générer les documents
+                        this.setStatus('Génération des documents Word...', 'loading');
+                        let generatedCount = 0;
+
+                        for (let i = 0; i < dataResults.length; i++) {
+                            const rowData = dataResults[i];
+                            const filenameRow = filenameResults[i];
+                            const filename = Object.values(filenameRow)[0] || `document_${i + 1}.docx`;
+
+                            // Parser les données JSON si nécessaire
+                            let templateData = rowData;
+                            
+                            // Si la ligne contient une seule colonne avec du JSON, le parser
+                            const keys = Object.keys(rowData);
+                            if (keys.length === 1) {
+                                const value = rowData[keys[0]];
+                                if (typeof value === 'string' && (value.startsWith('{') || value.startsWith('['))) {
+                                    try {
+                                        templateData = JSON.parse(value);
+                                    } catch (e) {
+                                        console.warn('⚠️ Failed to parse JSON, using raw data:', e);
+                                    }
+                                }
+                            }
+
+                            // Créer une nouvelle instance du template pour chaque document
+                            const zip = new PizZip(templateArrayBuffer);
+                            const doc = new window.docxtemplater(zip, {
+                                paragraphLoop: true,
+                                linebreaks: true,
+                            });
+
+                            // Injecter les données
+                            doc.render(templateData);
+
+                            // Générer le blob
+                            const blob = doc.getZip().generate({
+                                type: 'blob',
+                                mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                            });
+
+                            // Télécharger le fichier (ou l'ajouter au zip si mode zip actif)
+                            this.downloadOrZipFile(filename, blob, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+                            generatedCount++;
+
+                            this.setStatus(`Génération ${generatedCount}/${dataResults.length}...`, 'loading');
+                        }
+
+                        cell._resultInfo = `✅ ${generatedCount} document(s) généré(s)` + 
+                            (cell._parseLevels.length > 1 ? ` - ${cell._parseLevels.length - 1} niveau(x) de parsing (query)` : '') +
+                            (cell._parseLevels2.length > 1 ? ` - ${cell._parseLevels2.length - 1} niveau(x) de parsing (query2)` : '');
+                        this.setStatus(`${generatedCount} documents générés`, 'success');
+                    } catch (error) {
+                        throw error;
+                    }
+                },
+
+                async executeJsPdfCell(cell) {
+                    if (!cell.query?.trim()) {
+                        throw new Error('Requête SQL manquante');
+                    }
+
+                    if (!cell.jsPdfConfig?.trim()) {
+                        throw new Error('Configuration jsPDF manquante');
+                    }
+
+                    this.setStatus('Exécution de la requête SQL...', 'loading');
+
+                    try {
+                        // Parser et exécuter la requête SQL
+                        const finalQuery = await this.parseQueryRecursively(cell);
+                        
+                        this.setStatus('Récupération des données...', 'loading');
+                        const data = await DuckDBManager.executeQuery(finalQuery);
+
+                        if (!data || data.length === 0) {
+                            cell._resultInfo = 'Aucune donnée à exporter';
+                            return;
+                        }
+
+                        this.setStatus('Génération du PDF...', 'loading');
+
+                        // Créer une instance jsPDF
+                        
+                        // jsPDF UMD 2.x expose window.jspdf.jsPDF
+                        const jsPDFClass = window.jspdf?.jsPDF || window.jsPDF || window.jspdf;
+                        if (!jsPDFClass) {
+                            throw new Error('jsPDF library not loaded. Check browser console for details.');
+                        }
+                        const doc = new jsPDFClass();
+                        // autoTable est ajouté comme plugin sur le prototype de jsPDF
+                        const autoTable = (docInstance, opts) => docInstance.autoTable(opts);
+
+                        // Exécuter le code de configuration jsPDF
+                        const configFunction = new Function('doc', 'autoTable', 'data', cell.jsPdfConfig);
+                        configFunction(doc, autoTable, data);
+
+                        // Sauvegarder le PDF (ou l'ajouter au zip si mode zip actif)
+                        const pdfFileName = cell.pdfFileName || 'export.pdf';
+                        
+                        if (this._zipMode) {
+                            // En mode zip, générer un blob et l'ajouter au zip
+                            const pdfBlob = doc.output('blob');
+                            this.downloadOrZipFile(pdfFileName, pdfBlob, 'application/pdf');
+                        } else {
+                            // Mode normal, télécharger directement
+                            doc.save(pdfFileName);
+                        }
+
+                        cell._resultInfo = `✅ PDF généré: ${pdfFileName} (${data.length} ligne(s))` + 
+                            (cell._parseLevels.length > 1 ? ` - ${cell._parseLevels.length - 1} niveau(x) de parsing` : '');
+                        this.setStatus('PDF généré avec succès', 'success');
+                    } catch (error) {
+                        throw error;
+                    }
                 },
 
                 // Collecter tous les paramètres définis dans les cellules uiParameter
@@ -3514,6 +4526,11 @@
 
                     for (const group of (this.groups || [])) {
                         collectFromGroup(group);
+                    }
+
+                    // Ajouter la variable $loop si elle est définie (pendant l'exécution d'une boucle)
+                    if (this._currentLoopValue !== null && this._currentLoopValue !== undefined) {
+                        params['loop'] = this._currentLoopValue;
                     }
 
                     return params;
@@ -3542,35 +4559,37 @@
                 },
 
                 // Générer le HTML de l'éditeur SQL partagé
-                renderSqlQueryEditor(cell, placeholder, showResultInfo) {
+                renderSqlQueryEditor(cell, placeholder, showResultInfo, queryType = 'query', showParsedQueryProp = '_showParsedQuery') {
                     const cellId = cell._id;
+                    const showParsedQuery = cell[showParsedQueryProp];
+                    const parseLevelsProp = queryType === 'query2' ? '_parseLevels2' : '_parseLevels';
                     return `
                         <div>
                             <div class="relative w-full">
                                 <div class="flex justify-between items-center mb-2">
                                     <span class="text-xs text-base-content/70 flex items-center gap-2">
-                                        ${cell._showParsedQuery ? '<span class="badge badge-soft badge-primary">Parsé</span>' : ''}
-                                        <span>${cell._showParsedQuery ? 'Requête avec paramètres' : 'Requête avec imbrication {{ }}'}</span>
+                                        ${showParsedQuery ? '<span class="badge badge-soft badge-primary">Parsé</span>' : ''}
+                                        <span>${showParsedQuery ? 'Requête avec paramètres' : 'Requête avec imbrication {{ }}'}</span>
                                     </span>
                                     <div class="flex gap-1">
                                         <button 
-                                            class="px-2 py-1 border border-base-300 bg-base-200 text-base-content/70 rounded cursor-pointer text-xs transition-all hover:border-primary hover:text-base-content ${!cell._showParsedQuery ? 'active' : ''}" 
-                                            @click="cellItem.cell._showParsedQuery = false" 
+                                            class="px-2 py-1 border border-base-300 bg-base-200 text-base-content/70 rounded cursor-pointer text-xs transition-all hover:border-primary hover:text-base-content ${!showParsedQuery ? 'active' : ''}" 
+                                            @click="cellItem.cell.${showParsedQueryProp} = false" 
                                             title="Mode édition">✏️ Éditer</button>
                                         <button 
-                                            class="px-2 py-1 border border-base-300 bg-base-200 text-base-content/70 rounded cursor-pointer text-xs transition-all hover:border-primary hover:text-base-content ${cell._showParsedQuery ? 'active' : ''}" 
-                                            @click="cellItem.cell._showParsedQuery = true" 
+                                            class="px-2 py-1 border border-base-300 bg-base-200 text-base-content/70 rounded cursor-pointer text-xs transition-all hover:border-primary hover:text-base-content ${showParsedQuery ? 'active' : ''}" 
+                                            @click="cellItem.cell.${showParsedQueryProp} = true" 
                                             title="Voir la requête parsée">👁️ Parsé</button>
                                     </div>
                                 </div>
-                                ${!cell._showParsedQuery ? `
+                                ${!showParsedQuery ? `
                                     <textarea 
                                         class="textarea textarea-bordered w-full font-mono min-h-20 p-3 resize-y text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" 
-                                        x-model="cellItem.cell.query"
+                                        x-model="cellItem.cell.${queryType}"
                                         placeholder="${placeholder}"></textarea>
                                 ` : `
                                     <div>
-                                        ${(cell._parseLevels || []).map((parseLevel, idx) => `
+                                        ${(cell[parseLevelsProp] || []).map((parseLevel, idx) => `
                                             <div class="relative w-full" style="margin-bottom: 0.75rem;">
                                                 <div class="flex justify-between items-center mb-2">
                                                     <span class="text-xs text-base-content/70 flex items-center gap-2">
@@ -3595,6 +4614,7 @@
                         </div>
                     `;
                 },
+
 
                 // Générer un nom de paramètre unique (param1, param2, param3...)
                 generateUniqueParamName() {
@@ -3881,23 +4901,19 @@
                 // ─────────────────────────────────────────────────────────────────
                 // EXPORT / IMPORT
                 // ─────────────────────────────────────────────────────────────────
-                // THEME TOGGLE
+                // THEME MANAGEMENT
                 // ─────────────────────────────────────────────────────────────────
-                toggleTheme() {
-                    this.isDarkMode = !this.isDarkMode;
-                    if (this.isDarkMode) {
-                        document.documentElement.setAttribute('data-theme', 'dark');
-                        localStorage.setItem('sqljob-theme', 'dark');
-                    } else {
-                        document.documentElement.removeAttribute('data-theme');
-                        localStorage.setItem('sqljob-theme', 'light');
-                    }
+                setTheme(themeName) {
+                    this.currentTheme = themeName;
+                    document.documentElement.setAttribute('data-theme', themeName);
+                    localStorage.setItem('sqljob-theme', themeName);
                 },
 
                 // ─────────────────────────────────────────────────────────────────
-                exportConfig() {
+                async exportConfig() {
                     try {
-                        const config = ConfigManager.buildConfigFromState(this.groups, this.linkGroups, this.devMode, this.autoExecuteWithoutSources);
+                        // includeFileData = true pour inclure les fichiers base64 dans l'export JSON
+                        const config = await ConfigManager.buildConfigFromState(this.groups, this.linkGroups, this.devMode, this.autoExecuteWithoutSources, this.displayAdvancedSettings, true, this.currentTheme);
                         const jsonString = JSON.stringify(config, null, 2);
                         const blob = new Blob([jsonString], { type: 'application/json' });
                         FileHandler.downloadFile(blob, 'notebook-config.json');
@@ -3907,9 +4923,10 @@
                     }
                 },
 
-                exportConfigBase64() {
+                async exportConfigBase64() {
                     try {
-                        const config = ConfigManager.buildConfigFromState(this.groups, this.linkGroups, this.devMode, this.autoExecuteWithoutSources);
+                        // includeFileData = true pour inclure les fichiers base64 dans l'export Base64
+                        const config = await ConfigManager.buildConfigFromState(this.groups, this.linkGroups, this.devMode, this.autoExecuteWithoutSources, this.displayAdvancedSettings, true, this.currentTheme);
                         const jsonString = JSON.stringify(config, null, 2);
                         const base64String = ConfigManager.encodeUTF8ToBase64(jsonString);
                         const blob = new Blob([base64String], { type: 'text/plain' });
@@ -3940,10 +4957,21 @@
                             };
 
                             if (cell.type === 'source') {
-                                newCell._fileName = '';
-                                newCell._currentFile = null;
                                 newCell._isDragging = false;
                                 newCell._loaded = false;
+                                // Charger le fichier base64 si présent dans la config JSON
+                                if (cell.fileBase64 && cell.fileName) {
+                                    newCell._fileName = cell.fileName;
+                                    // Créer un File object à partir du base64
+                                    const uint8Array = FileHandler.base64ToUint8Array(cell.fileBase64);
+                                    const blob = new Blob([uint8Array], { type: FileHandler.getMimeTypeFromFileName(cell.fileName) });
+                                    newCell._currentFile = new File([blob], cell.fileName, { type: blob.type });
+                                    // Marquer pour chargement différé
+                                    newCell._pendingFileLoad = true;
+                                } else {
+                                    newCell._fileName = '';
+                                    newCell._currentFile = null;
+                                }
                             }
 
                             if (cell.type === 'uiParameter') {
@@ -3953,8 +4981,26 @@
                                 newCell._paramError = null;
                             }
 
+                            if (cell.type === 'publipostageWord') {
+                                newCell._showParsedQuery = false;
+                                newCell._showParsedQuery2 = false;
+                                newCell._parseLevels = [];
+                                newCell._parseLevels2 = [];
+                                newCell._isDragging = false;
+                                // Charger le template base64 si présent dans la config JSON
+                                if (cell.fileBase64 && cell.fileName) {
+                                    newCell.docxTemplateBase64 = cell.fileBase64;
+                                    newCell.docxTemplateFileName = cell.fileName;
+                                }
+                            }
+
+                            if (cell.type === 'jsPDF') {
+                                newCell._showParsedQuery = false;
+                                newCell._parseLevels = [];
+                            }
+
                             // Cellules avec SQL editor
-                            if (['sqlRecursiveParse', 'table', 'iframe', 'uiParameter'].includes(cell.type)) {
+                            if (['sqlRecursiveParse', 'table', 'iframe', 'uiParameter', 'publipostageWord', 'jsPDF'].includes(cell.type)) {
                                 newCell._showParsedQuery = false;
                             }
 
@@ -3989,9 +5035,39 @@
                         this.groups = allGroups.filter(g => g._type === 'core');
                         this.linkGroups = allGroups.filter(g => g._type === 'link');
 
+                        // Charger les fichiers source en attente (depuis la config JSON)
+                        await this.loadPendingSourceFiles();
+
                         this.setStatus('Configuration chargée', 'success');
                     } catch (error) {
                         this.setStatus('Erreur import: ' + error.message, 'error');
+                    }
+                },
+
+                // Charger les fichiers source marqués comme _pendingFileLoad (depuis config JSON)
+                async loadPendingSourceFiles() {
+                    const loadFromGroup = async (group, path) => {
+                        for (let ci = 0; ci < (group.cells || []).length; ci++) {
+                            const cell = group.cells[ci];
+                            if (cell.type === 'source' && cell._pendingFileLoad && cell._currentFile) {
+                                try {
+                                    this.setStatus(`Chargement de ${cell.name}...`, 'loading');
+                                    await this.loadSingleSourceFile(cell._currentFile, path, ci);
+                                    cell._pendingFileLoad = false;
+                                } catch (error) {
+                                    console.error(`Erreur chargement fichier source ${cell.name}:`, error);
+                                }
+                            }
+                        }
+                        if (group.children) {
+                            for (let gi = 0; gi < group.children.length; gi++) {
+                                await loadFromGroup(group.children[gi], [...path, gi]);
+                            }
+                        }
+                    };
+
+                    for (let gi = 0; gi < this.groups.length; gi++) {
+                        await loadFromGroup(this.groups[gi], [gi]);
                     }
                 },
 
@@ -4000,7 +5076,8 @@
                     this.setStatus('Génération HTML...', 'loading');
 
                     try {
-                        const config = ConfigManager.buildConfigFromState(this.groups, this.linkGroups, clientOnly ? false : this.devMode, this.autoExecuteWithoutSources);
+                        // includeFileData = false pour l'export HTML (les fichiers sont stockés dans des balises script séparées)
+                        const config = await ConfigManager.buildConfigFromState(this.groups, this.linkGroups, clientOnly ? false : this.devMode, this.autoExecuteWithoutSources, this.displayAdvancedSettings, false, this.currentTheme);
                         const jsonString = JSON.stringify(config, null, 2);
                         const configBase64 = ConfigManager.encodeUTF8ToBase64(jsonString);
 
@@ -4012,9 +5089,10 @@
                         configScript.textContent = configBase64;
                         document.head.appendChild(configScript);
 
-                        // Collecter les fichiers source depuis tous les groupes (récursivement)
-                        const collectSourceFiles = async (group) => {
-                            for (const cell of (group.cells || [])) {
+                        // Collecter les fichiers source et templates docx depuis tous les groupes (récursivement)
+                        const collectSourceFiles = async (group, groupPath = []) => {
+                            for (let cellIndex = 0; cellIndex < (group.cells || []).length; cellIndex++) {
+                                const cell = group.cells[cellIndex];
                                 // Vérifier que le fichier existe vraiment (fichier en mémoire ET nom de fichier)
                                 if (cell.type === 'source' && cell._currentFile && cell._fileName) {
                                     const safeSourceName = cell.name.replace(/[^a-zA-Z0-9_]/g, '_');
@@ -4038,14 +5116,42 @@
                                     const safeSourceName = cell.name.replace(/[^a-zA-Z0-9_]/g, '_');
                                     document.querySelectorAll(`script[id^="sourceFile_${safeSourceName}"]`).forEach(s => s.remove());
                                 }
+                                
+                                // Gérer les templates docx pour publipostageWord
+                                if (cell.type === 'publipostageWord' && cell.docxTemplateBase64 && cell.docxTemplateFileName) {
+                                    // Utiliser un identifiant stable basé sur la position
+                                    const cellPath = [...groupPath, cellIndex].join('_');
+                                    const stableId = `docxTemplate_${cellPath}`;
+
+                                    // Supprimer les anciens scripts pour ce template
+                                    document.querySelectorAll(`script[id="${stableId}"]`).forEach(s => s.remove());
+
+                                    const script = document.createElement('script');
+                                    script.type = 'application/octet-stream';
+                                    script.id = stableId;
+                                    script.dataset.cellPath = cellPath;
+                                    script.dataset.fileName = cell.docxTemplateFileName;
+                                    script.textContent = cell.docxTemplateBase64;
+                                    document.head.appendChild(script);
+                                } else if (cell.type === 'publipostageWord' && !cell.docxTemplateBase64) {
+                                    // Si la cellule n'a pas de template, supprimer les scripts existants
+                                    const cellPath = [...groupPath, cellIndex].join('_');
+                                    const stableId = `docxTemplate_${cellPath}`;
+                                    document.querySelectorAll(`script[id="${stableId}"]`).forEach(s => s.remove());
+                                }
                             }
-                            for (const child of (group.children || [])) {
-                                await collectSourceFiles(child);
+                            for (let childIndex = 0; childIndex < (group.children || []).length; childIndex++) {
+                                await collectSourceFiles(group.children[childIndex], [...groupPath, childIndex]);
                             }
                         };
 
-                        for (const group of this.groups) {
-                            await collectSourceFiles(group);
+                        for (let groupIndex = 0; groupIndex < this.groups.length; groupIndex++) {
+                            await collectSourceFiles(this.groups[groupIndex], [groupIndex]);
+                        }
+                        
+                        // Collecter aussi les templates des linkGroups
+                        for (let groupIndex = 0; groupIndex < this.linkGroups.length; groupIndex++) {
+                            await collectSourceFiles(this.linkGroups[groupIndex], [-1, groupIndex]);
                         }
 
                         // Récupérer le HTML complet
