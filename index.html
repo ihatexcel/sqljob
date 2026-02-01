@@ -83,9 +83,13 @@
         .editor-preview-full{
             overflow: visible;
         }
-        /* Réduire la hauteur minimale des cellules markdown */
-        .CodeMirror {
-            background: hsl(var(--color-primary-content))
+
+        .editor-preview {
+            background-color: var(--color-base-100) !important;
+        }
+
+        .EasyMDEContainer .editor-preview-active ~ .CodeMirror {
+            display: none;
         }
         
         /* Styles pour les titres - doit venir APRÈS all: revert */
@@ -108,8 +112,6 @@
             line-height: 2.25rem;
             font-weight: 600;
         }
-
-
 
     </style>
 
@@ -406,7 +408,61 @@
             }
 
             /**
-             * Charge la configuration depuis un Gist GitHub si présent dans l'URL
+             * Parse les paramètres UI depuis l'URL
+             * Paramètres supportés: devMode, displaySettings, theme, dbEngine
+             * @returns {Object} Objet contenant les paramètres UI trouvés dans l'URL
+             */
+            static getUIParamsFromURL() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const uiParams = {};
+
+                // devMode: boolean
+                if (urlParams.has('devMode')) {
+                    const val = urlParams.get('devMode').toLowerCase();
+                    uiParams.devMode = val !== 'false' && val !== '0';
+                }
+
+                // displaySettings: boolean
+                if (urlParams.has('displaySettings')) {
+                    const val = urlParams.get('displaySettings').toLowerCase();
+                    uiParams.displaySettings = val !== 'false' && val !== '0';
+                }
+
+                // theme: string
+                if (urlParams.has('theme')) {
+                    uiParams.theme = urlParams.get('theme');
+                }
+
+                // dbEngine: string
+                if (urlParams.has('dbEngine')) {
+                    uiParams.dbEngine = urlParams.get('dbEngine');
+                }
+
+                if (Object.keys(uiParams).length > 0) {
+                    console.log('🔗 Paramètres UI depuis l\'URL:', uiParams);
+                }
+
+                return uiParams;
+            }
+
+            /**
+             * Applique les paramètres UI de l'URL sur une config existante
+             * Priorité: URL > config existante
+             */
+            static applyURLParamsToConfig(config) {
+                const urlParams = ConfigManager.getUIParamsFromURL();
+                if (Object.keys(urlParams).length === 0) {
+                    return config;
+                }
+                
+                // Créer une copie de la config avec les paramètres URL appliqués
+                const result = { ...config };
+                result.ui = { ...(config.ui || {}), ...urlParams };
+                return result;
+            }
+
+            /**
+             * Charge la configuration avec la priorité: URL > gist > base64 > default
              */
             static async loadConfigFromGist() {
                 const gistId = (() => {
@@ -427,6 +483,8 @@
                     return null;
                 })();
 
+                let baseConfig = null;
+
                 if (gistId) {
                     try {
                         console.log('🔗 Détection d\'un Gist dans l\'URL, chargement de la configuration...', gistId);
@@ -443,7 +501,7 @@
                                 try {
                                     const config = JSON.parse(jsonFile.content);
                                     console.log('✅ Configuration chargée depuis le Gist:', config);
-                                    return ConfigManager.deepMerge(ConfigManager.getDefaultConfig(), config);
+                                    baseConfig = ConfigManager.deepMerge(ConfigManager.getDefaultConfig(), config);
                                 } catch (parseError) {
                                     console.error('❌ Erreur de parsing JSON du Gist:', parseError);
                                     throw new Error(`Le fichier JSON du Gist est invalide. Erreur: ${parseError.message}`);
@@ -459,7 +517,13 @@
                     }
                 }
 
-                return ConfigManager.getDefaultConfig();
+                // Si pas de config depuis le gist, utiliser la config par défaut (base64)
+                if (!baseConfig) {
+                    baseConfig = ConfigManager.getDefaultConfig();
+                }
+
+                // Appliquer les paramètres URL en priorité (URL > gist > base64 > default)
+                return ConfigManager.applyURLParamsToConfig(baseConfig);
             }
 
             static async cleanCell(cell, includeFileData = false) {
@@ -588,7 +652,7 @@
                 return cleanGroup;
             }
 
-            static async buildConfigFromState(pages, devMode = true, displayAdvancedSettings = true, includeFileData = false, theme = 'light', dbEngine = 'duckdb-wasm') {
+            static async buildConfigFromState(pages, devMode = true, displaySettings = true, includeFileData = false, theme = 'light', dbEngine = 'duckdb-wasm') {
                 // Nettoyer chaque page
                 const cleanPages = await Promise.all(pages.map(async (page) => {
                     const cleanGroups = await Promise.all(page.groups.map(group => ConfigManager.cleanGroup(group, includeFileData)));
@@ -605,14 +669,14 @@
                 }));
 
                 return {
-                    job: {
-                        pages: cleanPages
-                    },
                     ui: { 
                         devMode: devMode,
-                        displayAdvancedSettings: displayAdvancedSettings,
+                        displaySettings: displaySettings,
                         theme: theme,
                         dbEngine: dbEngine
+                    },
+                    job: {
+                        pages: cleanPages
                     }
                 };
             }
@@ -886,7 +950,10 @@
 
                 // Ducklings ne fonctionne pas depuis file:// (worker ES module)
                 if (location.protocol === 'file:') {
-                    throw new Error('Ducklings nécessite un serveur HTTP. Ouvrez le fichier via http://localhost (ex: npx serve)');
+                    onStatus?.('Ducklings nécessite un serveur HTTP. Basculement vers DuckDB WASM...', 'warning');
+                    await new Promise(resolve => setTimeout(resolve, 1500));
+                    DuckDBManager.currentEngine = 'duckdb-wasm';
+                    return await DuckDBManager._initDuckDBWasm(onStatus);
                 }
 
                 const ducklings = await import(DuckDBManager.getDucklingsUrl());
@@ -1364,7 +1431,7 @@
         // ═══════════════════════════════════════════════════════════════════════════
         function generateAppHTML() {
             return `
-    <div x-data="notebookApp()" x-init="init()" @keydown.window.ctrl.comma.prevent="displayAdvancedSettings = !displayAdvancedSettings" class="drawer drawer-end">
+    <div x-data="notebookApp()" x-init="init()" @keydown.window.ctrl.comma.prevent="displaySettings = !displaySettings" class="drawer drawer-end">
         <input id="mobile-drawer" type="checkbox" class="drawer-toggle" />
         <div class="drawer-side">
             <label for="mobile-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
@@ -1428,13 +1495,13 @@
         </div>
         <div class="drawer-content">
         <!-- Header fixe -->
-        <div  class="navbar fixed top-0 left-0 right-0 z-50 bg-base-100 shadow-sm" x-show="displayAdvancedSettings">
+        <div  class="navbar fixed top-0 left-0 right-0 z-50 bg-base-100 shadow-sm" x-show="displaySettings">
             <div class="navbar-start">
                 <a href="https://ihatexcel.github.io/sqljob/" target="_blank"class="btn btn-ghost text-xl flex items-center gap-2">
                     <img src="https://raw.githubusercontent.com/ihatexcel/sqljob/main/ihatexcel.svg" 
                         alt="I Hate Excel" 
                         class="h-8 w-8">
-                    sqlJob
+                    sqljob
                 </a>
             </div>
             
@@ -1519,7 +1586,7 @@
                 </template>
             </div>
         </div>
-        <div class="max-w-7xl mx-auto px-4 mt-6 pb-8" :class="displayAdvancedSettings ? 'pt-16' : 'pt-0'">
+        <div class="max-w-7xl mx-auto px-4 mt-6 pb-8" :class="displaySettings ? 'pt-16' : 'pt-0'">
             <div class="flex flex-col" :class="devMode ? 'gap-4' : 'gap-0'">
                 <!-- Rendu unifié de tous les groupes de niveau 0 -->
                 <template x-for="item in getFlattenedGroups()" :key="activePageIndex + '_' + item.pathKey">
@@ -2386,7 +2453,7 @@ autoTable(doc, {
     
         
         <!-- DevMode Toggle -->
-        <div class="fixed bottom-4 left-4 z-[1500] flex gap-1" x-show="displayAdvancedSettings">
+        <div class="fixed bottom-4 left-4 z-[1500] flex gap-1" x-show="displaySettings">
             <!-- Sélecteur de thème (devMode uniquement) -->
                 <div class="dropdown dropdown-top" x-show="devMode">
                     <div tabindex="0"  class="btn btn-sm  btn-ghost">
@@ -2421,9 +2488,9 @@ autoTable(doc, {
             </div>
         </template>
         
-        <footer class="footer sm:footer-horizontal footer-center bg-base-300 text-base-content p-4" x-show="displayAdvancedSettings">
+        <footer class="footer sm:footer-horizontal footer-center bg-base-300 text-base-content p-4" x-show="displaySettings">
             <aside>
-                <p>iHateXcel - sqlJob - Made with ❤️ by Théo Nobella-Pichonnier</p>
+                <p>iHateXcel - sqljob - Made with ❤️ by Théo Nobella-Pichonnier</p>
             </aside>
         </footer>
         </div>
@@ -2549,7 +2616,7 @@ autoTable(doc, {
             const devMode = config.ui?.devMode !== false;
 
             // Affichage des paramètres avancés (navbar et boutons bottom-left)
-            const displayAdvancedSettings = config.ui?.displayAdvancedSettings !== false;
+            const displaySettings = config.ui?.displaySettings !== false;
 
             // Liste des thèmes daisyUI disponibles
             const availableThemes = [
@@ -2571,6 +2638,7 @@ autoTable(doc, {
             const savedDbEngine = localStorage.getItem('sqljob-dbEngine');
             const configDbEngine = config.ui?.dbEngine;
             const initialDbEngine = configDbEngine || savedDbEngine || 'duckdb-wasm';
+            console.log('🔧 DB Engine - config:', configDbEngine, '| localStorage:', savedDbEngine, '| final:', initialDbEngine);
             DuckDBManager.setEngine(initialDbEngine);
 
             return {
@@ -2580,7 +2648,7 @@ autoTable(doc, {
                 status: '',
                 statusType: '',
                 devMode: devMode,
-                displayAdvancedSettings: displayAdvancedSettings,
+                displaySettings: displaySettings,
                 availableThemes: availableThemes,
                 currentTheme: currentTheme,
                 dbEngine: initialDbEngine,
@@ -5904,7 +5972,7 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                 async exportConfig() {
                     try {
                         // includeFileData = true pour inclure les fichiers base64 dans l'export JSON
-                        const config = await ConfigManager.buildConfigFromState(this.pages, this.devMode, this.displayAdvancedSettings, true, this.currentTheme, this.dbEngine);
+                        const config = await ConfigManager.buildConfigFromState(this.pages, this.devMode, this.displaySettings, true, this.currentTheme, this.dbEngine);
                         const jsonString = JSON.stringify(config, null, 2);
                         const blob = new Blob([jsonString], { type: 'application/json' });
                         FileHandler.downloadFile(blob, 'notebook-config.json');
@@ -5917,7 +5985,7 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                 async exportConfigBase64() {
                     try {
                         // includeFileData = true pour inclure les fichiers base64 dans l'export Base64
-                        const config = await ConfigManager.buildConfigFromState(this.pages, this.devMode, this.displayAdvancedSettings, true, this.currentTheme, this.dbEngine);
+                        const config = await ConfigManager.buildConfigFromState(this.pages, this.devMode, this.displaySettings, true, this.currentTheme, this.dbEngine);
                         const jsonString = JSON.stringify(config, null, 2);
                         const base64String = ConfigManager.encodeUTF8ToBase64(jsonString);
                         const blob = new Blob([base64String], { type: 'text/plain' });
@@ -6121,7 +6189,7 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
 
                     try {
                         // includeFileData = false pour l'export HTML (les fichiers sont stockés dans des balises script séparées)
-                        const config = await ConfigManager.buildConfigFromState(this.pages, clientOnly ? false : this.devMode, this.displayAdvancedSettings, false, this.currentTheme, this.dbEngine);
+                        const config = await ConfigManager.buildConfigFromState(this.pages, clientOnly ? false : this.devMode, this.displaySettings, false, this.currentTheme, this.dbEngine);
                         const jsonString = JSON.stringify(config, null, 2);
                         const configBase64 = ConfigManager.encodeUTF8ToBase64(jsonString);
 
@@ -6234,7 +6302,7 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
             }
 
             window.notebookApp = notebookApp;
-            console.log('🦆 sqlJob Notebook initialisé');
+            console.log('🦆 sqljob Notebook initialisé');
         })();
     </script>
 </body>
