@@ -342,6 +342,54 @@
                 }
                 await this.loadScript(xlsxUrl);
             }
+
+            static perspectiveLoaded = false;
+            static perspectiveLoadingPromise = null;
+
+            static async loadPerspective() {
+                if (this.perspectiveLoaded) return;
+                
+                if (this.perspectiveLoadingPromise) {
+                    return this.perspectiveLoadingPromise;
+                }
+
+                this.perspectiveLoadingPromise = (async () => {
+                    // Charger le CSS themes
+                    const themeCssUrl = 'https://cdn.jsdelivr.net/npm/@perspective-dev/viewer/dist/css/themes.css';
+                    if (!document.querySelector(`link[href="${themeCssUrl}"]`)) {
+                        const link = document.createElement('link');
+                        link.rel = 'stylesheet';
+                        link.crossOrigin = 'anonymous';
+                        link.href = themeCssUrl;
+                        
+                        // Attendre que le CSS soit chargé
+                        await new Promise((resolve, reject) => {
+                            link.onload = resolve;
+                            link.onerror = reject;
+                            document.head.appendChild(link);
+                        });
+                    }
+
+                    // Charger les modules ES6 pour Perspective
+                    await import('https://cdn.jsdelivr.net/npm/@perspective-dev/viewer@4.1.0/dist/cdn/perspective-viewer.js');
+                    await import('https://cdn.jsdelivr.net/npm/@perspective-dev/viewer-datagrid@4.1.0/dist/cdn/perspective-viewer-datagrid.js');
+                    await import('https://cdn.jsdelivr.net/npm/@perspective-dev/viewer-d3fc@4.1.0/dist/cdn/perspective-viewer-d3fc.js');
+                    await import('https://cdn.jsdelivr.net/npm/@perspective-dev/viewer-openlayers@4.1.0/dist/cdn/perspective-viewer-openlayers.js');
+
+                    // Charger le client perspective
+                    const perspectiveModule = await import('https://cdn.jsdelivr.net/npm/@perspective-dev/client@4.1.0/dist/cdn/perspective.js');
+                    window.perspectiveClient = perspectiveModule.default;
+
+                    // Charger DuckDBHandler
+                    const duckdbHandlerModule = await import('https://cdn.jsdelivr.net/npm/@perspective-dev/client/dist/esm/virtual_servers/duckdb.js');
+                    window.PerspectiveDuckDBHandler = duckdbHandlerModule.DuckDBHandler;
+
+                    this.perspectiveLoaded = true;
+                    console.log('✅ Perspective CDN chargé');
+                })();
+
+                return this.perspectiveLoadingPromise;
+            }
         }
 
         // ═══════════════════════════════════════════════════════════════════════════
@@ -596,6 +644,10 @@
                         cleanCell.query = cell.query;
                         cleanCell.jsPdfConfig = cell.jsPdfConfig;
                         cleanCell.pdfFileName = cell.pdfFileName;
+                        break;
+                    case 'perspective':
+                        cleanCell.query = cell.query;
+                        cleanCell.perspectiveConfig = cell.perspectiveConfig;
                         break;
                 }
 
@@ -927,7 +979,13 @@
                 );
                 const worker = new Worker(worker_url);
                 DuckDBManager.workerRef = worker;
-                const logger = new duckdb.ConsoleLogger(duckdb.LogLevel.INFO);
+                
+                // Créer un logger personnalisé compatible avec Perspective
+                const logger = {
+                    log(entry) {
+                        console.log('[DuckDB]', entry);
+                    }
+                };
 
                 DuckDBManager.dbInstance = new duckdb.AsyncDuckDB(logger, worker);
                 URL.revokeObjectURL(worker_url);
@@ -1014,6 +1072,28 @@
                     throw new Error('Ducklings ne supporte pas copyFileToBuffer. Utilisez DuckDB WASM.');
                 }
                 return await DuckDBManager.dbInstance.copyFileToBuffer(fileName);
+            }
+
+            static async executeQueryArrow(query) {
+                if (!DuckDBManager.connInstance) {
+                    throw new Error('DuckDB non initialisé');
+                }
+
+                if (DuckDBManager.currentEngine === 'ducklings') {
+                    throw new Error('Ducklings ne supporte pas le format Arrow. Utilisez DuckDB WASM.');
+                }
+
+                // DuckDB WASM retourne directement un Arrow Table
+                const result = await DuckDBManager.connInstance.query(query);
+                return result;
+            }
+
+            static getConnection() {
+                return DuckDBManager.connInstance;
+            }
+
+            static getDatabase() {
+                return DuckDBManager.dbInstance;
             }
         }
 
@@ -1112,7 +1192,7 @@
             // Génère le HTML du body d'une cellule (tous les types)
             static renderBody(pathExpr, cellIdxExpr) {
                 return `
-                    <div class="p-2">
+                    <div class="p-2 relative">
                         <!-- MARKDOWN CELL -->
                         <template x-if="cellItem.cell.type === 'markdown'">
                             <div>
@@ -1308,7 +1388,7 @@
                         <template x-if="cellItem.cell.type === 'sqlStat'">
                             <div>
                                 <div x-show="devMode" x-html="renderSqlQueryEditor(cellItem.cell, 'SELECT COUNT(*) FROM source1', false)"></div>
-                                <div class="stat place-items-center" x-show="cellItem.cell._results">
+                                <div class="stat place-items-center py-1" x-show="cellItem.cell._results">
                                     <div class="stat-figure text-secondary">
                                         <span
                                             class="iconify inline-block h-8 w-8"
@@ -1407,9 +1487,28 @@
                             </div>
                         </template>
                         
+                        <!-- PERSPECTIVE CELL -->
+                        <template x-if="cellItem.cell.type === 'perspective'">
+                            <div class="flex flex-col gap-2">
+                                <div x-show="devMode" x-html="renderSqlQueryEditor(cellItem.cell, 'SELECT * FROM source1', false)"></div>                                
+                                <template x-if="cellItem.cell._perspectiveReady">
+                                    <perspective-viewer 
+                                        :id="'perspective-' + cellItem.cell._id"
+                                        theme="Pro Light"
+                                        class="w-full rounded-lg"
+                                        style="min-height: 500px;">
+                                    </perspective-viewer>
+                                </template>
+                                
+                                <template x-if="cellItem.cell._resultInfo">
+                                    <div class="mt-2 p-2 bg-base-200 rounded text-sm text-base-content/70" x-text="cellItem.cell._resultInfo"></div>
+                                </template>
+                            </div>
+                        </template>
+                        
                         <!-- CLIENT MODE BUTTON: Open child group modal if cell has childGroupId -->
                         <template x-if="!devMode && cellItem.cell.childGroupId">
-                            <div class="mt-0 flex justify-center">
+                            <div class="absolute top-2 right-2">
                                 <button class="btn btn-sm gap-0" 
                                         @click="openChildGroupModal(${pathExpr}, ${cellIdxExpr})"
                                         title="Ouvrir le groupe enfant">
@@ -1971,6 +2070,7 @@
                                 <option value="sqlStat">💯 Stat SQL (daisyui)</option>
                                 <option value="publipostageWord">📄 Publipostage Word</option>
                                 <option value="jsPDF">PDF (jsPDF)</option>
+                                <option value="perspective">🔍 Perspective Viewer</option>
                             </select>
                         </div>
                         
@@ -2350,6 +2450,83 @@ autoTable(doc, {
                                 </div>
                             </div>
                         </template>
+                        
+                        <!-- Config spécifique perspective -->
+                        <template x-if="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex)?.type === 'perspective'">
+                            <div class="flex flex-col gap-2">
+                                <div class="form-control">
+                                    <label class="label gap-2">
+                                        <span class="label-text">Requête SQL (données pour Perspective)</span>
+                                        <span class="tooltip tooltip-bottom" data-tip="La requête doit retourner les données à afficher dans Perspective Viewer. Support des requêtes récursives avec {{ }}">
+                                            <span class="badge badge-sm cursor-help">?</span>
+                                        </span>
+                                    </label>
+                                    <textarea class="textarea textarea-bordered w-full font-mono text-sm" 
+                                              x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).query" 
+                                              rows="3"
+                                              placeholder="SELECT * FROM source1"></textarea>
+                                </div>
+                                <div class="form-control">
+                                    <label class="label gap-2">
+                                        <span class="label-text">Configuration Perspective (JSON optionnel)</span>
+                                        <span class="tooltip tooltip-bottom" data-tip="Configuration JSON pour le viewer Perspective (group_by, columns, sort, plugin, theme, etc.)">
+                                            <span class="badge badge-sm cursor-help">?</span>
+                                        </span>
+                                    </label>
+                                    <textarea class="textarea textarea-bordered w-full font-mono text-sm" 
+                                              x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).perspectiveConfig" 
+                                              rows="10"
+                                              style="min-height: 200px;"
+                                              placeholder='{
+    "plugin": "Datagrid",
+    "theme": "Pro Dark",
+    "columns": ["col1", "col2"],
+    "group_by": ["category"],
+    "sort": [["col1", "asc"]]
+}'></textarea>
+                                </div>
+                                <div class="form-control">
+                                    <label class="label gap-2">
+                                        <span class="label-text">CDN Perspective.js à charger</span>
+                                        <span class="tooltip tooltip-bottom" data-tip="Sélectionnez les modules CDN nécessaires pour votre visualisation">
+                                            <span class="badge badge-sm cursor-help">?</span>
+                                        </span>
+                                    </label>
+                                    <div class="flex flex-col gap-2 p-3 bg-base-200 rounded-lg">
+                                        <label class="label cursor-pointer justify-start gap-3">
+                                            <input type="checkbox" 
+                                                   class="checkbox checkbox-sm" 
+                                                   x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).perspectiveCdns"
+                                                   x-init="if (!getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).perspectiveCdns) { getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).perspectiveCdns = { viewer: true, datagrid: true, d3fc: true, openlayers: false }; }"
+                                                   :checked="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).perspectiveCdns?.viewer ?? true"
+                                                   @change="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).perspectiveCdns.viewer = $event.target.checked">
+                                            <span class="label-text font-mono text-xs">@perspective-dev/viewer (requis)</span>
+                                        </label>
+                                        <label class="label cursor-pointer justify-start gap-3">
+                                            <input type="checkbox" 
+                                                   class="checkbox checkbox-sm" 
+                                                   :checked="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).perspectiveCdns?.datagrid ?? true"
+                                                   @change="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).perspectiveCdns.datagrid = $event.target.checked">
+                                            <span class="label-text font-mono text-xs">@perspective-dev/viewer-datagrid</span>
+                                        </label>
+                                        <label class="label cursor-pointer justify-start gap-3">
+                                            <input type="checkbox" 
+                                                   class="checkbox checkbox-sm" 
+                                                   :checked="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).perspectiveCdns?.d3fc ?? true"
+                                                   @change="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).perspectiveCdns.d3fc = $event.target.checked">
+                                            <span class="label-text font-mono text-xs">@perspective-dev/viewer-d3fc (charts)</span>
+                                        </label>
+                                        <label class="label cursor-pointer justify-start gap-3">
+                                            <input type="checkbox" 
+                                                   class="checkbox checkbox-sm" 
+                                                   :checked="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).perspectiveCdns?.openlayers ?? false"
+                                                   @change="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).perspectiveCdns.openlayers = $event.target.checked">
+                                            <span class="label-text font-mono text-xs">@perspective-dev/viewer-openlayers (maps)</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
                     </div>
                     <div class="modal-action">
                         <button class="btn" @click="closeCellConfig()">Fermer</button>
@@ -2531,8 +2708,15 @@ autoTable(doc, {
                 }
 
                 // Cellules avec SQL editor : ajouter le flag de vue parsée
-                if (['sqlRecursiveParse', 'table', 'iframe', 'sqlStat'].includes(cell.type)) {
+                if (['sqlRecursiveParse', 'table', 'iframe', 'sqlStat', 'perspective'].includes(cell.type)) {
                     newCell._showParsedQuery = false;
+                }
+
+                if (cell.type === 'perspective') {
+                    newCell._perspectiveReady = false;
+                    newCell._perspectiveClient = null;
+                    newCell._perspectiveTable = null;
+                    newCell._arrowTable = null;
                 }
 
                 return newCell;
@@ -2815,7 +2999,8 @@ autoTable(doc, {
                     { type: 'iframe', label: 'HTML/Iframe', icon: '🖼️' },
                     { type: 'sqlStat', label: 'Stat SQL', icon: '📊' },
                     { type: 'publipostageWord', label: 'Publipostage Word', icon: '📄' },
-                    { type: 'jsPDF', label: 'PDF (jsPDF)', icon: '📑' }
+                    { type: 'jsPDF', label: 'PDF (jsPDF)', icon: '📑' },
+                    { type: 'perspective', label: 'Perspective Viewer', icon: '🔍' }
                 ],
 
                 // Tables simple-datatables par cellule
@@ -4196,6 +4381,15 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                             newCell._showParsedQuery = false;
                             newCell._parseLevels = [];
                             break;
+                        case 'perspective':
+                            newCell.query = 'SELECT * FROM source1';
+                            newCell.perspectiveConfig = '';
+                            newCell._showParsedQuery = false;
+                            newCell._parseLevels = [];
+                            newCell._perspectiveReady = false;
+                            newCell._perspectiveClient = null;
+                            newCell._perspectiveTable = null;
+                            break;
                     }
 
                     return newCell;
@@ -4388,8 +4582,16 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                         if (cell._isDragging === undefined) cell._isDragging = false;
                     }
                     // Cellules avec SQL editor
-                    if (['sqlRecursiveParse', 'table', 'iframe', 'publipostageWord'].includes(cell.type)) {
+                    if (['sqlRecursiveParse', 'table', 'iframe', 'publipostageWord', 'perspective'].includes(cell.type)) {
                         if (cell._showParsedQuery === undefined) cell._showParsedQuery = false;
+                    }
+                    if (cell.type === 'perspective') {
+                        if (!cell.query) cell.query = 'SELECT * FROM source1';
+                        if (cell.perspectiveConfig === undefined) cell.perspectiveConfig = '';
+                        if (!cell._parseLevels) cell._parseLevels = [];
+                        cell._perspectiveReady = false;
+                        cell._perspectiveClient = null;
+                        cell._perspectiveTable = null;
                     }
                 },
 
@@ -4819,6 +5021,9 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                             case 'jsPDF':
                                 await this.executeJsPdfCell(cell);
                                 break;
+                            case 'perspective':
+                                await this.executePerspectiveCell(cell);
+                                break;
                             default:
                                 console.warn('⚠️ Unknown cell type:', cell.type);
                         }
@@ -5083,13 +5288,15 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                                     
                                     // Style body rows
                                     if (tBody && tBody.childNodes) {
-                                        tBody.childNodes.forEach(tr => {
+                                        tBody.childNodes.forEach((tr, trIndex) => {
                                             tr.attributes = tr.attributes || {};
-                                            tr.attributes.class = "hover:bg-base-200 transition-colors";
+                                            const isEven = trIndex % 2 === 0;
+                                            const rowClass = isEven ? "bg-base-100" : "bg-base-200/50";
+                                            tr.attributes.class = `${rowClass} hover:bg-base-300/50 transition-colors`;
                                             if (tr.childNodes) {
                                                 tr.childNodes.forEach((td, tdIndex) => {
                                                     td.attributes = td.attributes || {};
-                                                    const stickyClass = tdIndex === 0 ? " sticky left-0 z-10 bg-base-100" : "";
+                                                    const stickyClass = tdIndex === 0 ? ` sticky left-0 z-10 ${isEven ? "bg-base-100" : "bg-base-200"}` : "";
                                                     td.attributes.class = "text-base-content text-sm px-3 py-2" + stickyClass;
                                                 });
                                             }
@@ -5525,6 +5732,160 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                         this.setStatus('PDF généré avec succès', 'success');
                     } catch (error) {
                         throw error;
+                    }
+                },
+
+                async executePerspectiveCell(cell) {
+                    if (!cell.query?.trim()) {
+                        throw new Error('Requête SQL manquante');
+                    }
+
+                    // Charger Perspective CDN à la demande
+                    this.setStatus('Chargement de Perspective...', 'loading');
+                    await CDNManager.loadPerspective();
+
+                    this.setStatus('Parsing de la requête SQL...', 'loading');
+
+                    try {
+                        // Parser et exécuter la requête SQL avec le parsing récursif
+                        const finalQuery = await this.parseQueryRecursively(cell);
+
+                        this.setStatus('Exécution de la requête...', 'loading');
+
+                        // Récupérer les données en format Arrow (non converti en array)
+                        const arrowTable = await DuckDBManager.executeQueryArrow(finalQuery);
+
+                        // Stocker la table Arrow pour le rendu
+                        cell._arrowTable = arrowTable;
+                        cell._perspectiveReady = true;
+
+                        // Attendre le prochain tick pour que le DOM soit prêt
+                        await this.$nextTick();
+
+                        // Rendre le viewer Perspective
+                        await this.renderPerspectiveInContainer(cell);
+
+                        const rowCount = arrowTable.numRows;
+                        cell._resultInfo = `✅ ${rowCount} ligne(s)` + 
+                            (cell._parseLevels.length > 1 ? ` - ${cell._parseLevels.length - 1} niveau(x) de parsing` : '');
+                        this.setStatus('Perspective chargé', 'success');
+                    } catch (error) {
+                        cell._perspectiveReady = false;
+                        throw error;
+                    }
+                },
+
+                async renderPerspectiveInContainer(cell) {
+                    const containerId = 'perspective-' + cell._id;
+                    const viewer = document.getElementById(containerId);
+
+                    if (!viewer || !cell._arrowTable) {
+                        console.warn('Perspective viewer ou données Arrow manquantes');
+                        return;
+                    }
+
+                    // Éviter les exécutions concurrentes
+                    if (cell._perspectiveRendering) {
+                        console.warn('Rendu Perspective déjà en cours pour cette cellule');
+                        return;
+                    }
+
+                    cell._perspectiveRendering = true;
+
+                    try {
+                        // Vérifier que le moteur est duckdb-wasm (Perspective ne supporte pas ducklings)
+                        if (DuckDBManager.getEngine() !== 'duckdb-wasm') {
+                            throw new Error('Perspective nécessite le moteur DuckDB WASM. Veuillez changer de moteur dans les paramètres.');
+                        }
+
+                        // Obtenir la connexion DuckDB
+                        const conn = DuckDBManager.getConnection();
+
+                        // Créer le handler DuckDB pour Perspective
+                        const perspective = window.perspectiveClient;
+                        const DuckDBHandler = window.PerspectiveDuckDBHandler;
+
+                        // Parser la configuration JSON si présente pour obtenir le nom de table
+                        let tableName = `perspective_data_${cell._id.replace(/[^a-zA-Z0-9_]/g, '_')}`;
+                        let config = { 
+                            table: tableName,
+                            settings: true,
+                            theme: 'Pro Light'
+                        };
+                        
+                        if (cell.perspectiveConfig?.trim()) {
+                            try {
+                                const userConfig = JSON.parse(cell.perspectiveConfig);
+                                // Si la config contient un nom de table, l'utiliser
+                                if (userConfig.table) {
+                                    tableName = userConfig.table;
+                                }
+                                config = { ...config, ...userConfig, table: tableName };
+                            } catch (e) {
+                                console.warn('Configuration Perspective invalide, utilisation des valeurs par défaut:', e);
+                            }
+                        }
+
+                        // Toujours supprimer la table si elle existe (même en première exécution)
+                        try {
+                            await conn.query(`DROP TABLE IF EXISTS ${tableName}`);
+                        } catch (e) {
+                            console.warn('Impossible de supprimer la table:', e);
+                        }
+                        
+                        // Créer la table à partir de la requête originale
+                        const finalQuery = cell._parseLevels?.find(l => l.level === 'final')?.innerQuery || cell.query;
+                        await conn.query(`CREATE TABLE ${tableName} AS ${finalQuery}`);
+
+                        // Créer le serveur virtuel avec DuckDBHandler
+                        // NOTE: Passer conn directement - le DuckDBHandler attend une connexion avec query()
+                        if (!cell._perspectiveClient) {
+                            const server = perspective.createMessageHandler(new DuckDBHandler(conn));
+                            cell._perspectiveClient = await perspective.worker(server);
+                        }
+
+                        // Forcer la détection des thèmes avant le chargement
+                        if (typeof viewer.resetThemes === 'function') {
+                            await viewer.resetThemes(['Pro Light', 'Pro Dark']);
+                        }
+
+                        // Charger le client dans le viewer
+                        await viewer.load(cell._perspectiveClient);
+
+                        // Appliquer la configuration avec le thème
+                        await viewer.restore(config);
+
+                        // Écouter les changements de configuration pour éviter le bug EXCLUDE ()
+                        viewer.addEventListener('perspective-config-update', async (event) => {
+                            try {
+                                const currentConfig = await viewer.save();
+                                
+                                // Si group_by est vide et qu'on utilise un plugin qui nécessite des agrégations
+                                // forcer au moins une colonne pour éviter SELECT * EXCLUDE ()
+                                if (currentConfig.group_by && currentConfig.group_by.length === 0) {
+                                    const allColumns = await viewer.getTable().then(t => t.columns());
+                                    if (allColumns && allColumns.length > 0) {
+                                        console.warn('⚠️ Perspective: group_by vide détecté, ajout automatique de la première colonne pour éviter EXCLUDE ()');
+                                        currentConfig.group_by = [allColumns[0]];
+                                        await viewer.restore(currentConfig);
+                                    }
+                                }
+                            } catch (e) {
+                                // Ignorer les erreurs de validation
+                                console.debug('Erreur lors de la validation config Perspective:', e);
+                            }
+                        });
+
+                        // Stocker les références pour nettoyage ultérieur
+                        cell._perspectiveTableName = tableName;
+
+                        console.log(`✅ Perspective viewer configuré pour table: ${tableName}`);
+
+                    } catch (error) {
+                        console.error('Erreur lors du rendu Perspective:', error);
+                        throw error;
+                    } finally {
+                        cell._perspectiveRendering = false;
                     }
                 },
 
@@ -6060,8 +6421,17 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                                 newCell._parseLevels = [];
                             }
 
+                            if (cell.type === 'perspective') {
+                                newCell._showParsedQuery = false;
+                                newCell._parseLevels = [];
+                                newCell._perspectiveReady = false;
+                                newCell._perspectiveClient = null;
+                                newCell._perspectiveTable = null;
+                                newCell._arrowTable = null;
+                            }
+
                             // Cellules avec SQL editor
-                            if (['sqlRecursiveParse', 'table', 'iframe', 'uiParameter', 'publipostageWord', 'jsPDF'].includes(cell.type)) {
+                            if (['sqlRecursiveParse', 'table', 'iframe', 'uiParameter', 'publipostageWord', 'jsPDF', 'perspective'].includes(cell.type)) {
                                 newCell._showParsedQuery = false;
                             }
 
