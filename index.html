@@ -630,6 +630,9 @@
                         cleanCell.initRunQuery = cell.initRunQuery;
                         cleanCell.query = cell.query;
                         if (cell.inputType) cleanCell.inputType = cell.inputType;
+                        if (cell.userVisible !== undefined) cleanCell.userVisible = cell.userVisible;
+                        if (cell.userEditable !== undefined) cleanCell.userEditable = cell.userEditable;
+                        if (cell.preserveUserValue !== undefined) cleanCell.preserveUserValue = cell.preserveUserValue;
                         break;
                     case 'publipostageWord':
                         cleanCell.query = cell.query;
@@ -648,6 +651,7 @@
                     case 'perspective':
                         cleanCell.query = cell.query;
                         cleanCell.perspectiveConfig = cell.perspectiveConfig;
+                        cleanCell.duckdbHandler = cell.duckdbHandler;
                         break;
                 }
 
@@ -704,7 +708,7 @@
                 return cleanGroup;
             }
 
-            static async buildConfigFromState(pages, devMode = true, displaySettings = true, includeFileData = false, theme = 'light', dbEngine = 'duckdb-wasm') {
+            static async buildConfigFromState(pages, devMode = true, displaySettings = true, includeFileData = false, theme = 'light', dbEngine = 'duckdb-wasm', directedAcyclicGraph = false) {
                 // Nettoyer chaque page
                 const cleanPages = await Promise.all(pages.map(async (page) => {
                     const cleanGroups = await Promise.all(page.groups.map(group => ConfigManager.cleanGroup(group, includeFileData)));
@@ -725,7 +729,8 @@
                         devMode: devMode,
                         displaySettings: displaySettings,
                         theme: theme,
-                        dbEngine: dbEngine
+                        dbEngine: dbEngine,
+                        directedAcyclicGraph: directedAcyclicGraph
                     },
                     job: {
                         pages: cleanPages
@@ -1337,7 +1342,7 @@
                         </template>
                         
                         <!-- UIPARAMETER CELL -->
-                        <template x-if="cellItem.cell.type === 'uiParameter'">
+                        <template x-if="cellItem.cell.type === 'uiParameter' && (devMode || cellItem.cell.userVisible !== false)">
                             <div class="flex flex-col gap-3">
                                 <div x-show="devMode" class="text-sm font-semibold text-primary mb-1" x-text="'$' + cellItem.cell.paramName"></div>
                                 <div x-show="devMode" x-html="renderSqlQueryEditor(cellItem.cell, 'SELECT * from source1', true)"></div>
@@ -1347,7 +1352,8 @@
                                         <input :type="cellItem.cell.inputType || 'text'" 
                                            class="input input-bordered input-sm w-full"
                                            x-model="cellItem.cell._value"
-                                           @change="onParameterValueChange(cellItem.cell)"
+                                           @change="cellItem.cell._userModified = true; onParameterValueChange(cellItem.cell)"
+                                           :disabled="cellItem.cell.userEditable === false"
                                            :placeholder="'Valeur de ' + cellItem.cell.paramName">
                                     </fieldset>
                                 </template>
@@ -1358,7 +1364,8 @@
                                                 <legend class="fieldset-legend" x-text="cellItem.cell.label"></legend>
                                                 <select class="select select-bordered select-sm w-full"
                                                     x-model="cellItem.cell._value"
-                                                    @change="onParameterValueChange(cellItem.cell)">
+                                                    @change="cellItem.cell._userModified = true; onParameterValueChange(cellItem.cell)"
+                                                    :disabled="cellItem.cell.userEditable === false">
                                                 <template x-for="opt in cellItem.cell._options" :key="opt">
                                                     <option :value="opt" x-text="opt"></option>
                                                 </template>
@@ -2321,6 +2328,36 @@ SELECT * FROM read_csv(\'{fileNameUpload}\',
                                         </span>
                                     </label>
                                 </div>
+                                <div class="form-control">
+                                    <label class="label cursor-pointer justify-start gap-2">
+                                        <input type="checkbox" class="checkbox checkbox-primary"
+                                            x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).userVisible" />
+                                        <span class="label-text">Visible en mode client</span>
+                                        <span class="tooltip tooltip-bottom" data-tip="Si décoché, ce paramètre sera caché en mode client (paramètre intermédiaire)">
+                                            <span class="badge badge-sm cursor-help">?</span>
+                                        </span>
+                                    </label>
+                                </div>
+                                <div class="form-control">
+                                    <label class="label cursor-pointer justify-start gap-2">
+                                        <input type="checkbox" class="checkbox checkbox-primary"
+                                            x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).userEditable" />
+                                        <span class="label-text">Modifiable par l'utilisateur</span>
+                                        <span class="tooltip tooltip-bottom" data-tip="Si décoché, l'utilisateur ne pourra pas modifier la valeur calculée par SQL">
+                                            <span class="badge badge-sm cursor-help">?</span>
+                                        </span>
+                                    </label>
+                                </div>
+                                <div class="form-control">
+                                    <label class="label cursor-pointer justify-start gap-2">
+                                        <input type="checkbox" class="checkbox checkbox-primary"
+                                            x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).preserveUserValue" />
+                                        <span class="label-text">Préserver la valeur utilisateur lors de la ré-exécution</span>
+                                        <span class="tooltip tooltip-bottom" data-tip="Si coché et que l'utilisateur a modifié la valeur, la ré-exécution de la cellule ne réinitialisera pas la valeur">
+                                            <span class="badge badge-sm cursor-help">?</span>
+                                        </span>
+                                    </label>
+                                </div>
                                 <!-- Config INPUT -->
                                 <template x-if="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex)?.paramType === 'input'">
                                     <div class="form-control">
@@ -2486,6 +2523,18 @@ autoTable(doc, {
 }'></textarea>
                                 </div>
                                 <div class="form-control">
+                                    <label class="label cursor-pointer justify-start gap-3">
+                                        <input type="checkbox" 
+                                               class="checkbox" 
+                                               x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).duckdbHandler"
+                                               :checked="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).duckdbHandler ?? true">
+                                        <div class="flex flex-col">
+                                            <span class="label-text font-semibold">Utiliser DuckDBHandler</span>
+                                            <span class="label-text-alt">Si activé : utilise DuckDBHandler (mode actuel). Si désactivé : utilise la connexion Arrow native de Perspective</span>
+                                        </div>
+                                    </label>
+                                </div>
+                                <div class="form-control">
                                     <label class="label gap-2">
                                         <span class="label-text">CDN Perspective.js à charger</span>
                                         <span class="tooltip tooltip-bottom" data-tip="Sélectionnez les modules CDN nécessaires pour votre visualisation">
@@ -2648,6 +2697,13 @@ autoTable(doc, {
             <button class="btn btn-sm btn-ghost" x-show="devMode" @click="showDbEngineModal = true" 
                     :title="'Moteur: ' + (dbEngine === 'ducklings' ? 'Ducklings' : 'DuckDB WASM')">
                 <span x-text="dbEngine === 'ducklings' ? '🐤' : '🦆'"></span>
+            </button>
+            <!-- Bouton DAG (devMode uniquement) -->
+            <button class="btn btn-sm" x-show="devMode" 
+                    :class="directedAcyclicGraph ? 'btn-primary' : 'btn-ghost'"
+                    @click="directedAcyclicGraph = !directedAcyclicGraph"
+                    :title="directedAcyclicGraph ? 'DAG activé - Les cellules dépendantes se rafraîchissent automatiquement' : 'DAG désactivé - Cliquer pour activer le rafraîchissement automatique'">
+                <span class="iconify" data-icon="material-symbols:account-tree-outline" style="font-size: 1.25rem;"></span>
             </button>
             <!-- Bouton Dev/View -->
             <button class="btn btn-sm" :class="devMode ? 'btn-soft' : 'btn-ghost'" @click="devMode = !devMode">
@@ -2825,6 +2881,9 @@ autoTable(doc, {
             console.log('🔧 DB Engine - config:', configDbEngine, '| localStorage:', savedDbEngine, '| final:', initialDbEngine);
             DuckDBManager.setEngine(initialDbEngine);
 
+            // DAG (Directed Acyclic Graph) - rafraîchissement automatique des cellules dépendantes
+            const initialDirectedAcyclicGraph = config.ui?.directedAcyclicGraph === true;
+
             return {
                 pages: initPages,
                 activePageIndex: 0,
@@ -2837,6 +2896,7 @@ autoTable(doc, {
                 currentTheme: currentTheme,
                 dbEngine: initialDbEngine,
                 showDbEngineModal: false,
+                directedAcyclicGraph: initialDirectedAcyclicGraph,
                 
                 // Getters pour la page active
                 get activePage() {
@@ -4349,9 +4409,13 @@ FROM source1 LIMIT 10;`;
                             newCell.label = '';
                             newCell.initRunQuery = false; // Exécuter la requête d'init au chargement du notebook
                             newCell.query = ''; // Requête SQL pour les options du dropdown
+                            newCell.userVisible = true; // Afficher la cellule en mode client
+                            newCell.userEditable = true; // Permettre à l'utilisateur de modifier la valeur
+                            newCell.preserveUserValue = false; // Préserver la valeur utilisateur lors de la ré-exécution
                             newCell._value = ''; // Valeur actuelle du paramètre (runtime)
                             newCell._options = []; // Options du dropdown (runtime)
                             newCell._initialized = false; // Indique si le paramètre a été initialisé
+                            newCell._userModified = false; // Indique si l'utilisateur a modifié la valeur (runtime)
                             break;
                         case 'publipostageWord':
                             newCell.query = 'SELECT * FROM source1 LIMIT 10';
@@ -4384,6 +4448,7 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                         case 'perspective':
                             newCell.query = 'SELECT * FROM source1';
                             newCell.perspectiveConfig = '';
+                            newCell.duckdbHandler = true;
                             newCell._showParsedQuery = false;
                             newCell._parseLevels = [];
                             newCell._perspectiveReady = false;
@@ -4566,9 +4631,13 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                         if (cell.label === undefined) cell.label = '';
                         if (cell.initRunQuery === undefined) cell.initRunQuery = false;
                         if (!cell.query) cell.query = '';
+                        if (cell.userVisible === undefined) cell.userVisible = true;
+                        if (cell.userEditable === undefined) cell.userEditable = true;
+                        if (cell.preserveUserValue === undefined) cell.preserveUserValue = false;
                         if (cell._value === undefined) cell._value = '';
                         if (!cell._options) cell._options = [];
                         cell._initialized = false;
+                        cell._userModified = false;
                     }
                     if (cell.type === 'publipostageWord') {
                         if (!cell.query) cell.query = 'SELECT * FROM source1 LIMIT 10';
@@ -4588,6 +4657,7 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                     if (cell.type === 'perspective') {
                         if (!cell.query) cell.query = 'SELECT * FROM source1';
                         if (cell.perspectiveConfig === undefined) cell.perspectiveConfig = '';
+                        if (cell.duckdbHandler === undefined) cell.duckdbHandler = true;
                         if (!cell._parseLevels) cell._parseLevels = [];
                         cell._perspectiveReady = false;
                         cell._perspectiveClient = null;
@@ -5482,6 +5552,12 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                 async executeUiParameterCell(cell) {
                     cell._paramError = null;
 
+                    // Si preserveUserValue est activé et que l'utilisateur a modifié la valeur, ne pas ré-exécuter
+                    if (cell.preserveUserValue && cell._userModified) {
+                        this.setStatus(`${cell.paramName} : valeur utilisateur préservée`, 'success');
+                        return;
+                    }
+
                     try {
                         const finalQuery = await this.parseQueryRecursively(cell);
 
@@ -5519,6 +5595,9 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                             cell._initialized = true;
                             this.setStatus(`${cell.paramName} initialisé`, 'success');
                         }
+                        
+                        // Réinitialiser le flag _userModified après une exécution réussie
+                        cell._userModified = false;
                     } catch (error) {
                         cell._paramError = 'Erreur: ' + error.message;
                         this.setStatus('Erreur: ' + error.message, 'error');
@@ -5809,7 +5888,6 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                         let tableName = `perspective_data_${cell._id.replace(/[^a-zA-Z0-9_]/g, '_')}`;
                         let config = { 
                             table: tableName,
-                            settings: true,
                             theme: 'Pro Light'
                         };
                         
@@ -5826,60 +5904,81 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                             }
                         }
 
-                        // Toujours supprimer la table si elle existe (même en première exécution)
-                        try {
-                            await conn.query(`DROP TABLE IF EXISTS ${tableName}`);
-                        } catch (e) {
-                            console.warn('Impossible de supprimer la table:', e);
-                        }
-                        
-                        // Créer la table à partir de la requête originale
+                        // Récupérer la requête finale
                         const finalQuery = cell._parseLevels?.find(l => l.level === 'final')?.innerQuery || cell.query;
-                        await conn.query(`CREATE TABLE ${tableName} AS ${finalQuery}`);
 
-                        // Créer le serveur virtuel avec DuckDBHandler
-                        // NOTE: Passer conn directement - le DuckDBHandler attend une connexion avec query()
-                        if (!cell._perspectiveClient) {
-                            const server = perspective.createMessageHandler(new DuckDBHandler(conn));
-                            cell._perspectiveClient = await perspective.worker(server);
-                        }
-
-                        // Forcer la détection des thèmes avant le chargement
-                        if (typeof viewer.resetThemes === 'function') {
-                            await viewer.resetThemes(['Pro Light', 'Pro Dark']);
-                        }
-
-                        // Charger le client dans le viewer
-                        await viewer.load(cell._perspectiveClient);
-
-                        // Appliquer la configuration avec le thème
-                        await viewer.restore(config);
-
-                        // Écouter les changements de configuration pour éviter le bug EXCLUDE ()
-                        viewer.addEventListener('perspective-config-update', async (event) => {
+                        // Choisir le mode de connexion selon le paramètre duckdbHandler
+                        if (cell.duckdbHandler !== false) {
+                            // Mode DuckDBHandler (mode actuel)
+                            
+                            // Toujours supprimer la table si elle existe (même en première exécution)
                             try {
-                                const currentConfig = await viewer.save();
-                                
-                                // Si group_by est vide et qu'on utilise un plugin qui nécessite des agrégations
-                                // forcer au moins une colonne pour éviter SELECT * EXCLUDE ()
-                                if (currentConfig.group_by && currentConfig.group_by.length === 0) {
-                                    const allColumns = await viewer.getTable().then(t => t.columns());
-                                    if (allColumns && allColumns.length > 0) {
-                                        console.warn('⚠️ Perspective: group_by vide détecté, ajout automatique de la première colonne pour éviter EXCLUDE ()');
-                                        currentConfig.group_by = [allColumns[0]];
-                                        await viewer.restore(currentConfig);
-                                    }
-                                }
+                                await conn.query(`DROP TABLE IF EXISTS ${tableName}`);
                             } catch (e) {
-                                // Ignorer les erreurs de validation
-                                console.debug('Erreur lors de la validation config Perspective:', e);
+                                console.warn('Impossible de supprimer la table:', e);
                             }
-                        });
+                            
+                            // Créer la table à partir de la requête originale
+                            await conn.query(`CREATE TABLE ${tableName} AS ${finalQuery}`);
+                            
+                            // NOTE: Passer conn directement - le DuckDBHandler attend une connexion avec query()
+                            if (!cell._perspectiveClient) {
+                                const server = perspective.createMessageHandler(new DuckDBHandler(conn));
+                                cell._perspectiveClient = await perspective.worker(server);
+                            }
 
-                        // Stocker les références pour nettoyage ultérieur
-                        cell._perspectiveTableName = tableName;
+                            // Forcer la détection des thèmes avant le chargement
+                            if (typeof viewer.resetThemes === 'function') {
+                                await viewer.resetThemes(['Pro Light', 'Pro Dark']);
+                            }
 
-                        console.log(`✅ Perspective viewer configuré pour table: ${tableName}`);
+                            // Charger le client dans le viewer
+                            await viewer.load(cell._perspectiveClient);
+
+                            // Appliquer la configuration avec le thème
+                            await viewer.restore(config);
+
+                            // Stocker les références pour nettoyage ultérieur
+                            cell._perspectiveTableName = tableName;
+
+                            console.log(`✅ Perspective viewer configuré (DuckDBHandler) pour table: ${tableName}`);
+                        } else {
+                            // Mode Arrow natif de Perspective
+                            // Exécuter la requête directement et récupérer les données en Arrow
+                            const arrowResult = await conn.query(finalQuery);
+                            
+                            // Récupérer tous les batches Arrow et les combiner
+                            const batches = [];
+                            for await (const batch of arrowResult) {
+                                batches.push(batch);
+                            }
+                            
+                            // Créer un worker Perspective si nécessaire
+                            if (!cell._perspectiveWorker) {
+                                cell._perspectiveWorker = await perspective.worker();
+                            }
+                            
+                            // Créer une table Perspective à partir des batches Arrow
+                            const table = await cell._perspectiveWorker.table(batches);
+                            
+                            // Forcer la détection des thèmes avant le chargement
+                            if (typeof viewer.resetThemes === 'function') {
+                                await viewer.resetThemes(['Pro Light', 'Pro Dark']);
+                            }
+
+                            // Charger la table dans le viewer
+                            await viewer.load(table);
+
+                            // Appliquer la configuration avec le thème (sans le nom de table car pas de DuckDBHandler)
+                            const arrowConfig = { ...config };
+                            delete arrowConfig.table;
+                            await viewer.restore(arrowConfig);
+
+                            // Stocker les références pour nettoyage ultérieur
+                            cell._perspectiveTable = table;
+
+                            console.log(`✅ Perspective viewer configuré (Arrow natif)`);
+                        }
 
                     } catch (error) {
                         console.error('Erreur lors du rendu Perspective:', error);
@@ -5935,6 +6034,167 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                     }
 
                     return parsedQuery;
+                },
+
+                // ─────────────────────────────────────────────────────────────────
+                // DAG (Directed Acyclic Graph) - Rafraîchissement automatique
+                // ─────────────────────────────────────────────────────────────────
+
+                // Trouver tous les paramètres référencés dans une query ($paramName)
+                findReferencedParams(query) {
+                    if (!query) return [];
+                    const params = [];
+                    // Pattern: $suivi de caractères alphanumériques ou underscore
+                    const regex = /\$([a-zA-Z_][a-zA-Z0-9_]*)/g;
+                    let match;
+                    while ((match = regex.exec(query)) !== null) {
+                        if (!params.includes(match[1])) {
+                            params.push(match[1]);
+                        }
+                    }
+                    return params;
+                },
+
+                // Trouver toutes les cellules qui dépendent d'un paramètre donné
+                // Retourne un tableau de {cell, path, cellIndex} pour les types DAG-compatibles
+                findDependentCells(paramName) {
+                    const dependents = [];
+                    const dagTypes = ['uiParameter', 'sqlRecursiveParse', 'table', 'perspective', 'sqlStat'];
+
+                    const searchInGroup = (group, path) => {
+                        for (let cellIndex = 0; cellIndex < (group.cells || []).length; cellIndex++) {
+                            const cell = group.cells[cellIndex];
+                            if (!dagTypes.includes(cell.type)) continue;
+
+                            // Vérifier si la query référence le paramètre
+                            const query = cell.query || '';
+                            const referencedParams = this.findReferencedParams(query);
+                            
+                            if (referencedParams.includes(paramName)) {
+                                dependents.push({ cell, path: [...path], cellIndex });
+                            }
+                        }
+                        // Récursif sur les enfants
+                        if (group.children) {
+                            for (let i = 0; i < group.children.length; i++) {
+                                searchInGroup(group.children[i], [...path, i]);
+                            }
+                        }
+                    };
+
+                    // Chercher dans tous les groupes de la page active
+                    for (let gi = 0; gi < this.groups.length; gi++) {
+                        searchInGroup(this.groups[gi], [gi]);
+                    }
+
+                    return dependents;
+                },
+
+                // Détecter les cycles dans le DAG
+                // Retourne true si un cycle est détecté
+                detectCycleInDAG() {
+                    // Construire le graphe de dépendances
+                    const graph = new Map(); // paramName -> [paramNames dépendants]
+                    const allParams = new Set();
+
+                    const collectFromGroup = (group) => {
+                        for (const cell of (group.cells || [])) {
+                            if (cell.type === 'uiParameter' && cell.paramName) {
+                                allParams.add(cell.paramName);
+                                // Trouver les paramètres référencés dans la query de ce uiParameter
+                                const refs = this.findReferencedParams(cell.query || '');
+                                if (!graph.has(cell.paramName)) {
+                                    graph.set(cell.paramName, []);
+                                }
+                                // Ce paramètre dépend des paramètres référencés
+                                for (const ref of refs) {
+                                    if (!graph.has(ref)) {
+                                        graph.set(ref, []);
+                                    }
+                                    graph.get(ref).push(cell.paramName);
+                                }
+                            }
+                        }
+                        for (const child of (group.children || [])) {
+                            collectFromGroup(child);
+                        }
+                    };
+
+                    for (const group of this.groups) {
+                        collectFromGroup(group);
+                    }
+
+                    // Détection de cycle avec DFS
+                    const visited = new Set();
+                    const recStack = new Set();
+
+                    const hasCycle = (node) => {
+                        if (recStack.has(node)) return true;
+                        if (visited.has(node)) return false;
+
+                        visited.add(node);
+                        recStack.add(node);
+
+                        for (const neighbor of (graph.get(node) || [])) {
+                            if (hasCycle(neighbor)) return true;
+                        }
+
+                        recStack.delete(node);
+                        return false;
+                    };
+
+                    for (const param of allParams) {
+                        if (hasCycle(param)) {
+                            return true;
+                        }
+                    }
+
+                    return false;
+                },
+
+                // Callback appelé lorsqu'une valeur de paramètre UI est modifiée par l'utilisateur
+                async onParameterValueChange(cell) {
+                    // Si le DAG n'est pas activé, ne rien faire
+                    if (!this.directedAcyclicGraph) {
+                        return;
+                    }
+
+                    const paramName = cell.paramName;
+                    if (!paramName) return;
+
+                    // Vérifier les cycles avant de procéder
+                    if (this.detectCycleInDAG()) {
+                        this.setStatus('⚠️ Cycle détecté dans le DAG - rafraîchissement automatique désactivé', 'error');
+                        this.directedAcyclicGraph = false;
+                        return;
+                    }
+
+                    // Trouver toutes les cellules qui dépendent de ce paramètre
+                    const dependents = this.findDependentCells(paramName);
+
+                    if (dependents.length === 0) {
+                        return;
+                    }
+
+                    this.setStatus(`🔄 Rafraîchissement de ${dependents.length} cellule(s) dépendante(s) de $${paramName}...`, 'loading');
+
+                    // Exécuter les cellules dépendantes dans l'ordre
+                    for (const dep of dependents) {
+                        const depCell = dep.cell;
+
+                        // Pour les uiParameter avec preserveUserValue et _userModified, ne pas re-exécuter
+                        if (depCell.type === 'uiParameter' && depCell.preserveUserValue && depCell._userModified) {
+                            continue;
+                        }
+
+                        try {
+                            await this.runCellAt(dep.path, dep.cellIndex);
+                        } catch (error) {
+                            console.error(`Erreur lors du rafraîchissement de la cellule dépendante:`, error);
+                        }
+                    }
+
+                    this.setStatus(`✅ ${dependents.length} cellule(s) rafraîchie(s)`, 'success');
                 },
 
                 // Générer le HTML de l'éditeur SQL partagé
@@ -6333,7 +6593,7 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                 async exportConfig() {
                     try {
                         // includeFileData = true pour inclure les fichiers base64 dans l'export JSON
-                        const config = await ConfigManager.buildConfigFromState(this.pages, this.devMode, this.displaySettings, true, this.currentTheme, this.dbEngine);
+                        const config = await ConfigManager.buildConfigFromState(this.pages, this.devMode, this.displaySettings, true, this.currentTheme, this.dbEngine, this.directedAcyclicGraph);
                         const jsonString = JSON.stringify(config, null, 2);
                         const blob = new Blob([jsonString], { type: 'application/json' });
                         FileHandler.downloadFile(blob, 'notebook-config.json');
@@ -6346,7 +6606,7 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                 async exportConfigBase64() {
                     try {
                         // includeFileData = true pour inclure les fichiers base64 dans l'export Base64
-                        const config = await ConfigManager.buildConfigFromState(this.pages, this.devMode, this.displaySettings, true, this.currentTheme, this.dbEngine);
+                        const config = await ConfigManager.buildConfigFromState(this.pages, this.devMode, this.displaySettings, true, this.currentTheme, this.dbEngine, this.directedAcyclicGraph);
                         const jsonString = JSON.stringify(config, null, 2);
                         const base64String = ConfigManager.encodeUTF8ToBase64(jsonString);
                         const blob = new Blob([base64String], { type: 'text/plain' });
@@ -6516,6 +6776,11 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                             await this.switchDbEngine(configDbEngine);
                         }
 
+                        // Mettre à jour le DAG si présent dans la config importée
+                        if (config.ui?.directedAcyclicGraph !== undefined) {
+                            this.directedAcyclicGraph = config.ui.directedAcyclicGraph === true;
+                        }
+
                         this.setStatus('Configuration chargée', 'success');
                     } catch (error) {
                         this.setStatus('Erreur import: ' + error.message, 'error');
@@ -6559,7 +6824,7 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
 
                     try {
                         // includeFileData = false pour l'export HTML (les fichiers sont stockés dans des balises script séparées)
-                        const config = await ConfigManager.buildConfigFromState(this.pages, clientOnly ? false : this.devMode, this.displaySettings, false, this.currentTheme, this.dbEngine);
+                        const config = await ConfigManager.buildConfigFromState(this.pages, clientOnly ? false : this.devMode, this.displaySettings, false, this.currentTheme, this.dbEngine, this.directedAcyclicGraph);
                         const jsonString = JSON.stringify(config, null, 2);
                         const configBase64 = ConfigManager.encodeUTF8ToBase64(jsonString);
 
