@@ -113,6 +113,60 @@
             font-weight: 600;
         }
 
+        /* CodeMirror SQL Editor Styles */
+        .codemirror-sql-container {
+            width: 100%;
+            min-height: 80px;
+        }
+        
+        .codemirror-sql-container .cm-editor {
+            background: oklch(var(--b1));
+        }
+        
+        .codemirror-sql-container .cm-gutters {
+            background: oklch(var(--b2));
+            border-right: 1px solid oklch(var(--b3));
+        }
+        
+        .codemirror-sql-container .cm-activeLineGutter {
+            background: oklch(var(--b3));
+        }
+        
+        .codemirror-sql-container .cm-line {
+            color: oklch(var(--bc));
+        }
+        
+        /* Tooltips marimo-sql */
+        .cm-tooltip {
+            background: oklch(var(--b2)) !important;
+            border: 1px solid oklch(var(--b3)) !important;
+            border-radius: 0.5rem !important;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1) !important;
+        }
+        
+        .cm-tooltip-autocomplete {
+            background: oklch(var(--b2)) !important;
+        }
+        
+        .cm-tooltip-autocomplete > ul > li {
+            color: oklch(var(--bc)) !important;
+        }
+        
+        .cm-tooltip-autocomplete > ul > li[aria-selected] {
+            background: oklch(var(--p) / 0.2) !important;
+            color: oklch(var(--bc)) !important;
+        }
+        
+        /* Cursor */
+        .codemirror-sql-container .cm-cursor {
+            border-left-color: oklch(var(--p)) !important;
+        }
+
+        .codemirror-sql-container div::selection {
+            color: var(--color-secondary) !important;
+            background-color: var(--color-base-300)!important;
+        }
+
     </style>
 
 </head>
@@ -341,6 +395,208 @@
                     return;
                 }
                 await this.loadScript(xlsxUrl);
+            }
+
+            // CodeMirror SQL avec marimo-team/codemirror-sql
+            static codeMirrorSQLLoaded = false;
+            static codeMirrorSQLModules = null;
+            static codeMirrorSQLLoadingPromise = null;
+
+            static async loadCodeMirrorSQL() {
+                if (this.codeMirrorSQLLoaded && this.codeMirrorSQLModules) {
+                    return this.codeMirrorSQLModules;
+                }
+
+                if (this.codeMirrorSQLLoadingPromise) {
+                    return this.codeMirrorSQLLoadingPromise;
+                }
+
+                this.codeMirrorSQLLoadingPromise = (async () => {
+                    try {
+                        console.log('⏳ Chargement de CodeMirror SQL...');
+                        
+                        // Créer un import map pour forcer le partage des dépendances
+                        if (!document.querySelector('script[type="importmap"]')) {
+                            const importMap = document.createElement('script');
+                            importMap.type = 'importmap';
+                            importMap.textContent = JSON.stringify({
+                                imports: {
+                                    "@codemirror/state": "https://esm.sh/@codemirror/state@6.4.1",
+                                    "@codemirror/view": "https://esm.sh/@codemirror/view@6.26.3",
+                                    "@codemirror/language": "https://esm.sh/@codemirror/language@6.10.1",
+                                    "@codemirror/commands": "https://esm.sh/@codemirror/commands@6.5.0",
+                                    "@codemirror/search": "https://esm.sh/@codemirror/search@6.5.6",
+                                    "@codemirror/autocomplete": "https://esm.sh/@codemirror/autocomplete@6.16.0",
+                                    "@codemirror/lint": "https://esm.sh/@codemirror/lint@6.8.0",
+                                    "@lezer/common": "https://esm.sh/@lezer/common@1.2.1",
+                                    "@lezer/highlight": "https://esm.sh/@lezer/highlight@1.2.0",
+                                    "@lezer/lr": "https://esm.sh/@lezer/lr@1.4.0",
+                                    "style-mod": "https://esm.sh/style-mod@4.1.2",
+                                    "w3c-keyname": "https://esm.sh/w3c-keyname@2.2.8"
+                                }
+                            });
+                            document.head.insertBefore(importMap, document.head.firstChild);
+                            
+                            // Attendre un tick pour que l'import map soit pris en compte
+                            await new Promise(r => setTimeout(r, 0));
+                        }
+                        
+                        // Import séquentiel pour éviter les conflits
+                        const stateModule = await import('https://esm.sh/@codemirror/state@6.4.1');
+                        const viewModule = await import('https://esm.sh/@codemirror/view@6.26.3?deps=@codemirror/state@6.4.1');
+                        const languageModule = await import('https://esm.sh/@codemirror/language@6.10.1?deps=@codemirror/state@6.4.1,@codemirror/view@6.26.3');
+                        const commandsModule = await import('https://esm.sh/@codemirror/commands@6.5.0?deps=@codemirror/state@6.4.1,@codemirror/view@6.26.3,@codemirror/language@6.10.1');
+                        const searchModule = await import('https://esm.sh/@codemirror/search@6.5.6?deps=@codemirror/state@6.4.1,@codemirror/view@6.26.3');
+                        const autocompleteModule = await import('https://esm.sh/@codemirror/autocomplete@6.16.0?deps=@codemirror/state@6.4.1,@codemirror/view@6.26.3,@codemirror/language@6.10.1,@codemirror/commands@6.5.0');
+                        const langSqlModule = await import('https://esm.sh/@codemirror/lang-sql@6.6.4?deps=@codemirror/state@6.4.1,@codemirror/view@6.26.3,@codemirror/language@6.10.1,@codemirror/autocomplete@6.16.0');
+                        const themeOneDarkModule = await import('https://esm.sh/@codemirror/theme-one-dark@6.1.2?deps=@codemirror/state@6.4.1,@codemirror/view@6.26.3');
+
+                        // Créer basicSetup manuellement
+                        const basicSetup = [
+                            viewModule.lineNumbers(),
+                            viewModule.highlightActiveLineGutter(),
+                            viewModule.highlightSpecialChars(),
+                            commandsModule.history(),
+                            languageModule.foldGutter(),
+                            viewModule.drawSelection(),
+                            viewModule.dropCursor(),
+                            stateModule.EditorState.allowMultipleSelections.of(true),
+                            languageModule.indentOnInput(),
+                            languageModule.syntaxHighlighting(languageModule.defaultHighlightStyle, { fallback: true }),
+                            languageModule.bracketMatching(),
+                            autocompleteModule.closeBrackets(),
+                            autocompleteModule.autocompletion(),
+                            viewModule.rectangularSelection(),
+                            viewModule.crosshairCursor(),
+                            viewModule.highlightActiveLine(),
+                            searchModule.highlightSelectionMatches(),
+                            viewModule.keymap.of([
+                                ...autocompleteModule.closeBracketsKeymap,
+                                ...commandsModule.defaultKeymap,
+                                ...searchModule.searchKeymap,
+                                ...commandsModule.historyKeymap,
+                                ...languageModule.foldKeymap,
+                                ...autocompleteModule.completionKeymap
+                            ])
+                        ];
+
+                        this.codeMirrorSQLModules = {
+                            EditorView: viewModule.EditorView,
+                            EditorState: stateModule.EditorState,
+                            basicSetup: basicSetup,
+                            sql: langSqlModule.sql,
+                            StandardSQL: langSqlModule.StandardSQL,
+                            DuckDBSQL: langSqlModule.DuckDBSQL || langSqlModule.StandardSQL,
+                            oneDark: themeOneDarkModule.oneDark,
+                            sqlExtension: null,
+                            cteCompletionSource: null
+                        };
+
+                        this.codeMirrorSQLLoaded = true;
+                        console.log('✅ CodeMirror SQL chargé avec succès');
+                        return this.codeMirrorSQLModules;
+                    } catch (error) {
+                        console.error('❌ Erreur chargement CodeMirror SQL:', error);
+                        this.codeMirrorSQLLoadingPromise = null;
+                        throw error;
+                    }
+                })();
+
+                return this.codeMirrorSQLLoadingPromise;
+            }
+
+            // Créer une instance d'éditeur CodeMirror SQL
+            static createSqlEditor(container, initialValue, onChange, options = {}) {
+                if (!this.codeMirrorSQLModules) {
+                    throw new Error('CodeMirror SQL non chargé. Appelez loadCodeMirrorSQL() d\'abord.');
+                }
+
+                const { 
+                    EditorView, basicSetup, sql, StandardSQL, DuckDBSQL,
+                    sqlExtension, cteCompletionSource, oneDark
+                } = this.codeMirrorSQLModules;
+
+                const isDarkTheme = document.documentElement.getAttribute('data-theme')?.includes('dark') ||
+                                    window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+                const schema = options.schema || {};
+                const dialect = options.dialect === 'duckdb' ? DuckDBSQL : StandardSQL;
+
+                const extensions = [
+                    basicSetup,
+                    sql({
+                        dialect: dialect,
+                        schema: schema,
+                        upperCaseKeywords: true,
+                    }),
+                    EditorView.updateListener.of((update) => {
+                        if (update.docChanged && onChange) {
+                            onChange(update.state.doc.toString());
+                        }
+                    }),
+                    EditorView.theme({
+                        '&': {
+                            fontSize: '14px',
+                            minHeight: '80px',
+                            border: '1px solid oklch(var(--b3))',
+                            borderRadius: '0.5rem',
+                        },
+                        '.cm-scroller': {
+                            fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+                            minHeight: '80px',
+                            maxHeight: '400px',
+                            overflow: 'auto',
+                        },
+                        '.cm-content': {
+                            padding: '0.5rem 0',
+                        },
+                        '.cm-gutters': {
+                            borderRadius: '0.5rem 0 0 0.5rem',
+                        },
+                        '&.cm-focused': {
+                            outline: '2px solid oklch(var(--p))',
+                            outlineOffset: '-1px',
+                        },
+                    }),
+                ];
+
+                // Ajouter marimo-sql si disponible
+                if (cteCompletionSource) {
+                    extensions.push(dialect.language.data.of({
+                        autocomplete: cteCompletionSource,
+                    }));
+                }
+                
+                if (sqlExtension) {
+                    extensions.push(sqlExtension({
+                        linterConfig: { delay: 300 },
+                        gutterConfig: {
+                            backgroundColor: '#3b82f6',
+                            errorBackgroundColor: '#ef4444',
+                            hideWhenNotFocused: true,
+                        },
+                        enableHover: true,
+                        hoverConfig: {
+                            schema: schema,
+                            hoverTime: 300,
+                            enableKeywords: true,
+                            enableTables: true,
+                            enableColumns: true,
+                        },
+                    }));
+                }
+
+                if (isDarkTheme) {
+                    extensions.push(oneDark);
+                }
+
+                const editor = new EditorView({
+                    doc: initialValue || '',
+                    extensions: extensions,
+                    parent: container,
+                });
+
+                return editor;
             }
 
             static perspectiveLoaded = false;
@@ -626,6 +882,7 @@
                     case 'uiParameter':
                         cleanCell.paramName = cell.paramName;
                         cleanCell.paramType = cell.paramType;
+                        cleanCell.languageType = cell.languageType;
                         cleanCell.label = cell.label;
                         cleanCell.initRunQuery = cell.initRunQuery;
                         cleanCell.query = cell.query;
@@ -1345,7 +1602,7 @@
                         <template x-if="cellItem.cell.type === 'uiParameter' && (devMode || cellItem.cell.userVisible !== false)">
                             <div class="flex flex-col gap-3">
                                 <div x-show="devMode" class="text-sm font-semibold text-primary mb-1" x-text="'$' + cellItem.cell.paramName"></div>
-                                <div x-show="devMode" x-html="renderSqlQueryEditor(cellItem.cell, 'SELECT * from source1', true)"></div>
+                                <div x-show="devMode" x-html="renderUiParameterEditor(cellItem.cell)"></div>
                                 <template x-if="cellItem.cell.paramType === 'input'">
                                     <fieldset class="fieldset">
                                         <legend class="fieldset-legend" x-text="cellItem.cell.label"></legend>
@@ -1366,8 +1623,8 @@
                                                     x-model="cellItem.cell._value"
                                                     @change="cellItem.cell._userModified = true; onParameterValueChange(cellItem.cell)"
                                                     :disabled="cellItem.cell.userEditable === false">
-                                                <template x-for="opt in cellItem.cell._options" :key="opt">
-                                                    <option :value="opt" x-text="opt"></option>
+                                                <template x-for="opt in cellItem.cell._options" :key="opt.value">
+                                                    <option :value="opt.value" x-text="opt.label"></option>
                                                 </template>
                                             </select>
                                             </fieldset>
@@ -2296,6 +2553,18 @@ SELECT * FROM read_csv(\'{fileNameUpload}\',
                                 </div>
                                 <div class="form-control">
                                     <label class="label gap-2">
+                                        <span class="label-text">Type de langage</span>
+                                        <span class="tooltip tooltip-bottom" data-tip="SQL: exécute une requête SQL | JS: exécute une expression JavaScript">
+                                            <span class="badge badge-sm cursor-help">?</span>
+                                        </span>
+                                    </label>
+                                    <select class="select select-bordered select-sm w-full" x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).languageType">
+                                        <option value="sql">🗄️SQL</option>
+                                        <option value="js">⚡JavaScript</option>
+                                    </select>
+                                </div>
+                                <div class="form-control">
+                                    <label class="label gap-2">
                                         <span class="label-text">Type de composant</span>
                                         <span class="tooltip tooltip-bottom" data-tip="Choisissez le type de composant d'interface pour ce paramètre">
                                             <span class="badge badge-sm cursor-help">?</span>
@@ -2726,9 +2995,190 @@ autoTable(doc, {
                 <p>iHateXcel - sqljob - Made with ❤️ by Théo Nobella-Pichonnier</p>
             </aside>
         </footer>
+        
+        <!-- Modale des templates SQL -->
+        <div x-show="$store.templateModal.isOpen" 
+             x-cloak
+             class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50"
+             @click.self="$store.templateModal.close()">
+            <div class="bg-base-100 rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col m-4">
+                <!-- Header -->
+                <div class="flex items-center justify-between p-4 border-b border-base-300">
+                    <h3 class="text-lg font-semibold" x-text="$store.templateModal.getModalTitle()"></h3>
+                    <button @click="$store.templateModal.close()" class="btn btn-ghost btn-sm btn-circle">✕</button>
+                </div>
+                
+                <!-- Recherche -->
+                <div class="p-4 border-b border-base-300">
+                    <input 
+                        type="text" 
+                        x-model="$store.templateModal.searchQuery"
+                        placeholder="🔍 Rechercher un template..."
+                        class="input input-bordered w-full"
+                        @input="$store.templateModal.filterTemplates()">
+                    <div x-show="$store.templateModal.filteredTemplates.length === 0 && $store.templateModal.searchQuery" 
+                         class="text-sm text-base-content/60 mt-2">
+                        Aucun template trouvé
+                    </div>
+                </div>
+                
+                <!-- Body -->
+                <div class="p-4 overflow-y-auto flex-1">
+                    <div class="space-y-3">
+                        <template x-for="(template, idx) in $store.templateModal.filteredTemplates" :key="idx">
+                            <div class="card bg-base-200 hover:bg-base-300 cursor-pointer transition-colors border border-base-300"
+                                 @click="$store.templateModal.selectTemplate(template.originalIndex)">
+                                <div class="card-body p-4">
+                                    <h4 class="card-title text-base" x-text="template.name"></h4>
+                                    <p class="text-sm text-base-content/70" x-text="template.description"></p>
+                                    <div class="mt-2">
+                                        <pre class="bg-base-100 p-3 rounded text-xs overflow-x-auto"><code x-text="template.code"></code></pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+                
+                <!-- Footer -->
+                <div class="flex justify-end gap-2 p-4 border-t border-base-300">
+                    <button @click="$store.templateModal.close()" class="btn btn-ghost">Annuler</button>
+                </div>
+            </div>
+        </div>
+        
         </div>
     </div>`;
         }
+
+        // ═══════════════════════════════════════════════════════════════════════════
+        // STORE ALPINE.JS POUR LA MODALE DES TEMPLATES
+        // ═══════════════════════════════════════════════════════════════════════════
+        document.addEventListener('alpine:init', () => {
+            Alpine.store('templateModal', {
+                isOpen: false,
+                currentCellId: null,
+                currentQueryType: null,
+                currentLanguageType: null,
+                searchQuery: '',
+                filteredTemplates: [],
+                
+                // Templates SQL
+                sqlTemplates: [
+                    {
+                        name: "Liste des colonnes avec position",
+                        description: "Affiche les colonnes d'une table avec leur position ordinale",
+                        code: `SELECT
+    column_name, ordinal_position::text || ' - ' || column_name
+FROM information_schema.columns
+WHERE table_name = 'source1'
+ORDER BY ordinal_position;`
+                    },
+                    {
+                        name: "SELECT DISTINCT dynamique",
+                        description: "Génère un SELECT DISTINCT avec toutes les colonnes",
+                        code: `SELECT DISTINCT {{ SELECT column_name FROM information_schema.columns
+WHERE table_name = 'source1'
+ORDER BY ordinal_position;
+}} FROM source1;`
+                    },
+                    {
+                        name: "SELECT colonnes avec préfixe",
+                        description: "Sélectionne uniquement les colonnes commençant par 'dim_'",
+                        code: `-- select only the column names that start with the dim_
+SELECT COLUMNS('^dim_') FROM source1;`
+                    }
+                ],
+                
+                // Templates JavaScript
+                jsTemplates: [
+                    {
+                        name: "Dropdown simple",
+                        description: "Retourne un tableau d'options pour un dropdown",
+                        code: `["Option 1", "Option 2", "Option 3"];`
+                    },
+                    {
+                        name: "Valeur calculée",
+                        description: "Retourne une valeur calculée dynamiquement",
+                        code: `// Exemple de calcul
+const today = new Date().toISOString().split('T')[0];
+return today;`
+                    },
+                    {
+                        name: "Dropdown conditionnel",
+                        description: "Options qui dépendent d'un autre paramètre",
+                        code: `// Options basées sur un autre paramètre
+if ($param1 === "Type A") {
+    return ["A1", "A2", "A3"];
+} else {
+    return ["B1", "B2", "B3"];
+}`
+                    }
+                ],
+                
+                open(cellId, queryType, languageType = 'sql') {
+                    this.currentCellId = cellId;
+                    this.currentQueryType = queryType;
+                    this.currentLanguageType = languageType;
+                    this.searchQuery = '';
+                    this.filterTemplates();
+                    this.isOpen = true;
+                },
+                
+                close() {
+                    this.isOpen = false;
+                    this.currentCellId = null;
+                    this.currentQueryType = null;
+                    this.currentLanguageType = null;
+                    this.searchQuery = '';
+                    this.filteredTemplates = [];
+                },
+                
+                getCurrentTemplates() {
+                    return this.currentLanguageType === 'js' ? this.jsTemplates : this.sqlTemplates;
+                },
+                
+                getModalTitle() {
+                    return this.currentLanguageType === 'js' ? '📋 Templates JavaScript' : '📋 Templates SQL';
+                },
+                
+                filterTemplates() {
+                    const query = this.searchQuery.toLowerCase().trim();
+                    const templates = this.getCurrentTemplates();
+                    
+                    if (!query) {
+                        // Si pas de recherche, afficher tous les templates avec leur index original
+                        this.filteredTemplates = templates.map((template, idx) => ({
+                            ...template,
+                            originalIndex: idx
+                        }));
+                        return;
+                    }
+                    
+                    // Filtrer les templates par recherche dans le nom, description et code
+                    this.filteredTemplates = templates
+                        .map((template, idx) => ({ ...template, originalIndex: idx }))
+                        .filter(template => {
+                            const searchIn = `${template.name} ${template.description} ${template.code}`.toLowerCase();
+                            return searchIn.includes(query);
+                        });
+                },
+                
+                selectTemplate(templateIndex) {
+                    if (this.currentCellId && this.currentQueryType && this.currentLanguageType) {
+                        // Accéder à l'instance Alpine.js via le DOM
+                        const appContainer = document.querySelector('[x-data]');
+                        if (appContainer && appContainer._x_dataStack) {
+                            const alpineInstance = appContainer._x_dataStack[0];
+                            if (alpineInstance && alpineInstance.insertTemplate) {
+                                alpineInstance.insertTemplate(this.currentCellId, this.currentQueryType, templateIndex, this.currentLanguageType);
+                            }
+                        }
+                        this.close();
+                    }
+                }
+            });
+        });
 
         // ═══════════════════════════════════════════════════════════════════════════
         // APPLICATION ALPINE.JS
@@ -4404,11 +4854,12 @@ FROM source1 LIMIT 10;`;
                             break;
                         case 'uiParameter':
                             newCell.paramName = this.generateUniqueParamName();
+                            newCell.languageType = 'sql'; // 'sql' ou 'js'
                             newCell.paramType = 'input'; // 'input' ou 'dropdown'
                             newCell.inputType = 'text'; // Type d'input: text, password, email, number, date, datetime-local, week, month, tel, url, search, time
                             newCell.label = '';
                             newCell.initRunQuery = false; // Exécuter la requête d'init au chargement du notebook
-                            newCell.query = ''; // Requête SQL pour les options du dropdown
+                            newCell.query = ''; // Requête SQL/JS pour les options du dropdown
                             newCell.userVisible = true; // Afficher la cellule en mode client
                             newCell.userEditable = true; // Permettre à l'utilisateur de modifier la valeur
                             newCell.preserveUserValue = false; // Préserver la valeur utilisateur lors de la ré-exécution
@@ -4626,6 +5077,7 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                     }
                     if (cell.type === 'uiParameter') {
                         if (!cell.paramName) cell.paramName = this.generateUniqueParamName();
+                        if (!cell.languageType) cell.languageType = 'sql';
                         if (!cell.paramType) cell.paramType = 'input';
                         if (!cell.inputType) cell.inputType = 'text';
                         if (cell.label === undefined) cell.label = '';
@@ -5559,10 +6011,66 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                     }
 
                     try {
-                        const finalQuery = await this.parseQueryRecursively(cell);
+                        const languageType = cell.languageType || 'sql';
+                        let results;
 
-                        this.setStatus('Exécution de la requête finale...', 'loading');
-                        const results = await DuckDBManager.executeQuery(finalQuery);
+                        if (languageType === 'js') {
+                            // Mode JavaScript
+                            this.setStatus('Exécution du code JavaScript...', 'loading');
+                            
+                            // Initialiser _parseLevels
+                            cell._parseLevels = [];
+                            
+                            // Parser les paramètres $param dans le code JS
+                            let jsCode = cell.query || '';
+                            const originalCode = jsCode;
+                            jsCode = this.parseQueryWithParameters(jsCode);
+                            
+                            
+                            // Stocker le code final
+                            cell._parseLevels.push({
+                                level: 'final',
+                                innerQuery: jsCode,
+                                replacement: null
+                            });
+                            
+                            // Exécuter le code JavaScript
+                            try {
+                                const jsResult = eval(jsCode);
+                                
+                                // Convertir le résultat en format compatible
+                                if (cell.paramType === 'dropdown') {
+                                    // Pour dropdown, on attend un tableau
+                                    if (Array.isArray(jsResult)) {
+                                        results = jsResult.map(item => {
+                                            if (Array.isArray(item)) {
+                                                // Tableau à 2 colonnes : [valeur, libellé]
+                                                return { 
+                                                    col1: String(item[0] || ''),
+                                                    col2: item.length > 1 ? String(item[1]) : String(item[0] || '')
+                                                };
+                                            } else {
+                                                // Valeur simple : une seule colonne
+                                                return { col1: String(item) };
+                                            }
+                                        });
+                                    } else {
+                                        throw new Error('Le code JS doit retourner un tableau pour un dropdown');
+                                    }
+                                } else {
+                                    // Pour input, on attend une valeur simple
+                                    results = [{ value: jsResult }];
+                                }
+                            } catch (jsError) {
+                                throw new Error(`Erreur JS: ${jsError.message}`);
+                            }
+                        } else {
+                            // Mode SQL (par défaut)
+                            const finalQuery = await this.parseQueryRecursively(cell);
+                            this.setStatus('Exécution de la requête finale...', 'loading');
+                            results = await DuckDBManager.executeQuery(finalQuery);
+                        }
+
                         if (cell.paramType === 'dropdown') {
                             if (results.length === 0) {
                                 cell._options = [];
@@ -5571,13 +6079,22 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                                 return;
                             }
 
-                            // Extraire la première colonne de chaque ligne
-                            const firstColumnKey = Object.keys(results[0])[0];
-                            cell._options = results.map(row => String(row[firstColumnKey]));
+                            // Déterminer les colonnes disponibles
+                            const columnKeys = Object.keys(results[0]);
+                            const firstColumnKey = columnKeys[0];
+                            const secondColumnKey = columnKeys.length > 1 ? columnKeys[1] : null;
+
+                            // Construire les options avec value et label
+                            cell._options = results.map(row => {
+                                const value = String(row[firstColumnKey]);
+                                const label = secondColumnKey ? String(row[secondColumnKey]) : value;
+                                return { value, label };
+                            });
 
                             // Initialiser avec la première valeur si pas déjà défini
-                            if (!cell._value || !cell._options.includes(cell._value)) {
-                                cell._value = cell._options[0] || '';
+                            const currentValues = cell._options.map(opt => opt.value);
+                            if (!cell._value || !currentValues.includes(cell._value)) {
+                                cell._value = cell._options[0]?.value || '';
                             }
 
                             cell._initialized = true;
@@ -6197,20 +6714,74 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                     this.setStatus(`✅ ${dependents.length} cellule(s) rafraîchie(s)`, 'success');
                 },
 
-                // Générer le HTML de l'éditeur SQL partagé
-                renderSqlQueryEditor(cell, placeholder, showResultInfo, queryType = 'query', showParsedQueryProp = '_showParsedQuery') {
+                // Générer le HTML de l'éditeur pour les cellules uiParameter (SQL ou JS)
+                renderUiParameterEditor(cell) {
+                    const languageType = cell.languageType || 'sql';
+                    const isJs = languageType === 'js';
+                    const placeholder = isJs ? 'return ["Option 1", "Option 2"]; // Pour dropdown\nreturn "Valeur"; // Pour input' : 'SELECT * from source1';
+                    const languageLabel = isJs ? 'JavaScript' : 'SQL';
+                    const languageIcon = isJs ? '⚡' : '🗄️';
+                    const badgeClass = isJs ? 'badge-warning' : 'badge-info';
+                    
+                    return this.renderSqlQueryEditor(cell, placeholder, true, 'query', '_showParsedQuery', languageLabel, languageIcon, badgeClass);
+                },
+
+                // Générer le HTML de l'éditeur SQL partagé (unifié pour tous les types de requêtes)
+                renderSqlQueryEditor(cell, placeholder, showResultInfo, queryType = 'query', showParsedQueryProp = '_showParsedQuery', languageLabel = null, languageIcon = null, badgeClass = null) {
                     const cellId = cell._id;
                     const showParsedQuery = cell[showParsedQueryProp];
                     const parseLevelsProp = queryType === 'query2' ? '_parseLevels2' : '_parseLevels';
+                    
+                    const languageType = cell.languageType || 'sql';
+                    const isJs = languageType === 'js';
+                    const finalLanguageLabel = languageLabel || (isJs ? 'JavaScript' : 'SQL');
+                    const finalLanguageIcon = languageIcon || (isJs ? '⚡' : '🗄️');
+                    const finalBadgeClass = badgeClass || (isJs ? 'badge-warning' : 'badge-info');
+                    
+                    // Configuration des templates SQL
+                    const sqlTemplates = [
+                        {
+                            name: "Liste des colonnes avec position",
+                            description: "Affiche les colonnes d'une table avec leur position ordinale",
+                            code: `SELECT
+    column_name, ordinal_position::text || ' - ' || column_name
+FROM information_schema.columns
+WHERE table_name = 'source1'
+ORDER BY ordinal_position;`
+                        },
+                        {
+                            name: "SELECT DISTINCT dynamique",
+                            description: "Génère un SELECT DISTINCT avec toutes les colonnes",
+                            code: `SELECT DISTINCT {{ SELECT column_name FROM information_schema.columns
+WHERE table_name = 'source1'
+ORDER BY ordinal_position;
+}} FROM source1;`
+                        },
+                        {
+                            name: "SELECT colonnes avec préfixe",
+                            description: "Sélectionne uniquement les colonnes commençant par 'dim_'",
+                            code: `-- select only the column names that start with the dim_
+SELECT COLUMNS('^dim_') FROM source1;`
+                        }
+                    ];
+                    
                     return `
                         <div>
                             <div class="relative w-full">
                                 <div class="flex justify-between items-center mb-2">
                                     <span class="text-xs text-base-content/70 flex items-center gap-2">
+                                        <span class="badge badge-soft ${finalBadgeClass}">${finalLanguageIcon} ${finalLanguageLabel}</span>
                                         ${showParsedQuery ? '<span class="badge badge-soft badge-primary">Parsé</span>' : ''}
-                                        <span>${showParsedQuery ? 'Requête avec paramètres' : 'Requête avec imbrication {{ }}'}</span>
                                     </span>
                                     <div class="flex gap-1">
+                                        ${!showParsedQuery ? `
+                                            <button 
+                                                @click="$store.templateModal.open('${cellId}', '${queryType}', '${languageType}')"
+                                                class="px-2 py-1 border border-base-300 bg-base-200 text-base-content/70 rounded cursor-pointer text-xs transition-all hover:border-primary hover:text-base-content" 
+                                                title="Insérer un template ${isJs ? 'JavaScript' : 'SQL'}">
+                                                📋 Templates
+                                            </button>
+                                        ` : ''}
                                         <button 
                                             class="px-2 py-1 border border-base-300 bg-base-200 text-base-content/70 rounded cursor-pointer text-xs transition-all hover:border-primary hover:text-base-content ${!showParsedQuery ? 'active' : ''}" 
                                             @click="cellItem.cell.${showParsedQueryProp} = false" 
@@ -6218,28 +6789,86 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                                         <button 
                                             class="px-2 py-1 border border-base-300 bg-base-200 text-base-content/70 rounded cursor-pointer text-xs transition-all hover:border-primary hover:text-base-content ${showParsedQuery ? 'active' : ''}" 
                                             @click="cellItem.cell.${showParsedQueryProp} = true" 
-                                            title="Voir la requête parsée">👁️ Parsé</button>
+                                            title="Voir ${isJs ? 'le code parsé' : 'la requête parsée'}">👁️ Parsé</button>
                                     </div>
                                 </div>
-                                ${!showParsedQuery ? `
+                                ${!showParsedQuery ? (isJs ? `
                                     <textarea 
                                         class="textarea textarea-bordered w-full font-mono min-h-20 p-3 resize-y text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" 
                                         x-model="cellItem.cell.${queryType}"
                                         placeholder="${placeholder}"></textarea>
                                 ` : `
+                                    <div 
+                                        class="codemirror-sql-container"
+                                        x-ref="cm_${cellId}_${queryType}"
+                                        x-init="$nextTick(async () => {
+                                            const container = $refs['cm_${cellId}_${queryType}'];
+                                            if (!container) return;
+                                            
+                                            // Si un éditeur existe déjà mais n'est plus dans le DOM, le détruire
+                                            const existingEditor = cellItem.cell._cmEditor_${queryType};
+                                            if (existingEditor) {
+                                                if (!document.body.contains(existingEditor.dom)) {
+                                                    existingEditor.destroy();
+                                                    cellItem.cell._cmEditor_${queryType} = null;
+                                                } else {
+                                                    return; // L'éditeur existe et est valide
+                                                }
+                                            }
+                                            
+                                            try {
+                                                await CDNManager.loadCodeMirrorSQL();
+                                                
+                                                // Récupérer le schéma des tables chargées
+                                                const schema = {};
+                                                if (notebookApp && notebookApp.tablesData) {
+                                                    for (const [tableName, data] of Object.entries(notebookApp.tablesData)) {
+                                                        if (data && data.length > 0) {
+                                                            schema[tableName] = Object.keys(data[0]);
+                                                        }
+                                                    }
+                                                }
+                                                
+                                                cellItem.cell._cmEditor_${queryType} = CDNManager.createSqlEditor(
+                                                    container,
+                                                    cellItem.cell.${queryType} || '',
+                                                    (newValue) => {
+                                                        cellItem.cell.${queryType} = newValue;
+                                                    },
+                                                    { schema: schema, dialect: 'duckdb' }
+                                                );
+                                            } catch (err) {
+                                                console.error('Erreur init CodeMirror:', err);
+                                                container.innerHTML = '<textarea class=&quot;textarea textarea-bordered w-full font-mono min-h-20 p-3 resize-y text-sm&quot; x-model=&quot;cellItem.cell.${queryType}&quot; placeholder=&quot;${placeholder}&quot;></textarea>';
+                                            }
+                                        })"
+                                        x-effect="(() => {
+                                            const editor = cellItem.cell._cmEditor_${queryType};
+                                            if (editor && editor.state && document.body.contains(editor.dom)) {
+                                                const currentDoc = editor.state.doc.toString();
+                                                const cellValue = cellItem.cell.${queryType} || '';
+                                                if (currentDoc !== cellValue && !editor.hasFocus) {
+                                                    editor.dispatch({
+                                                        changes: { from: 0, to: currentDoc.length, insert: cellValue }
+                                                    });
+                                                }
+                                            }
+                                        })()"
+                                    ></div>
+                                `) : `
                                     <div>
                                         ${(cell[parseLevelsProp] || []).map((parseLevel, idx) => `
                                             <div class="relative w-full" style="margin-bottom: 0.75rem;">
                                                 <div class="flex justify-between items-center mb-2">
                                                     <span class="text-xs text-base-content/70 flex items-center gap-2">
                                                         <span class="badge badge-soft badge-primary">${parseLevel.level === 'final' ? 'Final' : 'Niveau ' + parseLevel.level}</span>
-                                                        <span>${parseLevel.level === 'final' ? 'Requête finale exécutée' : 'Requête niveau ' + parseLevel.level}</span>
+                                                        <span>${parseLevel.level === 'final' ? (isJs ? 'Code final exécuté' : 'Requête finale exécutée') : (isJs ? 'Code niveau ' + parseLevel.level : 'Requête niveau ' + parseLevel.level)}</span>
                                                     </span>
                                                 </div>
                                                 <div class="w-full min-h-20 max-h-72 p-3 bg-base-200 border border-primary rounded-lg text-base-content font-mono text-sm overflow-auto whitespace-pre-wrap break-words">${parseLevel.innerQuery || ''}</div>
                                                 ${parseLevel.replacement ? `
                                                     <div style="margin-top: 0.5rem; padding: 0.5rem; background: var(--success-bg); border-left: 3px solid var(--success); font-family: monospace; font-size: 0.85rem;">
-                                                        <strong>→ Résultat:</strong> <span>${parseLevel.replacement}</span>
+                                                        <strong>→ ${isJs ? 'Parsé en' : 'Résultat'}:</strong> <span>${parseLevel.replacement}</span>
                                                     </div>
                                                 ` : ''}
                                             </div>
@@ -6346,6 +6975,57 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                         this.setStatus(`Le nom de paramètre "${currentName}" est déjà utilisé dans une autre page`, 'error');
                         cell.paramName = this.generateUniqueParamName();
                     }
+                },
+                
+                // Insérer un template (SQL ou JS) dans une cellule
+                insertTemplate(cellId, queryType, templateIndex, languageType = 'sql') {
+                    // Récupérer les templates appropriés selon le type de langage
+                    const store = Alpine.store('templateModal');
+                    const templates = languageType === 'js' ? store.jsTemplates : store.sqlTemplates;
+                    
+                    // Trouver la cellule par son ID
+                    const findCell = (groups) => {
+                        for (const group of groups) {
+                            for (const cell of (group.cells || [])) {
+                                if (cell._id === cellId) {
+                                    return cell;
+                                }
+                            }
+                            if (group.children) {
+                                const found = findCell(group.children);
+                                if (found) return found;
+                            }
+                        }
+                        return null;
+                    };
+                    
+                    let cell = null;
+                    for (const page of this.pages) {
+                        cell = findCell(page.groups);
+                        if (cell) break;
+                        if (page.linkGroups) {
+                            cell = findCell(page.linkGroups);
+                            if (cell) break;
+                        }
+                    }
+                    
+                    if (!cell) {
+                        console.error('Cellule non trouvée:', cellId);
+                        return;
+                    }
+                    
+                    // Vérifier que l'index du template est valide
+                    if (templateIndex < 0 || templateIndex >= templates.length) {
+                        console.error('Index de template invalide:', templateIndex);
+                        return;
+                    }
+                    
+                    // Insérer le code du template dans la cellule
+                    const template = templates[templateIndex];
+                    cell[queryType] = template.code;
+                    
+                    // Afficher un message de confirmation
+                    this.setStatus(`✅ Template "${template.name}" inséré`, 'success');
                 },
                 
                 // Valider l'unicité du nom de source (accepte path ou groupIndex) - vérifie dans TOUTES les pages
