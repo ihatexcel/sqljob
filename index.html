@@ -862,6 +862,7 @@
                     case 'table':
                         cleanCell.query = cell.query;
                         cleanCell.maxRows = cell.maxRows;
+                        if (cell.showSqlEditorForClient !== undefined) cleanCell.showSqlEditorForClient = cell.showSqlEditorForClient;
                         break;
                     case 'plot':
                         cleanCell.query = cell.query;
@@ -869,15 +870,18 @@
                         break;
                     case 'iframe':
                         cleanCell.query = cell.query;
+                        if (cell.showSqlEditorForClient !== undefined) cleanCell.showSqlEditorForClient = cell.showSqlEditorForClient;
                         break;
                     case 'sqlRecursiveParse':
                         cleanCell.query = cell.query;
+                        if (cell.showSqlEditorForClient !== undefined) cleanCell.showSqlEditorForClient = cell.showSqlEditorForClient;
                         break;
                     case 'sqlStat':
                         cleanCell.query = cell.query;
                         cleanCell.statTitle = cell.statTitle;
                         cleanCell.statDesc = cell.statDesc;
                         if (cell.dataIcon) cleanCell.dataIcon = cell.dataIcon;
+                        if (cell.showSqlEditorForClient !== undefined) cleanCell.showSqlEditorForClient = cell.showSqlEditorForClient;
                         break;
                     case 'uiParameter':
                         cleanCell.paramName = cell.paramName;
@@ -909,6 +913,7 @@
                         cleanCell.query = cell.query;
                         cleanCell.perspectiveConfig = cell.perspectiveConfig;
                         cleanCell.duckdbHandler = cell.duckdbHandler;
+                        if (cell.showSqlEditorForClient !== undefined) cleanCell.showSqlEditorForClient = cell.showSqlEditorForClient;
                         break;
                 }
 
@@ -1552,7 +1557,7 @@
                         <!-- SQL RECURSIVE PARSE CELL -->
                         <template x-if="cellItem.cell.type === 'sqlRecursiveParse'">
                             <div>
-                                <div x-show="devMode" x-html="renderSqlQueryEditor(cellItem.cell, 'SELECT * FROM source1 LIMIT 100', false)"></div>
+                                <div x-show="devMode || cellItem.cell.showSqlEditorForClient" x-html="renderSqlQueryEditor(cellItem.cell, 'SELECT * FROM source1 LIMIT 100', false, 'query', '_showParsedQuery', null, null, null, '${pathExpr}', '${cellIdxExpr}')"></div>
                                 <template x-if="cellItem.cell._resultInfo">
                                     <div class="mt-2 p-2 bg-base-200 rounded text-sm text-base-content/70" x-text="cellItem.cell._resultInfo"></div>
                                 </template>
@@ -1562,7 +1567,7 @@
                         <!-- TABLE CELL -->
                         <template x-if="cellItem.cell.type === 'table'">
                             <div>
-                                <div x-show="devMode" x-html="renderSqlQueryEditor(cellItem.cell, 'SELECT * FROM source1 LIMIT 100', false)"></div>
+                                <div x-show="devMode || cellItem.cell.showSqlEditorForClient" x-html="renderSqlQueryEditor(cellItem.cell, 'SELECT * FROM source1 LIMIT 100', false, 'query', '_showParsedQuery', null, null, null, '${pathExpr}', '${cellIdxExpr}')"></div>
                                 <div class="bg-base-100 rounded-lg overflow-x-auto" 
                                      :id="'table-' + cellItem.cell._id"
                                      x-init="$nextTick(() => { if (cellItem.cell._results && cellItem.cell._results.length > 0) { renderTableInContainer(cellItem.cell); } })"></div>
@@ -1588,7 +1593,7 @@
                         <!-- IFRAME CELL -->
                         <template x-if="cellItem.cell.type === 'iframe'">
                             <div>
-                                <div x-show="devMode" x-html="renderSqlQueryEditor(cellItem.cell, 'SELECT \'<!DOCTYPE html>...\' as html', false)"></div>
+                                <div x-show="devMode || cellItem.cell.showSqlEditorForClient" x-html="renderSqlQueryEditor(cellItem.cell, 'SELECT \'<!DOCTYPE html>...\' as html', false, 'query', '_showParsedQuery', null, null, null, '${pathExpr}', '${cellIdxExpr}')"></div>
                                 <iframe class="w-full min-h-[400px] border-none rounded-lg bg-white" 
                                         :id="'iframe-' + cellItem.cell._id"
                                         x-init="$nextTick(() => { if (cellItem.cell._htmlContent) { renderIframeInContainer(cellItem.cell); } })"></iframe>
@@ -1651,7 +1656,7 @@
                         <!-- SQLSTAT CELL -->
                         <template x-if="cellItem.cell.type === 'sqlStat'">
                             <div>
-                                <div x-show="devMode" x-html="renderSqlQueryEditor(cellItem.cell, 'SELECT COUNT(*) FROM source1', false)"></div>
+                                <div x-show="devMode || cellItem.cell.showSqlEditorForClient" x-html="renderSqlQueryEditor(cellItem.cell, 'SELECT COUNT(*) FROM source1', false, 'query', '_showParsedQuery', null, null, null, '${pathExpr}', '${cellIdxExpr}')"></div>
                                 <div class="stat place-items-center py-1" x-show="cellItem.cell._results">
                                     <div class="stat-figure text-secondary">
                                         <span
@@ -1754,13 +1759,14 @@
                         <!-- PERSPECTIVE CELL -->
                         <template x-if="cellItem.cell.type === 'perspective'">
                             <div class="flex flex-col gap-2">
-                                <div x-show="devMode" x-html="renderSqlQueryEditor(cellItem.cell, 'SELECT * FROM source1', false)"></div>                                
+                                <div x-show="devMode || cellItem.cell.showSqlEditorForClient" x-html="renderSqlQueryEditor(cellItem.cell, 'SELECT * FROM source1', false, 'query', '_showParsedQuery', null, null, null, '${pathExpr}', '${cellIdxExpr}')"></div>                                
                                 <template x-if="cellItem.cell._perspectiveReady">
                                     <perspective-viewer 
                                         :id="'perspective-' + cellItem.cell._id"
                                         theme="Pro Light"
                                         class="w-full rounded-lg"
-                                        style="min-height: 500px;">
+                                        style="min-height: 500px;"
+                                        x-init="$nextTick(() => { if (cellItem.cell._arrowTable) { renderPerspectiveInContainer(cellItem.cell); } })">
                                     </perspective-viewer>
                                 </template>
                                 
@@ -2472,6 +2478,15 @@ SELECT * FROM read_csv(\'{fileNameUpload}\',
                                            x-model.number="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).maxRows"
                                            placeholder="100000">
                                 </div>
+                                <div class="form-control">
+                                    <label class="label cursor-pointer justify-start gap-3">
+                                        <input type="checkbox" class="checkbox checkbox-sm" x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).showSqlEditorForClient">
+                                        <span class="label-text">Afficher l'éditeur SQL en mode client</span>
+                                        <span class="tooltip tooltip-bottom" data-tip="Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur. En mode client, seul le résultat sera affiché.">
+                                            <span class="badge badge-sm cursor-help">?</span>
+                                        </span>
+                                    </label>
+                                </div>
                             </div>
                         </template>
                         
@@ -2531,6 +2546,15 @@ SELECT * FROM read_csv(\'{fileNameUpload}\',
                                               x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).query" 
                                               rows="3"
                                               placeholder="SELECT '&lt;html&gt;...&lt;/html&gt;' as html"></textarea>
+                                </div>
+                                <div class="form-control">
+                                    <label class="label cursor-pointer justify-start gap-3">
+                                        <input type="checkbox" class="checkbox checkbox-sm" x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).showSqlEditorForClient">
+                                        <span class="label-text">Afficher l'éditeur SQL en mode client</span>
+                                        <span class="tooltip tooltip-bottom" data-tip="Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur. En mode client, seul le résultat sera affiché.">
+                                            <span class="badge badge-sm cursor-help">?</span>
+                                        </span>
+                                    </label>
                                 </div>
                             </div>
                         </template>
@@ -2706,6 +2730,15 @@ SELECT * FROM read_csv(\'{fileNameUpload}\',
                                            x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).dataIcon" 
                                            placeholder="material-symbols-light:join-right">
                                 </div>
+                                <div class="form-control">
+                                    <label class="label cursor-pointer justify-start gap-3">
+                                        <input type="checkbox" class="checkbox checkbox-sm" x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).showSqlEditorForClient">
+                                        <span class="label-text">Afficher l'éditeur SQL en mode client</span>
+                                        <span class="tooltip tooltip-bottom" data-tip="Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur. En mode client, seul le résultat sera affiché.">
+                                            <span class="badge badge-sm cursor-help">?</span>
+                                        </span>
+                                    </label>
+                                </div>
                             </div>
                         </template>
                         
@@ -2842,6 +2875,30 @@ autoTable(doc, {
                                             <span class="label-text font-mono text-xs">@perspective-dev/viewer-openlayers (maps)</span>
                                         </label>
                                     </div>
+                                </div>
+                                <div class="form-control">
+                                    <label class="label cursor-pointer justify-start gap-3">
+                                        <input type="checkbox" class="checkbox checkbox-sm" x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).showSqlEditorForClient">
+                                        <span class="label-text">Afficher l'éditeur SQL en mode client</span>
+                                        <span class="tooltip tooltip-bottom" data-tip="Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur. En mode client, seul le résultat sera affiché.">
+                                            <span class="badge badge-sm cursor-help">?</span>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                        </template>
+                        
+                        <!-- Config spécifique sqlRecursiveParse -->
+                        <template x-if="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex)?.type === 'sqlRecursiveParse'">
+                            <div class="flex flex-col gap-2">
+                                <div class="form-control">
+                                    <label class="label cursor-pointer justify-start gap-3">
+                                        <input type="checkbox" class="checkbox checkbox-sm" x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).showSqlEditorForClient">
+                                        <span class="label-text">Afficher l'éditeur SQL en mode client</span>
+                                        <span class="tooltip tooltip-bottom" data-tip="Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur. En mode client, seul le résultat sera affiché.">
+                                            <span class="badge badge-sm cursor-help">?</span>
+                                        </span>
+                                    </label>
                                 </div>
                             </div>
                         </template>
@@ -3199,10 +3256,21 @@ if ($param1 === "Type A") {
                 };
 
                 if (cell.type === 'source') {
-                    newCell._fileName = '';
-                    newCell._currentFile = null;
                     newCell._isDragging = false;
                     newCell._loaded = false;
+                    // Charger le fichier base64 si présent dans la config JSON
+                    if (cell.fileBase64 && cell.fileName) {
+                        newCell._fileName = cell.fileName;
+                        // Créer un File object à partir du base64
+                        const uint8Array = FileHandler.base64ToUint8Array(cell.fileBase64);
+                        const blob = new Blob([uint8Array], { type: FileHandler.getMimeTypeFromFileName(cell.fileName) });
+                        newCell._currentFile = new File([blob], cell.fileName, { type: blob.type });
+                        // Marquer pour chargement différé
+                        newCell._pendingFileLoad = true;
+                    } else {
+                        newCell._fileName = '';
+                        newCell._currentFile = null;
+                    }
                 }
 
 
@@ -3213,9 +3281,30 @@ if ($param1 === "Type A") {
                     newCell._paramError = null;
                 }
 
-                // Cellules avec SQL editor : ajouter le flag de vue parsée
+                if (cell.type === 'publipostageWord') {
+                    newCell._showParsedQuery = false;
+                    newCell._showParsedQuery2 = false;
+                    newCell._parseLevels = [];
+                    newCell._parseLevels2 = [];
+                    newCell._isDragging = false;
+                    // Charger le template base64 si présent dans la config JSON
+                    if (cell.fileBase64 && cell.fileName) {
+                        newCell.docxTemplateBase64 = cell.fileBase64;
+                        newCell.docxTemplateFileName = cell.fileName;
+                    }
+                }
+
+                if (cell.type === 'jsPDF') {
+                    newCell._showParsedQuery = false;
+                    newCell._parseLevels = [];
+                }
+
+                // Cellules avec SQL editor : ajouter le flag de vue parsée et showSqlEditorForClient par défaut
                 if (['sqlRecursiveParse', 'table', 'iframe', 'sqlStat', 'perspective'].includes(cell.type)) {
                     newCell._showParsedQuery = false;
+                    if (newCell.showSqlEditorForClient === undefined) {
+                        newCell.showSqlEditorForClient = true;
+                    }
                 }
 
                 if (cell.type === 'perspective') {
@@ -3445,6 +3534,12 @@ if ($param1 === "Type A") {
                 // Détermine si une cellule doit être affichée (fix pour les cases vides en mode view)
                 shouldShowCell(cell) {
                     if (this.devMode) return true;
+                    
+                    // Si showSqlEditorForClient est activé pour les cellules SQL, forcer l'affichage
+                    if (cell.showSqlEditorForClient) {
+                        return true;
+                    }
+                    
                     // SQL : caché car pas d'output visuel utile en mode view
                     if (cell.type === 'sqlRecursiveParse') return false;
                     // Table, Plot, Iframe, SqlStat : cachés sauf si résultat ou en cours d'exécution
@@ -3572,6 +3667,9 @@ if ($param1 === "Type A") {
                         await DuckDBManager.initDuckDB((msg, type) => this.setStatus(msg, type));
                         // Charger les fichiers embarqués dans le HTML
                         await this.loadEmbeddedFiles();
+
+                        // Charger les fichiers source en attente (depuis la config Gist avec fileBase64)
+                        await this.loadPendingSourceFiles();
 
                         // Exécuter les requêtes d'init des paramètres UI cochés
                         await this.runInitUIParameters();
@@ -6727,7 +6825,7 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                 },
 
                 // Générer le HTML de l'éditeur SQL partagé (unifié pour tous les types de requêtes)
-                renderSqlQueryEditor(cell, placeholder, showResultInfo, queryType = 'query', showParsedQueryProp = '_showParsedQuery', languageLabel = null, languageIcon = null, badgeClass = null) {
+                renderSqlQueryEditor(cell, placeholder, showResultInfo, queryType = 'query', showParsedQueryProp = '_showParsedQuery', languageLabel = null, languageIcon = null, badgeClass = null, pathExpr = null, cellIdxExpr = null) {
                     const cellId = cell._id;
                     const showParsedQuery = cell[showParsedQueryProp];
                     const parseLevelsProp = queryType === 'query2' ? '_parseLevels2' : '_parseLevels';
@@ -6773,8 +6871,8 @@ SELECT COLUMNS('^dim_') FROM source1;`
                                         <span class="badge badge-soft ${finalBadgeClass}">${finalLanguageIcon} ${finalLanguageLabel}</span>
                                         ${showParsedQuery ? '<span class="badge badge-soft badge-primary">Parsé</span>' : ''}
                                     </span>
-                                    <div class="flex gap-1">
-                                        ${!showParsedQuery ? `
+                                    <div class="flex gap-1 items-center">
+                                        ${!showParsedQuery && this.devMode ? `
                                             <button 
                                                 @click="$store.templateModal.open('${cellId}', '${queryType}', '${languageType}')"
                                                 class="px-2 py-1 border border-base-300 bg-base-200 text-base-content/70 rounded cursor-pointer text-xs transition-all hover:border-primary hover:text-base-content" 
@@ -6782,14 +6880,47 @@ SELECT COLUMNS('^dim_') FROM source1;`
                                                 📋 Templates
                                             </button>
                                         ` : ''}
-                                        <button 
-                                            class="px-2 py-1 border border-base-300 bg-base-200 text-base-content/70 rounded cursor-pointer text-xs transition-all hover:border-primary hover:text-base-content ${!showParsedQuery ? 'active' : ''}" 
-                                            @click="cellItem.cell.${showParsedQueryProp} = false" 
-                                            title="Mode édition">✏️ Éditer</button>
-                                        <button 
-                                            class="px-2 py-1 border border-base-300 bg-base-200 text-base-content/70 rounded cursor-pointer text-xs transition-all hover:border-primary hover:text-base-content ${showParsedQuery ? 'active' : ''}" 
-                                            @click="cellItem.cell.${showParsedQueryProp} = true" 
-                                            title="Voir ${isJs ? 'le code parsé' : 'la requête parsée'}">👁️ Parsé</button>
+                                        ${this.devMode ? `
+                                            <button 
+                                                class="px-2 py-1 border border-base-300 bg-base-200 text-base-content/70 rounded cursor-pointer text-xs transition-all hover:border-primary hover:text-base-content ${!showParsedQuery ? 'active' : ''}" 
+                                                @click="cellItem.cell.${showParsedQueryProp} = false" 
+                                                title="Mode édition">✏️ Éditer</button>
+                                            <button 
+                                                class="px-2 py-1 border border-base-300 bg-base-200 text-base-content/70 rounded cursor-pointer text-xs transition-all hover:border-primary hover:text-base-content ${showParsedQuery ? 'active' : ''}" 
+                                                @click="cellItem.cell.${showParsedQueryProp} = true" 
+                                                title="Voir ${isJs ? 'le code parsé' : 'la requête parsée'}">👁️ Parsé</button>
+                                        ` : ''}
+                                        ${!showParsedQuery && pathExpr && cellIdxExpr ? `
+                                            <button 
+                                                @click="runCellAt(${pathExpr}, ${cellIdxExpr})"
+                                                :disabled="isLoading"
+                                                class="p-1.5 text-base-content/40 hover:text-base-content transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed" 
+                                                title="Exécuter la requête">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                                            </button>
+                                        ` : ''}
+                                        ${!showParsedQuery ? `
+                                            <button 
+                                                x-ref="copyBtn_${cellId}_${queryType}"
+                                                @click="(() => {
+                                                    const text = cellItem.cell.${queryType} || '';
+                                                    const btn = $refs['copyBtn_${cellId}_${queryType}'];
+                                                    if (!btn) return;
+                                                    navigator.clipboard.writeText(text).then(() => {
+                                                        const originalHTML = btn.innerHTML;
+                                                        btn.innerHTML = '<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;14&quot; height=&quot;14&quot; viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><polyline points=&quot;20 6 9 17 4 12&quot;></polyline></svg>';
+                                                        btn.classList.add('text-success');
+                                                        setTimeout(() => {
+                                                            btn.innerHTML = originalHTML;
+                                                            btn.classList.remove('text-success');
+                                                        }, 1500);
+                                                    }).catch(err => console.error('Erreur copie:', err));
+                                                })()"
+                                                class="p-1.5 text-base-content/40 hover:text-base-content transition-colors cursor-pointer" 
+                                                title="Copier le code">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2 2v1"></path></svg>
+                                            </button>
+                                        ` : ''}
                                     </div>
                                 </div>
                                 ${!showParsedQuery ? (isJs ? `
