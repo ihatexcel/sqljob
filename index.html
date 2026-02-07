@@ -14,10 +14,16 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <!-- EasyMDE chargé dynamiquement via CDNManager uniquement si une cellule 'markdown' est affichée -->
     <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/focus@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
     <style>
  
+
+        /* Alpine.js x-cloak pour cacher les éléments non initialisés */
+        [x-cloak] {
+            display: none !important;
+        }
 
         /* Simple-datatables dark mode fix */
         .datatable-wrapper,
@@ -931,6 +937,19 @@
                     cells: await Promise.all((group.cells || []).map(cell => ConfigManager.cleanCell(cell, includeFileData)))
                 };
 
+                // Ajouter les paramètres accordion si définis
+                if (group.accordion) {
+                    cleanGroup.accordion = true;
+                    cleanGroup.title = group.title || '';
+                    cleanGroup.accordionOpen = group.accordionOpen !== false; // true par défaut
+                }
+
+                // Ajouter ifQuery si défini (condition d'affichage en mode client)
+                if (group.ifQuery && group.ifQuery.trim()) {
+                    cleanGroup.ifQuery = group.ifQuery.trim();
+                    cleanGroup.ifQueryLanguageType = group.ifQueryLanguageType || 'sql';
+                }
+
                 // Ajouter la config de loop si elle existe
                 if (group.loop && group.loop.enabled) {
                     cleanGroup.loop = {
@@ -996,7 +1015,159 @@
         }
 
         // ═══════════════════════════════════════════════════════════════════════════
-        // CLASSE 2: FileHandler
+        // CLASSE 2: GitHubGistManager
+        // ═══════════════════════════════════════════════════════════════════════════
+        class GitHubGistManager {
+            static CLIENT_ID = ''; // À configurer par l'utilisateur
+            static REDIRECT_URI = window.location.origin + window.location.pathname;
+            static ACCESS_TOKEN_KEY = 'github_access_token';
+
+            /**
+             * Vérifie si un token d'accès est stocké
+             */
+            static hasAccessToken() {
+                return !!localStorage.getItem(this.ACCESS_TOKEN_KEY);
+            }
+
+            /**
+             * Récupère le token d'accès stocké
+             */
+            static getAccessToken() {
+                return localStorage.getItem(this.ACCESS_TOKEN_KEY);
+            }
+
+            /**
+             * Stocke le token d'accès
+             */
+            static setAccessToken(token) {
+                localStorage.setItem(this.ACCESS_TOKEN_KEY, token);
+            }
+
+            /**
+             * Supprime le token d'accès
+             */
+            static clearAccessToken() {
+                localStorage.removeItem(this.ACCESS_TOKEN_KEY);
+            }
+
+            /**
+             * Vérifie si nous revenons d'une authentification GitHub
+             * et extrait le code d'autorisation
+             */
+            static checkAuthCallback() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const code = urlParams.get('code');
+                const state = urlParams.get('state');
+                
+                if (code && state === 'github_gist_auth') {
+                    // Nettoyer l'URL
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                    return code;
+                }
+                return null;
+            }
+
+            /**
+             * Redirige vers GitHub pour l'authentification OAuth
+             */
+            static initiateAuth() {
+                if (!this.CLIENT_ID) {
+                    throw new Error('GitHub Client ID non configuré. Veuillez configurer CLIENT_ID dans GitHubGistManager.');
+                }
+
+                const authUrl = new URL('https://github.com/login/oauth/authorize');
+                authUrl.searchParams.set('client_id', this.CLIENT_ID);
+                authUrl.searchParams.set('redirect_uri', this.REDIRECT_URI);
+                authUrl.searchParams.set('scope', 'gist');
+                authUrl.searchParams.set('state', 'github_gist_auth');
+
+                window.location.href = authUrl.toString();
+            }
+
+            /**
+             * Échange le code d'autorisation contre un token d'accès
+             * Note: Cela nécessite un backend proxy car GitHub ne permet pas CORS
+             * Pour une solution client-only, on peut utiliser le Device Flow ou demander à l'utilisateur
+             * de créer un Personal Access Token
+             */
+            static async exchangeCodeForToken(code) {
+                // Cette méthode nécessiterait un backend proxy
+                // Pour l'instant, nous utiliserons une approche avec Personal Access Token
+                throw new Error('Exchange code nécessite un backend proxy. Utilisez setAccessToken() avec un Personal Access Token.');
+            }
+
+            /**
+             * Crée un gist avec la configuration
+             * @param {Object} config - Configuration à partager
+             * @param {string} description - Description du gist
+             * @param {string} fileName - Nom du fichier JSON (par défaut: notebook-config.json)
+             * @returns {Promise<string>} URL du gist créé
+             */
+            static async createGist(config, description = 'sqljob Notebook Configuration', fileName = 'gistconfig.sqljob.json') {
+                const token = this.getAccessToken();
+                if (!token) {
+                    throw new Error('Non authentifié. Veuillez configurer un Personal Access Token.');
+                }
+
+                const jsonString = JSON.stringify(config, null, 2);
+                
+                // S'assurer que le nom de fichier a l'extension .json
+                const finalFileName = fileName.endsWith('.json') ? fileName : `${fileName}.json`;
+                
+                const gistData = {
+                    description: description,
+                    public: false,
+                    files: {
+                        [finalFileName]: {
+                            content: jsonString
+                        }
+                    }
+                };
+
+                try {
+                    const response = await fetch('https://api.github.com/gists', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Accept': 'application/vnd.github+json',
+                            'Content-Type': 'application/json',
+                            'X-GitHub-Api-Version': '2022-11-28'
+                        },
+                        body: JSON.stringify(gistData)
+                    });
+
+                    if (!response.ok) {
+                        const error = await response.json();
+                        throw new Error(error.message || 'Erreur lors de la création du gist');
+                    }
+
+                    const result = await response.json();
+                    return result.html_url;
+                } catch (error) {
+                    console.error('Erreur création gist:', error);
+                    throw error;
+                }
+            }
+
+            /**
+             * Génère une URL sqljob avec le gist
+             * @param {string} gistUrl - URL du gist GitHub
+             * @returns {string} URL sqljob avec le paramètre gist
+             */
+            static generateSqljobUrl(gistUrl) {
+                const gistId = gistUrl.match(/gist\.github\.com\/[^\/]+\/([a-f0-9]{32})/i)?.[1];
+                if (!gistId) {
+                    throw new Error('URL de gist invalide');
+                }
+
+                /*const baseUrl = window.location.origin + window.location.pathname;*/
+                const baseUrl = 'https://ihatexcel.github.io/sqljob/';
+                return `${baseUrl}?gist=${gistId}`;
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════════════════
+        // CLASSE 3: FileHandler
         // ═══════════════════════════════════════════════════════════════════════════
         class FileHandler {
             static getMimeTypeFromFileName(fileName) {
@@ -1839,10 +2010,11 @@
                     <li>
                         <a>📤 Export</a>
                         <ul class="p-2">
-                            <li><button @click="exportHTML(); document.getElementById('mobile-drawer').checked = false;" :disabled="isLoading">💾 HTML</button></li>
-                            <li><button @click="exportHTML(true); document.getElementById('mobile-drawer').checked = false;" :disabled="isLoading">💾 HTML Client</button></li>
-                            <li><button @click="exportConfig(); document.getElementById('mobile-drawer').checked = false;">📦 JSON</button></li>
-                            <li><button @click="exportConfigBase64(); document.getElementById('mobile-drawer').checked = false;">🔐 Base64</button></li>
+                            <li><button @click="openExportModal('html'); document.getElementById('mobile-drawer').checked = false;" :disabled="isLoading">💾 HTML</button></li>
+                            <li><button @click="openExportModal('html-client'); document.getElementById('mobile-drawer').checked = false;" :disabled="isLoading">💾 HTML Client</button></li>
+                            <li><button @click="openExportModal('json'); document.getElementById('mobile-drawer').checked = false;">📦 JSON</button></li>
+                            <li><button @click="openExportModal('base64'); document.getElementById('mobile-drawer').checked = false;">🔐 Base64</button></li>
+                            <li><button @click="openExportModal('gist'); document.getElementById('mobile-drawer').checked = false;" :disabled="isLoading">🐙 Partager via Gist</button></li>
                         </ul>
                     </li>
                 </template>
@@ -1934,10 +2106,11 @@
                                 📤 Export
                             </div>
                             <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
-                                <li><button @click="exportHTML()" :disabled="isLoading">💾 HTML</button></li>
-                                <li><button @click="exportHTML(true)" :disabled="isLoading">💾 HTML Client</button></li>
-                                <li><button @click="exportConfig()">📦 JSON</button></li>
-                                <li><button @click="exportConfigBase64()">🔐 Base64</button></li>
+                                <li><button @click="openExportModal('html')" :disabled="isLoading">💾 HTML</button></li>
+                                <li><button @click="openExportModal('html-client')" :disabled="isLoading">💾 HTML Client</button></li>
+                                <li><button @click="openExportModal('json')">📦 JSON</button></li>
+                                <li><button @click="openExportModal('base64')">🔐 Base64</button></li>
+                                <li><button @click="openExportModal('gist')" :disabled="isLoading">🐙 Partager via Gist</button></li>
                             </ul>
                         </div>
                         <!-- Import JSON : seulement en mode dev -->
@@ -1988,7 +2161,7 @@
                         </div>
                         
                         <!-- Groupe niveau 0 (même structure que sous-groupe) -->
-                        <div class="flex-1 rounded-lg overflow-hidden" :class="devMode ? 'bg-base-100 border border-base-300 hover:border-primary transition-all duration-200 shadow-sm hover:shadow-md' : 'border border-transparent'" x-show="shouldShowGroup(item.group)">
+                        <div class="flex-1 rounded-lg overflow-hidden" :class="(devMode || item.group.accordion) ? 'bg-base-100 border border-base-300 hover:border-primary transition-all duration-200 shadow-sm hover:shadow-md' : 'border border-transparent'" x-show="shouldShowGroup(item.group)">
                             
                             <!-- Header du groupe -->
                             <div class="flex items-center justify-between gap-2 py-2 px-4 bg-primary/10 border-b border-base-300" x-show="devMode">
@@ -1997,6 +2170,7 @@
                                         <span x-text="item.group.direction === 'column' ? '⇵' : '⇄'"></span>
                                     </button>
                                     <button class="btn btn-xs join-item" :class="item.group.loop?.enabled ? 'btn-info' : ''" @click="openLoopConfigModal(item.path)" title="Configurer la boucle">🔁</button>
+                                    <button class="btn btn-xs join-item" :class="item.group.accordion ? 'btn-accent' : ''" @click="openGroupSettingsModal(item.path)" title="Paramètres du groupe">⚙️</button>
                                     <button class="btn btn-xs btn-success join-item" @click="runGroupAtPath(item.path)" :disabled="isLoading" title="Exécuter">▶️</button>
                                     <button class="btn btn-xs join-item" @click="moveGroupAtPath(item.path, -1)" :disabled="item.isFirst" title="Monter">⬆️</button>
                                     <button class="btn btn-xs join-item" @click="moveGroupAtPath(item.path, 1)" :disabled="item.isLast" title="Descendre">⬇️</button>
@@ -2009,6 +2183,7 @@
                                     <ul tabindex="-1" class="dropdown-content menu menu-xs bg-base-100 rounded-box z-[1] w-48 p-2 shadow-sm">
                                         <li><button @click="toggleGroupDirection(item.path)"><span x-text="item.group.direction === 'column' ? '⇵ Passer en ligne' : '⇄ Passer en colonne'"></span></button></li>
                                         <li><button @click="openLoopConfigModal(item.path)">🔁 Configurer la boucle</button></li>
+                                        <li><button @click="openGroupSettingsModal(item.path)">⚙️ Paramètres du groupe</button></li>
                                         <li><button @click="runGroupAtPath(item.path)" :disabled="isLoading">▶️ Exécuter</button></li>
                                         <li><button @click="moveGroupAtPath(item.path, -1)" :disabled="item.isFirst">⬆️ Monter</button></li>
                                         <li><button @click="moveGroupAtPath(item.path, 1)" :disabled="item.isLast">⬇️ Descendre</button></li>
@@ -2019,8 +2194,16 @@
                                 </div>
                             </div>
                             
+                            <!-- Bande accordion (visible quand accordion activé) -->
+                            <div x-show="item.group.accordion" 
+                                 @click="toggleAccordion(item.path)"
+                                 class="flex items-center gap-2 py-2 px-4 bg-base-200 border-b border-base-300 cursor-pointer select-none hover:bg-base-300 transition-colors duration-200">
+                                <span class="text-sm transition-transform duration-200" :class="item.group.accordionOpen ? 'rotate-90' : ''">▶</span>
+                                <span class="font-semibold text-sm" x-text="item.group.title || ''"></span>
+                            </div>
+
                             <!-- Contenu du groupe -->
-                            <div class="p-1">
+                            <div class="p-1" x-show="!item.group.accordion || item.group.accordionOpen" x-collapse>
                                 <div class="flex gap-2" :class="(item.group.direction || 'row') === 'row' ? 'flex-row flex-wrap' : 'flex-col'" :style="item.group.style">
                                     <!-- Cellules du groupe (triées par _order) - Niveau 0 -->
                                 <template x-for="cellItem in getSortedCells(item.group)" :key="cellItem.cell._id">
@@ -2303,6 +2486,88 @@
                     </div>
                     <div class="modal-action">
                         <button class="btn" @click="loopConfigModal.open = false">Fermer</button>
+                    </div>
+                </div>
+            </div>
+        </template>
+        
+        <!-- Modal paramètres du groupe (accordion, title, accordionOpen) -->
+        <template x-if="groupSettingsModal.open">
+            <div class="modal modal-open z-[2100]" :key="'group-settings-' + (groupSettingsModal.path || []).join('-')" @click.self="groupSettingsModal.open = false" role="presentation">
+                <div class="modal-box max-w-lg" role="dialog" aria-modal="true" aria-labelledby="modal-group-settings-title"
+                     x-trap.noscroll="groupSettingsModal.open">
+                    <div class="flex items-center justify-between gap-2">
+                        <h3 class="text-lg font-semibold" id="modal-group-settings-title">⚙️ Paramètres du groupe</h3>
+                        <button class="btn btn-sm btn-ghost" @click="groupSettingsModal.open = false">✕</button>
+                    </div>
+                    <div class="mt-4">
+                        <div class="form-control mb-4">
+                            <label class="label cursor-pointer justify-start gap-3">
+                                <input type="checkbox" class="toggle toggle-primary" x-model="getGroupAtPath(groupSettingsModal.path).accordion" />
+                                <span class="label-text">Activer le mode accordion</span>
+                            </label>
+                            <p class="text-xs text-base-content/60 ml-12">Affiche une bande cliquable permettant de replier/déplier le contenu du groupe.</p>
+                        </div>
+                        
+                        <div x-show="getGroupAtPath(groupSettingsModal.path).accordion" x-transition>
+                            <div class="form-control mb-4">
+                                <label class="label">
+                                    <span class="label-text font-semibold">Titre du groupe</span>
+                                </label>
+                                <input type="text" 
+                                    class="input input-bordered w-full"
+                                    x-model="getGroupAtPath(groupSettingsModal.path).title"
+                                    placeholder="Titre affiché dans la bande accordion" />
+                            </div>
+                            
+                            <div class="form-control mb-4">
+                                <label class="label cursor-pointer justify-start gap-3">
+                                    <input type="checkbox" class="toggle toggle-secondary" x-model="getGroupAtPath(groupSettingsModal.path).accordionOpen" />
+                                    <span class="label-text">Ouvert par défaut</span>
+                                </label>
+                                <p class="text-xs text-base-content/60 ml-12">Si désactivé, le groupe sera replié au chargement de la page.</p>
+                            </div>
+                        </div>
+
+                        <div class="divider"></div>
+
+                        <!-- ifQuery : condition d'affichage en mode client -->
+                        <div class="form-control mb-4">
+                            <label class="label gap-2">
+                                <span class="label-text font-semibold">Condition d'affichage (ifQuery)</span>
+                                <span class="tooltip tooltip-bottom" data-tip="En mode client : si la requête retourne true, le groupe est affiché ; si null ou false, le groupe est caché.">
+                                    <span class="badge badge-sm cursor-help">?</span>
+                                </span>
+                            </label>
+                            <p class="text-xs text-base-content/60 mb-2">Requête SQL ou JS. Si définie, le groupe ne sera affiché en mode client que si le résultat est truthy.</p>
+                            <div class="rounded-lg border border-base-300 p-3 bg-base-200/50">
+                                <div class="form-control mb-2">
+                                    <label class="label py-1">
+                                        <span class="label-text text-sm">Type de langage</span>
+                                    </label>
+                                    <select class="select select-bordered select-sm w-full" 
+                                            :value="getGroupAtPath(groupSettingsModal.path).ifQueryLanguageType || 'sql'"
+                                            @change="(() => { const g = getGroupAtPath(groupSettingsModal.path); g._cmEditor_ifQuery?.destroy(); g._cmEditor_ifQuery = null; g.ifQueryLanguageType = $event.target.value; })()">
+                                        <option value="sql">🗄️ SQL</option>
+                                        <option value="js">⚡ JavaScript</option>
+                                    </select>
+                                </div>
+                                <div class="form-control">
+                                    <label class="label py-1">
+                                        <span class="label-text text-sm">Requête</span>
+                                    </label>
+                                    <div x-init="$nextTick(() => renderGroupIfQueryEditorInit(getGroupAtPath(groupSettingsModal.path), $el))"></div>
+                                </div>
+                                <div class="mt-2 flex gap-2">
+                                    <button type="button" class="btn btn-sm btn-outline" @click="testGroupIfQuery(groupSettingsModal.path)" :disabled="!getGroupAtPath(groupSettingsModal.path)?.ifQuery?.trim() || isLoading">
+                                        ▶️ Tester
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-action">
+                        <button class="btn" @click="groupSettingsModal.open = false">Fermer</button>
                     </div>
                 </div>
             </div>
@@ -3099,6 +3364,182 @@ autoTable(doc, {
         </div>
         
         </div>
+
+        <!-- Modal d'export unifié -->
+        <template x-if="exportModal.show">
+            <div class="modal modal-open z-[2100]" @click.self="cancelExport()" role="presentation">
+                <div class="modal-box max-w-lg" role="dialog" aria-modal="true" aria-labelledby="modal-export-title"
+                     x-trap.noscroll="exportModal.show">
+                    <div class="flex items-center justify-between gap-2">
+                        <h3 class="text-lg font-semibold" id="modal-export-title">
+                            <span x-show="exportModal.type === 'gist'">🐙 Partager via GitHub Gist</span>
+                            <span x-show="exportModal.type === 'json'">📦 Export JSON</span>
+                            <span x-show="exportModal.type === 'base64'">🔐 Export Base64</span>
+                            <span x-show="exportModal.type === 'html'">💾 Export HTML</span>
+                            <span x-show="exportModal.type === 'html-client'">💾 Export HTML Client</span>
+                        </h3>
+                        <button class="btn btn-sm btn-ghost" @click="cancelExport()">✕</button>
+                    </div>
+                    <div class="mt-4 space-y-4">
+                        <!-- Description (seulement pour Gist) -->
+                        <div class="form-control" x-show="exportModal.type === 'gist'">
+                            <label class="label">
+                                <span class="label-text">Description</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                x-model="exportModal.description" 
+                                placeholder="sqljob Notebook Configuration"
+                                class="input input-bordered w-full"
+                                @keydown.enter="executeExport()">
+                            <label class="label">
+                                <span class="label-text-alt">Décrivez votre notebook (visible sur GitHub)</span>
+                            </label>
+                        </div>
+
+                        <!-- Nom du fichier -->
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text">Nom du fichier</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                x-model="exportModal.fileName" 
+                                placeholder="notebook-config.json"
+                                class="input input-bordered w-full font-mono text-sm"
+                                @keydown.enter="executeExport()">
+                            <label class="label">
+                                <span class="label-text-alt" x-show="exportModal.type === 'base64'">Extension .base64.txt sera ajoutée automatiquement</span>
+                                <span class="label-text-alt" x-show="exportModal.type === 'html' || exportModal.type === 'html-client'">Le fichier sera nommé index.sqljob.html</span>
+                                <span class="label-text-alt" x-show="exportModal.type === 'json' || exportModal.type === 'gist'">Extension .json sera ajoutée automatiquement si absente</span>
+                            </label>
+                        </div>
+
+                        <!-- Paramètres UI -->
+                        <div class="divider text-sm">Paramètres de la configuration</div>
+                        
+                        <div class="form-control">
+                            <label class="label cursor-pointer justify-start gap-3">
+                                <input type="checkbox" class="toggle toggle-primary" x-model="exportModal.devMode" />
+                                <div>
+                                    <span class="label-text font-semibold">Mode développeur</span>
+                                    <p class="text-xs text-base-content/60">Afficher les contrôles d'édition des cellules et groupes</p>
+                                </div>
+                            </label>
+                        </div>
+
+                        <div class="form-control">
+                            <label class="label cursor-pointer justify-start gap-3">
+                                <input type="checkbox" class="toggle toggle-primary" x-model="exportModal.displaySettings" />
+                                <div>
+                                    <span class="label-text font-semibold">Afficher les paramètres</span>
+                                    <p class="text-xs text-base-content/60">Afficher la barre de navigation et les contrôles d'export</p>
+                                </div>
+                            </label>
+                        </div>
+
+                        <!-- Info pour Gist -->
+                        <div class="alert alert-info" x-show="exportModal.type === 'gist'">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <span class="text-sm">
+                                Le Gist sera créé en <strong>privé</strong>. Seules les personnes avec le lien pourront y accéder.
+                            </span>
+                        </div>
+                    </div>
+                    <div class="modal-action">
+                        <button @click="cancelExport()" class="btn btn-ghost">Annuler</button>
+                        <button @click="executeExport()" class="btn btn-primary">
+                            <span x-show="exportModal.type === 'gist'">Créer le Gist</span>
+                            <span x-show="exportModal.type !== 'gist'">Exporter</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- Modal token GitHub -->
+        <template x-if="showGistTokenModal">
+            <div class="modal modal-open z-[2100]" @click.self="cancelGithubToken()" role="presentation">
+                <div class="modal-box max-w-lg" role="dialog" aria-modal="true" aria-labelledby="modal-github-token-title"
+                     x-trap.noscroll="showGistTokenModal">
+                    <div class="flex items-center justify-between gap-2">
+                        <h3 class="text-lg font-semibold" id="modal-github-token-title">🐙 Configuration GitHub</h3>
+                        <button class="btn btn-sm btn-ghost" @click="cancelGithubToken()">✕</button>
+                    </div>
+                    <div class="mt-4 space-y-4">
+                        <p class="text-sm text-base-content/60">
+                            Pour partager votre notebook via GitHub Gist, vous devez créer un <strong>Personal Access Token</strong> :
+                        </p>
+                        <ol class="text-sm list-decimal list-inside space-y-2 text-base-content/80">
+                            <li>Allez sur <a href="https://github.com/settings/tokens/new?scopes=gist&description=sqljob-notebook" target="_blank" class="link link-primary">GitHub → Settings → Developer settings</a></li>
+                            <li>Cliquez sur "Generate new token (classic)"</li>
+                            <li>Donnez un nom (ex: "sqljob notebook")</li>
+                            <li>Cochez uniquement la permission <strong>gist</strong></li>
+                            <li>Cliquez sur "Generate token" et copiez-le</li>
+                        </ol>
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text">Collez votre token ici :</span>
+                            </label>
+                            <input 
+                                type="password" 
+                                x-model="githubToken" 
+                                placeholder="ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                                class="input input-bordered w-full"
+                                @keydown.enter="saveGithubToken()">
+                            <label class="label">
+                                <span class="label-text-alt text-warning">⚠️ Le token sera stocké localement dans votre navigateur</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="modal-action">
+                        <button @click="cancelGithubToken()" class="btn btn-ghost">Annuler</button>
+                        <button @click="saveGithubToken()" class="btn btn-primary">Enregistrer</button>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- Modal résultat Gist -->
+        <template x-if="showGistModal">
+            <div class="modal modal-open z-[2100]" @click.self="closeGistModal()" role="presentation">
+                <div class="modal-box max-w-2xl" role="dialog" aria-modal="true" aria-labelledby="modal-gist-result-title"
+                     x-trap.noscroll="showGistModal">
+                    <div class="flex items-center justify-between gap-2">
+                        <h3 class="text-lg font-semibold" id="modal-gist-result-title">✅ Gist créé avec succès</h3>
+                        <button class="btn btn-sm btn-ghost" @click="closeGistModal()">✕</button>
+                    </div>
+                    <div class="mt-4 space-y-4">
+                        <p class="text-sm text-base-content/60">
+                            Votre notebook a été partagé sur GitHub Gist. Partagez cette URL pour permettre aux autres d'accéder à votre configuration :
+                        </p>
+                        <div class="form-control">
+                            <div class="join w-full">
+                                <input 
+                                    type="text" 
+                                    :value="gistShareUrl" 
+                                    readonly 
+                                    class="input input-bordered join-item flex-1 font-mono text-sm"
+                                    @click="$event.target.select()">
+                                <button @click="copyGistUrl()" class="btn join-item btn-primary">📋 Copier</button>
+                            </div>
+                        </div>
+                        <div class="alert alert-info">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <span class="text-sm">
+                                Cette URL charge automatiquement votre configuration depuis GitHub Gist.
+                                Le gist est <strong>privé</strong> (seules les personnes avec le lien peuvent y accéder).
+                            </span>
+                        </div>
+                    </div>
+                    <div class="modal-action">
+                        <button @click="closeGistModal()" class="btn btn-ghost">Fermer</button>
+                        <button @click="openGistUrl()" class="btn btn-primary">Ouvrir le lien</button>
+                    </div>
+                </div>
+            </div>
+        </template>
+
     </div>`;
         }
 
@@ -3297,7 +3738,7 @@ if ($param1 === "Type A") {
                 if (['sqlRecursiveParse', 'table', 'iframe', 'sqlStat', 'perspective'].includes(cell.type)) {
                     newCell._showParsedQuery = false;
                     if (newCell.showSqlEditorForClient === undefined) {
-                        newCell.showSqlEditorForClient = true;
+                        newCell.showSqlEditorForClient = false;
                     }
                 }
 
@@ -3326,8 +3767,18 @@ if ($param1 === "Type A") {
                         query: group.loop.query || '',
                         zip: group.loop.zip || false,
                         zipQuery: group.loop.zipQuery || ''
-                    } : { enabled: false, query: '', zip: false, zipQuery: '' }
+                    } : { enabled: false, query: '', zip: false, zipQuery: '' },
+                    // Config accordion
+                    accordion: group.accordion || false,
+                    title: group.title || '',
+                    accordionOpen: group.accordionOpen !== false // true par défaut
                 };
+
+                // Ajouter ifQuery si présent
+                if (group.ifQuery) {
+                    newGroup.ifQuery = group.ifQuery;
+                    newGroup.ifQueryLanguageType = group.ifQueryLanguageType || 'sql';
+                }
 
                 // Récursivement initialiser les children avec leur _order
                 if (group.children && group.children.length > 0) {
@@ -3430,6 +3881,26 @@ if ($param1 === "Type A") {
                 dbEngine: initialDbEngine,
                 showDbEngineModal: false,
                 directedAcyclicGraph: initialDirectedAcyclicGraph,
+                
+                // GitHub Gist - variables d'état
+                githubToken: '',
+                gistShareUrl: '',
+                showGistModal: false,
+                showGistTokenModal: false,
+                
+                // Export unifié - variables d'état
+                exportModal: {
+                    show: false,
+                    type: '', // 'gist', 'json', 'base64', 'html', 'html-client'
+                    fileName: 'notebook-config.json',
+                    description: 'sqljob Notebook Configuration',
+                    devMode: null, // null = utiliser la valeur actuelle
+                    displaySettings: null // null = utiliser la valeur actuelle
+                },
+                
+                // DAG debounce timer
+                _dagDebounceTimer: null,
+                _dagDebounceDelay: 500, // 500ms de délai avant rafraîchissement
                 
                 // Getters pour la page active
                 get activePage() {
@@ -3547,6 +4018,16 @@ if ($param1 === "Type A") {
                 shouldShowGroup(group) {
                     if (this.devMode) return true;
 
+                    // Si ifQuery est défini, _ifQueryResult doit être true pour afficher
+                    if (group.ifQuery?.trim()) {
+                        if (group._ifQueryResult === false || group._ifQueryResult === null) {
+                            return false;
+                        }
+                        if (group._ifQueryResult !== true) {
+                            return false; // pas encore évalué ou erreur
+                        }
+                    }
+
                     // Vérifier si une des cellules du groupe est visible
                     if (group.cells && group.cells.some(cell => this.shouldShowCell(cell))) {
                         return true;
@@ -3569,6 +4050,7 @@ if ($param1 === "Type A") {
                 cellConfigModal: { open: false, groupIndex: null, cellIndex: null },
                 childGroupModal: { open: false, path: null, cellIndex: null, group: null },
                 loopConfigModal: { open: false, path: null },
+                groupSettingsModal: { open: false, path: null },
                 exportDropdownOpen: false,
 
                 // Variable $loop courante (utilisée pendant l'exécution d'un groupe en boucle)
@@ -3667,6 +4149,9 @@ if ($param1 === "Type A") {
 
                         // Exécuter les requêtes d'init des paramètres UI cochés
                         await this.runInitUIParameters();
+
+                        // Évaluer les ifQuery des groupes (condition d'affichage en mode client)
+                        await this.evaluateAllGroupIfQueries();
 
                         // Auto-exécution si pas de cellule source et option activée
                         if (this.autoExecuteWithoutSources) {
@@ -3899,6 +4384,60 @@ if ($param1 === "Type A") {
                         } catch (error) {
                             console.error(`Erreur init paramètre ${cell.paramName}:`, error);
                         }
+                    }
+                },
+
+                // Évaluer la requête ifQuery d'un groupe (retourne true/false/null)
+                async evaluateGroupIfQuery(group) {
+                    if (!group || !group.ifQuery?.trim()) {
+                        return true;
+                    }
+                    
+                    const langType = group.ifQueryLanguageType || 'sql';
+                    
+                    try {
+                        if (langType === 'js') {
+                            const jsCode = this.parseQueryWithParameters(group.ifQuery);
+                            const result = eval(jsCode);
+                            const finalResult = result === true || (result !== null && result !== false && result !== undefined);
+                            return finalResult;
+                        } else {
+                            const cellLike = { query: group.ifQuery };
+                            const finalQuery = await this.parseQueryRecursively(cellLike);
+                            const results = await DuckDBManager.executeQuery(finalQuery);
+                            
+                            if (!results || results.length === 0) {
+                                console.log('  ⚠️ [evaluateGroupIfQuery] Aucun résultat → false');
+                                return false;
+                            }
+                            
+                            const firstVal = Object.values(results[0])[0];
+                            const finalResult = firstVal === true || (firstVal !== null && firstVal !== false && firstVal !== undefined);
+                            return finalResult;
+                        }
+                    } catch (err) {
+                        console.error('  ❌ [evaluateGroupIfQuery] Erreur:', err);
+                        return false;
+                    }
+                },
+
+                // Évaluer toutes les ifQuery des groupes (récursif) et mettre à jour _ifQueryResult
+                async evaluateAllGroupIfQueries() {
+                    const evaluateRecursive = async (groups) => {
+                        for (const group of groups || []) {
+                            if (group.ifQuery?.trim()) {
+                                group._ifQueryResult = await this.evaluateGroupIfQuery(group);
+                            } else {
+                                group._ifQueryResult = true;
+                            }
+                            if (group.children?.length) {
+                                await evaluateRecursive(group.children);
+                            }
+                        }
+                    };
+                    for (const page of this.pages || []) {
+                        await evaluateRecursive(page.groups || []);
+                        await evaluateRecursive(page.linkGroups || []);
                     }
                 },
 
@@ -4200,7 +4739,10 @@ if ($param1 === "Type A") {
                         cells: [],
                         children: [],
                         _order: 0, // Sera ajusté lors de l'ajout au parent
-                        loop: { enabled: false, query: '', zip: false, zipQuery: '' }
+                        loop: { enabled: false, query: '', zip: false, zipQuery: '' },
+                        accordion: false,
+                        title: '',
+                        accordionOpen: true
                     };
                 },
 
@@ -4240,6 +4782,37 @@ if ($param1 === "Type A") {
                             group.loop = { enabled: false, query: '' };
                         }
                         this.loopConfigModal = { open: true, path: path };
+                    }
+                },
+
+                // Ouvrir la modale de paramètres du groupe (accordion, title, accordionOpen)
+                openGroupSettingsModal(path) {
+                    const group = this.getGroupAtPath(path);
+                    if (group) {
+                        if (group.ifQuery && group.ifQueryLanguageType === undefined) {
+                            group.ifQueryLanguageType = 'sql';
+                        }
+                        this.groupSettingsModal = { open: true, path: path };
+                    }
+                },
+
+                // Tester la requête ifQuery d'un groupe (affiche le résultat)
+                async testGroupIfQuery(path) {
+                    const group = this.getGroupAtPath(path);
+                    if (!group || !group.ifQuery?.trim()) return;
+                    try {
+                        const result = await this.evaluateGroupIfQuery(group);
+                        this.setStatus(`ifQuery: ${result === true ? 'true → groupe affiché' : (result === false ? 'false' : 'null') + ' → groupe masqué'}`, result ? 'success' : 'info');
+                    } catch (err) {
+                        this.setStatus('Erreur ifQuery: ' + err.message, 'error');
+                    }
+                },
+
+                // Basculer l'état ouvert/fermé d'un accordion
+                toggleAccordion(path) {
+                    const group = this.getGroupAtPath(path);
+                    if (group) {
+                        group.accordionOpen = !group.accordionOpen;
                     }
                 },
 
@@ -4376,6 +4949,18 @@ FROM source1 LIMIT 10;`;
 
                 // Exécuter un groupe une seule fois (sans loop)
                 async runGroupOnce(path, group) {
+                    // Évaluer ifQuery au début de l'exécution du groupe
+                    if (group.ifQuery?.trim()) {
+                        this.setStatus('Évaluation de la condition ifQuery...', 'loading');
+                        const ifQueryResult = await this.evaluateGroupIfQuery(group);
+                        group._ifQueryResult = ifQueryResult;
+                        
+                        if (!ifQueryResult) {
+                            this.setStatus('Groupe ignoré (ifQuery = false)', 'info');
+                            return; // Skip l'exécution du groupe
+                        }
+                    }
+
                     this.setStatus('Exécution du groupe...', 'loading');
 
                     // Exécuter selon l'ordre visuel (_order) en intercalant cellules et sous-groupes
@@ -4468,6 +5053,18 @@ FROM source1 LIMIT 10;`;
 
                 // Exécuter un groupe avec loop
                 async runGroupWithLoop(path, group) {
+                    // Évaluer ifQuery au début de l'exécution du groupe
+                    if (group.ifQuery?.trim()) {
+                        this.setStatus('Évaluation de la condition ifQuery...', 'loading');
+                        const ifQueryResult = await this.evaluateGroupIfQuery(group);
+                        group._ifQueryResult = ifQueryResult;
+                        
+                        if (!ifQueryResult) {
+                            this.setStatus('Groupe ignoré (ifQuery = false)', 'info');
+                            return; // Skip l'exécution du groupe
+                        }
+                    }
+
                     this.setStatus('Initialisation de la boucle...', 'loading');
 
                     // Activer le mode zip si configuré
@@ -4765,6 +5362,7 @@ FROM source1 LIMIT 10;`;
                                     <span x-text="getGroupAtPath(${pathJSON})?.direction === 'column' ? '⇵' : '⇄'"></span>
                                 </button>
                                 <button class="btn btn-xs join-item" :class="getGroupAtPath(${pathJSON})?.loop?.enabled ? 'btn-info' : ''" @click="openLoopConfigModal(${pathJSON})" title="Configurer la boucle">🔁</button>
+                                <button class="btn btn-xs join-item" :class="getGroupAtPath(${pathJSON})?.accordion ? 'btn-accent' : ''" @click="openGroupSettingsModal(${pathJSON})" title="Paramètres du groupe">⚙️</button>
                                 <button class="btn btn-xs btn-success join-item" @click="runGroupAtPath(${pathJSON})" :disabled="isLoading" title="Exécuter">▶️</button>
                                 <button class="btn btn-xs join-item" @click="moveItemInGroup(${parentPathJSON}, 'child', ${originalIndex}, -1)" :disabled="isFirstInGroup(getGroupAtPath(${parentPathJSON}), 'child', ${originalIndex})" title="Monter">⬆️</button>
                                 <button class="btn btn-xs join-item" @click="moveItemInGroup(${parentPathJSON}, 'child', ${originalIndex}, 1)" :disabled="isLastInGroup(getGroupAtPath(${parentPathJSON}), 'child', ${originalIndex})" title="Descendre">⬇️</button>
@@ -4777,6 +5375,7 @@ FROM source1 LIMIT 10;`;
                                 <ul tabindex="-1" class="dropdown-content menu menu-xs bg-base-100 rounded-box z-[1] w-48 p-2 shadow-sm">
                                     <li><button @click="toggleGroupDirection(${pathJSON})"><span x-text="getGroupAtPath(${pathJSON})?.direction === 'column' ? '⇵ Passer en ligne' : '⇄ Passer en colonne'"></span></button></li>
                                     <li><button @click="openLoopConfigModal(${pathJSON})">🔁 Configurer la boucle</button></li>
+                                    <li><button @click="openGroupSettingsModal(${pathJSON})">⚙️ Paramètres du groupe</button></li>
                                     <li><button @click="runGroupAtPath(${pathJSON})" :disabled="isLoading">▶️ Exécuter</button></li>
                                     <li><button @click="moveItemInGroup(${parentPathJSON}, 'child', ${originalIndex}, -1)" :disabled="isFirstInGroup(getGroupAtPath(${parentPathJSON}), 'child', ${originalIndex})">⬆️ Monter</button></li>
                                     <li><button @click="moveItemInGroup(${parentPathJSON}, 'child', ${originalIndex}, 1)" :disabled="isLastInGroup(getGroupAtPath(${parentPathJSON}), 'child', ${originalIndex})">⬇️ Descendre</button></li>
@@ -4787,9 +5386,18 @@ FROM source1 LIMIT 10;`;
                             </div>
                         </div>`;
 
+                    // Bande accordion pour sous-groupe
+                    const accordionBand = `
+                        <div x-show="getGroupAtPath(${pathJSON})?.accordion" 
+                             @click="toggleAccordion(${pathJSON})"
+                             class="flex items-center gap-2 py-2 px-4 bg-base-200 border-b border-base-300 cursor-pointer select-none hover:bg-base-300 transition-colors duration-200">
+                            <span class="text-sm transition-transform duration-200" :class="getGroupAtPath(${pathJSON})?.accordionOpen ? 'rotate-90' : ''">▶</span>
+                            <span class="font-semibold text-sm" x-text="getGroupAtPath(${pathJSON})?.title || ''"></span>
+                        </div>`;
+
                     // Contenu du sous-groupe (cellules + sous-groupes récursifs)
                     const content = `
-                        <div class="p-2">
+                        <div class="p-2" x-show="!getGroupAtPath(${pathJSON})?.accordion || getGroupAtPath(${pathJSON})?.accordionOpen" x-collapse>
                             <div class="flex gap-2" :class="(getGroupAtPath(${pathJSON})?.direction || 'row') === 'row' ? 'flex-row flex-wrap' : 'flex-col'">
                                 <!-- Cellules du groupe -->
                                 <template x-for="cellItem in getSortedCells(getGroupAtPath(${pathJSON}))" :key="cellItem.cell._id">
@@ -4821,7 +5429,7 @@ FROM source1 LIMIT 10;`;
                             </div>
                         </div>`;
 
-                    return header + content;
+                    return header + accordionBand + content;
                 },
 
                 // Retourne tous les items (cellules + children) triés par _order avec leur type
@@ -6699,6 +7307,38 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                     return dependents;
                 },
 
+                // Trouver tous les groupes qui dépendent d'un paramètre donné (via ifQuery)
+                // Retourne un tableau de {group, path}
+                findDependentGroups(paramName) {
+                    console.log(`🔍 [findDependentGroups] Recherche des groupes dépendant de $${paramName}`);
+                    const dependents = [];
+
+                    const searchInGroup = (group, path) => {
+                        // Vérifier si l'ifQuery du groupe référence le paramètre
+                        if (group.ifQuery) {
+                            const referencedParams = this.findReferencedParams(group.ifQuery);
+                            if (referencedParams.includes(paramName)) {
+                                console.log(`  ✅ [findDependentGroups] Groupe trouvé - path: [${path.join(',')}], ifQuery: "${group.ifQuery.substring(0, 50)}..."`);
+                                dependents.push({ group, path: [...path] });
+                            }
+                        }
+                        // Récursif sur les enfants
+                        if (group.children) {
+                            for (let i = 0; i < group.children.length; i++) {
+                                searchInGroup(group.children[i], [...path, i]);
+                            }
+                        }
+                    };
+
+                    // Chercher dans tous les groupes de la page active
+                    for (let gi = 0; gi < this.groups.length; gi++) {
+                        searchInGroup(this.groups[gi], [gi]);
+                    }
+
+                    console.log(`📊 [findDependentGroups] Total: ${dependents.length} groupe(s) trouvé(s)`);
+                    return dependents;
+                },
+
                 // Détecter les cycles dans le DAG
                 // Retourne true si un cycle est détecté
                 detectCycleInDAG() {
@@ -6763,47 +7403,109 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
 
                 // Callback appelé lorsqu'une valeur de paramètre UI est modifiée par l'utilisateur
                 async onParameterValueChange(cell) {
+                    console.log('🔄 [DAG] onParameterValueChange appelé pour:', cell.paramName);
+                    
                     // Si le DAG n'est pas activé, ne rien faire
                     if (!this.directedAcyclicGraph) {
+                        console.log('⏸️ [DAG] DAG désactivé, skip');
                         return;
                     }
 
                     const paramName = cell.paramName;
-                    if (!paramName) return;
+                    if (!paramName) {
+                        console.log('⚠️ [DAG] Pas de paramName, skip');
+                        return;
+                    }
+
+                    // Annuler le timer précédent (debounce)
+                    if (this._dagDebounceTimer) {
+                        console.log('⏱️ [DAG] Annulation du timer précédent (debounce)');
+                        clearTimeout(this._dagDebounceTimer);
+                        this._dagDebounceTimer = null;
+                    }
+
+                    // Démarrer un nouveau timer
+                    console.log(`⏱️ [DAG] Timer de ${this._dagDebounceDelay}ms démarré`);
+                    this._dagDebounceTimer = setTimeout(async () => {
+                        console.log('⏰ [DAG] Timer écoulé, démarrage du rafraîchissement');
+                        this._dagDebounceTimer = null;
+                        
+                        try {
+                            await this._executeDAGRefresh(paramName);
+                        } catch (error) {
+                            console.error('❌ [DAG] Erreur lors du rafraîchissement:', error);
+                            this.setStatus('❌ Erreur DAG: ' + error.message, 'error');
+                        }
+                    }, this._dagDebounceDelay);
+                },
+
+                // Exécuter le rafraîchissement DAG (appelé après le debounce)
+                async _executeDAGRefresh(paramName) {
+                    console.log(`🔍 [DAG] Recherche des dépendances pour $${paramName}...`);
 
                     // Vérifier les cycles avant de procéder
                     if (this.detectCycleInDAG()) {
+                        console.error('🔴 [DAG] Cycle détecté dans le DAG');
                         this.setStatus('⚠️ Cycle détecté dans le DAG - rafraîchissement automatique désactivé', 'error');
                         this.directedAcyclicGraph = false;
                         return;
                     }
 
                     // Trouver toutes les cellules qui dépendent de ce paramètre
-                    const dependents = this.findDependentCells(paramName);
+                    const dependentCells = this.findDependentCells(paramName);
+                    console.log(`📊 [DAG] ${dependentCells.length} cellule(s) dépendante(s) trouvée(s)`);
+                    
+                    // Trouver tous les groupes qui dépendent de ce paramètre (via ifQuery)
+                    const dependentGroups = this.findDependentGroups(paramName);
+                    console.log(`📁 [DAG] ${dependentGroups.length} groupe(s) dépendant(s) trouvé(s)`);
 
-                    if (dependents.length === 0) {
+                    const totalDependents = dependentCells.length + dependentGroups.length;
+                    
+                    if (totalDependents === 0) {
+                        console.log('✅ [DAG] Aucune dépendance, terminé');
                         return;
                     }
 
-                    this.setStatus(`🔄 Rafraîchissement de ${dependents.length} cellule(s) dépendante(s) de $${paramName}...`, 'loading');
+                    this.setStatus(`🔄 Rafraîchissement de ${dependentCells.length} cellule(s) et ${dependentGroups.length} groupe(s) dépendant(s) de $${paramName}...`, 'loading');
+
+                    // Réévaluer les ifQuery des groupes dépendants
+                    console.log(`🔄 [DAG] Réévaluation des ifQuery des groupes dépendants...`);
+                    for (let i = 0; i < dependentGroups.length; i++) {
+                        const dep = dependentGroups[i];
+                        try {
+                            console.log(`  🔍 [DAG] Évaluation groupe ${i + 1}/${dependentGroups.length} - path: [${dep.path.join(',')}]`);
+                            const previousResult = dep.group._ifQueryResult;
+                            const newResult = await this.evaluateGroupIfQuery(dep.group);
+                            dep.group._ifQueryResult = newResult;
+                            console.log(`  ✅ [DAG] Groupe ${i + 1} - ifQuery: ${previousResult} → ${newResult}`);
+                        } catch (error) {
+                            console.error(`  ❌ [DAG] Erreur évaluation groupe ${i + 1}:`, error);
+                        }
+                    }
 
                     // Exécuter les cellules dépendantes dans l'ordre
-                    for (const dep of dependents) {
+                    console.log(`🔄 [DAG] Exécution des cellules dépendantes...`);
+                    for (let i = 0; i < dependentCells.length; i++) {
+                        const dep = dependentCells[i];
                         const depCell = dep.cell;
 
                         // Pour les uiParameter avec preserveUserValue et _userModified, ne pas re-exécuter
                         if (depCell.type === 'uiParameter' && depCell.preserveUserValue && depCell._userModified) {
+                            console.log(`  ⏭️ [DAG] Cellule ${i + 1} skip (preserveUserValue + userModified)`);
                             continue;
                         }
 
                         try {
+                            console.log(`  ▶️ [DAG] Exécution cellule ${i + 1}/${dependentCells.length} - type: ${depCell.type} - path: [${dep.path.join(',')}], index: ${dep.cellIndex}`);
                             await this.runCellAt(dep.path, dep.cellIndex);
+                            console.log(`  ✅ [DAG] Cellule ${i + 1} exécutée`);
                         } catch (error) {
-                            console.error(`Erreur lors du rafraîchissement de la cellule dépendante:`, error);
+                            console.error(`  ❌ [DAG] Erreur cellule ${i + 1}:`, error);
                         }
                     }
 
-                    this.setStatus(`✅ ${dependents.length} cellule(s) rafraîchie(s)`, 'success');
+                    console.log('✅ [DAG] Rafraîchissement DAG terminé');
+                    this.setStatus(`✅ ${dependentCells.length} cellule(s) et ${dependentGroups.length} groupe(s) rafraîchi(s)`, 'success');
                 },
 
                 // Générer le HTML de l'éditeur pour les cellules uiParameter (SQL ou JS)
@@ -6816,6 +7518,105 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                     const badgeClass = isJs ? 'badge-warning' : 'badge-info';
                     
                     return this.renderSqlQueryEditor(cell, placeholder, true, 'query', '_showParsedQuery', languageLabel, languageIcon, badgeClass);
+                },
+
+                // Générer l'éditeur ifQuery pour les groupes (réutilise le pattern SQL/JS)
+                renderGroupIfQueryEditor(group) {
+                    if (!group) return '<textarea class="textarea textarea-bordered w-full font-mono min-h-20 text-sm" placeholder="SELECT true"></textarea>';
+                    const groupId = 'ifquery-' + (group.id || group._id || 'g');
+                    const langType = group.ifQueryLanguageType || 'sql';
+                    const isJs = langType === 'js';
+                    const placeholder = isJs ? 'return true;  // ou return false; pour masquer le groupe' : 'SELECT true  -- ou SELECT false pour masquer le groupe';
+                    const badgeClass = isJs ? 'badge-warning' : 'badge-info';
+                    const badgeIcon = isJs ? '⚡' : '🗄️';
+                    const badgeLabel = isJs ? 'JavaScript' : 'SQL';
+                    if (isJs) {
+                        return `<div>
+                            <span class="badge badge-soft ${badgeClass} text-xs mb-2">${badgeIcon} ${badgeLabel}</span>
+                            <textarea class="textarea textarea-bordered w-full font-mono min-h-20 p-3 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" 
+                                x-model="group.ifQuery"
+                                placeholder="${placeholder}"></textarea>
+                        </div>`;
+                    }
+                    return `<div>
+                        <span class="badge badge-soft ${badgeClass} text-xs mb-2">${badgeIcon} ${badgeLabel}</span>
+                        <div class="codemirror-sql-container" x-ref="cm_${groupId}"
+                            x-init="$nextTick(async () => {
+                                const container = $refs['cm_${groupId}'];
+                                if (!container || !group) return;
+                                const existingEditor = group._cmEditor_ifQuery;
+                                if (existingEditor && document.body.contains(existingEditor.dom)) return;
+                                if (existingEditor) { existingEditor.destroy(); group._cmEditor_ifQuery = null; }
+                                try {
+                                    await CDNManager.loadCodeMirrorSQL();
+                                    const schema = {};
+                                    if (notebookApp && notebookApp.tablesData) {
+                                        for (const [tableName, data] of Object.entries(notebookApp.tablesData)) {
+                                            if (data && data.length > 0) schema[tableName] = Object.keys(data[0]);
+                                        }
+                                    }
+                                    group._cmEditor_ifQuery = CDNManager.createSqlEditor(container, group.ifQuery || '', (v) => { group.ifQuery = v; }, { schema, dialect: 'duckdb' });
+                                } catch (err) {
+                                    console.error('Erreur CodeMirror ifQuery:', err);
+                                    container.innerHTML = '<textarea class=&quot;textarea textarea-bordered w-full font-mono min-h-20 p-3 text-sm&quot; x-model=&quot;group.ifQuery&quot; placeholder=&quot;${placeholder}&quot;></textarea>';
+                                }
+                            })"></div>
+                    </div>`;
+                },
+
+                // Initialiser l'éditeur ifQuery dans la modale (version simplifiée sans x-html)
+                renderGroupIfQueryEditorInit(group, container) {
+                    if (!group || !container) return;
+                    const langType = group.ifQueryLanguageType || 'sql';
+                    const isJs = langType === 'js';
+                    const placeholder = isJs ? 'return true;  // ou return false; pour masquer le groupe' : 'SELECT true  -- ou SELECT false pour masquer le groupe';
+                    const badgeClass = isJs ? 'badge-warning' : 'badge-info';
+                    const badgeIcon = isJs ? '⚡' : '🗄️';
+                    const badgeLabel = isJs ? 'JavaScript' : 'SQL';
+
+                    // Nettoyer l'éditeur existant
+                    if (group._cmEditor_ifQuery) {
+                        group._cmEditor_ifQuery.destroy();
+                        group._cmEditor_ifQuery = null;
+                    }
+
+                    if (isJs) {
+                        container.innerHTML = `<div>
+                            <span class="badge badge-soft ${badgeClass} text-xs mb-2">${badgeIcon} ${badgeLabel}</span>
+                            <textarea class="textarea textarea-bordered w-full font-mono min-h-20 p-3 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" 
+                                placeholder="${placeholder}"></textarea>
+                        </div>`;
+                        const textarea = container.querySelector('textarea');
+                        if (textarea) {
+                            textarea.value = group.ifQuery || '';
+                            textarea.addEventListener('input', (e) => { group.ifQuery = e.target.value; });
+                        }
+                    } else {
+                        container.innerHTML = `<div>
+                            <span class="badge badge-soft ${badgeClass} text-xs mb-2">${badgeIcon} ${badgeLabel}</span>
+                            <div class="codemirror-sql-container"></div>
+                        </div>`;
+                        const cmContainer = container.querySelector('.codemirror-sql-container');
+                        if (cmContainer) {
+                            CDNManager.loadCodeMirrorSQL().then(() => {
+                                const schema = {};
+                                if (notebookApp && notebookApp.tablesData) {
+                                    for (const [tableName, data] of Object.entries(notebookApp.tablesData)) {
+                                        if (data && data.length > 0) schema[tableName] = Object.keys(data[0]);
+                                    }
+                                }
+                                group._cmEditor_ifQuery = CDNManager.createSqlEditor(cmContainer, group.ifQuery || '', (v) => { group.ifQuery = v; }, { schema, dialect: 'duckdb' });
+                            }).catch(err => {
+                                console.error('Erreur CodeMirror ifQuery:', err);
+                                cmContainer.innerHTML = `<textarea class="textarea textarea-bordered w-full font-mono min-h-20 p-3 text-sm" placeholder="${placeholder}"></textarea>`;
+                                const textarea = cmContainer.querySelector('textarea');
+                                if (textarea) {
+                                    textarea.value = group.ifQuery || '';
+                                    textarea.addEventListener('input', (e) => { group.ifQuery = e.target.value; });
+                                }
+                            });
+                        }
+                    }
                 },
 
                 // Générer le HTML de l'éditeur SQL partagé (unifié pour tous les types de requêtes)
@@ -7375,6 +8176,9 @@ SELECT COLUMNS('^dim_') FROM source1;`
                     // Invalider le cache des tables pour qu'il soit rafraîchi
                     this.invalidateTablesCache();
 
+                    // Réévaluer les ifQuery avant l'exécution (données à jour)
+                    await this.evaluateAllGroupIfQueries();
+
                     for (let groupIndex = 0; groupIndex < this.groups.length; groupIndex++) {
                         await this.runGroup(groupIndex);
                     }
@@ -7395,32 +8199,244 @@ SELECT COLUMNS('^dim_') FROM source1;`
                 },
 
                 // ─────────────────────────────────────────────────────────────────
-                async exportConfig() {
+                // Export unifié
+                // ─────────────────────────────────────────────────────────────────
+
+                openExportModal(type) {
+                    // Pour le gist, vérifier d'abord si un token existe
+                    if (type === 'gist' && !GitHubGistManager.hasAccessToken()) {
+                        this.showGistTokenModal = true;
+                        return;
+                    }
+                    
+                    // Réinitialiser la modale avec les valeurs par défaut
+                    this.exportModal.show = false;
+                    this.$nextTick(() => {
+                        this.exportModal.type = type;
+                        this.exportModal.fileName = 'notebook-config.json';
+                        this.exportModal.description = 'sqljob Notebook Configuration';
+                        this.exportModal.devMode = this.devMode;
+                        this.exportModal.displaySettings = this.displaySettings;
+                        this.exportModal.show = true;
+                    });
+                },
+
+                async executeExport() {
+                    const type = this.exportModal.type;
+                    const fileName = this.exportModal.fileName || 'notebook-config.json';
+                    const description = this.exportModal.description || 'sqljob Notebook Configuration';
+                    const devMode = this.exportModal.devMode;
+                    const displaySettings = this.exportModal.displaySettings;
+                    
+                    this.exportModal.show = false;
+
                     try {
-                        // includeFileData = true pour inclure les fichiers base64 dans l'export JSON
-                        const config = await ConfigManager.buildConfigFromState(this.pages, this.devMode, this.displaySettings, true, this.currentTheme, this.dbEngine, this.directedAcyclicGraph);
-                        const jsonString = JSON.stringify(config, null, 2);
-                        const blob = new Blob([jsonString], { type: 'application/json' });
-                        FileHandler.downloadFile(blob, 'notebook-config.json');
-                        this.setStatus('Configuration exportée', 'success');
+                        this.isLoading = true;
+                        
+                        // Générer la configuration avec les paramètres choisis
+                        const includeFileData = (type === 'gist' || type === 'json' || type === 'base64');
+                        const config = await ConfigManager.buildConfigFromState(
+                            this.pages, 
+                            devMode,
+                            displaySettings,
+                            includeFileData,
+                            this.currentTheme, 
+                            this.dbEngine, 
+                            this.directedAcyclicGraph
+                        );
+
+                        switch (type) {
+                            case 'gist':
+                                this.setStatus('Création du gist GitHub...', 'loading');
+                                const gistUrl = await GitHubGistManager.createGist(config, description, fileName);
+                                this.gistShareUrl = GitHubGistManager.generateSqljobUrl(gistUrl);
+                                this.showGistModal = true;
+                                this.setStatus('Gist créé avec succès', 'success');
+                                break;
+
+                            case 'json':
+                                this.setStatus('Export JSON...', 'loading');
+                                const jsonString = JSON.stringify(config, null, 2);
+                                const jsonBlob = new Blob([jsonString], { type: 'application/json' });
+                                FileHandler.downloadFile(jsonBlob, fileName);
+                                this.setStatus('Configuration exportée', 'success');
+                                break;
+
+                            case 'base64':
+                                this.setStatus('Export Base64...', 'loading');
+                                const jsonStr = JSON.stringify(config, null, 2);
+                                const base64String = ConfigManager.encodeUTF8ToBase64(jsonStr);
+                                const base64Blob = new Blob([base64String], { type: 'text/plain' });
+                                const base64FileName = fileName.replace('.json', '.base64.txt');
+                                FileHandler.downloadFile(base64Blob, base64FileName);
+                                this.setStatus('Configuration exportée en Base64', 'success');
+                                break;
+
+                            case 'html':
+                            case 'html-client':
+                                this.setStatus('Génération HTML...', 'loading');
+                                const clientOnly = (type === 'html-client');
+                                await this.exportHTMLWithConfig(clientOnly, config);
+                                this.setStatus('HTML exporté', 'success');
+                                break;
+                        }
                     } catch (error) {
-                        this.setStatus('Erreur export: ' + error.message, 'error');
+                        console.error('Erreur export:', error);
+                        this.setStatus('Erreur: ' + error.message, 'error');
+                        
+                        // Si erreur d'authentification pour gist
+                        if (type === 'gist' && (error.message.includes('authentifié') || error.message.includes('Unauthorized'))) {
+                            GitHubGistManager.clearAccessToken();
+                            this.showGistTokenModal = true;
+                        }
+                    } finally {
+                        this.isLoading = false;
                     }
                 },
 
-                async exportConfigBase64() {
+                async exportHTMLWithConfig(clientOnly, config) {
+                    const jsonString = JSON.stringify(config, null, 2);
+                    const configBase64 = ConfigManager.encodeUTF8ToBase64(jsonString);
+
+                    // Mettre à jour la config base64 dans le DOM
+                    document.getElementById('defaultConfigBase64')?.remove();
+                    const configScript = document.createElement('script');
+                    configScript.type = 'application/octet-stream';
+                    configScript.id = 'defaultConfigBase64';
+                    configScript.textContent = configBase64;
+                    document.head.appendChild(configScript);
+
+                    // Collecter les fichiers source et templates docx depuis tous les groupes (récursivement)
+                    const collectSourceFiles = async (group, groupPath = []) => {
+                        for (let cellIndex = 0; cellIndex < (group.cells || []).length; cellIndex++) {
+                            const cell = group.cells[cellIndex];
+                            if (cell.type === 'source' && cell._currentFile && cell._fileName) {
+                                const safeSourceName = cell.name.replace(/[^a-zA-Z0-9_]/g, '_');
+                                document.querySelectorAll(`script[id^="sourceFile_${safeSourceName}"]`).forEach(s => s.remove());
+
+                                const arrayBuffer = await cell._currentFile.arrayBuffer();
+                                const compressedBuffer = await FileHandler.compressGzip(arrayBuffer);
+                                const fileBase64 = FileHandler.arrayBufferToBase64(compressedBuffer);
+
+                                const script = document.createElement('script');
+                                script.type = 'application/octet-stream';
+                                script.id = `sourceFile_${safeSourceName}`;
+                                script.dataset.sourceName = cell.name;
+                                script.dataset.fileName = cell._fileName;
+                                script.textContent = fileBase64;
+                                document.head.appendChild(script);
+                            } else if (cell.type === 'source' && !cell._currentFile) {
+                                const safeSourceName = cell.name.replace(/[^a-zA-Z0-9_]/g, '_');
+                                document.querySelectorAll(`script[id^="sourceFile_${safeSourceName}"]`).forEach(s => s.remove());
+                            }
+                            
+                            if (cell.type === 'publipostageWord' && cell.docxTemplateBase64 && cell.docxTemplateFileName) {
+                                const cellPath = [...groupPath, cellIndex].join('_');
+                                const stableId = `docxTemplate_${cellPath}`;
+                                document.querySelectorAll(`script[id="${stableId}"]`).forEach(s => s.remove());
+
+                                const script = document.createElement('script');
+                                script.type = 'application/octet-stream';
+                                script.id = stableId;
+                                script.dataset.cellPath = cellPath;
+                                script.dataset.fileName = cell.docxTemplateFileName;
+                                script.textContent = cell.docxTemplateBase64;
+                                document.head.appendChild(script);
+                            } else if (cell.type === 'publipostageWord' && !cell.docxTemplateBase64) {
+                                const cellPath = [...groupPath, cellIndex].join('_');
+                                const stableId = `docxTemplate_${cellPath}`;
+                                document.querySelectorAll(`script[id="${stableId}"]`).forEach(s => s.remove());
+                            }
+                        }
+                        for (let childIndex = 0; childIndex < (group.children || []).length; childIndex++) {
+                            await collectSourceFiles(group.children[childIndex], [...groupPath, childIndex]);
+                        }
+                    };
+
+                    // Collecter les fichiers de toutes les pages
+                    for (let pageIndex = 0; pageIndex < this.pages.length; pageIndex++) {
+                        const page = this.pages[pageIndex];
+                        for (let groupIndex = 0; groupIndex < page.groups.length; groupIndex++) {
+                            await collectSourceFiles(page.groups[groupIndex], [groupIndex]);
+                        }
+                        for (let groupIndex = 0; groupIndex < (page.linkGroups || []).length; groupIndex++) {
+                            await collectSourceFiles(page.linkGroups[groupIndex], [-1, groupIndex]);
+                        }
+                    }
+
+                    let htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+                    htmlContent = htmlContent.replace(/<html[^>]*>/i, '<html lang="fr">');
+
+                    const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+                    FileHandler.downloadFile(blob, 'index.sqljob.html');
+                },
+
+                cancelExport() {
+                    this.exportModal.show = false;
+                },
+
+                saveGithubToken() {
+                    if (!this.githubToken || this.githubToken.trim() === '') {
+                        this.setStatus('Veuillez saisir un token', 'error');
+                        return;
+                    }
+
                     try {
-                        // includeFileData = true pour inclure les fichiers base64 dans l'export Base64
-                        const config = await ConfigManager.buildConfigFromState(this.pages, this.devMode, this.displaySettings, true, this.currentTheme, this.dbEngine, this.directedAcyclicGraph);
-                        const jsonString = JSON.stringify(config, null, 2);
-                        const base64String = ConfigManager.encodeUTF8ToBase64(jsonString);
-                        const blob = new Blob([base64String], { type: 'text/plain' });
-                        FileHandler.downloadFile(blob, 'notebook-config.base64.txt');
-                        this.setStatus('Configuration exportée en Base64', 'success');
+                        GitHubGistManager.setAccessToken(this.githubToken.trim());
+                        this.showGistTokenModal = false;
+                        this.githubToken = '';
+                        this.setStatus('Token GitHub enregistré', 'success');
+                        
+                        // Afficher la modale d'export pour le gist
+                        setTimeout(() => this.openExportModal('gist'), 300);
                     } catch (error) {
-                        this.setStatus('Erreur export Base64: ' + error.message, 'error');
+                        this.setStatus('Erreur: ' + error.message, 'error');
                     }
                 },
+
+                cancelGithubToken() {
+                    this.showGistTokenModal = false;
+                    this.githubToken = '';
+                },
+
+                copyGistUrl() {
+                    navigator.clipboard.writeText(this.gistShareUrl).then(() => {
+                        this.setStatus('URL copiée dans le presse-papiers', 'success');
+                    }).catch(() => {
+                        this.setStatus('Erreur lors de la copie', 'error');
+                    });
+                },
+
+                closeGistModal() {
+                    this.showGistModal = false;
+                    this.gistShareUrl = '';
+                },
+
+                openGistUrl() {
+                    if (this.gistShareUrl) {
+                        window.open(this.gistShareUrl, '_blank');
+                    }
+                },
+
+                // ─────────────────────────────────────────────────────────────────
+
+                // ─────────────────────────────────────────────────────────────────
+                // Wrappers de compatibilité pour les anciennes fonctions
+                // ─────────────────────────────────────────────────────────────────
+                
+                async exportConfig() {
+                    this.openExportModal('json');
+                },
+
+                async exportConfigBase64() {
+                    this.openExportModal('base64');
+                },
+
+                async exportHTML(clientOnly = false) {
+                    this.openExportModal(clientOnly ? 'html-client' : 'html');
+                },
+
+                // ─────────────────────────────────────────────────────────────────
 
                 async loadConfig(event) {
                     const file = event.target.files[0];
@@ -7511,8 +8527,29 @@ SELECT COLUMNS('^dim_') FROM source1;`
                                 direction: group.direction || 'row',
                                 style: group.style || '',
                                 _order: ConfigManager.normalizeOrder(group._order ?? group.order, groupIndex), // Préserver l'_order / order config ou l'index
-                                cells: (group.cells || []).map((cell, cellIndex) => initCell(cell, cellIndex))
+                                cells: (group.cells || []).map((cell, cellIndex) => initCell(cell, cellIndex)),
+                                accordion: group.accordion || false,
+                                title: group.title || '',
+                                accordionOpen: group.accordionOpen !== false // true par défaut
                             };
+
+                            // Ajouter ifQuery si présent
+                            if (group.ifQuery) {
+                                newGroup.ifQuery = group.ifQuery;
+                                newGroup.ifQueryLanguageType = group.ifQueryLanguageType || 'sql';
+                            }
+
+                            // Ajouter loop si présent
+                            if (group.loop) {
+                                newGroup.loop = {
+                                    enabled: group.loop.enabled || false,
+                                    query: group.loop.query || '',
+                                    zip: group.loop.zip || false,
+                                    zipQuery: group.loop.zipQuery || ''
+                                };
+                            } else {
+                                newGroup.loop = { enabled: false, query: '', zip: false, zipQuery: '' };
+                            }
 
                             if (group.children && group.children.length > 0) {
                                 newGroup.children = group.children.map((child, childIndex) => {
@@ -7575,6 +8612,10 @@ SELECT COLUMNS('^dim_') FROM source1;`
                         // Charger les fichiers source en attente (depuis la config JSON)
                         await this.loadPendingSourceFiles();
 
+                        // Exécuter les init params et évaluer les ifQuery
+                        await this.runInitUIParameters();
+                        await this.evaluateAllGroupIfQueries();
+
                         // Mettre à jour le moteur DB si différent dans la config importée
                         const configDbEngine = config.ui?.dbEngine;
                         if (configDbEngine && configDbEngine !== this.dbEngine) {
@@ -7622,110 +8663,6 @@ SELECT COLUMNS('^dim_') FROM source1;`
                         }
                     }
                 },
-
-                async exportHTML(clientOnly = false) {
-                    this.isLoading = true;
-                    this.setStatus('Génération HTML...', 'loading');
-
-                    try {
-                        // includeFileData = false pour l'export HTML (les fichiers sont stockés dans des balises script séparées)
-                        const config = await ConfigManager.buildConfigFromState(this.pages, clientOnly ? false : this.devMode, this.displaySettings, false, this.currentTheme, this.dbEngine, this.directedAcyclicGraph);
-                        const jsonString = JSON.stringify(config, null, 2);
-                        const configBase64 = ConfigManager.encodeUTF8ToBase64(jsonString);
-
-                        // Mettre à jour la config base64 dans le DOM
-                        document.getElementById('defaultConfigBase64')?.remove();
-                        const configScript = document.createElement('script');
-                        configScript.type = 'application/octet-stream';
-                        configScript.id = 'defaultConfigBase64';
-                        configScript.textContent = configBase64;
-                        document.head.appendChild(configScript);
-
-                        // Collecter les fichiers source et templates docx depuis tous les groupes (récursivement)
-                        const collectSourceFiles = async (group, groupPath = []) => {
-                            for (let cellIndex = 0; cellIndex < (group.cells || []).length; cellIndex++) {
-                                const cell = group.cells[cellIndex];
-                                // Vérifier que le fichier existe vraiment (fichier en mémoire ET nom de fichier)
-                                if (cell.type === 'source' && cell._currentFile && cell._fileName) {
-                                    const safeSourceName = cell.name.replace(/[^a-zA-Z0-9_]/g, '_');
-
-                                    // Supprimer les anciens scripts pour cette source
-                                    document.querySelectorAll(`script[id^="sourceFile_${safeSourceName}"]`).forEach(s => s.remove());
-
-                                    const arrayBuffer = await cell._currentFile.arrayBuffer();
-                                    const compressedBuffer = await FileHandler.compressGzip(arrayBuffer);
-                                    const fileBase64 = FileHandler.arrayBufferToBase64(compressedBuffer);
-
-                                    const script = document.createElement('script');
-                                    script.type = 'application/octet-stream';
-                                    script.id = `sourceFile_${safeSourceName}`;
-                                    script.dataset.sourceName = cell.name;
-                                    script.dataset.fileName = cell._fileName;
-                                    script.textContent = fileBase64;
-                                    document.head.appendChild(script);
-                                } else if (cell.type === 'source' && !cell._currentFile) {
-                                    // Si la cellule source n'a pas de fichier, supprimer les scripts existants
-                                    const safeSourceName = cell.name.replace(/[^a-zA-Z0-9_]/g, '_');
-                                    document.querySelectorAll(`script[id^="sourceFile_${safeSourceName}"]`).forEach(s => s.remove());
-                                }
-                                
-                                // Gérer les templates docx pour publipostageWord
-                                if (cell.type === 'publipostageWord' && cell.docxTemplateBase64 && cell.docxTemplateFileName) {
-                                    // Utiliser un identifiant stable basé sur la position
-                                    const cellPath = [...groupPath, cellIndex].join('_');
-                                    const stableId = `docxTemplate_${cellPath}`;
-
-                                    // Supprimer les anciens scripts pour ce template
-                                    document.querySelectorAll(`script[id="${stableId}"]`).forEach(s => s.remove());
-
-                                    const script = document.createElement('script');
-                                    script.type = 'application/octet-stream';
-                                    script.id = stableId;
-                                    script.dataset.cellPath = cellPath;
-                                    script.dataset.fileName = cell.docxTemplateFileName;
-                                    script.textContent = cell.docxTemplateBase64;
-                                    document.head.appendChild(script);
-                                } else if (cell.type === 'publipostageWord' && !cell.docxTemplateBase64) {
-                                    // Si la cellule n'a pas de template, supprimer les scripts existants
-                                    const cellPath = [...groupPath, cellIndex].join('_');
-                                    const stableId = `docxTemplate_${cellPath}`;
-                                    document.querySelectorAll(`script[id="${stableId}"]`).forEach(s => s.remove());
-                                }
-                            }
-                            for (let childIndex = 0; childIndex < (group.children || []).length; childIndex++) {
-                                await collectSourceFiles(group.children[childIndex], [...groupPath, childIndex]);
-                            }
-                        };
-
-                        // Collecter les fichiers de toutes les pages
-                        for (let pageIndex = 0; pageIndex < this.pages.length; pageIndex++) {
-                            const page = this.pages[pageIndex];
-                            
-                            // Collecter les fichiers des groupes de la page
-                            for (let groupIndex = 0; groupIndex < page.groups.length; groupIndex++) {
-                                await collectSourceFiles(page.groups[groupIndex], [groupIndex]);
-                            }
-                            
-                            // Collecter aussi les templates des linkGroups
-                            for (let groupIndex = 0; groupIndex < (page.linkGroups || []).length; groupIndex++) {
-                                await collectSourceFiles(page.linkGroups[groupIndex], [-1, groupIndex]);
-                            }
-                        }
-
-                        // Récupérer le HTML complet
-                        let htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
-                        htmlContent = htmlContent.replace(/<html[^>]*>/i, '<html lang="fr">');
-
-                        const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
-                        FileHandler.downloadFile(blob, 'index.sqljob.html');
-
-                        this.setStatus('HTML exporté', 'success');
-                    } catch (error) {
-                        this.setStatus('Erreur export HTML: ' + error.message, 'error');
-                    } finally {
-                        this.isLoading = false;
-                    }
-                }
             };
         }
 
