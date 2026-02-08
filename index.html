@@ -841,7 +841,7 @@
                         cleanCell.name = cell.name;
                         cleanCell.importText = cell.importText;
                         cleanCell.query = cell.query;
-                        cleanCell.csvQuery = cell.csvQuery;
+                        cleanCell.fallbackAllVarcharOnError = cell.fallbackAllVarcharOnError;
                         cleanCell.xlsx = cell.xlsx;
                         cleanCell.autoRunNextCells = cell.autoRunNextCells;
                         cleanCell.preloadXlsxBySheetjs = cell.preloadXlsxBySheetjs || false;
@@ -891,6 +891,9 @@
                         cleanCell.initRunQuery = cell.initRunQuery;
                         cleanCell.query = cell.query;
                         if (cell.inputType) cleanCell.inputType = cell.inputType;
+                        if (cell.rangeMin !== undefined) cleanCell.rangeMin = cell.rangeMin;
+                        if (cell.rangeMax !== undefined) cleanCell.rangeMax = cell.rangeMax;
+                        if (cell.rangeStep !== undefined) cleanCell.rangeStep = cell.rangeStep;
                         if (cell.userVisible !== undefined) cleanCell.userVisible = cell.userVisible;
                         if (cell.userEditable !== undefined) cleanCell.userEditable = cell.userEditable;
                         if (cell.preserveUserValue !== undefined) cleanCell.preserveUserValue = cell.preserveUserValue;
@@ -1624,7 +1627,7 @@
             // Génère le HTML du body d'une cellule (tous les types)
             static renderBody(pathExpr, cellIdxExpr) {
                 return `
-                    <div class="p-2 relative">
+                    <div class="pt-1 pb-1 pl-2 pr-2 relative">
                         <!-- MARKDOWN CELL -->
                         <template x-if="cellItem.cell.type === 'markdown'">
                             <div>
@@ -1682,7 +1685,7 @@
                         
                         <!-- SOURCE CELL -->
                         <template x-if="cellItem.cell.type === 'source'">
-                            <div class="flex items-center justify-center min-h-20 rounded-lg transition-all duration-200"
+                            <div class="flex items-center justify-center rounded-lg transition-all duration-200 mt-1 mb-1"
                                  :class="cellItem.cell._fileName 
                                     ? 'border-2 border-solid border-success bg-success/10 cursor-default' 
                                     : (cellItem.cell._isDragging 
@@ -1693,14 +1696,14 @@
                                  @dragleave.prevent="cellItem.cell._isDragging = false"
                                  @drop.prevent="handleSingleSourceDrop($event, ${pathExpr}, ${cellIdxExpr})">
                                 <template x-if="!cellItem.cell._fileName">
-                                    <div class="text-center p-4">
-                                        <div class="text-4xl mb-2">📁</div>
+                                    <div class="text-center p-1">
+                                        <div class="text-4xl mb-0">📁</div>
                                         <p class="m-0 text-base-content/60 text-sm" x-text="cellItem.cell.importText || 'Glissez-déposez ici'"></p>
-                                        <p class="mt-2 mb-0 text-accent text-xs font-semibold" x-text="'→ ' + cellItem.cell.name"></p>
+                                        <p class="mt-0 mb-0 text-accent text-xs font-semibold" x-text="'→ ' + cellItem.cell.name"></p>
                                     </div>
                                 </template>
                                 <template x-if="cellItem.cell._fileName">
-                                    <div class="flex items-center gap-3 px-4 py-3 w-full">
+                                    <div class="flex flex-wrap items-center gap-3 px-4 py-3 w-full">
                                         <span class="text-xl">✅</span>
                                         <span class="flex-1 text-success font-medium truncate" x-text="cellItem.cell._fileName"></span>
                                         <span class="text-base-content/60 text-xs" x-text="'→ ' + cellItem.cell.name"></span>
@@ -1770,7 +1773,7 @@
                         
                         <!-- UIPARAMETER CELL -->
                         <template x-if="cellItem.cell.type === 'uiParameter' && (devMode || cellItem.cell.userVisible !== false)">
-                            <div class="flex flex-col gap-3">
+                            <div class="flex flex-col gap-0">
                                 <div x-show="devMode" class="text-sm font-semibold text-primary mb-1" x-text="'$' + cellItem.cell.paramName"></div>
                                 <div x-show="devMode" x-html="renderUiParameterEditor(cellItem.cell)"></div>
                                 <template x-if="cellItem.cell.paramType === 'input'">
@@ -1801,6 +1804,24 @@
                                         </template>
                                     </div>
                                 </template>
+                                <template x-if="cellItem.cell.paramType === 'range'">
+                                    <fieldset class="fieldset">
+                                        <legend class="fieldset-legend" x-text="cellItem.cell.label"></legend>
+                                        <div class="flex items-center gap-3 w-full">
+                                            <span class="text-xs text-base-content/60 min-w-[2rem] text-right" x-text="cellItem.cell.rangeMin ?? 0"></span>
+                                            <input type="range"
+                                                class="range range-sm range-primary flex-1"
+                                                x-model.number="cellItem.cell._value"
+                                                :min="cellItem.cell.rangeMin ?? 0"
+                                                :max="cellItem.cell.rangeMax ?? 100"
+                                                :step="cellItem.cell.rangeStep ?? 1"
+                                                @input="cellItem.cell._userModified = true; onParameterValueChange(cellItem.cell)"
+                                                :disabled="cellItem.cell.userEditable === false">
+                                            <span class="text-xs text-base-content/60 min-w-[2rem]" x-text="cellItem.cell.rangeMax ?? 100"></span>
+                                            <span class="badge badge-primary badge-sm font-mono min-w-[3rem] text-center" x-text="cellItem.cell._value"></span>
+                                        </div>
+                                    </fieldset>
+                                </template>
                                 <template x-if="cellItem.cell._paramError">
                                     <div class="p-2 text-error text-sm bg-error/10 rounded" x-text="cellItem.cell._paramError"></div>
                                 </template>
@@ -1809,7 +1830,7 @@
                         
                         <!-- BUTTON RUN NEXT CELLS -->
                         <template x-if="cellItem.cell.type === 'buttonRunNextCells'">
-                            <div class="flex justify-center p-2">
+                            <div class="flex justify-center p-0">
                                 <button class="btn btn-primary btn-sm" 
                                         @click="runCellsAfter(${pathExpr}, ${cellIdxExpr})"
                                         :disabled="isLoading">
@@ -2011,7 +2032,6 @@
                         <a>📤 Export</a>
                         <ul class="p-2">
                             <li><button @click="openExportModal('html'); document.getElementById('mobile-drawer').checked = false;" :disabled="isLoading">💾 HTML</button></li>
-                            <li><button @click="openExportModal('html-client'); document.getElementById('mobile-drawer').checked = false;" :disabled="isLoading">💾 HTML Client</button></li>
                             <li><button @click="openExportModal('json'); document.getElementById('mobile-drawer').checked = false;">📦 JSON</button></li>
                             <li><button @click="openExportModal('base64'); document.getElementById('mobile-drawer').checked = false;">🔐 Base64</button></li>
                             <li><button @click="openExportModal('gist'); document.getElementById('mobile-drawer').checked = false;" :disabled="isLoading">🐙 Partager via Gist</button></li>
@@ -2107,7 +2127,6 @@
                             </div>
                             <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
                                 <li><button @click="openExportModal('html')" :disabled="isLoading">💾 HTML</button></li>
-                                <li><button @click="openExportModal('html-client')" :disabled="isLoading">💾 HTML Client</button></li>
                                 <li><button @click="openExportModal('json')">📦 JSON</button></li>
                                 <li><button @click="openExportModal('base64')">🔐 Base64</button></li>
                                 <li><button @click="openExportModal('gist')" :disabled="isLoading">🐙 Partager via Gist</button></li>
@@ -2647,8 +2666,8 @@
                                 </div>
                                 <div class="form-control">
                                     <label class="label gap-2">
-                                        <span class="label-text">Requête d'import (xlsx, parquet, json...)</span>
-                                        <span class="tooltip tooltip-bottom" data-tip="Utilisez {fileNameUpload} pour le nom du fichier. Utilisée pour tous les formats sauf CSV.">
+                                        <span class="label-text">Requête d'import</span>
+                                        <span class="tooltip tooltip-bottom" data-tip="Utilisez {fileNameUpload} pour le nom du fichier. Utilisée pour tous les formats (csv, xlsx, parquet, json...).">
                                             <span class="badge badge-sm cursor-help">?</span>
                                         </span>
                                     </label>
@@ -2656,20 +2675,13 @@
                                               placeholder="CREATE OR REPLACE TABLE source1 AS SELECT * FROM '{fileNameUpload}'"></textarea>
                                 </div>
                                 <div class="form-control">
-                                    <label class="label gap-2">
-                                        <span class="label-text">Requête d'import CSV</span>
-                                        <span class="tooltip tooltip-bottom" data-tip="Utilisée pour les fichiers .csv ou xlsx prétraités par sheetjs.">
+                                    <label class="label cursor-pointer justify-start gap-3">
+                                        <input type="checkbox" class="checkbox checkbox-sm" x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).fallbackAllVarcharOnError">
+                                        <span class="label-text">Fallback ALL_VARCHAR en cas d'erreur</span>
+                                        <span class="tooltip tooltip-bottom" data-tip="Si la requête d'import échoue, retente avec ALL_VARCHAR=true et des options adaptées au format du fichier (csv, xlsx, tsv, txt). Utile quand DuckDB type mal certaines colonnes.">
                                             <span class="badge badge-sm cursor-help">?</span>
                                         </span>
                                     </label>
-                                    <textarea class="textarea textarea-bordered w-full" x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).csvQuery" rows="3"
-                                              placeholder="CREATE OR REPLACE TABLE source1 AS 
-SELECT * FROM read_csv(\'{fileNameUpload}\', 
-    ALL_VARCHAR=true, 
-    HEADER=true,
-    sample_size=-1,
-    auto_detect=true
-)"></textarea>
                                 </div>
                                 <div class="form-control">
                                     <label class="label cursor-pointer justify-start gap-3">
@@ -2856,6 +2868,7 @@ SELECT * FROM read_csv(\'{fileNameUpload}\',
                                     <select class="select select-bordered select-sm w-full" x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).paramType">
                                         <option value="input">📝 Champ texte (input)</option>
                                         <option value="dropdown">📋 Liste déroulante (dropdown)</option>
+                                        <option value="range">🎚️ Curseur (range)</option>
                                     </select>
                                 </div>
                                 <div class="form-control">
@@ -2933,6 +2946,49 @@ SELECT * FROM read_csv(\'{fileNameUpload}\',
                                             <option value="search">🔍 Recherche (search)</option>
                                             <option value="time">⏰ Heure (time)</option>
                                         </select>
+                                    </div>
+                                </template>
+                                <!-- Config RANGE -->
+                                <template x-if="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex)?.paramType === 'range'">
+                                    <div class="flex flex-col gap-2">
+                                        <div class="form-control">
+                                            <label class="label gap-2">
+                                                <span class="label-text">Valeur minimum</span>
+                                                <span class="tooltip tooltip-bottom" data-tip="Valeur minimale du curseur (défaut: 0)">
+                                                    <span class="badge badge-sm cursor-help">?</span>
+                                                </span>
+                                            </label>
+                                            <input type="number" 
+                                                   class="input input-bordered input-sm w-full"
+                                                   x-model.number="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).rangeMin"
+                                                   placeholder="0">
+                                        </div>
+                                        <div class="form-control">
+                                            <label class="label gap-2">
+                                                <span class="label-text">Valeur maximum</span>
+                                                <span class="tooltip tooltip-bottom" data-tip="Valeur maximale du curseur (défaut: 100)">
+                                                    <span class="badge badge-sm cursor-help">?</span>
+                                                </span>
+                                            </label>
+                                            <input type="number" 
+                                                   class="input input-bordered input-sm w-full"
+                                                   x-model.number="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).rangeMax"
+                                                   placeholder="100">
+                                        </div>
+                                        <div class="form-control">
+                                            <label class="label gap-2">
+                                                <span class="label-text">Pas (step)</span>
+                                                <span class="tooltip tooltip-bottom" data-tip="Incrément entre chaque valeur du curseur (défaut: 1)">
+                                                    <span class="badge badge-sm cursor-help">?</span>
+                                                </span>
+                                            </label>
+                                            <input type="number" 
+                                                   class="input input-bordered input-sm w-full"
+                                                   x-model.number="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).rangeStep"
+                                                   placeholder="1"
+                                                   min="0.001"
+                                                   step="any">
+                                        </div>
                                     </div>
                                 </template>
                             </div>
@@ -3088,10 +3144,10 @@ autoTable(doc, {
                                         <input type="checkbox" 
                                                class="checkbox" 
                                                x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).duckdbHandler"
-                                               :checked="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).duckdbHandler ?? true">
+                                               :checked="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).duckdbHandler ?? false">
                                         <div class="flex flex-col">
                                             <span class="label-text font-semibold">Utiliser DuckDBHandler</span>
-                                            <span class="label-text-alt">Si activé : utilise DuckDBHandler (mode actuel). Si désactivé : utilise la connexion Arrow native de Perspective</span>
+                                            <span class="label-text-alt">Si activé : utilise DuckDBHandler. Si désactivé : utilise la connexion Arrow.</span>
                                         </div>
                                     </label>
                                 </div>
@@ -3376,7 +3432,6 @@ autoTable(doc, {
                             <span x-show="exportModal.type === 'json'">📦 Export JSON</span>
                             <span x-show="exportModal.type === 'base64'">🔐 Export Base64</span>
                             <span x-show="exportModal.type === 'html'">💾 Export HTML</span>
-                            <span x-show="exportModal.type === 'html-client'">💾 Export HTML Client</span>
                         </h3>
                         <button class="btn btn-sm btn-ghost" @click="cancelExport()">✕</button>
                     </div>
@@ -3410,7 +3465,7 @@ autoTable(doc, {
                                 @keydown.enter="executeExport()">
                             <label class="label">
                                 <span class="label-text-alt" x-show="exportModal.type === 'base64'">Extension .base64.txt sera ajoutée automatiquement</span>
-                                <span class="label-text-alt" x-show="exportModal.type === 'html' || exportModal.type === 'html-client'">Le fichier sera nommé index.sqljob.html</span>
+                                <span class="label-text-alt" x-show="exportModal.type === 'html'">Le fichier sera nommé index.sqljob.html</span>
                                 <span class="label-text-alt" x-show="exportModal.type === 'json' || exportModal.type === 'gist'">Extension .json sera ajoutée automatiquement si absente</span>
                             </label>
                         </div>
@@ -3442,7 +3497,7 @@ autoTable(doc, {
                         <div class="alert alert-info" x-show="exportModal.type === 'gist'">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                             <span class="text-sm">
-                                Le Gist sera créé en <strong>privé</strong>. Seules les personnes avec le lien pourront y accéder.
+                                Ne partagez pas de données confidentielles. Le Gist sera accessible via le lien partagé.
                             </span>
                         </div>
                     </div>
@@ -3528,7 +3583,7 @@ autoTable(doc, {
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                             <span class="text-sm">
                                 Cette URL charge automatiquement votre configuration depuis GitHub Gist.
-                                Le gist est <strong>privé</strong> (seules les personnes avec le lien peuvent y accéder).
+                                Ne partagez pas de données confidentielles. Le Gist sera accessible via le lien partagé.
                             </span>
                         </div>
                     </div>
@@ -3542,6 +3597,14 @@ autoTable(doc, {
 
     </div>`;
         }
+
+        // ═══════════════════════════════════════════════════════════════════════════
+        // STORE NON-RÉACTIF POUR LES DONNÉES DE TABLEAUX (évite le Proxy Alpine)
+        // ═══════════════════════════════════════════════════════════════════════════
+        // Les résultats volumineux de requêtes table sont stockés ici pour que
+        // renderTableInContainer puisse itérer sans passer par le Proxy Alpine.js,
+        // évitant ainsi des millions de traps Proxy qui freezent l'UI.
+        const _rawTableDataStore = new Map();
 
         // ═══════════════════════════════════════════════════════════════════════════
         // STORE ALPINE.JS POUR LA MODALE DES TEMPLATES
@@ -5519,7 +5582,7 @@ FROM source1 LIMIT 10;`;
                             newCell.name = singleSourceName;
                             newCell.importText = 'Glissez-déposez votre fichier ici';
                             newCell.query = `CREATE OR REPLACE TABLE ${singleSourceName} AS SELECT * FROM '{fileNameUpload}'`;
-                            newCell.csvQuery = `CREATE OR REPLACE TABLE ${singleSourceName} AS SELECT * FROM read_csv('{fileNameUpload}',  ALL_VARCHAR=true, HEADER=true, sample_size=-1, auto_detect=true)`;
+                            newCell.fallbackAllVarcharOnError = true;
                             newCell.xlsx = {
                                 options: { type: 'array', raw: false, dateNF: 'dd/mm/yyyy', cellDates: true },
                                 toCsvOptions: { dateNF: 'dd/mm/yyyy', FS: ',', RS: '\n' },
@@ -5555,9 +5618,12 @@ FROM source1 LIMIT 10;`;
                         case 'uiParameter':
                             newCell.paramName = this.generateUniqueParamName();
                             newCell.languageType = 'sql'; // 'sql' ou 'js'
-                            newCell.paramType = 'input'; // 'input' ou 'dropdown'
+                            newCell.paramType = 'input'; // 'input', 'dropdown' ou 'range'
                             newCell.inputType = 'text'; // Type d'input: text, password, email, number, date, datetime-local, week, month, tel, url, search, time
                             newCell.label = '';
+                            newCell.rangeMin = 0; // Valeur min du range
+                            newCell.rangeMax = 100; // Valeur max du range
+                            newCell.rangeStep = 1; // Pas du range
                             newCell.initRunQuery = false; // Exécuter la requête d'init au chargement du notebook
                             newCell.query = ''; // Requête SQL/JS pour les options du dropdown
                             newCell.userVisible = true; // Afficher la cellule en mode client
@@ -5599,7 +5665,7 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                         case 'perspective':
                             newCell.query = 'SELECT * FROM source1';
                             newCell.perspectiveConfig = '';
-                            newCell.duckdbHandler = true;
+                            newCell.duckdbHandler = false;
                             newCell._showParsedQuery = false;
                             newCell._parseLevels = [];
                             newCell._perspectiveReady = false;
@@ -5704,6 +5770,7 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                     } else {
                         if (confirm('Supprimer cette cellule ?')) {
                             const cell = group.cells[cellIndex];
+                            _rawTableDataStore.delete(cell._id);
                             if (this._tables && this._tables[cell._id]) {
                                 this._tables[cell._id].destroy();
                                 delete this._tables[cell._id];
@@ -5754,6 +5821,7 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                     if (!cell) return;
 
                     // Réinitialiser les propriétés spécifiques au type
+                    _rawTableDataStore.delete(cell._id);
                     cell._results = null;
                     cell._resultInfo = null;
 
@@ -5761,7 +5829,8 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                     if (cell.type === 'source') {
                         if (!cell.name) cell.name = this.generateUniqueSourceName();
                         if (!cell.importText) cell.importText = 'Glissez-déposez votre fichier ici';
-                        if (!cell.query) cell.query = `CREATE OR REPLACE TABLE ${cell.name} AS SELECT * FROM read_csv('{fileNameUpload}', ALL_VARCHAR=true, HEADER=true, sample_size=-1, auto_detect=true)`;
+                        if (!cell.query) cell.query = `CREATE OR REPLACE TABLE ${cell.name} AS SELECT * FROM '{fileNameUpload}'`;
+                        if (cell.fallbackAllVarcharOnError === undefined) cell.fallbackAllVarcharOnError = true;
                         if (!cell.xlsx) cell.xlsx = { options: { type: 'array', raw: false }, toCsvOptions: { FS: ',', RS: '\n' }, sheetSelection: { type: { auto: true } } };
                         if (cell.autoRunNextCells === undefined) cell.autoRunNextCells = false;
                         if (cell._fileName === undefined) cell._fileName = '';
@@ -5780,6 +5849,9 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                         if (!cell.languageType) cell.languageType = 'sql';
                         if (!cell.paramType) cell.paramType = 'input';
                         if (!cell.inputType) cell.inputType = 'text';
+                        if (cell.rangeMin === undefined) cell.rangeMin = 0;
+                        if (cell.rangeMax === undefined) cell.rangeMax = 100;
+                        if (cell.rangeStep === undefined) cell.rangeStep = 1;
                         if (cell.label === undefined) cell.label = '';
                         if (cell.initRunQuery === undefined) cell.initRunQuery = false;
                         if (!cell.query) cell.query = '';
@@ -5809,7 +5881,7 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                     if (cell.type === 'perspective') {
                         if (!cell.query) cell.query = 'SELECT * FROM source1';
                         if (cell.perspectiveConfig === undefined) cell.perspectiveConfig = '';
-                        if (cell.duckdbHandler === undefined) cell.duckdbHandler = true;
+                        if (cell.duckdbHandler === undefined) cell.duckdbHandler = false;
                         if (!cell._parseLevels) cell._parseLevels = [];
                         cell._perspectiveReady = false;
                         cell._perspectiveClient = null;
@@ -5890,12 +5962,23 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                     try {
                         await DuckDBManager.registerFile(file.name, file);
 
-                        const ext = file.name.split('.').pop().toLowerCase();
+                        const fileName = file.name;
                         const tableName = cell.name || 'source1';
                         let loadQuery;
+                        let executed = false;
 
-                        if ((ext === 'xlsx' || ext === 'xls') && cell.preloadXlsxBySheetjs) {
-                            // Mode legacy : conversion via sheetjs puis utilisation de csvQuery
+                        // Déterminer l'extension logique (gère .csv.gz, .tsv.gz, .txt.gz)
+                        const getLogicalExt = (name) => {
+                            const lower = name.toLowerCase();
+                            if (lower.endsWith('.csv.gz')) return 'csv.gz';
+                            if (lower.endsWith('.tsv.gz')) return 'tsv.gz';
+                            if (lower.endsWith('.txt.gz')) return 'txt.gz';
+                            return lower.split('.').pop();
+                        };
+                        const logicalExt = getLogicalExt(fileName);
+
+                        // Mode legacy sheetjs pour xlsx/xls
+                        if ((logicalExt === 'xlsx' || logicalExt === 'xls') && cell.preloadXlsxBySheetjs) {
                             this.setStatus('Conversion Excel via sheetjs...', 'loading');
                             const { csv, csvFileName } = await FileHandler.processExcelFile(
                                 file,
@@ -5903,66 +5986,53 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                                 cell.xlsx?.toCsvOptions,
                                 cell.xlsx?.sheetSelection
                             );
-
                             const csvBlob = new Blob([csv], { type: 'text/csv' });
                             await DuckDBManager.registerFile(csvFileName, csvBlob);
 
-                            const csvQueryTemplate = (cell.csvQuery || '').trim();
-                            loadQuery = csvQueryTemplate
-                                ? csvQueryTemplate.replace(/\{fileNameUpload\}/g, csvFileName)
-                                : `CREATE OR REPLACE TABLE ${tableName} AS SELECT * FROM read_csv('${csvFileName}', ALL_VARCHAR=true, HEADER=true, sample_size=-1, auto_detect=true)`;
-                        } else if (ext === 'csv') {
-                            // Fichier CSV : utiliser csvQuery avec gestion des encodages
-                            const csvQueryTemplate = (cell.csvQuery || '').trim();
-                            const encodings = [null, 'latin-1', 'utf-8', 'utf-16'];
-                            let csvLoaded = false;
-                            let lastError = null;
-
-                            for (const encoding of encodings) {
-                                try {
-                                    const encodingParam = encoding ? `, encoding='${encoding}'` : '';
-                                    if (csvQueryTemplate) {
-                                        // Si template custom, on injecte l'encodage avant la dernière parenthèse fermante
-                                        if (encoding && !csvQueryTemplate.toLowerCase().includes('encoding')) {
-                                            loadQuery = csvQueryTemplate.replace(/\{fileNameUpload\}/g, file.name).replace(/\)\s*$/, encodingParam + ')');
-                                        } else {
-                                            loadQuery = csvQueryTemplate.replace(/\{fileNameUpload\}/g, file.name);
-                                        }
-                                    } else {
-                                        loadQuery = `CREATE OR REPLACE TABLE ${tableName} AS SELECT * FROM read_csv('${file.name}', ALL_VARCHAR=true, HEADER=true, sample_size=-1, auto_detect=true${encodingParam})`;
-                                    }
-                                    
-                                    await DuckDBManager.executeQuery(loadQuery);
-                                    csvLoaded = true;
-                                    if (encoding) {
-                                        this.setStatus(`${cell.name} chargé avec encodage ${encoding}`, 'success');
-                                    }
-                                    break;
-                                } catch (err) {
-                                    lastError = err;
-                                    if (err.message && err.message.includes('Invalid unicode')) {
-                                        this.setStatus(`Encodage UTF-8 échoué, essai avec ${encodings[encodings.indexOf(encoding) + 1] || 'autres'}...`, 'loading');
-                                        continue;
-                                    }
-                                    throw err;
-                                }
-                            }
-
-                            if (!csvLoaded) {
-                                throw lastError || new Error('Impossible de charger le CSV avec les encodages disponibles');
-                            }
-                            loadQuery = null; // Déjà exécuté dans la boucle
-                        } else {
-                            // Autres formats (xlsx, parquet, json...) : utiliser query
                             const queryTemplate = (cell.query || '').trim();
                             loadQuery = queryTemplate
-                                ? queryTemplate.replace(/\{fileNameUpload\}/g, file.name)
-                                : `CREATE OR REPLACE TABLE ${tableName} AS SELECT * FROM '${file.name}'`;
+                                ? queryTemplate.replace(/\{fileNameUpload\}/g, csvFileName)
+                                : `CREATE OR REPLACE TABLE ${tableName} AS SELECT * FROM '${csvFileName}'`;
+                        } else {
+                            // Tous les formats : utiliser la requête paramétrée
+                            const queryTemplate = (cell.query || '').trim();
+                            loadQuery = queryTemplate
+                                ? queryTemplate.replace(/\{fileNameUpload\}/g, fileName)
+                                : `CREATE OR REPLACE TABLE ${tableName} AS SELECT * FROM '${fileName}'`;
                         }
 
-                        // Exécuter la requête seulement si elle n'a pas déjà été exécutée (cas CSV avec retry)
-                        if (loadQuery) {
+                        // Exécuter la requête principale
+                        try {
                             await DuckDBManager.executeQuery(loadQuery);
+                            executed = true;
+                        } catch (primaryError) {
+                            // Si fallbackAllVarcharOnError est activé, tenter une requête adaptée au format
+                            if (!cell.fallbackAllVarcharOnError) throw primaryError;
+
+                            this.setStatus(`Requête initiale échouée, tentative fallback ALL_VARCHAR...`, 'loading');
+                            let fallbackQuery = null;
+
+                            if (['csv', 'csv.gz'].includes(logicalExt)) {
+                                fallbackQuery = `CREATE OR REPLACE TABLE ${tableName} AS SELECT * FROM read_csv('${fileName}', ALL_VARCHAR = true, HEADER = true, AUTO_DETECT = true, SAMPLE_SIZE = -1, IGNORE_ERRORS = true)`;
+                            } else if (['xlsx', 'xls'].includes(logicalExt)) {
+                                fallbackQuery = `CREATE OR REPLACE TABLE ${tableName} AS SELECT * FROM read_xlsx('${fileName}', ALL_VARCHAR = true, HEADER = true, STOP_AT_EMPTY = false, EMPTY_AS_VARCHAR = true, IGNORE_ERRORS = true)`;
+                            } else if (['tsv', 'tsv.gz', 'txt', 'txt.gz'].includes(logicalExt)) {
+                                fallbackQuery = `CREATE OR REPLACE TABLE ${tableName} AS SELECT * FROM read_csv('${fileName}', ALL_VARCHAR = true, HEADER = true, DELIM = '\\t', AUTO_DETECT = false, SAMPLE_SIZE = -1, IGNORE_ERRORS = true)`;
+                            }
+
+                            if (fallbackQuery) {
+                                try {
+                                    await DuckDBManager.executeQuery(fallbackQuery);
+                                    executed = true;
+                                    this.setStatus(`${cell.name} chargé via fallback ALL_VARCHAR`, 'success');
+                                } catch (fallbackError) {
+                                    // Le fallback a aussi échoué, remonter l'erreur originale
+                                    throw primaryError;
+                                }
+                            } else {
+                                // Pas de fallback disponible pour cette extension
+                                throw primaryError;
+                            }
                         }
                         cell._loaded = true;
                         cell._status = 'success';
@@ -5974,9 +6044,7 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                         // Auto-exécution des cellules suivantes si activé (avec conditions d'arrêt)
                         if (cell.autoRunNextCells) {
                             const result = await this.runCellsAfterWithStopConditions(path, cellIndex, cell._id);
-                            if (result.stopped) {
-                                console.log('Auto-exécution arrêtée:', result.reason);
-                            } else {
+                            if (!result.stopped) {
                                 this.setStatus('Auto-exécution terminée', 'success');
                             }
                         }
@@ -6433,14 +6501,18 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
 
                         const maxRows = cell.maxRows || 100000;
                         const truncated = results.length > maxRows;
-                        cell._results = results.slice(0, maxRows);
+                        const rawResults = results.slice(0, maxRows);
+                        // Stocker les données brutes hors Alpine pour éviter le freeze
+                        // dû aux millions de traps Proxy lors de l'itération
+                        _rawTableDataStore.set(cell._id, rawResults);
+                        cell._results = rawResults;
                         cell._resultInfo = `${results.length} ligne(s)` + (truncated ? ` (limité à ${maxRows})` : '') +
                             (cell._parseLevels.length > 1 ? ` - ${cell._parseLevels.length - 1} niveau(x) de parsing` : '');
 
                         await this.$nextTick();
                         
-                        // Rendre le tableau dans le conteneur
-                        this.renderTableInContainer(cell);
+                        // Rendre le tableau (fromExecute=true lève le garde anti-cascade)
+                        this.renderTableInContainer(cell, true);
 
                         this.setStatus('Tableau chargé', 'success');
                     } catch (error) {
@@ -6450,23 +6522,32 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                 },
                 
                 // Fonction pour rendre un tableau dans son conteneur (appelée aussi par x-init)
-                renderTableInContainer(cell) {
+                renderTableInContainer(cell, fromExecute = false) {
+                    // Garde anti-cascade : les mutations DOM du DataTable déclenchent
+                    // le MutationObserver Alpine → x-init re-fire → boucle infinie.
+                    // Seul executeTableCell peut lever ce garde (fromExecute = true).
+                    if (cell._tableRenderGuard && !fromExecute) return;
+
                     const containerId = 'table-' + cell._id;
                     const container = document.getElementById(containerId);
+                    // Utiliser les données brutes du store (hors Proxy Alpine) pour éviter
+                    // le freeze lors de l'itération sur des grands jeux de données.
+                    // Fallback sur cell._results si le store est vide (ex: x-init au chargement).
+                    const rawResults = _rawTableDataStore.get(cell._id) || cell._results;
 
-                    if (container && cell._results && cell._results.length > 0) {
+                    if (container && rawResults && rawResults.length > 0) {
                         if (this._tables[cell._id]) {
                             this._tables[cell._id].destroy();
                         }
 
-                            const columns = Object.keys(cell._results[0]).map(key => ({
+                            const columns = Object.keys(rawResults[0]).map(key => ({
                                 title: key,
                                 field: key
                             }));
 
                             const tableData = {
-                                headings: Object.keys(cell._results[0]),
-                                data: cell._results.map(row => Object.values(row))
+                                headings: Object.keys(rawResults[0]),
+                                data: rawResults.map(row => Object.values(row))
                             };
 
                             const dataTable = new simpleDatatables.DataTable('#' + containerId, {
@@ -6584,6 +6665,10 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                                     });
                                 });
                             });
+
+                            // Garde anti-cascade : les mutations DOM du DataTable déclenchent
+                            // Alpine MutationObserver → x-init re-fire → on bloque les appels suivants.
+                            cell._tableRenderGuard = true;
                     }
                 },
 
@@ -6758,7 +6843,7 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                                         throw new Error('Le code JS doit retourner un tableau pour un dropdown');
                                     }
                                 } else {
-                                    // Pour input, on attend une valeur simple
+                                    // Pour input et range, on attend une valeur simple
                                     results = [{ value: jsResult }];
                                 }
                             } catch (jsError) {
@@ -6807,6 +6892,24 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                                 const rawValue = results[0][firstColumnKey];
                                 // Formater la valeur selon le type d'input (date, time, etc.)
                                 cell._value = formatValueForInputType(rawValue, cell.inputType);
+                            }
+
+                            cell._initialized = true;
+                            this.setStatus(`${cell.paramName} initialisé`, 'success');
+
+                        } else if (cell.paramType === 'range') {
+                            // Charger la valeur initiale si une requête est définie
+                            if (results.length > 0) {
+                                const firstColumnKey = Object.keys(results[0])[0];
+                                const rawValue = results[0][firstColumnKey];
+                                const numValue = Number(rawValue);
+                                const min = cell.rangeMin ?? 0;
+                                const max = cell.rangeMax ?? 100;
+                                // Clamper la valeur entre min et max
+                                cell._value = Math.min(max, Math.max(min, isNaN(numValue) ? min : numValue));
+                            } else if (cell._value === '' || cell._value === undefined) {
+                                // Valeur par défaut = min
+                                cell._value = cell.rangeMin ?? 0;
                             }
 
                             cell._initialized = true;
@@ -7126,7 +7229,6 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
 
                         // Choisir le mode de connexion selon le paramètre duckdbHandler
                         if (cell.duckdbHandler !== false) {
-                            // Mode DuckDBHandler (mode actuel)
                             
                             // Toujours supprimer la table si elle existe (même en première exécution)
                             try {
@@ -8005,13 +8107,23 @@ SELECT COLUMNS('^dim_') FROM source1;`
                     const group = this.getGroupAtPath(path);
                     if (!group) return { stopped: false };
 
+                    // Évaluer ifQuery avant d'exécuter le groupe (comme dans runGroupOnce)
+                    if (group.ifQuery?.trim()) {
+                        this.setStatus('Évaluation de la condition ifQuery...', 'loading');
+                        const ifQueryResult = await this.evaluateGroupIfQuery(group);
+                        group._ifQueryResult = ifQueryResult;
+
+                        if (!ifQueryResult) {
+                            this.setStatus('Groupe ignoré (ifQuery = false)', 'info');
+                            return { stopped: false };
+                        }
+                    }
+
                     const orderedItems = this.getAllItemsSorted(group);
                     for (const item of orderedItems) {
                         if (item.type === 'child') {
                             const result = await this.runGroupWithStopConditions([...path, item.originalIndex]);
-                            if (result.stopped) {
-                                return result;
-                            }
+                            if (result.stopped) return result;
                             continue;
                         }
 
@@ -8019,14 +8131,12 @@ SELECT COLUMNS('^dim_') FROM source1;`
 
                         // Condition d'arrêt : cellule buttonRunNextCells
                         if (cell.type === 'buttonRunNextCells') {
-                            this.setStatus('Arrêt : bouton "Exécuter les cellules suivantes" rencontré', 'info');
                             return { stopped: true, reason: 'buttonRunNextCells' };
                         }
 
                         // Condition d'arrêt : cellule source sans fichier ou non chargée
                         if (cell.type === 'source') {
                             if (!cell._fileName || !cell._currentFile || !cell._loaded) {
-                                this.setStatus(`Arrêt : la source "${cell.name}" n'a pas de fichier chargé`, 'info');
                                 return { stopped: true, reason: 'source_no_file', cellName: cell.name };
                             }
                             if (cell._status === 'error') {
@@ -8042,7 +8152,6 @@ SELECT COLUMNS('^dim_') FROM source1;`
                             cell._status = 'running';
                             await this.runCellAtPath(path, item.originalIndex);
 
-                            // Vérifier si l'exécution a causé une erreur
                             if (cell._status === 'error') {
                                 this.setStatus(`Arrêt : erreur lors de l'exécution d'une cellule`, 'error');
                                 return { stopped: true, reason: 'cell_error' };
@@ -8074,9 +8183,7 @@ SELECT COLUMNS('^dim_') FROM source1;`
 
                         if (item.type === 'child') {
                             const result = await this.runGroupWithStopConditions([...path, item.originalIndex]);
-                            if (result.stopped) {
-                                return result;
-                            }
+                            if (result.stopped) return result;
                             continue;
                         }
 
@@ -8098,7 +8205,6 @@ SELECT COLUMNS('^dim_') FROM source1;`
                                 this.setStatus(`Arrêt : la source "${cell.name}" a une erreur de chargement`, 'info');
                                 return { stopped: true, reason: 'source_error', cellName: cell.name };
                             }
-                            // Les cellules source sont déjà chargées, on ne les exécute pas
                             continue;
                         }
 
@@ -8118,13 +8224,69 @@ SELECT COLUMNS('^dim_') FROM source1;`
                         }
                     }
 
-                    // Exécuter tous les groupes suivants au niveau racine
-                    if (path.length === 1) {
-                        const rootGroupIndex = path[0];
-                        const result = await this.runGroupsFromIndexWithStopConditions(rootGroupIndex + 1);
-                        if (result.stopped) {
-                            return result;
+                    // Remonter la hiérarchie des groupes parents et continuer les items restants
+                    let currentPath = [...path];
+                    while (currentPath.length > 1) {
+                        const childIndexInParent = currentPath[currentPath.length - 1];
+                        currentPath = currentPath.slice(0, -1);
+                        const parentGroup = this.getGroupAtPath(currentPath);
+                        if (!parentGroup) break;
+
+                        const parentOrderedItems = this.getAllItemsSorted(parentGroup);
+                        const childPos = parentOrderedItems.findIndex(item =>
+                            item.type === 'child' && item.originalIndex === childIndexInParent
+                        );
+                        if (childPos === -1) break;
+
+                        // Continuer avec les items après le sous-groupe dans le parent
+                        for (let i = childPos + 1; i < parentOrderedItems.length; i++) {
+                            const item = parentOrderedItems[i];
+
+                            if (item.type === 'child') {
+                                const result = await this.runGroupWithStopConditions([...currentPath, item.originalIndex]);
+                                if (result.stopped) return result;
+                                continue;
+                            }
+
+                            const cell = item.item;
+
+                            if (cell.type === 'buttonRunNextCells') {
+                                this.setStatus('Arrêt : bouton "Exécuter les cellules suivantes" rencontré', 'info');
+                                return { stopped: true, reason: 'buttonRunNextCells' };
+                            }
+
+                            if (cell.type === 'source') {
+                                if (!cell._fileName || !cell._currentFile || !cell._loaded) {
+                                    this.setStatus(`Arrêt : la source "${cell.name}" n'a pas de fichier chargé`, 'info');
+                                    return { stopped: true, reason: 'source_no_file', cellName: cell.name };
+                                }
+                                if (cell._status === 'error') {
+                                    this.setStatus(`Arrêt : la source "${cell.name}" a une erreur de chargement`, 'info');
+                                    return { stopped: true, reason: 'source_error', cellName: cell.name };
+                                }
+                                continue;
+                            }
+
+                            try {
+                                cell._status = 'running';
+                                await this.runCellAtPath(currentPath, item.originalIndex);
+                                if (cell._status === 'error') {
+                                    this.setStatus(`Arrêt : erreur lors de l'exécution d'une cellule`, 'error');
+                                    return { stopped: true, reason: 'cell_error' };
+                                }
+                            } catch (error) {
+                                cell._status = 'error';
+                                this.setStatus(`Arrêt : erreur - ${error.message}`, 'error');
+                                return { stopped: true, reason: 'execution_error', error: error.message };
+                            }
                         }
+                    }
+
+                    // Au niveau racine, propager aux groupes suivants
+                    if (currentPath.length === 1) {
+                        const rootGroupIndex = currentPath[0];
+                        const result = await this.runGroupsFromIndexWithStopConditions(rootGroupIndex + 1);
+                        if (result.stopped) return result;
                     }
 
                     return { stopped: false };
@@ -8273,10 +8435,8 @@ SELECT COLUMNS('^dim_') FROM source1;`
                                 break;
 
                             case 'html':
-                            case 'html-client':
                                 this.setStatus('Génération HTML...', 'loading');
-                                const clientOnly = (type === 'html-client');
-                                await this.exportHTMLWithConfig(clientOnly, config);
+                                await this.exportHTMLWithConfig(config);
                                 this.setStatus('HTML exporté', 'success');
                                 break;
                         }
@@ -8294,7 +8454,7 @@ SELECT COLUMNS('^dim_') FROM source1;`
                     }
                 },
 
-                async exportHTMLWithConfig(clientOnly, config) {
+                async exportHTMLWithConfig(config) {
                     const jsonString = JSON.stringify(config, null, 2);
                     const configBase64 = ConfigManager.encodeUTF8ToBase64(jsonString);
 
@@ -8416,24 +8576,6 @@ SELECT COLUMNS('^dim_') FROM source1;`
                     if (this.gistShareUrl) {
                         window.open(this.gistShareUrl, '_blank');
                     }
-                },
-
-                // ─────────────────────────────────────────────────────────────────
-
-                // ─────────────────────────────────────────────────────────────────
-                // Wrappers de compatibilité pour les anciennes fonctions
-                // ─────────────────────────────────────────────────────────────────
-                
-                async exportConfig() {
-                    this.openExportModal('json');
-                },
-
-                async exportConfigBase64() {
-                    this.openExportModal('base64');
-                },
-
-                async exportHTML(clientOnly = false) {
-                    this.openExportModal(clientOnly ? 'html-client' : 'html');
                 },
 
                 // ─────────────────────────────────────────────────────────────────
