@@ -18,8 +18,6 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
     <style>
- 
-
         /* Alpine.js x-cloak pour cacher les éléments non initialisés */
         [x-cloak] {
             display: none !important;
@@ -32,7 +30,7 @@
         .datatable-container {
             background: transparent !important;
         }
-        
+
         .datatable-input,
         .datatable-selector {
             background: oklch(var(--b1)) !important;
@@ -80,7 +78,8 @@
         .editor-preview-full *:not(h1):not(h2):not(h3):not(h4):not(h5):not(h6) {
             all: revert;
         }
-        .editor-preview-full{
+
+        .editor-preview-full {
             overflow: visible;
         }
 
@@ -88,17 +87,18 @@
             background-color: var(--color-base-100) !important;
         }
 
-        .EasyMDEContainer .editor-preview-active ~ .CodeMirror {
+        .EasyMDEContainer .editor-preview-active~.CodeMirror {
             display: none;
         }
-        
+
         /* Styles pour les titres - doit venir APRÈS all: revert */
         .editor-preview-active h1,
         .editor-preview h1,
         .editor-preview-side h1,
         .editor-preview-full h1 {
             color: var(--color-primary) !important;
-            font-size: 2.25rem;       /* équivalent text-4xl */
+            font-size: 2.25rem;
+            /* équivalent text-4xl */
             line-height: 2.5rem;
             font-weight: 700;
         }
@@ -108,7 +108,8 @@
         .editor-preview-side h2,
         .editor-preview-full h2 {
             color: var(--color-secondary) !important;
-            font-size: 1.875rem;      /* équivalent text-3xl */
+            font-size: 1.875rem;
+            /* équivalent text-3xl */
             line-height: 2.25rem;
             font-weight: 600;
         }
@@ -118,24 +119,24 @@
             width: 100%;
             min-height: 80px;
         }
-        
+
         .codemirror-sql-container .cm-editor {
             background: oklch(var(--b1));
         }
-        
+
         .codemirror-sql-container .cm-gutters {
             background: oklch(var(--b2));
             border-right: 1px solid oklch(var(--b3));
         }
-        
+
         .codemirror-sql-container .cm-activeLineGutter {
             background: oklch(var(--b3));
         }
-        
+
         .codemirror-sql-container .cm-line {
             color: oklch(var(--bc));
         }
-        
+
         /* Tooltips marimo-sql */
         .cm-tooltip {
             background: oklch(var(--b2)) !important;
@@ -143,20 +144,20 @@
             border-radius: 0.5rem !important;
             box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1) !important;
         }
-        
+
         .cm-tooltip-autocomplete {
             background: oklch(var(--b2)) !important;
         }
-        
-        .cm-tooltip-autocomplete > ul > li {
+
+        .cm-tooltip-autocomplete>ul>li {
             color: oklch(var(--bc)) !important;
         }
-        
-        .cm-tooltip-autocomplete > ul > li[aria-selected] {
+
+        .cm-tooltip-autocomplete>ul>li[aria-selected] {
             background: oklch(var(--p) / 0.2) !important;
             color: oklch(var(--bc)) !important;
         }
-        
+
         /* Cursor */
         .codemirror-sql-container .cm-cursor {
             border-left-color: oklch(var(--p)) !important;
@@ -164,12 +165,12 @@
 
         .codemirror-sql-container div::selection {
             color: var(--color-secondary) !important;
-            background-color: var(--color-base-300)!important;
+            background-color: var(--color-base-300) !important;
         }
-
     </style>
 
 </head>
+
 <body class="min-h-screen font-sans bg-base-100 text-base-content transition-colors duration-200">
     <div id="app-container"></div>
 
@@ -311,10 +312,10 @@
 
             static async loadDocxtemplater() {
                 const docxtemplaterUrl = 'https://cdn.jsdelivr.net/npm/docxtemplater@3.67.6/build/docxtemplater.min.js';
-                
+
                 // PizZip doit être chargé avant docxtemplater
                 await this.loadPizZip();
-                
+
                 if (typeof window.docxtemplater === 'undefined') {
                     await this.loadScript(docxtemplaterUrl);
                 } else {
@@ -325,7 +326,7 @@
             static async loadSimpleDatatables() {
                 const simpleDatatablesUrl = 'https://cdn.jsdelivr.net/npm/simple-datatables@10.2.0/dist/umd/simple-datatables.min.js';
                 const simpleDatatablesCssUrl = 'https://cdn.jsdelivr.net/npm/simple-datatables@10.2.0/dist/style.min.css';
-                
+
                 // Charger le CSS si pas déjà chargé
                 if (!document.querySelector(`link[href="${simpleDatatablesCssUrl}"]`)) {
                     const link = document.createElement('link');
@@ -333,7 +334,7 @@
                     link.href = simpleDatatablesCssUrl;
                     document.head.appendChild(link);
                 }
-                
+
                 if (typeof simpleDatatables !== 'undefined') {
                     this.loadedScripts.add(simpleDatatablesUrl);
                     return;
@@ -341,23 +342,33 @@
                 await this.loadScript(simpleDatatablesUrl);
             }
 
-            static async loadJsPdf() {
-                const jspdfUrl = 'https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js';
-                const autotableUrl = 'https://unpkg.com/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js';
-                
-                // jsPDF doit être chargé avant autotable
-                if (typeof window.jspdf === 'undefined' && typeof window.jsPDF === 'undefined') {
-                    await this.loadScript(jspdfUrl);
-                } else {
-                    this.loadedScripts.add(jspdfUrl);
+            static async loadPdfme() {
+                if (window._pdfmeModules) {
+                    console.log('[pdfme CDN] Modules déjà en cache');
+                    return window._pdfmeModules;
                 }
-                
-                // Charger autotable (plugin)
-                const jsPDFClass = window.jspdf?.jsPDF || window.jsPDF;
-                if (jsPDFClass && typeof jsPDFClass.prototype.autoTable === 'undefined') {
-                    await this.loadScript(autotableUrl);
-                } else {
-                    this.loadedScripts.add(autotableUrl);
+                console.log('[pdfme CDN] Début chargement des 3 modules ESM...');
+                try {
+                    console.log('[pdfme CDN] import @pdfme/common@5.5.8...');
+                    const commonPromise = import('https://cdn.jsdelivr.net/npm/@pdfme/common@5.5.8/+esm');
+                    console.log('[pdfme CDN] import @pdfme/generator@5.5.8...');
+                    const generatorPromise = import('https://cdn.jsdelivr.net/npm/@pdfme/generator@5.5.8/+esm');
+                    console.log('[pdfme CDN] import @pdfme/schemas@5.5.8...');
+                    const schemasPromise = import('https://cdn.jsdelivr.net/npm/@pdfme/schemas@5.5.8/+esm');
+
+                    const [common, generator, schemas] = await Promise.all([commonPromise, generatorPromise, schemasPromise]);
+
+                    console.log('[pdfme CDN] common chargé, exports:', Object.keys(common));
+                    console.log('[pdfme CDN] generator chargé, exports:', Object.keys(generator));
+                    console.log('[pdfme CDN] schemas chargé, exports:', Object.keys(schemas));
+
+                    window._pdfmeModules = { common, generator, schemas };
+                    console.log('[pdfme CDN] Tous les modules chargés avec succès');
+                    return window._pdfmeModules;
+                } catch (err) {
+                    console.error('[pdfme CDN] ERREUR chargement:', err);
+                    console.error('[pdfme CDN] Stack:', err.stack);
+                    throw err;
                 }
             }
 
@@ -365,7 +376,7 @@
 
             static async loadStyle(url) {
                 if (this.loadedStyles.has(url)) return;
-                
+
                 const link = document.createElement('link');
                 link.rel = 'stylesheet';
                 link.href = url;
@@ -376,10 +387,10 @@
             static async loadEasyMDE() {
                 const easymdeJsUrl = 'https://cdn.jsdelivr.net/npm/easymde@2.20.0/dist/easymde.min.js';
                 const easymdeCssUrl = 'https://cdn.jsdelivr.net/npm/easymde@2.20.0/dist/easymde.min.css';
-                
+
                 // Charger le CSS
                 this.loadStyle(easymdeCssUrl);
-                
+
                 // Charger le JS
                 if (typeof EasyMDE !== 'undefined') {
                     this.loadedScripts.add(easymdeJsUrl);
@@ -414,7 +425,7 @@
                 this.codeMirrorSQLLoadingPromise = (async () => {
                     try {
                         console.log('⏳ Chargement de CodeMirror SQL...');
-                        
+
                         // Créer un import map pour forcer le partage des dépendances
                         if (!document.querySelector('script[type="importmap"]')) {
                             const importMap = document.createElement('script');
@@ -436,11 +447,11 @@
                                 }
                             });
                             document.head.insertBefore(importMap, document.head.firstChild);
-                            
+
                             // Attendre un tick pour que l'import map soit pris en compte
                             await new Promise(r => setTimeout(r, 0));
                         }
-                        
+
                         // Import séquentiel pour éviter les conflits
                         const stateModule = await import('https://esm.sh/@codemirror/state@6.4.1');
                         const viewModule = await import('https://esm.sh/@codemirror/view@6.26.3?deps=@codemirror/state@6.4.1');
@@ -511,13 +522,13 @@
                     throw new Error('CodeMirror SQL non chargé. Appelez loadCodeMirrorSQL() d\'abord.');
                 }
 
-                const { 
+                const {
                     EditorView, basicSetup, sql, StandardSQL, DuckDBSQL,
                     sqlExtension, cteCompletionSource, oneDark
                 } = this.codeMirrorSQLModules;
 
                 const isDarkTheme = document.documentElement.getAttribute('data-theme')?.includes('dark') ||
-                                    window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    window.matchMedia('(prefers-color-scheme: dark)').matches;
 
                 const schema = options.schema || {};
                 const dialect = options.dialect === 'duckdb' ? DuckDBSQL : StandardSQL;
@@ -566,7 +577,7 @@
                         autocomplete: cteCompletionSource,
                     }));
                 }
-                
+
                 if (sqlExtension) {
                     extensions.push(sqlExtension({
                         linterConfig: { delay: 300 },
@@ -604,7 +615,7 @@
 
             static async loadPerspective() {
                 if (this.perspectiveLoaded) return;
-                
+
                 if (this.perspectiveLoadingPromise) {
                     return this.perspectiveLoadingPromise;
                 }
@@ -617,7 +628,7 @@
                         link.rel = 'stylesheet';
                         link.crossOrigin = 'anonymous';
                         link.href = themeCssUrl;
-                        
+
                         // Attendre que le CSS soit chargé
                         await new Promise((resolve, reject) => {
                             link.onload = resolve;
@@ -758,7 +769,7 @@
                 if (Object.keys(urlParams).length === 0) {
                     return config;
                 }
-                
+
                 // Créer une copie de la config avec les paramètres URL appliqués
                 const result = { ...config };
                 result.ui = { ...(config.ui || {}), ...urlParams };
@@ -907,9 +918,10 @@
                             cleanCell.fileName = cell.docxTemplateFileName;
                         }
                         break;
-                    case 'jsPDF':
+                    case 'pdfme':
                         cleanCell.query = cell.query;
-                        cleanCell.jsPdfConfig = cell.jsPdfConfig;
+                        cleanCell.pdfmeTemplate = cell.pdfmeTemplate;
+                        cleanCell.pdfmePlugins = cell.pdfmePlugins;
                         cleanCell.pdfFileName = cell.pdfFileName;
                         break;
                     case 'perspective':
@@ -991,10 +1003,10 @@
                 const cleanPages = await Promise.all(pages.map(async (page) => {
                     const cleanGroups = await Promise.all(page.groups.map(group => ConfigManager.cleanGroup(group, includeFileData)));
                     const cleanLinkGroups = await Promise.all((page.linkGroups || []).map(group => ConfigManager.cleanGroup(group, includeFileData)));
-                    
+
                     // Merger groups et linkGroups dans un seul tableau
                     const allGroups = [...cleanGroups, ...cleanLinkGroups];
-                    
+
                     return {
                         name: page.name,
                         autoExecuteWithoutSources: page.autoExecuteWithoutSources,
@@ -1003,7 +1015,7 @@
                 }));
 
                 return {
-                    ui: { 
+                    ui: {
                         devMode: devMode,
                         displaySettings: displaySettings,
                         theme: theme,
@@ -1061,7 +1073,7 @@
                 const urlParams = new URLSearchParams(window.location.search);
                 const code = urlParams.get('code');
                 const state = urlParams.get('state');
-                
+
                 if (code && state === 'github_gist_auth') {
                     // Nettoyer l'URL
                     window.history.replaceState({}, document.title, window.location.pathname);
@@ -1113,10 +1125,10 @@
                 }
 
                 const jsonString = JSON.stringify(config, null, 2);
-                
+
                 // S'assurer que le nom de fichier a l'extension .json
                 const finalFileName = fileName.endsWith('.json') ? fileName : `${fileName}.json`;
-                
+
                 const gistData = {
                     description: description,
                     public: false,
@@ -1257,7 +1269,7 @@
             static async processExcelFile(file, xlsxOptions, xlsxToCsvOptions, xlsxSheetSelection) {
                 // Charger xlsx (SheetJS) à la demande
                 await CDNManager.loadXlsx();
-                
+
                 const workbook = XLSX.read(await file.arrayBuffer(), { type: 'array', ...xlsxOptions });
 
                 let selectedSheetName = workbook.SheetNames[0];
@@ -1330,7 +1342,7 @@
 
             static async destroy(onStatus) {
                 onStatus?.('Destruction de la base de données...', 'loading');
-                
+
                 try {
                     if (DuckDBManager.connInstance) {
                         if (DuckDBManager.currentEngine === 'ducklings') {
@@ -1338,7 +1350,7 @@
                         }
                         DuckDBManager.connInstance = null;
                     }
-                    
+
                     if (DuckDBManager.dbInstance) {
                         if (DuckDBManager.currentEngine === 'ducklings') {
                             await DuckDBManager.dbInstance.close?.();
@@ -1414,7 +1426,7 @@
                 );
                 const worker = new Worker(worker_url);
                 DuckDBManager.workerRef = worker;
-                
+
                 // Créer un logger personnalisé compatible avec Perspective
                 const logger = {
                     log(entry) {
@@ -1864,23 +1876,27 @@
                         <template x-if="cellItem.cell.type === 'publipostageWord'">
                             <div class="flex flex-col gap-3">
                                 <!-- Template Word drop zone -->
-                                <div class="source-drop-zone"
-                                     :class="{ 'drag-over': cellItem.cell._isDragging, 'has-file': cellItem.cell.docxTemplateFileName }"
+                                <div class="flex items-center justify-center rounded-lg transition-all duration-200 mt-1 mb-1"
+                                     :class="cellItem.cell.docxTemplateFileName 
+                                        ? 'border-2 border-solid border-success bg-success/10 cursor-default' 
+                                        : (cellItem.cell._isDragging 
+                                            ? 'border-2 border-solid border-accent bg-accent/10 cursor-pointer' 
+                                            : 'border-2 border-dashed border-primary bg-primary/5 cursor-pointer hover:border-accent hover:bg-accent/10')"
                                      @click="!cellItem.cell.docxTemplateFileName && document.getElementById('docxInput_' + cellItem.cell._id).click()"
                                      @dragover.prevent="cellItem.cell._isDragging = true"
                                      @dragleave.prevent="cellItem.cell._isDragging = false"
                                      @drop.prevent="handleDocxTemplateDrop($event, ${pathExpr}, ${cellIdxExpr})">
                                     <template x-if="!cellItem.cell.docxTemplateFileName">
-                                        <div class="source-drop-content">
-                                            <div class="source-drop-icon">📄</div>
-                                            <p class="source-drop-text">Glissez-déposez votre template Word (.docx)</p>
-                                            <p class="source-drop-hint">Template de publipostage</p>
+                                        <div class="text-center p-1">
+                                            <div class="text-4xl mb-0">📄</div>
+                                            <p class="m-0 text-base-content/60 text-sm">Glissez-déposez votre template Word (.docx)</p>
+                                            <p class="mt-0 mb-0 text-accent text-xs font-semibold">Template de publipostage</p>
                                         </div>
                                     </template>
                                     <template x-if="cellItem.cell.docxTemplateFileName">
-                                        <div class="source-file-loaded">
-                                            <span class="source-file-icon">✅</span>
-                                            <span class="source-file-name" x-text="cellItem.cell.docxTemplateFileName"></span>
+                                        <div class="flex flex-wrap items-center gap-3 px-4 py-3 w-full">
+                                            <span class="text-xl">✅</span>
+                                            <span class="flex-1 text-success font-medium truncate" x-text="cellItem.cell.docxTemplateFileName"></span>
                                             <button class="btn btn-ghost" @click.stop="downloadDocxTemplate(${pathExpr}, ${cellIdxExpr})" title="Télécharger">
                                                 <span class="iconify" data-icon="material-symbols:download" style="font-size: 1.25rem;"></span>
                                             </button>
@@ -1903,8 +1919,11 @@
                                 
                                 <!-- Query 2: Filename query -->
                                 <div x-show="devMode">
-                                    <div class="text-sm font-semibold text-primary mb-1">Requête de nom de fichier</div>
-                                    <div x-html="renderSqlQueryEditor(cellItem.cell, 'SELECT \\'document_\\' || row_number() OVER () || \\'.docx\\' as filename FROM source1 LIMIT 10', true, 'query2', '_showParsedQuery2')"></div>
+                                    <div class="text-sm font-semibold text-primary mb-1 flex items-center gap-2">
+                                        <span>Requête de nom de fichier</span>
+                                        <span class="badge badge-soft badge-info text-xs">🗄️ SQL</span>
+                                    </div>
+                                    <div x-html='renderSqlQueryEditor(cellItem.cell, "SELECT 1 filename FROM source1 LIMIT 10", false, "query2")'></div>
                                 </div>
                                 
                                 <!-- Execute button -->
@@ -1922,17 +1941,55 @@
                             </div>
                         </template>
                         
-                        <!-- JSPDF CELL -->
-                        <template x-if="cellItem.cell.type === 'jsPDF'">
+                        <!-- PDFME CELL -->
+                        <template x-if="cellItem.cell.type === 'pdfme'">
                             <div class="flex flex-col gap-3">
-                                <div x-show="devMode" x-html="renderSqlQueryEditor(cellItem.cell, 'SELECT * FROM source1 LIMIT 100', true)"></div>
+                                <!-- Query 1: Data query -->
+                                <div x-show="devMode">
+                                    <div class="text-sm font-semibold text-primary mb-1">Requête de données</div>
+                                    <div x-html="renderSqlQueryEditor(cellItem.cell, 'SELECT * FROM source1 LIMIT 10', true)"></div>
+                                </div>
+                                
+                                <!-- Query 2: Filename query -->
+                                <div x-show="devMode">
+                                    <div class="text-sm font-semibold text-primary mb-1 flex items-center gap-2">
+                                        <span>Requête de nom de fichier PDF</span>
+                                        <span class="badge badge-soft badge-info text-xs">🗄️ SQL</span>
+                                    </div>
+                                    <div x-html="renderSqlQueryEditor(cellItem.cell, 'SELECT 1 as filename', false, 'query2')"></div>
+                                </div>
+                                
+                                <!-- Template JSON (devMode) -->
+                                <div x-show="devMode" class="form-control">
+                                    <label class="label gap-2">
+                                        <span class="label-text font-semibold">Template pdfme (JSON)</span>
+                                        <span class="badge badge-soft badge-primary text-xs">📐 Layout</span>
+                                    </label>
+                                    <textarea class="textarea textarea-bordered w-full font-mono text-xs"
+                                              x-model="cellItem.cell.pdfmeTemplate"
+                                              rows="10"
+                                              style="min-height: 180px;"
+                                              placeholder='{"basePdf": {...}, "schemas": [...]}'></textarea>
+                                </div>
+                                
+                                <!-- Plugins JSON (devMode) -->
+                                <div x-show="devMode" class="form-control">
+                                    <label class="label gap-2">
+                                        <span class="label-text font-semibold">Plugins (JSON)</span>
+                                        <span class="badge badge-soft badge-secondary text-xs">🔌 Schemas</span>
+                                    </label>
+                                    <textarea class="textarea textarea-bordered w-full font-mono text-xs"
+                                              x-model="cellItem.cell.pdfmePlugins"
+                                              rows="4"
+                                              placeholder='{"Text": "text", "Table": "table"}'></textarea>
+                                </div>
                                 
                                 <!-- Execute button -->
                                 <div class="flex justify-center">
                                     <button class="btn btn-primary btn-sm" 
                                             @click="runCellAt(${pathExpr}, ${cellIdxExpr})"
                                             :disabled="isLoading">
-                                        📑 Générer le PDF
+                                        📑 Générer le PDF (pdfme)
                                     </button>
                                 </div>
                                 
@@ -2481,7 +2538,7 @@
                                     <input type="checkbox" class="toggle toggle-secondary" x-model="group.loop.zip" />
                                     <span class="label-text">📦 Zipper les fichiers générés</span>
                                 </label>
-                                <p class="text-xs text-base-content/60 ml-12">Les fichiers produits (SQL COPY, Publipostage Word, jsPDF) seront regroupés dans un ZIP à la fin de la boucle.</p>
+                                <p class="text-xs text-base-content/60 ml-12">Les fichiers produits (SQL COPY, Publipostage Word, pdfme) seront regroupés dans un ZIP à la fin de la boucle.</p>
                             </div>
 
                             <div x-show="group.loop.zip" x-transition>
@@ -2617,7 +2674,7 @@
                                 <option value="iframe">🖼️ HTML/Iframe</option>
                                 <option value="sqlStat">💯 Stat SQL (daisyui)</option>
                                 <option value="publipostageWord">📄 Publipostage Word</option>
-                                <option value="jsPDF">PDF (jsPDF)</option>
+                                <option value="pdfme">PDF (pdfme)</option>
                                 <option value="perspective">🔍 Perspective Viewer</option>
                             </select>
                         </div>
@@ -3057,38 +3114,45 @@
                             </div>
                         </template>
                         
-                        <!-- Config spécifique jsPDF -->
-                        <template x-if="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex)?.type === 'jsPDF'">
+                        <!-- Config spécifique pdfme -->
+                        <template x-if="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex)?.type === 'pdfme'">
                             <div class="flex flex-col gap-2">
                                 <div class="form-control">
                                     <label class="label gap-2">
                                         <span class="label-text">Requête SQL (données pour le PDF)</span>
-                                        <span class="tooltip tooltip-bottom" data-tip="La requête doit retourner les données à afficher dans le PDF. Support des requêtes récursives avec {{ }}">
+                                        <span class="tooltip tooltip-bottom" data-tip="La requête doit retourner les données à utiliser dans le template pdfme. Support des requêtes récursives avec {{ }}">
                                             <span class="badge badge-sm cursor-help">?</span>
                                         </span>
                                     </label>
                                     <textarea class="textarea textarea-bordered w-full" 
                                               x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).query" 
                                               rows="3"
-                                              placeholder="SELECT * FROM source1 LIMIT 100"></textarea>
+                                              placeholder="SELECT * FROM source1 LIMIT 10"></textarea>
                                 </div>
                                 <div class="form-control">
                                     <label class="label gap-2">
-                                        <span class="label-text">Configuration jsPDF</span>
-                                        <span class="tooltip tooltip-bottom" data-tip="Variables disponibles : doc (instance jsPDF), autoTable (fonction), data (résultat SQL en JSON)">
+                                        <span class="label-text">Template pdfme (JSON)</span>
+                                        <span class="tooltip tooltip-bottom" data-tip="Template pdfme avec basePdf et schemas. Voir https://pdfme.com/docs/getting-started">
                                             <span class="badge badge-sm cursor-help">?</span>
                                         </span>
                                     </label>
-                                    <textarea class="textarea textarea-bordered w-full font-mono text-sm" 
-                                              x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).jsPdfConfig" 
+                                    <textarea class="textarea textarea-bordered w-full font-mono text-xs" 
+                                              x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).pdfmeTemplate" 
                                               rows="15"
                                               style="min-height: 300px;"
-                                              placeholder="// Exemple avec autoTable:
-autoTable(doc, {
-    head: [Object.keys(data[0] || {})],
-    body: data.map(row => Object.values(row)),
-    startY: 20
-});"></textarea>
+                                              placeholder='{"basePdf": {"width": 210, "height": 297, "padding": [20,20,20,20]}, "schemas": [...]}'></textarea>
+                                </div>
+                                <div class="form-control">
+                                    <label class="label gap-2">
+                                        <span class="label-text">Plugins (JSON)</span>
+                                        <span class="tooltip tooltip-bottom" data-tip="Mapping nom → type de schema @pdfme/schemas. Ex: text, image, table, barcodes.qrcode">
+                                            <span class="badge badge-sm cursor-help">?</span>
+                                        </span>
+                                    </label>
+                                    <textarea class="textarea textarea-bordered w-full font-mono text-xs" 
+                                              x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).pdfmePlugins" 
+                                              rows="4"
+                                              placeholder='{"Text": "text", "Table": "table"}'></textarea>
                                 </div>
                                 <div class="form-control">
                                     <label class="label gap-2">
@@ -3357,6 +3421,7 @@ autoTable(doc, {
             <div class="toast toast-end toast-bottom z-[1500]">
                 <div class="alert"
                      :class="statusType === 'loading' ? 'alert-info' : statusType === 'success' ? 'alert-success' : 'alert-error'">
+                    <span x-show="statusType === 'loading'" class="loading loading-spinner loading-md"></span>
                     <span x-text="status"></span>
                 </div>
             </div>
@@ -3617,7 +3682,7 @@ autoTable(doc, {
                 currentLanguageType: null,
                 searchQuery: '',
                 filteredTemplates: [],
-                
+
                 // Templates SQL
                 sqlTemplates: [
                     {
@@ -3644,7 +3709,7 @@ ORDER BY ordinal_position;
 SELECT COLUMNS('^dim_') FROM source1;`
                     }
                 ],
-                
+
                 // Templates JavaScript
                 jsTemplates: [
                     {
@@ -3670,7 +3735,7 @@ if ($param1 === "Type A") {
 }`
                     }
                 ],
-                
+
                 open(cellId, queryType, languageType = 'sql') {
                     this.currentCellId = cellId;
                     this.currentQueryType = queryType;
@@ -3679,7 +3744,7 @@ if ($param1 === "Type A") {
                     this.filterTemplates();
                     this.isOpen = true;
                 },
-                
+
                 close() {
                     this.isOpen = false;
                     this.currentCellId = null;
@@ -3688,19 +3753,19 @@ if ($param1 === "Type A") {
                     this.searchQuery = '';
                     this.filteredTemplates = [];
                 },
-                
+
                 getCurrentTemplates() {
                     return this.currentLanguageType === 'js' ? this.jsTemplates : this.sqlTemplates;
                 },
-                
+
                 getModalTitle() {
                     return this.currentLanguageType === 'js' ? '📋 Templates JavaScript' : '📋 Templates SQL';
                 },
-                
+
                 filterTemplates() {
                     const query = this.searchQuery.toLowerCase().trim();
                     const templates = this.getCurrentTemplates();
-                    
+
                     if (!query) {
                         // Si pas de recherche, afficher tous les templates avec leur index original
                         this.filteredTemplates = templates.map((template, idx) => ({
@@ -3709,7 +3774,7 @@ if ($param1 === "Type A") {
                         }));
                         return;
                     }
-                    
+
                     // Filtrer les templates par recherche dans le nom, description et code
                     this.filteredTemplates = templates
                         .map((template, idx) => ({ ...template, originalIndex: idx }))
@@ -3718,7 +3783,7 @@ if ($param1 === "Type A") {
                             return searchIn.includes(query);
                         });
                 },
-                
+
                 selectTemplate(templateIndex) {
                     if (this.currentCellId && this.currentQueryType && this.currentLanguageType) {
                         // Accéder à l'instance Alpine.js via le DOM
@@ -3792,7 +3857,7 @@ if ($param1 === "Type A") {
                     }
                 }
 
-                if (cell.type === 'jsPDF') {
+                if (cell.type === 'pdfme') {
                     newCell._showParsedQuery = false;
                     newCell._parseLevels = [];
                 }
@@ -3857,13 +3922,13 @@ if ($param1 === "Type A") {
 
             // Initialiser les pages depuis la config
             let initPages = [];
-            
+
             // Migration: si l'ancienne structure existe (groups au lieu de pages)
             if (config.job?.groups && !config.job?.pages) {
                 const allGroups = (config.job.groups || []).map((group, groupIndex) => initGroup(group, groupIndex));
                 const initGroups = allGroups.filter(g => g._type === 'core');
                 const initLinkGroups = allGroups.filter(g => g._type === 'link');
-                
+
                 initPages = [{
                     _id: ConfigManager.generatePageId(),
                     name: 'Feuille 1',
@@ -3877,7 +3942,7 @@ if ($param1 === "Type A") {
                     const allGroups = (page.groups || []).map((group, groupIndex) => initGroup(group, groupIndex));
                     const initGroups = allGroups.filter(g => g._type === 'core');
                     const initLinkGroups = allGroups.filter(g => g._type === 'link');
-                    
+
                     return {
                         _id: page.id || ConfigManager.generatePageId(),
                         name: page.name || `Feuille ${pageIndex + 1}`,
@@ -3887,7 +3952,7 @@ if ($param1 === "Type A") {
                     };
                 });
             }
-            
+
             // Si aucune page n'existe, créer une page par défaut
             if (initPages.length === 0) {
                 initPages = [{
@@ -3944,13 +4009,13 @@ if ($param1 === "Type A") {
                 dbEngine: initialDbEngine,
                 showDbEngineModal: false,
                 directedAcyclicGraph: initialDirectedAcyclicGraph,
-                
+
                 // GitHub Gist - variables d'état
                 githubToken: '',
                 gistShareUrl: '',
                 showGistModal: false,
                 showGistTokenModal: false,
-                
+
                 // Export unifié - variables d'état
                 exportModal: {
                     show: false,
@@ -3960,11 +4025,11 @@ if ($param1 === "Type A") {
                     devMode: null, // null = utiliser la valeur actuelle
                     displaySettings: null // null = utiliser la valeur actuelle
                 },
-                
+
                 // DAG debounce timer
                 _dagDebounceTimer: null,
                 _dagDebounceDelay: 500, // 500ms de délai avant rafraîchissement
-                
+
                 // Getters pour la page active
                 get activePage() {
                     return this.pages[this.activePageIndex] || this.pages[0];
@@ -3978,7 +4043,7 @@ if ($param1 === "Type A") {
                 get autoExecuteWithoutSources() {
                     return this.activePage?.autoExecuteWithoutSources || false;
                 },
-                
+
                 // Gestion des pages
                 addPage() {
                     const newPage = {
@@ -3991,7 +4056,7 @@ if ($param1 === "Type A") {
                     this.pages.push(newPage);
                     this.activePageIndex = this.pages.length - 1;
                 },
-                
+
                 deletePage(index) {
                     if (this.pages.length <= 1) {
                         this.setStatus('Impossible de supprimer la dernière page', 'error');
@@ -4052,7 +4117,7 @@ if ($param1 === "Type A") {
                     this.draggedPageIndex = null;
                     this.dragOverPageIndex = null;
                 },
-                
+
                 switchPage(index) {
                     if (index >= 0 && index < this.pages.length) {
                         this.activePageIndex = index;
@@ -4062,12 +4127,12 @@ if ($param1 === "Type A") {
                 // Détermine si une cellule doit être affichée (fix pour les cases vides en mode view)
                 shouldShowCell(cell) {
                     if (this.devMode) return true;
-                    
+
                     // Si showSqlEditorForClient est activé pour les cellules SQL, forcer l'affichage
                     if (cell.showSqlEditorForClient) {
                         return true;
                     }
-                    
+
                     // SQL : caché car pas d'output visuel utile en mode view
                     if (cell.type === 'sqlRecursiveParse') return false;
                     // Table, Plot, Iframe, SqlStat : cachés sauf si résultat ou en cours d'exécution
@@ -4143,7 +4208,7 @@ if ($param1 === "Type A") {
                     { type: 'iframe', label: 'HTML/Iframe', icon: '🖼️' },
                     { type: 'sqlStat', label: 'Stat SQL', icon: '📊' },
                     { type: 'publipostageWord', label: 'Publipostage Word', icon: '📄' },
-                    { type: 'jsPDF', label: 'PDF (jsPDF)', icon: '📑' },
+                    { type: 'pdfme', label: 'PDF (pdfme)', icon: '📑' },
                     { type: 'perspective', label: 'Perspective Viewer', icon: '🔍' }
                 ],
 
@@ -4166,7 +4231,7 @@ if ($param1 === "Type A") {
                         }
                         return false;
                     };
-                    return this.pages.some(page => 
+                    return this.pages.some(page =>
                         checkGroups(page.groups || []) || checkGroups(page.linkGroups || [])
                     );
                 },
@@ -4252,7 +4317,7 @@ if ($param1 === "Type A") {
                         }
                         return null;
                     };
-                    
+
                     const findSourceRecursive = (groups, sourceName, currentPath) => {
                         for (let gi = 0; gi < groups.length; gi++) {
                             const group = groups[gi];
@@ -4278,7 +4343,7 @@ if ($param1 === "Type A") {
                         try {
                             let current = groups;
                             let group = null;
-                            
+
                             // Naviguer jusqu'au groupe contenant la cellule
                             for (let i = 0; i < targetPath.length - 1; i++) {
                                 const index = targetPath[i];
@@ -4287,9 +4352,9 @@ if ($param1 === "Type A") {
                                     current = this.linkGroups;
                                     continue;
                                 }
-                                
+
                                 if (!current[index]) return null;
-                                
+
                                 if (i === 0) {
                                     group = current[index];
                                     current = group.children || [];
@@ -4298,15 +4363,15 @@ if ($param1 === "Type A") {
                                     current = group.children || [];
                                 }
                             }
-                            
+
                             // Récupérer la cellule
                             const cellIndex = targetPath[targetPath.length - 1];
                             const finalGroup = targetPath.length === 1 ? current[targetPath[0]] : group;
-                            
+
                             if (!finalGroup || !finalGroup.cells || !finalGroup.cells[cellIndex]) {
                                 return null;
                             }
-                            
+
                             return {
                                 cell: finalGroup.cells[cellIndex],
                                 cellIndex: cellIndex
@@ -4334,7 +4399,7 @@ if ($param1 === "Type A") {
                             console.warn(`Source "${sourceName}" non trouvée dans les cellules`);
                             continue;
                         }
-                        
+
                         // Basculer temporairement vers la page contenant la source
                         const originalPageIndex = this.activePageIndex;
                         this.activePageIndex = found.pageIndex;
@@ -4455,9 +4520,9 @@ if ($param1 === "Type A") {
                     if (!group || !group.ifQuery?.trim()) {
                         return true;
                     }
-                    
+
                     const langType = group.ifQueryLanguageType || 'sql';
-                    
+
                     try {
                         if (langType === 'js') {
                             const jsCode = this.parseQueryWithParameters(group.ifQuery);
@@ -4468,12 +4533,12 @@ if ($param1 === "Type A") {
                             const cellLike = { query: group.ifQuery };
                             const finalQuery = await this.parseQueryRecursively(cellLike);
                             const results = await DuckDBManager.executeQuery(finalQuery);
-                            
+
                             if (!results || results.length === 0) {
                                 console.log('  ⚠️ [evaluateGroupIfQuery] Aucun résultat → false');
                                 return false;
                             }
-                            
+
                             const firstVal = Object.values(results[0])[0];
                             const finalResult = firstVal === true || (firstVal !== null && firstVal !== false && firstVal !== undefined);
                             return finalResult;
@@ -4564,49 +4629,49 @@ if ($param1 === "Type A") {
                 generateGroupId() {
                     return 'group_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
                 },
-                
+
                 generatePageId() {
                     return 'page_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
                 },
-                
+
                 // Vérifier si un nom de source/param existe déjà dans toutes les pages
                 isNameUniqueAcrossPages(name, type, excludePageIndex = null, excludePath = null, excludeCellIndex = null) {
                     if (!name || !name.trim()) return true;
-                    
+
                     const trimmedName = name.trim();
-                    
+
                     // Types qui doivent être uniques globalement
                     if (type !== 'source' && type !== 'uiParameter') {
                         return true;
                     }
-                    
+
                     // Parcourir toutes les pages
                     for (let pi = 0; pi < this.pages.length; pi++) {
                         const page = this.pages[pi];
-                        
+
                         // Fonction récursive pour chercher dans les groupes
                         const checkInGroups = (groups, currentPath = []) => {
                             for (let gi = 0; gi < groups.length; gi++) {
                                 const group = groups[gi];
                                 const groupPath = [...currentPath, gi];
-                                
+
                                 for (let ci = 0; ci < (group.cells || []).length; ci++) {
                                     const cell = group.cells[ci];
-                                    
+
                                     // Vérifier si c'est la cellule à exclure
-                                    if (excludePageIndex === pi && 
-                                        excludePath && 
-                                        JSON.stringify(excludePath) === JSON.stringify(groupPath) && 
+                                    if (excludePageIndex === pi &&
+                                        excludePath &&
+                                        JSON.stringify(excludePath) === JSON.stringify(groupPath) &&
                                         excludeCellIndex === ci) {
                                         continue;
                                     }
-                                    
+
                                     // Vérifier le type et le nom
                                     if (cell.type === type && cell.name && cell.name.trim() === trimmedName) {
                                         return false;
                                     }
                                 }
-                                
+
                                 // Vérifier récursivement dans les enfants
                                 if (group.children && group.children.length > 0) {
                                     if (!checkInGroups(group.children, groupPath)) {
@@ -4616,32 +4681,32 @@ if ($param1 === "Type A") {
                             }
                             return true;
                         };
-                        
+
                         // Vérifier dans les groupes de la page
                         if (!checkInGroups(page.groups)) {
                             return false;
                         }
-                        
+
                         // Vérifier dans les linkGroups de la page
                         if (page.linkGroups && !checkInGroups(page.linkGroups)) {
                             return false;
                         }
                     }
-                    
+
                     return true;
                 },
-                
+
                 // Obtenir tous les noms de source/param existants
                 getAllNamesOfType(type) {
                     const names = [];
-                    
+
                     if (type !== 'source' && type !== 'uiParameter') {
                         return names;
                     }
-                    
+
                     for (let pi = 0; pi < this.pages.length; pi++) {
                         const page = this.pages[pi];
-                        
+
                         const collectFromGroups = (groups) => {
                             for (const group of groups) {
                                 for (const cell of (group.cells || [])) {
@@ -4654,13 +4719,13 @@ if ($param1 === "Type A") {
                                 }
                             }
                         };
-                        
+
                         collectFromGroups(page.groups);
                         if (page.linkGroups) {
                             collectFromGroups(page.linkGroups);
                         }
                     }
-                    
+
                     return names;
                 },
 
@@ -5017,7 +5082,7 @@ FROM source1 LIMIT 10;`;
                         this.setStatus('Évaluation de la condition ifQuery...', 'loading');
                         const ifQueryResult = await this.evaluateGroupIfQuery(group);
                         group._ifQueryResult = ifQueryResult;
-                        
+
                         if (!ifQueryResult) {
                             this.setStatus('Groupe ignoré (ifQuery = false)', 'info');
                             return; // Skip l'exécution du groupe
@@ -5121,7 +5186,7 @@ FROM source1 LIMIT 10;`;
                         this.setStatus('Évaluation de la condition ifQuery...', 'loading');
                         const ifQueryResult = await this.evaluateGroupIfQuery(group);
                         group._ifQueryResult = ifQueryResult;
-                        
+
                         if (!ifQueryResult) {
                             this.setStatus('Groupe ignoré (ifQuery = false)', 'info');
                             return; // Skip l'exécution du groupe
@@ -5225,7 +5290,9 @@ FROM source1 LIMIT 10;`;
 
                         for (const file of this._zipFiles) {
                             if (file.content instanceof Blob) {
-                                zip.file(file.filename, file.content);
+                                // Convertir le Blob en ArrayBuffer pour PizZip
+                                const arrayBuffer = await file.content.arrayBuffer();
+                                zip.file(file.filename, arrayBuffer);
                             } else if (file.content instanceof ArrayBuffer) {
                                 zip.file(file.filename, file.content);
                             } else if (typeof file.content === 'string') {
@@ -5645,22 +5712,152 @@ FROM source1 LIMIT 10;`;
                             newCell._parseLevels2 = [];
                             newCell._isDragging = false;
                             break;
-                        case 'jsPDF':
-                            newCell.query = 'SELECT * FROM source1 LIMIT 100';
-                            newCell.jsPdfConfig = `// Variables disponibles: doc (jsPDF), autoTable, data (résultat SQL)
-// Exemple avec autoTable:
-autoTable(doc, {
-    head: [Object.keys(data[0] || {})],
-    body: data.map(row => Object.values(row)),
-    startY: 20,
-    styles: { fontSize: 8 },
-    headStyles: { fillColor: [99, 102, 241] }
-});
-
-doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 10);`;
+                        case 'pdfme':
+                            newCell.query = `with v_source as (select * from source1 limit 10)\nSELECT 'Titre' as header, 'Pied de page' as footer, json_group_array(json_array(col1, col2, col3)) as datatable\nFROM v_source LIMIT 10`;
+                            newCell.pdfmeTemplate = JSON.stringify({
+                                "basePdf": {
+                                    "width": 210,
+                                    "height": 297,
+                                    "padding": [
+                                        20,
+                                        20,
+                                        9,
+                                        20
+                                    ],
+                                    "staticSchema": [
+                                        {
+                                            "name": "page_header",
+                                            "type": "text",
+                                            "position": {
+                                                "x": 20,
+                                                "y": 5
+                                            },
+                                            "width": 170,
+                                            "height": 8,
+                                            "content": "{date}",
+                                            "fontSize": 9,
+                                            "fontColor": "#888888",
+                                            "alignment": "right",
+                                            "readOnly": true
+                                        },
+                                        {
+                                            "name": "footer",
+                                            "type": "text",
+                                            "position": {
+                                                "x": 20,
+                                                "y": 288
+                                            },
+                                            "width": 170,
+                                            "height": 10,
+                                            "content": "PIED DE PAGE - Document généré par SQLJob - Page {currentPage} / {totalPages}",
+                                            "fontSize": 10,
+                                            "fontColor": "#888888",
+                                            "alignment": "center",
+                                            "readOnly": true
+                                        }
+                                    ]
+                                },
+                                "schemas": [
+                                    [
+                                        {
+                                            "name": "header",
+                                            "type": "text",
+                                            "position": {
+                                                "x": 20,
+                                                "y": 20
+                                            },
+                                            "width": 170,
+                                            "height": 10,
+                                            "content": "ENTÊTE DU DOCUMENT",
+                                            "fontSize": 16,
+                                            "fontColor": "#6366f1",
+                                            "alignment": "center"
+                                        },
+                                        {
+                                            "name": "datatable",
+                                            "type": "table",
+                                            "position": {
+                                                "x": 20,
+                                                "y": 35
+                                            },
+                                            "width": 170,
+                                            "height": 50,
+                                            "content": "[[\"A\",\"B\",\"C\"]]",
+                                            "showHead": true,
+                                            "repeatHead": true,
+                                            "head": [
+                                                "Col1",
+                                                "Col2",
+                                                "Col3"
+                                            ],
+                                            "headWidthPercentages": [
+                                                33,
+                                                33,
+                                                34
+                                            ],
+                                            "tableStyles": {
+                                                "borderWidth": 0.3,
+                                                "borderColor": "#000000"
+                                            },
+                                            "headStyles": {
+                                                "fontName": "",
+                                                "fontSize": 10,
+                                                "characterSpacing": 0,
+                                                "alignment": "left",
+                                                "verticalAlignment": "middle",
+                                                "lineHeight": 1,
+                                                "fontColor": "#ffffff",
+                                                "borderColor": "",
+                                                "backgroundColor": "#6366f1",
+                                                "borderWidth": {
+                                                    "top": 0,
+                                                    "right": 0,
+                                                    "bottom": 0,
+                                                    "left": 0
+                                                },
+                                                "padding": {
+                                                    "top": 5,
+                                                    "right": 5,
+                                                    "bottom": 5,
+                                                    "left": 5
+                                                }
+                                            },
+                                            "bodyStyles": {
+                                                "fontName": "",
+                                                "fontSize": 9,
+                                                "characterSpacing": 0,
+                                                "alignment": "left",
+                                                "verticalAlignment": "middle",
+                                                "lineHeight": 1,
+                                                "fontColor": "#333333",
+                                                "borderColor": "#888888",
+                                                "backgroundColor": "",
+                                                "alternateBackgroundColor": "#f5f5f5",
+                                                "borderWidth": {
+                                                    "top": 0.1,
+                                                    "right": 0.1,
+                                                    "bottom": 0.1,
+                                                    "left": 0.1
+                                                },
+                                                "padding": {
+                                                    "top": 3,
+                                                    "right": 5,
+                                                    "bottom": 3,
+                                                    "left": 5
+                                                }
+                                            },
+                                            "columnStyles": {}
+                                        }
+                                    ]
+                                ]
+                            }, null, 2);
+                            newCell.pdfmePlugins = JSON.stringify({ Text: "text", Table: "table" }, null, 2);
                             newCell.pdfFileName = 'export.pdf';
+                            newCell.query2 = "SELECT 'export.pdf' as filename";
                             newCell._showParsedQuery = false;
+                            newCell._showParsedQuery2 = false;
                             newCell._parseLevels = [];
+                            newCell._parseLevels2 = [];
                             break;
                         case 'perspective':
                             newCell.query = 'SELECT * FROM source1';
@@ -6174,17 +6371,17 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
 
                     try {
                         this.setStatus('Chargement du template Word...', 'loading');
-                        
+
                         // Lire le fichier en ArrayBuffer
                         const arrayBuffer = await file.arrayBuffer();
-                        
+
                         // Encoder en base64
                         const base64 = FileHandler.arrayBufferToBase64(arrayBuffer);
-                        
+
                         // Stocker dans la cellule
                         cell.docxTemplateBase64 = base64;
                         cell.docxTemplateFileName = file.name;
-                        
+
                         this.setStatus('Template Word chargé', 'success');
                     } catch (error) {
                         this.setStatus('Erreur lors du chargement du template: ' + error.message, 'error');
@@ -6203,15 +6400,15 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                     try {
                         // Décoder le base64 en Uint8Array
                         const uint8Array = FileHandler.base64ToUint8Array(cell.docxTemplateBase64);
-                        
+
                         // Créer un blob
                         const blob = new Blob([uint8Array], {
                             type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
                         });
-                        
+
                         // Télécharger le fichier
                         FileHandler.downloadFile(blob, cell.docxTemplateFileName);
-                        
+
                         this.setStatus('Template Word téléchargé', 'success');
                     } catch (error) {
                         this.setStatus('Erreur lors du téléchargement: ' + error.message, 'error');
@@ -6231,7 +6428,7 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                     // Supprimer les données du template
                     cell.docxTemplateBase64 = null;
                     cell.docxTemplateFileName = '';
-                    
+
                     this.setStatus('Template Word supprimé', 'success');
                 },
 
@@ -6278,6 +6475,7 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
 
                     cell._status = 'running';
                     this.isLoading = true;
+                    this.setStatus(`Exécution de ${cell.name || cell.type}...`, 'loading');
 
                     try {
                         switch (cell.type) {
@@ -6308,8 +6506,8 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                             case 'publipostageWord':
                                 await this.executePublipostageWordCell(cell);
                                 break;
-                            case 'jsPDF':
-                                await this.executeJsPdfCell(cell);
+                            case 'pdfme':
+                                await this.executePdfmeCell(cell);
                                 break;
                             case 'perspective':
                                 await this.executePerspectiveCell(cell);
@@ -6319,6 +6517,7 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                         }
 
                         cell._status = 'success';
+                        this.setStatus(`${cell.name || cell.type} exécuté`, 'success');
                     } catch (error) {
                         cell._status = 'error';
                         cell._resultInfo = 'Erreur: ' + error.message;
@@ -6420,7 +6619,7 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                 },
 
                 async executeSqlRecursiveParseCell(cell) {
-                    
+
                     if (!cell.query?.trim()) {
                         console.warn('❌ cell.query est vide ou undefined!');
                         return;
@@ -6434,8 +6633,8 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
 
                         this.setStatus('Exécution de la requête finale...', 'loading');
 
-                        // Détecter si la requête finale est un COPY
-                        const copyRegex = /COPY\s+.*\s+TO\s+'([^']+)'/i;
+                        // Détecter si la requête finale est un COPY ([\s\S] au lieu de . pour traverser les retours à la ligne)
+                        const copyRegex = /COPY\s+[\s\S]+\bTO\s+'([^']+)'/i;
                         const copyMatch = finalQuery.match(copyRegex);
 
                         if (copyMatch) {
@@ -6444,27 +6643,67 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
 
                             const fileName = copyMatch[1];
 
-                            // Exécuter le COPY
-                            await DuckDBManager.executeQuery(finalQuery);
+                            try {
+                                // Exécuter le COPY
+                                await DuckDBManager.executeQuery(finalQuery);
 
-                            // Récupérer le fichier
-                            const buffer = await DuckDBManager.copyFileToBuffer(fileName);
+                                // Petit délai pour s'assurer que le fichier est bien écrit dans le système de fichiers virtuel
+                                await new Promise(resolve => setTimeout(resolve, 100));
 
-                            // Déterminer le MIME type (optionnel, par défaut CSV)
-                            let mime = 'text/csv;charset=utf-8;';
-                            if (fileName.toLowerCase().endsWith('.parquet')) {
-                                mime = 'application/octet-stream';
-                            } else if (fileName.toLowerCase().endsWith('.json')) {
-                                mime = 'application/json;charset=utf-8;';
+                                // Récupérer le fichier
+                                const buffer = await DuckDBManager.copyFileToBuffer(fileName);
+
+                                // Déterminer le MIME type (optionnel, par défaut CSV)
+                                let mime = 'text/csv;charset=utf-8;';
+                                if (fileName.toLowerCase().endsWith('.parquet')) {
+                                    mime = 'application/octet-stream';
+                                } else if (fileName.toLowerCase().endsWith('.json')) {
+                                    mime = 'application/json;charset=utf-8;';
+                                } else if (fileName.toLowerCase().endsWith('.txt')) {
+                                    mime = 'text/plain;charset=utf-8;';
+                                }
+
+                                // Télécharger le fichier (ou l'ajouter au zip si mode zip actif)
+                                const blob = new Blob([buffer], { type: mime });
+                                const downloadFileName = fileName.split('/').pop();
+                                this.downloadOrZipFile(downloadFileName, blob, mime);
+
+                                cell._results = [];
+                                cell._resultInfo = `✅ Fichier exporté: ${fileName} (${buffer.byteLength} octets) - ${cell._parseLevels.length - 1} niveau(x) de parsing`;
+                            } catch (copyError) {
+                                console.error('❌ Erreur lors de la récupération du fichier exporté:', copyError);
+
+                                // Si copyFileToBuffer échoue, essayer d'exporter directement les résultats
+                                this.setStatus('Récupération alternative des résultats...', 'loading');
+
+                                // Extraire la requête SELECT de la commande COPY
+                                const copyContentMatch = finalQuery.match(/COPY\s+\(([\s\S]+)\)\s+TO\s+/i);
+
+                                if (copyContentMatch) {
+                                    const selectQuery = copyContentMatch[1];
+                                    const results = await DuckDBManager.executeQuery(selectQuery);
+
+                                    // Convertir en TSV
+                                    if (results.length > 0) {
+                                        const headers = Object.keys(results[0]);
+                                        const tsvContent = [
+                                            headers.join('\t'),
+                                            ...results.map(row => headers.map(h => row[h] ?? '').join('\t'))
+                                        ].join('\n');
+
+                                        const blob = new Blob([tsvContent], { type: 'text/plain;charset=utf-8;' });
+                                        const downloadFileName = fileName.split('/').pop();
+                                        this.downloadOrZipFile(downloadFileName, blob, 'text/plain;charset=utf-8;');
+
+                                        cell._results = [];
+                                        cell._resultInfo = `✅ Fichier exporté (mode alternatif): ${fileName} - ${results.length} ligne(s)`;
+                                    } else {
+                                        throw new Error('Aucun résultat à exporter');
+                                    }
+                                } else {
+                                    throw copyError;
+                                }
                             }
-
-                            // Télécharger le fichier (ou l'ajouter au zip si mode zip actif)
-                            const blob = new Blob([buffer], { type: mime });
-                            const downloadFileName = fileName.split('/').pop();
-                            this.downloadOrZipFile(downloadFileName, blob, mime);
-
-                            cell._results = [];
-                            cell._resultInfo = `✅ Fichier exporté: ${fileName} - ${cell._parseLevels.length - 1} niveau(x) de parsing`;
                         } else {
                             // Mode normal : exécuter et stocker les résultats
                             const finalResults = await DuckDBManager.executeQuery(finalQuery);
@@ -6510,7 +6749,7 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                             (cell._parseLevels.length > 1 ? ` - ${cell._parseLevels.length - 1} niveau(x) de parsing` : '');
 
                         await this.$nextTick();
-                        
+
                         // Rendre le tableau (fromExecute=true lève le garde anti-cascade)
                         this.renderTableInContainer(cell, true);
 
@@ -6520,7 +6759,7 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                         throw error;
                     }
                 },
-                
+
                 // Fonction pour rendre un tableau dans son conteneur (appelée aussi par x-init)
                 renderTableInContainer(cell, fromExecute = false) {
                     // Garde anti-cascade : les mutations DOM du DataTable déclenchent
@@ -6540,135 +6779,135 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                             this._tables[cell._id].destroy();
                         }
 
-                            const columns = Object.keys(rawResults[0]).map(key => ({
-                                title: key,
-                                field: key
-                            }));
+                        const columns = Object.keys(rawResults[0]).map(key => ({
+                            title: key,
+                            field: key
+                        }));
 
-                            const tableData = {
-                                headings: Object.keys(rawResults[0]),
-                                data: rawResults.map(row => Object.values(row))
-                            };
+                        const tableData = {
+                            headings: Object.keys(rawResults[0]),
+                            data: rawResults.map(row => Object.values(row))
+                        };
 
-                            const dataTable = new simpleDatatables.DataTable('#' + containerId, {
-                                data: tableData,
-                                perPage: 10,
-                                perPageSelect: [5, 10, 25, 50],
-                                searchable: true,
-                                sortable: true,
-                                labels: {
-                                    placeholder: "Rechercher...",
-                                    perPage: "entrées par page",
-                                    noRows: "Aucune donnée",
-                                    info: "Affichage de {start} à {end} sur {rows} entrées"
-                                },
-                                tableRender: (_data, table, type) => {
-                                    if (type === "print") {
-                                        return table;
-                                    }
-                                    
-                                    // Classes DaisyUI/Tailwind sur la table
-                                    table.attributes = table.attributes || {};
-                                    table.attributes.class = "table table-zebra table-pin-rows w-full";
-                                    
-                                    const tHead = table.childNodes[0];
-                                    const tBody = table.childNodes[1];
-                                    
-                                    // Style header
-                                    if (tHead && tHead.childNodes) {
-                                        tHead.childNodes.forEach((tr, trIndex) => {
-                                            tr.attributes = tr.attributes || {};
-                                            tr.attributes.class = "bg-base-200";
-                                            if (tr.childNodes) {
-                                                tr.childNodes.forEach((th, thIndex) => {
-                                                    th.attributes = th.attributes || {};
-                                                    const stickyClass = thIndex === 0 ? " sticky left-0 z-10 bg-base-200" : "";
-                                                    th.attributes.class = "text-base-content font-semibold text-sm px-3 py-2" + stickyClass;
-                                                });
-                                            }
-                                        });
-                                    }
-                                    
-                                    // Style body rows
-                                    if (tBody && tBody.childNodes) {
-                                        tBody.childNodes.forEach((tr, trIndex) => {
-                                            tr.attributes = tr.attributes || {};
-                                            const isEven = trIndex % 2 === 0;
-                                            const rowClass = isEven ? "bg-base-100" : "bg-base-200/50";
-                                            tr.attributes.class = `${rowClass} hover:bg-base-300/50 transition-colors`;
-                                            if (tr.childNodes) {
-                                                tr.childNodes.forEach((td, tdIndex) => {
-                                                    td.attributes = td.attributes || {};
-                                                    const stickyClass = tdIndex === 0 ? ` sticky left-0 z-10 ${isEven ? "bg-base-100" : "bg-base-200"}` : "";
-                                                    td.attributes.class = "text-base-content text-sm px-3 py-2" + stickyClass;
-                                                });
-                                            }
-                                        });
-                                    }
-                                    
-                                    // Ajouter ligne de filtres par colonne
-                                    const filterHeaders = {
-                                        nodeName: "TR",
-                                        attributes: { class: "bg-base-100 filter-row" },
-                                        childNodes: tHead.childNodes[0].childNodes.map(
-                                            (_th, index) => ({
-                                                nodeName: "TH",
-                                                attributes: { 
-                                                    class: "px-2 py-1" + (index === 0 ? " sticky left-0 z-10 bg-base-100" : "")
-                                                },
-                                                childNodes: [
-                                                    {
-                                                        nodeName: "INPUT",
-                                                        attributes: {
-                                                            class: "input input-bordered input-xs w-full column-filter",
-                                                            type: "search",
-                                                            placeholder: "Filtrer...",
-                                                            "data-column-index": index
-                                                        }
-                                                    }
-                                                ]
-                                            })
-                                        )
-                                    };
-                                    tHead.childNodes.push(filterHeaders);
+                        const dataTable = new simpleDatatables.DataTable('#' + containerId, {
+                            data: tableData,
+                            perPage: 10,
+                            perPageSelect: [5, 10, 25, 50],
+                            searchable: true,
+                            sortable: true,
+                            labels: {
+                                placeholder: "Rechercher...",
+                                perPage: "entrées par page",
+                                noRows: "Aucune donnée",
+                                info: "Affichage de {start} à {end} sur {rows} entrées"
+                            },
+                            tableRender: (_data, table, type) => {
+                                if (type === "print") {
                                     return table;
                                 }
-                            });
-                            
-                            this._tables[cell._id] = dataTable;
-                            
-                            // Ajouter les event listeners pour les filtres de colonne
-                            dataTable.on('datatable.init', () => {
-                                const filterInputs = container.querySelectorAll('.column-filter');
-                                const columnFilters = {};
-                                
-                                filterInputs.forEach(input => {
-                                    input.addEventListener('input', (e) => {
-                                        const columnIndex = parseInt(e.target.dataset.columnIndex);
-                                        const value = e.target.value.trim();
-                                        
-                                        // Stocker la valeur du filtre pour cette colonne
-                                        if (value) {
-                                            columnFilters[columnIndex] = value;
-                                        } else {
-                                            delete columnFilters[columnIndex];
+
+                                // Classes DaisyUI/Tailwind sur la table
+                                table.attributes = table.attributes || {};
+                                table.attributes.class = "table table-zebra table-pin-rows w-full";
+
+                                const tHead = table.childNodes[0];
+                                const tBody = table.childNodes[1];
+
+                                // Style header
+                                if (tHead && tHead.childNodes) {
+                                    tHead.childNodes.forEach((tr, trIndex) => {
+                                        tr.attributes = tr.attributes || {};
+                                        tr.attributes.class = "bg-base-200";
+                                        if (tr.childNodes) {
+                                            tr.childNodes.forEach((th, thIndex) => {
+                                                th.attributes = th.attributes || {};
+                                                const stickyClass = thIndex === 0 ? " sticky left-0 z-10 bg-base-200" : "";
+                                                th.attributes.class = "text-base-content font-semibold text-sm px-3 py-2" + stickyClass;
+                                            });
                                         }
-                                        
-                                        // Construire les queries pour multiSearch
-                                        const queries = Object.entries(columnFilters).map(([col, term]) => ({
-                                            terms: [term],
-                                            columns: [parseInt(col)]
-                                        }));
-                                        
-                                        // Appliquer le filtre multi-colonnes
-                                        dataTable.multiSearch(queries);
                                     });
+                                }
+
+                                // Style body rows
+                                if (tBody && tBody.childNodes) {
+                                    tBody.childNodes.forEach((tr, trIndex) => {
+                                        tr.attributes = tr.attributes || {};
+                                        const isEven = trIndex % 2 === 0;
+                                        const rowClass = isEven ? "bg-base-100" : "bg-base-200/50";
+                                        tr.attributes.class = `${rowClass} hover:bg-base-300/50 transition-colors`;
+                                        if (tr.childNodes) {
+                                            tr.childNodes.forEach((td, tdIndex) => {
+                                                td.attributes = td.attributes || {};
+                                                const stickyClass = tdIndex === 0 ? ` sticky left-0 z-10 ${isEven ? "bg-base-100" : "bg-base-200"}` : "";
+                                                td.attributes.class = "text-base-content text-sm px-3 py-2" + stickyClass;
+                                            });
+                                        }
+                                    });
+                                }
+
+                                // Ajouter ligne de filtres par colonne
+                                const filterHeaders = {
+                                    nodeName: "TR",
+                                    attributes: { class: "bg-base-100 filter-row" },
+                                    childNodes: tHead.childNodes[0].childNodes.map(
+                                        (_th, index) => ({
+                                            nodeName: "TH",
+                                            attributes: {
+                                                class: "px-2 py-1" + (index === 0 ? " sticky left-0 z-10 bg-base-100" : "")
+                                            },
+                                            childNodes: [
+                                                {
+                                                    nodeName: "INPUT",
+                                                    attributes: {
+                                                        class: "input input-bordered input-xs w-full column-filter",
+                                                        type: "search",
+                                                        placeholder: "Filtrer...",
+                                                        "data-column-index": index
+                                                    }
+                                                }
+                                            ]
+                                        })
+                                    )
+                                };
+                                tHead.childNodes.push(filterHeaders);
+                                return table;
+                            }
+                        });
+
+                        this._tables[cell._id] = dataTable;
+
+                        // Ajouter les event listeners pour les filtres de colonne
+                        dataTable.on('datatable.init', () => {
+                            const filterInputs = container.querySelectorAll('.column-filter');
+                            const columnFilters = {};
+
+                            filterInputs.forEach(input => {
+                                input.addEventListener('input', (e) => {
+                                    const columnIndex = parseInt(e.target.dataset.columnIndex);
+                                    const value = e.target.value.trim();
+
+                                    // Stocker la valeur du filtre pour cette colonne
+                                    if (value) {
+                                        columnFilters[columnIndex] = value;
+                                    } else {
+                                        delete columnFilters[columnIndex];
+                                    }
+
+                                    // Construire les queries pour multiSearch
+                                    const queries = Object.entries(columnFilters).map(([col, term]) => ({
+                                        terms: [term],
+                                        columns: [parseInt(col)]
+                                    }));
+
+                                    // Appliquer le filtre multi-colonnes
+                                    dataTable.multiSearch(queries);
                                 });
                             });
+                        });
 
-                            // Garde anti-cascade : les mutations DOM du DataTable déclenchent
-                            // Alpine MutationObserver → x-init re-fire → on bloque les appels suivants.
-                            cell._tableRenderGuard = true;
+                        // Garde anti-cascade : les mutations DOM du DataTable déclenchent
+                        // Alpine MutationObserver → x-init re-fire → on bloque les appels suivants.
+                        cell._tableRenderGuard = true;
                     }
                 },
 
@@ -6694,13 +6933,13 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                     cell._plotData = { query: cell.query, tablesData };
 
                     await this.$nextTick();
-                    
+
                     // Rendre le graphique dans le conteneur
                     this.renderPlotInContainer(cell);
 
                     this.setStatus('Graphique créé', 'success');
                 },
-                
+
                 // Fonction pour rendre un graphique dans son conteneur (appelée aussi par x-init)
                 renderPlotInContainer(cell) {
                     const containerId = 'plot-' + cell._id;
@@ -6724,12 +6963,12 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                         const results = await DuckDBManager.executeQuery(finalQuery);
 
                         const htmlContent = results.map(row => Object.values(row).join('')).join('\n');
-                        
+
                         // Stocker le contenu HTML pour re-render
                         cell._htmlContent = htmlContent;
 
                         await this.$nextTick();
-                        
+
                         // Rendre l'iframe
                         this.renderIframeInContainer(cell);
 
@@ -6740,7 +6979,7 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                         throw error;
                     }
                 },
-                
+
                 // Fonction pour rendre un iframe dans son conteneur (appelée aussi par x-init)
                 renderIframeInContainer(cell) {
                     const iframe = document.getElementById('iframe-' + cell._id);
@@ -6802,27 +7041,27 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                         if (languageType === 'js') {
                             // Mode JavaScript
                             this.setStatus('Exécution du code JavaScript...', 'loading');
-                            
+
                             // Initialiser _parseLevels
                             cell._parseLevels = [];
-                            
+
                             // Parser les paramètres $param dans le code JS
                             let jsCode = cell.query || '';
                             const originalCode = jsCode;
                             jsCode = this.parseQueryWithParameters(jsCode);
-                            
-                            
+
+
                             // Stocker le code final
                             cell._parseLevels.push({
                                 level: 'final',
                                 innerQuery: jsCode,
                                 replacement: null
                             });
-                            
+
                             // Exécuter le code JavaScript
                             try {
                                 const jsResult = eval(jsCode);
-                                
+
                                 // Convertir le résultat en format compatible
                                 if (cell.paramType === 'dropdown') {
                                     // Pour dropdown, on attend un tableau
@@ -6830,7 +7069,7 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                                         results = jsResult.map(item => {
                                             if (Array.isArray(item)) {
                                                 // Tableau à 2 colonnes : [valeur, libellé]
-                                                return { 
+                                                return {
                                                     col1: String(item[0] || ''),
                                                     col2: item.length > 1 ? String(item[1]) : String(item[0] || '')
                                                 };
@@ -6915,7 +7154,7 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                             cell._initialized = true;
                             this.setStatus(`${cell.paramName} initialisé`, 'success');
                         }
-                        
+
                         // Réinitialiser le flag _userModified après une exécution réussie
                         cell._userModified = false;
                     } catch (error) {
@@ -6966,7 +7205,7 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                 async executePublipostageWordCell(cell) {
                     // Charger PizZip et Docxtemplater à la demande
                     await CDNManager.loadDocxtemplater();
-                    
+
                     if (!cell.docxTemplateBase64) {
                         console.error('❌ No template loaded');
                         throw new Error('Aucun template Word chargé');
@@ -6987,7 +7226,7 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                     try {
                         // Parser et exécuter query (données)
                         const finalQuery = await this.parseQueryRecursively(cell);
-                        
+
                         this.setStatus('Récupération des données...', 'loading');
                         const dataResults = await DuckDBManager.executeQuery(finalQuery);
 
@@ -6998,7 +7237,7 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
 
                         // Parser et exécuter query2 (noms de fichiers)
                         const finalQuery2 = await this.parseQueryRecursively2(cell);
-                        
+
                         this.setStatus('Récupération des noms de fichiers...', 'loading');
                         const filenameResults = await DuckDBManager.executeQuery(finalQuery2);
 
@@ -7025,7 +7264,7 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
 
                             // Parser les données JSON si nécessaire
                             let templateData = rowData;
-                            
+
                             // Si la ligne contient une seule colonne avec du JSON, le parser
                             const keys = Object.keys(rowData);
                             if (keys.length === 1) {
@@ -7062,7 +7301,7 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                             this.setStatus(`Génération ${generatedCount}/${dataResults.length}...`, 'loading');
                         }
 
-                        cell._resultInfo = `✅ ${generatedCount} document(s) généré(s)` + 
+                        cell._resultInfo = `✅ ${generatedCount} document(s) généré(s)` +
                             (cell._parseLevels.length > 1 ? ` - ${cell._parseLevels.length - 1} niveau(x) de parsing (query)` : '') +
                             (cell._parseLevels2.length > 1 ? ` - ${cell._parseLevels2.length - 1} niveau(x) de parsing (query2)` : '');
                         this.setStatus(`${generatedCount} documents générés`, 'success');
@@ -7071,16 +7310,25 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                     }
                 },
 
-                async executeJsPdfCell(cell) {
-                    // Charger jsPDF et autotable à la demande
-                    await CDNManager.loadJsPdf();
+                async executePdfmeCell(cell) {
+
+                    // Charger pdfme à la demande (ESM dynamic import)
+                    this.setStatus('Chargement de pdfme...', 'loading');
+                    try {
+                        var pdfme = await CDNManager.loadPdfme();
+                    } catch (loadErr) {
+                        console.error('[pdfme] ERREUR chargement CDN:', loadErr);
+                        throw loadErr;
+                    }
 
                     if (!cell.query?.trim()) {
+                        console.error('[pdfme] Requête SQL manquante');
                         throw new Error('Requête SQL manquante');
                     }
 
-                    if (!cell.jsPdfConfig?.trim()) {
-                        throw new Error('Configuration jsPDF manquante');
+                    if (!cell.pdfmeTemplate?.trim()) {
+                        console.error('[pdfme] Template pdfme manquant');
+                        throw new Error('Template pdfme manquant');
                     }
 
                     this.setStatus('Exécution de la requête SQL...', 'loading');
@@ -7088,48 +7336,160 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                     try {
                         // Parser et exécuter la requête SQL
                         const finalQuery = await this.parseQueryRecursively(cell);
-                        
+
                         this.setStatus('Récupération des données...', 'loading');
                         const data = await DuckDBManager.executeQuery(finalQuery);
 
                         if (!data || data.length === 0) {
+                            console.warn('[pdfme] Aucune donnée retournée par la requête');
                             cell._resultInfo = 'Aucune donnée à exporter';
                             return;
                         }
 
-                        this.setStatus('Génération du PDF...', 'loading');
+                        // Récupérer le nom du fichier depuis query2 si défini
+                        let pdfFileName = cell.pdfFileName || 'export.pdf';
+                        if (cell.query2?.trim()) {
+                            this.setStatus('Récupération du nom de fichier...', 'loading');
 
-                        // Créer une instance jsPDF
-                        
-                        // jsPDF UMD 2.x expose window.jspdf.jsPDF
-                        const jsPDFClass = window.jspdf?.jsPDF || window.jsPDF || window.jspdf;
-                        if (!jsPDFClass) {
-                            throw new Error('jsPDF library not loaded. Check browser console for details.');
+                            const finalQuery2 = await this.parseQueryRecursively2(cell);
+                            const filenameResults = await DuckDBManager.executeQuery(finalQuery2);
+
+                            if (filenameResults && filenameResults.length > 0) {
+                                const filenameValue = Object.values(filenameResults[0])[0];
+                                if (filenameValue) {
+                                    pdfFileName = String(filenameValue);
+                                }
+                            }
                         }
-                        const doc = new jsPDFClass();
-                        // autoTable est ajouté comme plugin sur le prototype de jsPDF
-                        const autoTable = (docInstance, opts) => docInstance.autoTable(opts);
 
-                        // Exécuter le code de configuration jsPDF
-                        const configFunction = new Function('doc', 'autoTable', 'data', cell.jsPdfConfig);
-                        configFunction(doc, autoTable, data);
+                        this.setStatus('Génération du PDF (pdfme)...', 'loading');
 
-                        // Sauvegarder le PDF (ou l'ajouter au zip si mode zip actif)
-                        const pdfFileName = cell.pdfFileName || 'export.pdf';
+                        // Parser le template JSON
+                        let template;
+                        try {
+                            template = JSON.parse(cell.pdfmeTemplate);
+                        } catch (parseErr) {
+                            console.error('[pdfme] ERREUR parsing template JSON:', parseErr);
+                            throw new Error('Template JSON invalide: ' + parseErr.message);
+                        }
+
+                        // Résoudre les plugins depuis @pdfme/schemas
+                        let pluginsConfig;
+                        try {
+                            pluginsConfig = JSON.parse(cell.pdfmePlugins || '{"Text": "text"}');
+                        } catch (parseErr) {
+                            console.error('[pdfme] ERREUR parsing plugins JSON:', parseErr);
+                            throw new Error('Plugins JSON invalide: ' + parseErr.message);
+                        }
+
+                        const plugins = {};
+                        for (const [name, path] of Object.entries(pluginsConfig)) {
+                            const parts = String(path).split('.');
+                            let obj = pdfme.schemas;
+                            for (const part of parts) {
+                                if (obj && obj[part] !== undefined) {
+                                    obj = obj[part];
+                                } else {
+                                    console.error(`[pdfme] Plugin introuvable: "${path}" partie "${part}"`, 'Clés disponibles:', obj ? Object.keys(obj) : 'obj est null/undefined');
+                                    throw new Error(`Plugin introuvable: "${path}" (partie "${part}" non trouvée dans @pdfme/schemas). Clés disponibles: ${obj ? Object.keys(obj).join(', ') : 'aucune'}`);
+                                }
+                            }
+                            plugins[name] = obj;
+                        }
+
+                        // Chaque ligne SQL = 1 input (1 page). Les noms de colonnes = noms des schemas
+                        // Les valeurs JSON (arrays, objects) sont parsées automatiquement
+
+                        // Extraire tous les noms de champs du template pour les valeurs par défaut
+                        const fieldNames = new Set();
+                        if (template.schemas && Array.isArray(template.schemas)) {
+                            template.schemas.forEach(pageSchemas => {
+                                if (Array.isArray(pageSchemas)) {
+                                    pageSchemas.forEach(s => {
+                                        if (s.name) fieldNames.add(s.name);
+                                    });
+                                }
+                            });
+                        }
+
+                        const inputs = data.map((row, i) => {
+                            const input = {};
+
+                            // 1. Initialiser avec le contenu statique du template comme valeur par défaut
+                            template.schemas.forEach(pageSchemas => {
+                                pageSchemas.forEach(s => {
+                                    if (s.name) {
+                                        let val = s.content || '';
+                                        try {
+                                            const parsed = JSON.parse(val);
+                                            input[s.name] = (Array.isArray(parsed) || typeof parsed === 'object') ? parsed : String(val);
+                                        } catch {
+                                            input[s.name] = String(val);
+                                        }
+                                    }
+                                });
+                            });
+
+                            // 2. Surcharger avec les données SQL
+                            for (const [key, value] of Object.entries(row)) {
+                                if (typeof value === 'string') {
+                                    // Tenter de parser les valeurs JSON (ex: [[...]] pour table)
+                                    try {
+                                        const parsed = JSON.parse(value);
+                                        if (Array.isArray(parsed) || typeof parsed === 'object') {
+                                            input[key] = parsed;
+                                        } else {
+                                            input[key] = String(value);
+                                        }
+                                    } catch {
+                                        input[key] = String(value);
+                                    }
+                                } else {
+                                    input[key] = String(value ?? '');
+                                }
+                            }
+                            return input;
+                        });
                         
+                        if (!inputs || !Array.isArray(inputs) || inputs.length === 0) {
+                            console.warn('[pdfme] Aucun input généré par le mapping');
+                            cell._resultInfo = 'Aucun input généré par le mapping';
+                            return;
+                        }
+
+                        // Générer le PDF avec pdfme
+                        let pdf;
+                        try {
+                            pdf = await pdfme.generator.generate({ template, inputs, plugins });
+                        } catch (genErr) {
+                            console.error('[pdfme] ERREUR generate():', genErr);
+                            console.error('[pdfme] generate() stack:', genErr.stack);
+                            throw genErr;
+                        }
+                        // Télécharger ou zipper
+                        // Utiliser pdf directement (Uint8Array) plutôt que pdf.buffer (ArrayBuffer partagé potentiellement plus grand)
+                        const pdfBlob = new Blob([pdf], { type: 'application/pdf' });
+
                         if (this._zipMode) {
-                            // En mode zip, générer un blob et l'ajouter au zip
-                            const pdfBlob = doc.output('blob');
                             this.downloadOrZipFile(pdfFileName, pdfBlob, 'application/pdf');
                         } else {
-                            // Mode normal, télécharger directement
-                            doc.save(pdfFileName);
+                            const url = URL.createObjectURL(pdfBlob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = pdfFileName;
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                            URL.revokeObjectURL(url);
                         }
 
-                        cell._resultInfo = `✅ PDF généré: ${pdfFileName} (${data.length} ligne(s))` + 
-                            (cell._parseLevels.length > 1 ? ` - ${cell._parseLevels.length - 1} niveau(x) de parsing` : '');
-                        this.setStatus('PDF généré avec succès', 'success');
+                        cell._resultInfo = `✅ PDF généré: ${pdfFileName} (${inputs.length} page(s), ${data.length} ligne(s) SQL)` +
+                            (cell._parseLevels.length > 1 ? ` - ${cell._parseLevels.length - 1} niveau(x) de parsing` : '') +
+                            (cell._parseLevels2?.length > 1 ? ` - ${cell._parseLevels2.length - 1} niveau(x) de parsing (query2)` : '');
+                        this.setStatus('PDF généré avec succès (pdfme)', 'success');
                     } catch (error) {
+                        console.error('[pdfme] === ERREUR executePdfmeCell ===', error);
+                        console.error('[pdfme] Stack:', error.stack);
                         throw error;
                     }
                 },
@@ -7165,7 +7525,7 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                         await this.renderPerspectiveInContainer(cell);
 
                         const rowCount = arrowTable.numRows;
-                        cell._resultInfo = `✅ ${rowCount} ligne(s)` + 
+                        cell._resultInfo = `✅ ${rowCount} ligne(s)` +
                             (cell._parseLevels.length > 1 ? ` - ${cell._parseLevels.length - 1} niveau(x) de parsing` : '');
                         this.setStatus('Perspective chargé', 'success');
                     } catch (error) {
@@ -7206,11 +7566,11 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
 
                         // Parser la configuration JSON si présente pour obtenir le nom de table
                         let tableName = `perspective_data_${cell._id.replace(/[^a-zA-Z0-9_]/g, '_')}`;
-                        let config = { 
+                        let config = {
                             table: tableName,
                             theme: 'Pro Light'
                         };
-                        
+
                         if (cell.perspectiveConfig?.trim()) {
                             try {
                                 const userConfig = JSON.parse(cell.perspectiveConfig);
@@ -7229,17 +7589,17 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
 
                         // Choisir le mode de connexion selon le paramètre duckdbHandler
                         if (cell.duckdbHandler !== false) {
-                            
+
                             // Toujours supprimer la table si elle existe (même en première exécution)
                             try {
                                 await conn.query(`DROP TABLE IF EXISTS ${tableName}`);
                             } catch (e) {
                                 console.warn('Impossible de supprimer la table:', e);
                             }
-                            
+
                             // Créer la table à partir de la requête originale
                             await conn.query(`CREATE TABLE ${tableName} AS ${finalQuery}`);
-                            
+
                             // NOTE: Passer conn directement - le DuckDBHandler attend une connexion avec query()
                             if (!cell._perspectiveClient) {
                                 const server = perspective.createMessageHandler(new DuckDBHandler(conn));
@@ -7265,21 +7625,21 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                             // Mode Arrow natif de Perspective
                             // Exécuter la requête directement et récupérer les données en Arrow
                             const arrowResult = await conn.query(finalQuery);
-                            
+
                             // Récupérer tous les batches Arrow et les combiner
                             const batches = [];
                             for await (const batch of arrowResult) {
                                 batches.push(batch);
                             }
-                            
+
                             // Créer un worker Perspective si nécessaire
                             if (!cell._perspectiveWorker) {
                                 cell._perspectiveWorker = await perspective.worker();
                             }
-                            
+
                             // Créer une table Perspective à partir des batches Arrow
                             const table = await cell._perspectiveWorker.table(batches);
-                            
+
                             // Forcer la détection des thèmes avant le chargement
                             if (typeof viewer.resetThemes === 'function') {
                                 await viewer.resetThemes(['Pro Light', 'Pro Dark']);
@@ -7388,7 +7748,7 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                             // Vérifier si la query référence le paramètre
                             const query = cell.query || '';
                             const referencedParams = this.findReferencedParams(query);
-                            
+
                             if (referencedParams.includes(paramName)) {
                                 dependents.push({ cell, path: [...path], cellIndex });
                             }
@@ -7505,33 +7865,27 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
 
                 // Callback appelé lorsqu'une valeur de paramètre UI est modifiée par l'utilisateur
                 async onParameterValueChange(cell) {
-                    console.log('🔄 [DAG] onParameterValueChange appelé pour:', cell.paramName);
-                    
+
                     // Si le DAG n'est pas activé, ne rien faire
                     if (!this.directedAcyclicGraph) {
-                        console.log('⏸️ [DAG] DAG désactivé, skip');
                         return;
                     }
 
                     const paramName = cell.paramName;
                     if (!paramName) {
-                        console.log('⚠️ [DAG] Pas de paramName, skip');
                         return;
                     }
 
                     // Annuler le timer précédent (debounce)
                     if (this._dagDebounceTimer) {
-                        console.log('⏱️ [DAG] Annulation du timer précédent (debounce)');
                         clearTimeout(this._dagDebounceTimer);
                         this._dagDebounceTimer = null;
                     }
 
                     // Démarrer un nouveau timer
-                    console.log(`⏱️ [DAG] Timer de ${this._dagDebounceDelay}ms démarré`);
                     this._dagDebounceTimer = setTimeout(async () => {
-                        console.log('⏰ [DAG] Timer écoulé, démarrage du rafraîchissement');
                         this._dagDebounceTimer = null;
-                        
+
                         try {
                             await this._executeDAGRefresh(paramName);
                         } catch (error) {
@@ -7543,8 +7897,6 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
 
                 // Exécuter le rafraîchissement DAG (appelé après le debounce)
                 async _executeDAGRefresh(paramName) {
-                    console.log(`🔍 [DAG] Recherche des dépendances pour $${paramName}...`);
-
                     // Vérifier les cycles avant de procéder
                     if (this.detectCycleInDAG()) {
                         console.error('🔴 [DAG] Cycle détecté dans le DAG');
@@ -7555,58 +7907,47 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
 
                     // Trouver toutes les cellules qui dépendent de ce paramètre
                     const dependentCells = this.findDependentCells(paramName);
-                    console.log(`📊 [DAG] ${dependentCells.length} cellule(s) dépendante(s) trouvée(s)`);
-                    
+
                     // Trouver tous les groupes qui dépendent de ce paramètre (via ifQuery)
                     const dependentGroups = this.findDependentGroups(paramName);
-                    console.log(`📁 [DAG] ${dependentGroups.length} groupe(s) dépendant(s) trouvé(s)`);
 
                     const totalDependents = dependentCells.length + dependentGroups.length;
-                    
+
                     if (totalDependents === 0) {
-                        console.log('✅ [DAG] Aucune dépendance, terminé');
                         return;
                     }
 
                     this.setStatus(`🔄 Rafraîchissement de ${dependentCells.length} cellule(s) et ${dependentGroups.length} groupe(s) dépendant(s) de $${paramName}...`, 'loading');
 
                     // Réévaluer les ifQuery des groupes dépendants
-                    console.log(`🔄 [DAG] Réévaluation des ifQuery des groupes dépendants...`);
                     for (let i = 0; i < dependentGroups.length; i++) {
                         const dep = dependentGroups[i];
                         try {
-                            console.log(`  🔍 [DAG] Évaluation groupe ${i + 1}/${dependentGroups.length} - path: [${dep.path.join(',')}]`);
                             const previousResult = dep.group._ifQueryResult;
                             const newResult = await this.evaluateGroupIfQuery(dep.group);
                             dep.group._ifQueryResult = newResult;
-                            console.log(`  ✅ [DAG] Groupe ${i + 1} - ifQuery: ${previousResult} → ${newResult}`);
                         } catch (error) {
                             console.error(`  ❌ [DAG] Erreur évaluation groupe ${i + 1}:`, error);
                         }
                     }
 
                     // Exécuter les cellules dépendantes dans l'ordre
-                    console.log(`🔄 [DAG] Exécution des cellules dépendantes...`);
                     for (let i = 0; i < dependentCells.length; i++) {
                         const dep = dependentCells[i];
                         const depCell = dep.cell;
 
                         // Pour les uiParameter avec preserveUserValue et _userModified, ne pas re-exécuter
                         if (depCell.type === 'uiParameter' && depCell.preserveUserValue && depCell._userModified) {
-                            console.log(`  ⏭️ [DAG] Cellule ${i + 1} skip (preserveUserValue + userModified)`);
                             continue;
                         }
 
                         try {
-                            console.log(`  ▶️ [DAG] Exécution cellule ${i + 1}/${dependentCells.length} - type: ${depCell.type} - path: [${dep.path.join(',')}], index: ${dep.cellIndex}`);
                             await this.runCellAt(dep.path, dep.cellIndex);
-                            console.log(`  ✅ [DAG] Cellule ${i + 1} exécutée`);
                         } catch (error) {
                             console.error(`  ❌ [DAG] Erreur cellule ${i + 1}:`, error);
                         }
                     }
 
-                    console.log('✅ [DAG] Rafraîchissement DAG terminé');
                     this.setStatus(`✅ ${dependentCells.length} cellule(s) et ${dependentGroups.length} groupe(s) rafraîchi(s)`, 'success');
                 },
 
@@ -7618,7 +7959,7 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                     const languageLabel = isJs ? 'JavaScript' : 'SQL';
                     const languageIcon = isJs ? '⚡' : '🗄️';
                     const badgeClass = isJs ? 'badge-warning' : 'badge-info';
-                    
+
                     return this.renderSqlQueryEditor(cell, placeholder, true, 'query', '_showParsedQuery', languageLabel, languageIcon, badgeClass);
                 },
 
@@ -7726,13 +8067,13 @@ doc.text('Rapport généré le ' + new Date().toLocaleDateString('fr-FR'), 14, 1
                     const cellId = cell._id;
                     const showParsedQuery = cell[showParsedQueryProp];
                     const parseLevelsProp = queryType === 'query2' ? '_parseLevels2' : '_parseLevels';
-                    
+
                     const languageType = cell.languageType || 'sql';
                     const isJs = languageType === 'js';
                     const finalLanguageLabel = languageLabel || (isJs ? 'JavaScript' : 'SQL');
                     const finalLanguageIcon = languageIcon || (isJs ? '⚡' : '🗄️');
                     const finalBadgeClass = badgeClass || (isJs ? 'badge-warning' : 'badge-info');
-                    
+
                     // Configuration des templates SQL
                     const sqlTemplates = [
                         {
@@ -7759,7 +8100,7 @@ ORDER BY ordinal_position;
 SELECT COLUMNS('^dim_') FROM source1;`
                         }
                     ];
-                    
+
                     return `
                         <div>
                             <div class="relative w-full">
@@ -7793,7 +8134,8 @@ SELECT COLUMNS('^dim_') FROM source1;`
                                                 :disabled="isLoading"
                                                 class="p-1.5 text-base-content/40 hover:text-base-content transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed" 
                                                 title="Exécuter la requête">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                                                <span x-show="cellItem.cell._status === 'running'" class="loading loading-spinner loading-sm"></span>
+                                                <svg x-show="cellItem.cell._status !== 'running'" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
                                             </button>
                                         ` : ''}
                                         ${!showParsedQuery ? `
@@ -7833,12 +8175,17 @@ SELECT COLUMNS('^dim_') FROM source1;`
                                             const container = $refs['cm_${cellId}_${queryType}'];
                                             if (!container) return;
                                             
+                                            // Utiliser Alpine.raw() pour stocker les refs d'éditeur HORS du proxy réactif
+                                            // Cela évite que l'assignation de _cmEditor_* déclenche une réévaluation
+                                            // des expressions x-html (critique quand plusieurs éditeurs coexistent dans une même cellule)
+                                            const rawCell = (typeof Alpine !== 'undefined' && Alpine.raw) ? Alpine.raw(cellItem.cell) : cellItem.cell;
+                                            
                                             // Si un éditeur existe déjà mais n'est plus dans le DOM, le détruire
-                                            const existingEditor = cellItem.cell._cmEditor_${queryType};
+                                            const existingEditor = rawCell._cmEditor_${queryType};
                                             if (existingEditor) {
                                                 if (!document.body.contains(existingEditor.dom)) {
                                                     existingEditor.destroy();
-                                                    cellItem.cell._cmEditor_${queryType} = null;
+                                                    rawCell._cmEditor_${queryType} = null;
                                                 } else {
                                                     return; // L'éditeur existe et est valide
                                                 }
@@ -7857,7 +8204,7 @@ SELECT COLUMNS('^dim_') FROM source1;`
                                                     }
                                                 }
                                                 
-                                                cellItem.cell._cmEditor_${queryType} = CDNManager.createSqlEditor(
+                                                rawCell._cmEditor_${queryType} = CDNManager.createSqlEditor(
                                                     container,
                                                     cellItem.cell.${queryType} || '',
                                                     (newValue) => {
@@ -7871,7 +8218,8 @@ SELECT COLUMNS('^dim_') FROM source1;`
                                             }
                                         })"
                                         x-effect="(() => {
-                                            const editor = cellItem.cell._cmEditor_${queryType};
+                                            const rawCell = (typeof Alpine !== 'undefined' && Alpine.raw) ? Alpine.raw(cellItem.cell) : cellItem.cell;
+                                            const editor = rawCell._cmEditor_${queryType};
                                             if (editor && editor.state && document.body.contains(editor.dom)) {
                                                 const currentDoc = editor.state.doc.toString();
                                                 const cellValue = cellItem.cell.${queryType} || '';
@@ -8004,13 +8352,13 @@ SELECT COLUMNS('^dim_') FROM source1;`
                         cell.paramName = this.generateUniqueParamName();
                     }
                 },
-                
+
                 // Insérer un template (SQL ou JS) dans une cellule
                 insertTemplate(cellId, queryType, templateIndex, languageType = 'sql') {
                     // Récupérer les templates appropriés selon le type de langage
                     const store = Alpine.store('templateModal');
                     const templates = languageType === 'js' ? store.jsTemplates : store.sqlTemplates;
-                    
+
                     // Trouver la cellule par son ID
                     const findCell = (groups) => {
                         for (const group of groups) {
@@ -8026,7 +8374,7 @@ SELECT COLUMNS('^dim_') FROM source1;`
                         }
                         return null;
                     };
-                    
+
                     let cell = null;
                     for (const page of this.pages) {
                         cell = findCell(page.groups);
@@ -8036,26 +8384,26 @@ SELECT COLUMNS('^dim_') FROM source1;`
                             if (cell) break;
                         }
                     }
-                    
+
                     if (!cell) {
                         console.error('Cellule non trouvée:', cellId);
                         return;
                     }
-                    
+
                     // Vérifier que l'index du template est valide
                     if (templateIndex < 0 || templateIndex >= templates.length) {
                         console.error('Index de template invalide:', templateIndex);
                         return;
                     }
-                    
+
                     // Insérer le code du template dans la cellule
                     const template = templates[templateIndex];
                     cell[queryType] = template.code;
-                    
+
                     // Afficher un message de confirmation
                     this.setStatus(`✅ Template "${template.name}" inséré`, 'success');
                 },
-                
+
                 // Valider l'unicité du nom de source (accepte path ou groupIndex) - vérifie dans TOUTES les pages
                 validateSingleSourceName(pathOrIndex, cellIndex) {
                     const path = Array.isArray(pathOrIndex) ? pathOrIndex : [pathOrIndex];
@@ -8370,7 +8718,7 @@ SELECT COLUMNS('^dim_') FROM source1;`
                         this.showGistTokenModal = true;
                         return;
                     }
-                    
+
                     // Réinitialiser la modale avec les valeurs par défaut
                     this.exportModal.show = false;
                     this.$nextTick(() => {
@@ -8389,21 +8737,21 @@ SELECT COLUMNS('^dim_') FROM source1;`
                     const description = this.exportModal.description || 'sqljob Notebook Configuration';
                     const devMode = this.exportModal.devMode;
                     const displaySettings = this.exportModal.displaySettings;
-                    
+
                     this.exportModal.show = false;
 
                     try {
                         this.isLoading = true;
-                        
+
                         // Générer la configuration avec les paramètres choisis
                         const includeFileData = (type === 'gist' || type === 'json' || type === 'base64');
                         const config = await ConfigManager.buildConfigFromState(
-                            this.pages, 
+                            this.pages,
                             devMode,
                             displaySettings,
                             includeFileData,
-                            this.currentTheme, 
-                            this.dbEngine, 
+                            this.currentTheme,
+                            this.dbEngine,
                             this.directedAcyclicGraph
                         );
 
@@ -8443,7 +8791,7 @@ SELECT COLUMNS('^dim_') FROM source1;`
                     } catch (error) {
                         console.error('Erreur export:', error);
                         this.setStatus('Erreur: ' + error.message, 'error');
-                        
+
                         // Si erreur d'authentification pour gist
                         if (type === 'gist' && (error.message.includes('authentifié') || error.message.includes('Unauthorized'))) {
                             GitHubGistManager.clearAccessToken();
@@ -8489,7 +8837,7 @@ SELECT COLUMNS('^dim_') FROM source1;`
                                 const safeSourceName = cell.name.replace(/[^a-zA-Z0-9_]/g, '_');
                                 document.querySelectorAll(`script[id^="sourceFile_${safeSourceName}"]`).forEach(s => s.remove());
                             }
-                            
+
                             if (cell.type === 'publipostageWord' && cell.docxTemplateBase64 && cell.docxTemplateFileName) {
                                 const cellPath = [...groupPath, cellIndex].join('_');
                                 const stableId = `docxTemplate_${cellPath}`;
@@ -8546,7 +8894,7 @@ SELECT COLUMNS('^dim_') FROM source1;`
                         this.showGistTokenModal = false;
                         this.githubToken = '';
                         this.setStatus('Token GitHub enregistré', 'success');
-                        
+
                         // Afficher la modale d'export pour le gist
                         setTimeout(() => this.openExportModal('gist'), 300);
                     } catch (error) {
@@ -8587,7 +8935,7 @@ SELECT COLUMNS('^dim_') FROM source1;`
                     try {
                         const text = await file.text();
                         const config = JSON.parse(text);
-                        
+
                         event.target.value = '';
 
                         // Helper pour initialiser une cellule
@@ -8639,9 +8987,11 @@ SELECT COLUMNS('^dim_') FROM source1;`
                                 }
                             }
 
-                            if (cell.type === 'jsPDF') {
+                            if (cell.type === 'pdfme') {
                                 newCell._showParsedQuery = false;
+                                newCell._showParsedQuery2 = false;
                                 newCell._parseLevels = [];
+                                newCell._parseLevels2 = [];
                             }
 
                             if (cell.type === 'perspective') {
@@ -8654,7 +9004,7 @@ SELECT COLUMNS('^dim_') FROM source1;`
                             }
 
                             // Cellules avec SQL editor
-                            if (['sqlRecursiveParse', 'table', 'iframe', 'uiParameter', 'publipostageWord', 'jsPDF', 'perspective'].includes(cell.type)) {
+                            if (['sqlRecursiveParse', 'table', 'iframe', 'uiParameter', 'publipostageWord', 'pdfme', 'perspective'].includes(cell.type)) {
                                 newCell._showParsedQuery = false;
                             }
 
@@ -8706,13 +9056,13 @@ SELECT COLUMNS('^dim_') FROM source1;`
 
                         // Charger les pages depuis la config
                         let loadedPages = [];
-                        
+
                         // Migration: si l'ancienne structure existe (groups au lieu de pages)
                         if (config.job?.groups && !config.job?.pages) {
                             const allGroups = (config.job.groups || []).map((group, groupIndex) => initGroup(group, groupIndex));
                             const initGroups = allGroups.filter(g => g._type === 'core');
                             const initLinkGroups = allGroups.filter(g => g._type === 'link');
-                            
+
                             loadedPages = [{
                                 _id: this.generatePageId(),
                                 name: 'Feuille 1',
@@ -8726,7 +9076,7 @@ SELECT COLUMNS('^dim_') FROM source1;`
                                 const allGroups = (page.groups || []).map((group, groupIndex) => initGroup(group, groupIndex));
                                 const initGroups = allGroups.filter(g => g._type === 'core');
                                 const initLinkGroups = allGroups.filter(g => g._type === 'link');
-                                
+
                                 return {
                                     _id: page.id || this.generatePageId(),
                                     name: page.name || `Feuille ${pageIndex + 1}`,
@@ -8736,7 +9086,7 @@ SELECT COLUMNS('^dim_') FROM source1;`
                                 };
                             });
                         }
-                        
+
                         // Si aucune page n'existe, créer une page par défaut
                         if (loadedPages.length === 0) {
                             loadedPages = [{
@@ -8747,7 +9097,7 @@ SELECT COLUMNS('^dim_') FROM source1;`
                                 autoExecuteWithoutSources: false
                             }];
                         }
-                        
+
                         this.pages = loadedPages;
                         this.activePageIndex = 0;
 
