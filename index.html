@@ -663,6 +663,8 @@
         // CLASSE 1: ConfigManager
         // ═══════════════════════════════════════════════════════════════════════════
         class ConfigManager {
+            static SQLJOB_VERSION = '0.1';
+
             static getDefaultConfig() {
                 try {
                     const scriptElement = document.getElementById('defaultConfigBase64');
@@ -912,6 +914,7 @@
                     case 'publipostageWord':
                         cleanCell.query = cell.query;
                         cleanCell.query2 = cell.query2;
+                        if (cell.showExecutionButton !== undefined) cleanCell.showExecutionButton = cell.showExecutionButton;
                         // Ajouter le fichier base64 si demandé et si un template est chargé
                         if (includeFileData && cell.docxTemplateBase64 && cell.docxTemplateFileName) {
                             cleanCell.fileBase64 = cell.docxTemplateBase64;
@@ -920,9 +923,11 @@
                         break;
                     case 'pdfme':
                         cleanCell.query = cell.query;
+                        cleanCell.query2 = cell.query2;
                         cleanCell.pdfmeTemplate = cell.pdfmeTemplate;
                         cleanCell.pdfmePlugins = cell.pdfmePlugins;
                         cleanCell.pdfFileName = cell.pdfFileName;
+                        if (cell.showExecutionButton !== undefined) cleanCell.showExecutionButton = cell.showExecutionButton;
                         break;
                     case 'perspective':
                         cleanCell.query = cell.query;
@@ -942,6 +947,11 @@
                     cleanCell.childGroupId = cell.childGroupId;
                 }
 
+                // Ajouter name (pour onglets tabsChild)
+                if (cell.name !== undefined && cell.name !== '') {
+                    cleanCell.name = cell.name;
+                }
+
                 return cleanCell;
             }
 
@@ -957,6 +967,14 @@
                     cleanGroup.accordion = true;
                     cleanGroup.title = group.title || '';
                     cleanGroup.accordionOpen = group.accordionOpen !== false; // true par défaut
+                }
+
+                // Ajouter tabsChild et name (pour onglets)
+                if (group.tabsChild) {
+                    cleanGroup.tabsChild = true;
+                }
+                if (group.name !== undefined && group.name !== '') {
+                    cleanGroup.name = group.name;
                 }
 
                 // Ajouter ifQuery si défini (condition d'affichage en mode client)
@@ -1015,6 +1033,7 @@
                 }));
 
                 return {
+                    version: ConfigManager.SQLJOB_VERSION,
                     ui: {
                         devMode: devMode,
                         displaySettings: displaySettings,
@@ -1521,6 +1540,36 @@
                 return await DuckDBManager.dbInstance.copyFileToBuffer(fileName);
             }
 
+            /** Attend que le fichier soit disponible dans le système de fichiers virtuel avec retry */
+            static async waitForFile(fileName, maxRetries = 10, delayMs = 200) {
+                for (let i = 0; i < maxRetries; i++) {
+                    try {
+                        const buffer = await DuckDBManager.dbInstance.copyFileToBuffer(fileName);
+                        if (buffer && buffer.byteLength > 0) {
+                            console.log(`✓ Fichier disponible après ${i + 1} essai(s): ${fileName} (${buffer.byteLength} octets)`);
+                            return buffer;
+                        }
+                    } catch (error) {
+                        // Fichier pas encore disponible, on continue
+                        console.log(`⏳ Attente fichier (${i + 1}/${maxRetries}): ${fileName}`);
+                    }
+                    await new Promise(resolve => setTimeout(resolve, delayMs));
+                }
+                throw new Error(`Le fichier ${fileName} n'est pas disponible après ${maxRetries} tentatives`);
+            }
+
+            /** Supprime un fichier du système de fichiers virtuel DuckDB (pour éviter conflits aux prochains exports) */
+            static async dropFile(fileName) {
+                if (DuckDBManager.currentEngine === 'ducklings' || !DuckDBManager.dbInstance?.dropFile) {
+                    return;
+                }
+                try {
+                    await DuckDBManager.dbInstance.dropFile(fileName);
+                } catch (e) {
+                    console.warn('dropFile ignoré:', e);
+                }
+            }
+
             static async executeQueryArrow(query) {
                 if (!DuckDBManager.connInstance) {
                     throw new Error('DuckDB non initialisé');
@@ -1636,10 +1685,27 @@
                     </div>`;
             }
 
+            // Skeleton DaisyUI affiché quand la cellule n'est pas encore chargée (template unique)
+            static renderCellBodySkeleton() {
+                return `<div class="flex min-w-0 w-full flex-col mt-2 gap-4">
+  <div class="skeleton h-8 w-full"></div>
+  <div class="skeleton h-2 w-28"></div>
+  <div class="skeleton h-2 w-full"></div>
+  <div class="skeleton h-2 w-full"></div>
+</div>`;
+            }
+
             // Génère le HTML du body d'une cellule (tous les types)
             static renderBody(pathExpr, cellIdxExpr) {
+                const skeleton = this.renderCellBodySkeleton();
                 return `
                     <div class="pt-1 pb-1 pl-2 pr-2 relative">
+                        <!-- SKELETON: affiché quand la cellule n'est pas chargée (jamais pour uiParameter qui garde son contenu) -->
+                        <div x-show="cellItem.cell.type !== 'uiParameter' && (cellItem.cell._status === 'running' || (cellItem.cell.type === 'source' && cellItem.cell._fileName && !cellItem.cell._loaded))">
+                            ${skeleton}
+                        </div>
+                        <!-- CONTENU: masqué pendant le chargement (toujours visible pour uiParameter) -->
+                        <div x-show="cellItem.cell.type === 'uiParameter' || (cellItem.cell._status !== 'running' && !(cellItem.cell.type === 'source' && cellItem.cell._fileName && !cellItem.cell._loaded))">
                         <!-- MARKDOWN CELL -->
                         <template x-if="cellItem.cell.type === 'markdown'">
                             <div>
@@ -1738,6 +1804,17 @@
                         <template x-if="cellItem.cell.type === 'sqlRecursiveParse'">
                             <div>
                                 <div x-show="devMode || cellItem.cell.showSqlEditorForClient" x-effect="safeRenderSqlEditor($el, cellItem.cell, 'SELECT * FROM source1 LIMIT 100', false, 'query', '_showParsedQuery', null, null, null, '${pathExpr}', '${cellIdxExpr}')"></div>
+                                <template x-if="(devMode || cellItem.cell.showSqlEditorForClient) && isSqlResultTabular(cellItem.cell)">
+                                    <div class="bg-base-100 rounded-lg overflow-x-auto mt-2" 
+                                         :id="'table-' + cellItem.cell._id"
+                                         x-init="$nextTick(async () => { if (cellItem.cell._results && cellItem.cell._results.length > 0) { await renderTableInContainer(cellItem.cell); } })"></div>
+                                </template>
+                                <template x-if="(devMode || cellItem.cell.showSqlEditorForClient) && isSqlResultText(cellItem.cell)">
+                                    <textarea class="textarea textarea-bordered w-full mt-2 min-h-[120px] font-mono text-sm" 
+                                              placeholder="Résultat texte/JSON"
+                                              readonly
+                                              :value="getSqlResultAsText(cellItem.cell)"></textarea>
+                                </template>
                                 <template x-if="cellItem.cell._resultInfo">
                                     <div class="mt-2 p-2 bg-base-200 rounded text-sm text-base-content/70" x-text="cellItem.cell._resultInfo"></div>
                                 </template>
@@ -1750,7 +1827,7 @@
                                 <div x-show="devMode || cellItem.cell.showSqlEditorForClient" x-effect="safeRenderSqlEditor($el, cellItem.cell, 'SELECT * FROM source1 LIMIT 100', false, 'query', '_showParsedQuery', null, null, null, '${pathExpr}', '${cellIdxExpr}')"></div>
                                 <div class="bg-base-100 rounded-lg overflow-x-auto" 
                                      :id="'table-' + cellItem.cell._id"
-                                     x-init="$nextTick(() => { if (cellItem.cell._results && cellItem.cell._results.length > 0) { renderTableInContainer(cellItem.cell); } })"></div>
+                                     x-init="$nextTick(async () => { if (cellItem.cell._results && cellItem.cell._results.length > 0) { await renderTableInContainer(cellItem.cell); } })"></div>
                                 <template x-if="cellItem.cell._resultInfo">
                                     <div class="mt-2 p-2 bg-base-200 rounded text-sm text-base-content/70" x-text="cellItem.cell._resultInfo"></div>
                                 </template>
@@ -1927,7 +2004,7 @@
                                 </div>
                                 
                                 <!-- Execute button -->
-                                <div class="flex justify-center">
+                                <div class="flex justify-center" x-show="cellItem.cell.showExecutionButton !== false">
                                     <button class="btn btn-primary btn-sm" 
                                             @click="runCellAt(${pathExpr}, ${cellIdxExpr})"
                                             :disabled="isLoading || !cellItem.cell.docxTemplateFileName">
@@ -1985,7 +2062,7 @@
                                 </div>
                                 
                                 <!-- Execute button -->
-                                <div class="flex justify-center">
+                                <div class="flex justify-center" x-show="cellItem.cell.showExecutionButton !== false">
                                     <button class="btn btn-primary btn-sm" 
                                             @click="runCellAt(${pathExpr}, ${cellIdxExpr})"
                                             :disabled="isLoading">
@@ -2002,7 +2079,9 @@
                         <!-- PERSPECTIVE CELL -->
                         <template x-if="cellItem.cell.type === 'perspective'">
                             <div class="flex flex-col gap-2">
-                                <div x-show="devMode || cellItem.cell.showSqlEditorForClient" x-effect="safeRenderSqlEditor($el, cellItem.cell, 'SELECT * FROM source1', false, 'query', '_showParsedQuery', null, null, null, '${pathExpr}', '${cellIdxExpr}')"></div>                                
+                                <template x-if="devMode || cellItem.cell.showSqlEditorForClient">
+                                    <div x-effect="safeRenderSqlEditor($el, cellItem.cell, 'SELECT * FROM source1', false, 'query', '_showParsedQuery', null, null, null, '${pathExpr}', '${cellIdxExpr}')"></div>
+                                </template>
                                 <template x-if="cellItem.cell._perspectiveReady">
                                     <perspective-viewer 
                                         :id="'perspective-' + cellItem.cell._id"
@@ -2029,6 +2108,7 @@
                                 </button>
                             </div>
                         </template>
+                        </div>
                     </div>`;
             }
 
@@ -2279,13 +2359,24 @@
                             </div>
 
                             <!-- Contenu du groupe -->
-                            <div class="p-1" x-show="!item.group.accordion || item.group.accordionOpen" x-collapse>
-                                <div class="flex gap-2" :class="(item.group.direction || 'row') === 'row' ? 'flex-row flex-wrap' : 'flex-col'" :style="item.group.style">
+                            <div class="p-1" x-show="!item.group.accordion || item.group.accordionOpen" x-collapse
+                                 x-data="{ _activeTabKey: null }"
+                                 x-init="if (item.group.tabsChild) { const items = getAllItemsSorted(item.group); if (items.length > 0) _activeTabKey = (items[0].type === 'cell' ? 'c-' : 'g-') + items[0].originalIndex; }">
+                                <!-- Barre d'onglets (mode client + tabsChild) -->
+                                <div x-show="!devMode && item.group.tabsChild" role="tablist" class="tabs tabs-box mb-2">
+                                    <template x-for="(tabItem, tabIdx) in getAllItemsSorted(item.group)" :key="'tab-' + (tabItem.type === 'cell' ? 'c-' : 'g-') + tabItem.originalIndex">
+                                        <a role="tab" class="tab"
+                                           :class="{ 'tab-active': _activeTabKey === ((tabItem.type === 'cell' ? 'c-' : 'g-') + tabItem.originalIndex) }"
+                                           @click="_activeTabKey = (tabItem.type === 'cell' ? 'c-' : 'g-') + tabItem.originalIndex"
+                                           x-text="getTabName(tabItem, tabIdx)"></a>
+                                    </template>
+                                </div>
+                                <div class="flex gap-2" :class="(!devMode && item.group.tabsChild) ? 'flex-col' : ((item.group.direction || 'row') === 'row' ? 'flex-row flex-wrap' : 'flex-col')" :style="item.group.style">
                                     <!-- Cellules du groupe (triées par _order) - Niveau 0 -->
                                 <template x-for="cellItem in getSortedCells(item.group)" :key="cellItem.cell._id">
                                     <div class="flex flex-1" 
                                         :class="(item.group.direction || 'row') === 'column' ? 'flex-col w-full' : 'min-w-[200px]'"
-                                        x-show="shouldShowCell(cellItem.cell)"
+                                        x-show="shouldShowCell(cellItem.cell) && (devMode || !item.group.tabsChild || _activeTabKey === ('c-' + cellItem.originalIndex))"
                                         :style="'order: ' + (cellItem.cell._order ?? 0)"
                                     >
                                         <div class="bg-base-100 border border-base-300 rounded-lg overflow-hidden transition-[border-color,box-shadow] duration-200 w-full min-w-[200px] shadow-sm hover:border-primary hover:shadow-lg cell-container" 
@@ -2303,7 +2394,7 @@
                                 <template x-for="childItem in getSortedChildren(item.group)" :key="childItem.child._id || ('child-' + childItem.originalIndex)">
                                     <div class="flex-1 bg-base-100 border border-base-300 rounded-lg overflow-hidden transition-all duration-200 shadow-sm hover:border-primary hover:shadow-md"
                                          :class="(item.group.direction || 'row') === 'column' ? 'w-full' : 'min-w-[200px]'"
-                                         x-show="shouldShowGroup(childItem.child)"
+                                         x-show="shouldShowGroup(childItem.child) && (devMode || !item.group.tabsChild || _activeTabKey === ('g-' + childItem.originalIndex))"
                                          :style="'order: ' + (childItem.child._order ?? 0)"
                                          x-data="{ _childPath: [...item.path, childItem.originalIndex] }"
                                          x-html="renderChildGroupHTML(childItem.child, _childPath, item.group, childItem.originalIndex)"
@@ -2354,7 +2445,7 @@
                 <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-db-engine-title"
                      x-trap.noscroll="showDbEngineModal">
                     <div class="flex items-center justify-between gap-2">
-                        <h3 class="text-lg font-semibold" id="modal-db-engine-title">🦆 Configuration du moteur SQL</h3>
+                        <h3 class="text-lg font-semibold" id="modal-db-engine-title">⚙️ Configuration job générale</h3>
                         <button class="btn btn-sm btn-ghost" @click="showDbEngineModal = false">✕</button>
                     </div>
                     <div class="mt-4 space-y-4">
@@ -2406,6 +2497,22 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="divider"></div>
+                        
+                        <!-- DAG (rafraîchissement automatique) -->
+                        <div class="flex items-center justify-between gap-4 p-4 rounded-lg bg-base-200">
+                            <div>
+                                <h4 class="font-semibold flex items-center gap-2">
+                                    <span class="iconify" data-icon="material-symbols:account-tree-outline" style="font-size: 1.25rem;"></span>
+                                    DAG (graphe acyclique dirigé)
+                                </h4>
+                                <p class="text-sm text-base-content/60 mt-1">Les cellules dépendantes se rafraîchissent automatiquement.</p>
+                            </div>
+                            <input type="checkbox" class="toggle toggle-primary" 
+                                   :checked="directedAcyclicGraph"
+                                   @change="directedAcyclicGraph = !directedAcyclicGraph">
                         </div>
 
                         <div class="divider"></div>
@@ -2607,6 +2714,26 @@
 
                         <div class="divider"></div>
 
+                        <!-- tabsChild : afficher les enfants directs en onglets (mode client) -->
+                        <div class="form-control mb-4">
+                            <label class="label cursor-pointer justify-start gap-3">
+                                <input type="checkbox" class="toggle toggle-primary" x-model="getGroupAtPath(groupSettingsModal.path).tabsChild" />
+                                <span class="label-text">Afficher les enfants en onglets (tabsChild)</span>
+                            </label>
+                            <p class="text-xs text-base-content/60 ml-12">En mode client : les cellules et groupes directs seront affichés dans des onglets DaisyUI. Configurez le nom des onglets sur chaque cellule/groupe.</p>
+                        </div>
+                        <div class="form-control mb-4">
+                            <label class="label">
+                                <span class="label-text font-semibold">Nom du groupe (pour onglet)</span>
+                            </label>
+                            <input type="text" 
+                                class="input input-bordered w-full"
+                                x-model="getGroupAtPath(groupSettingsModal.path).name"
+                                placeholder="Libellé de l'onglet lorsque ce groupe est enfant d'un groupe avec tabsChild" />
+                        </div>
+
+                        <div class="divider"></div>
+
                         <!-- ifQuery : condition d'affichage en mode client -->
                         <div class="form-control mb-4">
                             <label class="label gap-2">
@@ -2677,6 +2804,18 @@
                                 <option value="pdfme">PDF (pdfme)</option>
                                 <option value="perspective">🔍 Perspective Viewer</option>
                             </select>
+                        </div>
+                        <div class="form-control" x-show="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex)?.type !== 'source'">
+                            <label class="label gap-2">
+                                <span class="label-text">Nom (pour onglet)</span>
+                                <span class="tooltip tooltip-bottom" data-tip="Libellé de l'onglet lorsque la cellule est dans un groupe avec tabsChild. Pour les sources, le nom de la table est utilisé.">
+                                    <span class="badge badge-sm cursor-help">?</span>
+                                </span>
+                            </label>
+                            <input type="text" 
+                                   class="input input-bordered input-sm w-full"
+                                   x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).name"
+                                   placeholder="Libellé affiché dans l'onglet (si parent a tabsChild)" />
                         </div>
                         
                         <!-- Config spécifique markdown -->
@@ -3166,6 +3305,30 @@
                                            x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).pdfFileName" 
                                            placeholder="export.pdf">
                                 </div>
+                                <div class="form-control">
+                                    <label class="label cursor-pointer justify-start gap-3">
+                                        <input type="checkbox" class="checkbox checkbox-sm" x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).showExecutionButton">
+                                        <span class="label-text">Afficher le bouton d'exécution</span>
+                                        <span class="tooltip tooltip-bottom" data-tip="Si décoché, le bouton 'Générer le PDF' ne sera pas affiché. La génération devra être déclenchée par un autre moyen (ex: bouton externe, autorun).">
+                                            <span class="badge badge-sm cursor-help">?</span>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                        </template>
+                        
+                        <!-- Config spécifique publipostageWord -->
+                        <template x-if="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex)?.type === 'publipostageWord'">
+                            <div class="flex flex-col gap-2">
+                                <div class="form-control">
+                                    <label class="label cursor-pointer justify-start gap-3">
+                                        <input type="checkbox" class="checkbox checkbox-sm" x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).showExecutionButton">
+                                        <span class="label-text">Afficher le bouton d'exécution</span>
+                                        <span class="tooltip tooltip-bottom" data-tip="Si décoché, le bouton 'Générer les documents' ne sera pas affiché. La génération devra être déclenchée par un autre moyen (ex: bouton externe, autorun).">
+                                            <span class="badge badge-sm cursor-help">?</span>
+                                        </span>
+                                    </label>
+                                </div>
                             </div>
                         </template>
                         
@@ -3399,16 +3562,10 @@
                     </ul>
             </div>
             <!-- Bouton configuration moteur DB (devMode uniquement) -->
-            <button class="btn btn-sm btn-ghost" x-show="devMode" @click="showDbEngineModal = true" 
+            <button class="btn btn-sm" x-show="devMode" @click="showDbEngineModal = true" 
+                    :class="directedAcyclicGraph ? 'btn-warning' : 'btn-ghost'"
                     :title="'Moteur: ' + (dbEngine === 'ducklings' ? 'Ducklings' : 'DuckDB WASM')">
                 <span x-text="dbEngine === 'ducklings' ? '🐤' : '🦆'"></span>
-            </button>
-            <!-- Bouton DAG (devMode uniquement) -->
-            <button class="btn btn-sm" x-show="devMode" 
-                    :class="directedAcyclicGraph ? 'btn-primary' : 'btn-ghost'"
-                    @click="directedAcyclicGraph = !directedAcyclicGraph"
-                    :title="directedAcyclicGraph ? 'DAG activé - Les cellules dépendantes se rafraîchissent automatiquement' : 'DAG désactivé - Cliquer pour activer le rafraîchissement automatique'">
-                <span class="iconify" data-icon="material-symbols:account-tree-outline" style="font-size: 1.25rem;"></span>
             </button>
             <!-- Bouton Dev/View -->
             <button class="btn btn-sm" :class="devMode ? 'btn-soft' : 'btn-ghost'" @click="devMode = !devMode">
@@ -3520,17 +3677,19 @@
                         <!-- Nom du fichier -->
                         <div class="form-control">
                             <label class="label">
-                                <span class="label-text">Nom du fichier</span>
+                                <span class="label-text" x-show="exportModal.type === 'html'">Nom du fichier HTML</span>
+                                <span class="label-text" x-show="exportModal.type === 'base64'">Nom du fichier Base64</span>
+                                <span class="label-text" x-show="exportModal.type === 'json' || exportModal.type === 'gist'">Nom du fichier JSON</span>
                             </label>
                             <input 
                                 type="text" 
                                 x-model="exportModal.fileName" 
-                                placeholder="notebook-config.json"
+                                placeholder="sqljob_yyyymmdd_hhmmss"
                                 class="input input-bordered w-full font-mono text-sm"
                                 @keydown.enter="executeExport()">
                             <label class="label">
-                                <span class="label-text-alt" x-show="exportModal.type === 'base64'">Extension .base64.txt sera ajoutée automatiquement</span>
-                                <span class="label-text-alt" x-show="exportModal.type === 'html'">Le fichier sera nommé index.sqljob.html</span>
+                                <span class="label-text-alt" x-show="exportModal.type === 'base64'">Extension .txt sera ajoutée automatiquement</span>
+                                <span class="label-text-alt" x-show="exportModal.type === 'html'">Extension .html sera ajoutée automatiquement</span>
                                 <span class="label-text-alt" x-show="exportModal.type === 'json' || exportModal.type === 'gist'">Extension .json sera ajoutée automatiquement si absente</span>
                             </label>
                         </div>
@@ -3695,12 +3854,91 @@ WHERE table_name = 'source1'
 ORDER BY ordinal_position;`
                     },
                     {
+                        name: "Liste des colonnes",
+                        description: "Affiche les noms des colonnes d'une table",
+                        code: `SELECT
+    column_name
+FROM information_schema.columns
+WHERE table_name = 'source1'
+ORDER BY ordinal_position;`
+                    },
+                    {
                         name: "SELECT DISTINCT dynamique",
                         description: "Génère un SELECT DISTINCT avec toutes les colonnes",
                         code: `SELECT DISTINCT {{ SELECT column_name FROM information_schema.columns
 WHERE table_name = 'source1'
 ORDER BY ordinal_position;
 }} FROM source1;`
+                    },
+                    {
+                        name: "Valeurs Ajouter/Enlever",
+                        description: "Table de valeurs pour opérations +/-",
+                        code: `SELECT *
+FROM (
+  VALUES 
+  ('+', '+ Ajouter'),
+  ('-', '- Enlever')
+) AS t(id, libelle);`
+                    },
+                    {
+                        name: "SELECT DISTINCT paramétré",
+                        description: "DISTINCT sur une colonne paramétrable",
+                        code: `SELECT
+    DISTINCT "$param1"
+FROM source1
+ORDER BY "$param1";`
+                    },
+                    {
+                        name: "Import CSV avec géométrie",
+                        description: "Import CSV SF avec extraction lon/lat depuis shape (DuckDB)",
+                        code: `CREATE OR REPLACE TABLE source1 AS 
+SELECT *,
+    CAST(regexp_extract(shape, 'POINT \\(([^ ]+)', 1) AS DOUBLE) as lon,
+    CAST(regexp_extract(shape, 'POINT \\([^ ]+ ([^)]+)', 1) AS DOUBLE) as lat
+FROM read_csv('https://data.sfgov.org/resource/5cei-gny5.csv?$limit=50000', ALL_VARCHAR=true, HEADER=true)
+WHERE shape IS NOT NULL;`
+                    },
+                    {
+                        name: "SUMMARIZE",
+                        description: "Résumé statistique de la table",
+                        code: `SUMMARIZE FROM source1;`
+                    },
+                    {
+                        name: "Échantillon 50 lignes",
+                        description: "Sample aléatoire de 50 lignes",
+                        code: `SELECT * FROM source1 USING SAMPLE 50 ROWS;`
+                    },
+                    {
+                        name: "COPY Parquet vers CSV",
+                        description: "Export Parquet vers fichier CSV",
+                        code: `COPY (SELECT * FROM 'https://raw.githubusercontent.com/ihatexcel/sqljob/main/data/aws-edge-locations.parquet') TO 'source1.csv' (FORMAT csv, DELIMITER ';', HEADER);`
+                    },
+                    {
+                        name: "COPY CSV vers Parquet",
+                        description: "Export CSV vers fichier Parquet",
+                        code: `COPY (SELECT * FROM read_csv_auto(
+'http://raw.githubusercontent.com/fivethirtyeight/data/master/bechdel/movies.csv'))
+TO 'movies.parquet' (FORMAT 'parquet');`
+                    },
+                    {
+                        name: "Fonction K-means",
+                        description: "Création d'une fonction de clustering K-means (DuckDB)",
+                        code: `CREATE FUNCTION kmeans(tname, idcol_name, numcol_name, bins:=5, maxiter:=100) AS (
+WITH RECURSIVE clusters(iter, cid, x) AS ( 
+	WITH t1 AS (FROM query_table(tname) SELECT idcol_name AS id, numcol_name AS x)
+	(SELECT 0, id, x FROM t1 LIMIT bins-1) 
+	UNION ALL 
+	SELECT iter + 1, cid, avg(px) FROM ( 
+		SELECT iter, cid, p.x as px, 
+		rank() OVER (PARTITION BY p.id ORDER BY (p.x-c.x)^2, c.x^2) r
+		FROM t1 p, clusters c
+	) x 
+	WHERE x.r = 1 and iter < maxiter 
+	GROUP BY ALL
+)
+SELECT list(x) FROM 
+(FROM clusters WHERE iter = maxiter ORDER BY x)
+);`
                     },
                     {
                         name: "SELECT colonnes avec préfixe",
@@ -3901,6 +4139,10 @@ if ($param1 === "Type A") {
                     title: group.title || '',
                     accordionOpen: group.accordionOpen !== false // true par défaut
                 };
+
+                // Ajouter tabsChild et name
+                newGroup.tabsChild = group.tabsChild || false;
+                newGroup.name = group.name || '';
 
                 // Ajouter ifQuery si présent
                 if (group.ifQuery) {
@@ -4510,6 +4752,7 @@ if ($param1 === "Type A") {
                         try {
                             await this.executeUiParameterCell(cell);
                         } catch (error) {
+                            cell._paramError = 'Erreur: ' + error.message;
                             console.error(`Erreur init paramètre ${cell.paramName}:`, error);
                         }
                     }
@@ -5530,15 +5773,26 @@ FROM source1 LIMIT 10;`;
 
                     // Contenu du sous-groupe (cellules + sous-groupes récursifs)
                     const content = `
-                        <div class="p-2" x-show="!getGroupAtPath(${pathJSON})?.accordion || getGroupAtPath(${pathJSON})?.accordionOpen" x-collapse>
-                            <div class="flex gap-2" :class="(getGroupAtPath(${pathJSON})?.direction || 'row') === 'row' ? 'flex-row flex-wrap' : 'flex-col'">
+                        <div class="p-2" x-show="!getGroupAtPath(${pathJSON})?.accordion || getGroupAtPath(${pathJSON})?.accordionOpen" x-collapse
+                             x-data="{ _activeTabKey: null }"
+                             x-init="if (getGroupAtPath(${pathJSON})?.tabsChild) { const items = getAllItemsSorted(getGroupAtPath(${pathJSON})); if (items.length > 0) _activeTabKey = (items[0].type === 'cell' ? 'c-' : 'g-') + items[0].originalIndex; }">
+                            <!-- Barre d'onglets (mode client + tabsChild) -->
+                            <div x-show="!devMode && getGroupAtPath(${pathJSON})?.tabsChild" role="tablist" class="tabs tabs-box mb-2">
+                                <template x-for="(tabItem, tabIdx) in getAllItemsSorted(getGroupAtPath(${pathJSON}))" :key="'tab-' + (tabItem.type === 'cell' ? 'c-' : 'g-') + tabItem.originalIndex">
+                                    <a role="tab" class="tab"
+                                       :class="{ 'tab-active': _activeTabKey === ((tabItem.type === 'cell' ? 'c-' : 'g-') + tabItem.originalIndex) }"
+                                       @click="_activeTabKey = (tabItem.type === 'cell' ? 'c-' : 'g-') + tabItem.originalIndex"
+                                       x-text="getTabName(tabItem, tabIdx)"></a>
+                                </template>
+                            </div>
+                            <div class="flex gap-2" :class="(!devMode && getGroupAtPath(${pathJSON})?.tabsChild) ? 'flex-col' : ((getGroupAtPath(${pathJSON})?.direction || 'row') === 'row' ? 'flex-row flex-wrap' : 'flex-col')">
                                 <!-- Cellules du groupe -->
                                 <template x-for="cellItem in getSortedCells(getGroupAtPath(${pathJSON}))" :key="cellItem.cell._id">
                                     <div class="flex flex-1 min-w-0" 
                                         :class="(getGroupAtPath(${pathJSON})?.direction || 'row') === 'column' ? 'flex-col w-full' : ''"
                                         style="display: contents;" :style="'order: ' + (cellItem.cell._order ?? 0)">
                                         <div class="bg-base-100 border border-base-300 rounded-lg overflow-hidden transition-[border-color,box-shadow] duration-200 flex-1 min-w-[200px] shadow-sm hover:border-primary hover:shadow-lg cell-container"
-                                             x-show="shouldShowCell(cellItem.cell)"
+                                             x-show="shouldShowCell(cellItem.cell) && (devMode || !getGroupAtPath(${pathJSON})?.tabsChild || _activeTabKey === ('c-' + cellItem.originalIndex))"
                                              :class="{
                                                  'border-warning shadow-[0_0_10px_rgba(251,191,36,0.3)]': cellItem.cell._status === 'running',
                                                  'border-success': cellItem.cell._status === 'success',
@@ -5552,7 +5806,7 @@ FROM source1 LIMIT 10;`;
                                 <!-- Sous-groupes récursifs -->
                                 <template x-for="subChild in getSortedChildren(getGroupAtPath(${pathJSON}))" :key="subChild.child._id || ('child-' + subChild.originalIndex)">
                                     <div class="flex-1 bg-base-100 border border-base-300 rounded-lg overflow-hidden transition-all duration-200 shadow-sm hover:border-primary hover:shadow-md"
-                                         x-show="shouldShowGroup(subChild.child)"
+                                         x-show="shouldShowGroup(subChild.child) && (devMode || !getGroupAtPath(${pathJSON})?.tabsChild || _activeTabKey === ('g-' + subChild.originalIndex))"
                                          :style="'order: ' + (subChild.child._order ?? 0)"
                                          x-data="{ _subPath: [...${pathJSON}, subChild.originalIndex] }"
                                          x-html="renderChildGroupHTML(subChild.child, _subPath, getGroupAtPath(${pathJSON}), subChild.originalIndex)"
@@ -5582,6 +5836,18 @@ FROM source1 LIMIT 10;`;
                     }));
                     return [...cells, ...children].sort((a, b) => a.order - b.order);
                 },
+
+                // Retourne le nom d'onglet pour un item (cellule ou groupe enfant)
+                getTabName(tabItem, tabIdx) {
+                    if (tabItem.type === 'cell') {
+                        const cell = tabItem.item;
+                        return cell.name || cell.paramName || cell.statTitle || `Cellule ${tabIdx + 1}`;
+                    } else {
+                        const child = tabItem.item;
+                        return child.name || child.title || `Groupe ${tabIdx + 1}`;
+                    }
+                },
+
 
                 // Déplace un item (cellule ou child) dans un groupe de façon unifiée
                 moveItemInGroup(path, itemType, originalIndex, direction) {
@@ -5709,6 +5975,7 @@ FROM source1 LIMIT 10;`;
                             newCell.query2 = 'SELECT \'document_\' || STRFTIME(current_timestamp::TIMESTAMP, \'%Y-%m-%d_%H-%M-%S\') || \'.docx\' AS filename;';
                             newCell.docxTemplateBase64 = null;
                             newCell.docxTemplateFileName = '';
+                            newCell.showExecutionButton = true;
                             newCell._showParsedQuery = false;
                             newCell._showParsedQuery2 = false;
                             newCell._parseLevels = [];
@@ -5857,6 +6124,7 @@ FROM source1 LIMIT 10;`;
                             newCell.pdfmePlugins = JSON.stringify({ Text: "text", Table: "table" }, null, 2);
                             newCell.pdfFileName = 'export.pdf';
                             newCell.query2 = "SELECT 'export.pdf' as filename";
+                            newCell.showExecutionButton = true;
                             newCell._showParsedQuery = false;
                             newCell._showParsedQuery2 = false;
                             newCell._parseLevels = [];
@@ -6082,6 +6350,7 @@ FROM source1 LIMIT 10;`;
                         if (!cell.query) cell.query = 'SELECT * FROM source1';
                         if (cell.perspectiveConfig === undefined) cell.perspectiveConfig = '';
                         if (cell.duckdbHandler === undefined) cell.duckdbHandler = false;
+                        if (cell.showSqlEditorForClient === undefined) cell.showSqlEditorForClient = false;
                         if (!cell._parseLevels) cell._parseLevels = [];
                         cell._perspectiveReady = false;
                         cell._perspectiveClient = null;
@@ -6650,25 +6919,123 @@ FROM source1 LIMIT 10;`;
                                 // Exécuter le COPY
                                 await DuckDBManager.executeQuery(finalQuery);
 
-                                // Petit délai pour s'assurer que le fichier est bien écrit dans le système de fichiers virtuel
-                                await new Promise(resolve => setTimeout(resolve, 100));
+                                // Déterminer l'extension pour adapter les paramètres de retry
+                                const fileExt = fileName.toLowerCase().split('.').pop();
+                                const isBinaryFormat = ['xlsx', 'xls', 'parquet', 'pq', 'arrow', 'ipc', 'avro'].includes(fileExt);
+                                
+                                // Les formats binaires complexes (notamment XLSX) nécessitent plus de tentatives
+                                const maxRetries = isBinaryFormat ? 15 : 10;
+                                const delayMs = isBinaryFormat ? 300 : 200;
 
-                                // Récupérer le fichier
-                                const buffer = await DuckDBManager.copyFileToBuffer(fileName);
+                                // Attendre que le fichier soit disponible avec retry
+                                const buffer = await DuckDBManager.waitForFile(fileName, maxRetries, delayMs);
+                                
+                                // [DEBUG] Logs détaillés pour diagnostic export
+                                const bufType = buffer?.constructor?.name || typeof buffer;
+                                const bufLen = buffer?.byteLength ?? 0;
+                                console.log(`📦 [EXPORT] Fichier prêt: ${fileName}`);
+                                console.log(`📦 [EXPORT] Buffer type: ${bufType}, taille: ${bufLen} octets`);
+                                if (bufLen > 0) {
+                                    const view = buffer instanceof ArrayBuffer ? new Uint8Array(buffer) : new Uint8Array(buffer.buffer || buffer);
+                                    const first4 = Array.from(view.slice(0, 4)).map(b => b.toString(16).padStart(2, '0')).join(' ');
+                                    const firstBytes = Array.from(view.slice(0, 8)).map(b => String.fromCharCode(b < 32 ? 46 : b)).join('');
+                                    console.log(`📦 [EXPORT] Premier octets (hex): ${first4} ...`);
+                                    console.log(`📦 [EXPORT] Premier octets (ascii): "${firstBytes}" (XLSX doit commencer par "PK")`);
+                                    if (fileExt === 'xlsx' && (view[0] !== 0x50 || view[1] !== 0x4B)) {
+                                        console.warn(`⚠️ [EXPORT] XLSX invalide: doit commencer par PK (0x50 0x4B), trouvé: 0x${view[0]?.toString(16)} 0x${view[1]?.toString(16)}`);
+                                    }
+                                }
 
-                                // Déterminer le MIME type (optionnel, par défaut CSV)
-                                let mime = 'text/csv;charset=utf-8;';
-                                if (fileName.toLowerCase().endsWith('.parquet')) {
-                                    mime = 'application/octet-stream';
-                                } else if (fileName.toLowerCase().endsWith('.json')) {
-                                    mime = 'application/json;charset=utf-8;';
-                                } else if (fileName.toLowerCase().endsWith('.txt')) {
-                                    mime = 'text/plain;charset=utf-8;';
+                                // Déterminer le MIME type selon l'extension du fichier
+                                let mime = 'text/csv;charset=utf-8;'; // par défaut CSV
+                                
+                                switch (fileExt) {
+                                    // Formats Parquet
+                                    case 'parquet':
+                                    case 'pq':
+                                        mime = 'application/octet-stream';
+                                        break;
+                                    
+                                    // Format Excel
+                                    case 'xlsx':
+                                        mime = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+                                        break;
+                                    case 'xls':
+                                        mime = 'application/vnd.ms-excel';
+                                        break;
+                                    
+                                    // Formats JSON
+                                    case 'json':
+                                    case 'jsonl':
+                                    case 'ndjson':
+                                        mime = 'application/json;charset=utf-8;';
+                                        break;
+                                    
+                                    // Formats texte
+                                    case 'txt':
+                                        mime = 'text/plain;charset=utf-8;';
+                                        break;
+                                    case 'tsv':
+                                        mime = 'text/tab-separated-values;charset=utf-8;';
+                                        break;
+                                    case 'csv':
+                                        mime = 'text/csv;charset=utf-8;';
+                                        break;
+                                    
+                                    // Formats XML
+                                    case 'xml':
+                                        mime = 'application/xml;charset=utf-8;';
+                                        break;
+                                    
+                                    // Formats binaires génériques
+                                    case 'bin':
+                                    case 'dat':
+                                    case 'blob':
+                                        mime = 'application/octet-stream';
+                                        break;
+                                    
+                                    // Format Arrow
+                                    case 'arrow':
+                                    case 'ipc':
+                                        mime = 'application/vnd.apache.arrow.stream';
+                                        break;
+                                    
+                                    // Format Avro
+                                    case 'avro':
+                                        mime = 'application/avro';
+                                        break;
+                                    
+                                    // Formats compressés
+                                    case 'gz':
+                                    case 'gzip':
+                                        mime = 'application/gzip';
+                                        break;
+                                    case 'zip':
+                                        mime = 'application/zip';
+                                        break;
+                                    case 'zst':
+                                    case 'zstd':
+                                        mime = 'application/zstd';
+                                        break;
+                                    
+                                    // Valeur par défaut pour autres formats
+                                    default:
+                                        mime = 'application/octet-stream';
+                                        break;
                                 }
 
                                 // Télécharger le fichier (ou l'ajouter au zip si mode zip actif)
-                                const blob = new Blob([buffer], { type: mime });
+                                // Copier dans un nouveau Uint8Array pour éviter problèmes SharedArrayBuffer / mémoire partagée
+                                let view = buffer instanceof ArrayBuffer ? new Uint8Array(buffer) : new Uint8Array(buffer.buffer ?? buffer, buffer.byteOffset ?? 0, buffer.byteLength);
+                                // Corriger bug DuckDB: copyFileToBuffer préfixe parfois 1 octet parasite avant les fichiers XLSX (ZIP)
+                                if (fileExt === 'xlsx' && view.length >= 3 && view[0] !== 0x50 && view[1] === 0x50 && view[2] === 0x4B) {
+                                    console.log(`📦 [EXPORT] Correction: suppression octet parasite (0x${view[0].toString(16)}) avant en-tête PK`);
+                                    view = view.slice(1);
+                                }
+                                const dataForBlob = view.slice(0);
+                                const blob = new Blob([dataForBlob], { type: mime });
                                 const downloadFileName = fileName.split('/').pop();
+                                console.log(`📦 [EXPORT] Blob créé: ${blob.size} octets (buffer source: ${buffer?.byteLength}), type: ${mime}, download: ${downloadFileName}`);
                                 this.downloadOrZipFile(downloadFileName, blob, mime);
 
                                 cell._results = [];
@@ -6706,12 +7073,27 @@ FROM source1 LIMIT 10;`;
                                 } else {
                                     throw copyError;
                                 }
+                            } finally {
+                                // Supprimer le fichier du VFS pour éviter que la prochaine exécution écrase/échoue
+                                await DuckDBManager.dropFile(fileName);
                             }
                         } else {
                             // Mode normal : exécuter et stocker les résultats
                             const finalResults = await DuckDBManager.executeQuery(finalQuery);
                             cell._results = finalResults;
                             cell._resultInfo = `✅ ${finalResults.length} ligne(s) - ${cell._parseLevels.length - 1} niveau(x) de parsing`;
+                            // Si tabular, stocker dans _rawTableDataStore et rendre le tableau (comme type 'table')
+                            if (this.isSqlResultTabular(cell)) {
+                                const maxRows = cell.maxRows || 100000;
+                                const truncated = finalResults.length > maxRows;
+                                const rawResults = finalResults.slice(0, maxRows);
+                                _rawTableDataStore.set(cell._id, rawResults);
+                                cell._results = rawResults;
+                                if (truncated) cell._resultInfo = `✅ ${finalResults.length} ligne(s) (limité à ${maxRows})` + (cell._parseLevels?.length > 1 ? ` - ${cell._parseLevels.length - 1} niveau(x) de parsing` : '');
+                                await this.$nextTick();
+                                await this.$nextTick(); // Double tick pour laisser Alpine rendre le template x-if du conteneur table
+                                await this.renderTableInContainer(cell, true);
+                            }
                         }
 
                         // Invalider le cache
@@ -6726,9 +7108,6 @@ FROM source1 LIMIT 10;`;
 
                 async executeTableCell(cell) {
                     if (!cell.query?.trim()) return;
-
-                    // Charger simple-datatables à la demande
-                    await CDNManager.loadSimpleDatatables();
 
                     this.setStatus('Chargement tableau...', 'loading');
 
@@ -6754,7 +7133,7 @@ FROM source1 LIMIT 10;`;
                         await this.$nextTick();
 
                         // Rendre le tableau (fromExecute=true lève le garde anti-cascade)
-                        this.renderTableInContainer(cell, true);
+                        await this.renderTableInContainer(cell, true);
 
                         this.setStatus('Tableau chargé', 'success');
                     } catch (error) {
@@ -6763,8 +7142,31 @@ FROM source1 LIMIT 10;`;
                     }
                 },
 
+                // Helpers pour distinguer résultat tabular vs texte/JSON (cells sqlRecursiveParse)
+                isSqlResultTabular(cell) {
+                    const r = cell?._results;
+                    if (!r || !Array.isArray(r) || r.length === 0) return false;
+                    const row = r[0];
+                    const keys = Object.keys(row);
+                    if (keys.length > 1) return true;
+                    if (r.length > 1) return true;
+                    const val = row[keys[0]];
+                    return typeof val !== 'string';
+                },
+                isSqlResultText(cell) {
+                    const r = cell?._results;
+                    if (!r || !Array.isArray(r) || r.length !== 1) return false;
+                    const keys = Object.keys(r[0]);
+                    return keys.length === 1 && typeof r[0][keys[0]] === 'string';
+                },
+                getSqlResultAsText(cell) {
+                    if (!this.isSqlResultText(cell)) return '';
+                    const keys = Object.keys(cell._results[0]);
+                    return cell._results[0][keys[0]] ?? '';
+                },
+
                 // Fonction pour rendre un tableau dans son conteneur (appelée aussi par x-init)
-                renderTableInContainer(cell, fromExecute = false) {
+                async renderTableInContainer(cell, fromExecute = false) {
                     // Garde anti-cascade : les mutations DOM du DataTable déclenchent
                     // le MutationObserver Alpine → x-init re-fire → boucle infinie.
                     // Seul executeTableCell peut lever ce garde (fromExecute = true).
@@ -6778,6 +7180,7 @@ FROM source1 LIMIT 10;`;
                     const rawResults = _rawTableDataStore.get(cell._id) || cell._results;
 
                     if (container && rawResults && rawResults.length > 0) {
+                        await CDNManager.loadSimpleDatatables();
                         if (this._tables[cell._id]) {
                             this._tables[cell._id].destroy();
                         }
@@ -8077,33 +8480,6 @@ FROM source1 LIMIT 10;`;
                     const finalLanguageIcon = languageIcon || (isJs ? '⚡' : '🗄️');
                     const finalBadgeClass = badgeClass || (isJs ? 'badge-warning' : 'badge-info');
 
-                    // Configuration des templates SQL
-                    const sqlTemplates = [
-                        {
-                            name: "Liste des colonnes avec position",
-                            description: "Affiche les colonnes d'une table avec leur position ordinale",
-                            code: `SELECT
-    column_name, ordinal_position::text || ' - ' || column_name
-FROM information_schema.columns
-WHERE table_name = 'source1'
-ORDER BY ordinal_position;`
-                        },
-                        {
-                            name: "SELECT DISTINCT dynamique",
-                            description: "Génère un SELECT DISTINCT avec toutes les colonnes",
-                            code: `SELECT DISTINCT {{ SELECT column_name FROM information_schema.columns
-WHERE table_name = 'source1'
-ORDER BY ordinal_position;
-}} FROM source1;`
-                        },
-                        {
-                            name: "SELECT colonnes avec préfixe",
-                            description: "Sélectionne uniquement les colonnes commençant par 'dim_'",
-                            code: `-- select only the column names that start with the dim_
-SELECT COLUMNS('^dim_') FROM source1;`
-                        }
-                    ];
-
                     return `
                         <div>
                             <div class="relative w-full">
@@ -8411,8 +8787,10 @@ SELECT COLUMNS('^dim_') FROM source1;`
 
                 // Insérer un template (SQL ou JS) dans une cellule
                 insertTemplate(cellId, queryType, templateIndex, languageType = 'sql') {
-                    // Récupérer les templates appropriés selon le type de langage
-                    const store = Alpine.store('templateModal');
+                    // Récupérer les templates appropriés (Alpine.raw pour éviter les soucis Proxy avec chaînes complexes)
+                    const store = (typeof Alpine !== 'undefined' && Alpine.raw)
+                        ? Alpine.raw(Alpine.store('templateModal'))
+                        : Alpine.store('templateModal');
                     const templates = languageType === 'js' ? store.jsTemplates : store.sqlTemplates;
 
                     // Trouver la cellule par son ID
@@ -8454,7 +8832,21 @@ SELECT COLUMNS('^dim_') FROM source1;`
 
                     // Insérer le code du template dans la cellule
                     const template = templates[templateIndex];
-                    cell[queryType] = template.code;
+                    const newCode = String(template.code);
+                    cell[queryType] = newCode;
+
+                    // Mettre à jour l'éditeur CodeMirror si présent (cellules SQL)
+                    const rawCell = (typeof Alpine !== 'undefined' && Alpine.raw) ? Alpine.raw(cell) : cell;
+                    const editorKey = '_cmEditor_' + queryType;
+                    const editor = rawCell[editorKey];
+                    if (editor && editor.state && editor.dispatch) {
+                        const currentDoc = editor.state.doc.toString();
+                        if (currentDoc !== newCode) {
+                            editor.dispatch({
+                                changes: { from: 0, to: currentDoc.length, insert: newCode }
+                            });
+                        }
+                    }
 
                     // Afficher un message de confirmation
                     this.setStatus(`✅ Template "${template.name}" inséré`, 'success');
@@ -8775,11 +9167,17 @@ SELECT COLUMNS('^dim_') FROM source1;`
                         return;
                     }
 
+                    // Valeur par défaut du nom de fichier (avec date/heure pour tous les types)
+                    const now = new Date();
+                    const yyyymmdd = now.toISOString().slice(0, 10).replace(/-/g, '');
+                    const hhmmss = now.toTimeString().slice(0, 8).replace(/:/g, '');
+                    const defaultFileName = `sqljob_${yyyymmdd}_${hhmmss}`;
+
                     // Réinitialiser la modale avec les valeurs par défaut
                     this.exportModal.show = false;
                     this.$nextTick(() => {
                         this.exportModal.type = type;
-                        this.exportModal.fileName = 'notebook-config.json';
+                        this.exportModal.fileName = defaultFileName;
                         this.exportModal.description = 'sqljob Notebook Configuration';
                         this.exportModal.devMode = this.devMode;
                         this.exportModal.displaySettings = this.displaySettings;
@@ -8824,7 +9222,8 @@ SELECT COLUMNS('^dim_') FROM source1;`
                                 this.setStatus('Export JSON...', 'loading');
                                 const jsonString = JSON.stringify(config, null, 2);
                                 const jsonBlob = new Blob([jsonString], { type: 'application/json' });
-                                FileHandler.downloadFile(jsonBlob, fileName);
+                                const jsonFileName = fileName.endsWith('.json') ? fileName : fileName + '.json';
+                                FileHandler.downloadFile(jsonBlob, jsonFileName);
                                 this.setStatus('Configuration exportée', 'success');
                                 break;
 
@@ -8833,14 +9232,15 @@ SELECT COLUMNS('^dim_') FROM source1;`
                                 const jsonStr = JSON.stringify(config, null, 2);
                                 const base64String = ConfigManager.encodeUTF8ToBase64(jsonStr);
                                 const base64Blob = new Blob([base64String], { type: 'text/plain' });
-                                const base64FileName = fileName.replace('.json', '.base64.txt');
+                                const base64FileName = fileName.endsWith('.txt') ? fileName : fileName + '.txt';
                                 FileHandler.downloadFile(base64Blob, base64FileName);
                                 this.setStatus('Configuration exportée en Base64', 'success');
                                 break;
 
                             case 'html':
                                 this.setStatus('Génération HTML...', 'loading');
-                                await this.exportHTMLWithConfig(config);
+                                const htmlFileName = (fileName.endsWith('.html') ? fileName : fileName + '.html');
+                                await this.exportHTMLWithConfig(config, htmlFileName);
                                 this.setStatus('HTML exporté', 'success');
                                 break;
                         }
@@ -8858,7 +9258,7 @@ SELECT COLUMNS('^dim_') FROM source1;`
                     }
                 },
 
-                async exportHTMLWithConfig(config) {
+                async exportHTMLWithConfig(config, fileName = 'index.sqljob.html') {
                     const jsonString = JSON.stringify(config, null, 2);
                     const configBase64 = ConfigManager.encodeUTF8ToBase64(jsonString);
 
@@ -8932,7 +9332,7 @@ SELECT COLUMNS('^dim_') FROM source1;`
                     htmlContent = htmlContent.replace(/<html[^>]*>/i, '<html lang="fr">');
 
                     const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
-                    FileHandler.downloadFile(blob, 'index.sqljob.html');
+                    FileHandler.downloadFile(blob, fileName);
                 },
 
                 cancelExport() {
@@ -9036,6 +9436,10 @@ SELECT COLUMNS('^dim_') FROM source1;`
                                 newCell._parseLevels = [];
                                 newCell._parseLevels2 = [];
                                 newCell._isDragging = false;
+                                // Préserver showExecutionButton ou utiliser true par défaut
+                                if (cell.showExecutionButton === undefined) {
+                                    newCell.showExecutionButton = true;
+                                }
                                 // Charger le template base64 si présent dans la config JSON
                                 if (cell.fileBase64 && cell.fileName) {
                                     newCell.docxTemplateBase64 = cell.fileBase64;
@@ -9048,6 +9452,10 @@ SELECT COLUMNS('^dim_') FROM source1;`
                                 newCell._showParsedQuery2 = false;
                                 newCell._parseLevels = [];
                                 newCell._parseLevels2 = [];
+                                // Préserver showExecutionButton ou utiliser true par défaut
+                                if (cell.showExecutionButton === undefined) {
+                                    newCell.showExecutionButton = true;
+                                }
                             }
 
                             if (cell.type === 'perspective') {
@@ -9080,6 +9488,10 @@ SELECT COLUMNS('^dim_') FROM source1;`
                                 title: group.title || '',
                                 accordionOpen: group.accordionOpen !== false // true par défaut
                             };
+
+                            // Ajouter tabsChild et name
+                            newGroup.tabsChild = group.tabsChild || false;
+                            newGroup.name = group.name || '';
 
                             // Ajouter ifQuery si présent
                             if (group.ifQuery) {
