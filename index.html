@@ -1737,7 +1737,7 @@
                         <!-- SQL RECURSIVE PARSE CELL -->
                         <template x-if="cellItem.cell.type === 'sqlRecursiveParse'">
                             <div>
-                                <div x-show="devMode || cellItem.cell.showSqlEditorForClient" x-html="renderSqlQueryEditor(cellItem.cell, 'SELECT * FROM source1 LIMIT 100', false, 'query', '_showParsedQuery', null, null, null, '${pathExpr}', '${cellIdxExpr}')"></div>
+                                <div x-show="devMode || cellItem.cell.showSqlEditorForClient" x-effect="safeRenderSqlEditor($el, cellItem.cell, 'SELECT * FROM source1 LIMIT 100', false, 'query', '_showParsedQuery', null, null, null, '${pathExpr}', '${cellIdxExpr}')"></div>
                                 <template x-if="cellItem.cell._resultInfo">
                                     <div class="mt-2 p-2 bg-base-200 rounded text-sm text-base-content/70" x-text="cellItem.cell._resultInfo"></div>
                                 </template>
@@ -1747,7 +1747,7 @@
                         <!-- TABLE CELL -->
                         <template x-if="cellItem.cell.type === 'table'">
                             <div>
-                                <div x-show="devMode || cellItem.cell.showSqlEditorForClient" x-html="renderSqlQueryEditor(cellItem.cell, 'SELECT * FROM source1 LIMIT 100', false, 'query', '_showParsedQuery', null, null, null, '${pathExpr}', '${cellIdxExpr}')"></div>
+                                <div x-show="devMode || cellItem.cell.showSqlEditorForClient" x-effect="safeRenderSqlEditor($el, cellItem.cell, 'SELECT * FROM source1 LIMIT 100', false, 'query', '_showParsedQuery', null, null, null, '${pathExpr}', '${cellIdxExpr}')"></div>
                                 <div class="bg-base-100 rounded-lg overflow-x-auto" 
                                      :id="'table-' + cellItem.cell._id"
                                      x-init="$nextTick(() => { if (cellItem.cell._results && cellItem.cell._results.length > 0) { renderTableInContainer(cellItem.cell); } })"></div>
@@ -1773,7 +1773,7 @@
                         <!-- IFRAME CELL -->
                         <template x-if="cellItem.cell.type === 'iframe'">
                             <div>
-                                <div x-show="devMode || cellItem.cell.showSqlEditorForClient" x-html="renderSqlQueryEditor(cellItem.cell, 'SELECT \'<!DOCTYPE html>...\' as html', false, 'query', '_showParsedQuery', null, null, null, '${pathExpr}', '${cellIdxExpr}')"></div>
+                                <div x-show="devMode || cellItem.cell.showSqlEditorForClient" x-effect="safeRenderSqlEditor($el, cellItem.cell, 'SELECT \'<!DOCTYPE html>...\' as html', false, 'query', '_showParsedQuery', null, null, null, '${pathExpr}', '${cellIdxExpr}')"></div>
                                 <iframe class="w-full min-h-[400px] border-none rounded-lg bg-white" 
                                         :id="'iframe-' + cellItem.cell._id"
                                         x-init="$nextTick(() => { if (cellItem.cell._htmlContent) { renderIframeInContainer(cellItem.cell); } })"></iframe>
@@ -1787,7 +1787,7 @@
                         <template x-if="cellItem.cell.type === 'uiParameter' && (devMode || cellItem.cell.userVisible !== false)">
                             <div class="flex flex-col gap-0">
                                 <div x-show="devMode" class="text-sm font-semibold text-primary mb-1" x-text="'$' + cellItem.cell.paramName"></div>
-                                <div x-show="devMode" x-html="renderUiParameterEditor(cellItem.cell)"></div>
+                                <div x-show="devMode" x-effect="safeRenderUiParameterEditor($el, cellItem.cell)"></div>
                                 <template x-if="cellItem.cell.paramType === 'input'">
                                     <fieldset class="fieldset">
                                         <legend class="fieldset-legend" x-text="cellItem.cell.label"></legend>
@@ -1854,7 +1854,7 @@
                         <!-- SQLSTAT CELL -->
                         <template x-if="cellItem.cell.type === 'sqlStat'">
                             <div>
-                                <div x-show="devMode || cellItem.cell.showSqlEditorForClient" x-html="renderSqlQueryEditor(cellItem.cell, 'SELECT COUNT(*) FROM source1', false, 'query', '_showParsedQuery', null, null, null, '${pathExpr}', '${cellIdxExpr}')"></div>
+                                <div x-show="devMode || cellItem.cell.showSqlEditorForClient" x-effect="safeRenderSqlEditor($el, cellItem.cell, 'SELECT COUNT(*) FROM source1', false, 'query', '_showParsedQuery', null, null, null, '${pathExpr}', '${cellIdxExpr}')"></div>
                                 <div class="stat place-items-center py-1" x-show="cellItem.cell._results">
                                     <div class="stat-figure text-secondary">
                                         <span
@@ -1914,7 +1914,7 @@
                                 <!-- Query 1: Data query -->
                                 <div x-show="devMode">
                                     <div class="text-sm font-semibold text-primary mb-1">Requête de données</div>
-                                    <div x-html="renderSqlQueryEditor(cellItem.cell, 'SELECT * FROM source1 LIMIT 10', true)"></div>
+                                    <div x-effect="safeRenderSqlEditor($el, cellItem.cell, 'SELECT * FROM source1 LIMIT 10', true)"></div>
                                 </div>
                                 
                                 <!-- Query 2: Filename query -->
@@ -1923,7 +1923,7 @@
                                         <span>Requête de nom de fichier</span>
                                         <span class="badge badge-soft badge-info text-xs">🗄️ SQL</span>
                                     </div>
-                                    <div x-html='renderSqlQueryEditor(cellItem.cell, "SELECT 1 filename FROM source1 LIMIT 10", false, "query2")'></div>
+                                    <div x-effect="safeRenderSqlEditor($el, cellItem.cell, 'SELECT 1 filename FROM source1 LIMIT 10', false, 'query2')"></div>
                                 </div>
                                 
                                 <!-- Execute button -->
@@ -1947,7 +1947,7 @@
                                 <!-- Query 1: Data query -->
                                 <div x-show="devMode">
                                     <div class="text-sm font-semibold text-primary mb-1">Requête de données</div>
-                                    <div x-html="renderSqlQueryEditor(cellItem.cell, 'SELECT * FROM source1 LIMIT 10', true)"></div>
+                                    <div x-effect="safeRenderSqlEditor($el, cellItem.cell, 'SELECT * FROM source1 LIMIT 10', true)"></div>
                                 </div>
                                 
                                 <!-- Query 2: Filename query -->
@@ -1956,7 +1956,7 @@
                                         <span>Requête de nom de fichier PDF</span>
                                         <span class="badge badge-soft badge-info text-xs">🗄️ SQL</span>
                                     </div>
-                                    <div x-html="renderSqlQueryEditor(cellItem.cell, 'SELECT 1 as filename', false, 'query2')"></div>
+                                    <div x-effect="safeRenderSqlEditor($el, cellItem.cell, 'SELECT 1 as filename', false, 'query2')"></div>
                                 </div>
                                 
                                 <!-- Template JSON (devMode) -->
@@ -2002,7 +2002,7 @@
                         <!-- PERSPECTIVE CELL -->
                         <template x-if="cellItem.cell.type === 'perspective'">
                             <div class="flex flex-col gap-2">
-                                <div x-show="devMode || cellItem.cell.showSqlEditorForClient" x-html="renderSqlQueryEditor(cellItem.cell, 'SELECT * FROM source1', false, 'query', '_showParsedQuery', null, null, null, '${pathExpr}', '${cellIdxExpr}')"></div>                                
+                                <div x-show="devMode || cellItem.cell.showSqlEditorForClient" x-effect="safeRenderSqlEditor($el, cellItem.cell, 'SELECT * FROM source1', false, 'query', '_showParsedQuery', null, null, null, '${pathExpr}', '${cellIdxExpr}')"></div>                                
                                 <template x-if="cellItem.cell._perspectiveReady">
                                     <perspective-viewer 
                                         :id="'perspective-' + cellItem.cell._id"
@@ -2493,20 +2493,20 @@
         <template x-if="loopConfigModal.open">
             <div class="modal modal-open z-[2100]" @click.self="loopConfigModal.open = false" role="presentation">
                 <div class="modal-box max-w-2xl" role="dialog" aria-modal="true" aria-labelledby="modal-loop-config-title"
-                     x-trap.noscroll="loopConfigModal.open">
+                     x-trap.noscroll="true">
                     <div class="flex items-center justify-between gap-2">
                         <h3 class="text-lg font-semibold" id="modal-loop-config-title">🔁 Configuration de la boucle</h3>
                         <button class="btn btn-sm btn-ghost" @click="loopConfigModal.open = false">✕</button>
                     </div>
-                    <div class="mt-4" x-data="{ group: getGroupAtPath(loopConfigModal.path) }">
+                    <div class="mt-4">
                         <div class="form-control mb-4">
                             <label class="label cursor-pointer justify-start gap-3">
-                                <input type="checkbox" class="toggle toggle-primary" x-model="group.loop.enabled" />
+                                <input type="checkbox" class="toggle toggle-primary" x-model="getGroupAtPath(loopConfigModal.path).loop.enabled" />
                                 <span class="label-text">Activer la boucle sur ce groupe</span>
                             </label>
                         </div>
                         
-                        <div x-show="group.loop.enabled" x-transition>
+                        <div x-show="getGroupAtPath(loopConfigModal.path).loop.enabled" x-transition>
                             <div class="alert alert-info mb-4">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                 <div>
@@ -2520,12 +2520,12 @@
                                 </label>
                                 <textarea 
                                     class="textarea textarea-bordered w-full font-mono min-h-32 text-sm"
-                                    x-model="group.loop.query"
+                                    x-model="getGroupAtPath(loopConfigModal.path).loop.query"
                                     placeholder="SELECT DISTINCT colonne FROM source1 LIMIT 10;"></textarea>
                             </div>
                             
                             <div class="mt-2 mb-4">
-                                <button class="btn btn-sm btn-outline" @click="group.loop.query = getDefaultLoopQuery()">
+                                <button class="btn btn-sm btn-outline" @click="getGroupAtPath(loopConfigModal.path).loop.query = getDefaultLoopQuery()">
                                     📝 Requête par défaut
                                 </button>
                             </div>
@@ -2535,25 +2535,25 @@
                             <!-- Option ZIP -->
                             <div class="form-control mb-4">
                                 <label class="label cursor-pointer justify-start gap-3">
-                                    <input type="checkbox" class="toggle toggle-secondary" x-model="group.loop.zip" />
+                                    <input type="checkbox" class="toggle toggle-secondary" x-model="getGroupAtPath(loopConfigModal.path).loop.zip" />
                                     <span class="label-text">📦 Zipper les fichiers générés</span>
                                 </label>
                                 <p class="text-xs text-base-content/60 ml-12">Les fichiers produits (SQL COPY, Publipostage Word, pdfme) seront regroupés dans un ZIP à la fin de la boucle.</p>
                             </div>
 
-                            <div x-show="group.loop.zip" x-transition>
+                            <div x-show="getGroupAtPath(loopConfigModal.path).loop.zip" x-transition>
                                 <div class="form-control">
                                     <label class="label">
                                         <span class="label-text font-semibold">Requête SQL pour le nom du fichier ZIP</span>
                                     </label>
                                     <textarea 
                                         class="textarea textarea-bordered w-full font-mono min-h-16 text-sm"
-                                        x-model="group.loop.zipQuery"
+                                        x-model="getGroupAtPath(loopConfigModal.path).loop.zipQuery"
                                         placeholder="SELECT 'export.zip' as filename;"></textarea>
                                 </div>
                                 
                                 <div class="mt-2">
-                                    <button class="btn btn-sm btn-outline" @click="group.loop.zipQuery = getDefaultZipQuery()">
+                                    <button class="btn btn-sm btn-outline" @click="getGroupAtPath(loopConfigModal.path).loop.zipQuery = getDefaultZipQuery()">
                                         📝 Requête par défaut
                                     </button>
                                 </div>
@@ -4905,9 +4905,12 @@ if ($param1 === "Type A") {
                 openLoopConfigModal(path) {
                     const group = this.getGroupAtPath(path);
                     if (group) {
-                        // S'assurer que loop existe
+                        // S'assurer que loop existe avec tous les champs
                         if (!group.loop) {
-                            group.loop = { enabled: false, query: '' };
+                            group.loop = { enabled: false, query: '', zip: false, zipQuery: '' };
+                        } else if (group.loop.zip === undefined) {
+                            group.loop.zip = false;
+                            group.loop.zipQuery = group.loop.zipQuery || '';
                         }
                         this.loopConfigModal = { open: true, path: path };
                     }
@@ -8170,9 +8173,10 @@ SELECT COLUMNS('^dim_') FROM source1;`
                                 ` : `
                                     <div 
                                         class="codemirror-sql-container"
+                                        id="cm-${cellId}-${queryType}"
                                         x-ref="cm_${cellId}_${queryType}"
                                         x-init="$nextTick(async () => {
-                                            const container = $refs['cm_${cellId}_${queryType}'];
+                                            const container = document.getElementById('cm-${cellId}-${queryType}');
                                             if (!container) return;
                                             
                                             // Utiliser Alpine.raw() pour stocker les refs d'éditeur HORS du proxy réactif
@@ -8257,6 +8261,58 @@ SELECT COLUMNS('^dim_') FROM source1;`
                             ` : ''}
                         </div>
                     `;
+                },
+
+                // Rendu sécurisé de l'éditeur SQL : ne re-render que si les propriétés pertinentes changent
+                // Cela évite que x-for ou d'autres effets Alpine ne détruisent les instances CodeMirror
+                safeRenderSqlEditor(el, cell, placeholder, showResultInfo, queryType = 'query', showParsedQueryProp = '_showParsedQuery', languageLabel = null, languageIcon = null, badgeClass = null, pathExpr = null, cellIdxExpr = null) {
+                    // Lire uniquement les propriétés réactives qui doivent déclencher un re-rendu
+                    const showParsed = cell[showParsedQueryProp];
+                    const langType = cell.languageType;
+                    const devModeVal = this.devMode;
+
+                    // Construire une clé à partir de ces propriétés
+                    const key = `${showParsed ? '1' : '0'}_${langType || 'sql'}_${devModeVal ? '1' : '0'}`;
+
+                    // Si la clé n'a pas changé et que le contenu existe déjà, ne pas re-render
+                    // Cela préserve les instances CodeMirror existantes
+                    if (el._sqlEditorKey === key && el.children.length > 0) {
+                        return;
+                    }
+
+                    el._sqlEditorKey = key;
+
+                    // Générer le HTML et l'injecter
+                    const html = this.renderSqlQueryEditor(cell, placeholder, showResultInfo, queryType, showParsedQueryProp, languageLabel, languageIcon, badgeClass, pathExpr, cellIdxExpr);
+                    el.innerHTML = html;
+
+                    // Initialiser les directives Alpine dans le nouveau DOM
+                    // _x_ignoreSelf empêche la ré-initialisation de l'élément lui-même (qui a déjà x-effect)
+                    el._x_ignoreSelf = true;
+                    Alpine.initTree(el);
+                    delete el._x_ignoreSelf;
+                },
+
+                // Version sécurisée pour l'éditeur uiParameter
+                safeRenderUiParameterEditor(el, cell) {
+                    const showParsed = cell._showParsedQuery;
+                    const langType = cell.languageType;
+                    const devModeVal = this.devMode;
+
+                    const key = `${showParsed ? '1' : '0'}_${langType || 'sql'}_${devModeVal ? '1' : '0'}`;
+
+                    if (el._sqlEditorKey === key && el.children.length > 0) {
+                        return;
+                    }
+
+                    el._sqlEditorKey = key;
+
+                    const html = this.renderUiParameterEditor(cell);
+                    el.innerHTML = html;
+
+                    el._x_ignoreSelf = true;
+                    Alpine.initTree(el);
+                    delete el._x_ignoreSelf;
                 },
 
 
