@@ -41,6 +41,9 @@
         /* Container query pour le responsive */
         .cell-container {
             container-type: inline-size;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
         }
 
         @container (max-width: 350px) {
@@ -89,6 +92,50 @@
 
         .EasyMDEContainer .editor-preview-active~.CodeMirror {
             display: none;
+        }
+
+        /* EasyMDE mode client : pas de bordure + masquer le glitch au chargement */
+        .easymde-client {
+            opacity: 0;
+            transition: opacity 0.15s ease-in;
+        }
+        .easymde-client.easymde-ready {
+            opacity: 1;
+        }
+        .easymde-client .EasyMDEContainer,
+        .easymde-client .CodeMirror,
+        .easymde-client .cm-editor,
+        .easymde-client .editor-preview,
+        .easymde-client .editor-preview-full {
+            border: none !important;
+        }
+
+        /* Hauteur cellule : variables CSS + max/min natifs (px et % combinables) */
+        .cell-body-has-height {
+            min-height: max(var(--cell-min-h-px, 0), var(--cell-min-h-pct, 0%));
+            max-height: min(var(--cell-max-h-px, 9999px), var(--cell-max-h-pct, 9999px));
+        }
+
+        /* Perspective: remplir tout l'espace disponible (quand hasCellHeight) */
+        .cell-body .perspective-fill-height perspective-viewer {
+            flex: 1;
+            min-height: 0;
+            min-width: 0;
+        }
+
+        /* Markdown/EasyMDE : remplir la hauteur quand cell-body a min/max height */
+        .cell-body .flex-1.min-h-0 .EasyMDEContainer {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        .cell-body .flex-1.min-h-0 .EasyMDEContainer .CodeMirror,
+        .cell-body .flex-1.min-h-0 .EasyMDEContainer .cm-editor,
+        .cell-body .flex-1.min-h-0 .EasyMDEContainer .editor-preview,
+        .cell-body .flex-1.min-h-0 .EasyMDEContainer .editor-preview-full {
+            flex: 1;
+            min-height: 0;
         }
 
         /* Styles pour les titres - doit venir APRÈS all: revert */
@@ -816,12 +863,18 @@
                             );
                             if (jsonFile) {
                                 try {
-                                    const config = JSON.parse(jsonFile.content);
-                                    console.log('✅ Configuration chargée depuis le Gist:', config);
-                                    baseConfig = ConfigManager.deepMerge(ConfigManager.getDefaultConfig(), config);
-                                } catch (parseError) {
-                                    console.error('❌ Erreur de parsing JSON du Gist:', parseError);
-                                    throw new Error(`Le fichier JSON du Gist est invalide. Erreur: ${parseError.message}`);
+                                    const parsed = JSON.parse(jsonFile.content);
+                                    let config;
+                                    if (GistEncrypt.isEncrypted(parsed)) {
+                                        return { needsPassphrase: true, encryptedContent: parsed };
+                                    } else {
+                                        config = parsed;
+                                        console.log('✅ Configuration chargée depuis le Gist:', config);
+                                        baseConfig = ConfigManager.deepMerge(ConfigManager.getDefaultConfig(), config);
+                                    }
+                                } catch (err) {
+                                    console.error('❌ Erreur Gist (parsing ou déchiffrement):', err);
+                                    throw new Error(err.message || `Erreur: ${String(err)}`);
                                 }
                             } else {
                                 console.warn('⚠️ Aucun fichier JSON trouvé dans le Gist');
@@ -883,6 +936,7 @@
                         break;
                     case 'iframe':
                         cleanCell.query = cell.query;
+                        if (cell.languageType) cleanCell.languageType = cell.languageType;
                         if (cell.showSqlEditorForClient !== undefined) cleanCell.showSqlEditorForClient = cell.showSqlEditorForClient;
                         break;
                     case 'sqlRecursiveParse':
@@ -951,6 +1005,17 @@
                 if (cell.name !== undefined && cell.name !== '') {
                     cleanCell.name = cell.name;
                 }
+
+                // Taille optionnelle des cellules (px et % combinables, largeur + hauteur)
+                const opt = (k, v) => { if (v !== undefined && v !== null && String(v).trim() !== '') cleanCell[k] = v; };
+                opt('minSizePx', cell.minSizePx);
+                opt('minSizePercent', cell.minSizePercent);
+                opt('maxSizePx', cell.maxSizePx);
+                opt('maxSizePercent', cell.maxSizePercent);
+                opt('minHeightPx', cell.minHeightPx);
+                opt('minHeightPercent', cell.minHeightPercent);
+                opt('maxHeightPx', cell.maxHeightPx);
+                opt('maxHeightPercent', cell.maxHeightPercent);
 
                 return cleanCell;
             }
@@ -1034,6 +1099,7 @@
 
                 return {
                     version: ConfigManager.SQLJOB_VERSION,
+                    createdAt: new Date().toISOString(),
                     ui: {
                         devMode: devMode,
                         displaySettings: displaySettings,
@@ -1045,6 +1111,94 @@
                         pages: cleanPages
                     }
                 };
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════════════════
+        // CLASSE: GistEncrypt - Chiffrement AES-GCM pour config Gist
+        // ═══════════════════════════════════════════════════════════════════════════
+        class GistEncrypt {
+            static ENCRYPTED_MARKER = '_encrypted';
+            static DEFAULT_ITERATIONS = 600000;
+
+            static _uint8ArrayToBase64(arr) {
+                return btoa(String.fromCharCode(...arr));
+            }
+            static _base64ToUint8Array(base64) {
+                const raw = atob(base64);
+                const arr = new Uint8Array(raw.length);
+                for (let i = 0; i < raw.length; i++) arr[i] = raw.charCodeAt(i);
+                return arr;
+            }
+
+            /** Génère une passphrase aléatoire (32 caractères hex, type 68cd597ba5da05ceba24fb975c05384f) */
+            static generatePassphrase() {
+                const bytes = new Uint8Array(16);
+                crypto.getRandomValues(bytes);
+                return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+            }
+
+            /** Dérive une clé AES depuis la passphrase */
+            static async deriveKey(passphrase, salt, iterations = this.DEFAULT_ITERATIONS) {
+                const enc = new TextEncoder();
+                const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(passphrase), 'PBKDF2', false, ['deriveBits', 'deriveKey']);
+                return crypto.subtle.deriveKey(
+                    { name: 'PBKDF2', salt, iterations, hash: 'SHA-256' },
+                    keyMaterial,
+                    { name: 'AES-GCM', length: 256 },
+                    false,
+                    ['encrypt', 'decrypt']
+                );
+            }
+
+            /**
+             * Chiffre une chaîne JSON. Format versionnable et auto-documenté :
+             * { _encrypted, kdf, iterations, salt, iv, ciphertext }
+             */
+            static async encrypt(plaintext, passphrase) {
+                const salt = crypto.getRandomValues(new Uint8Array(16));
+                const iv = crypto.getRandomValues(new Uint8Array(12));
+                const key = await this.deriveKey(passphrase, salt);
+                const enc = new TextEncoder();
+                const ciphertext = await crypto.subtle.encrypt(
+                    { name: 'AES-GCM', iv },
+                    key,
+                    enc.encode(plaintext)
+                );
+                return {
+                    [this.ENCRYPTED_MARKER]: true,
+                    kdf: 'PBKDF2',
+                    iterations: this.DEFAULT_ITERATIONS,
+                    salt: this._uint8ArrayToBase64(salt),
+                    iv: this._uint8ArrayToBase64(iv),
+                    ciphertext: this._uint8ArrayToBase64(new Uint8Array(ciphertext))
+                };
+            }
+
+            /**
+             * Déchiffre. Format attendu: { _encrypted, kdf, iterations, salt, iv, ciphertext }
+             */
+            static async decrypt(encryptedObj, passphrase) {
+                if (!encryptedObj || !encryptedObj[this.ENCRYPTED_MARKER] || !encryptedObj.ciphertext || !encryptedObj.salt || encryptedObj.iv === undefined) {
+                    throw new Error('Contenu non chiffré ou format invalide');
+                }
+
+                const salt = this._base64ToUint8Array(encryptedObj.salt);
+                const iv = this._base64ToUint8Array(encryptedObj.iv);
+                const ciphertext = this._base64ToUint8Array(encryptedObj.ciphertext);
+                const iterations = encryptedObj.iterations || this.DEFAULT_ITERATIONS;
+
+                const key = await this.deriveKey(passphrase, salt, iterations);
+                const decrypted = await crypto.subtle.decrypt(
+                    { name: 'AES-GCM', iv },
+                    key,
+                    ciphertext
+                );
+                return new TextDecoder().decode(decrypted);
+            }
+
+            static isEncrypted(obj) {
+                return obj && obj[this.ENCRYPTED_MARKER] === true && !!obj.ciphertext && !!obj.salt && obj.iv !== undefined;
             }
         }
 
@@ -1135,15 +1289,24 @@
              * @param {Object} config - Configuration à partager
              * @param {string} description - Description du gist
              * @param {string} fileName - Nom du fichier JSON (par défaut: notebook-config.json)
+             * @param {string} [passphrase] - Passphrase pour chiffrer (optionnel). Si fourni, la config et datachunks sont chiffrés.
              * @returns {Promise<string>} URL du gist créé
              */
-            static async createGist(config, description = 'sqljob Notebook Configuration', fileName = 'gistconfig.sqljob.json') {
+            static async createGist(config, description = 'sqljob Notebook Configuration', fileName = 'gistconfig.sqljob.json', passphrase = null) {
                 const token = this.getAccessToken();
                 if (!token) {
                     throw new Error('Non authentifié. Veuillez configurer un Personal Access Token.');
                 }
 
-                const jsonString = JSON.stringify(config, null, 2);
+                let contentToUpload;
+                if (passphrase && passphrase.trim()) {
+                    const jsonString = JSON.stringify(config, null, 2);
+                    const encrypted = await GistEncrypt.encrypt(jsonString, passphrase.trim());
+                    encrypted.createdAt = config.createdAt || new Date().toISOString();
+                    contentToUpload = JSON.stringify(encrypted, null, 2);
+                } else {
+                    contentToUpload = JSON.stringify(config, null, 2);
+                }
 
                 // S'assurer que le nom de fichier a l'extension .json
                 const finalFileName = fileName.endsWith('.json') ? fileName : `${fileName}.json`;
@@ -1153,7 +1316,7 @@
                     public: false,
                     files: {
                         [finalFileName]: {
-                            content: jsonString
+                            content: contentToUpload
                         }
                     }
                 };
@@ -1184,7 +1347,7 @@
             }
 
             /**
-             * Génère une URL sqljob avec le gist
+             * Génère une URL sqljob avec le gist (sans passphrase dans l'URL pour des raisons de sécurité)
              * @param {string} gistUrl - URL du gist GitHub
              * @returns {string} URL sqljob avec le paramètre gist
              */
@@ -1694,23 +1857,33 @@
   <div class="skeleton h-2 w-full"></div>
 </div>`;
             }
+            static renderTableSkeleton() {
+                return `<div class="flex flex-col gap-2 p-4">
+  <div class="skeleton h-6 w-full"></div>
+  <div class="skeleton h-4 w-full"></div>
+  <div class="skeleton h-4 w-full"></div>
+  <div class="skeleton h-4 w-3/4"></div>
+</div>`;
+            }
 
             // Génère le HTML du body d'une cellule (tous les types)
             static renderBody(pathExpr, cellIdxExpr) {
                 const skeleton = this.renderCellBodySkeleton();
                 return `
-                    <div class="pt-1 pb-1 pl-2 pr-2 relative">
-                        <!-- SKELETON: affiché quand la cellule n'est pas chargée (jamais pour uiParameter qui garde son contenu) -->
-                        <div x-show="cellItem.cell.type !== 'uiParameter' && (cellItem.cell._status === 'running' || (cellItem.cell.type === 'source' && cellItem.cell._fileName && !cellItem.cell._loaded))">
+                    <div class="pt-1 pb-1 pl-2 pr-2 relative flex-1 flex flex-col min-h-0 cell-body"
+                         :class="{ 'cell-body-has-height': hasCellHeight(cellItem.cell) }"
+                         :style="getCellHeightVars(cellItem.cell)">
+                        <!-- SKELETON: affiché quand la cellule n'est pas chargée. Pas pour uiParameter. Pour les cellules SQL (avec éditeur), on affiche le skeleton uniquement sur le tableau, pas ici. -->
+                        <div x-show="cellItem.cell.type !== 'uiParameter' && !isSqlCellWithEditor(cellItem.cell.type) && (cellItem.cell._status === 'running' || (cellItem.cell.type === 'source' && cellItem.cell._fileName && !cellItem.cell._loaded))">
                             ${skeleton}
                         </div>
-                        <!-- CONTENU: masqué pendant le chargement (toujours visible pour uiParameter) -->
-                        <div x-show="cellItem.cell.type === 'uiParameter' || (cellItem.cell._status !== 'running' && !(cellItem.cell.type === 'source' && cellItem.cell._fileName && !cellItem.cell._loaded))">
+                        <!-- CONTENU: masqué pendant le chargement. Pour les cellules SQL, on garde l'éditeur visible pendant l'exécution. -->
+                        <div class="flex-1 flex flex-col min-h-0" x-show="cellItem.cell.type === 'uiParameter' || (cellItem.cell._status !== 'running' || isSqlCellWithEditor(cellItem.cell.type)) && !(cellItem.cell.type === 'source' && cellItem.cell._fileName && !cellItem.cell._loaded)">
                         <!-- MARKDOWN CELL -->
                         <template x-if="cellItem.cell.type === 'markdown'">
-                            <div>
+                            <div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 flex flex-col' : ''">
                                 
-                                    <div x-show="devMode">
+                                    <div x-show="devMode" :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 flex flex-col' : ''">
                                     <textarea 
                                         :id="'markdown_dev_' + cellItem.cell._id"
                                         x-text="cellItem.cell.content"
@@ -1727,7 +1900,7 @@
                                                 element: document.getElementById('markdown_dev_' + cellItem.cell._id),
                                                 spellChecker: false,
                                                 status: false,
-                                                minHeight: '50px',
+                                                minHeight: hasCellHeight(cellItem.cell) ? '100%' : '50px',
                                                 toolbar: ['bold', 'italic', 'heading', '|', 'quote', 'unordered-list', 'ordered-list', '|', 'link', 'image', '|', 'preview', '|', 'guide'],
                                             });
                                             cellItem.cell._easyMDE.codemirror.on('change', () => {
@@ -1737,7 +1910,7 @@
                                     ></textarea>
                                     </div>
                                     <template x-if="!devMode">
-                                    <div>
+                                    <div class="easymde-client" :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 flex flex-col' : ''">
                                     <textarea 
                                         :id="'markdown_cli_' + cellItem.cell._id"
                                         x-text="cellItem.cell.content"
@@ -1749,10 +1922,11 @@
                                                 spellChecker: false,
                                                 status: false,
                                                 toolbar: false, 
-                                                minHeight: '50px',
+                                                minHeight: hasCellHeight(cellItem.cell) ? '100%' : '50px',
                                                 previewRender: (plainText) => cellItem.cell._easyMDEcli.markdown(plainText),
                                             });
                                             cellItem.cell._easyMDEcli.togglePreview();
+                                            setTimeout(() => $el.closest('.easymde-client')?.classList.add('easymde-ready'), 100);
                                         })"
                                     ></textarea>
                                     </div>
@@ -1763,12 +1937,15 @@
                         
                         <!-- SOURCE CELL -->
                         <template x-if="cellItem.cell.type === 'source'">
-                            <div class="flex items-center justify-center rounded-lg transition-all duration-200 mt-1 mb-1"
-                                 :class="cellItem.cell._fileName 
-                                    ? 'border-2 border-solid border-success bg-success/10 cursor-default' 
-                                    : (cellItem.cell._isDragging 
-                                        ? 'border-2 border-solid border-accent bg-accent/10 cursor-pointer' 
-                                        : 'border-2 border-dashed border-primary bg-primary/5 cursor-pointer hover:border-accent hover:bg-accent/10')"
+                            <div class="flex items-center justify-center rounded-lg transition-all duration-200 mt-1 mb-1 min-h-[80px]"
+                                 :class="[
+                                    cellItem.cell._fileName 
+                                       ? 'border-2 border-solid border-success bg-success/10 cursor-default' 
+                                       : (cellItem.cell._isDragging 
+                                           ? 'border-2 border-solid border-accent bg-accent/10 cursor-pointer' 
+                                           : 'border-2 border-dashed border-primary bg-primary/5 cursor-pointer hover:border-accent hover:bg-accent/10'),
+                                    hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0' : ''
+                                 ]"
                                  @click="!cellItem.cell._fileName && document.getElementById('fileInput_' + cellItem.cell._id).click()"
                                  @dragover.prevent="cellItem.cell._isDragging = true"
                                  @dragleave.prevent="cellItem.cell._isDragging = false"
@@ -1802,12 +1979,14 @@
                         
                         <!-- SQL RECURSIVE PARSE CELL -->
                         <template x-if="cellItem.cell.type === 'sqlRecursiveParse'">
-                            <div>
+                            <div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 flex flex-col' : ''">
                                 <div x-show="devMode || cellItem.cell.showSqlEditorForClient" x-effect="safeRenderSqlEditor($el, cellItem.cell, 'SELECT * FROM source1 LIMIT 100', false, 'query', '_showParsedQuery', null, null, null, '${pathExpr}', '${cellIdxExpr}')"></div>
                                 <template x-if="(devMode || cellItem.cell.showSqlEditorForClient) && isSqlResultTabular(cellItem.cell)">
-                                    <div class="bg-base-100 rounded-lg overflow-x-auto mt-2" 
-                                         :id="'table-' + cellItem.cell._id"
-                                         x-init="$nextTick(async () => { if (cellItem.cell._results && cellItem.cell._results.length > 0) { await renderTableInContainer(cellItem.cell); } })"></div>
+                                    <div class="relative rounded-lg mt-2" :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 overflow-auto' : ''">
+                                        <div x-show="cellItem.cell._status === 'running'" class="bg-base-100 rounded-lg overflow-x-auto">${CellRenderer.renderTableSkeleton()}</div>
+                                        <div x-show="cellItem.cell._status !== 'running'" class="bg-base-100 rounded-lg overflow-x-auto" :id="'table-' + cellItem.cell._id"
+                                             x-init="$nextTick(async () => { if (cellItem.cell._results && cellItem.cell._results.length > 0) { await renderTableInContainer(cellItem.cell); } })"></div>
+                                    </div>
                                 </template>
                                 <template x-if="(devMode || cellItem.cell.showSqlEditorForClient) && isSqlResultText(cellItem.cell)">
                                     <textarea class="textarea textarea-bordered w-full mt-2 min-h-[120px] font-mono text-sm" 
@@ -1823,11 +2002,13 @@
                         
                         <!-- TABLE CELL -->
                         <template x-if="cellItem.cell.type === 'table'">
-                            <div>
+                            <div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 flex flex-col' : ''">
                                 <div x-show="devMode || cellItem.cell.showSqlEditorForClient" x-effect="safeRenderSqlEditor($el, cellItem.cell, 'SELECT * FROM source1 LIMIT 100', false, 'query', '_showParsedQuery', null, null, null, '${pathExpr}', '${cellIdxExpr}')"></div>
-                                <div class="bg-base-100 rounded-lg overflow-x-auto" 
-                                     :id="'table-' + cellItem.cell._id"
-                                     x-init="$nextTick(async () => { if (cellItem.cell._results && cellItem.cell._results.length > 0) { await renderTableInContainer(cellItem.cell); } })"></div>
+                                <div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 overflow-auto' : ''">
+                                    <div x-show="cellItem.cell._status === 'running'" class="bg-base-100 rounded-lg overflow-x-auto">${CellRenderer.renderTableSkeleton()}</div>
+                                    <div x-show="cellItem.cell._status !== 'running'" class="bg-base-100 rounded-lg overflow-x-auto" :id="'table-' + cellItem.cell._id"
+                                         x-init="$nextTick(async () => { if (cellItem.cell._results && cellItem.cell._results.length > 0) { await renderTableInContainer(cellItem.cell); } })"></div>
+                                </div>
                                 <template x-if="cellItem.cell._resultInfo">
                                     <div class="mt-2 p-2 bg-base-200 rounded text-sm text-base-content/70" x-text="cellItem.cell._resultInfo"></div>
                                 </template>
@@ -1836,8 +2017,9 @@
                         
                         <!-- PLOT CELL -->
                         <template x-if="cellItem.cell.type === 'plot'">
-                            <div>
-                                <div class="bg-white rounded-lg p-4 min-h-[300px]" 
+                            <div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 flex flex-col overflow-auto' : ''">
+                                <div class="bg-white rounded-lg p-4" 
+                                     :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0' : 'min-h-[300px]'"
                                      :id="'plot-' + cellItem.cell._id"
                                      x-init="$nextTick(() => { if (cellItem.cell._plotData) { renderPlotInContainer(cellItem.cell); } })">
                                     <p x-show="devMode" style="text-align: center; color: var(--text-secondary); padding: 2rem;">
@@ -1849,14 +2031,12 @@
                         
                         <!-- IFRAME CELL -->
                         <template x-if="cellItem.cell.type === 'iframe'">
-                            <div>
-                                <div x-show="devMode || cellItem.cell.showSqlEditorForClient" x-effect="safeRenderSqlEditor($el, cellItem.cell, 'SELECT \'<!DOCTYPE html>...\' as html', false, 'query', '_showParsedQuery', null, null, null, '${pathExpr}', '${cellIdxExpr}')"></div>
-                                <iframe class="w-full min-h-[400px] border-none rounded-lg bg-white" 
+                            <div class="flex flex-col flex-1 min-h-0 overflow-hidden">
+                                <div x-show="devMode || cellItem.cell.showSqlEditorForClient" x-effect="safeRenderIframeEditor($el, cellItem.cell, ${pathExpr}, ${cellIdxExpr})"></div>
+                                <iframe class="flex-1 min-h-0 w-full border-none rounded-lg bg-white" 
                                         :id="'iframe-' + cellItem.cell._id"
                                         x-init="$nextTick(() => { if (cellItem.cell._htmlContent) { renderIframeInContainer(cellItem.cell); } })"></iframe>
-                                <template x-if="cellItem.cell._resultInfo" >
-                                    <div x-show="devMode" class="mt-2 p-2 bg-base-200 rounded text-sm text-base-content/70" x-text="cellItem.cell._resultInfo"></div>
-                                </template>
+                                
                             </div>
                         </template>
                         
@@ -2066,143 +2246,7 @@
                                     <button class="btn btn-primary btn-sm" 
                                             @click="runCellAt(${pathExpr}, ${cellIdxExpr})"
                                             :disabled="isLoading">
-                                        📑 Générer le PDF{
-  "basePdf": {
-    "width": 210,
-    "height": 297,
-    "padding": [
-      20,
-      20,
-      9,
-      20
-    ],
-    "staticSchema": [
-      {
-        "name": "page_header",
-        "type": "text",
-        "position": {
-          "x": 20,
-          "y": 5
-        },
-        "width": 170,
-        "height": 8,
-        "content": "{date}",
-        "fontSize": 9,
-        "fontColor": "#888888",
-        "alignment": "right",
-        "readOnly": true
-      },
-      {
-        "name": "footer",
-        "type": "text",
-        "position": {
-          "x": 20,
-          "y": 288
-        },
-        "width": 170,
-        "height": 10,
-        "content": "PIED DE PAGE - Document généré par SQLJob - Page {currentPage} / {totalPages}",
-        "fontSize": 10,
-        "fontColor": "#888888",
-        "alignment": "center",
-        "readOnly": true
-      }
-    ]
-  },
-  "schemas": [
-    [
-      {
-        "name": "header",
-        "type": "text",
-        "position": {
-          "x": 20,
-          "y": 20
-        },
-        "width": 170,
-        "height": 10,
-        "content": "ENTÊTE DU DOCUMENT",
-        "fontSize": 16,
-        "fontColor": "#6366f1",
-        "alignment": "center"
-      },
-      {
-        "name": "datatable",
-        "type": "table",
-        "position": {
-          "x": 20,
-          "y": 35
-        },
-        "width": 170,
-        "height": 50,
-        "content": "[[\"A\",\"B\",\"C\"]]",
-        "showHead": true,
-        "repeatHead": true,
-        "head": [
-          "Col1",
-          "Col2",
-          "Col3"
-        ],
-        "headWidthPercentages": [
-          33,
-          33,
-          34
-        ],
-        "tableStyles": {
-          "borderWidth": 0.3,
-          "borderColor": "#000000"
-        },
-        "headStyles": {
-          "fontName": "",
-          "fontSize": 10,
-          "characterSpacing": 0,
-          "alignment": "left",
-          "verticalAlignment": "middle",
-          "lineHeight": 1,
-          "fontColor": "#ffffff",
-          "borderColor": "",
-          "backgroundColor": "#6366f1",
-          "borderWidth": {
-            "top": 0,
-            "right": 0,
-            "bottom": 0,
-            "left": 0
-          },
-          "padding": {
-            "top": 5,
-            "right": 5,
-            "bottom": 5,
-            "left": 5
-          }
-        },
-        "bodyStyles": {
-          "fontName": "",
-          "fontSize": 9,
-          "characterSpacing": 0,
-          "alignment": "left",
-          "verticalAlignment": "middle",
-          "lineHeight": 1,
-          "fontColor": "#333333",
-          "borderColor": "#888888",
-          "backgroundColor": "",
-          "alternateBackgroundColor": "#f5f5f5",
-          "borderWidth": {
-            "top": 0.1,
-            "right": 0.1,
-            "bottom": 0.1,
-            "left": 0.1
-          },
-          "padding": {
-            "top": 3,
-            "right": 5,
-            "bottom": 3,
-            "left": 5
-          }
-        },
-        "columnStyles": {}
-      }
-    ]
-  ]
-}
+                                        📑 Générer le PDF
                                     </button>
                                 </div>
                                 
@@ -2214,23 +2258,21 @@
                         
                         <!-- PERSPECTIVE CELL -->
                         <template x-if="cellItem.cell.type === 'perspective'">
-                            <div class="flex flex-col gap-2">
+                            <div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 flex flex-col' : 'flex flex-col gap-2'">
                                 <template x-if="devMode || cellItem.cell.showSqlEditorForClient">
                                     <div x-effect="safeRenderSqlEditor($el, cellItem.cell, 'SELECT * FROM source1', false, 'query', '_showParsedQuery', null, null, null, '${pathExpr}', '${cellIdxExpr}')"></div>
                                 </template>
                                 <template x-if="cellItem.cell._perspectiveReady">
-                                    <perspective-viewer 
-                                        :id="'perspective-' + cellItem.cell._id"
-                                        theme="Pro Light"
-                                        class="w-full rounded-lg"
-                                        style="min-height: 500px;"
-                                        x-init="$nextTick(() => { if (cellItem.cell._arrowTable) { renderPerspectiveInContainer(cellItem.cell); } })">
-                                    </perspective-viewer>
+                                    <div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 flex flex-col perspective-fill-height' : 'min-h-[400px]'">
+                                        <perspective-viewer 
+                                            :id="'perspective-' + cellItem.cell._id"
+                                            theme="Pro Light"
+                                            :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 w-full rounded-lg' : 'w-full rounded-lg min-h-[400px]'"
+                                            x-init="$nextTick(() => { if (cellItem.cell._arrowTable) { renderPerspectiveInContainer(cellItem.cell); } })">
+                                        </perspective-viewer>
+                                    </div>
                                 </template>
                                 
-                                <template x-if="cellItem.cell._resultInfo">
-                                    <div class="mt-2 p-2 bg-base-200 rounded text-sm text-base-content/70" x-text="cellItem.cell._resultInfo"></div>
-                                </template>
                             </div>
                         </template>
                         
@@ -2256,6 +2298,82 @@
 
         // ═══════════════════════════════════════════════════════════════════════════
         // TEMPLATE HTML
+        // ═══════════════════════════════════════════════════════════════════════════
+        function generateGistPassphraseModalHTML() {
+            return `
+    <div class="min-h-screen flex items-center justify-center p-4 bg-base-200" x-data="gistPassphraseModal()" x-init="init()">
+        <div class="modal modal-open">
+            <div class="modal-box max-w-md">
+                <h3 class="font-bold text-lg flex items-center gap-2">🔐 Configuration chiffrée</h3>
+                <p class="py-2 text-sm text-base-content/70">
+                    Ce Gist est protégé par une passphrase. Entrez-la pour charger la configuration.
+                </p>
+                <div class="form-control mt-4">
+                    <label class="label"><span class="label-text">Passphrase</span></label>
+                    <input type="password" x-model="passphrase" placeholder="68cd597ba5da05ceba24fb975c05384f"
+                        class="input input-bordered w-full font-mono"
+                        @keydown.enter="unlock()"
+                        autocomplete="current-password">
+                </div>
+                <div x-show="error" class="alert alert-error mt-3">
+                    <span x-text="error"></span>
+                </div>
+                <div class="modal-action flex-wrap gap-2">
+                    <button class="btn btn-ghost btn-sm" @click="useDefaultConfig()">Utiliser la config par défaut</button>
+                    <button class="btn btn-primary" @click="unlock()" :disabled="loading">
+                        <span x-show="!loading">Déchiffrer</span>
+                        <span x-show="loading" class="loading loading-spinner loading-sm"></span>
+                    </button>
+                </div>
+            </div>
+            <form method="dialog" class="modal-backdrop"><button type="button">close</button></form>
+        </div>
+    </div>`;
+        }
+
+        function gistPassphraseModal() {
+            return {
+                passphrase: '',
+                error: '',
+                loading: false,
+                init() {},
+                useDefaultConfig() {
+                    window._loadedConfig = ConfigManager.applyURLParamsToConfig(ConfigManager.getDefaultConfig());
+                    window._pendingEncryptedGist = null;
+                    const container = document.getElementById('app-container');
+                    if (container) {
+                        container.innerHTML = generateAppHTML();
+                        if (window.Alpine) Alpine.initTree(container);
+                    }
+                    window.notebookApp = notebookApp;
+                },
+                async unlock() {
+                    const pass = (this.passphrase || '').trim();
+                    if (!pass) { this.error = 'Veuillez entrer la passphrase'; return; }
+                    this.error = '';
+                    this.loading = true;
+                    try {
+                        const decrypted = await GistEncrypt.decrypt(window._pendingEncryptedGist, pass);
+                        const config = JSON.parse(decrypted);
+                        const baseConfig = ConfigManager.deepMerge(ConfigManager.getDefaultConfig(), config);
+                        window._loadedConfig = ConfigManager.applyURLParamsToConfig(baseConfig);
+                        window._pendingEncryptedGist = null;
+                        const container = document.getElementById('app-container');
+                        if (container) {
+                            container.innerHTML = generateAppHTML();
+                            if (window.Alpine) Alpine.initTree(container);
+                        }
+                        window.notebookApp = notebookApp;
+                        console.log('✅ Configuration déchiffrée et chargée');
+                    } catch (e) {
+                        this.error = e.message || 'Passphrase incorrecte';
+                    } finally {
+                        this.loading = false;
+                    }
+                }
+            };
+        }
+
         // ═══════════════════════════════════════════════════════════════════════════
         function generateAppHTML() {
             return `
@@ -2511,16 +2629,16 @@
                                     <!-- Cellules du groupe (triées par _order) - Niveau 0 -->
                                 <template x-for="cellItem in getSortedCells(item.group)" :key="cellItem.cell._id">
                                     <div class="flex flex-1" 
-                                        :class="(item.group.direction || 'row') === 'column' ? 'flex-col w-full' : 'min-w-[200px]'"
+                                        :class="getCellSizeOuterClass(cellItem.cell, (item.group.direction || 'row') === 'column')"
                                         x-show="shouldShowCell(cellItem.cell) && (devMode || !item.group.tabsChild || _activeTabKey === ('c-' + cellItem.originalIndex))"
-                                        :style="'order: ' + (cellItem.cell._order ?? 0)"
+                                        :style="getCellWrapperStyle(cellItem.cell, (item.group.direction || 'row') === 'column', cellItem.cell._order ?? 0)"
                                     >
-                                        <div class="bg-base-100 border border-base-300 rounded-lg overflow-hidden transition-[border-color,box-shadow] duration-200 w-full min-w-[200px] shadow-sm hover:border-primary hover:shadow-lg cell-container" 
-                                             :class="{ 
+                                        <div class="bg-base-100 border border-base-300 rounded-lg overflow-hidden transition-[border-color,box-shadow] duration-200 shadow-sm hover:border-primary hover:shadow-lg cell-container" 
+                                             :class="[getCellSizeInnerClass(), {
                                                  'border-warning shadow-[0_0_10px_rgba(251,191,36,0.3)]': cellItem.cell._status === 'running', 
                                                  'border-success': cellItem.cell._status === 'success', 
                                                  'border-error': cellItem.cell._status === 'error'
-                                             }">
+                                             }]">
                                         ${CellRenderer.renderCell('item.path', 'cellItem.originalIndex', 'item.group')}
                                     </div>
                                     </div>
@@ -2954,6 +3072,60 @@
                                    placeholder="Libellé affiché dans l'onglet (si parent a tabsChild)" />
                         </div>
                         
+                        <!-- Taille de la cellule (tous types) - DaisyUI collapse replié par défaut -->
+                        <div class="collapse collapse-arrow border border-base-300 bg-base-100">
+                            <input type="checkbox" />
+                            <div class="collapse-title min-h-0 py-3 font-medium flex items-center gap-2">
+                                Taille de la cellule
+                            </div>
+                            <div class="collapse-content">
+                                <div class="grid grid-cols-2 gap-3 pt-1">
+                                    <div class="col-span-2 font-medium text-sm">Largeur</div>
+                                    <div>
+                                        <span class="label-text-alt">Min (px)</span>
+                                        <input type="text" class="input input-bordered input-sm validator w-full" placeholder="100" title="Min largeur px"
+                                               x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).minSizePx" />
+                                    </div>
+                                    <div>
+                                        <span class="label-text-alt">Min (%)</span>
+                                        <input type="text" class="input input-bordered input-sm validator w-full" placeholder="50" title="Min largeur %"
+                                               x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).minSizePercent" />
+                                    </div>
+                                    <div>
+                                        <span class="label-text-alt">Max (px)</span>
+                                        <input type="text" class="input input-bordered input-sm validator w-full" placeholder="400" title="Max largeur px"
+                                               x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).maxSizePx" />
+                                    </div>
+                                    <div>
+                                        <span class="label-text-alt">Max (%)</span>
+                                        <input type="text" class="input input-bordered input-sm validator w-full" placeholder="80" title="Max largeur %"
+                                               x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).maxSizePercent" />
+                                    </div>
+                                    <div class="col-span-2 font-medium text-sm mt-1">Hauteur</div>
+                                    <div>
+                                        <span class="label-text-alt">Min (px)</span>
+                                        <input type="text" class="input input-bordered input-sm validator w-full" placeholder="100" title="Min hauteur px"
+                                               x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).minHeightPx" />
+                                    </div>
+                                    <div>
+                                        <span class="label-text-alt">Min (%)</span>
+                                        <input type="text" class="input input-bordered input-sm validator w-full" placeholder="50" title="Min hauteur %"
+                                               x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).minHeightPercent" />
+                                    </div>
+                                    <div>
+                                        <span class="label-text-alt">Max (px)</span>
+                                        <input type="text" class="input input-bordered input-sm validator w-full" placeholder="400" title="Max hauteur px"
+                                               x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).maxHeightPx" />
+                                    </div>
+                                    <div>
+                                        <span class="label-text-alt">Max (%)</span>
+                                        <input type="text" class="input input-bordered input-sm validator w-full" placeholder="80" title="Max hauteur %"
+                                               x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).maxHeightPercent" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <!-- Config spécifique markdown -->
                         <template x-if="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex)?.type === 'markdown'">
                             <div class="flex flex-col gap-2">
@@ -3140,15 +3312,16 @@
                             <div class="flex flex-col gap-2">
                                 <div class="form-control">
                                     <label class="label gap-2">
-                                        <span class="label-text">Requête SQL (doit retourner du HTML)</span>
-                                        <span class="tooltip tooltip-bottom" data-tip="La requête doit retourner une colonne 'html' contenant le code HTML à afficher dans l'iframe">
+                                        <span class="label-text">Type de langage</span>
+                                        <span class="tooltip tooltip-bottom" data-tip="SQL: requête retournant du HTML | JS: retourne une chaîne HTML | Texte: HTML saisi directement">
                                             <span class="badge badge-sm cursor-help">?</span>
                                         </span>
                                     </label>
-                                    <textarea class="textarea textarea-bordered w-full" 
-                                              x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).query" 
-                                              rows="3"
-                                              placeholder="SELECT '&lt;html&gt;...&lt;/html&gt;' as html"></textarea>
+                                    <select class="select select-bordered select-sm w-full" x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).languageType">
+                                        <option value="sql">🗄️SQL</option>
+                                        <option value="js">⚡JavaScript</option>
+                                        <option value="text">📝Texte</option>
+                                    </select>
                                 </div>
                                 <div class="form-control">
                                     <label class="label cursor-pointer justify-start gap-3">
@@ -3181,13 +3354,14 @@
                                 <div class="form-control">
                                     <label class="label gap-2">
                                         <span class="label-text">Type de langage</span>
-                                        <span class="tooltip tooltip-bottom" data-tip="SQL: exécute une requête SQL | JS: exécute une expression JavaScript">
+                                        <span class="tooltip tooltip-bottom" data-tip="SQL: exécute une requête SQL | JS: exécute une expression JavaScript | Texte: valeur retournée directement sans moteur">
                                             <span class="badge badge-sm cursor-help">?</span>
                                         </span>
                                     </label>
                                     <select class="select select-bordered select-sm w-full" x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).languageType">
                                         <option value="sql">🗄️SQL</option>
                                         <option value="js">⚡JavaScript</option>
+                                        <option value="text">📝Texte</option>
                                     </select>
                                 </div>
                                 <div class="form-control">
@@ -3628,14 +3802,14 @@
                                             <!-- Cellules du groupe modal -->
                                             <template x-for="(cellItem, cellIdx) in getSortedCells(childGroupModal.group)" :key="cellItem.cell._id">
                                                 <div class="flex flex-1"
-                                                     :class="childGroupModal.group.direction === 'column' ? 'flex-col w-full' : 'min-w-[200px]'"
-                                                     :style="'order: ' + (cellItem.cell._order ?? 0)">
-                                                    <div class="border border-base-300 rounded-lg overflow-hidden bg-base-100 shadow-sm w-full min-w-[200px] hover:border-primary hover:shadow-lg cell-container"
-                                                         :class="{ 
+                                                     :class="getCellSizeOuterClass(cellItem.cell, childGroupModal.group.direction === 'column')"
+                                                     :style="getCellWrapperStyle(cellItem.cell, childGroupModal.group.direction === 'column', cellItem.cell._order ?? 0)">
+                                                    <div class="border border-base-300 rounded-lg overflow-hidden bg-base-100 shadow-sm hover:border-primary hover:shadow-lg cell-container"
+                                                         :class="[getCellSizeInnerClass(), {
                                                              'border-warning shadow-[0_0_10px_rgba(251,191,36,0.3)]': cellItem.cell._status === 'running', 
                                                              'border-success': cellItem.cell._status === 'success', 
                                                              'border-error': cellItem.cell._status === 'error'
-                                                         }">
+                                                         }]">
                                                     
                                                     <!-- Header de cellule -->
                                                     <div class="flex justify-between items-center py-2 px-4 bg-base-200 border-b border-base-300" x-show="devMode">
@@ -3853,6 +4027,30 @@
                             </label>
                         </div>
 
+                        <!-- Chiffrer (Gist et JSON) -->
+                        <div class="form-control" x-show="exportModal.type === 'gist' || exportModal.type === 'json'">
+                            <label class="label cursor-pointer justify-start gap-3">
+                                <input type="checkbox" class="toggle toggle-primary" x-model="exportModal.encryptGist"
+                                    @change="if (exportModal.encryptGist && !exportModal.gistPassphrase) exportModal.gistPassphrase = GistEncrypt.generatePassphrase()" />
+                                <div>
+                                    <span class="label-text font-semibold">🔐 Chiffrer la configuration</span>
+                                    <p class="text-xs text-base-content/60">Chiffre la config et les datachunks avec une passphrase</p>
+                                </div>
+                            </label>
+                        </div>
+                        <div class="form-control" x-show="(exportModal.type === 'gist' || exportModal.type === 'json') && exportModal.encryptGist">
+                            <label class="label">
+                                <span class="label-text">Passphrase (à partager pour déchiffrer)</span>
+                            </label>
+                            <input type="text" x-model="exportModal.gistPassphrase"
+                                placeholder="68cd597ba5da05ceba24fb975c05384f"
+                                class="input input-bordered w-full font-mono text-sm"
+                                @keydown.enter="executeExport()">
+                            <label class="label">
+                                <span class="label-text-alt">À transmettre séparément au destinataire (demandée via modale au chargement).</span>
+                            </label>
+                        </div>
+
                         <!-- Info pour Gist -->
                         <div class="alert alert-info" x-show="exportModal.type === 'gist'">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -3946,10 +4144,58 @@
                                 Ne partagez pas de données confidentielles. Le Gist sera accessible via le lien partagé.
                             </span>
                         </div>
+                        <div class="alert alert-warning" x-show="gistWasEncrypted">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                            <span class="text-sm">
+                                <strong>Configuration chiffrée.</strong> Transmettez la passphrase au destinataire par un canal sécurisé. Elle sera demandée via une modale lors du chargement.
+                            </span>
+                        </div>
+                        <div class="form-control" x-show="gistWasEncrypted">
+                            <label class="label"><span class="label-text">Passphrase (à transmettre au destinataire)</span></label>
+                            <div class="join w-full">
+                                <input type="text" :value="gistPassphraseToShare" readonly
+                                    class="input input-bordered join-item flex-1 font-mono text-sm"
+                                    @click="$event.target.select()">
+                                <button @click="copyGistPassphrase()" class="btn join-item btn-primary">📋 Copier la passphrase</button>
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-action">
                         <button @click="closeGistModal()" class="btn btn-ghost">Fermer</button>
                         <button @click="openGistUrl()" class="btn btn-primary">Ouvrir le lien</button>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- Modal passphrase pour JSON chiffré -->
+        <template x-if="showJsonPassphraseModal">
+            <div class="modal modal-open z-[2100]" @click.self="cancelJsonPassphraseModal()" role="presentation">
+                <div class="modal-box max-w-md" role="dialog" aria-modal="true" aria-labelledby="modal-json-passphrase-title"
+                     x-trap.noscroll="showJsonPassphraseModal">
+                    <div class="flex items-center justify-between gap-2">
+                        <h3 class="text-lg font-semibold" id="modal-json-passphrase-title">🔐 Fichier JSON chiffré</h3>
+                        <button class="btn btn-sm btn-ghost" @click="cancelJsonPassphraseModal()">✕</button>
+                    </div>
+                    <p class="py-2 text-sm text-base-content/70">
+                        Ce fichier est protégé par une passphrase. Entrez-la pour charger la configuration.
+                    </p>
+                    <div class="form-control mt-4">
+                        <label class="label"><span class="label-text">Passphrase</span></label>
+                        <input type="password" x-model="jsonPassphrase" placeholder="68cd597ba5da05ceba24fb975c05384f"
+                            class="input input-bordered w-full font-mono"
+                            @keydown.enter="unlockJsonConfig()"
+                            autocomplete="current-password">
+                    </div>
+                    <div x-show="jsonPassphraseError" class="alert alert-error mt-3">
+                        <span x-text="jsonPassphraseError"></span>
+                    </div>
+                    <div class="modal-action">
+                        <button @click="cancelJsonPassphraseModal()" class="btn btn-ghost">Annuler</button>
+                        <button @click="unlockJsonConfig()" class="btn btn-primary" :disabled="jsonPassphraseLoading">
+                            <span x-show="!jsonPassphraseLoading">Déchiffrer</span>
+                            <span x-show="jsonPassphraseLoading" class="loading loading-spinner loading-sm"></span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -4392,7 +4638,14 @@ if ($param1 === "Type A") {
                 githubToken: '',
                 gistShareUrl: '',
                 showGistModal: false,
+                gistWasEncrypted: false,
+                gistPassphraseToShare: '',
                 showGistTokenModal: false,
+                showJsonPassphraseModal: false,
+                jsonPassphrase: '',
+                jsonPassphraseError: '',
+                jsonPassphraseLoading: false,
+                _pendingEncryptedJson: null,
 
                 // Export unifié - variables d'état
                 exportModal: {
@@ -4401,7 +4654,9 @@ if ($param1 === "Type A") {
                     fileName: 'notebook-config.json',
                     description: 'sqljob Notebook Configuration',
                     devMode: null, // null = utiliser la valeur actuelle
-                    displaySettings: null // null = utiliser la valeur actuelle
+                    displaySettings: null, // null = utiliser la valeur actuelle
+                    encryptGist: false,
+                    gistPassphrase: ''
                 },
 
                 // DAG debounce timer
@@ -5852,6 +6107,81 @@ FROM source1 LIMIT 10;`;
                         .sort((a, b) => (a.cell._order ?? 0) - (b.cell._order ?? 0));
                 },
 
+                // Helpers factorisés pour la taille des cellules (minSizePx/Percent, maxSizePx/Percent optionnels)
+                hasCellMinSize(cell) {
+                    const v = x => (x !== undefined && x !== null && String(x).trim() !== '');
+                    return cell && (v(cell.minSizePx) || v(cell.minSizePercent) || v(cell.minSize));
+                },
+                hasCellMaxSize(cell) {
+                    const v = x => (x !== undefined && x !== null && String(x).trim() !== '');
+                    return cell && (v(cell.maxSizePx) || v(cell.maxSizePercent) || v(cell.maxSize));
+                },
+                hasCellHeight(cell) {
+                    const v = x => (x !== undefined && x !== null && String(x).trim() !== '');
+                    return cell && (v(cell.minHeightPx) || v(cell.minHeightPercent) || v(cell.maxHeightPx) || v(cell.maxHeightPercent));
+                },
+                isSqlCellWithEditor(type) {
+                    return ['sqlRecursiveParse', 'table', 'iframe', 'sqlStat', 'perspective', 'pdfme', 'publipostageWord'].includes(type);
+                },
+                /** Retourne les variables CSS pour la hauteur (à utiliser avec style). Utilise max/min en CSS. */
+                getCellHeightVars(cell) {
+                    if (!cell) return '';
+                    const toPx = v => {
+                        if (v == null || String(v).trim() === '') return '';
+                        const s = String(v).trim();
+                        return /^\d+(\.\d+)?$/.test(s) ? s + 'px' : s;
+                    };
+                    const toPct = v => {
+                        if (v == null || String(v).trim() === '') return '';
+                        const s = String(v).trim();
+                        return /^\d+(\.\d+)?$/.test(s) ? s + '%' : s;
+                    };
+                    const parts = [];
+                    const mhp = toPx(cell.minHeightPx); const mhc = toPct(cell.minHeightPercent);
+                    if (mhp) parts.push(`--cell-min-h-px:${mhp}`);
+                    if (mhc) parts.push(`--cell-min-h-pct:${mhc}`);
+                    const mxp = toPx(cell.maxHeightPx); const mxc = toPct(cell.maxHeightPercent);
+                    if (mxp) parts.push(`--cell-max-h-px:${mxp}`);
+                    if (mxc) parts.push(`--cell-max-h-pct:${mxc}`);
+                    return parts.length ? parts.join(';') : '';
+                },
+                getCellSizeOuterClass(cell, isColumn) {
+                    if (isColumn) return 'flex-col w-full';
+                    return this.hasCellMinSize(cell) ? '' : 'min-w-[200px]';
+                },
+                // Style pour le wrapper (flex child) : order + min/max width/height. Combinaison px et % via max()/min() CSS.
+                getCellWrapperStyle(cell, isColumn, order) {
+                    const s = { order: order ?? 0 };
+                    const toPx = v => {
+                        if (v === undefined || v === null) return null;
+                        const str = String(v).trim();
+                        if (str === '') return null;
+                        return /^\d+(\.\d+)?$/.test(str) ? str + 'px' : str;
+                    };
+                    const toPct = v => {
+                        if (v === undefined || v === null) return null;
+                        const str = String(v).trim();
+                        if (str === '') return null;
+                        return /^\d+(\.\d+)?$/.test(str) ? str + '%' : str;
+                    };
+                    if (!isColumn) {
+                        const minPx = toPx(cell?.minSizePx) ?? toPx(cell?.minSize);
+                        const minPct = toPct(cell?.minSizePercent);
+                        if (minPx && minPct) s.minWidth = `max(${minPx}, ${minPct})`;
+                        else if (minPx) s.minWidth = minPx;
+                        else if (minPct) s.minWidth = minPct;
+                        const maxPx = toPx(cell?.maxSizePx) ?? toPx(cell?.maxSize);
+                        const maxPct = toPct(cell?.maxSizePercent);
+                        if (maxPx && maxPct) s.maxWidth = `min(${maxPx}, ${maxPct})`;
+                        else if (maxPx) s.maxWidth = maxPx;
+                        else if (maxPct) s.maxWidth = maxPct;
+                    }
+                    return s;
+                },
+                getCellSizeInnerClass() {
+                    return 'w-full';
+                },
+
                 // Retourne les children triés par _order avec leur index original
                 getSortedChildren(group) {
                     if (!group || !group.children) return [];
@@ -5926,14 +6256,15 @@ FROM source1 LIMIT 10;`;
                                 <template x-for="cellItem in getSortedCells(getGroupAtPath(${pathJSON}))" :key="cellItem.cell._id">
                                     <div class="flex flex-1 min-w-0" 
                                         :class="(getGroupAtPath(${pathJSON})?.direction || 'row') === 'column' ? 'flex-col w-full' : ''"
-                                        style="display: contents;" :style="'order: ' + (cellItem.cell._order ?? 0)">
-                                        <div class="bg-base-100 border border-base-300 rounded-lg overflow-hidden transition-[border-color,box-shadow] duration-200 flex-1 min-w-[200px] shadow-sm hover:border-primary hover:shadow-lg cell-container"
+                                        style="display: contents;">
+                                        <div class="bg-base-100 border border-base-300 rounded-lg overflow-hidden transition-[border-color,box-shadow] duration-200 flex-1 shadow-sm hover:border-primary hover:shadow-lg cell-container"
                                              x-show="shouldShowCell(cellItem.cell) && (devMode || !getGroupAtPath(${pathJSON})?.tabsChild || _activeTabKey === ('c-' + cellItem.originalIndex))"
-                                             :class="{
+                                             :class="[getCellSizeInnerClass(), {
                                                  'border-warning shadow-[0_0_10px_rgba(251,191,36,0.3)]': cellItem.cell._status === 'running',
                                                  'border-success': cellItem.cell._status === 'success',
                                                  'border-error': cellItem.cell._status === 'error'
-                                             }">
+                                             }]"
+                                             :style="getCellWrapperStyle(cellItem.cell, (getGroupAtPath(${pathJSON})?.direction || 'row') === 'column', cellItem.cell._order ?? 0)">
                                             ${CellRenderer.renderCell(pathJSON, 'cellItem.originalIndex', `getGroupAtPath(${pathJSON})`)}
                                         </div>
                                     </div>
@@ -6085,6 +6416,7 @@ FROM source1 LIMIT 10;`;
                             break;
                         case 'iframe':
                             newCell.query = 'SELECT \'<html><body><h1>Hello</h1></body></html>\' as html';
+                            newCell.languageType = 'sql';
                             newCell._showParsedQuery = false;
                             break;
                         case 'uiParameter':
@@ -6481,6 +6813,9 @@ FROM source1 LIMIT 10;`;
                     // Cellules avec SQL editor
                     if (['sqlRecursiveParse', 'table', 'iframe', 'publipostageWord', 'perspective'].includes(cell.type)) {
                         if (cell._showParsedQuery === undefined) cell._showParsedQuery = false;
+                    }
+                    if (cell.type === 'iframe' && !cell.languageType) {
+                        cell.languageType = 'sql';
                     }
                     if (cell.type === 'perspective') {
                         if (!cell.query) cell.query = 'SELECT * FROM source1';
@@ -7335,13 +7670,24 @@ FROM source1 LIMIT 10;`;
                             data: tableData,
                             perPage: 10,
                             perPageSelect: [5, 10, 25, 50],
-                            searchable: true,
+                            searchable: cell.type === 'table',
                             sortable: true,
                             labels: {
                                 placeholder: "Rechercher...",
                                 perPage: "entrées par page",
                                 noRows: "Aucune donnée",
                                 info: "Affichage de {start} à {end} sur {rows} entrées"
+                            },
+                            template: (options) => {
+                                const c = options.classes;
+                                const top = options.searchable
+                                    ? `<div class="${c.top}"><div class="${c.search}"><input class="${c.input}" placeholder="${options.labels.placeholder || ''}" type="search"></div></div>`
+                                    : `<div class="${c.top}"></div>`;
+                                const bottom = options.paging
+                                    ? `<div class="${c.bottom}" style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:0.75rem;">
+<div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">${options.perPageSelect ? `<div class="${c.dropdown}" style="display:flex;align-items:center;gap:0.5rem;"><label>${options.labels.perPage}</label><select class="${c.selector}"></select></div>` : ''}<div class="${c.info}"></div></div><nav class="${c.pagination}"></nav></div>`
+                                    : '';
+                                return `${top}<div class="${c.container}"></div>${bottom}`;
                             },
                             tableRender: (_data, table, type) => {
                                 if (type === "print") {
@@ -7495,29 +7841,40 @@ FROM source1 LIMIT 10;`;
                 async executeIframeCell(cell) {
                     if (!cell.query?.trim()) return;
 
+                    const languageType = cell.languageType || 'sql';
                     this.setStatus('Chargement HTML...', 'loading');
 
                     try {
-                        // Utiliser la fonction partagée pour le parsing récursif
-                        const finalQuery = await this.parseQueryRecursively(cell);
+                        let htmlContent;
 
-                        this.setStatus('Exécution de la requête finale...', 'loading');
-                        const results = await DuckDBManager.executeQuery(finalQuery);
+                        if (languageType === 'text') {
+                            htmlContent = (cell.query || '').trim();
+                            cell._parseLevels = [];
+                            cell._resultInfo = '✅ Texte utilisé tel quel';
+                        } else if (languageType === 'js') {
+                            cell._parseLevels = [];
+                            let jsCode = this.parseQueryWithParameters(cell.query || '');
+                            cell._parseLevels.push({ level: 'final', innerQuery: jsCode, replacement: null });
+                            try {
+                                const result = eval(jsCode);
+                                htmlContent = typeof result === 'string' ? result : String(result);
+                            } catch (jsError) {
+                                throw new Error(`Erreur JS: ${jsError.message}`);
+                            }
+                            cell._resultInfo = '✅ HTML généré (JavaScript)';
+                        } else {
+                            const finalQuery = await this.parseQueryRecursively(cell);
+                            this.setStatus('Exécution de la requête finale...', 'loading');
+                            const results = await DuckDBManager.executeQuery(finalQuery);
+                            htmlContent = results.map(row => Object.values(row).join('')).join('\n');
+                            cell._resultInfo = `✅ HTML généré` + (cell._parseLevels.length > 1 ? ` - ${cell._parseLevels.length - 1} niveau(x) de parsing` : '');
+                        }
 
-                        const htmlContent = results.map(row => Object.values(row).join('')).join('\n');
-
-                        // Stocker le contenu HTML pour re-render
                         cell._htmlContent = htmlContent;
-
                         await this.$nextTick();
-
-                        // Rendre l'iframe
                         this.renderIframeInContainer(cell);
-
-                        cell._resultInfo = `✅ HTML généré` + (cell._parseLevels.length > 1 ? ` - ${cell._parseLevels.length - 1} niveau(x) de parsing` : '');
                         this.setStatus('HTML chargé', 'success');
                     } catch (error) {
-                        // En cas d'erreur, on garde les niveaux déjà parsés pour debug
                         throw error;
                     }
                 },
@@ -7580,7 +7937,17 @@ FROM source1 LIMIT 10;`;
                         const languageType = cell.languageType || 'sql';
                         let results;
 
-                        if (languageType === 'js') {
+                        if (languageType === 'text') {
+                            // Mode Texte : le contenu est retourné directement, pas d'engine
+                            this.setStatus(`${cell.paramName} : texte utilisé tel quel`, 'success');
+                            const textValue = (cell.query || '').trim();
+                            if (cell.paramType === 'dropdown') {
+                                const lines = textValue.split('\n').filter(Boolean);
+                                results = lines.map(line => ({ col1: line, col2: line }));
+                            } else {
+                                results = [{ value: textValue }];
+                            }
+                        } else if (languageType === 'js') {
                             // Mode JavaScript
                             this.setStatus('Exécution du code JavaScript...', 'loading');
 
@@ -8493,14 +8860,15 @@ FROM source1 LIMIT 10;`;
                     this.setStatus(`✅ ${dependentCells.length} cellule(s) et ${dependentGroups.length} groupe(s) rafraîchi(s)`, 'success');
                 },
 
-                // Générer le HTML de l'éditeur pour les cellules uiParameter (SQL ou JS)
+                // Générer le HTML de l'éditeur pour les cellules uiParameter (SQL, JS ou Texte)
                 renderUiParameterEditor(cell) {
                     const languageType = cell.languageType || 'sql';
                     const isJs = languageType === 'js';
-                    const placeholder = isJs ? 'return ["Option 1", "Option 2"]; // Pour dropdown\nreturn "Valeur"; // Pour input' : 'SELECT * from source1';
-                    const languageLabel = isJs ? 'JavaScript' : 'SQL';
-                    const languageIcon = isJs ? '⚡' : '🗄️';
-                    const badgeClass = isJs ? 'badge-warning' : 'badge-info';
+                    const isText = languageType === 'text';
+                    const placeholder = isJs ? 'return ["Option 1", "Option 2"]; // Pour dropdown\nreturn "Valeur"; // Pour input' : isText ? 'Saisir le texte (une ligne par option pour dropdown)' : 'SELECT * from source1';
+                    const languageLabel = isJs ? 'JavaScript' : isText ? 'Texte' : 'SQL';
+                    const languageIcon = isJs ? '⚡' : isText ? '📝' : '🗄️';
+                    const badgeClass = isJs ? 'badge-warning' : isText ? 'badge-ghost' : 'badge-info';
 
                     return this.renderSqlQueryEditor(cell, placeholder, true, 'query', '_showParsedQuery', languageLabel, languageIcon, badgeClass);
                 },
@@ -8612,9 +8980,10 @@ FROM source1 LIMIT 10;`;
 
                     const languageType = cell.languageType || 'sql';
                     const isJs = languageType === 'js';
-                    const finalLanguageLabel = languageLabel || (isJs ? 'JavaScript' : 'SQL');
-                    const finalLanguageIcon = languageIcon || (isJs ? '⚡' : '🗄️');
-                    const finalBadgeClass = badgeClass || (isJs ? 'badge-warning' : 'badge-info');
+                    const isText = languageType === 'text';
+                    const finalLanguageLabel = languageLabel || (isJs ? 'JavaScript' : isText ? 'Texte' : 'SQL');
+                    const finalLanguageIcon = languageIcon || (isJs ? '⚡' : isText ? '📝' : '🗄️');
+                    const finalBadgeClass = badgeClass || (isJs ? 'badge-warning' : isText ? 'badge-ghost' : 'badge-info');
 
                     return `
                         <div>
@@ -8625,7 +8994,7 @@ FROM source1 LIMIT 10;`;
                                         ${showParsedQuery ? '<span class="badge badge-soft badge-primary">Parsé</span>' : ''}
                                     </span>
                                     <div class="flex gap-1 items-center">
-                                        ${!showParsedQuery && this.devMode ? `
+                                        ${!showParsedQuery && this.devMode && !isText ? `
                                             <button 
                                                 @click="$store.templateModal.open('${cellId}', '${queryType}', '${languageType}')"
                                                 class="px-2 py-1 border border-base-300 bg-base-200 text-base-content/70 rounded cursor-pointer text-xs transition-all hover:border-primary hover:text-base-content" 
@@ -8633,7 +9002,7 @@ FROM source1 LIMIT 10;`;
                                                 📋 Templates
                                             </button>
                                         ` : ''}
-                                        ${this.devMode ? `
+                                        ${this.devMode && !isText ? `
                                             <button 
                                                 class="px-2 py-1 border border-base-300 bg-base-200 text-base-content/70 rounded cursor-pointer text-xs transition-all hover:border-primary hover:text-base-content ${!showParsedQuery ? 'active' : ''}" 
                                                 @click="cellItem.cell.${showParsedQueryProp} = false" 
@@ -8677,7 +9046,7 @@ FROM source1 LIMIT 10;`;
                                         ` : ''}
                                     </div>
                                 </div>
-                                ${!showParsedQuery ? (isJs ? `
+                                ${!showParsedQuery ? (isJs || isText ? `
                                     <textarea 
                                         class="textarea textarea-bordered w-full font-mono min-h-20 p-3 resize-y text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" 
                                         x-model="cellItem.cell.${queryType}"
@@ -8827,6 +9196,43 @@ FROM source1 LIMIT 10;`;
                     delete el._x_ignoreSelf;
                 },
 
+                // Générer l'éditeur pour les cellules iframe (SQL, JS ou Texte)
+                renderIframeEditor(cell, pathExpr, cellIdxExpr) {
+                    const languageType = cell.languageType || 'sql';
+                    const isJs = languageType === 'js';
+                    const isText = languageType === 'text';
+                    const placeholder = isJs
+                        ? "return '<html><body><h1>Hello</h1></body></html>';"
+                        : isText
+                            ? '<html><body><h1>Hello</h1></body></html>'
+                            : "SELECT '<html><body><h1>Hello</h1></body></html>' as html";
+                    const languageLabel = isJs ? 'JavaScript' : isText ? 'Texte' : 'SQL';
+                    const languageIcon = isJs ? '⚡' : isText ? '📝' : '🗄️';
+                    const badgeClass = isJs ? 'badge-warning' : isText ? 'badge-ghost' : 'badge-info';
+                    return this.renderSqlQueryEditor(cell, placeholder, true, 'query', '_showParsedQuery', languageLabel, languageIcon, badgeClass, pathExpr, cellIdxExpr);
+                },
+
+                // Version sécurisée pour l'éditeur iframe
+                safeRenderIframeEditor(el, cell, pathExpr, cellIdxExpr) {
+                    const showParsed = cell._showParsedQuery;
+                    const langType = cell.languageType;
+                    const devModeVal = this.devMode;
+
+                    const key = `iframe_${showParsed ? '1' : '0'}_${langType || 'sql'}_${devModeVal ? '1' : '0'}`;
+
+                    if (el._sqlEditorKey === key && el.children.length > 0) {
+                        return;
+                    }
+
+                    el._sqlEditorKey = key;
+
+                    const html = this.renderIframeEditor(cell, pathExpr, cellIdxExpr);
+                    el.innerHTML = html;
+
+                    el._x_ignoreSelf = true;
+                    Alpine.initTree(el);
+                    delete el._x_ignoreSelf;
+                },
 
                 // Générer un nom de paramètre unique (param1, param2, param3...) - vérifie dans TOUTES les pages
                 generateUniqueParamName() {
@@ -8923,6 +9329,7 @@ FROM source1 LIMIT 10;`;
 
                 // Insérer un template (SQL ou JS) dans une cellule
                 insertTemplate(cellId, queryType, templateIndex, languageType = 'sql') {
+                    if (languageType === 'text') return; // Pas de templates pour le type Texte
                     // Récupérer les templates appropriés (Alpine.raw pour éviter les soucis Proxy avec chaînes complexes)
                     const store = (typeof Alpine !== 'undefined' && Alpine.raw)
                         ? Alpine.raw(Alpine.store('templateModal'))
@@ -9317,6 +9724,8 @@ FROM source1 LIMIT 10;`;
                         this.exportModal.description = 'sqljob Notebook Configuration';
                         this.exportModal.devMode = this.devMode;
                         this.exportModal.displaySettings = this.displaySettings;
+                        this.exportModal.encryptGist = false;
+                        this.exportModal.gistPassphrase = '';
                         this.exportModal.show = true;
                     });
                 },
@@ -9348,16 +9757,31 @@ FROM source1 LIMIT 10;`;
                         switch (type) {
                             case 'gist':
                                 this.setStatus('Création du gist GitHub...', 'loading');
-                                const gistUrl = await GitHubGistManager.createGist(config, description, fileName);
+                                let passphrase = null;
+                                if (this.exportModal.encryptGist) {
+                                    passphrase = (this.exportModal.gistPassphrase || '').trim();
+                                    if (!passphrase) passphrase = GistEncrypt.generatePassphrase();
+                                }
+                                const gistUrl = await GitHubGistManager.createGist(config, description, fileName, passphrase);
                                 this.gistShareUrl = GitHubGistManager.generateSqljobUrl(gistUrl);
+                                this.gistWasEncrypted = !!passphrase;
+                                this.gistPassphraseToShare = passphrase || '';
                                 this.showGistModal = true;
                                 this.setStatus('Gist créé avec succès', 'success');
                                 break;
 
                             case 'json':
                                 this.setStatus('Export JSON...', 'loading');
-                                const jsonString = JSON.stringify(config, null, 2);
-                                const jsonBlob = new Blob([jsonString], { type: 'application/json' });
+                                let jsonContent;
+                                const jsonPassphrase = this.exportModal.encryptGist ? ((this.exportModal.gistPassphrase || '').trim() || GistEncrypt.generatePassphrase()) : null;
+                                if (jsonPassphrase) {
+                                    const jsonString = JSON.stringify(config, null, 2);
+                                    const encrypted = await GistEncrypt.encrypt(jsonString, jsonPassphrase);
+                                    jsonContent = JSON.stringify(encrypted, null, 2);
+                                } else {
+                                    jsonContent = JSON.stringify(config, null, 2);
+                                }
+                                const jsonBlob = new Blob([jsonContent], { type: 'application/json' });
                                 const jsonFileName = fileName.endsWith('.json') ? fileName : fileName + '.json';
                                 FileHandler.downloadFile(jsonBlob, jsonFileName);
                                 this.setStatus('Configuration exportée', 'success');
@@ -9507,9 +9931,19 @@ FROM source1 LIMIT 10;`;
                     });
                 },
 
+                copyGistPassphrase() {
+                    navigator.clipboard.writeText(this.gistPassphraseToShare).then(() => {
+                        this.setStatus('Passphrase copiée dans le presse-papiers', 'success');
+                    }).catch(() => {
+                        this.setStatus('Erreur lors de la copie', 'error');
+                    });
+                },
+
                 closeGistModal() {
                     this.showGistModal = false;
                     this.gistShareUrl = '';
+                    this.gistWasEncrypted = false;
+                    this.gistPassphraseToShare = '';
                 },
 
                 openGistUrl() {
@@ -9526,10 +9960,52 @@ FROM source1 LIMIT 10;`;
 
                     try {
                         const text = await file.text();
-                        const config = JSON.parse(text);
+                        const parsed = JSON.parse(text);
 
                         event.target.value = '';
 
+                        if (GistEncrypt.isEncrypted(parsed)) {
+                            this._pendingEncryptedJson = parsed;
+                            this.showJsonPassphraseModal = true;
+                            this.jsonPassphrase = '';
+                            this.jsonPassphraseError = '';
+                            return;
+                        }
+
+                        await this.applyImportedConfig(parsed);
+                    } catch (error) {
+                        this.setStatus('Erreur import: ' + error.message, 'error');
+                    }
+                },
+
+                cancelJsonPassphraseModal() {
+                    this.showJsonPassphraseModal = false;
+                    this._pendingEncryptedJson = null;
+                    this.jsonPassphrase = '';
+                    this.jsonPassphraseError = '';
+                },
+
+                async unlockJsonConfig() {
+                    const pass = (this.jsonPassphrase || '').trim();
+                    if (!pass) { this.jsonPassphraseError = 'Veuillez entrer la passphrase'; return; }
+                    this.jsonPassphraseError = '';
+                    this.jsonPassphraseLoading = true;
+                    try {
+                        const decrypted = await GistEncrypt.decrypt(this._pendingEncryptedJson, pass);
+                        const config = JSON.parse(decrypted);
+                        this._pendingEncryptedJson = null;
+                        this.showJsonPassphraseModal = false;
+                        this.jsonPassphrase = '';
+                        await this.applyImportedConfig(config);
+                        this.setStatus('Configuration chargée', 'success');
+                    } catch (e) {
+                        this.jsonPassphraseError = e.message || 'Passphrase incorrecte';
+                    } finally {
+                        this.jsonPassphraseLoading = false;
+                    }
+                },
+
+                async applyImportedConfig(config) {
                         // Helper pour initialiser une cellule
                         const initCell = (cell, cellIndex) => {
                             const newCell = {
@@ -9724,9 +10200,6 @@ FROM source1 LIMIT 10;`;
                         }
 
                         this.setStatus('Configuration chargée', 'success');
-                    } catch (error) {
-                        this.setStatus('Erreur import: ' + error.message, 'error');
-                    }
                 },
 
                 // Charger les fichiers source marqués comme _pendingFileLoad (depuis config JSON)
@@ -9766,16 +10239,21 @@ FROM source1 LIMIT 10;`;
         // INITIALISATION
         // ═══════════════════════════════════════════════════════════════════════════
         (async function main() {
-            // Charger la config depuis le Gist si présent dans l'URL
-            window._loadedConfig = await ConfigManager.loadConfigFromGist();
-
+            const loadResult = await ConfigManager.loadConfigFromGist();
             const container = document.getElementById('app-container');
-            if (container) {
-                container.innerHTML = generateAppHTML();
-            }
 
-            window.notebookApp = notebookApp;
-            console.log('🦆 sqljob Notebook initialisé');
+            if (loadResult && loadResult.needsPassphrase && loadResult.encryptedContent) {
+                window._pendingEncryptedGist = loadResult.encryptedContent;
+                if (container) {
+                    container.innerHTML = generateGistPassphraseModalHTML();
+                    if (window.Alpine) Alpine.initTree(container);
+                }
+            } else {
+                window._loadedConfig = loadResult;
+                if (container) container.innerHTML = generateAppHTML();
+                window.notebookApp = notebookApp;
+                console.log('🦆 sqljob Notebook initialisé');
+            }
         })();
     </script>
 </body>
