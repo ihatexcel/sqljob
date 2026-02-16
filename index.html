@@ -698,6 +698,257 @@
         }
 
         // ═══════════════════════════════════════════════════════════════════════════
+        // REGISTRE DES TYPES DE CELLULES (CellCommon → CellTypeXXX, héritage déclaratif)
+        // ═══════════════════════════════════════════════════════════════════════════
+        const CELL_TYPE_SCHEMAS = {
+            common: {
+                name: { label: 'Nom', tooltip: "Identifiant unique (tous types confondus). Pour source = nom de la table SQL (ex: source1). Pour onglets tabsChild = libellé affiché.", placeholder: 'Identifiant unique de la cellule', inputType: 'text', required: true },
+                title: { label: 'Titre', tooltip: null, placeholder: null, inputType: 'text' },
+                queries: { label: null, inputType: 'textarea', placeholder: null },
+                subtitle: { label: 'Description de la stat', tooltip: "Texte descriptif affiché sous le titre de la statistique", placeholder: 'Jan 1st - Feb 1st', inputType: 'text' },
+                icon: { label: "Icône (Iconify)", tooltip: "Nom de l'icône Iconify (ex: material-symbols-light:join-right)", placeholder: 'material-symbols-light:join-right', inputType: 'text' },
+                buttonLabel: { label: "Label du bouton", tooltip: "Les boutons interrompent le flux d'exécution des cellules ; un clic permet de le reprendre.", placeholder: null, inputType: 'text' }
+            },
+            types: {
+                markdown: {
+                    commonParams: ['name'],
+                    specificParams: [{ key: 'content', label: 'Contenu Markdown', inputType: 'textarea', rows: 5 }],
+                    defaults: { content: '# Nouvelle section' }
+                },
+                source: {
+                    commonParams: ['name', 'title', 'queries'],
+                    queryCount: 1,
+                    queryLabels: { 0: "Requête d'import" },
+                    titleLabel: "Texte de la zone d'import",
+                    titleTooltip: "Texte affiché dans la zone de drag & drop",
+                    specificParams: [
+                        { key: 'json.fallbackAllVarcharOnError', label: "Fallback ALL_VARCHAR en cas d'erreur", tooltip: "Si la requête d'import échoue, retente avec ALL_VARCHAR=true et des options adaptées au format du fichier (csv, xlsx, tsv, txt). Utile quand DuckDB type mal certaines colonnes.", inputType: 'checkbox' },
+                        { key: 'json.xlsx', label: 'Configuration Excel (JSON)', tooltip: "Options pour la conversion des fichiers .xlsx/.xls", inputType: 'textarea', rows: 5 }
+                    ],
+                    defaults: {
+                        title: 'Glissez-déposez votre fichier ici',
+                        queries: [{ sql: "CREATE OR REPLACE TABLE {name} AS SELECT * FROM '{fileNameUpload}'", engine: 'sql', clientVisible: false }],
+                        json: { fallbackAllVarcharOnError: true, xlsx: { options: { type: 'array', raw: false, dateNF: 'dd/mm/yyyy', cellDates: true }, toCsvOptions: { dateNF: 'dd/mm/yyyy', FS: ',', RS: '\n' }, sheetSelection: { type: { auto: true }, index: 0, name: '' } } }
+                    }
+                },
+                buttonRunNextCells: {
+                    commonParams: ['name', 'buttonLabel'],
+                    specificParams: [],
+                    defaults: { buttonLabel: '▶️ Exécuter' }
+                },
+                sqlRecursiveParse: {
+                    commonParams: ['name', 'queries'],
+                    queryCount: 1,
+                    specificParams: [
+                        { key: 'queries[0].clientVisible', label: "Afficher l'éditeur SQL en mode client", tooltip: "Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur. En mode client, seul le résultat sera affiché.", inputType: 'checkbox' }
+                    ],
+                    defaults: { queries: [{ sql: 'SELECT * FROM source1 LIMIT 100', engine: 'sql', clientVisible: false }] }
+                },
+                table: {
+                    commonParams: ['name', 'queries'],
+                    queryCount: 1,
+                    specificParams: [
+                        { key: 'maxRows', label: "Nombre max de lignes", tooltip: "Limite le nombre de lignes affichées dans le tableau pour éviter les surcharges mémoire", inputType: 'number', placeholder: '100000' },
+                        { key: 'queries[0].clientVisible', label: "Afficher l'éditeur SQL en mode client", tooltip: "Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur. En mode client, seul le résultat sera affiché.", inputType: 'checkbox' }
+                    ],
+                    defaults: { queries: [{ sql: 'SELECT * FROM source1 LIMIT 100', engine: 'sql', clientVisible: false }], maxRows: 100000 }
+                },
+                iframe: {
+                    commonParams: ['name', 'queries'],
+                    queryCount: 1,
+                    specificParams: [
+                        { key: 'queries[0].engine', label: 'Type de langage', tooltip: "SQL: requête retournant du HTML | JS: retourne une chaîne HTML | Texte: HTML saisi directement", inputType: 'select', options: [{ value: 'sql', label: '🗄️SQL' }, { value: 'js', label: '⚡JavaScript' }, { value: 'text', label: '📝Texte' }] },
+                        { key: 'queries[0].clientVisible', label: "Afficher l'éditeur SQL en mode client", tooltip: "Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur. En mode client, seul le résultat sera affiché.", inputType: 'checkbox' }
+                    ],
+                    defaults: { queries: [{ sql: "SELECT '<html><body><h1>Hello</h1></body></html>' as html", engine: 'sql', clientVisible: false }] }
+                },
+                sqlStat: {
+                    commonParams: ['name', 'title', 'subtitle', 'icon', 'queries'],
+                    queryCount: 1,
+                    queryLabels: { 0: 'Requête SQL' },
+                    titleLabel: 'Titre de la stat',
+                    titleTooltip: "Titre affiché au-dessus de la valeur statistique",
+                    specificParams: [
+                        { key: 'queries[0].clientVisible', label: "Afficher l'éditeur SQL en mode client", tooltip: "Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur. En mode client, seul le résultat sera affiché.", inputType: 'checkbox' }
+                    ],
+                    defaults: { title: 'Total Lignes', subtitle: '', icon: 'material-symbols-light:join-right', queries: [{ sql: 'SELECT COUNT(*) FROM source1', engine: 'sql', clientVisible: false }] }
+                },
+                uiParameter: {
+                    commonParams: ['name', 'title', 'queries'],
+                    queryCount: 1,
+                    titleLabel: "Libellé",
+                    titleTooltip: "Texte affiché à gauche du champ de saisie",
+                    specificParams: [
+                        { key: 'queries[0].engine', label: 'Type de langage', tooltip: "SQL: exécute une requête SQL | JS: exécute une expression JavaScript | Texte: valeur retournée directement sans moteur", inputType: 'select', options: [{ value: 'sql', label: '🗄️SQL' }, { value: 'js', label: '⚡JavaScript' }, { value: 'text', label: '📝Texte' }] },
+                        { key: 'paramType', label: 'Type de composant', tooltip: "Choisissez le type de composant d'interface pour ce paramètre", inputType: 'select', options: [{ value: 'input', label: '📝 Champ texte (input)' }, { value: 'dropdown', label: '📋 Liste déroulante (dropdown)' }, { value: 'range', label: '🎚️ Curseur (range)' }] },
+                        { key: 'initRunQuery', label: "Exécuter la requête d'initialisation au chargement du notebook", tooltip: "Cochez pour exécuter automatiquement la requête SQL associée lors du chargement", inputType: 'checkbox' },
+                        { key: 'userVisible', label: 'Visible en mode client', tooltip: "Si décoché, ce paramètre sera caché en mode client (paramètre intermédiaire)", inputType: 'checkbox' },
+                        { key: 'userEditable', label: 'Modifiable par l\'utilisateur', tooltip: "Si décoché, l'utilisateur ne pourra pas modifier la valeur calculée par SQL", inputType: 'checkbox' },
+                        { key: 'preserveUserValue', label: 'Préserver la valeur utilisateur lors de la ré-exécution', tooltip: "Si coché et que l'utilisateur a modifié la valeur, la ré-exécution de la cellule ne réinitialisera pas la valeur", inputType: 'checkbox' },
+                        { key: 'inputType', label: 'Type de champ', tooltip: "Choisissez le type HTML du champ de saisie", inputType: 'select', when: { paramType: 'input' }, options: [{ value: 'text', label: '📝 Texte' }, { value: 'password', label: '🔒 Mot de passe' }, { value: 'email', label: '📧 Email' }, { value: 'number', label: '🔢 Nombre' }, { value: 'date', label: '📅 Date' }, { value: 'datetime-local', label: '📆 Date et heure' }, { value: 'week', label: '📅 Semaine' }, { value: 'month', label: '📅 Mois' }, { value: 'tel', label: '📞 Téléphone' }, { value: 'url', label: '🔗 URL' }, { value: 'search', label: '🔍 Recherche' }, { value: 'time', label: '⏰ Heure' }] },
+                        { key: 'rangeMin', label: 'Valeur minimum', tooltip: "Valeur minimale du curseur (défaut: 0)", inputType: 'number', when: { paramType: 'range' }, placeholder: '0' },
+                        { key: 'rangeMax', label: 'Valeur maximum', tooltip: "Valeur maximale du curseur (défaut: 100)", inputType: 'number', when: { paramType: 'range' }, placeholder: '100' },
+                        { key: 'rangeStep', label: 'Pas (step)', tooltip: "Incrément entre chaque valeur du curseur (défaut: 1)", inputType: 'number', when: { paramType: 'range' }, placeholder: '1', min: 0.001 }
+                    ],
+                    defaults: { title: '', paramType: 'input', inputType: 'text', rangeMin: 0, rangeMax: 100, rangeStep: 1, initRunQuery: false, userVisible: true, userEditable: true, preserveUserValue: false, queries: [{ sql: '', engine: 'sql', clientVisible: false }] }
+                },
+                publipostageWord: {
+                    commonParams: ['name', 'buttonLabel'],
+                    queryCount: 2,
+                    queryLabels: { 0: 'Requête SQL (données)', 1: 'Requête nom de fichier' },
+                    specificParams: [],
+                    defaults: {
+                        queries: [
+                            { sql: 'SELECT * FROM source1 LIMIT 10', engine: 'sql', clientVisible: false },
+                            { sql: "SELECT 'document_' || STRFTIME(current_timestamp::TIMESTAMP, '%Y-%m-%d_%H-%M-%S') || '.docx' AS filename;", engine: 'sql', clientVisible: false }
+                        ],
+                        buttonLabel: '📄 Générer les documents'
+                    }
+                },
+                pdfme: {
+                    commonParams: ['name', 'queries', 'buttonLabel'],
+                    queryCount: 2,
+                    queryLabels: { 0: 'Requête SQL (données pour le PDF)', 1: "Requête nom de fichier PDF" },
+                    specificParams: [
+                        { key: 'json', label: 'Template pdfme (JSON)', tooltip: "Template pdfme avec basePdf et schemas. Voir https://pdfme.com/docs/getting-started", inputType: 'textarea', rows: 15, placeholder: '{"basePdf": {...}, "schemas": [...]}' }
+                    ],
+                    defaults: {
+                        json: '',
+                        queries: [
+                            { sql: "with v_source as (select * from source1 limit 10)\nSELECT 'Titre' as header, 'Pied de page' as footer, json_group_array(json_array(col1, col2, col3)) as datatable\nFROM v_source LIMIT 10", engine: 'sql', clientVisible: false },
+                            { sql: "SELECT '$loop' || '_2.pdf'", engine: 'sql', clientVisible: false }
+                        ],
+                        buttonLabel: '📑 Générer le PDF'
+                    }
+                },
+                perspective: {
+                    commonParams: ['name', 'queries'],
+                    queryCount: 1,
+                    queryLabels: { 0: 'Requête SQL (données pour Perspective)' },
+                    specificParams: [
+                        { key: 'json.perspectiveConfig', label: 'Configuration Perspective (JSON optionnel)', tooltip: "Configuration JSON pour le viewer Perspective (group_by, columns, sort, plugin, theme, etc.)", inputType: 'textarea', rows: 10, placeholder: '{"plugin": "Datagrid", "theme": "Pro Dark", ...}' },
+                        { key: 'perspectiveCdns', label: 'CDN Perspective.js à charger', tooltip: "Sélectionnez les modules CDN nécessaires", inputType: 'perspectiveCdns' },
+                        { key: 'queries[0].clientVisible', label: "Afficher l'éditeur SQL en mode client", tooltip: "Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur.", inputType: 'checkbox' }
+                    ],
+                    defaults: {
+                        queries: [{ sql: 'SELECT * FROM source1', engine: 'sql', clientVisible: false }],
+                        json: { perspectiveConfig: '' },
+                        perspectiveCdns: { viewer: true, datagrid: true, d3fc: true, openlayers: false }
+                    }
+                }
+            }
+        };
+
+        // ═══════════════════════════════════════════════════════════════════════════
+        // SERVICE CONFIG CELLULE (CellConfigService)
+        // ═══════════════════════════════════════════════════════════════════════════
+        class CellConfigService {
+            static getSchemaForType(type) {
+                return CELL_TYPE_SCHEMAS.types[type] || null;
+            }
+            static getCommonParamDef(paramKey, type) {
+                const common = CELL_TYPE_SCHEMAS.common[paramKey];
+                if (!common) return null;
+                const schema = CELL_TYPE_SCHEMAS.types[type];
+                if (!schema) return common;
+                const override = schema[paramKey + 'Label'] || schema[paramKey + 'Tooltip'] || schema[paramKey + 'Placeholder'];
+                const label = schema[paramKey + 'Label'] ?? common.label;
+                const tooltip = schema[paramKey + 'Tooltip'] ?? common.tooltip;
+                const placeholder = schema[paramKey + 'Placeholder'] ?? common.placeholder;
+                return { ...common, label, tooltip, placeholder };
+            }
+            static getCommonParamsForType(type) {
+                const schema = CELL_TYPE_SCHEMAS.types[type];
+                return (schema?.commonParams || ['name']).filter(p => CELL_TYPE_SCHEMAS.common[p]);
+            }
+            static getSpecificParamsForType(type) {
+                return CELL_TYPE_SCHEMAS.types[type]?.specificParams || [];
+            }
+            static ensureCellFromSchema(cell, type, opts = {}) {
+                const schema = CELL_TYPE_SCHEMAS.types[type];
+                if (!schema || !cell) return;
+                const { baseName } = opts;
+                const defaults = schema.defaults || {};
+                for (const [k, v] of Object.entries(defaults)) {
+                    if (k === 'queries') {
+                        const qCount = schema.queryCount ?? 1;
+                        for (let i = 0; i < qCount; i++) {
+                            ConfigManager.ensureCellQueries(cell, i);
+                            const d = Array.isArray(v) && v[i] ? v[i] : { sql: '', engine: 'sql', clientVisible: false };
+                            const q = cell.queries[i];
+                            if (!q.sql && d.sql) {
+                                const sql = (typeof d.sql === 'string' && baseName) ? d.sql.replace(/\{name\}/g, baseName) : d.sql;
+                                q.sql = sql;
+                            }
+                            if (d.engine !== undefined && q.engine === undefined) q.engine = d.engine;
+                            if (d.clientVisible !== undefined && q.clientVisible === undefined) q.clientVisible = d.clientVisible;
+                        }
+                    } else if (cell[k] === undefined) {
+                        if (k === 'json' && typeof v === 'object') cell.json = { ...v };
+                        else if (typeof v === 'object' && v !== null && !Array.isArray(v)) cell[k] = { ...v };
+                        else cell[k] = v;
+                    }
+                }
+                const qCount = schema.queryCount ?? 1;
+                for (let i = 0; i < qCount; i++) ConfigManager.ensureCellQueries(cell, i);
+                if (schema.defaults?.json !== undefined && !cell.json) cell.json = {};
+            }
+            static applyDefaultsOnTypeChange(cell, newType, opts = {}) {
+                if (!cell) return;
+                const schema = CELL_TYPE_SCHEMAS.types[newType];
+                if (!schema) return;
+                const oldType = opts.oldType || cell.type;
+                const oldSchema = CELL_TYPE_SCHEMAS.types[oldType];
+                const newParamKeys = new Set([...(schema.commonParams || []), ...(schema.specificParams || []).map(p => (typeof p === 'object' ? p.key : p).split('.')[0].split('[')[0])]);
+                const typeSpecificKeys = ['content', 'paramType', 'inputType', 'rangeMin', 'rangeMax', 'rangeStep', 'initRunQuery', 'userVisible', 'userEditable', 'preserveUserValue', 'maxRows', 'perspectiveCdns'];
+                for (const key of typeSpecificKeys) {
+                    if (!newParamKeys.has(key)) delete cell[key];
+                }
+                delete cell.json;
+                cell.type = newType;
+                this.ensureCellFromSchema(cell, newType, opts);
+            }
+            static isSpecificParamVisible(param, cell) {
+                if (!param.when || !cell) return true;
+                for (const [k, v] of Object.entries(param.when)) {
+                    if (cell[k] !== v) return false;
+                }
+                return true;
+            }
+            /** Lit une valeur via un chemin (ex: 'queries[0].sql', 'json.xlsx'). Pour json.xlsx retourne JSON.stringify. */
+            static getCellValueByPath(cell, path) {
+                if (!cell || !path) return undefined;
+                if (path === 'json.xlsx') return JSON.stringify(cell.json?.xlsx || {}, null, 2);
+                const parts = path.replace(/\]/g, '').split(/\.|\[/).filter(Boolean);
+                let v = cell;
+                for (const p of parts) v = v?.[isNaN(p) ? p : parseInt(p, 10)];
+                if (path === 'json.fallbackAllVarcharOnError' && v === undefined) return true;
+                return v;
+            }
+            /** Écrit une valeur via un chemin. Pour json.xlsx : value est une chaîne JSON. */
+            static setCellValueByPath(cell, path, value) {
+                if (!cell || !path) return;
+                if (path === 'json.xlsx') {
+                    if (!cell.json) cell.json = {};
+                    try { cell.json.xlsx = JSON.parse(value); } catch (e) {}
+                    return;
+                }
+                if (path.startsWith('json.') && !cell.json) cell.json = {};
+                const parts = path.replace(/\]/g, '').split(/\.|\[/).filter(Boolean);
+                const last = parts.pop();
+                let target = cell;
+                for (let i = 0; i < parts.length; i++) {
+                    const p = parts[i];
+                    const key = isNaN(p) ? p : parseInt(p, 10);
+                    const next = parts[i + 1];
+                    if (target[key] === undefined) target[key] = (next !== undefined && !isNaN(next)) ? [] : {};
+                    target = target[key];
+                }
+                if (target) target[last] = value;
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════════════════
         // CLASSE 1: ConfigManager
         // ═══════════════════════════════════════════════════════════════════════════
         class ConfigManager {
@@ -720,6 +971,41 @@
                 } catch (error) {
                     console.error('Erreur de décodage config:', error);
                     return { job: { cells: [] } };
+                }
+            }
+
+            /**
+             * Charge la config par défaut (defaultConfigBase64) ou détecte si elle est chiffrée (export HTML).
+             * @returns {{ config } | { needsPassphrase: true, encryptedContent, source: 'html' }}
+             */
+            static loadDefaultConfigOrEncrypted() {
+                const scriptElement = document.getElementById('defaultConfigBase64');
+                const raw = scriptElement?.textContent?.trim();
+                if (!raw) return { config: { job: { cells: [] } } };
+                try {
+                    const base64Decoded = atob(raw);
+                    let decodedStr;
+                    try {
+                        decodedStr = decodeURIComponent(escape(base64Decoded));
+                    } catch {
+                        decodedStr = base64Decoded;
+                    }
+                    const parsed = JSON.parse(decodedStr);
+                    if (GistEncrypt.isEncrypted(parsed)) {
+                        return { needsPassphrase: true, encryptedContent: parsed, source: 'html' };
+                    }
+                    return { config: parsed };
+                } catch (e) {
+                    try {
+                        const parsed = JSON.parse(atob(raw));
+                        if (GistEncrypt.isEncrypted(parsed)) {
+                            return { needsPassphrase: true, encryptedContent: parsed, source: 'html' };
+                        }
+                        return { config: parsed };
+                    } catch (err) {
+                        console.error('Erreur de décodage config:', err);
+                        return { config: { job: { cells: [] } } };
+                    }
                 }
             }
 
@@ -1004,9 +1290,13 @@
                     }
                 }
 
-                // Si pas de config depuis le gist, utiliser la config par défaut (base64)
+                // Si pas de config depuis le gist, utiliser la config par défaut (base64 ou HTML embarqué)
                 if (!baseConfig) {
-                    baseConfig = ConfigManager.getDefaultConfig();
+                    const defaultResult = ConfigManager.loadDefaultConfigOrEncrypted();
+                    if (defaultResult.needsPassphrase && defaultResult.encryptedContent) {
+                        return { needsPassphrase: true, encryptedContent: defaultResult.encryptedContent, source: defaultResult.source || 'html' };
+                    }
+                    baseConfig = defaultResult.config;
                 }
 
                 // Appliquer les paramètres URL en priorité (URL > gist > base64 > default)
@@ -1249,7 +1539,14 @@
             static DEFAULT_ITERATIONS = 600000;
 
             static _uint8ArrayToBase64(arr) {
-                return btoa(String.fromCharCode(...arr));
+                // Chunked conversion: String.fromCharCode(...arr) dépasse la limite d'arguments (~65k)
+                const CHUNK = 0x8000;
+                let s = '';
+                for (let i = 0; i < arr.length; i += CHUNK) {
+                    const chunk = arr.subarray(i, Math.min(i + CHUNK, arr.length));
+                    s += String.fromCharCode.apply(null, chunk);
+                }
+                return btoa(s);
             }
             static _base64ToUint8Array(base64) {
                 const raw = atob(base64);
@@ -1292,6 +1589,9 @@
                     key,
                     enc.encode(plaintext)
                 );
+                // #region agent log
+                fetch('http://127.0.0.1:7243/ingest/dc2eff21-3908-46dc-8551-f6846156ee7f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'GistEncrypt.encrypt',message:'before _uint8ArrayToBase64 ciphertext',data:{plaintextLen:plaintext.length,ciphertextByteLength:new Uint8Array(ciphertext).length},timestamp:Date.now(),hypothesisId:'H2'})}).catch(()=>{});
+                // #endregion
                 return {
                     [this.ENCRYPTED_MARKER]: true,
                     kdf: 'PBKDF2',
@@ -2359,7 +2659,7 @@
             <div class="modal-box max-w-md">
                 <h3 class="font-bold text-lg flex items-center gap-2">🔐 Configuration chiffrée</h3>
                 <p class="py-2 text-sm text-base-content/70">
-                    Ce Gist est protégé par une passphrase. Entrez-la pour charger la configuration.
+                    Cette configuration est protégée par un mot de passe. Entrez-le pour charger les données.
                 </p>
                 <div class="form-control mt-4">
                     <label class="label"><span class="label-text">Passphrase</span></label>
@@ -2372,7 +2672,7 @@
                     <span x-text="error"></span>
                 </div>
                 <div class="modal-action flex-wrap gap-2">
-                    <button class="btn btn-ghost btn-sm" @click="useDefaultConfig()">Utiliser la config par défaut</button>
+                    <button class="btn btn-ghost btn-sm" @click="useDefaultConfig()" x-show="(typeof window !== 'undefined' && window._encryptedSource !== 'html')">Utiliser la config par défaut</button>
                     <button class="btn btn-primary" @click="unlock()" :disabled="loading">
                         <span x-show="!loading">Déchiffrer</span>
                         <span x-show="loading" class="loading loading-spinner loading-sm"></span>
@@ -2391,8 +2691,10 @@
                 loading: false,
                 init() {},
                 useDefaultConfig() {
-                    window._loadedConfig = ConfigManager.applyURLParamsToConfig(ConfigManager.getDefaultConfig());
+                    const baseConfig = window._encryptedSource === 'html' ? { job: { cells: [] } } : ConfigManager.getDefaultConfig();
+                    window._loadedConfig = ConfigManager.applyURLParamsToConfig(baseConfig);
                     window._pendingEncryptedGist = null;
+                    window._encryptedSource = null;
                     const container = document.getElementById('app-container');
                     if (container) {
                         container.innerHTML = generateAppHTML();
@@ -2407,10 +2709,40 @@
                     this.loading = true;
                     try {
                         const decrypted = await GistEncrypt.decrypt(window._pendingEncryptedGist, pass);
-                        const config = JSON.parse(decrypted);
-                        const baseConfig = ConfigManager.deepMerge(ConfigManager.getDefaultConfig(), config);
-                        window._loadedConfig = ConfigManager.applyURLParamsToConfig(baseConfig);
+                        const parsed = JSON.parse(decrypted);
+                        let config;
+                        if (window._encryptedSource === 'html' && parsed && typeof parsed.config === 'object' && Array.isArray(parsed.sourceFiles) && Array.isArray(parsed.docxTemplates)) {
+                            for (const sf of parsed.sourceFiles) {
+                                const script = document.createElement('script');
+                                script.type = 'application/octet-stream';
+                                script.id = sf.id;
+                                script.dataset.sourceName = sf.sourceName;
+                                script.dataset.fileName = sf.fileName;
+                                script.textContent = sf.base64 || '';
+                                document.head.appendChild(script);
+                            }
+                            for (const dt of parsed.docxTemplates) {
+                                const script = document.createElement('script');
+                                script.type = 'application/octet-stream';
+                                script.id = dt.id;
+                                script.dataset.cellPath = dt.cellPath;
+                                script.dataset.fileName = dt.fileName;
+                                if (dt.compressed) script.dataset.compressed = 'true';
+                                script.textContent = dt.base64 || '';
+                                document.head.appendChild(script);
+                            }
+                            const configScript = document.getElementById('defaultConfigBase64');
+                            if (configScript) {
+                                configScript.textContent = ConfigManager.encodeUTF8ToBase64(JSON.stringify(parsed.config, null, 2));
+                                configScript.removeAttribute('data-encrypted');
+                            }
+                            config = parsed.config;
+                        } else {
+                            config = ConfigManager.deepMerge(ConfigManager.getDefaultConfig(), parsed);
+                        }
+                        window._loadedConfig = ConfigManager.applyURLParamsToConfig(config);
                         window._pendingEncryptedGist = null;
+                        window._encryptedSource = null;
                         const container = document.getElementById('app-container');
                         if (container) {
                             container.innerHTML = generateAppHTML();
@@ -3092,12 +3424,13 @@
                         <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" @click="closeCellConfig()">✕</button>
                     </form>
                     <h3 class="text-lg font-bold" id="modal-cell-config-title">⚙️ Configuration de la cellule</h3>
-                    <div class="mt-4 space-y-4">
+                    <div class="mt-4 space-y-4" x-init="(function(){ const c = getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex); if (c?.type) CellConfigService.ensureCellFromSchema(c, c.type, { baseName: c.name }); })()"
+                         x-show="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex)">
                         <div class="flex flex-col gap-2">
                             <label class="label"><span class="label-text">Type de cellule</span></label>
                             <select class="select select-bordered select-sm w-full" x-ref="typeSelect"
                                     x-effect="if (cellConfigModal.open && cellConfigModal.path !== null) $refs.typeSelect.value = getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex)?.type"
-                                    @change="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).type = $event.target.value; onCellTypeChange(cellConfigModal.path, cellConfigModal.cellIndex)">
+                                    @change="(function(){ const c=getCellAtPath(cellConfigModal.path,cellConfigModal.cellIndex); const oldType=c?.type; c.type=$event.target.value; onCellTypeChange(cellConfigModal.path,cellConfigModal.cellIndex,oldType); })()">
                                 <option value="markdown">📝 Markdown</option>
                                 <option value="source">📄 Source</option>
                                 <option value="uiParameter">🎛️ Paramètre UI</option>
@@ -3111,597 +3444,131 @@
                                 <option value="perspective">🔍 Perspective Viewer</option>
                             </select>
                         </div>
-                        <div class="form-control">
-                            <label class="label gap-2">
-                                <span class="label-text">Nom</span>
-                                <span class="tooltip tooltip-bottom" data-tip="Identifiant unique (tous types confondus). Pour source = nom de la table SQL (ex: source1). Pour onglets tabsChild = libellé affiché.">
-                                    <span class="badge badge-sm cursor-help">?</span>
-                                </span>
-                            </label>
-                            <input type="text" 
-                                   class="input input-bordered input-sm w-full"
-                                   x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).name"
-                                   @blur="validateCellName(cellConfigModal.path, cellConfigModal.cellIndex)"
-                                   placeholder="Identifiant unique de la cellule" />
-                        </div>
-                        
-                        <!-- Taille de la cellule (tous types) - DaisyUI collapse replié par défaut -->
+
+                        <!-- Paramètres communs unifiés (name, title, subtitle, icon, buttonLabel, queries) -->
+                        <template x-for="paramKey in ['name', ...getCommonParamsExcludingName(getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex)?.type)]" :key="'common-'+paramKey">
+                            <div class="form-control">
+                                <template x-if="paramKey === 'name'">
+                                    <div>
+                                        <label class="label gap-2">
+                                            <span class="label-text">Nom</span>
+                                            <span class="tooltip tooltip-bottom" data-tip="Identifiant unique (tous types confondus). Pour source = nom de la table SQL. Pour onglets tabsChild = libellé affiché."><span class="badge badge-sm cursor-help">?</span></span>
+                                        </label>
+                                        <input type="text" class="input input-bordered input-sm w-full"
+                                               x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).name"
+                                               @blur="validateCellName(cellConfigModal.path, cellConfigModal.cellIndex)"
+                                               placeholder="Identifiant unique de la cellule" />
+                                    </div>
+                                </template>
+                                <template x-if="['title','subtitle','icon','buttonLabel'].includes(paramKey)">
+                                    <div>
+                                        <label class="label gap-2">
+                                            <span class="label-text" x-text="getCommonParamDef(paramKey, getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex)?.type)?.label || paramKey"></span>
+                                            <span class="tooltip tooltip-bottom" :data-tip="getCommonParamDef(paramKey, getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex)?.type)?.tooltip || ''" x-show="getCommonParamDef(paramKey, getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex)?.type)?.tooltip"><span class="badge badge-sm cursor-help">?</span></span>
+                                        </label>
+                                        <input type="text" class="input input-bordered input-sm w-full"
+                                               :value="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex)[paramKey]"
+                                               @input="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex)[paramKey] = $event.target.value"
+                                               :placeholder="getCommonParamDef(paramKey, getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex)?.type)?.placeholder || ''" />
+                                    </div>
+                                </template>
+                                <template x-if="paramKey === 'queries'">
+                                    <div class="flex flex-col gap-2">
+                                        <template x-for="qi in Array.from({length: getQueryCountForType(getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex)?.type)}, (_, i) => i)" :key="'q'+qi">
+                                            <div class="form-control">
+                                                <label class="label gap-2">
+                                                    <span class="label-text" x-text="getQueryLabelForType(getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex)?.type, qi)"></span>
+                                                    <span class="tooltip tooltip-bottom" data-tip="Utilisez {{ }} pour les requêtes récursives. Pour source: {fileNameUpload}." x-show="qi === 0 && getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex)?.type === 'source'"><span class="badge badge-sm cursor-help">?</span></span>
+                                                </label>
+                                                <textarea class="textarea textarea-bordered w-full font-mono text-sm" :rows="qi === 0 ? 3 : 2"
+                                                          x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).queries[qi].sql"></textarea>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+
+                        <!-- Taille (commun à tous) -->
                         <div class="collapse collapse-arrow border border-base-300 bg-base-100">
                             <input type="checkbox" />
-                            <div class="collapse-title min-h-0 py-3 font-medium flex items-center gap-2">
-                                Taille de la cellule
-                            </div>
+                            <div class="collapse-title min-h-0 py-3 font-medium flex items-center gap-2">Taille de la cellule</div>
                             <div class="collapse-content">
                                 <div class="grid grid-cols-2 gap-3 pt-1">
                                     <div class="col-span-2 font-medium text-sm">Largeur</div>
-                                    <div>
-                                        <span class="label-text-alt">Min (px)</span>
-                                        <input type="text" class="input input-bordered input-sm validator w-full" placeholder="100" title="Min largeur px"
-                                               x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).minSizePx" />
-                                    </div>
-                                    <div>
-                                        <span class="label-text-alt">Min (%)</span>
-                                        <input type="text" class="input input-bordered input-sm validator w-full" placeholder="50" title="Min largeur %"
-                                               x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).minSizePercent" />
-                                    </div>
-                                    <div>
-                                        <span class="label-text-alt">Max (px)</span>
-                                        <input type="text" class="input input-bordered input-sm validator w-full" placeholder="400" title="Max largeur px"
-                                               x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).maxSizePx" />
-                                    </div>
-                                    <div>
-                                        <span class="label-text-alt">Max (%)</span>
-                                        <input type="text" class="input input-bordered input-sm validator w-full" placeholder="80" title="Max largeur %"
-                                               x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).maxSizePercent" />
-                                    </div>
+                                    <div><span class="label-text-alt">Min (px)</span><input type="text" class="input input-bordered input-sm validator w-full" placeholder="100" x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).minSizePx" /></div>
+                                    <div><span class="label-text-alt">Min (%)</span><input type="text" class="input input-bordered input-sm validator w-full" placeholder="50" x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).minSizePercent" /></div>
+                                    <div><span class="label-text-alt">Max (px)</span><input type="text" class="input input-bordered input-sm validator w-full" placeholder="400" x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).maxSizePx" /></div>
+                                    <div><span class="label-text-alt">Max (%)</span><input type="text" class="input input-bordered input-sm validator w-full" placeholder="80" x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).maxSizePercent" /></div>
                                     <div class="col-span-2 font-medium text-sm mt-1">Hauteur</div>
-                                    <div>
-                                        <span class="label-text-alt">Min (px)</span>
-                                        <input type="text" class="input input-bordered input-sm validator w-full" placeholder="100" title="Min hauteur px"
-                                               x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).minHeightPx" />
-                                    </div>
-                                    <div>
-                                        <span class="label-text-alt">Min (%)</span>
-                                        <input type="text" class="input input-bordered input-sm validator w-full" placeholder="50" title="Min hauteur %"
-                                               x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).minHeightPercent" />
-                                    </div>
-                                    <div>
-                                        <span class="label-text-alt">Max (px)</span>
-                                        <input type="text" class="input input-bordered input-sm validator w-full" placeholder="400" title="Max hauteur px"
-                                               x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).maxHeightPx" />
-                                    </div>
-                                    <div>
-                                        <span class="label-text-alt">Max (%)</span>
-                                        <input type="text" class="input input-bordered input-sm validator w-full" placeholder="80" title="Max hauteur %"
-                                               x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).maxHeightPercent" />
-                                    </div>
+                                    <div><span class="label-text-alt">Min (px)</span><input type="text" class="input input-bordered input-sm validator w-full" placeholder="100" x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).minHeightPx" /></div>
+                                    <div><span class="label-text-alt">Min (%)</span><input type="text" class="input input-bordered input-sm validator w-full" placeholder="50" x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).minHeightPercent" /></div>
+                                    <div><span class="label-text-alt">Max (px)</span><input type="text" class="input input-bordered input-sm validator w-full" placeholder="400" x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).maxHeightPx" /></div>
+                                    <div><span class="label-text-alt">Max (%)</span><input type="text" class="input input-bordered input-sm validator w-full" placeholder="80" x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).maxHeightPercent" /></div>
                                 </div>
                             </div>
                         </div>
-                        
-                        <!-- Config spécifique markdown -->
-                        <template x-if="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex)?.type === 'markdown'">
-                            <div class="flex flex-col gap-2">
-                                <div class="form-control">
-                                    <label class="label gap-2">
-                                        <span class="label-text">Contenu Markdown</span>
-                                    </label>
-                                    <textarea class="textarea textarea-bordered w-full" 
-                                              x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).content" 
-                                              @input="syncMarkdownToEditor(cellConfigModal.path, cellConfigModal.cellIndex)"
-                                              rows="5"></textarea>
-                                </div>
-                            </div>
-                        </template>
-                        
-                        <!-- Config spécifique source (simple) -->
-                        <template x-if="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex)?.type === 'source'">
-                            <div class="flex flex-col gap-2" x-init="(function(){var c=getCellAtPath(cellConfigModal.path,cellConfigModal.cellIndex);if(c){ConfigManager.ensureCellQueries(c,0);if(!c.json)c.json={};} })()">
-                                <div class="form-control">
-                                    <label class="label gap-2">
-                                        <span class="label-text">Texte de la zone d'import</span>
-                                        <span class="tooltip tooltip-bottom" data-tip="Texte affiché dans la zone de drag & drop">
-                                            <span class="badge badge-sm cursor-help">?</span>
-                                        </span>
-                                    </label>
-                                    <input type="text"
-                                           class="input input-bordered input-sm w-full"
-                                           x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).title"
-                                           placeholder="Glissez-déposez votre fichier ici">
-                                </div>
-                                <div class="form-control">
-                                    <label class="label gap-2">
-                                        <span class="label-text">Requête d'import</span>
-                                        <span class="tooltip tooltip-bottom" data-tip="Utilisez {fileNameUpload} pour le nom du fichier. Utilisée pour tous les formats (csv, xlsx, parquet, json...).">
-                                            <span class="badge badge-sm cursor-help">?</span>
-                                        </span>
-                                    </label>
-                                    <textarea class="textarea textarea-bordered w-full" x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).queries[0].sql" rows="3"
-                                              placeholder="CREATE OR REPLACE TABLE source1 AS SELECT * FROM '{fileNameUpload}'"></textarea>
-                                </div>
-                                <div class="form-control">
-                                    <label class="label cursor-pointer justify-start gap-3">
-                                        <input type="checkbox" class="checkbox checkbox-sm" x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).json.fallbackAllVarcharOnError">
-                                        <span class="label-text">Fallback ALL_VARCHAR en cas d'erreur</span>
-                                        <span class="tooltip tooltip-bottom" data-tip="Si la requête d'import échoue, retente avec ALL_VARCHAR=true et des options adaptées au format du fichier (csv, xlsx, tsv, txt). Utile quand DuckDB type mal certaines colonnes.">
-                                            <span class="badge badge-sm cursor-help">?</span>
-                                        </span>
-                                    </label>
-                                </div>
-                                <div class="form-control">
-                                    <label class="label gap-2">
-                                        <span class="label-text">Configuration Excel (JSON)</span>
-                                        <span class="tooltip tooltip-bottom" data-tip="Options pour la conversion des fichiers .xlsx/.xls">
-                                            <span class="badge badge-sm cursor-help">?</span>
-                                        </span>
-                                    </label>
-                                    <textarea class="textarea textarea-bordered w-full" :value="JSON.stringify(getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).json?.xlsx || {}, null, 2)"
-                                              @input="try { var c=getCellAtPath(cellConfigModal.path,cellConfigModal.cellIndex);if(!c.json)c.json={};c.json.xlsx=JSON.parse($event.target.value); } catch(e) {}"
-                                              rows="5"></textarea>
-                                </div>
-                            </div>
-                        </template>
-                        
-                        
-                        <!-- Config spécifique buttonRunNextCells -->
-                        <template x-if="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex)?.type === 'buttonRunNextCells'">
-                            <div class="flex flex-col gap-2">
-                                <div class="form-control">
-                                    <label class="label gap-2">
-                                        <span class="label-text">Label du bouton</span>
-                                        <span class="tooltip tooltip-bottom" data-tip="Les boutons interrompent le flux d\'exécution des cellules ; un clic permet de le reprendre.">
-                                            <span class="badge badge-sm cursor-help">?</span>
-                                        </span>
-                                    </label>
-                                    <input type="text" 
-                                           class="input input-bordered input-sm w-full"
-                                           x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).buttonLabel"
-                                           placeholder="▶️ Exécuter">
-                                </div>
-                            </div>
-                        </template>
-                        
-                        <!-- Config spécifique table -->
-                        <template x-if="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex)?.type === 'table'">
-                            <div class="flex flex-col gap-2" x-init="ConfigManager.ensureCellQueries(getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex), 0)">
-                                <div class="form-control">
-                                    <label class="label gap-2">
-                                        <span class="label-text">Nombre max de lignes</span>
-                                        <span class="tooltip tooltip-bottom" data-tip="Limite le nombre de lignes affichées dans le tableau pour éviter les surcharges mémoire">
-                                            <span class="badge badge-sm cursor-help">?</span>
-                                        </span>
-                                    </label>
-                                    <input type="number" 
-                                           class="input input-bordered input-sm w-full"
-                                           x-model.number="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).maxRows"
-                                           placeholder="100000">
-                                </div>
-                                <div class="form-control">
-                                    <label class="label cursor-pointer justify-start gap-3">
-                                        <input type="checkbox" class="checkbox checkbox-sm" x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).queries[0].clientVisible">
-                                        <span class="label-text">Afficher l'éditeur SQL en mode client</span>
-                                        <span class="tooltip tooltip-bottom" data-tip="Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur. En mode client, seul le résultat sera affiché.">
-                                            <span class="badge badge-sm cursor-help">?</span>
-                                        </span>
-                                    </label>
-                                </div>
-                            </div>
-                        </template>
-                        
-                        <!-- Config spécifique iframe -->
-                        <template x-if="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex)?.type === 'iframe'">
-                            <div class="flex flex-col gap-2" x-init="ConfigManager.ensureCellQueries(getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex), 0)">
-                                <div class="form-control">
-                                    <label class="label gap-2">
-                                        <span class="label-text">Type de langage</span>
-                                        <span class="tooltip tooltip-bottom" data-tip="SQL: requête retournant du HTML | JS: retourne une chaîne HTML | Texte: HTML saisi directement">
-                                            <span class="badge badge-sm cursor-help">?</span>
-                                        </span>
-                                    </label>
-                                    <select class="select select-bordered select-sm w-full" x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).queries[0].engine">
-                                        <option value="sql">🗄️SQL</option>
-                                        <option value="js">⚡JavaScript</option>
-                                        <option value="text">📝Texte</option>
-                                    </select>
-                                </div>
-                                <div class="form-control">
-                                    <label class="label cursor-pointer justify-start gap-3">
-                                        <input type="checkbox" class="checkbox checkbox-sm" x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).queries[0].clientVisible">
-                                        <span class="label-text">Afficher l'éditeur SQL en mode client</span>
-                                        <span class="tooltip tooltip-bottom" data-tip="Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur. En mode client, seul le résultat sera affiché.">
-                                            <span class="badge badge-sm cursor-help">?</span>
-                                        </span>
-                                    </label>
-                                </div>
-                            </div>
-                        </template>
-                        
-                        <!-- Config spécifique uiParameter -->
-                        <template x-if="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex)?.type === 'uiParameter'">
-                            <div class="flex flex-col gap-2" x-init="ConfigManager.ensureCellQueries(getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex), 0)">
-                                <div class="form-control">
-                                    <label class="label gap-2">
-                                        <span class="label-text">Type de langage</span>
-                                        <span class="tooltip tooltip-bottom" data-tip="SQL: exécute une requête SQL | JS: exécute une expression JavaScript | Texte: valeur retournée directement sans moteur">
-                                            <span class="badge badge-sm cursor-help">?</span>
-                                        </span>
-                                    </label>
-                                    <select class="select select-bordered select-sm w-full" x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).queries[0].engine">
-                                        <option value="sql">🗄️SQL</option>
-                                        <option value="js">⚡JavaScript</option>
-                                        <option value="text">📝Texte</option>
-                                    </select>
-                                </div>
-                                <div class="form-control">
-                                    <label class="label gap-2">
-                                        <span class="label-text">Type de composant</span>
-                                        <span class="tooltip tooltip-bottom" data-tip="Choisissez le type de composant d'interface pour ce paramètre">
-                                            <span class="badge badge-sm cursor-help">?</span>
-                                        </span>
-                                    </label>
-                                    <select class="select select-bordered select-sm w-full" x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).paramType">
-                                        <option value="input">📝 Champ texte (input)</option>
-                                        <option value="dropdown">📋 Liste déroulante (dropdown)</option>
-                                        <option value="range">🎚️ Curseur (range)</option>
-                                    </select>
-                                </div>
-                                <div class="form-control">
-                                    <label class="label gap-2">
-                                        <span class="label-text">Libellé</span>
-                                        <span class="tooltip tooltip-bottom" data-tip="Texte affiché à gauche du champ de saisie">
-                                            <span class="badge badge-sm cursor-help">?</span>
-                                        </span>
-                                    </label>
-                                    <input type="text" 
-                                           class="input input-bordered input-sm w-full"  
-                                           x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).title" 
-                                           placeholder="Libellé affiché à gauche de l'input">
-                                </div>
-                                <div class="form-control">
-                                    <label class="label cursor-pointer justify-start gap-2">
-                                        <input type="checkbox" class="checkbox checkbox-primary"
-                                            x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).initRunQuery" />
-                                        <span class="label-text">Exécuter la requête d'initialisation au chargement du notebook</span>
-                                        <span class="tooltip tooltip-bottom" data-tip="Cochez pour exécuter automatiquement la requête SQL associée lors du chargement">
-                                            <span class="badge badge-sm cursor-help">?</span>
-                                        </span>
-                                    </label>
-                                </div>
-                                <div class="form-control">
-                                    <label class="label cursor-pointer justify-start gap-2">
-                                        <input type="checkbox" class="checkbox checkbox-primary"
-                                            x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).userVisible" />
-                                        <span class="label-text">Visible en mode client</span>
-                                        <span class="tooltip tooltip-bottom" data-tip="Si décoché, ce paramètre sera caché en mode client (paramètre intermédiaire)">
-                                            <span class="badge badge-sm cursor-help">?</span>
-                                        </span>
-                                    </label>
-                                </div>
-                                <div class="form-control">
-                                    <label class="label cursor-pointer justify-start gap-2">
-                                        <input type="checkbox" class="checkbox checkbox-primary"
-                                            x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).userEditable" />
-                                        <span class="label-text">Modifiable par l'utilisateur</span>
-                                        <span class="tooltip tooltip-bottom" data-tip="Si décoché, l'utilisateur ne pourra pas modifier la valeur calculée par SQL">
-                                            <span class="badge badge-sm cursor-help">?</span>
-                                        </span>
-                                    </label>
-                                </div>
-                                <div class="form-control">
-                                    <label class="label cursor-pointer justify-start gap-2">
-                                        <input type="checkbox" class="checkbox checkbox-primary"
-                                            x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).preserveUserValue" />
-                                        <span class="label-text">Préserver la valeur utilisateur lors de la ré-exécution</span>
-                                        <span class="tooltip tooltip-bottom" data-tip="Si coché et que l'utilisateur a modifié la valeur, la ré-exécution de la cellule ne réinitialisera pas la valeur">
-                                            <span class="badge badge-sm cursor-help">?</span>
-                                        </span>
-                                    </label>
-                                </div>
-                                <!-- Config INPUT -->
-                                <template x-if="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex)?.paramType === 'input'">
-                                    <div class="form-control">
-                                        <label class="label gap-2">
-                                            <span class="label-text">Type de champ</span>
-                                            <span class="tooltip tooltip-bottom" data-tip="Choisissez le type HTML du champ de saisie">
-                                                <span class="badge badge-sm cursor-help">?</span>
-                                            </span>
+
+                        <!-- Paramètres spécifiques unifiés (boucle sur le schéma) -->
+                        <template x-for="param in getSpecificParamsForType(getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex)?.type)" :key="'spec-'+param.key">
+                            <div class="form-control" x-show="isSpecificParamVisible(param, getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex))">
+                                <!-- perspectiveCdns : 4 checkboxes -->
+                                <template x-if="param.inputType === 'perspectiveCdns'">
+                                    <div>
+                                        <label class="label gap-2"><span class="label-text" x-text="param.label"></span>
+                                            <span class="tooltip tooltip-bottom" :data-tip="param.tooltip || ''"><span class="badge badge-sm cursor-help">?</span></span>
                                         </label>
-                                        <select class="select select-bordered select-sm w-full" x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).inputType">
-                                            <option value="text">📝 Texte (text)</option>
-                                            <option value="password">🔒 Mot de passe (password)</option>
-                                            <option value="email">📧 Email (email)</option>
-                                            <option value="number">🔢 Nombre (number)</option>
-                                            <option value="date">📅 Date (date)</option>
-                                            <option value="datetime-local">📆 Date et heure (datetime-local)</option>
-                                            <option value="week">📅 Semaine (week)</option>
-                                            <option value="month">📅 Mois (month)</option>
-                                            <option value="tel">📞 Téléphone (tel)</option>
-                                            <option value="url">🔗 URL (url)</option>
-                                            <option value="search">🔍 Recherche (search)</option>
-                                            <option value="time">⏰ Heure (time)</option>
+                                        <div class="flex flex-col gap-2 p-3 bg-base-200 rounded-lg" x-init="if (!getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).perspectiveCdns) getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).perspectiveCdns = { viewer: true, datagrid: true, d3fc: true, openlayers: false }">
+                                            <label class="label cursor-pointer justify-start gap-3"><input type="checkbox" class="checkbox checkbox-sm" x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).perspectiveCdns.viewer"><span class="label-text font-mono text-xs">@perspective-dev/viewer (requis)</span></label>
+                                            <label class="label cursor-pointer justify-start gap-3"><input type="checkbox" class="checkbox checkbox-sm" x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).perspectiveCdns.datagrid"><span class="label-text font-mono text-xs">@perspective-dev/viewer-datagrid</span></label>
+                                            <label class="label cursor-pointer justify-start gap-3"><input type="checkbox" class="checkbox checkbox-sm" x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).perspectiveCdns.d3fc"><span class="label-text font-mono text-xs">@perspective-dev/viewer-d3fc (charts)</span></label>
+                                            <label class="label cursor-pointer justify-start gap-3"><input type="checkbox" class="checkbox checkbox-sm" x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).perspectiveCdns.openlayers"><span class="label-text font-mono text-xs">@perspective-dev/viewer-openlayers (maps)</span></label>
+                                        </div>
+                                    </div>
+                                </template>
+                                <!-- checkbox -->
+                                <template x-if="param.inputType === 'checkbox'">
+                                    <label class="label cursor-pointer justify-start gap-3">
+                                        <input type="checkbox" class="checkbox checkbox-sm"
+                                               :checked="getCellValueByPath(getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex), param.key)"
+                                               @change="setCellValueByPath(getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex), param.key, $event.target.checked)">
+                                        <span class="label-text" x-text="param.label"></span>
+                                        <span class="tooltip tooltip-bottom" :data-tip="param.tooltip || ''"><span class="badge badge-sm cursor-help">?</span></span>
+                                    </label>
+                                </template>
+                                <!-- select -->
+                                <template x-if="param.inputType === 'select'">
+                                    <div>
+                                        <label class="label gap-2"><span class="label-text" x-text="param.label"></span><span class="tooltip tooltip-bottom" :data-tip="param.tooltip || ''"><span class="badge badge-sm cursor-help">?</span></span></label>
+                                        <select class="select select-bordered select-sm w-full"
+                                                :value="getCellValueByPath(getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex), param.key)"
+                                                @change="setCellValueByPath(getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex), param.key, $event.target.value)">
+                                            <template x-for="opt in (param.options || [])" :key="opt.value"><option :value="opt.value" x-text="opt.label"></option></template>
                                         </select>
                                     </div>
                                 </template>
-                                <!-- Config RANGE -->
-                                <template x-if="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex)?.paramType === 'range'">
-                                    <div class="flex flex-col gap-2">
-                                        <div class="form-control">
-                                            <label class="label gap-2">
-                                                <span class="label-text">Valeur minimum</span>
-                                                <span class="tooltip tooltip-bottom" data-tip="Valeur minimale du curseur (défaut: 0)">
-                                                    <span class="badge badge-sm cursor-help">?</span>
-                                                </span>
-                                            </label>
-                                            <input type="number" 
-                                                   class="input input-bordered input-sm w-full"
-                                                   x-model.number="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).rangeMin"
-                                                   placeholder="0">
-                                        </div>
-                                        <div class="form-control">
-                                            <label class="label gap-2">
-                                                <span class="label-text">Valeur maximum</span>
-                                                <span class="tooltip tooltip-bottom" data-tip="Valeur maximale du curseur (défaut: 100)">
-                                                    <span class="badge badge-sm cursor-help">?</span>
-                                                </span>
-                                            </label>
-                                            <input type="number" 
-                                                   class="input input-bordered input-sm w-full"
-                                                   x-model.number="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).rangeMax"
-                                                   placeholder="100">
-                                        </div>
-                                        <div class="form-control">
-                                            <label class="label gap-2">
-                                                <span class="label-text">Pas (step)</span>
-                                                <span class="tooltip tooltip-bottom" data-tip="Incrément entre chaque valeur du curseur (défaut: 1)">
-                                                    <span class="badge badge-sm cursor-help">?</span>
-                                                </span>
-                                            </label>
-                                            <input type="number" 
-                                                   class="input input-bordered input-sm w-full"
-                                                   x-model.number="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).rangeStep"
-                                                   placeholder="1"
-                                                   min="0.001"
-                                                   step="any">
-                                        </div>
+                                <!-- textarea (content, json, json.xlsx, json.perspectiveConfig) -->
+                                <template x-if="param.inputType === 'textarea'">
+                                    <div>
+                                        <label class="label gap-2"><span class="label-text" x-text="param.label"></span><span class="tooltip tooltip-bottom" :data-tip="param.tooltip || ''"><span class="badge badge-sm cursor-help">?</span></span></label>
+                                        <textarea class="textarea textarea-bordered w-full" :class="param.key.includes('json') ? 'font-mono text-sm' : ''" :rows="param.rows || 5"
+                                                  :style="param.rows >= 10 ? 'min-height: 200px;' : (param.key === 'json' ? 'min-height: 300px;' : '')"
+                                                  :placeholder="param.placeholder || ''"
+                                                  :value="param.key === 'json.xlsx' ? getCellValueByPath(getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex), 'json.xlsx') : getCellValueByPath(getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex), param.key)"
+                                                  @input="param.key === 'content' ? (setCellValueByPath(getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex), 'content', $event.target.value), syncMarkdownToEditor(cellConfigModal.path, cellConfigModal.cellIndex)) : setCellValueByPath(getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex), param.key === 'json.xlsx' ? 'json.xlsx' : param.key, $event.target.value)">
+                                        </textarea>
                                     </div>
                                 </template>
-                            </div>
-                        </template>
-                        
-                        <!-- Config spécifique sqlStat -->
-                        <template x-if="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex)?.type === 'sqlStat'">
-                            <div class="flex flex-col gap-2" x-init="ConfigManager.ensureCellQueries(getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex), 0)">
-                                <div class="form-control">
-                                    <label class="label gap-2">
-                                        <span class="label-text">Requête SQL</span>
-                                        <span class="tooltip tooltip-bottom" data-tip="La requête doit retourner une seule valeur (première colonne, première ligne). Support des requêtes récursives avec {{ }}">
-                                            <span class="badge badge-sm cursor-help">?</span>
-                                        </span>
-                                    </label>
-                                    <textarea class="textarea textarea-bordered w-full" 
-                                              x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).queries[0].sql" 
-                                              rows="3"
-                                              placeholder="SELECT COUNT(*) FROM source1"></textarea>
-                                </div>
-                                <div class="form-control">
-                                    <label class="label gap-2">
-                                        <span class="label-text">Titre de la stat</span>
-                                        <span class="tooltip tooltip-bottom" data-tip="Titre affiché au-dessus de la valeur statistique">
-                                            <span class="badge badge-sm cursor-help">?</span>
-                                        </span>
-                                    </label>
-                                    <input type="text" 
-                                           class="input input-bordered input-sm w-full" 
-                                           x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).title" 
-                                           placeholder="Total Lignes">
-                                </div>
-                                <div class="form-control">
-                                    <label class="label gap-2">
-                                        <span class="label-text">Description de la stat</span>
-                                        <span class="tooltip tooltip-bottom" data-tip="Texte descriptif affiché sous le titre de la statistique">
-                                            <span class="badge badge-sm cursor-help">?</span>
-                                        </span>
-                                    </label>
-                                    <input type="text" 
-                                           class="input input-bordered input-sm w-full" 
-                                           x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).subtitle" 
-                                           placeholder="Jan 1st - Feb 1st">
-                                </div>
-                                <div class="form-control">
-                                    <label class="label gap-2">
-                                        <span class="label-text">Icône (Iconify)</span>
-                                        <span class="tooltip tooltip-bottom" data-tip="Nom de l'icône Iconify (ex: material-symbols-light:join-right)">
-                                            <span class="badge badge-sm cursor-help">?</span>
-                                        </span>
-                                    </label>
-                                    <input type="text" 
-                                           class="input input-bordered input-sm w-full" 
-                                           x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).icon" 
-                                           placeholder="material-symbols-light:join-right">
-                                </div>
-                                <div class="form-control">
-                                    <label class="label cursor-pointer justify-start gap-3">
-                                        <input type="checkbox" class="checkbox checkbox-sm" x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).queries[0].clientVisible">
-                                        <span class="label-text">Afficher l'éditeur SQL en mode client</span>
-                                        <span class="tooltip tooltip-bottom" data-tip="Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur. En mode client, seul le résultat sera affiché.">
-                                            <span class="badge badge-sm cursor-help">?</span>
-                                        </span>
-                                    </label>
-                                </div>
-                            </div>
-                        </template>
-                        
-                        <!-- Config spécifique pdfme -->
-                        <template x-if="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex)?.type === 'pdfme'">
-                            <div class="flex flex-col gap-2" x-init="(function(){var c=getCellAtPath(cellConfigModal.path,cellConfigModal.cellIndex);ConfigManager.ensureCellQueries(c,1);})()">
-                                <div class="form-control">
-                                    <label class="label gap-2">
-                                        <span class="label-text">Requête SQL (données pour le PDF)</span>
-                                        <span class="tooltip tooltip-bottom" data-tip="La requête doit retourner les données à utiliser dans le template pdfme. Support des requêtes récursives avec {{ }}">
-                                            <span class="badge badge-sm cursor-help">?</span>
-                                        </span>
-                                    </label>
-                                    <textarea class="textarea textarea-bordered w-full" 
-                                              x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).queries[0].sql" 
-                                              rows="3"
-                                              placeholder="SELECT * FROM source1 LIMIT 10"></textarea>
-                                </div>
-                                <div class="form-control">
-                                    <label class="label gap-2">
-                                        <span class="label-text">Requête nom de fichier PDF</span>
-                                        <span class="tooltip tooltip-bottom" data-tip="Résultat de la 2ème requête = nom du fichier PDF. Ex: SELECT '$loop' || '_2.pdf'">
-                                            <span class="badge badge-sm cursor-help">?</span>
-                                        </span>
-                                    </label>
-                                    <textarea class="textarea textarea-bordered w-full font-mono text-sm" 
-                                              x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).queries[1].sql" 
-                                              rows="2"
-                                              placeholder="SELECT '$loop' || '_2.pdf'"></textarea>
-                                </div>
-                                <div class="form-control">
-                                    <label class="label gap-2">
-                                        <span class="label-text">Template pdfme (JSON)</span>
-                                        <span class="tooltip tooltip-bottom" data-tip="Template pdfme avec basePdf et schemas. Plugins Text/Table chargés automatiquement. Voir https://pdfme.com/docs/getting-started">
-                                            <span class="badge badge-sm cursor-help">?</span>
-                                        </span>
-                                    </label>
-                                    <textarea class="textarea textarea-bordered w-full font-mono text-xs" 
-                                              x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).json" 
-                                              rows="15"
-                                              style="min-height: 300px;"
-                                              placeholder='{"basePdf": {"width": 210, "height": 297, "padding": [20,20,20,20]}, "schemas": [...]}'></textarea>
-                                </div>
-                                <div class="form-control">
-                                    <label class="label gap-2">
-                                        <span class="label-text">Label du bouton d'exécution</span>
-                                        <span class="tooltip tooltip-bottom" data-tip="Si non vide, le bouton sera affiché. Laisser vide pour masquer le bouton (ex: génération via autorun).">
-                                            <span class="badge badge-sm cursor-help">?</span>
-                                        </span>
-                                    </label>
-                                    <input type="text" 
-                                           class="input input-bordered input-sm w-full"
-                                           x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).buttonLabel"
-                                           placeholder="📑 Générer le PDF">
-                                </div>
-                            </div>
-                        </template>
-                        
-                        <!-- Config spécifique publipostageWord -->
-                        <template x-if="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex)?.type === 'publipostageWord'">
-                            <div class="flex flex-col gap-2">
-                                <div class="form-control">
-                                    <label class="label gap-2">
-                                        <span class="label-text">Label du bouton d'exécution</span>
-                                        <span class="tooltip tooltip-bottom" data-tip="Si non vide, le bouton sera affiché. Laisser vide pour masquer le bouton (ex: génération via autorun).">
-                                            <span class="badge badge-sm cursor-help">?</span>
-                                        </span>
-                                    </label>
-                                    <input type="text" 
-                                           class="input input-bordered input-sm w-full"
-                                           x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).buttonLabel"
-                                           placeholder="📄 Générer les documents">
-                                </div>
-                            </div>
-                        </template>
-                        
-                        <!-- Config spécifique perspective -->
-                        <template x-if="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex)?.type === 'perspective'">
-                            <div class="flex flex-col gap-2" x-init="(function(){var c=getCellAtPath(cellConfigModal.path,cellConfigModal.cellIndex);ConfigManager.ensureCellQueries(c,0);if(!c.json)c.json={};if(c.json.perspectiveConfig===undefined)c.json.perspectiveConfig='';})()">
-                                <div class="form-control">
-                                    <label class="label gap-2">
-                                        <span class="label-text">Requête SQL (données pour Perspective)</span>
-                                        <span class="tooltip tooltip-bottom" data-tip="La requête doit retourner les données à afficher dans Perspective Viewer. Support des requêtes récursives avec {{ }}">
-                                            <span class="badge badge-sm cursor-help">?</span>
-                                        </span>
-                                    </label>
-                                    <textarea class="textarea textarea-bordered w-full font-mono text-sm" 
-                                              x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).queries[0].sql" 
-                                              rows="3"
-                                              placeholder="SELECT * FROM source1"></textarea>
-                                </div>
-                                <div class="form-control">
-                                    <label class="label gap-2">
-                                        <span class="label-text">Configuration Perspective (JSON optionnel)</span>
-                                        <span class="tooltip tooltip-bottom" data-tip="Configuration JSON pour le viewer Perspective (group_by, columns, sort, plugin, theme, etc.)">
-                                            <span class="badge badge-sm cursor-help">?</span>
-                                        </span>
-                                    </label>
-                                    <textarea class="textarea textarea-bordered w-full font-mono text-sm" 
-                                              x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).json.perspectiveConfig" 
-                                              rows="10"
-                                              style="min-height: 200px;"
-                                              placeholder='{
-    "plugin": "Datagrid",
-    "theme": "Pro Dark",
-    "columns": ["col1", "col2"],
-    "group_by": ["category"],
-    "sort": [["col1", "asc"]]
-}'></textarea>
-                                </div>
-                                <div class="form-control">
-                                    <label class="label gap-2">
-                                        <span class="label-text">CDN Perspective.js à charger</span>
-                                        <span class="tooltip tooltip-bottom" data-tip="Sélectionnez les modules CDN nécessaires pour votre visualisation">
-                                            <span class="badge badge-sm cursor-help">?</span>
-                                        </span>
-                                    </label>
-                                    <div class="flex flex-col gap-2 p-3 bg-base-200 rounded-lg">
-                                        <label class="label cursor-pointer justify-start gap-3">
-                                            <input type="checkbox" 
-                                                   class="checkbox checkbox-sm" 
-                                                   x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).perspectiveCdns"
-                                                   x-init="if (!getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).perspectiveCdns) { getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).perspectiveCdns = { viewer: true, datagrid: true, d3fc: true, openlayers: false }; }"
-                                                   :checked="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).perspectiveCdns?.viewer ?? true"
-                                                   @change="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).perspectiveCdns.viewer = $event.target.checked">
-                                            <span class="label-text font-mono text-xs">@perspective-dev/viewer (requis)</span>
-                                        </label>
-                                        <label class="label cursor-pointer justify-start gap-3">
-                                            <input type="checkbox" 
-                                                   class="checkbox checkbox-sm" 
-                                                   :checked="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).perspectiveCdns?.datagrid ?? true"
-                                                   @change="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).perspectiveCdns.datagrid = $event.target.checked">
-                                            <span class="label-text font-mono text-xs">@perspective-dev/viewer-datagrid</span>
-                                        </label>
-                                        <label class="label cursor-pointer justify-start gap-3">
-                                            <input type="checkbox" 
-                                                   class="checkbox checkbox-sm" 
-                                                   :checked="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).perspectiveCdns?.d3fc ?? true"
-                                                   @change="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).perspectiveCdns.d3fc = $event.target.checked">
-                                            <span class="label-text font-mono text-xs">@perspective-dev/viewer-d3fc (charts)</span>
-                                        </label>
-                                        <label class="label cursor-pointer justify-start gap-3">
-                                            <input type="checkbox" 
-                                                   class="checkbox checkbox-sm" 
-                                                   :checked="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).perspectiveCdns?.openlayers ?? false"
-                                                   @change="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).perspectiveCdns.openlayers = $event.target.checked">
-                                            <span class="label-text font-mono text-xs">@perspective-dev/viewer-openlayers (maps)</span>
-                                        </label>
+                                <!-- number -->
+                                <template x-if="param.inputType === 'number'">
+                                    <div>
+                                        <label class="label gap-2"><span class="label-text" x-text="param.label"></span><span class="tooltip tooltip-bottom" :data-tip="param.tooltip || ''"><span class="badge badge-sm cursor-help">?</span></span></label>
+                                        <input type="number" class="input input-bordered input-sm w-full"
+                                               :value="getCellValueByPath(getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex), param.key)"
+                                               @input="setCellValueByPath(getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex), param.key, parseFloat($event.target.value) || 0)"
+                                               :placeholder="param.placeholder" :min="param.min" step="any" />
                                     </div>
-                                </div>
-                                <div class="form-control">
-                                    <label class="label cursor-pointer justify-start gap-3">
-                                        <input type="checkbox" class="checkbox checkbox-sm" x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).queries[0].clientVisible">
-                                        <span class="label-text">Afficher l'éditeur SQL en mode client</span>
-                                        <span class="tooltip tooltip-bottom" data-tip="Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur. En mode client, seul le résultat sera affiché.">
-                                            <span class="badge badge-sm cursor-help">?</span>
-                                        </span>
-                                    </label>
-                                </div>
-                            </div>
-                        </template>
-                        
-                        <!-- Config spécifique sqlRecursiveParse -->
-                        <template x-if="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex)?.type === 'sqlRecursiveParse'">
-                            <div class="flex flex-col gap-2" x-init="ConfigManager.ensureCellQueries(getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex), 0)">
-                                <div class="form-control">
-                                    <label class="label cursor-pointer justify-start gap-3">
-                                        <input type="checkbox" class="checkbox checkbox-sm" x-model="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex).queries[0].clientVisible">
-                                        <span class="label-text">Afficher l'éditeur SQL en mode client</span>
-                                        <span class="tooltip tooltip-bottom" data-tip="Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur. En mode client, seul le résultat sera affiché.">
-                                            <span class="badge badge-sm cursor-help">?</span>
-                                        </span>
-                                    </label>
-                                </div>
+                                </template>
                             </div>
                         </template>
                     </div>
@@ -3977,8 +3844,8 @@
                             </label>
                         </div>
 
-                        <!-- Chiffrer (Gist et JSON) -->
-                        <div class="form-control" x-show="exportModal.type === 'gist' || exportModal.type === 'json'">
+                        <!-- Chiffrer (Gist, JSON et HTML) -->
+                        <div class="form-control" x-show="exportModal.type === 'gist' || exportModal.type === 'json' || exportModal.type === 'html'">
                             <label class="label cursor-pointer justify-start gap-3">
                                 <input type="checkbox" class="toggle toggle-primary" x-model="exportModal.encryptGist"
                                     @change="if (exportModal.encryptGist && !exportModal.gistPassphrase) exportModal.gistPassphrase = GistEncrypt.generatePassphrase()" />
@@ -3988,7 +3855,7 @@
                                 </div>
                             </label>
                         </div>
-                        <div class="form-control" x-show="(exportModal.type === 'gist' || exportModal.type === 'json') && exportModal.encryptGist">
+                        <div class="form-control" x-show="(exportModal.type === 'gist' || exportModal.type === 'json' || exportModal.type === 'html') && exportModal.encryptGist">
                             <label class="label">
                                 <span class="label-text">Mot de passe (à partager pour déchiffrer)</span>
                             </label>
@@ -4740,7 +4607,7 @@ if ($param1 === "Type A") {
                 addCellToGroupModal: { open: false, path: null },
                 insertGroupModal: { open: false, atIndex: null },
                 insertCellModal: { open: false, groupIndex: null, atCellIndex: null },
-                cellConfigModal: { open: false, groupIndex: null, cellIndex: null },
+                cellConfigModal: { open: false, path: null, cellIndex: null },
                 childGroupModal: { open: false, path: null, cellIndex: null, group: null },
                 loopConfigModal: { open: false, path: null },
                 groupSettingsModal: { open: false, path: null },
@@ -4991,11 +4858,22 @@ if ($param1 === "Type A") {
                     for (const script of docxTemplateScripts) {
                         const cellPath = script.dataset.cellPath;
                         const fileName = script.dataset.fileName;
-                        const base64 = script.textContent.trim();
+                        let base64 = script.textContent.trim();
 
                         if (!cellPath || !fileName || !base64) {
                             console.warn('Script docx template incomplet:', script.id);
                             continue;
+                        }
+
+                        if (script.dataset.compressed === 'true') {
+                            try {
+                                const bytes = FileHandler.base64ToUint8Array(base64);
+                                const decompressed = await FileHandler.decompressGzip(bytes);
+                                base64 = FileHandler.arrayBufferToBase64(decompressed);
+                            } catch (e) {
+                                console.error('Décompression template docx échouée:', e);
+                                continue;
+                            }
                         }
 
                         // Convertir le cellPath en array d'indices
@@ -6275,122 +6153,57 @@ FROM source1 LIMIT 10;`;
                         _status: null,
                         _results: null,
                         _resultInfo: null,
-                        _order: 0, // Sera ajusté lors de l'ajout au groupe
+                        _order: 0,
                         type
                     };
-
                     const baseName = this.generateUniqueCellName(type);
-                    switch (type) {
-                        case 'markdown':
-                            newCell.name = baseName;
-                            newCell.content = '# Nouvelle section';
-                            break;
-                        case 'source':
-                            newCell.name = baseName;
-                            newCell.title = 'Glissez-déposez votre fichier ici';
-                            newCell.queries = [{ sql: `CREATE OR REPLACE TABLE ${baseName} AS SELECT * FROM '{fileNameUpload}'`, engine: 'sql', clientVisible: false }];
-                            newCell.json = { fallbackAllVarcharOnError: true, xlsx: {
-                                options: { type: 'array', raw: false, dateNF: 'dd/mm/yyyy', cellDates: true },
-                                toCsvOptions: { dateNF: 'dd/mm/yyyy', FS: ',', RS: '\n' },
-                                sheetSelection: { type: { auto: true }, index: 0, name: '' }
-                            } };
-                            newCell._fileName = '';
-                            newCell._currentFile = null;
-                            newCell._isDragging = false;
-                            newCell._loaded = false;
-                            break;
-                        case 'buttonRunNextCells':
-                            newCell.name = baseName;
-                            newCell.buttonLabel = '▶️ Exécuter';
-                            break;
-                        case 'sqlRecursiveParse':
-                            newCell.name = baseName;
-                            newCell.queries = [{ sql: 'SELECT * FROM source1 LIMIT 100', engine: 'sql', clientVisible: false }];
-                            newCell._showParsedQuery = false;
-                            break;
-                        case 'table':
-                            newCell.name = baseName;
-                            newCell.queries = [{ sql: 'SELECT * FROM source1 LIMIT 100', engine: 'sql', clientVisible: false }];
-                            newCell.maxRows = 100000;
-                            newCell._showParsedQuery = false;
-                            break;
-                        case 'iframe':
-                            newCell.name = baseName;
-                            newCell.queries = [{ sql: 'SELECT \'<html><body><h1>Hello</h1></body></html>\' as html', engine: 'sql', clientVisible: false }];
-                            newCell._showParsedQuery = false;
-                            break;
-                        case 'uiParameter':
-                            newCell.name = baseName;
-                            newCell.paramType = 'input'; // 'input', 'dropdown' ou 'range'
-                            newCell.inputType = 'text'; // Type d'input: text, password, email, number, date, datetime-local, week, month, tel, url, search, time
-                            newCell.title = '';
-                            newCell.rangeMin = 0; // Valeur min du range
-                            newCell.rangeMax = 100; // Valeur max du range
-                            newCell.rangeStep = 1; // Pas du range
-                            newCell.initRunQuery = false; // Exécuter la requête d'init au chargement du notebook
-                            newCell.queries = [{ sql: '', engine: 'sql', clientVisible: false }]; // Requête SQL ou JS pour les options du dropdown
-                            newCell.userVisible = true; // Afficher la cellule en mode client
-                            newCell.userEditable = true; // Permettre à l'utilisateur de modifier la valeur
-                            newCell.preserveUserValue = false; // Préserver la valeur utilisateur lors de la ré-exécution
-                            newCell._value = ''; // Valeur actuelle du paramètre (runtime)
-                            newCell._options = []; // Options du dropdown (runtime)
-                            newCell._initialized = false; // Indique si le paramètre a été initialisé
-                            newCell._userModified = false; // Indique si l'utilisateur a modifié la valeur (runtime)
-                            break;
-                        case 'publipostageWord':
-                            newCell.name = baseName;
-                            newCell.queries = [
-                                { sql: 'SELECT * FROM source1 LIMIT 10', engine: 'sql', clientVisible: false },
-                                { sql: 'SELECT \'document_\' || STRFTIME(current_timestamp::TIMESTAMP, \'%Y-%m-%d_%H-%M-%S\') || \'.docx\' AS filename;', engine: 'sql', clientVisible: false }
-                            ];
-                            newCell.docxTemplateBase64 = null;
-                            newCell.docxTemplateFileName = '';
-                            newCell.buttonLabel = '📄 Générer les documents';
-                            newCell._showParsedQuery = false;
-                            newCell._showParsedQuery2 = false;
-                            newCell._parseLevels = [];
-                            newCell._parseLevels2 = [];
-                            newCell._isDragging = false;
-                            break;
-                        case 'pdfme':
-                            newCell.name = baseName;
-                            newCell.queries = [
-                                { sql: `with v_source as (select * from source1 limit 10)\nSELECT 'Titre' as header, 'Pied de page' as footer, json_group_array(json_array(col1, col2, col3)) as datatable\nFROM v_source LIMIT 10`, engine: 'sql', clientVisible: false },
-                                { sql: "SELECT '$loop' || '_2.pdf'", engine: 'sql', clientVisible: false }
-                            ];
+                    newCell.name = baseName;
+                    CellConfigService.ensureCellFromSchema(newCell, type, { baseName });
+                    if (type === 'source') {
+                        newCell._fileName = '';
+                        newCell._currentFile = null;
+                        newCell._isDragging = false;
+                        newCell._loaded = false;
+                    }
+                    if (type === 'uiParameter') {
+                        newCell._value = '';
+                        newCell._options = [];
+                        newCell._initialized = false;
+                        newCell._userModified = false;
+                    }
+                    if (type === 'publipostageWord') {
+                        newCell.docxTemplateBase64 = null;
+                        newCell.docxTemplateFileName = '';
+                        newCell._showParsedQuery = false;
+                        newCell._showParsedQuery2 = false;
+                        newCell._parseLevels = [];
+                        newCell._parseLevels2 = [];
+                        newCell._isDragging = false;
+                    }
+                    if (type === 'pdfme') {
+                        if (!newCell.json || typeof newCell.json !== 'string' || newCell.json.length < 50) {
                             newCell.json = JSON.stringify({
-                                "basePdf": {
-                                    "width": 210,
-                                    "height": 297,
-                                    "padding": [20, 20, 9, 20],
-                                    "staticSchema": [
-                                        { "name": "page_header", "type": "text", "position": { "x": 20, "y": 5 }, "width": 170, "height": 8, "content": "{date}", "fontSize": 9, "fontColor": "#888888", "alignment": "right", "readOnly": true },
-                                        { "name": "footer", "type": "text", "position": { "x": 20, "y": 288 }, "width": 170, "height": 10, "content": "PIED DE PAGE - Document généré par SQLJob - Page {currentPage} / {totalPages}", "fontSize": 10, "fontColor": "#888888", "alignment": "center", "readOnly": true }
-                                    ]
-                                },
-                                "schemas": [[
-                                    { "name": "header", "type": "text", "position": { "x": 20, "y": 20 }, "width": 170, "height": 10, "content": "ENTÊTE DU DOCUMENT", "fontSize": 16, "fontColor": "#6366f1", "alignment": "center" },
-                                    { "name": "datatable", "type": "table", "position": { "x": 20, "y": 35 }, "width": 170, "height": 50, "content": "[[\"A\",\"B\",\"C\"]]", "showHead": true, "repeatHead": true, "head": ["Col1", "Col2", "Col3"], "headWidthPercentages": [33, 33, 34], "tableStyles": { "borderWidth": 0.3, "borderColor": "#000000" }, "headStyles": { "fontSize": 10, "fontColor": "#ffffff", "backgroundColor": "#6366f1" }, "bodyStyles": { "fontSize": 9, "fontColor": "#333333", "alternateBackgroundColor": "#f5f5f5" }, "columnStyles": {} }
+                                basePdf: { width: 210, height: 297, padding: [20, 20, 9, 20], staticSchema: [
+                                    { name: 'page_header', type: 'text', position: { x: 20, y: 5 }, width: 170, height: 8, content: '{date}', fontSize: 9, fontColor: '#888888', alignment: 'right', readOnly: true },
+                                    { name: 'footer', type: 'text', position: { x: 20, y: 288 }, width: 170, height: 10, content: 'PIED DE PAGE - Page {currentPage} / {totalPages}', fontSize: 10, fontColor: '#888888', alignment: 'center', readOnly: true }
+                                ]},
+                                schemas: [[
+                                    { name: 'header', type: 'text', position: { x: 20, y: 20 }, width: 170, height: 10, content: 'ENTÊTE DU DOCUMENT', fontSize: 16, fontColor: '#6366f1', alignment: 'center' },
+                                    { name: 'datatable', type: 'table', position: { x: 20, y: 35 }, width: 170, height: 50, content: '[[\"A\",\"B\",\"C\"]]', showHead: true, repeatHead: true, head: ['Col1', 'Col2', 'Col3'], headWidthPercentages: [33, 33, 34], tableStyles: { borderWidth: 0.3, borderColor: '#000000' }, headStyles: { fontSize: 10, fontColor: '#ffffff', backgroundColor: '#6366f1' }, bodyStyles: { fontSize: 9, fontColor: '#333333', alternateBackgroundColor: '#f5f5f5' }, columnStyles: {} }
                                 ]]
                             }, null, 2);
-                            newCell.buttonLabel = '📑 Générer le PDF';
-                            newCell._showParsedQuery = false;
-                            newCell._showParsedQuery2 = false;
-                            newCell._parseLevels = [];
-                            newCell._parseLevels2 = [];
-                            break;
-                        case 'perspective':
-                            newCell.name = baseName;
-                            newCell.queries = [{ sql: 'SELECT * FROM source1', engine: 'sql', clientVisible: false }];
-                            newCell.json = { perspectiveConfig: '' };
-                            newCell._showParsedQuery = false;
-                            newCell._parseLevels = [];
-                            newCell._perspectiveReady = false;
-                            newCell._perspectiveClient = null;
-                            newCell._perspectiveTable = null;
-                            break;
+                        }
+                        newCell._showParsedQuery = false;
+                        newCell._showParsedQuery2 = false;
+                        newCell._parseLevels = [];
+                        newCell._parseLevels2 = [];
                     }
-
+                    if (['sqlRecursiveParse', 'table', 'iframe', 'sqlStat', 'perspective'].includes(type)) newCell._showParsedQuery = false;
+                    if (type === 'perspective') {
+                        newCell._perspectiveReady = false;
+                        newCell._perspectiveClient = null;
+                        newCell._perspectiveTable = null;
+                    }
                     return newCell;
                 },
 
@@ -6555,56 +6368,48 @@ FROM source1 LIMIT 10;`;
                     this.cellConfigModal = { open: false, path: null, cellIndex: null };
                 },
 
-                onCellTypeChange(pathOrIndex, cellIndex) {
+                getCommonParamsForType(type) { return CellConfigService.getCommonParamsForType(type); },
+                getCommonParamsExcludingName(type) { return (CellConfigService.getCommonParamsForType(type) || []).filter(p => p !== 'name'); },
+                getCommonParamDef(paramKey, type) { return CellConfigService.getCommonParamDef(paramKey, type); },
+                getSpecificParamsForType(type) { return CellConfigService.getSpecificParamsForType(type); },
+                isSpecificParamVisible(param, cell) { return CellConfigService.isSpecificParamVisible(param, cell); },
+                getQueryLabelForType(type, index) { return CELL_TYPE_SCHEMAS.types[type]?.queryLabels?.[index] || CELL_TYPE_SCHEMAS.common.queries?.label || 'Requête SQL'; },
+                getQueryCountForType(type) { return CELL_TYPE_SCHEMAS.types[type]?.queryCount ?? 1; },
+                getCellValueByPath(cell, path) { return CellConfigService.getCellValueByPath(cell, path); },
+                setCellValueByPath(cell, path, value) { CellConfigService.setCellValueByPath(cell, path, value); },
+
+                onCellTypeChange(pathOrIndex, cellIndex, oldType) {
                     const path = Array.isArray(pathOrIndex) ? pathOrIndex : [pathOrIndex];
                     const cell = this.getCellAtPath(path, cellIndex);
                     if (!cell) return;
 
-                    // Réinitialiser les propriétés spécifiques au type
                     _rawTableDataStore.delete(cell._id);
                     cell._results = null;
                     cell._resultInfo = null;
 
-                    // Ajouter les propriétés manquantes selon le type
+                    const newType = cell.type;
+                    const baseName = cell.name && String(cell.name).trim() ? cell.name : this.generateUniqueCellName(newType);
+                    if (!cell.name || !String(cell.name).trim()) cell.name = baseName;
+
+                    CellConfigService.applyDefaultsOnTypeChange(cell, newType, { oldType, baseName });
+
                     if (cell.type === 'source') {
                         if (!cell.name) cell.name = this.generateUniqueSourceName();
-                        if (!cell.title) cell.title = 'Glissez-déposez votre fichier ici';
-                        if (!ConfigManager.getCellQuery(cell, 0)) ConfigManager.setCellQuery(cell, 0, `CREATE OR REPLACE TABLE ${cell.name} AS SELECT * FROM '{fileNameUpload}'`);
-                        if (!cell.json) cell.json = {};
-                        if (cell.json.fallbackAllVarcharOnError === undefined) cell.json.fallbackAllVarcharOnError = true;
-                        if (!cell.json.xlsx) cell.json.xlsx = { options: { type: 'array', raw: false }, toCsvOptions: { FS: ',', RS: '\n' }, sheetSelection: { type: { auto: true } } };
+                        else if (!ConfigManager.getCellQuery(cell, 0)?.trim()) ConfigManager.setCellQuery(cell, 0, `CREATE OR REPLACE TABLE ${cell.name} AS SELECT * FROM '{fileNameUpload}'`);
                         if (cell._fileName === undefined) cell._fileName = '';
                         if (cell._currentFile === undefined) cell._currentFile = null;
                         if (cell._isDragging === undefined) cell._isDragging = false;
                         if (cell._loaded === undefined) cell._loaded = false;
                     }
-                    if (cell.type === 'table' && !cell.maxRows) {
-                        cell.maxRows = 100000;
-                    }
                     if (cell.type === 'uiParameter') {
                         if (cell.referenceName && (!cell.name || !String(cell.name).trim())) cell.name = String(cell.referenceName).trim();
                         if (!ConfigManager.getCellReferenceName(cell)) cell.name = this.generateUniqueCellName('uiParameter', cell._id);
-                        ConfigManager.ensureCellQueries(cell, 0);
-                        if (!cell.queries[0].engine) cell.queries[0].engine = 'sql';
-                        if (!cell.paramType) cell.paramType = 'input';
-                        if (!cell.inputType) cell.inputType = 'text';
-                        if (cell.rangeMin === undefined) cell.rangeMin = 0;
-                        if (cell.rangeMax === undefined) cell.rangeMax = 100;
-                        if (cell.rangeStep === undefined) cell.rangeStep = 1;
-                        if (cell.title === undefined) cell.title = '';
-                        if (cell.initRunQuery === undefined) cell.initRunQuery = false;
-                        if (!ConfigManager.getCellQuery(cell, 0)) ConfigManager.setCellQuery(cell, 0, '');
-                        if (cell.userVisible === undefined) cell.userVisible = true;
-                        if (cell.userEditable === undefined) cell.userEditable = true;
-                        if (cell.preserveUserValue === undefined) cell.preserveUserValue = false;
                         if (cell._value === undefined) cell._value = '';
                         if (!cell._options) cell._options = [];
                         cell._initialized = false;
                         cell._userModified = false;
                     }
                     if (cell.type === 'publipostageWord') {
-                        if (!ConfigManager.getCellQuery(cell, 0)) ConfigManager.setCellQuery(cell, 0, 'SELECT * FROM source1 LIMIT 10');
-                        if (!ConfigManager.getCellQuery(cell, 1)) ConfigManager.setCellQuery(cell, 1, 'SELECT \'document_\' || STRFTIME(current_timestamp::TIMESTAMP, \'%Y-%m-%d_%H-%M-%S\') || \'.docx\' AS filename;');
                         if (cell.docxTemplateBase64 === undefined) cell.docxTemplateBase64 = null;
                         if (cell.docxTemplateFileName === undefined) cell.docxTemplateFileName = '';
                         if (cell._showParsedQuery === undefined) cell._showParsedQuery = false;
@@ -6612,29 +6417,11 @@ FROM source1 LIMIT 10;`;
                         if (!cell._parseLevels) cell._parseLevels = [];
                         if (!cell._parseLevels2) cell._parseLevels2 = [];
                         if (cell._isDragging === undefined) cell._isDragging = false;
-                        if (!cell.buttonLabel) cell.buttonLabel = '📄 Générer les documents';
                     }
-                    if (cell.type === 'pdfme') {
-                        if (!cell.buttonLabel) cell.buttonLabel = '📑 Générer le PDF';
-                    }
-                    if (cell.type === 'buttonRunNextCells') {
-                        if (!cell.buttonLabel) cell.buttonLabel = '▶️ Exécuter';
-                    }
-                    // Cellules avec SQL editor
-                    if (['sqlRecursiveParse', 'table', 'iframe', 'publipostageWord', 'perspective'].includes(cell.type)) {
+                    if (['sqlRecursiveParse', 'table', 'iframe', 'sqlStat', 'perspective'].includes(cell.type)) {
                         if (cell._showParsedQuery === undefined) cell._showParsedQuery = false;
                     }
-                    if (cell.type === 'iframe') {
-                        ConfigManager.ensureCellQueries(cell, 0);
-                        if (!cell.queries[0].engine) cell.queries[0].engine = 'sql';
-                    }
                     if (cell.type === 'perspective') {
-                        if (!ConfigManager.getCellQuery(cell, 0)) ConfigManager.setCellQuery(cell, 0, 'SELECT * FROM source1');
-                        if (!cell.json) cell.json = {};
-                        if (cell.json.perspectiveConfig === undefined) cell.json.perspectiveConfig = '';
-                        ConfigManager.ensureCellQueries(cell, 0);
-                        if (cell.queries[0] && cell.queries[0].clientVisible === undefined) cell.queries[0].clientVisible = false;
-                        if (!cell._parseLevels) cell._parseLevels = [];
                         cell._perspectiveReady = false;
                         cell._perspectiveClient = null;
                         cell._perspectiveTable = null;
@@ -6803,6 +6590,8 @@ FROM source1 LIMIT 10;`;
                         cell._fileName = '';
                         cell._currentFile = null;
                         if (Array.isArray(cell.files)) cell.files = cell.files.filter(f => f.slot !== 'source');
+                        delete cell.fileBase64;
+                        delete cell.fileName;
                     } finally {
                         this.isLoading = false;
                     }
@@ -6840,6 +6629,9 @@ FROM source1 LIMIT 10;`;
                     cell._loaded = false;
                     cell._status = null;
                     if (Array.isArray(cell.files)) cell.files = cell.files.filter(f => f.slot !== 'source');
+                    // Supprimer aussi le base64/temporaire pour que l'export config JSON/gist ne l'inclue pas
+                    delete cell.fileBase64;
+                    delete cell.fileName;
 
                     this.setStatus(`Fichier supprimé de ${cell.name}`, 'success');
                 },
@@ -9552,7 +9344,8 @@ FROM source1 LIMIT 10;`;
                             case 'html':
                                 this.setStatus('Génération HTML...', 'loading');
                                 const htmlFileName = (fileName.endsWith('.html') ? fileName : fileName + '.html');
-                                await this.exportHTMLWithConfig(config, htmlFileName);
+                                const htmlPassphrase = this.exportModal.encryptGist ? ((this.exportModal.gistPassphrase || '').trim() || GistEncrypt.generatePassphrase()) : null;
+                                await this.exportHTMLWithConfig(config, htmlFileName, htmlPassphrase);
                                 this.setStatus('HTML exporté', 'success');
                                 break;
                         }
@@ -9570,17 +9363,24 @@ FROM source1 LIMIT 10;`;
                     }
                 },
 
-                async exportHTMLWithConfig(config, fileName = 'index.sqljob.html') {
-                    const jsonString = JSON.stringify(config, null, 2);
-                    const configBase64 = ConfigManager.encodeUTF8ToBase64(jsonString);
+                _buildExportHTMLEncrypted(fullOuterHTML, configScriptContent) {
+                    let html = fullOuterHTML;
+                    const openTag = '\x3cscript type="application/octet-stream" id="defaultConfigBase64" data-encrypted="true"\x3e';
+                    const closeTag = '\x3c/script\x3e';
+                    const encryptedScript = openTag + configScriptContent + closeTag;
+                    if (/<script[^>]*\sid="defaultConfigBase64"/i.test(html)) {
+                        html = html.replace(/<script[^>]*\sid="defaultConfigBase64"[^>]*>[\s\S]*?<\/script>/i, encryptedScript);
+                    } else {
+                        html = html.replace(/<\/head>/i, encryptedScript + '</head>');
+                    }
+                    html = html.replace(/<script[^>]*\sid="sourceFile_[^"]*"[^>]*>[\s\S]*?<\/script>/gi, '');
+                    html = html.replace(/<script[^>]*\sid="docxTemplate_[^"]*"[^>]*>[\s\S]*?<\/script>/gi, '');
+                    return '<!DOCTYPE html>\n' + html;
+                },
 
-                    // Mettre à jour la config base64 dans le DOM
-                    document.getElementById('defaultConfigBase64')?.remove();
-                    const configScript = document.createElement('script');
-                    configScript.type = 'application/octet-stream';
-                    configScript.id = 'defaultConfigBase64';
-                    configScript.textContent = configBase64;
-                    document.head.appendChild(configScript);
+                async exportHTMLWithConfig(config, fileName = 'index.sqljob.html', passphrase = null) {
+                    const sourceFilesPayload = [];
+                    const docxTemplatesPayload = [];
 
                     // Collecter les fichiers source et templates docx depuis tous les groupes (récursivement)
                     const collectSourceFiles = async (group, groupPath = []) => {
@@ -9588,20 +9388,26 @@ FROM source1 LIMIT 10;`;
                             const cell = group.cells[cellIndex];
                             if (cell.type === 'source' && cell._currentFile && cell._fileName) {
                                 const safeSourceName = cell.name.replace(/[^a-zA-Z0-9_]/g, '_');
-                                document.querySelectorAll(`script[id^="sourceFile_${safeSourceName}"]`).forEach(s => s.remove());
-
                                 const arrayBuffer = await cell._currentFile.arrayBuffer();
                                 const compressedBuffer = await FileHandler.compressGzip(arrayBuffer);
                                 const fileBase64 = FileHandler.arrayBufferToBase64(compressedBuffer);
 
-                                const script = document.createElement('script');
-                                script.type = 'application/octet-stream';
-                                script.id = `sourceFile_${safeSourceName}`;
-                                script.dataset.sourceName = cell.name;
-                                script.dataset.fileName = cell._fileName;
-                                script.textContent = fileBase64;
-                                document.head.appendChild(script);
-                            } else if (cell.type === 'source' && !cell._currentFile) {
+                                if (passphrase) {
+                                    // #region agent log
+                                    fetch('http://127.0.0.1:7243/ingest/dc2eff21-3908-46dc-8551-f6846156ee7f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'collectSourceFiles',message:'source chunk',data:{sourceName:cell.name,base64Len:fileBase64.length,arrayBufferLen:arrayBuffer.byteLength,compressedLen:compressedBuffer.byteLength},timestamp:Date.now(),hypothesisId:'H3'})}).catch(()=>{});
+                                    // #endregion
+                                    sourceFilesPayload.push({ id: `sourceFile_${safeSourceName}`, sourceName: cell.name, fileName: cell._fileName, base64: fileBase64 });
+                                } else {
+                                    document.querySelectorAll(`script[id^="sourceFile_${safeSourceName}"]`).forEach(s => s.remove());
+                                    const script = document.createElement('script');
+                                    script.type = 'application/octet-stream';
+                                    script.id = `sourceFile_${safeSourceName}`;
+                                    script.dataset.sourceName = cell.name;
+                                    script.dataset.fileName = cell._fileName;
+                                    script.textContent = fileBase64;
+                                    document.head.appendChild(script);
+                                }
+                            } else if (cell.type === 'source' && !cell._currentFile && !passphrase) {
                                 const safeSourceName = cell.name.replace(/[^a-zA-Z0-9_]/g, '_');
                                 document.querySelectorAll(`script[id^="sourceFile_${safeSourceName}"]`).forEach(s => s.remove());
                             }
@@ -9609,16 +9415,30 @@ FROM source1 LIMIT 10;`;
                             if (cell.type === 'publipostageWord' && cell.docxTemplateBase64 && cell.docxTemplateFileName) {
                                 const cellPath = [...groupPath, cellIndex].join('_');
                                 const stableId = `docxTemplate_${cellPath}`;
-                                document.querySelectorAll(`script[id="${stableId}"]`).forEach(s => s.remove());
 
-                                const script = document.createElement('script');
-                                script.type = 'application/octet-stream';
-                                script.id = stableId;
-                                script.dataset.cellPath = cellPath;
-                                script.dataset.fileName = cell.docxTemplateFileName;
-                                script.textContent = cell.docxTemplateBase64;
-                                document.head.appendChild(script);
-                            } else if (cell.type === 'publipostageWord' && !cell.docxTemplateBase64) {
+                                if (passphrase) {
+                                    const docxBytes = FileHandler.base64ToUint8Array(cell.docxTemplateBase64);
+                                    const docxCompressed = await FileHandler.compressGzip(docxBytes.buffer || docxBytes);
+                                    const docxBase64 = FileHandler.arrayBufferToBase64(docxCompressed);
+                                    // #region agent log
+                                    fetch('http://127.0.0.1:7243/ingest/dc2eff21-3908-46dc-8551-f6846156ee7f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'collectSourceFiles',message:'docx chunk',data:{cellPath,base64Len:docxBase64.length,rawLen:cell.docxTemplateBase64.length,compressedLen:docxCompressed.byteLength},timestamp:Date.now(),hypothesisId:'H4'})}).catch(()=>{});
+                                    // #endregion
+                                    docxTemplatesPayload.push({ id: stableId, cellPath, fileName: cell.docxTemplateFileName, base64: docxBase64, compressed: true });
+                                } else {
+                                    document.querySelectorAll(`script[id="${stableId}"]`).forEach(s => s.remove());
+                                    const docxBytes = FileHandler.base64ToUint8Array(cell.docxTemplateBase64);
+                                    const docxCompressed = await FileHandler.compressGzip(docxBytes.buffer || docxBytes);
+                                    const docxBase64 = FileHandler.arrayBufferToBase64(docxCompressed);
+                                    const script = document.createElement('script');
+                                    script.type = 'application/octet-stream';
+                                    script.id = stableId;
+                                    script.dataset.cellPath = cellPath;
+                                    script.dataset.fileName = cell.docxTemplateFileName;
+                                    script.dataset.compressed = 'true';
+                                    script.textContent = docxBase64;
+                                    document.head.appendChild(script);
+                                }
+                            } else if (cell.type === 'publipostageWord' && !cell.docxTemplateBase64 && !passphrase) {
                                 const cellPath = [...groupPath, cellIndex].join('_');
                                 const stableId = `docxTemplate_${cellPath}`;
                                 document.querySelectorAll(`script[id="${stableId}"]`).forEach(s => s.remove());
@@ -9640,7 +9460,26 @@ FROM source1 LIMIT 10;`;
                         }
                     }
 
-                    let htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+                    let htmlContent;
+                    if (passphrase) {
+                        const payload = { config, sourceFiles: sourceFilesPayload, docxTemplates: docxTemplatesPayload };
+                        let payloadStr;
+                        try { payloadStr = JSON.stringify(payload); } catch (e) { payloadStr = '[stringify error]'; }
+                        // #region agent log
+                        fetch('http://127.0.0.1:7243/ingest/dc2eff21-3908-46dc-8551-f6846156ee7f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'exportHTMLWithConfig',message:'payload avant encrypt',data:{payloadStrLen:payloadStr?.length||0,sourceFilesCount:sourceFilesPayload.length,docxCount:docxTemplatesPayload.length,totalSourceBase64:sourceFilesPayload.reduce((s,x)=>s+(x.base64?.length||0),0),totalDocxBase64:docxTemplatesPayload.reduce((s,x)=>s+(x.base64?.length||0),0)},timestamp:Date.now(),hypothesisId:'H5'})}).catch(()=>{});
+                        // #endregion
+                        const encrypted = await GistEncrypt.encrypt(payloadStr, passphrase);
+                        const configScriptContent = btoa(JSON.stringify(encrypted));
+                        htmlContent = this._buildExportHTMLEncrypted(document.documentElement.outerHTML, configScriptContent);
+                    } else {
+                        document.getElementById('defaultConfigBase64')?.remove();
+                        const configScript = document.createElement('script');
+                        configScript.type = 'application/octet-stream';
+                        configScript.id = 'defaultConfigBase64';
+                        configScript.textContent = ConfigManager.encodeUTF8ToBase64(JSON.stringify(config, null, 2));
+                        document.head.appendChild(configScript);
+                        htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+                    }
                     htmlContent = htmlContent.replace(/<html[^>]*>/i, '<html lang="fr">');
 
                     const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
@@ -10002,6 +9841,7 @@ FROM source1 LIMIT 10;`;
 
             if (loadResult && loadResult.needsPassphrase && loadResult.encryptedContent) {
                 window._pendingEncryptedGist = loadResult.encryptedContent;
+                window._encryptedSource = loadResult.source || 'gist';
                 if (container) {
                     container.innerHTML = generateGistPassphraseModalHTML();
                     if (window.Alpine) Alpine.initTree(container);
