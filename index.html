@@ -947,6 +947,10 @@
                 const qNames = schema.queryNames ?? (schema.queryCount ? Array.from({ length: schema.queryCount }, (_, i) => i === 0 ? 'main' : i === 1 ? 'filename' : 'query' + i) : ['main']);
                 for (const qName of qNames) ConfigManager.ensureCellQueries(cell, qName);
                 if (schema.defaults?.json !== undefined && !cell.json) cell.json = {};
+                // pdfme: json doit être une chaîne pour textarea/modale (éviter [object Object])
+                if (type === 'pdfme' && typeof cell.json === 'object' && cell.json !== null) {
+                    cell.json = JSON.stringify(cell.json, null, 2);
+                }
             }
             static applyDefaultsOnTypeChange(cell, newType, opts = {}) {
                 if (!cell) return;
@@ -981,7 +985,14 @@
                     return result;
                 }
                 if (path === 'json.xlsx') return JSON.stringify(cell.json?.xlsx || {}, null, 2);
-                if (path === 'json.perspectiveConfig') return cell.json?.perspectiveConfig ?? '';
+                if (path === 'json.perspectiveConfig') {
+                    const cfg = cell.json?.perspectiveConfig;
+                    return (typeof cfg === 'string') ? cfg : (cfg != null ? JSON.stringify(cfg, null, 2) : '');
+                }
+                if (path === 'json') {
+                    const v = cell.json;
+                    return (typeof v === 'object' && v !== null) ? JSON.stringify(v, null, 2) : (v ?? '');
+                }
                 // Rétrocompat: queries[0] -> queries.main, queries[1] -> queries.fallback ou queries.filename selon le type
                 const qMatch = path.match(/^queries\[(\d+)\]\.(.*)$/);
                 if (qMatch) {
@@ -1026,6 +1037,10 @@
                 if (path === 'json.perspectiveConfig') {
                     if (!cell.json) cell.json = {};
                     cell.json.perspectiveConfig = typeof value === 'string' ? value : (value ?? '');
+                    return;
+                }
+                if (path === 'json') {
+                    cell.json = typeof value === 'string' ? value : (value != null ? JSON.stringify(value) : '');
                     return;
                 }
                 if (path.startsWith('json.') && !cell.json) cell.json = {};
@@ -1154,6 +1169,10 @@
                         ...q,
                         name: q.name || qNames[i] || (i === 0 ? 'main' : i === 1 ? 'filename' : 'query' + i)
                     }));
+                }
+                // pdfme: json objet -> chaîne pour éviter [object Object] dans textarea/modale
+                if (c.type === 'pdfme' && typeof c.json === 'object' && c.json !== null) {
+                    c.json = JSON.stringify(c.json, null, 2);
                 }
                 return c;
             }
@@ -1687,7 +1706,7 @@
                         break;
                     case 'pdfme':
                         cleanCell.queries = ConfigManager._buildQueriesForClean(cell);
-                        cleanCell.json = typeof cell.json === 'string' ? cell.json : '';
+                        cleanCell.json = typeof cell.json === 'string' ? cell.json : (cell.json ? JSON.stringify(cell.json) : '');
                         if (cell.buttonLabel) cleanCell.buttonLabel = cell.buttonLabel;
                         break;
                     case 'perspective':
@@ -2689,7 +2708,8 @@
                 const c = schema.bodyConfig || {};
                 const defaultSql = (c.defaultSql || 'SELECT * FROM source1').replace(/'/g, "\\'");
                 const mh = c.minHeight || '400px';
-                return `<div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 flex flex-col' : 'flex flex-col gap-2'"><template x-if="showSqlEditorVisible(cellItem.cell)"><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${defaultSql}', false, 'query', '_showParsedQuery', null, null, null, '${pathExpr}', '${cellIdxExpr}')"></div></template><template x-if="cellItem.cell._perspectiveReady"><div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 flex flex-col perspective-fill-height' : 'min-h-[${mh}]'"><perspective-viewer :id="'perspective-' + cellItem.cell._id" theme="Pro Light" :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 w-full rounded-lg' : 'w-full rounded-lg min-h-[${mh}]'" x-init="$nextTick(() => { if (cellItem.cell._arrowTable) { renderPerspectiveInContainer(cellItem.cell); } })"></perspective-viewer></div></template></div>`;
+                const ps = CellRenderer.renderTableSkeleton();
+                return `<div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 flex flex-col' : 'flex flex-col gap-2'"><template x-if="showSqlEditorVisible(cellItem.cell)"><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${defaultSql}', false, 'query', '_showParsedQuery', null, null, null, '${pathExpr}', '${cellIdxExpr}')"></div></template><template x-if="cellItem.cell._status === 'running' && !cellItem.cell._perspectiveReady"><div :class="(hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 ' : '') + 'min-h-[${mh}] rounded-lg bg-base-100 overflow-hidden'">${ps}</div></template><template x-if="cellItem.cell._perspectiveReady"><div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 flex flex-col perspective-fill-height' : 'min-h-[${mh}]'"><perspective-viewer :id="'perspective-' + cellItem.cell._id" theme="Pro Light" :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 w-full rounded-lg' : 'w-full rounded-lg min-h-[${mh}]'" x-init="$nextTick(() => { if (cellItem.cell._arrowTable) { renderPerspectiveInContainer(cellItem.cell); } })"></perspective-viewer></div></template></div>`;
             }
         }
 
@@ -5001,7 +5021,7 @@ if ($param1 === "Type A") {
                     this.status = message;
                     this.statusType = type;
                     if (type !== 'loading') {
-                        setTimeout(() => { this.status = ''; this.statusType = ''; }, 4000);
+                        setTimeout(() => { this.status = ''; this.statusType = ''; }, 1000);
                     }
                 },
 
@@ -5561,11 +5581,9 @@ FROM source1 LIMIT 10;`;
                         // Cellule source sans fileInput chargé : interrompre le flux
                         if (cell.type === 'source') {
                             if (!cell._fileName || !cell._currentFile || !cell._loaded) {
-                                this.setStatus(`Exécution interrompue : la source "${cell.name}" n'a pas de fichier chargé`, 'warning');
                                 return { stopped: true, reason: 'source_no_file', cellName: cell.name };
                             }
                             if (cell._status === 'error') {
-                                this.setStatus(`Exécution interrompue : la source "${cell.name}" a une erreur de chargement`, 'error');
                                 return { stopped: true, reason: 'source_error', cellName: cell.name };
                             }
                             continue;
@@ -5714,11 +5732,9 @@ FROM source1 LIMIT 10;`;
                                 // Cellule source sans fileInput chargé : interrompre le flux
                                 if (cell.type === 'source') {
                                     if (!cell._fileName || !cell._currentFile || !cell._loaded) {
-                                        this.setStatus(`Exécution interrompue : la source "${cell.name}" n'a pas de fichier chargé`, 'warning');
                                         return { stopped: true, reason: 'source_no_file', cellName: cell.name };
                                     }
                                     if (cell._status === 'error') {
-                                        this.setStatus(`Exécution interrompue : la source "${cell.name}" a une erreur de chargement`, 'error');
                                         return { stopped: true, reason: 'source_error', cellName: cell.name };
                                     }
                                     continue;
@@ -5918,7 +5934,7 @@ FROM source1 LIMIT 10;`;
                     const disp = schema?.bodyDisplay?.showSkeleton ?? { when: 'running', excludeTypes: ['uiParameter'] };
                     if (disp.when === 'never') return false;
                     if (disp.excludeTypes?.includes(cell.type)) return false;
-                    if (disp.excludeWhenSqlEditor && this.isSqlCellWithEditor(cell.type)) return false;
+                    if (disp.excludeWhenSqlEditor && this.isSqlCellWithEditor(cell.type) && this.showSqlEditorVisible(cell)) return false;
                     if (cell._status === 'running') return true;
                     if (disp.sourceLoading && cell.type === 'source' && cell._fileName && !cell._loaded) return true;
                     return false;
@@ -7772,7 +7788,7 @@ FROM source1 LIMIT 10;`;
                         throw new Error('Requête SQL manquante');
                     }
 
-                    const pdfmeTemplate = typeof cell.json === 'string' ? cell.json : null;
+                    const pdfmeTemplate = typeof cell.json === 'string' ? cell.json : (cell.json ? JSON.stringify(cell.json) : null);
                     if (!pdfmeTemplate?.trim()) {
                         console.error('[pdfme] Template pdfme manquant');
                         throw new Error('Template pdfme manquant');
@@ -8008,12 +8024,14 @@ FROM source1 LIMIT 10;`;
                         const conn = DuckDBManager.getConnection();
                         const perspective = window.perspectiveClient;
 
-                        // Parser la configuration JSON si présente
+                        // Parser la configuration JSON si présente (string ou objet déjà parsé)
                         let config = { theme: 'Pro Light' };
                         const perspectiveConfig = cell.json?.perspectiveConfig;
-                        if (perspectiveConfig?.trim()) {
+                        if (perspectiveConfig != null && perspectiveConfig !== '') {
                             try {
-                                const userConfig = JSON.parse(perspectiveConfig);
+                                const userConfig = typeof perspectiveConfig === 'string'
+                                    ? JSON.parse(perspectiveConfig.trim())
+                                    : perspectiveConfig;
                                 config = { ...config, ...userConfig };
                             } catch (e) {
                                 console.warn('Configuration Perspective invalide, utilisation des valeurs par défaut:', e);
@@ -8034,6 +8052,9 @@ FROM source1 LIMIT 10;`;
                             cell._perspectiveWorker = await perspective.worker();
                         }
                         const table = await cell._perspectiveWorker.table(batches);
+
+                        // Laisser le custom element perspective-viewer (WASM) s'initialiser complètement
+                        await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
 
                         if (typeof viewer.resetThemes === 'function') {
                             await viewer.resetThemes(['Pro Light', 'Pro Dark']);
