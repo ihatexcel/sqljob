@@ -2623,7 +2623,7 @@
                             const cm = cellItem.cell._easyMDE.codemirror || cellItem.cell._easyMDE.cm;
                             if (cm && typeof cm.on === 'function') cm.on('change', () => { if (cellItem.cell._easyMDE && ConfigManager.getCellEngine(cellItem.cell, 'main') === 'text') ConfigManager.setMarkdownContent(cellItem.cell, cellItem.cell._easyMDE.value()); });
                         })"
-                        x-effect="(() => { const c = cellItem.cell; if (!c._easyMDE) return; if (c._markdownContent && c._easyMDE.value() !== c._markdownContent) { c._easyMDE.value(c._markdownContent); const cm = c._easyMDE.codemirror || c._easyMDE.cm; if (cm?.refresh) cm.refresh(); } })()"></textarea></div></template>
+                        x-effect="(() => { const c = cellItem.cell; if (!c._easyMDE) return; const target = ConfigManager.getMarkdownContent(c); if (target != null && c._easyMDE.value() !== target) { c._easyMDE.value(target); const cm = c._easyMDE.codemirror || c._easyMDE.cm; if (cm?.refresh) cm.refresh(); } })()"></textarea></div></template>
                     <template x-if="devMode && (ConfigManager.getCellEngine(cellItem.cell,'main') === 'sql' || ConfigManager.getCellEngine(cellItem.cell,'main') === 'js')"><div class="flex flex-col gap-2" :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0' : ''"><div x-effect="safeRenderMarkdownQueryEditor($el, cellItem.cell, ${pathExpr}, ${cellIdxExpr})"></div></div></template>
                     <template x-if="!devMode || ConfigManager.getCellEngine(cellItem.cell,'main') !== 'text'"><div class="easymde-client" :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 flex flex-col' : ''">
                     <textarea :id="'markdown_cli_' + cellItem.cell._id" x-text="ConfigManager.getMarkdownDisplayContent(cellItem.cell) || ''"
@@ -2635,9 +2635,10 @@
                             let inst = new EasyMDE({ element: el, spellChecker: false, status: false, toolbar: false, readOnly: isReadOnly, minHeight: hasCellHeight(cellItem.cell) ? '100%' : '50px', previewRender: (plainText) => inst ? inst.markdown(plainText) : plainText, autorefresh: { delay: 200 } });
                             const cm = inst.codemirror || inst.cm;
                             if (cm && isReadOnly) cm.setOption('readOnly', true);
+                            if (cm && !isReadOnly && typeof cm.on === 'function') cm.on('change', () => { if (cellItem.cell._easyMDEcli && ConfigManager.getCellEngine(cellItem.cell, 'main') === 'text') ConfigManager.setMarkdownContent(cellItem.cell, cellItem.cell._easyMDEcli.value()); });
                             cellItem.cell._easyMDEcli = inst;
                             if (typeof inst.togglePreview === 'function') { try { inst.togglePreview(); } catch (_) {} }
-                            setTimeout(() => $el.closest('.easymde-client')?.classList.add('easymde-ready'), 100);
+                            setTimeout(() => { $el.closest('.easymde-client')?.classList.add('easymde-ready'); if (cm?.refresh) cm.refresh(); }, 100);
                         })"
                         x-effect="(() => { const c = cellItem.cell; if (!c._easyMDEcli) return; const isRo = ConfigManager.getCellEngine(c, 'main') !== 'text'; const cm = c._easyMDEcli.codemirror || c._easyMDEcli.cm; if (cm && cm.getOption('readOnly') !== isRo) { cm.setOption('readOnly', isRo); if (!isRo) c._easyMDEcli.value(ConfigManager.getMarkdownContent(c)); } if (isRo && c._markdownContent && c._easyMDEcli.value() !== c._markdownContent) { c._easyMDEcli.value(c._markdownContent); if (cm?.refresh) cm.refresh(); } })()"></textarea></div></template>
                 </div>`;
@@ -2849,7 +2850,7 @@
                 <template x-for="(page, index) in pages" :key="page._id">
                     <li x-data="{ editing: false, tempName: '' }">
                         <div class="flex items-center justify-between w-full">
-                            <a @click="activePageIndex = index; document.getElementById('mobile-drawer').checked = false;"
+                            <a @click="activatePage(index); document.getElementById('mobile-drawer').checked = false;"
                                @dblclick="if (devMode) { editing = true; tempName = page.name; $nextTick(() => $refs.input.select()); }"
                                x-show="!editing"
                                :class="activePageIndex === index ? 'active' : ''"
@@ -2929,7 +2930,7 @@
                             <a role="tab" 
                                class="tab"
                                :class="activePageIndex === index ? 'tab-active' : ''"
-                               @click="activePageIndex = index"
+                               @click="activatePage(index)"
                                @dblclick="if (devMode) { editing = true; tempName = page.name; $nextTick(() => $refs.input.select()); }"
                                x-show="!editing"
                                x-text="page.name"
@@ -2996,9 +2997,9 @@
         </div>
         <div class="max-w-7xl mx-auto px-4 mt-6 pb-8" :class="showLayout ? 'pt-16' : 'pt-0'">
             <div class="flex flex-col" :class="devMode ? 'gap-4' : 'gap-0'">
-                <!-- Rendu unifié de tous les groupes de niveau 0 -->
-                <template x-for="item in getFlattenedGroups()" :key="activePageIndex + '_' + item.pathKey">
-                    <div>
+                <!-- Rendu unifié de tous les groupes de niveau 0 (toutes pages, x-show pour conserver le DOM) -->
+                <template x-for="item in getFlattenedGroupsForAllPages()" :key="item.uniqueKey">
+                    <div x-show="activePageIndex === item.pageIndex">
 			<!-- Séparateur avant le groupe -->
                         <div
                         x-show="devMode && !item.isFirst && !draggedCellPath && !draggedChildPath"
@@ -4519,6 +4520,7 @@ if ($param1 === "Type A") {
                 // DAG debounce timer
                 _dagDebounceTimer: null,
                 _dagDebounceDelay: 200, // 500ms de délai avant rafraîchissement
+                _pagesInitialized: new Set(), // Pages dont les cellules ont déjà été exécutées (par _id)
 
                 // Getters pour la page active
                 get activePage() {
@@ -4608,6 +4610,39 @@ if ($param1 === "Type A") {
                     if (index >= 0 && index < this.pages.length) {
                         this.activePageIndex = index;
                     }
+                },
+
+                // Active une page et exécute ses cellules à la première ouverture (stop si source vide, bouton, etc.)
+                async activatePage(index) {
+                    if (index < 0 || index >= this.pages.length) return;
+                    const page = this.pages[index];
+                    this.activePageIndex = index;
+                    if (!this._pagesInitialized.has(page._id)) {
+                        this._pagesInitialized.add(page._id);
+                        await this.runAllGroups();
+                    }
+                    this.$nextTick(() => setTimeout(() => this.refreshMarkdownCellsForPage(index), 50));
+                },
+
+                // Rafraîchit les hauteurs des cellules markdown en mode client (EasyMDE _easyMDEcli uniquement)
+                // Pas _easyMDE (dev) : cm.refresh() casse l'édition
+                refreshMarkdownCellsForPage(pageIndex) {
+                    const page = this.pages[pageIndex];
+                    if (!page) return;
+                    const refreshCells = (groups) => {
+                        (groups || []).forEach(group => {
+                            (group.cells || []).forEach(cell => {
+                                if (cell.type === 'markdown') {
+                                    const inst = cell._easyMDEcli;
+                                    const cm = inst?.codemirror || inst?.cm;
+                                    if (cm?.refresh) cm.refresh();
+                                }
+                            });
+                            if (group.children) refreshCells(group.children);
+                        });
+                    };
+                    refreshCells(page.groups || []);
+                    refreshCells(page.linkGroups || []);
                 },
 
                 // Détermine si une cellule doit être affichée (fix pour les cases vides en mode view)
@@ -4762,8 +4797,10 @@ if ($param1 === "Type A") {
                         // Évaluer les ifQuery des groupes (condition d'affichage en mode client)
                         await this.evaluateAllGroupIfQueries();
 
-                        // Auto-exécution au chargement du notebook
+                        // Auto-exécution au chargement du notebook (page 0)
                         await this.runAllGroups();
+                        if (this.pages[0]) this._pagesInitialized.add(this.pages[0]._id);
+                        this.$nextTick(() => setTimeout(() => this.refreshMarkdownCellsForPage(0), 300));
                     } catch (error) {
                         this.setStatus('Erreur d\'initialisation: ' + error.message, 'error');
                     } finally {
@@ -5241,6 +5278,31 @@ if ($param1 === "Type A") {
                             isLast: i === this.groups.length - 1,
                             siblingCount: this.groups.length
                         });
+                    }
+                    return result;
+                },
+
+                // Retourne tous les groupes de toutes les pages (pour conservation du DOM au changement de page)
+                getFlattenedGroupsForAllPages() {
+                    const result = [];
+                    for (let pi = 0; pi < (this.pages || []).length; pi++) {
+                        const page = this.pages[pi];
+                        const groups = page?.groups || [];
+                        for (let i = 0; i < groups.length; i++) {
+                            const group = groups[i];
+                            result.push({
+                                pageIndex: pi,
+                                pageId: page._id,
+                                uniqueKey: page._id + '_' + i,
+                                group,
+                                path: [i],
+                                depth: 0,
+                                pathKey: String(i),
+                                isFirst: i === 0,
+                                isLast: i === groups.length - 1,
+                                siblingCount: groups.length
+                            });
+                        }
                     }
                     return result;
                 },
@@ -9726,6 +9788,7 @@ FROM source1 LIMIT 10;`;
 
                         this.pages = loadedPages;
                         this.activePageIndex = 0;
+                        this._pagesInitialized.clear();
                         this.ensureAllCellsHaveNames();
 
                         // Charger les fichiers source en attente (depuis la config JSON)
@@ -9734,8 +9797,10 @@ FROM source1 LIMIT 10;`;
                         // Évaluer les ifQuery des groupes
                         await this.evaluateAllGroupIfQueries();
 
-                        // Auto-exécution au chargement du notebook
+                        // Auto-exécution au chargement du notebook (page 0)
                         await this.runAllGroups();
+                        if (this.pages[0]) this._pagesInitialized.add(this.pages[0]._id);
+                        this.$nextTick(() => setTimeout(() => this.refreshMarkdownCellsForPage(0), 300));
 
                         // Mettre à jour le moteur DB si différent dans la config importée
                         const configDbEngine = config.ui?.dbEngine;
