@@ -713,6 +713,12 @@
             },
             types: {
                 markdown: {
+                    executeHandler: 'executeMarkdownCell',
+                    defaultNamePrefix: 'markdown',
+                    bodyDisplay: { showSkeleton: { when: 'running', skipWhenEngineText: true } },
+                    exportFields: ['queries'],
+                    contentKey: 'queries.main',
+                    contentResultKey: '_markdownContent',
                     commonParams: ['name', 'queries'],
                     queryCount: 1,
                     queryNames: ['main'],
@@ -725,6 +731,16 @@
                     bodyConfig: { devModeToolbar: ['bold', 'italic', 'heading', '|', 'quote', 'unordered-list', 'ordered-list', '|', 'link', 'image', '|', 'preview', '|', 'guide'], devTextareaId: 'markdown_dev_', clientTextareaId: 'markdown_cli_' }
                 },
                 source: {
+                    executeHandler: null,
+                    defaultNamePrefix: 'source',
+                    secondQueryName: 'fallback',
+                    requiresFileBeforeRun: true,
+                    exportRuntimeBlob: true,
+                    namePattern: /^[a-zA-Z_][a-zA-Z0-9_]*$/,
+                    exportFields: ['name', 'title', 'queries', 'json'],
+                    exportFileSlot: 'source',
+                    initProps: { _isDragging: false, _loaded: false },
+                    initFileSlot: { slot: 'source', asBlob: true },
                     commonParams: ['name', 'title', 'queries'],
                     queryCount: 2,
                     queryNames: ['main', 'fallback'],
@@ -743,10 +759,15 @@
                         json: { xlsx: { options: { type: 'array', raw: false, dateNF: 'dd/mm/yyyy', cellDates: true }, toCsvOptions: { dateNF: 'dd/mm/yyyy', FS: ',', RS: '\n' }, sheetSelection: { type: { auto: true }, index: 0, name: '' } } }
                     },
                     bodyFamily: 'fileDropZone',
-                    bodyConfig: { fileKey: '_fileName', accept: '.csv,.parquet,.xlsx,.xls', inputId: 'fileInput_', emptyIcon: '📁', emptyTitleKey: 'title', emptySubtitle: "→ {name}", handlers: { drop: 'handleSingleSourceDrop', select: 'handleSingleSourceFileSelect', remove: 'removeSingleSourceFile', download: 'downloadSourceFile' }, minHeight: '80px', showQueryInDevMode: true, defaultSqls: ["CREATE OR REPLACE TABLE {name} AS SELECT * FROM '{fileNameUpload}'", "CREATE OR REPLACE TABLE {name} AS\n{{\nSELECT\nCASE\n    WHEN lower('{fileName}') LIKE '%.csv'\n      OR lower('{fileName}') LIKE '%.csv.gz'\n    THEN\n        'SELECT * FROM read_csv(''' || '{fileName}' || ''',\n         ALL_VARCHAR = true, HEADER = true, AUTO_DETECT = true,\n         SAMPLE_SIZE = -1, IGNORE_ERRORS = true)'\n\n    WHEN lower('{fileName}') LIKE '%.xlsx'\n    THEN\n        'SELECT * FROM read_xlsx(''' || '{fileName}' || ''',\n         ALL_VARCHAR = true, HEADER = true,\n         STOP_AT_EMPTY = false, EMPTY_AS_VARCHAR = true,\n         IGNORE_ERRORS = true)'\n\n    WHEN lower('{fileName}') LIKE '%.tsv'\n      OR lower('{fileName}') LIKE '%.tsv.gz'\n      OR lower('{fileName}') LIKE '%.txt'\n      OR lower('{fileName}') LIKE '%.txt.gz'\n    THEN\n        'SELECT * FROM read_csv(''' || '{fileName}' || ''',\n         ALL_VARCHAR = true, HEADER = true,\n         DELIM = ''\\t'', AUTO_DETECT = false,\n         SAMPLE_SIZE = -1, IGNORE_ERRORS = true)'\n\n    WHEN lower('{fileName}') LIKE '%.parquet'\n      OR lower('{fileName}') LIKE '%.parquet.gz'\n    THEN\n        'SELECT * FROM read_parquet(''' || '{fileName}' || ''')'\n\n    ELSE 'SELECT 1'\nEND AS fallback_query;\n}};"] },
+                    bodyConfig: { fileSlot: 'source', fileKey: '_fileName', fileBase64Key: 'fileBase64', fileFileNameKey: 'fileName', accept: '.csv,.parquet,.xlsx,.xls', inputId: 'fileInput_', emptyIcon: '📁', emptyTitleKey: 'title', emptySubtitle: "→ {name}", handlers: { drop: 'handleSingleSourceDrop', select: 'handleSingleSourceFileSelect', remove: 'removeSingleSourceFile', download: 'downloadSourceFile' }, minHeight: '80px', showQueryInDevMode: true },
                     bodyDisplay: { showSkeleton: { when: 'running', sourceLoading: true } }
                 },
                 buttonRunNextCells: {
+                    executeHandler: null,
+                    defaultNamePrefix: 'button',
+                    blocksAutoFlow: true,
+                    showOnlyWhenButtonLabel: true,
+                    exportFields: ['buttonLabel'],
                     commonParams: ['name', 'buttonLabel'],
                     specificParams: [],
                     defaults: { buttonLabel: '▶️ Exécuter' },
@@ -754,6 +775,11 @@
                     bodyConfig: { defaultLabel: '▶️ Exécuter', action: 'runCellsAfter' }
                 },
                 sqlRecursiveParse: {
+                    executeHandler: 'executeSqlRecursiveParseCell',
+                    defaultNamePrefix: 'sql',
+                    hideInViewMode: true,
+                    exportFields: ['queries'],
+                    initProps: { _showParsedQuery: false },
                     commonParams: ['name', 'queries'],
                     queryCount: 1,
                     queryNames: ['main'],
@@ -762,10 +788,14 @@
                     ],
                     defaults: { queries: [{ name: 'main', sql: 'SELECT * FROM source1 LIMIT 100', engine: 'sql', clientVisible: false }] },
                     bodyFamily: 'sqlWithTable',
-                    bodyConfig: { defaultSql: 'SELECT * FROM source1 LIMIT 100', queryKey: 'query', showTextResult: true, showResultInfo: true },
+                    bodyConfig: { queryKey: 'query', showTextResult: true, showResultInfo: true },
                     bodyDisplay: { showSkeleton: { excludeWhenSqlEditor: true }, resultInfo: { showDevOnly: false } }
                 },
                 table: {
+                    executeHandler: 'executeTableCell',
+                    defaultNamePrefix: 'table',
+                    exportFields: ['queries', 'maxRows'],
+                    initProps: { _showParsedQuery: false },
                     commonParams: ['name', 'queries'],
                     queryCount: 1,
                     queryNames: ['main'],
@@ -775,10 +805,15 @@
                     ],
                     defaults: { queries: [{ name: 'main', sql: 'SELECT * FROM source1 LIMIT 100', engine: 'sql', clientVisible: false }], maxRows: 100000 },
                     bodyFamily: 'sqlWithTable',
-                    bodyConfig: { defaultSql: 'SELECT * FROM source1 LIMIT 100', queryKey: 'query', showTextResult: false, showResultInfo: true },
+                    bodyConfig: { queryKey: 'query', showTextResult: false, showResultInfo: true },
                     bodyDisplay: { showSkeleton: { excludeWhenSqlEditor: true }, resultInfo: { showDevOnly: false } }
                 },
                 iframe: {
+                    executeHandler: 'executeIframeCell',
+                    defaultNamePrefix: 'iframe',
+                    showInViewWhenResultOrRunning: true,
+                    exportFields: ['queries'],
+                    initProps: { _showParsedQuery: false },
                     commonParams: ['name', 'queries'],
                     queryCount: 1,
                     queryNames: ['main'],
@@ -786,12 +821,17 @@
                         { key: 'queries.main.engine', label: 'Type de langage', tooltip: "SQL: requête retournant du HTML | JS: retourne une chaîne HTML | Texte: HTML saisi directement", inputType: 'select', options: [{ value: 'sql', label: '🗄️SQL' }, { value: 'js', label: '⚡JavaScript' }, { value: 'text', label: '📝Texte' }] },
                         { key: 'queries.main.clientVisible', label: "Afficher l'éditeur SQL en mode client", tooltip: "Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur. En mode client, seul le résultat sera affiché.", inputType: 'checkbox' }
                     ],
-                    defaults: { queries: [{ name: 'main', sql: "SELECT '<html><body><h1>Hello</h1></body></html>' as html", engine: 'sql', clientVisible: false }] },
+                    defaults: { queries: [{ name: 'main', sql: '<html><body><h1>Hello</h1></body></html>', engine: 'text', clientVisible: false }] },
                     bodyFamily: 'sqlWithIframe',
-                    bodyConfig: { defaultSql: "SELECT '<html><body><h1>Hello</h1></body></html>' as html", useIframeEditor: true },
+                    bodyConfig: { useIframeEditor: true },
                     bodyDisplay: { showSkeleton: { excludeWhenSqlEditor: true } }
                 },
                 sqlStat: {
+                    executeHandler: 'executeSqlStatCell',
+                    defaultNamePrefix: 'sqlStat',
+                    showInViewWhenResultOrRunning: true,
+                    exportFields: ['queries', 'title', 'subtitle', 'icon'],
+                    initProps: { _showParsedQuery: false },
                     commonParams: ['name', 'title', 'subtitle', 'icon', 'queries'],
                     queryCount: 1,
                     queryNames: ['main'],
@@ -803,10 +843,16 @@
                     ],
                     defaults: { title: 'Total Lignes', subtitle: '', icon: 'material-symbols-light:join-right', queries: [{ name: 'main', sql: 'SELECT COUNT(*) FROM source1', engine: 'sql', clientVisible: false }] },
                     bodyFamily: 'sqlStat',
-                    bodyConfig: { defaultSql: 'SELECT COUNT(*) FROM source1', defaultIcon: 'mdi:information-outline', showResultInfoDevOnly: true },
+                    bodyConfig: { defaultIcon: 'mdi:information-outline', showResultInfoDevOnly: true },
                     bodyDisplay: { showSkeleton: { excludeWhenSqlEditor: true }, resultInfo: { showDevOnly: true } }
                 },
                 uiParameter: {
+                    executeHandler: 'executeUiParameterCell',
+                    defaultNamePrefix: 'param',
+                    useNameAsReference: true,
+                    namePattern: /^[a-zA-Z_][a-zA-Z0-9_]*$/,
+                    exportFields: ['name', 'paramType', 'title', 'queries', 'inputType', 'rangeMin', 'rangeMax', 'rangeStep', 'userVisible', 'userEditable', 'preserveUserValue'],
+                    initProps: { _value: '', _options: [], _initialized: false, _paramError: null },
                     commonParams: ['name', 'title', 'queries'],
                     queryCount: 1,
                     queryNames: ['main'],
@@ -823,12 +869,36 @@
                         { key: 'rangeMax', label: 'Valeur maximum', tooltip: "Valeur maximale du curseur (défaut: 100)", inputType: 'number', when: { paramType: 'range' }, placeholder: '100' },
                         { key: 'rangeStep', label: 'Pas (step)', tooltip: "Incrément entre chaque valeur du curseur (défaut: 1)", inputType: 'number', when: { paramType: 'range' }, placeholder: '1', min: 0.001 }
                     ],
-                    defaults: { title: '', paramType: 'input', inputType: 'text', rangeMin: 0, rangeMax: 100, rangeStep: 1, userVisible: true, userEditable: true, preserveUserValue: false, queries: [{ name: 'main', sql: '', engine: 'sql', clientVisible: false }] },
+                    defaults: { 
+                        title: '', 
+                        paramType: 'input', 
+                        inputType: 'text', 
+                        rangeMin: 0, rangeMax: 100, rangeStep: 1, 
+                        userVisible: true, userEditable: true, 
+                        preserveUserValue: false, 
+                        queries: [{ 
+                            name: 'main', sql: '', 
+                            engine: 'sql', 
+                            clientVisible: false 
+                        }] 
+                    },
                     bodyFamily: 'uiParameter',
-                    bodyConfig: { showDevRef: true, paramTypes: ['input', 'dropdown', 'range'] },
+                    bodyConfig: { 
+                        showDevRef: true, 
+                        paramTypes: ['input', 'dropdown', 'range'] 
+                    },
                     bodyDisplay: { showSkeleton: { when: 'never' } }
                 },
                 publipostageWord: {
+                    executeHandler: 'executePublipostageWordCell',
+                    defaultNamePrefix: 'docx',
+                    secondQueryName: 'filename',
+                    skippedWhenButtonLabel: true,
+                    exportTemplateBase64: true,
+                    exportFields: ['queries', 'buttonLabel'],
+                    exportFileSlot: 'docxTemplate',
+                    initProps: { _showParsedQuery: false, _showParsedQuery2: false, _parseLevels: [], _parseLevels2: [], _isDragging: false },
+                    initFileSlot: { slot: 'docxTemplate', asBlob: false },
                     commonParams: ['name', 'buttonLabel'],
                     queryCount: 2,
                     queryNames: ['main', 'filename'],
@@ -842,9 +912,27 @@
                         buttonLabel: '📄 Générer les documents'
                     },
                     bodyFamily: 'publipostageWord',
-                    bodyConfig: { fileKey: 'docxTemplateFileName', accept: '.docx', emptyIcon: '📄', emptyTitle: 'Glissez-déposez votre template Word (.docx)', emptySubtitle: 'Template de publipostage', queryLabels: ['Requête de données', 'Requête de nom de fichier'], defaultSqls: ['SELECT * FROM source1 LIMIT 10', 'SELECT 1 filename FROM source1 LIMIT 10'], defaultButtonLabel: '📄 Générer les documents', buttonDisabledCondition: '!cellItem.cell.docxTemplateFileName' }
+                    bodyConfig: { 
+                        fileSlot: 'docxTemplate', 
+                        fileKey: 'docxTemplateFileName', 
+                        fileBase64Key: 'docxTemplateBase64', 
+                        fileFileNameKey: 'docxTemplateFileName', 
+                        accept: '.docx', emptyIcon: '📄',
+                        emptyTitle: 'Glissez-déposez votre template Word (.docx)',
+                        emptySubtitle: 'Template de publipostage',
+                        queryLabels: ['Requête de données', 'Requête de nom de fichier'],
+                        defaultButtonLabel: '📄 Générer les documents', 
+                        buttonDisabledCondition: '!cellItem.cell.docxTemplateFileName'
+                    }
                 },
                 pdfme: {
+                    executeHandler: 'executePdfmeCell',
+                    defaultNamePrefix: 'pdfme',
+                    secondQueryName: 'filename',
+                    skippedWhenButtonLabel: true,
+                    exportFields: ['queries', 'json', 'buttonLabel'],
+                    exportJsonMode: 'string',
+                    initProps: { _showParsedQuery: false, _parseLevels: [] },
                     commonParams: ['name', 'queries', 'buttonLabel'],
                     queryCount: 2,
                     queryNames: ['main', 'filename'],
@@ -861,9 +949,19 @@
                         buttonLabel: '📑 Générer le PDF'
                     },
                     bodyFamily: 'pdfme',
-                    bodyConfig: { queryLabels: ['Requête de données', 'Requête nom de fichier PDF'], defaultSqls: ['SELECT * FROM source1 LIMIT 10', "SELECT '$loop' || '_2.pdf'"], jsonLabel: 'Template pdfme (JSON)', jsonPlaceholder: '{"basePdf": {...}, "schemas": [...]}', defaultButtonLabel: '📑 Générer le PDF' }
+                    bodyConfig: { 
+                        queryLabels: ['Requête de données', 'Requête nom de fichier PDF'], 
+                        jsonLabel: 'Template pdfme (JSON)', 
+                        jsonPlaceholder: '{"basePdf": {...}, "schemas": [...]}', 
+                        defaultButtonLabel: '📑 Générer le PDF'
+                    }
                 },
                 perspective: {
+                    executeHandler: 'executePerspectiveCell',
+                    defaultNamePrefix: 'perspective',
+                    exportFields: ['queries', 'json'],
+                    exportJsonMode: 'object',
+                    initProps: { _showParsedQuery: false, _perspectiveReady: false, _perspectiveWorker: null, _perspectiveTable: null, _arrowTable: null },
                     commonParams: ['name', 'queries'],
                     queryCount: 1,
                     queryNames: ['main'],
@@ -879,11 +977,93 @@
                         perspectiveCdns: { viewer: true, datagrid: true, d3fc: true, openlayers: false }
                     },
                     bodyFamily: 'sqlWithPerspective',
-                    bodyConfig: { defaultSql: 'SELECT * FROM source1', theme: 'Pro Light', minHeight: '400px' },
+                    bodyConfig: { theme: 'Pro Light', minHeight: '400px' },
                     bodyDisplay: { showSkeleton: { excludeWhenSqlEditor: true } }
                 }
             }
         };
+
+        // ═══════════════════════════════════════════════════════════════════════════
+        // HANDLERS PAR TYPE DE CELLULE (logique spécifique non factorisable)
+        // ═══════════════════════════════════════════════════════════════════════════
+        const CELL_TYPE_HANDLERS = {
+            uiParameter: {
+                onInit(cell, newCell) {
+                    if (cell.referenceName && (!cell.name || !String(cell.name).trim())) {
+                        newCell.name = String(cell.referenceName).trim();
+                    }
+                },
+                getExportValue(cell, field) {
+                    if (field === 'name') return (cell.name || cell.referenceName || '').trim() || undefined;
+                    return undefined;
+                }
+            },
+            perspective: {
+                onInit(cell, newCell) {
+                    if (cell.json?.perspectiveConfig !== undefined) {
+                        if (!newCell.json || typeof newCell.json !== 'object') newCell.json = {};
+                        newCell.json.perspectiveConfig = cell.json.perspectiveConfig;
+                    }
+                }
+            },
+            publipostageWord: {
+                onInit(cell, newCell) {
+                    if (newCell.buttonLabel === undefined) newCell.buttonLabel = '📄 Générer les documents';
+                }
+            },
+            pdfme: {
+                onInit(cell, newCell) {
+                    if (newCell.buttonLabel === undefined) newCell.buttonLabel = '📑 Générer le PDF';
+                }
+            }
+        };
+
+        /** Initialisation partagée d'une cellule (initCell + restore). Utilisé par notebookApp et applyImportedConfig. */
+        function initializeCell(cell, cellIndex, opts = {}) {
+            const generateId = opts.generateId || (() => 'cell_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9));
+            const newCell = {
+                ...cell,
+                _id: generateId(),
+                _status: null,
+                _results: null,
+                _resultInfo: null,
+                _order: ConfigManager.normalizeOrder(cell.order, cellIndex)
+            };
+            const schema = CELL_TYPE_SCHEMAS?.types[cell?.type];
+
+            if (schema?.initProps) {
+                for (const [k, v] of Object.entries(schema.initProps)) {
+                    newCell[k] = Array.isArray(v) ? [] : v;
+                }
+            }
+
+            if (schema?.initFileSlot) {
+                const { slot, asBlob } = schema.initFileSlot;
+                ConfigManager.ensureCellFiles(cell);
+                newCell.files = cell.files;
+                const fileData = ConfigManager.getCellFileData(cell);
+                if (asBlob) {
+                    if (fileData) {
+                        newCell._fileName = fileData.fileName;
+                        const uint8Array = FileHandler.base64ToUint8Array(fileData.base64);
+                        const blob = new Blob([uint8Array], { type: FileHandler.getMimeTypeFromFileName(fileData.fileName) });
+                        newCell._currentFile = new File([blob], fileData.fileName, { type: blob.type });
+                        newCell._pendingFileLoad = true;
+                    } else {
+                        newCell._fileName = '';
+                        newCell._currentFile = null;
+                    }
+                } else if (fileData) {
+                    newCell.docxTemplateBase64 = fileData.base64;
+                    newCell.docxTemplateFileName = fileData.fileName;
+                }
+            }
+
+            const handler = CELL_TYPE_HANDLERS[cell?.type];
+            if (handler?.onInit) handler.onInit(cell, newCell);
+
+            return newCell;
+        }
 
         // ═══════════════════════════════════════════════════════════════════════════
         // SERVICE CONFIG CELLULE (CellConfigService)
@@ -977,12 +1157,15 @@
             /** Lit une valeur via un chemin (ex: 'queries.main.sql', 'queries[0].sql' rétrocompat, 'json.xlsx'). Pour json.xlsx retourne JSON.stringify. */
             static getCellValueByPath(cell, path) {
                 if (!cell || !path) return undefined;
-                // Pour markdown: la modale doit TOUJOURS afficher la requête (queries.main.sql), jamais le résultat (_markdownContent)
-                if (path === 'content' && cell.type === 'markdown') {
-                    const engine = ConfigManager.getCellEngine(cell, 'main');
-                    const queryVal = ConfigManager.getCellQuery(cell, 'main') || '';
-                    const result = (engine === 'sql' || engine === 'js') ? queryVal : ConfigManager.getMarkdownContent(cell);
-                    return result;
+                // Pour cellules avec contenu éditable (ex. markdown): la modale affiche la requête ou le contenu selon l'engine
+                if (path === 'content') {
+                    const schema = CELL_TYPE_SCHEMAS?.types[cell?.type];
+                    if (schema?.contentKey) {
+                        const engine = ConfigManager.getCellEngine(cell, 'main');
+                        const queryVal = ConfigManager.getCellQuery(cell, 'main') || '';
+                        const result = (engine === 'sql' || engine === 'js') ? queryVal : ConfigManager.getCellEditableContent(cell);
+                        return result;
+                    }
                 }
                 if (path === 'json.xlsx') return JSON.stringify(cell.json?.xlsx || {}, null, 2);
                 if (path === 'json.perspectiveConfig') {
@@ -1015,7 +1198,8 @@
                         }
                         if (q && subPath) {
                             const val = q[subPath];
-                            const ret = (subPath === 'engine' && val === undefined && cell.type === 'markdown') ? 'text' : val;
+                            const defaultEngine = ConfigManager.getDefaultEngineForType(cell?.type, qName);
+                            const ret = (subPath === 'engine' && val === undefined) ? defaultEngine : val;
                             return ret;
                         }
                     }
@@ -1028,7 +1212,10 @@
             /** Écrit une valeur via un chemin. Pour json.xlsx : value est une chaîne JSON. Supporte queries.main.xxx et queries[0].xxx (rétrocompat). */
             static setCellValueByPath(cell, path, value) {
                 if (!cell || !path) return;
-                if (path === 'content' && cell.type === 'markdown') { ConfigManager.setMarkdownContent(cell, value); return; }
+                if (path === 'content') {
+                    const schema = CELL_TYPE_SCHEMAS?.types[cell?.type];
+                    if (schema?.contentKey) { ConfigManager.setCellEditableContent(cell, value); return; }
+                }
                 if (path === 'json.xlsx') {
                     if (!cell.json) cell.json = {};
                     try { cell.json.xlsx = JSON.parse(value); } catch (e) {}
@@ -1060,7 +1247,8 @@
                         if (!Array.isArray(cell.queries)) cell.queries = [];
                         let q = cell.queries.find(x => x.name === qName);
                         if (!q) {
-                            q = { name: qName, sql: '', engine: 'sql', clientVisible: false };
+                            const defaultEngine = ConfigManager.getDefaultEngineForType(cell?.type, qName);
+                            q = { name: qName, sql: '', engine: defaultEngine, clientVisible: false };
                             cell.queries.push(q);
                         }
                         if (q && subPath) {
@@ -1234,48 +1422,110 @@
                 const schema = CELL_TYPE_SCHEMAS?.types[cell?.type];
                 return schema?.queryNames?.[index] ?? (index === 0 ? 'main' : index === 1 ? 'filename' : null);
             }
-
-            /** Contenu markdown à afficher : si engine text = contenu éditable ; si sql/js = _markdownContent (résultat d'exécution). */
-            static getMarkdownDisplayContent(cell) {
-                if (!cell) return '';
-                const engine = ConfigManager.getCellEngine(cell, 'main');
-                if (engine === 'sql' || engine === 'js') return cell._markdownContent || '';
-                return ConfigManager.getMarkdownContent(cell);
+            /** Retourne le nom de la requête secondaire (query2) : fallback pour source, filename pour les autres. */
+            static getQuery2Name(cell) {
+                const schema = CELL_TYPE_SCHEMAS?.types[cell?.type];
+                return schema?.secondQueryName ?? schema?.queryNames?.[1] ?? 'filename';
             }
 
-            /** Contenu markdown (queries.main.sql ou content en rétrocompat). */
-            static getMarkdownContent(cell) {
-                if (!cell) return '';
-                return ConfigManager.getCellQuery(cell, 'main') || cell.content || '';
+            /** Retourne le moteur par défaut selon le type (depuis defaults.queries[].engine du schéma). */
+            static getDefaultEngineForType(cellOrType, nameOrIndex = 'main') {
+                const type = typeof cellOrType === 'object' ? cellOrType?.type : cellOrType;
+                const schema = CELL_TYPE_SCHEMAS?.types[type];
+                if (!schema?.defaults?.queries) return 'sql';
+                const idx = typeof nameOrIndex === 'number' ? nameOrIndex : (schema?.queryNames?.indexOf(nameOrIndex) ?? 0);
+                const q = schema.defaults.queries[idx];
+                return q?.engine ?? 'sql';
             }
-            /** Définit le contenu markdown (queries.main + content pour rétrocompat). */
-            static setMarkdownContent(cell, value) {
+
+            /** Contenu éditable (depuis contentKey du schéma). Ex: queries.main.sql pour markdown. */
+            static getCellEditableContent(cell) {
+                if (!cell) return '';
+                const schema = CELL_TYPE_SCHEMAS?.types[cell?.type];
+                if (!schema?.contentKey) return '';
+                const q = ConfigManager.getQueryByName(cell, 'main');
+                return (q?.sql ?? '') || (cell.content ?? '');
+            }
+            /** Définit le contenu éditable (queries.main.sql + content rétrocompat). */
+            static setCellEditableContent(cell, value) {
                 if (!cell) return;
+                const schema = CELL_TYPE_SCHEMAS?.types[cell?.type];
+                if (!schema?.contentKey) return;
                 ConfigManager.ensureCellQueries(cell, 'main');
                 const q = ConfigManager.getQueryByName(cell, 'main');
                 if (q) q.sql = value;
                 cell.content = value;
             }
+            /** Contenu à afficher : si engine sql/js = contenu calculé (contentResultKey) ; sinon contenu éditable. */
+            static getCellContentDisplay(cell) {
+                if (!cell) return '';
+                const schema = CELL_TYPE_SCHEMAS?.types[cell?.type];
+                if (!schema?.contentKey) return '';
+                const engine = ConfigManager.getCellEngine(cell, 'main');
+                if (engine === 'sql' || engine === 'js') return (cell[schema.contentResultKey] ?? '') || '';
+                return ConfigManager.getCellEditableContent(cell);
+            }
+
+            /** Contenu markdown à afficher : si engine text = contenu éditable ; si sql/js = _markdownContent (résultat d'exécution). @deprecated Utiliser getCellContentDisplay */
+            static getMarkdownDisplayContent(cell) {
+                return ConfigManager.getCellContentDisplay(cell);
+            }
+            /** Contenu markdown (queries.main.sql ou content en rétrocompat). @deprecated Utiliser getCellEditableContent */
+            static getMarkdownContent(cell) {
+                return ConfigManager.getCellEditableContent(cell);
+            }
+            /** Définit le contenu markdown (queries.main + content pour rétrocompat). @deprecated Utiliser setCellEditableContent */
+            static setMarkdownContent(cell, value) {
+                ConfigManager.setCellEditableContent(cell, value);
+            }
 
             /** Retourne le nom du paramètre pour le DAG (name pour uiParameter, rétrocompat referenceName). */
             static getCellReferenceName(cell) {
                 if (!cell) return '';
-                if (cell.type === 'uiParameter') return (cell.name ?? cell.referenceName ?? '').trim();
+                if (CELL_TYPE_SCHEMAS?.types[cell?.type]?.useNameAsReference) return (cell.name ?? cell.referenceName ?? '').trim();
                 return cell?.referenceName ?? '';
             }
 
-            /**
-             * Slot fichier unifié selon le type de cellule (source, docxTemplate).
-             */
-            static getCellFileSlot(cell) {
-                if (!cell?.type) return null;
-                if (cell.type === 'source') return 'source';
-                if (cell.type === 'publipostageWord') return 'docxTemplate';
-                return null;
+            /** Vérifie si un nom est valide pour le type de cellule (depuis namePattern du schéma). */
+            static isCellNameValid(cell, name) {
+                const schema = CELL_TYPE_SCHEMAS?.types[cell?.type];
+                const pattern = schema?.namePattern;
+                if (!pattern || !name) return true;
+                return typeof pattern === 'object' && pattern.test ? pattern.test(String(name)) : true;
+            }
+
+            static cellBlocksAutoFlow(cell) { return !!CELL_TYPE_SCHEMAS?.types[cell?.type]?.blocksAutoFlow; }
+            static cellRequiresFileBeforeRun(cell) { return !!CELL_TYPE_SCHEMAS?.types[cell?.type]?.requiresFileBeforeRun; }
+            static cellSkippedWhenButtonLabel(cell) { return !!CELL_TYPE_SCHEMAS?.types[cell?.type]?.skippedWhenButtonLabel; }
+            static cellShowOnlyWhenButtonLabel(cell) { return !!CELL_TYPE_SCHEMAS?.types[cell?.type]?.showOnlyWhenButtonLabel; }
+            static cellHideInViewMode(cell) { return !!CELL_TYPE_SCHEMAS?.types[cell?.type]?.hideInViewMode; }
+            static cellShowInViewWhenResultOrRunning(cell) { return !!CELL_TYPE_SCHEMAS?.types[cell?.type]?.showInViewWhenResultOrRunning; }
+            static cellTableSearchable(cell) { return !!CELL_TYPE_SCHEMAS?.types[cell?.type]?.tableSearchable; }
+            static cellExportRuntimeBlob(cell) { return !!CELL_TYPE_SCHEMAS?.types[cell?.type]?.exportRuntimeBlob; }
+            static cellExportTemplateBase64(cell) { return !!CELL_TYPE_SCHEMAS?.types[cell?.type]?.exportTemplateBase64; }
+            static hasCellsWithExportSlot(pages, slot) {
+                const check = (groups) => {
+                    for (const g of groups || []) {
+                        for (const c of g.cells || []) {
+                            if (CELL_TYPE_SCHEMAS?.types[c?.type]?.exportFileSlot === slot) return true;
+                        }
+                        if (check(g.children)) return true;
+                    }
+                    return false;
+                };
+                return (pages || []).some(p => check(p.groups || []) || check(p.linkGroups || []));
             }
 
             /**
-             * Lit les données fichier d'une cellule (structure unifiée files[] ou legacy fileBase64/fileName).
+             * Slot fichier unifié selon le type de cellule (depuis bodyConfig.fileSlot du schéma).
+             */
+            static getCellFileSlot(cell) {
+                const schema = CELL_TYPE_SCHEMAS?.types[cell?.type];
+                return schema?.bodyConfig?.fileSlot ?? null;
+            }
+
+            /**
+             * Lit les données fichier d'une cellule (structure unifiée files[] ou legacy depuis schéma).
              * @returns {{ base64: string, fileName: string } | null}
              */
             static getCellFileData(cell) {
@@ -1286,15 +1536,17 @@
                     const f = cell.files.find(x => x.slot === slot) || cell.files[0];
                     if (f?.base64 && f?.fileName) return { base64: f.base64, fileName: f.fileName, compressed: f.compressed === true };
                 }
-                if (cell.fileBase64 && cell.fileName) return { base64: cell.fileBase64, fileName: cell.fileName, compressed: cell.files?.[0]?.compressed === true };
-                if (cell.type === 'publipostageWord' && cell.docxTemplateBase64 && cell.docxTemplateFileName) {
-                    return { base64: cell.docxTemplateBase64, fileName: cell.docxTemplateFileName, compressed: cell.files?.[0]?.compressed === true };
+                const bc = CELL_TYPE_SCHEMAS?.types[cell?.type]?.bodyConfig;
+                const base64Key = bc?.fileBase64Key;
+                const fileNameKey = bc?.fileFileNameKey ?? bc?.fileKey;
+                if (base64Key && fileNameKey && cell[base64Key] && cell[fileNameKey]) {
+                    return { base64: cell[base64Key], fileName: cell[fileNameKey], compressed: cell.files?.[0]?.compressed === true };
                 }
                 return null;
             }
 
             /**
-             * Écrit les données fichier (structure unifiée files[]) et met à jour les champs legacy.
+             * Écrit les données fichier (structure unifiée files[]) et met à jour les champs legacy depuis le schéma.
              */
             static setCellFileData(cell, { base64, fileName }) {
                 if (!cell || !base64 || !fileName) return;
@@ -1304,12 +1556,11 @@
                 const idx = cell.files.findIndex(x => x.slot === slot);
                 const entry = { slot, base64, fileName };
                 if (idx >= 0) cell.files[idx] = entry; else cell.files.push(entry);
-                cell.fileBase64 = base64;
-                cell.fileName = fileName;
-                if (cell.type === 'publipostageWord') {
-                    cell.docxTemplateBase64 = base64;
-                    cell.docxTemplateFileName = fileName;
-                }
+                const bc = CELL_TYPE_SCHEMAS?.types[cell?.type]?.bodyConfig;
+                const base64Key = bc?.fileBase64Key;
+                const fileNameKey = bc?.fileFileNameKey ?? bc?.fileKey;
+                if (base64Key) cell[base64Key] = base64;
+                if (fileNameKey) cell[fileNameKey] = fileName;
             }
 
             /** S'assure que cell.files existe. Migre legacy → files[0] si pertinent. */
@@ -1322,12 +1573,12 @@
                 if (data) cell.files.push({ slot, base64: data.base64, fileName: data.fileName });
             }
 
-            /** Retourne le moteur de la requête (queries[].engine). Valeurs: sql, js, text. Markdown: défaut 'text'. */
+            /** Retourne le moteur de la requête (queries[].engine). Valeurs: sql, js, text. Défaut depuis schéma. */
             static getCellEngine(cell, nameOrIndex = 'main') {
                 if (!cell) return 'sql';
                 const name = typeof nameOrIndex === 'number' ? (ConfigManager.getQueryNameForIndex(cell, nameOrIndex) || 'main') : nameOrIndex;
                 const q = ConfigManager.getQueryByName(cell, name);
-                const defaultEngine = cell.type === 'markdown' ? 'text' : 'sql';
+                const defaultEngine = ConfigManager.getDefaultEngineForType(cell, name);
                 const e = q?.engine ? q.engine : defaultEngine;
                 return e === 'duckdb-wasm' ? 'sql' : e;
             }
@@ -1345,7 +1596,7 @@
                         cell.queries[idx].name = name;
                         q = cell.queries[idx];
                     } else {
-                        const defaultEngine = cell.type === 'markdown' ? 'text' : 'sql';
+                        const defaultEngine = ConfigManager.getDefaultEngineForType(cell, name);
                         q = { name, sql: '', engine: defaultEngine, clientVisible: false };
                         const insertIdx = schema?.queryNames?.indexOf(name) ?? cell.queries.length;
                         if (insertIdx < cell.queries.length) cell.queries.splice(insertIdx, 0, q);
@@ -1588,11 +1839,10 @@
             static _buildQueriesForClean(cell) {
                 if (Array.isArray(cell.queries) && cell.queries.length > 0) {
                     const schema = CELL_TYPE_SCHEMAS?.types[cell?.type];
-                    const defaultEngine = cell?.type === 'markdown' ? 'text' : 'sql';
                     return cell.queries.map((q, i) => ({
                         name: q.name || schema?.queryNames?.[i] || (i === 0 ? 'main' : i === 1 ? 'filename' : 'query' + i),
                         sql: q.sql || '',
-                        engine: q.engine || defaultEngine,
+                        engine: q.engine || ConfigManager.getDefaultEngineForType(cell?.type, i),
                         clientVisible: q.clientVisible === true
                     }));
                 }
@@ -1600,131 +1850,73 @@
                 const qMain = ConfigManager.getCellQuery(cell, 'main');
                 if (qMain) arr.push({ name: 'main', sql: qMain, engine: ConfigManager.getCellEngine(cell, 'main'), clientVisible: ConfigManager.getCellQueryClientVisible(cell, 'main') });
                 const qFallback = ConfigManager.getCellQuery(cell, 'fallback') || ConfigManager.getCellQuery(cell, 'filename');
-                if (qFallback) arr.push({ name: cell.type === 'source' ? 'fallback' : 'filename', sql: qFallback, engine: 'sql', clientVisible: false });
+                if (qFallback) arr.push({ name: ConfigManager.getQuery2Name(cell), sql: qFallback, engine: 'sql', clientVisible: false });
                 return arr;
             }
 
             static async cleanCell(cell, includeFileData = false) {
                 const cleanCell = { type: cell.type };
 
-                switch (cell.type) {
-                    case 'markdown':
+                const schema = CELL_TYPE_SCHEMAS?.types[cell?.type];
+                const exportFields = schema?.exportFields ?? ['queries'];
+
+                for (const field of exportFields) {
+                    if (field === 'queries') {
                         cleanCell.queries = ConfigManager._buildQueriesForClean(cell);
-                        if (!Array.isArray(cleanCell.queries) || cleanCell.queries.length === 0) {
-                            cleanCell.queries = [{ name: 'main', sql: ConfigManager.getMarkdownContent(cell), engine: ConfigManager.getCellEngine(cell, 'main'), clientVisible: ConfigManager.getCellQueryClientVisible(cell, 'main') }];
+                        if (cell.type === 'markdown' && (!Array.isArray(cleanCell.queries) || cleanCell.queries.length === 0)) {
+                            cleanCell.queries = [{ name: 'main', sql: ConfigManager.getCellEditableContent(cell), engine: ConfigManager.getCellEngine(cell, 'main'), clientVisible: ConfigManager.getCellQueryClientVisible(cell, 'main') }];
                         }
-                        break;
-                    case 'source':
-                        cleanCell.name = cell.name;
-                        cleanCell.title = cell.title;
-                        cleanCell.queries = ConfigManager._buildQueriesForClean(cell);
-                        cleanCell.json = cell.json || {};
-                        if (cell.json?.xlsx) cleanCell.json.xlsx = cell.json.xlsx;
-                        if (includeFileData && cell._currentFile && cell._fileName) {
-                            try {
-                                const arrayBuffer = await cell._currentFile.arrayBuffer();
-                                const compressedBuffer = await FileHandler.compressGzip(arrayBuffer);
-                                const base64 = FileHandler.arrayBufferToBase64(compressedBuffer);
-                                const fileName = cell._fileName;
-                                cleanCell.files = [{ slot: 'source', base64, fileName, compressed: true }];
-                            } catch (e) {
-                                console.warn('Impossible de lire le fichier source:', e);
-                            }
-                        } else if (includeFileData) {
-                            const fileData = ConfigManager.getCellFileData(cell);
-                            if (fileData) {
-                                let base64 = fileData.base64;
-                                let compressed = !!fileData.compressed;
-                                if (!compressed) {
-                                    try {
-                                        const bytes = FileHandler.base64ToUint8Array(base64);
-                                        const rawBuffer = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
-                                        const compressedBuffer = await FileHandler.compressGzip(rawBuffer);
-                                        base64 = FileHandler.arrayBufferToBase64(compressedBuffer);
-                                        compressed = true;
-                                    } catch (e) {
-                                        console.warn('Compression fichier source échouée:', e);
-                                    }
-                                }
-                                cleanCell.files = [{ slot: 'source', base64, fileName: fileData.fileName, compressed }];
+                    } else if (field === 'name') {
+                        const handler = CELL_TYPE_HANDLERS[cell?.type];
+                        const val = handler?.getExportValue ? handler.getExportValue(cell, 'name') : cell.name;
+                        if (val !== undefined) cleanCell.name = val;
+                    } else if (field === 'json') {
+                        if (schema?.exportJsonMode === 'string') {
+                            cleanCell.json = typeof cell.json === 'string' ? cell.json : (cell.json ? JSON.stringify(cell.json) : '');
+                        } else {
+                            cleanCell.json = cell.json || {};
+                            if (cell.json?.xlsx) cleanCell.json.xlsx = cell.json.xlsx;
+                            if (cell.json?.perspectiveConfig !== undefined) {
+                                let cfg = cell.json.perspectiveConfig;
+                                cleanCell.json.perspectiveConfig = typeof cfg === 'string' ? cfg.replace(/\r\n/g, '\n').replace(/\r/g, '\n') : (cfg != null ? JSON.stringify(cfg, null, 2) : '');
                             }
                         }
-                        break;
-                    case 'buttonRunNextCells':
-                        cleanCell.buttonLabel = cell.buttonLabel;
-                        break;
-                    case 'table':
-                        cleanCell.queries = ConfigManager._buildQueriesForClean(cell);
-                        cleanCell.maxRows = cell.maxRows;
-                        break;
-                    case 'iframe':
-                        cleanCell.queries = ConfigManager._buildQueriesForClean(cell);
-                        break;
-                    case 'sqlRecursiveParse':
-                        cleanCell.queries = ConfigManager._buildQueriesForClean(cell);
-                        break;
-                    case 'sqlStat':
-                        cleanCell.queries = ConfigManager._buildQueriesForClean(cell);
-                        cleanCell.title = cell.title;
-                        cleanCell.subtitle = cell.subtitle;
-                        cleanCell.icon = cell.icon;
-                        break;
-                    case 'uiParameter':
-                        cleanCell.name = (cell.name || cell.referenceName || '').trim() || undefined;
-                        cleanCell.paramType = cell.paramType;
-                        cleanCell.title = cell.title;
-                        cleanCell.queries = ConfigManager._buildQueriesForClean(cell);
-                        if (cell.inputType) cleanCell.inputType = cell.inputType;
-                        if (cell.rangeMin !== undefined) cleanCell.rangeMin = cell.rangeMin;
-                        if (cell.rangeMax !== undefined) cleanCell.rangeMax = cell.rangeMax;
-                        if (cell.rangeStep !== undefined) cleanCell.rangeStep = cell.rangeStep;
-                        if (cell.userVisible !== undefined) cleanCell.userVisible = cell.userVisible;
-                        if (cell.userEditable !== undefined) cleanCell.userEditable = cell.userEditable;
-                        if (cell.preserveUserValue !== undefined) cleanCell.preserveUserValue = cell.preserveUserValue;
-                        break;
-                    case 'publipostageWord':
-                        cleanCell.queries = ConfigManager._buildQueriesForClean(cell);
-                        if (cell.buttonLabel) cleanCell.buttonLabel = cell.buttonLabel;
-                        if (includeFileData) {
-                            const rawBase64 = cell.docxTemplateBase64 || ConfigManager.getCellFileData(cell)?.base64;
-                            const fileName = cell.docxTemplateFileName || ConfigManager.getCellFileData(cell)?.fileName;
-                            if (rawBase64 && fileName) {
-                                let base64 = rawBase64;
-                                let compressed = false;
+                    } else if (cell[field] !== undefined) {
+                        cleanCell[field] = cell[field];
+                    }
+                }
+
+                if (includeFileData && schema?.exportFileSlot) {
+                    const slot = schema.exportFileSlot;
+                    if (slot === 'source' && cell._currentFile && cell._fileName) {
+                        try {
+                            const arrayBuffer = await cell._currentFile.arrayBuffer();
+                            const compressedBuffer = await FileHandler.compressGzip(arrayBuffer);
+                            const base64 = FileHandler.arrayBufferToBase64(compressedBuffer);
+                            cleanCell.files = [{ slot, base64, fileName: cell._fileName, compressed: true }];
+                        } catch (e) {
+                            console.warn('Impossible de lire le fichier source:', e);
+                        }
+                    } else {
+                        const fileData = ConfigManager.getCellFileData(cell);
+                        if (fileData) {
+                            let base64 = fileData.base64;
+                            let compressed = !!fileData.compressed;
+                            if (!compressed) {
                                 try {
-                                    const bytes = FileHandler.base64ToUint8Array(rawBase64);
+                                    const bytes = FileHandler.base64ToUint8Array(base64);
                                     const rawBuffer = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
                                     const compressedBuffer = await FileHandler.compressGzip(rawBuffer);
                                     base64 = FileHandler.arrayBufferToBase64(compressedBuffer);
                                     compressed = true;
                                 } catch (e) {
-                                    console.warn('Compression template docx échouée:', e);
+                                    console.warn('Compression fichier échouée:', e);
                                 }
-                                cleanCell.files = [{ slot: 'docxTemplate', base64, fileName, compressed }];
                             }
+                            cleanCell.files = [{ slot, base64, fileName: fileData.fileName, compressed }];
                         }
-                        break;
-                    case 'pdfme':
-                        cleanCell.queries = ConfigManager._buildQueriesForClean(cell);
-                        cleanCell.json = typeof cell.json === 'string' ? cell.json : (cell.json ? JSON.stringify(cell.json) : '');
-                        if (cell.buttonLabel) cleanCell.buttonLabel = cell.buttonLabel;
-                        break;
-                    case 'perspective':
-                        cleanCell.queries = ConfigManager._buildQueriesForClean(cell);
-                        cleanCell.json = cell.json || {};
-                        if (cell.json?.perspectiveConfig !== undefined) {
-                            let cfg = cell.json.perspectiveConfig;
-                            if (typeof cfg === 'string') {
-                                // Normaliser les retours à la ligne en \n pour un export JSON valide
-                                cfg = cfg.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-                            } else {
-                                cfg = JSON.stringify(cfg, null, 2);
-                            }
-                            cleanCell.json.perspectiveConfig = cfg;
-                        }
-                        break;
+                    }
                 }
-
                 const orderValue = ConfigManager.normalizeOrder(cell._order, undefined);
                 if (orderValue !== undefined) {
                     cleanCell.order = orderValue;
@@ -2605,6 +2797,9 @@
         // CELL BODY RENDERER – Familles de body (blocs factorisés)
         // ═══════════════════════════════════════════════════════════════════════════
         class CellBodyRenderer {
+            static _sqlPlaceholder(s) { return (s ?? '').replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, '\\n'); }
+            static _defaultSql(schema, index = 0, fallback = 'SELECT 1') { return this._sqlPlaceholder(schema?.defaults?.queries?.[index]?.sql ?? fallback); }
+            static _defaultSqls(schema, fallbacks = ['SELECT 1']) { const qs = schema?.defaults?.queries ?? []; return fallbacks.map((fb, i) => this._sqlPlaceholder(qs[i]?.sql ?? fb)); }
             static renderResultInfoBlock(showDevOnly = false) {
                 const showAttr = showDevOnly ? 'x-show="devMode" ' : '';
                 return `<template x-if="cellItem.cell._resultInfo"><div class="mt-2 p-2 bg-base-200 rounded text-sm text-base-content/70" ${showAttr}x-text="cellItem.cell._resultInfo"></div></template>`;
@@ -2613,7 +2808,7 @@
                 const cfg = schema.bodyConfig || {};
                 return `<div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 flex flex-col' : ''">${this.renderResultInfoBlock(true)}
                     <template x-if="devMode && ConfigManager.getCellEngine(cellItem.cell,'main') === 'text'"><div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 flex flex-col' : ''">
-                    <textarea :key="'md_dev_'+cellItem.cell._id" :id="'markdown_dev_'+cellItem.cell._id" x-text="ConfigManager.getMarkdownDisplayContent(cellItem.cell) || ''"
+                    <textarea :key="'md_dev_'+cellItem.cell._id" :id="'markdown_dev_'+cellItem.cell._id" x-text="ConfigManager.getCellContentDisplay(cellItem.cell) || ''"
                         x-init="$nextTick(async () => {
                             const el = document.getElementById('markdown_dev_'+cellItem.cell._id);
                             if (!el) return;
@@ -2621,12 +2816,12 @@
                             if (cellItem.cell._easyMDE) { try { cellItem.cell._easyMDE.toTextArea(); } catch (_) {} cellItem.cell._easyMDE = null; }
                             cellItem.cell._easyMDE = new EasyMDE({ element: el, spellChecker: false, status: false, minHeight: hasCellHeight(cellItem.cell) ? '100%' : '50px', toolbar: ['bold', 'italic', 'heading', '|', 'quote', 'unordered-list', 'ordered-list', '|', 'link', 'image', '|', 'preview', '|', 'guide'], autorefresh: { delay: 200 } });
                             const cm = cellItem.cell._easyMDE.codemirror || cellItem.cell._easyMDE.cm;
-                            if (cm && typeof cm.on === 'function') cm.on('change', () => { if (cellItem.cell._easyMDE && ConfigManager.getCellEngine(cellItem.cell, 'main') === 'text') ConfigManager.setMarkdownContent(cellItem.cell, cellItem.cell._easyMDE.value()); });
+                            if (cm && typeof cm.on === 'function') cm.on('change', () => { if (cellItem.cell._easyMDE && ConfigManager.getCellEngine(cellItem.cell, 'main') === 'text') ConfigManager.setCellEditableContent(cellItem.cell, cellItem.cell._easyMDE.value()); });
                         })"
-                        x-effect="(() => { const c = cellItem.cell; if (!c._easyMDE) return; const target = ConfigManager.getMarkdownContent(c); if (target != null && c._easyMDE.value() !== target) { c._easyMDE.value(target); const cm = c._easyMDE.codemirror || c._easyMDE.cm; if (cm?.refresh) cm.refresh(); } })()"></textarea></div></template>
+                        x-effect="(() => { const c = cellItem.cell; if (!c._easyMDE) return; const target = ConfigManager.getCellEditableContent(c); if (target != null && c._easyMDE.value() !== target) { c._easyMDE.value(target); const cm = c._easyMDE.codemirror || c._easyMDE.cm; if (cm?.refresh) cm.refresh(); } })()"></textarea></div></template>
                     <template x-if="devMode && (ConfigManager.getCellEngine(cellItem.cell,'main') === 'sql' || ConfigManager.getCellEngine(cellItem.cell,'main') === 'js')"><div class="flex flex-col gap-2" :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0' : ''"><div x-effect="safeRenderMarkdownQueryEditor($el, cellItem.cell, ${pathExpr}, ${cellIdxExpr})"></div></div></template>
                     <template x-if="!devMode || ConfigManager.getCellEngine(cellItem.cell,'main') !== 'text'"><div class="easymde-client" :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 flex flex-col' : ''">
-                    <textarea :id="'markdown_cli_' + cellItem.cell._id" x-text="ConfigManager.getMarkdownDisplayContent(cellItem.cell) || ''"
+                    <textarea :id="'markdown_cli_' + cellItem.cell._id" x-text="ConfigManager.getCellContentDisplay(cellItem.cell) || ''"
                         x-init="$nextTick(async () => {
                             const el = document.getElementById('markdown_cli_' + cellItem.cell._id);
                             if (!el) return;
@@ -2635,12 +2830,12 @@
                             let inst = new EasyMDE({ element: el, spellChecker: false, status: false, toolbar: false, readOnly: isReadOnly, minHeight: hasCellHeight(cellItem.cell) ? '100%' : '50px', previewRender: (plainText) => inst ? inst.markdown(plainText) : plainText, autorefresh: { delay: 200 } });
                             const cm = inst.codemirror || inst.cm;
                             if (cm && isReadOnly) cm.setOption('readOnly', true);
-                            if (cm && !isReadOnly && typeof cm.on === 'function') cm.on('change', () => { if (cellItem.cell._easyMDEcli && ConfigManager.getCellEngine(cellItem.cell, 'main') === 'text') ConfigManager.setMarkdownContent(cellItem.cell, cellItem.cell._easyMDEcli.value()); });
+                            if (cm && !isReadOnly && typeof cm.on === 'function') cm.on('change', () => { if (cellItem.cell._easyMDEcli && ConfigManager.getCellEngine(cellItem.cell, 'main') === 'text') ConfigManager.setCellEditableContent(cellItem.cell, cellItem.cell._easyMDEcli.value()); });
                             cellItem.cell._easyMDEcli = inst;
                             if (typeof inst.togglePreview === 'function') { try { inst.togglePreview(); } catch (_) {} }
                             setTimeout(() => { $el.closest('.easymde-client')?.classList.add('easymde-ready'); if (cm?.refresh) cm.refresh(); }, 100);
                         })"
-                        x-effect="(() => { const c = cellItem.cell; if (!c._easyMDEcli) return; const isRo = ConfigManager.getCellEngine(c, 'main') !== 'text'; const cm = c._easyMDEcli.codemirror || c._easyMDEcli.cm; if (cm && cm.getOption('readOnly') !== isRo) { cm.setOption('readOnly', isRo); if (!isRo) c._easyMDEcli.value(ConfigManager.getMarkdownContent(c)); } if (isRo && c._markdownContent && c._easyMDEcli.value() !== c._markdownContent) { c._easyMDEcli.value(c._markdownContent); if (cm?.refresh) cm.refresh(); } })()"></textarea></div></template>
+                        x-effect="(() => { const c = cellItem.cell; if (!c._easyMDEcli) return; const isRo = ConfigManager.getCellEngine(c, 'main') !== 'text'; const cm = c._easyMDEcli.codemirror || c._easyMDEcli.cm; if (cm && cm.getOption('readOnly') !== isRo) { cm.setOption('readOnly', isRo); if (!isRo) c._easyMDEcli.value(ConfigManager.getCellEditableContent(c)); } if (isRo && c._markdownContent && c._easyMDEcli.value() !== c._markdownContent) { c._easyMDEcli.value(c._markdownContent); if (cm?.refresh) cm.refresh(); } })()"></textarea></div></template>
                 </div>`;
             }
             static renderFileDropZone(pathExpr, cellIdxExpr, schema) {
@@ -2651,10 +2846,8 @@
                 const emptyIcon = c.emptyIcon || '📁';
                 const titleKey = c.emptyTitleKey || 'title';
                 const subTitleExpr = `'→ ' + cellItem.cell.name`;
-                const defaultSqls = c.defaultSqls || (c.defaultSql ? [c.defaultSql] : ["CREATE OR REPLACE TABLE {name} AS SELECT * FROM '{fileNameUpload}'"]);
-                const escapeForAttr = (s) => String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, '\\n');
-                const placeholderSimple = 'SELECT * FROM source1';
-                const queryBlock = c.showQueryInDevMode ? `<div x-show="devMode" class="mt-3 flex flex-col gap-3"><div><div class="text-sm font-semibold text-primary mb-1">Requête d'import</div><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${placeholderSimple}', false, 'query', '_showParsedQuery', null, null, null, '${pathExpr}', '${cellIdxExpr}', true)"></div></div><div><div class="text-sm font-semibold text-primary mb-1">Requête de fallback (si erreur)</div><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${placeholderSimple}', false, 'query2', '_showParsedQuery2', null, null, null, '${pathExpr}', '${cellIdxExpr}', true)"></div></div></div>` : '';
+                const [defaultSql1, defaultSql2] = this._defaultSqls(schema, ["CREATE OR REPLACE TABLE {name} AS SELECT * FROM '{fileNameUpload}'", 'SELECT 1']);
+                const queryBlock = c.showQueryInDevMode ? `<div x-show="devMode" class="mt-3 flex flex-col gap-3"><div><div class="text-sm font-semibold text-primary mb-1">Requête d'import</div><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${defaultSql1}', false, 'query', '_showParsedQuery', null, null, null, '${pathExpr}', '${cellIdxExpr}', true)"></div></div><div><div class="text-sm font-semibold text-primary mb-1">Requête de fallback (si erreur)</div><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${defaultSql2}', false, 'query2', '_showParsedQuery2', null, null, null, '${pathExpr}', '${cellIdxExpr}', true)"></div></div></div>` : '';
                 return `<div class="flex flex-col gap-2"><div class="flex items-center justify-center rounded-lg transition-all duration-200 mt-1 mb-1 min-h-[${c.minHeight || '20'}px]" :class="[cellItem.cell.${fileKey} ? 'border-2 border-solid border-success bg-success/10 cursor-default' : (cellItem.cell._isDragging ? 'border-2 border-solid border-accent bg-accent/10 cursor-pointer' : 'border-2 border-dashed border-primary bg-primary/5 cursor-pointer hover:border-accent hover:bg-accent/10'), hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0' : '']" @click="!cellItem.cell.${fileKey} && document.getElementById('${inputId}' + cellItem.cell._id).click()" @dragover.prevent="cellItem.cell._isDragging = true" @dragleave.prevent="cellItem.cell._isDragging = false" @drop.prevent="handleSingleSourceDrop($event, ${pathExpr}, ${cellIdxExpr})">
                     <template x-if="!cellItem.cell.${fileKey}"><div class="text-center p-1"><div class="text-4xl mb-0">${emptyIcon}</div><p class="m-0 text-base-content/60 text-sm" x-text="cellItem.cell.${titleKey} || 'Glissez-déposez ici'"></p><p class="mt-0 mb-0 text-accent text-xs font-semibold" x-text="${subTitleExpr}"></p></div></template>
                     <template x-if="cellItem.cell.${fileKey}"><div class="flex flex-wrap items-center gap-3 px-4 py-3 w-full"><span class="text-xl">✅</span><span class="flex-1 text-success font-medium truncate" x-text="cellItem.cell.${fileKey}"></span><span class="text-base-content/60 text-xs" x-text="'→ ' + cellItem.cell.name"></span><button class="btn btn-ghost" @click.stop="downloadSourceFile(${pathExpr}, ${cellIdxExpr})" title="Télécharger"><span class="iconify" data-icon="material-symbols:download" style="font-size: 1.25rem;"></span></button><button class="btn btn-ghost btn-error" @click.stop="removeSingleSourceFile(${pathExpr}, ${cellIdxExpr})" title="Supprimer"><span class="iconify" data-icon="material-symbols:close" style="font-size: 1.5rem;"></span></button></div></template>
@@ -2667,7 +2860,7 @@
             }
             static renderSqlWithTable(pathExpr, cellIdxExpr, schema) {
                 const c = schema.bodyConfig || {};
-                const defaultSql = (c.defaultSql || 'SELECT * FROM source1 LIMIT 100').replace(/'/g, "\\'");
+                const defaultSql = this._defaultSql(schema, 0, 'SELECT * FROM source1 LIMIT 100');
                 const ts = CellRenderer.renderTableSkeleton();
                 const showTextResult = c.showTextResult === true;
                 let out = `<div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 flex flex-col' : ''">`;
@@ -2687,7 +2880,7 @@
             }
             static renderSqlStat(pathExpr, cellIdxExpr, schema) {
                 const c = schema.bodyConfig || {};
-                const defaultSql = (c.defaultSql || 'SELECT COUNT(*) FROM source1').replace(/'/g, "\\'");
+                const defaultSql = this._defaultSql(schema, 0, 'SELECT COUNT(*) FROM source1');
                 return `<div><div x-show="showSqlEditorVisible(cellItem.cell)" x-effect="safeRenderSqlEditor($el, cellItem.cell, '${defaultSql}', false, 'query', '_showParsedQuery', null, null, null, '${pathExpr}', '${cellIdxExpr}')"></div><div class="stat place-items-center py-1" x-show="cellItem.cell._results"><template x-if="cellItem.cell.icon"><div class="stat-figure text-secondary"><span class="iconify inline-block h-8 w-8" :data-icon="cellItem.cell.icon"></span></div></template><div class="stat-title" x-text="cellItem.cell.title || 'Stat'"></div><div class="stat-value" x-text="cellItem.cell._statValue || '-'"></div><div class="stat-desc" x-text="cellItem.cell.subtitle || ''"></div></div>${this.renderResultInfoBlock(true)}</div>`;
             }
             static renderUiParameter(pathExpr, cellIdxExpr, schema) {
@@ -2695,19 +2888,17 @@
             }
             static renderPublipostageWord(pathExpr, cellIdxExpr, schema) {
                 const c = schema.bodyConfig || {};
-                const defaultSql1 = (c.defaultSqls?.[0] || 'SELECT * FROM source1 LIMIT 10').replace(/'/g, "\\'");
-                const defaultSql2 = (c.defaultSqls?.[1] || 'SELECT 1 filename FROM source1 LIMIT 10').replace(/'/g, "\\'");
+                const [defaultSql1, defaultSql2] = this._defaultSqls(schema, ['SELECT * FROM source1 LIMIT 10', "SELECT 'document_' || STRFTIME(current_timestamp::TIMESTAMP, '%Y-%m-%d_%H-%M-%S') || '.docx' AS filename;"]);
                 return `<div class="flex flex-col gap-3"><div class="flex items-center justify-center rounded-lg transition-all duration-200 mt-1 mb-1" :class="cellItem.cell.docxTemplateFileName ? 'border-2 border-solid border-success bg-success/10 cursor-default' : (cellItem.cell._isDragging ? 'border-2 border-solid border-accent bg-accent/10 cursor-pointer' : 'border-2 border-dashed border-primary bg-primary/5 cursor-pointer hover:border-accent hover:bg-accent/10')" @click="!cellItem.cell.docxTemplateFileName && document.getElementById('docxInput_' + cellItem.cell._id).click()" @dragover.prevent="cellItem.cell._isDragging = true" @dragleave.prevent="cellItem.cell._isDragging = false" @drop.prevent="handleDocxTemplateDrop($event, ${pathExpr}, ${cellIdxExpr})"><template x-if="!cellItem.cell.docxTemplateFileName"><div class="text-center p-1"><div class="text-4xl mb-0">📄</div><p class="m-0 text-base-content/60 text-sm">Glissez-déposez votre template Word (.docx)</p><p class="mt-0 mb-0 text-accent text-xs font-semibold">Template de publipostage</p></div></template><template x-if="cellItem.cell.docxTemplateFileName"><div class="flex flex-wrap items-center gap-3 px-4 py-3 w-full"><span class="text-xl">✅</span><span class="flex-1 text-success font-medium truncate" x-text="cellItem.cell.docxTemplateFileName"></span><button class="btn btn-ghost" @click.stop="downloadDocxTemplate(${pathExpr}, ${cellIdxExpr})" title="Télécharger"><span class="iconify" data-icon="material-symbols:download" style="font-size: 1.25rem;"></span></button><button class="btn btn-ghost btn-error" @click.stop="removeDocxTemplate(${pathExpr}, ${cellIdxExpr})" title="Supprimer"><span class="iconify" data-icon="material-symbols:close" style="font-size: 1.5rem;"></span></button></div></template><input type="file" hidden :id="'docxInput_' + cellItem.cell._id" accept=".docx" @change="handleDocxTemplateFileSelect($event, ${pathExpr}, ${cellIdxExpr})"></div><div x-show="devMode"><div class="text-sm font-semibold text-primary mb-1">Requête de données</div><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${defaultSql1}', true)"></div></div><div x-show="devMode"><div class="text-sm font-semibold text-primary mb-1 flex items-center gap-2"><span>Requête de nom de fichier</span><span class="badge badge-soft badge-info text-xs">🗄️ SQL</span></div><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${defaultSql2}', false, 'query2')"></div></div><div class="flex justify-center" x-show="cellItem.cell.buttonLabel"><button class="btn btn-primary btn-sm" @click="runCellAt(${pathExpr}, ${cellIdxExpr})" :disabled="isLoading || !cellItem.cell.docxTemplateFileName"><span x-text="cellItem.cell.buttonLabel || '📄 Générer les documents'"></span></button></div>${this.renderResultInfoBlock(false)}</div>`;
             }
             static renderPdfme(pathExpr, cellIdxExpr, schema) {
                 const c = schema.bodyConfig || {};
-                const defaultSql1 = (c.defaultSqls?.[0] || 'SELECT * FROM source1 LIMIT 10').replace(/'/g, "\\'");
-                const defaultSql2 = (c.defaultSqls?.[1] || "SELECT '$loop' || '_2.pdf'").replace(/'/g, "\\'");
+                const [defaultSql1, defaultSql2] = this._defaultSqls(schema, ["with v_source as (select * from source1 limit 10)\nSELECT 'Titre' as header, 'Pied de page' as footer, json_group_array(json_array(col1, col2, col3)) as datatable\nFROM v_source LIMIT 10", "SELECT '$loop' || '_2.pdf'"]);
                 return `<div class="flex flex-col gap-3"><div x-show="devMode"><div class="text-sm font-semibold text-primary mb-1">Requête de données</div><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${defaultSql1}', true)"></div></div><div x-show="devMode"><div class="text-sm font-semibold text-primary mb-1 flex items-center gap-2"><span>Requête nom de fichier PDF</span><span class="badge badge-soft badge-info text-xs">🗄️ SQL</span></div><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${defaultSql2}', false, 'query2')"></div></div><div x-show="devMode" class="form-control"><label class="label gap-2"><span class="label-text font-semibold">Template pdfme (JSON)</span><span class="badge badge-soft badge-primary text-xs">📐 Layout</span></label><textarea class="textarea textarea-bordered w-full font-mono text-xs" x-model="cellItem.cell.json" rows="10" style="min-height: 180px;" placeholder='{"basePdf": {...}, "schemas": [...]}'></textarea></div><div class="flex justify-center" x-show="cellItem.cell.buttonLabel"><button class="btn btn-primary btn-sm" @click="runCellAt(${pathExpr}, ${cellIdxExpr})" :disabled="isLoading"><span x-text="cellItem.cell.buttonLabel || '📑 Générer le PDF'"></span></button></div>${this.renderResultInfoBlock(false)}</div>`;
             }
             static renderSqlWithPerspective(pathExpr, cellIdxExpr, schema) {
                 const c = schema.bodyConfig || {};
-                const defaultSql = (c.defaultSql || 'SELECT * FROM source1').replace(/'/g, "\\'");
+                const defaultSql = this._defaultSql(schema, 0, 'SELECT * FROM source1');
                 const mh = c.minHeight || '400px';
                 const ps = CellRenderer.renderTableSkeleton();
                 return `<div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 flex flex-col' : 'flex flex-col gap-2'"><template x-if="showSqlEditorVisible(cellItem.cell)"><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${defaultSql}', false, 'query', '_showParsedQuery', null, null, null, '${pathExpr}', '${cellIdxExpr}')"></div></template><template x-if="cellItem.cell._status === 'running' && !cellItem.cell._perspectiveReady"><div :class="(hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 ' : '') + 'min-h-[${mh}] rounded-lg bg-base-100 overflow-hidden'">${ps}</div></template><template x-if="cellItem.cell._perspectiveReady"><div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 flex flex-col perspective-fill-height' : 'min-h-[${mh}]'"><perspective-viewer :id="'perspective-' + cellItem.cell._id" theme="Pro Light" :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 w-full rounded-lg' : 'w-full rounded-lg min-h-[${mh}]'" x-init="$nextTick(() => { if (cellItem.cell._arrowTable) { renderPerspectiveInContainer(cellItem.cell); } })"></perspective-viewer></div></template></div>`;
@@ -3612,6 +3803,7 @@
                                     <div>
                                         <label class="label gap-2"><span class="label-text" x-text="param.label"></span><span class="tooltip tooltip-bottom" :data-tip="param.tooltip || ''"><span class="badge badge-sm cursor-help">?</span></span></label>
                                         <select class="select select-bordered select-sm w-full"
+                                                :key="'select-'+param.key+'-'+(getCellValueByPath(getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex), param.key) || '')"
                                                 :value="getCellValueByPath(getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex), param.key)"
                                                 @change="setCellValueByPath(getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex), param.key, $event.target.value)">
                                             <template x-for="opt in (param.options || [])" :key="opt.value"><option :value="opt.value" x-text="opt.label"></option></template>
@@ -4295,82 +4487,7 @@ if ($param1 === "Type A") {
             // Utiliser la config chargée depuis le Gist si disponible, sinon la config par défaut
             const config = window._loadedConfig || ConfigManager.getDefaultConfig();
 
-            // Helper pour initialiser une cellule avec ses propriétés runtime
-            const initCell = (cell, cellIndex) => {
-                const newCell = {
-                    ...cell,
-                    _id: 'cell_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
-                    _status: null,
-                    _results: null,
-                    _resultInfo: null,
-                    _order: ConfigManager.normalizeOrder(cell.order, cellIndex)
-                };
-
-                if (cell.type === 'source') {
-                    newCell._isDragging = false;
-                    newCell._loaded = false;
-                    ConfigManager.ensureCellFiles(cell);
-                    newCell.files = cell.files;
-                    const fileData = ConfigManager.getCellFileData(cell);
-                    if (fileData) {
-                        newCell._fileName = fileData.fileName;
-                        const uint8Array = FileHandler.base64ToUint8Array(fileData.base64);
-                        const blob = new Blob([uint8Array], { type: FileHandler.getMimeTypeFromFileName(fileData.fileName) });
-                        newCell._currentFile = new File([blob], fileData.fileName, { type: blob.type });
-                        newCell._pendingFileLoad = true;
-                    } else {
-                        newCell._fileName = '';
-                        newCell._currentFile = null;
-                    }
-                }
-
-
-                if (cell.type === 'uiParameter') {
-                    if (cell.referenceName && (!cell.name || !String(cell.name).trim())) newCell.name = String(cell.referenceName).trim();
-                    newCell._value = '';
-                    newCell._options = [];
-                    newCell._initialized = false;
-                    newCell._paramError = null;
-                }
-
-                if (cell.type === 'publipostageWord') {
-                    newCell._showParsedQuery = false;
-                    newCell._showParsedQuery2 = false;
-                    newCell._parseLevels = [];
-                    newCell._parseLevels2 = [];
-                    newCell._isDragging = false;
-                    ConfigManager.ensureCellFiles(cell);
-                    newCell.files = cell.files;
-                    const fileData = ConfigManager.getCellFileData(cell);
-                    if (fileData) {
-                        newCell.docxTemplateBase64 = fileData.base64;
-                        newCell.docxTemplateFileName = fileData.fileName;
-                    }
-                }
-
-                if (cell.type === 'pdfme') {
-                    newCell._showParsedQuery = false;
-                    newCell._parseLevels = [];
-                }
-
-                if (['sqlRecursiveParse', 'table', 'iframe', 'sqlStat', 'perspective'].includes(cell.type)) {
-                    newCell._showParsedQuery = false;
-                }
-
-                if (cell.type === 'perspective') {
-                    newCell._perspectiveReady = false;
-                    newCell._perspectiveWorker = null;
-                    newCell._perspectiveTable = null;
-                    newCell._arrowTable = null;
-                    // Préserver json.perspectiveConfig depuis la config chargée
-                    if (cell.json?.perspectiveConfig !== undefined) {
-                        if (!newCell.json || typeof newCell.json !== 'object') newCell.json = {};
-                        newCell.json.perspectiveConfig = cell.json.perspectiveConfig;
-                    }
-                }
-
-                return newCell;
-            };
+            const initCell = (cell, cellIndex) => initializeCell(cell, cellIndex);
 
             // Fonction récursive pour initialiser un groupe et ses enfants
             const initGroup = (group, groupIndex) => {
@@ -5072,7 +5189,7 @@ if ($param1 === "Type A") {
                     const engine = ConfigManager.getCellEngine(cell, 'main');
                     if (engine === 'sql' || engine === 'js') return;
                     const currentValue = cell._easyMDE.value();
-                    const targetContent = ConfigManager.getMarkdownContent(cell);
+                    const targetContent = ConfigManager.getCellEditableContent(cell);
                     if (currentValue !== targetContent) {
                         cell._easyMDE.value(targetContent);
                     }
@@ -5595,16 +5712,19 @@ FROM source1 LIMIT 10;`;
                     if (!group) return { stopped: false };
 
                     // Vérifier si le groupe a une loop activée
-                    if (group.loop && group.loop.enabled && group.loop.query) {
+                    const useLoop = !!(group.loop && group.loop.enabled && group.loop.query);
+
+                    if (useLoop) {
                         return await this.runGroupWithLoop(path, group);
                     } else {
                         return await this.runGroupOnce(path, group);
                     }
                 },
 
-                /** Cellule à exécuter manuellement (buttonLabel non vide) : sautée dans le flux auto, non bloquante. buttonRunNextCells reste bloquant. */
+                /** Cellule à exécuter manuellement (buttonLabel non vide) : sautée dans le flux auto. En mode boucle+zip, on exécute toutes les cellules productrices de fichiers. */
                 isCellSkippedInAutoFlow(cell) {
                     if (!cell || cell.type === 'buttonRunNextCells') return false;
+                    if (this._zipMode) return false; // En boucle avec zip, exécuter toutes les cellules productrices de fichiers
                     return !!(cell.buttonLabel && String(cell.buttonLabel).trim() !== '');
                 },
 
@@ -5660,7 +5780,7 @@ FROM source1 LIMIT 10;`;
                 // Parser une requête de loop (avec paramètres et imbrications {{ }})
                 async parseLoopQuery(query) {
                     // Parse la requête avec les paramètres d'abord
-                    let currentQuery = this.parseQueryWithParameters(query);
+                        let currentQuery = this.parseQueryWithParameters(query);
                     const maxLevels = 10;
                     let level = 0;
 
@@ -5673,7 +5793,9 @@ FROM source1 LIMIT 10;`;
                         const posClose = q.indexOf('}}');
                         if (posClose === -1) return q;
                         const posOpen = q.lastIndexOf('{{', posClose);
-                        if (posOpen === -1) return q;
+                        if (posOpen === -1) {
+                            return q;
+                        }
 
                         const innerQuery = q.substring(posOpen + 2, posClose).trim();
                         level++;
@@ -5819,7 +5941,6 @@ FROM source1 LIMIT 10;`;
                     } catch (error) {
                         this._currentLoopValue = null;
                         this.setStatus('Erreur boucle: ' + error.message, 'error');
-                        console.error('Erreur lors de l\'exécution de la boucle:', error);
                         return { stopped: true };
                     } finally {
                         // Toujours réinitialiser le mode zip
@@ -6462,7 +6583,7 @@ FROM source1 LIMIT 10;`;
                         if (!modal || !cell) return;
                         const selects = modal.querySelectorAll('select');
                         if (selects[0]) selects[0].value = cell.type;
-                        if (cell.type === 'markdown' && selects[1]) {
+                        if (['markdown', 'iframe', 'uiParameter'].includes(cell.type) && selects[1]) {
                             const engine = ConfigManager.getCellEngine(cell, 'main');
                             if (engine && selects[1].value !== engine) selects[1].value = engine;
                         }
@@ -6558,8 +6679,7 @@ FROM source1 LIMIT 10;`;
                         collectNames(page.groups || []);
                         if (page.linkGroups) collectNames(page.linkGroups);
                     }
-                    const prefixMap = { source: 'source', table: 'table', iframe: 'iframe', sqlRecursiveParse: 'sql', sqlStat: 'sqlStat', uiParameter: 'param', publipostageWord: 'docx', pdfme: 'pdfme', perspective: 'perspective', markdown: 'markdown', buttonRunNextCells: 'button' };
-                    const prefix = prefixMap[type] || 'cell';
+                    const prefix = CELL_TYPE_SCHEMAS?.types[type]?.defaultNamePrefix ?? 'cell';
                     let num = 1;
                     while (existingNames.has(prefix + num)) num++;
                     return prefix + num;
@@ -6768,7 +6888,7 @@ FROM source1 LIMIT 10;`;
                         return;
                     }
 
-                    if ((cell.type === 'source' || cell.type === 'uiParameter') && !/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(currentName)) {
+                    if (!ConfigManager.isCellNameValid(cell, currentName)) {
                         this.setStatus('Le nom doit commencer par une lettre ou _ et ne contenir que des lettres, chiffres et _', 'error');
                         cell.name = currentName.replace(/[^a-zA-Z0-9_]/g, '_').replace(/^([0-9])/, '_$1');
                         return;
@@ -6900,39 +7020,12 @@ FROM source1 LIMIT 10;`;
                     this.setStatus(`Exécution de ${cell.name || cell.type}...`, 'loading');
 
                     try {
-                        switch (cell.type) {
-                            case 'markdown':
-                                await this.executeMarkdownCell(cell);
-                                break;
-                            case 'source':
-                                // La source est chargée via le drop
-                                break;
-                            case 'sqlRecursiveParse':
-                                await this.executeSqlRecursiveParseCell(cell);
-                                break;
-                            case 'table':
-                                await this.executeTableCell(cell);
-                                break;
-                            case 'iframe':
-                                await this.executeIframeCell(cell);
-                                break;
-                            case 'uiParameter':
-                                await this.executeUiParameterCell(cell);
-                                break;
-                            case 'sqlStat':
-                                await this.executeSqlStatCell(cell);
-                                break;
-                            case 'publipostageWord':
-                                await this.executePublipostageWordCell(cell);
-                                break;
-                            case 'pdfme':
-                                await this.executePdfmeCell(cell);
-                                break;
-                            case 'perspective':
-                                await this.executePerspectiveCell(cell);
-                                break;
-                            default:
-                                console.warn('⚠️ Unknown cell type:', cell.type);
+                        const schema = CELL_TYPE_SCHEMAS?.types[cell?.type];
+                        const handler = schema?.executeHandler;
+                        if (handler && typeof this[handler] === 'function') {
+                            await this[handler](cell);
+                        } else if (handler !== null) {
+                            console.warn('⚠️ Unknown cell type or missing handler:', cell.type);
                         }
 
                         cell._status = 'success';
@@ -7455,7 +7548,7 @@ FROM source1 LIMIT 10;`;
                 async executeMarkdownCell(cell) {
                     const languageType = ConfigManager.getCellEngine(cell, 'main');
                     if (languageType === 'text') {
-                        cell._markdownContent = ConfigManager.getMarkdownContent(cell);
+                        cell._markdownContent = ConfigManager.getCellEditableContent(cell);
                         cell._resultInfo = '✅ Markdown (texte)';
                         return;
                     }
@@ -8541,7 +8634,7 @@ FROM source1 LIMIT 10;`;
                 // applySourceDefaultIfEmpty: si true et cell.type==='source', charge la requête par défaut du schéma à l'init si vide (placeholder reste simple)
                 renderSqlQueryEditor(cell, placeholder, showResultInfo, queryType = 'query', showParsedQueryProp = '_showParsedQuery', languageLabel = null, languageIcon = null, badgeClass = null, pathExpr = null, cellIdxExpr = null, applySourceDefaultIfEmpty = false) {
                     const cellId = cell._id;
-                    const queryName = queryType === 'query2' ? (cell.type === 'source' ? 'fallback' : 'filename') : 'main';
+                    const queryName = queryType === 'query2' ? ConfigManager.getQuery2Name(cell) : 'main';
                     const queryIndex = ConfigManager.getQueryIndexByName(cell, queryName);
                     const showParsedQuery = cell[showParsedQueryProp];
                     const parseLevelsProp = queryType === 'query2' ? '_parseLevels2' : '_parseLevels';
@@ -8620,7 +8713,7 @@ FROM source1 LIMIT 10;`;
                                         class="codemirror-sql-container"
                                         id="cm-${cellId}-${queryType}"
                                         x-ref="cm_${cellId}_${queryType}"
-                                        x-init="$nextTick(() => initCodeMirrorForCell(cellItem, '${cellId}', '${queryType}', '${queryName}', ${queryIndex}, ${applySourceDefaultIfEmpty}, '${String(placeholder || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'")}', typeof $root !== 'undefined' ? $root : null))"
+                                        x-init="$nextTick(() => initCodeMirrorForCell(cellItem, '${cellId}', '${queryType}', '${queryName}', ${queryIndex}, ${applySourceDefaultIfEmpty}, '${String(placeholder || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\r/g, '\\r').replace(/\n/g, '\\n')}', typeof $root !== 'undefined' ? $root : null))"
                                         x-effect="(() => {
                                             const rawCell = (typeof Alpine !== 'undefined' && Alpine.raw) ? Alpine.raw(cellItem.cell) : cellItem.cell;
                                             const editor = rawCell._cmEditor_${queryType};
@@ -8675,7 +8768,7 @@ FROM source1 LIMIT 10;`;
                 // Rendu sécurisé de l'éditeur SQL : ne re-render que si les propriétés pertinentes changent
                 // Cela évite que x-for ou d'autres effets Alpine ne détruisent les instances CodeMirror
                 safeRenderSqlEditor(el, cell, placeholder, showResultInfo, queryType = 'query', showParsedQueryProp = '_showParsedQuery', languageLabel = null, languageIcon = null, badgeClass = null, pathExpr = null, cellIdxExpr = null, applySourceDefaultIfEmpty = false) {
-                    const queryName = queryType === 'query2' ? (cell?.type === 'source' ? 'fallback' : 'filename') : 'main';
+                    const queryName = queryType === 'query2' ? ConfigManager.getQuery2Name(cell) : 'main';
                     const queryIndex = ConfigManager.getQueryIndexByName(cell, queryName);
                     ConfigManager.ensureCellQueries(cell, queryName);
                     // Lire uniquement les propriétés réactives qui doivent déclencher un re-rendu
@@ -9628,88 +9721,7 @@ FROM source1 LIMIT 10;`;
 
                 async applyImportedConfig(config) {
                         await ConfigManager.prepareConfigForLoad(config);
-                        // Helper pour initialiser une cellule
-                        const initCell = (cell, cellIndex) => {
-                            const newCell = {
-                                ...cell,
-                                _id: this.generateCellId(),
-                                _status: null,
-                                _results: null,
-                                _resultInfo: null,
-                                _order: ConfigManager.normalizeOrder(cell.order, cellIndex)
-                            };
-
-                            if (cell.type === 'source') {
-                                newCell._isDragging = false;
-                                newCell._loaded = false;
-                                ConfigManager.ensureCellFiles(cell);
-                                newCell.files = cell.files;
-                                const fileData = ConfigManager.getCellFileData(cell);
-                                if (fileData) {
-                                    newCell._fileName = fileData.fileName;
-                                    const uint8Array = FileHandler.base64ToUint8Array(fileData.base64);
-                                    const blob = new Blob([uint8Array], { type: FileHandler.getMimeTypeFromFileName(fileData.fileName) });
-                                    newCell._currentFile = new File([blob], fileData.fileName, { type: blob.type });
-                                    newCell._pendingFileLoad = true;
-                                } else {
-                                    newCell._fileName = '';
-                                    newCell._currentFile = null;
-                                }
-                            }
-
-                            if (cell.type === 'uiParameter') {
-                                if (cell.referenceName && (!cell.name || !String(cell.name).trim())) newCell.name = String(cell.referenceName).trim();
-                                newCell._value = '';
-                                newCell._options = [];
-                                newCell._initialized = false;
-                                newCell._paramError = null;
-                            }
-
-                            if (cell.type === 'publipostageWord') {
-                                newCell._showParsedQuery = false;
-                                newCell._showParsedQuery2 = false;
-                                newCell._parseLevels = [];
-                                newCell._parseLevels2 = [];
-                                newCell._isDragging = false;
-                                newCell.buttonLabel = cell.buttonLabel !== undefined ? cell.buttonLabel : '📄 Générer les documents';
-                                ConfigManager.ensureCellFiles(cell);
-                                newCell.files = cell.files;
-                                const fileData = ConfigManager.getCellFileData(cell);
-                                if (fileData) {
-                                    newCell.docxTemplateBase64 = fileData.base64;
-                                    newCell.docxTemplateFileName = fileData.fileName;
-                                }
-                            }
-
-                            if (cell.type === 'pdfme') {
-                                newCell._showParsedQuery = false;
-                                newCell._showParsedQuery2 = false;
-                                newCell._parseLevels = [];
-                                newCell._parseLevels2 = [];
-                                newCell.buttonLabel = cell.buttonLabel !== undefined ? cell.buttonLabel : '📑 Générer le PDF';
-                            }
-
-                            if (cell.type === 'perspective') {
-                                newCell._showParsedQuery = false;
-                                newCell._parseLevels = [];
-                                newCell._perspectiveReady = false;
-                                newCell._perspectiveWorker = null;
-                                newCell._perspectiveTable = null;
-                                newCell._arrowTable = null;
-                                // Préserver json.perspectiveConfig depuis la config chargée
-                                if (cell.json?.perspectiveConfig !== undefined) {
-                                    if (!newCell.json || typeof newCell.json !== 'object') newCell.json = {};
-                                    newCell.json.perspectiveConfig = cell.json.perspectiveConfig;
-                                }
-                            }
-
-                            // Cellules avec SQL editor
-                            if (['sqlRecursiveParse', 'table', 'iframe', 'uiParameter', 'publipostageWord', 'pdfme', 'perspective'].includes(cell.type)) {
-                                newCell._showParsedQuery = false;
-                            }
-
-                            return newCell;
-                        };
+                        const initCell = (cell, cellIndex) => initializeCell(cell, cellIndex, { generateId: () => this.generateCellId() });
 
                         // Helper récursif pour initialiser un groupe et ses enfants
                         const initGroup = (group, groupIndex) => {
