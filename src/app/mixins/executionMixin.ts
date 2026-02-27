@@ -1433,6 +1433,7 @@ export function executionMixin() {
 
                         // Stocker la table Arrow pour le rendu
                         cell._arrowTable = arrowTable;
+                        console.log('[Perspective] _arrowTable set, numRows=', arrowTable?.numRows, 'setting _perspectiveReady=true');
                         cell._perspectiveReady = true;
 
                         // Attendre que Alpine ait inséré <perspective-viewer> dans le DOM.
@@ -1443,6 +1444,11 @@ export function executionMixin() {
                         while (!document.getElementById(_containerId) && _waited < 2000) {
                             await new Promise(r => setTimeout(r, 50));
                             _waited += 50;
+                        }
+                        const _foundEl = document.getElementById(_containerId);
+                        console.log('[Perspective] après attente DOM (' + _waited + 'ms) : élément trouvé =', !!_foundEl, '| id cherché =', _containerId);
+                        if (!_foundEl) {
+                            console.warn('[Perspective] DOM dump sous sqljob-app:', document.querySelector('sqljob-app')?.innerHTML?.substring(0, 500));
                         }
 
                         // Rendre le viewer Perspective
@@ -1461,15 +1467,16 @@ export function executionMixin() {
                 async renderPerspectiveInContainer(cell) {
                     const containerId = 'perspective-' + cell._id;
                     const viewer = document.getElementById(containerId);
+                    console.log('[Perspective] renderPerspectiveInContainer — viewer=', viewer, '| _arrowTable=', !!cell._arrowTable, '| _perspectiveRendering=', cell._perspectiveRendering);
 
                     if (!viewer || !cell._arrowTable) {
-                        console.warn('Perspective viewer ou données Arrow manquantes');
+                        console.warn('[Perspective] viewer ou _arrowTable manquant — abandon');
                         return;
                     }
 
                     // Éviter les exécutions concurrentes
                     if (cell._perspectiveRendering) {
-                        console.warn('Rendu Perspective déjà en cours pour cette cellule');
+                        console.warn('[Perspective] rendu déjà en cours — abandon');
                         return;
                     }
 
@@ -1477,13 +1484,16 @@ export function executionMixin() {
 
                     try {
                         // Vérifier que le moteur est duckdb-wasm (Perspective ne supporte pas ducklings)
-                        if (DuckDBManager.getEngine() !== 'duckdb-wasm') {
+                        const engine = DuckDBManager.getEngine();
+                        console.log('[Perspective] moteur DuckDB =', engine);
+                        if (engine !== 'duckdb-wasm') {
                             throw new Error('Perspective nécessite le moteur DuckDB WASM. Veuillez changer de moteur dans les paramètres.');
                         }
 
                         // Obtenir la connexion DuckDB
                         const conn = DuckDBManager.getConnection();
                         const perspective = window.perspectiveClient;
+                        console.log('[Perspective] conn=', !!conn, '| perspectiveClient=', !!perspective, '| perspective.worker=', typeof perspective?.worker);
 
                         // Parser la configuration JSON si présente (string ou objet déjà parsé)
                         let config = { theme: 'Pro Light' };
@@ -1503,25 +1513,34 @@ export function executionMixin() {
                         const finalQuery = cell._parseLevels?.find(l => l.level === 'final')?.innerQuery || ConfigManager.getCellQuery(cell, 0);
 
                         // Flux natif : DuckDB requête → Arrow → Perspective
+                        console.log('[Perspective] conn.query()...');
                         const arrowResult = await conn.query(finalQuery);
                         const batches = [];
                         for await (const batch of arrowResult) {
                             batches.push(batch);
                         }
+                        console.log('[Perspective] batches Arrow collectés : ', batches.length);
 
                         if (!cell._perspectiveWorker) {
+                            console.log('[Perspective] création du worker...');
                             cell._perspectiveWorker = await perspective.worker();
+                            console.log('[Perspective] worker créé :', !!cell._perspectiveWorker);
                         }
                         const table = await cell._perspectiveWorker.table(batches);
+                        console.log('[Perspective] table Perspective créée :', !!table);
 
                         // Laisser le custom element perspective-viewer (WASM) s'initialiser complètement
                         await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
 
+                        console.log('[Perspective] viewer.resetThemes ?', typeof viewer.resetThemes);
                         if (typeof viewer.resetThemes === 'function') {
                             await viewer.resetThemes(['Pro Light', 'Pro Dark']);
                         }
+                        console.log('[Perspective] viewer.load()...');
                         await viewer.load(table);
+                        console.log('[Perspective] viewer.restore()...');
                         await viewer.restore(config);
+                        console.log('[Perspective] ✅ rendu terminé');
 
                         cell._perspectiveTable = table;
 
