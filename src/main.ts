@@ -3179,13 +3179,6 @@ FROM source1 LIMIT 10;`;
                     this.showAddGroupModal = true;
                 },
 
-                // Ouvrir le modal pour ajouter une cellule (accepte path ou groupIndex)
-                openAddCellToGroupModal(pathOrIndex) {
-                    const path = Array.isArray(pathOrIndex) ? pathOrIndex : [pathOrIndex];
-                    this.addCellToGroupModal = { open: true, path };
-                },
-
-
 
                 // ─────────────────────────────────────────────────────────────────
                 // GESTION DE L'ORDRE UNIFIÉ (cellules + sous-groupes)
@@ -4017,10 +4010,6 @@ FROM source1 LIMIT 10;`;
                         this.setStatus(`Le nom "${currentName}" est déjà utilisé par une autre cellule`, 'error');
                         cell.name = this.generateUniqueCellName(cell.type, cell._id);
                     }
-                },
-
-                validateSingleSourceName(path, cellIndex) {
-                    this.validateCellName(path, cellIndex);
                 },
 
                 // ─────────────────────────────────────────────────────────────────
