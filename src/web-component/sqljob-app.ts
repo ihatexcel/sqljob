@@ -19,6 +19,10 @@ import { mountApp } from '../app/mount'
 
 import './styles.css'
 
+// URL absolue de ce fichier (import.meta.url) — utilisée par l'export HTML
+// pour retrouver exactement le bon élément <script src> dans la page hôte.
+window.__sqljobScriptUrl = import.meta.url
+
 // ─── Initialisation Alpine (une seule fois, même si plusieurs <sqljob-app>) ──
 
 let alpineStarted = false
