@@ -6534,7 +6534,7 @@ FROM v_source LIMIT 10`, "SELECT '$loop' || '_2.pdf'"]);
   }
   static renderSqlWithPerspective(e, n, r) {
     const s = r.bodyConfig || {}, i = this._defaultSql(r, 0, "SELECT * FROM source1"), a = s.minHeight || "400px", o = CellRenderer$1.renderTableSkeleton();
-    return `<div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 flex flex-col' : 'flex flex-col gap-2'"><template x-if="showSqlEditorVisible(cellItem.cell)"><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${i}', false, 'query', '_showParsedQuery', null, null, null, '${e}', '${n}')"></div></template><template x-if="cellItem.cell._status === 'running' && !cellItem.cell._perspectiveReady"><div :class="(hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 ' : '') + 'min-h-[${a}] rounded-lg bg-base-100 overflow-hidden'">${o}</div></template><template x-if="cellItem.cell._perspectiveReady"><div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 flex flex-col perspective-fill-height' : 'min-h-[${a}]'"><perspective-viewer :id="'perspective-' + cellItem.cell._id" theme="Pro Light" :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 w-full rounded-lg' : 'w-full rounded-lg min-h-[${a}]'" x-init="$nextTick(() => { if (cellItem.cell._arrowTable) { renderPerspectiveInContainer(cellItem.cell); } })"></perspective-viewer></div></template></div>`;
+    return `<div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 flex flex-col' : 'flex flex-col gap-2'"><template x-if="showSqlEditorVisible(cellItem.cell)"><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${i}', false, 'query', '_showParsedQuery', null, null, null, '${e}', '${n}')"></div></template><template x-if="cellItem.cell._status === 'running' && !cellItem.cell._perspectiveReady"><div :class="(hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 ' : '') + 'min-h-[${a}] rounded-lg bg-base-100 overflow-hidden'">${o}</div></template><template x-if="cellItem.cell._perspectiveReady"><div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 flex flex-col perspective-fill-height' : 'min-h-[${a}]'"><perspective-viewer :id="'perspective-' + cellItem.cell._id" theme="Pro Light" :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 w-full rounded-lg' : 'w-full rounded-lg min-h-[${a}]'" x-init="$nextTick(() => { if (cellItem.cell._arrowTable && !cellItem.cell._perspectiveRendering && !cellItem.cell._perspectiveTable) { renderPerspectiveInContainer(cellItem.cell).catch(e => { cellItem.cell._perspectiveReady = false; cellItem.cell._resultInfo = '❌ ' + e.message; }); } })"></perspective-viewer></div></template></div>`;
   }
 }
 const CELL_BODY_FAMILIES = {
@@ -9447,9 +9447,14 @@ function executionMixin() {
         const n = await this.parseQueryRecursively(t);
         this.setStatus("Exécution de la requête...", "loading");
         const r = await DuckDBManager.executeQueryArrow(n);
-        t._arrowTable = r, t._perspectiveReady = !0, await this.$nextTick(), await this.renderPerspectiveInContainer(t);
-        const s = r.numRows;
-        t._resultInfo = `✅ ${s} ligne(s)` + (t._parseLevels.length > 1 ? ` - ${t._parseLevels.length - 1} niveau(x) de parsing` : ""), this.setStatus("Perspective chargé", "success");
+        t._arrowTable = r, t._perspectiveReady = !0, await this.$nextTick();
+        const s = "perspective-" + t._id;
+        let i = 0;
+        for (; !document.getElementById(s) && i < 2e3; )
+          await new Promise((o) => setTimeout(o, 50)), i += 50;
+        await this.renderPerspectiveInContainer(t);
+        const a = r.numRows;
+        t._resultInfo = `✅ ${a} ligne(s)` + (t._parseLevels.length > 1 ? ` - ${t._parseLevels.length - 1} niveau(x) de parsing` : ""), this.setStatus("Perspective chargé", "success");
       } catch (n) {
         throw t._perspectiveReady = !1, n;
       }

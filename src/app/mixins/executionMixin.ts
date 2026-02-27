@@ -1435,8 +1435,15 @@ export function executionMixin() {
                         cell._arrowTable = arrowTable;
                         cell._perspectiveReady = true;
 
-                        // Attendre le prochain tick pour que le DOM soit prêt
+                        // Attendre que Alpine ait inséré <perspective-viewer> dans le DOM.
+                        // x-if peut nécessiter plusieurs ticks selon la profondeur du composant.
                         await this.$nextTick();
+                        const _containerId = 'perspective-' + cell._id;
+                        let _waited = 0;
+                        while (!document.getElementById(_containerId) && _waited < 2000) {
+                            await new Promise(r => setTimeout(r, 50));
+                            _waited += 50;
+                        }
 
                         // Rendre le viewer Perspective
                         await this.renderPerspectiveInContainer(cell);
