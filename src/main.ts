@@ -2,6 +2,7 @@
 // Phase 1 : extraction brute du JS de index.html
 // Les classes seront découpées en modules dans les commits suivants.
 
+import '@iconify/iconify'
 import { formatValueForInputType } from './lib/utils'
 import { CDNManager } from './lib/CDNManager'
 import { CELL_TYPE_SCHEMAS, CELL_TYPE_HANDLERS } from './lib/cellTypeSchemas'
