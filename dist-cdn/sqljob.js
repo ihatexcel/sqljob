@@ -8650,587 +8650,7 @@ FROM source1 LIMIT 10;`;
     }
   };
 }
-function cellsMixin() {
-  return {
-    // Helpers factorisés pour la taille des cellules (minSizePx/Percent, maxSizePx/Percent optionnels)
-    hasCellMinSize(t) {
-      const e = (n) => n != null && String(n).trim() !== "";
-      return t && (e(t.minSizePx) || e(t.minSizePercent));
-    },
-    hasCellMaxSize(t) {
-      const e = (n) => n != null && String(n).trim() !== "";
-      return t && (e(t.maxSizePx) || e(t.maxSizePercent));
-    },
-    hasCellHeight(t) {
-      const e = (n) => n != null && String(n).trim() !== "";
-      return t && (e(t.minHeightPx) || e(t.minHeightPercent) || e(t.maxHeightPx) || e(t.maxHeightPercent));
-    },
-    isSqlCellWithEditor(t) {
-      return ["sqlRecursiveParse", "table", "iframe", "sqlStat", "perspective", "pdfme", "publipostageWord"].includes(t);
-    },
-    /** Logique d'affichage pilotée par le schéma (bodyDisplay) */
-    bodyDisplayShouldShowSkeleton(t) {
-      var r, s;
-      if (!t || t.type === "markdown" && ConfigManager.getCellEngine(t, "main") === "text") return !1;
-      const e = CELL_TYPE_SCHEMAS.types[t.type], n = ((r = e == null ? void 0 : e.bodyDisplay) == null ? void 0 : r.showSkeleton) ?? { when: "running", excludeTypes: ["uiParameter"] };
-      return n.when === "never" || (s = n.excludeTypes) != null && s.includes(t.type) || n.excludeWhenSqlEditor && this.isSqlCellWithEditor(t.type) && this.showSqlEditorVisible(t) ? !1 : !!(t._status === "running" || n.sourceLoading && t.type === "source" && t._fileName && !t._loaded);
-    },
-    bodyDisplayShouldShowContent(t) {
-      return t ? !this.bodyDisplayShouldShowSkeleton(t) : !1;
-    },
-    /** Retourne les variables CSS pour la hauteur (à utiliser avec style). Utilise max/min en CSS. */
-    getCellHeightVars(t) {
-      if (!t) return "";
-      const e = (l) => {
-        if (l == null || String(l).trim() === "") return "";
-        const c = String(l).trim();
-        return /^\d+(\.\d+)?$/.test(c) ? c + "px" : c;
-      }, n = (l) => {
-        if (l == null || String(l).trim() === "") return "";
-        const c = String(l).trim();
-        return /^\d+(\.\d+)?$/.test(c) ? c + "%" : c;
-      }, r = [], s = e(t.minHeightPx), i = n(t.minHeightPercent);
-      s && r.push(`--cell-min-h-px:${s}`), i && r.push(`--cell-min-h-pct:${i}`);
-      const a = e(t.maxHeightPx), o = n(t.maxHeightPercent);
-      return a && r.push(`--cell-max-h-px:${a}`), o && r.push(`--cell-max-h-pct:${o}`), r.length ? r.join(";") : "";
-    },
-    getCellSizeOuterClass(t, e) {
-      return e ? "flex-col w-full" : this.hasCellMinSize(t) ? "" : "min-w-[200px]";
-    },
-    // Style pour le wrapper (flex child) : order + min/max width/height. Combinaison px et % via max()/min() CSS.
-    getCellWrapperStyle(t, e, n) {
-      const r = { order: n ?? 0 }, s = (a) => {
-        if (a == null) return null;
-        const o = String(a).trim();
-        return o === "" ? null : /^\d+(\.\d+)?$/.test(o) ? o + "px" : o;
-      }, i = (a) => {
-        if (a == null) return null;
-        const o = String(a).trim();
-        return o === "" ? null : /^\d+(\.\d+)?$/.test(o) ? o + "%" : o;
-      };
-      if (!e) {
-        const a = s(t == null ? void 0 : t.minSizePx) ?? s(t == null ? void 0 : t.minSize), o = i(t == null ? void 0 : t.minSizePercent);
-        a && o ? r.minWidth = `max(${a}, ${o})` : a ? r.minWidth = a : o && (r.minWidth = o);
-        const l = s(t == null ? void 0 : t.maxSizePx) ?? s(t == null ? void 0 : t.maxSize), c = i(t == null ? void 0 : t.maxSizePercent);
-        l && c ? r.maxWidth = `min(${l}, ${c})` : l ? r.maxWidth = l : c && (r.maxWidth = c);
-      }
-      return r;
-    },
-    getCellSizeInnerClass() {
-      return "w-full";
-    },
-    createNewCell(t) {
-      const e = {
-        _id: this.generateCellId(),
-        _status: null,
-        _results: null,
-        _resultInfo: null,
-        _order: 0,
-        type: t
-      }, n = this.generateUniqueCellName(t);
-      return e.name = n, CellConfigService.ensureCellFromSchema(e, t, { baseName: n }), t === "source" && (e._fileName = "", e._currentFile = null, e._isDragging = !1, e._loaded = !1), t === "uiParameter" && (e._value = "", e._options = [], e._initialized = !1, e._userModified = !1), t === "publipostageWord" && (e.docxTemplateBase64 = null, e.docxTemplateFileName = "", e._showParsedQuery = !1, e._showParsedQuery2 = !1, e._parseLevels = [], e._parseLevels2 = [], e._isDragging = !1), t === "pdfme" && ((!e.json || typeof e.json != "string" || e.json.length < 50) && (e.json = JSON.stringify({
-        basePdf: { width: 210, height: 297, padding: [20, 20, 9, 20], staticSchema: [
-          { name: "page_header", type: "text", position: { x: 20, y: 5 }, width: 170, height: 8, content: "{date}", fontSize: 9, fontColor: "#888888", alignment: "right", readOnly: !0 },
-          { name: "footer", type: "text", position: { x: 20, y: 288 }, width: 170, height: 10, content: "PIED DE PAGE - Page {currentPage} / {totalPages}", fontSize: 10, fontColor: "#888888", alignment: "center", readOnly: !0 }
-        ] },
-        schemas: [[
-          { name: "header", type: "text", position: { x: 20, y: 20 }, width: 170, height: 10, content: "ENTÊTE DU DOCUMENT", fontSize: 16, fontColor: "#6366f1", alignment: "center" },
-          { name: "datatable", type: "table", position: { x: 20, y: 35 }, width: 170, height: 50, content: '[["A","B","C"]]', showHead: !0, repeatHead: !0, head: ["Col1", "Col2", "Col3"], headWidthPercentages: [33, 33, 34], tableStyles: { borderWidth: 0.3, borderColor: "#000000" }, headStyles: { fontSize: 10, fontColor: "#ffffff", backgroundColor: "#6366f1" }, bodyStyles: { fontSize: 9, fontColor: "#333333", alternateBackgroundColor: "#f5f5f5" }, columnStyles: {} }
-        ]]
-      }, null, 2)), e._showParsedQuery = !1, e._showParsedQuery2 = !1, e._parseLevels = [], e._parseLevels2 = []), ["sqlRecursiveParse", "table", "iframe", "sqlStat", "perspective"].includes(t) && (e._showParsedQuery = !1), t === "perspective" && (e._perspectiveReady = !1, e._perspectiveWorker = null, e._perspectiveTable = null), e;
-    },
-    addGroup(t) {
-      const e = this.createNewGroup("row");
-      e.cells = [this.createNewCell(t)], this.groups.push(e), this.showAddGroupModal = !1;
-    },
-    // Ajouter une cellule à un groupe (accepte path ou groupIndex)
-    addCellToGroup(t, e) {
-      const n = Array.isArray(t) ? t : [t], r = this.getGroupAtPath(n);
-      if (r) {
-        r.cells || (r.cells = []);
-        const s = this.createNewCell(e);
-        s._order = this.getNextOrder(r), r.cells.push(s);
-      }
-      this.addCellToGroupModal = { open: !1, path: null };
-    },
-    // Ouvrir le modal pour ajouter une cellule à un groupe (accepte path ou groupIndex)
-    openAddCellToGroupModal(t) {
-      const e = Array.isArray(t) ? t : [t];
-      this.addCellToGroupModal = { open: !0, path: e };
-    },
-    // Ouvrir le modal pour insérer un groupe à une position
-    openInsertGroupModal(t) {
-      this.insertGroupModal = { open: !0, atIndex: t };
-    },
-    // Insérer un groupe à une position spécifique
-    insertGroupAt(t, e) {
-      const n = this.createNewGroup("row");
-      n.cells = [this.createNewCell(e)], this.groups.splice(t, 0, n), this.insertGroupModal = { open: !1, atIndex: null };
-    },
-    // Ouvrir le modal pour insérer une cellule à une position (accepte path ou groupIndex)
-    openInsertCellModal(t, e) {
-      const n = Array.isArray(t) ? t : [t];
-      this.insertCellModal = { open: !0, path: n, atCellIndex: e };
-    },
-    // Insérer une cellule à une position spécifique (accepte path ou groupIndex)
-    insertCellAt(t, e, n) {
-      const r = Array.isArray(t) ? t : [t], s = this.getGroupAtPath(r);
-      if (s) {
-        s.cells || (s.cells = []);
-        const i = this.createNewCell(n);
-        i._order = this.getNextOrder(s), s.cells.splice(e, 0, i);
-      }
-      this.insertCellModal = { open: !1, path: null, atCellIndex: null };
-    },
-    // Supprimer un groupe (wrapper pour deleteGroupAtPath)
-    deleteGroup(t) {
-      const e = Array.isArray(t) ? t : [t];
-      this.deleteGroupAtPath(e);
-    },
-    // Déplacer un groupe (wrapper pour moveGroupAtPath)
-    moveGroup(t, e) {
-      const n = Array.isArray(t) ? t : [t];
-      this.moveGroupAtPath(n, e);
-    },
-    // Supprimer une cellule (accepte path ou groupIndex)
-    deleteCellAt(t, e) {
-      const n = Array.isArray(t) ? t : [t], r = this.getGroupAtPath(n);
-      if (!r || !r.cells) return;
-      const s = r.children && r.children.length > 0;
-      if (r.cells.length === 1 && !s)
-        this.deleteGroupAtPath(n);
-      else if (confirm("Supprimer cette cellule ?")) {
-        const i = r.cells[e];
-        _rawTableDataStore.delete(i._id), this._tables && this._tables[i._id] && (this._tables[i._id].destroy(), delete this._tables[i._id]), r.cells.splice(e, 1);
-      }
-    },
-    // Déplacer une cellule dans un groupe (accepte path ou groupIndex)
-    moveCellInGroup(t, e, n) {
-      const r = Array.isArray(t) ? t : [t];
-      this.moveCellInGroupAtPath(r, e, n);
-    },
-    /** S'assure qu'une cellule a un nom unique (génération auto si absent). Rétrocompat : uiParameter referenceName → name. */
-    ensureCellName(t, e) {
-      const n = Array.isArray(t) ? t : [t], r = this.getCellAtPath(n, e);
-      if (!r || !r.type) return;
-      r.type === "uiParameter" && r.referenceName && (!r.name || !String(r.name).trim()) && (r.name = String(r.referenceName).trim()), (r.name != null ? String(r.name).trim() : "") || (r.name = this.generateUniqueCellName(r.type, r._id));
-    },
-    /** Parcourt toutes les cellules et assigne un nom unique à celles qui n'en ont pas. Rétrocompat : uiParameter referenceName → name. */
-    ensureAllCellsHaveNames() {
-      const t = (e, n) => {
-        for (let r = 0; r < (e || []).length; r++) {
-          const s = e[r], i = [...n, r];
-          for (let a = 0; a < (s.cells || []).length; a++) {
-            const o = s.cells[a];
-            !o || !o.type || (o.type === "uiParameter" && o.referenceName && (!o.name || !String(o.name).trim()) && (o.name = String(o.referenceName).trim()), (!o.name || !String(o.name).trim()) && (o.name = this.generateUniqueCellName(o.type, o._id)));
-          }
-          s.children && t(s.children, i);
-        }
-      };
-      for (let e = 0; e < this.pages.length; e++)
-        t(this.pages[e].groups || [], [e]), this.pages[e].linkGroups && t(this.pages[e].linkGroups, [-1, e]);
-    },
-    // Ouvrir la config d'une cellule (accepte path ou groupIndex)
-    openCellConfig(t, e) {
-      const n = Array.isArray(t) ? t : [t];
-      this.ensureCellName(n, e), this.cellConfigModal = { open: !0, path: n, cellIndex: e }, setTimeout(() => {
-        const r = document.querySelector('[aria-labelledby="modal-cell-config-title"]'), s = this.getCellAtPath(n, e);
-        if (!r || !s) return;
-        const i = r.querySelectorAll("select");
-        if (i[0] && (i[0].value = s.type), ["markdown", "iframe", "uiParameter"].includes(s.type) && i[1]) {
-          const a = ConfigManager.getCellEngine(s, "main");
-          a && i[1].value !== a && (i[1].value = a);
-        }
-      }, 50);
-    },
-    closeCellConfig() {
-      this.cellConfigModal.open = !1;
-    },
-    getCommonParamsForType(t) {
-      return CellConfigService.getCommonParamsForType(t);
-    },
-    getCommonParamsExcludingName(t) {
-      return (CellConfigService.getCommonParamsForType(t) ?? []).filter((e) => e !== "name");
-    },
-    getCommonParamDef(t, e) {
-      return CellConfigService.getCommonParamDef(t, e);
-    },
-    getSpecificParamsForType(t) {
-      return CellConfigService.getSpecificParamsForType(t);
-    },
-    isSpecificParamVisible(t, e) {
-      return CellConfigService.isSpecificParamVisible(t, e);
-    },
-    getQueryLabelForType(t, e) {
-      var s, i, a, o;
-      const n = CELL_TYPE_SCHEMAS.types[t], r = typeof e == "string" ? e : (s = n == null ? void 0 : n.queryNames) == null ? void 0 : s[e];
-      return ((i = n == null ? void 0 : n.queryLabels) == null ? void 0 : i[r]) || ((a = n == null ? void 0 : n.queryLabels) == null ? void 0 : a[e]) || ((o = CELL_TYPE_SCHEMAS.common.queries) == null ? void 0 : o.label) || "Requête SQL";
-    },
-    getQueryCountForType(t) {
-      var e;
-      return ((e = CELL_TYPE_SCHEMAS.types[t]) == null ? void 0 : e.queryCount) ?? 1;
-    },
-    getCellValueByPath(t, e) {
-      return CellConfigService.getCellValueByPath(t, e);
-    },
-    setCellValueByPath(t, e, n) {
-      CellConfigService.setCellValueByPath(t, e, n);
-    },
-    onCellTypeChange(t, e, n) {
-      var o, l, c, u, d, p, g, h, f, m;
-      const r = Array.isArray(t) ? t : [t], s = this.getCellAtPath(r, e);
-      if (!s) return;
-      _rawTableDataStore.delete(s._id), s._results = null, s._resultInfo = null;
-      const i = s.type, a = s.name && String(s.name).trim() ? s.name : this.generateUniqueCellName(i);
-      (!s.name || !String(s.name).trim()) && (s.name = a), CellConfigService.applyDefaultsOnTypeChange(s, i, { oldType: n, baseName: a }), s.type === "source" && (s.name ? (o = ConfigManager.getCellQuery(s, "main")) != null && o.trim() || ConfigManager.setCellQuery(s, "main", `CREATE OR REPLACE TABLE ${s.name} AS SELECT * FROM '{fileNameUpload}'`) : s.name = this.generateUniqueSourceName(), (l = ConfigManager.getCellQuery(s, "fallback")) != null && l.trim() || ConfigManager.setCellQuery(s, "fallback", ((p = (d = (u = (c = CELL_TYPE_SCHEMAS.types.source) == null ? void 0 : c.defaults) == null ? void 0 : u.queries) == null ? void 0 : d.find((y) => y.name === "fallback")) == null ? void 0 : p.sql) || ((m = (f = (h = (g = CELL_TYPE_SCHEMAS.types.source) == null ? void 0 : g.defaults) == null ? void 0 : h.queries) == null ? void 0 : f[1]) == null ? void 0 : m.sql) || `CREATE OR REPLACE TABLE ${s.name} AS SELECT * FROM read_csv('{fileNameUpload}', HEADER=true, AUTO_DETECT=true, SAMPLE_SIZE=-1, IGNORE_ERRORS=true)`), s._fileName === void 0 && (s._fileName = ""), s._currentFile === void 0 && (s._currentFile = null), s._isDragging === void 0 && (s._isDragging = !1), s._loaded === void 0 && (s._loaded = !1), s._showParsedQuery2 === void 0 && (s._showParsedQuery2 = !1)), s.type === "uiParameter" && (s.referenceName && (!s.name || !String(s.name).trim()) && (s.name = String(s.referenceName).trim()), ConfigManager.getCellReferenceName(s) || (s.name = this.generateUniqueCellName("uiParameter", s._id)), s._value === void 0 && (s._value = ""), s._options || (s._options = []), s._initialized = !1, s._userModified = !1), s.type === "publipostageWord" && (s.docxTemplateBase64 === void 0 && (s.docxTemplateBase64 = null), s.docxTemplateFileName === void 0 && (s.docxTemplateFileName = ""), s._showParsedQuery === void 0 && (s._showParsedQuery = !1), s._showParsedQuery2 === void 0 && (s._showParsedQuery2 = !1), s._parseLevels || (s._parseLevels = []), s._parseLevels2 || (s._parseLevels2 = []), s._isDragging === void 0 && (s._isDragging = !1)), ["sqlRecursiveParse", "table", "iframe", "sqlStat", "perspective"].includes(s.type) && s._showParsedQuery === void 0 && (s._showParsedQuery = !1), s.type === "perspective" && (s._perspectiveReady = !1, s._perspectiveWorker = null, s._perspectiveTable = null);
-    },
-    /** Génère un nom unique pour une cellule (tous types confondus). excludeId = _id de la cellule à exclure. */
-    generateUniqueCellName(t, e = null) {
-      var a;
-      const n = /* @__PURE__ */ new Set(), r = (o) => {
-        for (const l of o) {
-          for (const c of l.cells || [])
-            c.name && String(c.name).trim() && c._id !== e && n.add(String(c.name).trim());
-          l.children && r(l.children);
-        }
-      };
-      for (const o of this.pages)
-        r(o.groups || []), o.linkGroups && r(o.linkGroups);
-      const s = ((a = CELL_TYPE_SCHEMAS == null ? void 0 : CELL_TYPE_SCHEMAS.types[t]) == null ? void 0 : a.defaultNamePrefix) ?? "cell";
-      let i = 1;
-      for (; n.has(s + i); ) i++;
-      return s + i;
-    },
-    /** Vérifie si un nom est déjà utilisé par une autre cellule (tous types). */
-    isCellNameUsed(t, e = null) {
-      const n = t && String(t).trim();
-      if (!n) return !1;
-      const r = (s) => {
-        for (const i of s) {
-          for (const a of i.cells || [])
-            if (a._id !== e && a.name && String(a.name).trim() === n) return !0;
-          if (i.children && r(i.children)) return !0;
-        }
-        return !1;
-      };
-      for (const s of this.pages)
-        if (r(s.groups || []) || s.linkGroups && r(s.linkGroups)) return !0;
-      return !1;
-    },
-    generateUniqueSourceName() {
-      return this.generateUniqueCellName("source");
-    },
-    /** Valide le nom d'une cellule (unicité globale, format SQL pour source). */
-    validateCellName(t, e) {
-      const n = this.getCellAtPath(t, e);
-      if (!n) return;
-      let r = n.name != null ? String(n.name).trim() : "";
-      if (!r) {
-        this.setStatus("Le nom ne peut pas être vide", "error"), n.name = this.generateUniqueCellName(n.type, n._id);
-        return;
-      }
-      if (!ConfigManager.isCellNameValid(n, r)) {
-        this.setStatus("Le nom doit commencer par une lettre ou _ et ne contenir que des lettres, chiffres et _", "error"), n.name = r.replace(/[^a-zA-Z0-9_]/g, "_").replace(/^([0-9])/, "_$1");
-        return;
-      }
-      this.isCellNameUsed(r, n._id) && (this.setStatus(`Le nom "${r}" est déjà utilisé par une autre cellule`, "error"), n.name = this.generateUniqueCellName(n.type, n._id));
-    },
-    // Valider l'unicité du nom de source (accepte path ou groupIndex) - vérifie dans TOUTES les pages
-    validateSingleSourceName(t, e) {
-      var i;
-      const n = Array.isArray(t) ? t : [t], r = this.getCellAtPath(n, e);
-      if (!r || r.type !== "source") return;
-      const s = (i = r.name) == null ? void 0 : i.trim();
-      if (!s) {
-        this.setStatus("Le nom de la source ne peut pas être vide", "error"), r.name = this.generateUniqueSourceName();
-        return;
-      }
-      if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(s)) {
-        this.setStatus("Le nom doit commencer par une lettre ou _ et ne contenir que des lettres, chiffres et _", "error"), r.name = s.replace(/[^a-zA-Z0-9_]/g, "_").replace(/^([0-9])/, "_$1");
-        return;
-      }
-      this.isNameUniqueAcrossPages(s, "source", this.activePageIndex, n, e) || (this.setStatus(`Le nom de source "${s}" est déjà utilisé dans une autre page`, "error"), r.name = this.generateUniqueSourceName());
-    }
-  };
-}
-function filesMixin() {
-  return {
-    async loadEmbeddedFiles() {
-      const t = document.querySelectorAll('script[id^="sourceFile_"]'), e = document.querySelectorAll('script[id^="docxTemplate_"]');
-      if (t.length === 0 && e.length === 0)
-        return;
-      console.info("📂 " + (t.length + e.length) + " fichier(s) embarqué(s) trouvé(s)");
-      const n = (i) => {
-        for (let a = 0; a < this.pages.length; a++) {
-          const o = this.pages[a], l = r(o.groups, i, []);
-          if (l)
-            return { ...l, pageIndex: a };
-        }
-        return null;
-      }, r = (i, a, o) => {
-        for (let l = 0; l < i.length; l++) {
-          const c = i[l], u = [...o, l];
-          for (let d = 0; d < (c.cells || []).length; d++) {
-            const p = c.cells[d];
-            if (p.type === "source" && p.name === a)
-              return { path: u, cellIndex: d, source: p };
-          }
-          if (c.children && c.children.length > 0) {
-            const d = r(c.children, a, u);
-            if (d) return d;
-          }
-        }
-        return null;
-      }, s = (i, a) => {
-        try {
-          let o = i, l = null;
-          for (let d = 0; d < a.length - 1; d++) {
-            const p = a[d];
-            if (p === -1) {
-              o = this.linkGroups;
-              continue;
-            }
-            if (!o[p]) return null;
-            d === 0 ? (l = o[p], o = l.children || []) : (l = o[p], o = l.children || []);
-          }
-          const c = a[a.length - 1], u = a.length === 1 ? o[a[0]] : l;
-          return !u || !u.cells || !u.cells[c] ? null : {
-            cell: u.cells[c],
-            cellIndex: c
-          };
-        } catch (o) {
-          return console.error("Error finding cell by path:", o), null;
-        }
-      };
-      for (const i of t) {
-        const a = i.dataset.sourceName, o = i.dataset.fileName, l = i.textContent.trim();
-        if (!a || !o || !l) {
-          console.warn("Script source incomplet:", i.id);
-          continue;
-        }
-        const c = n(a);
-        if (!c) {
-          console.warn(`Source "${a}" non trouvée dans les cellules`);
-          continue;
-        }
-        const u = this.activePageIndex;
-        this.activePageIndex = c.pageIndex;
-        try {
-          this.setStatus(`Chargement de ${a}...`, "loading");
-          const d = FileHandler.base64ToUint8Array(l), p = await FileHandler.decompressGzip(d), g = new Blob([p]), h = new File([g], o, {
-            type: FileHandler.getMimeTypeFromFileName(o)
-          });
-          await this.loadSingleSourceFile(h, c.path, c.cellIndex, { skipRunNextCells: !0 });
-        } catch (d) {
-          console.error(`Erreur chargement fichier embarqué ${a}:`, d), this.setStatus(`Erreur: ${d.message}`, "error");
-        } finally {
-          this.activePageIndex = u;
-        }
-      }
-      for (const i of e) {
-        const a = i.dataset.cellPath, o = i.dataset.fileName;
-        let l = i.textContent.trim();
-        if (!a || !o || !l) {
-          console.warn("Script docx template incomplet:", i.id);
-          continue;
-        }
-        if (i.dataset.compressed === "true")
-          try {
-            const d = FileHandler.base64ToUint8Array(l), p = await FileHandler.decompressGzip(d);
-            l = FileHandler.arrayBufferToBase64(p);
-          } catch (d) {
-            console.error("Décompression template docx échouée:", d);
-            continue;
-          }
-        const c = a.split("_").map((d) => parseInt(d, 10)), u = s(this.groups, c);
-        if (!u) {
-          console.warn(`Cellule publipostageWord au chemin "${a}" non trouvée`);
-          continue;
-        }
-        if (u.cell.type !== "publipostageWord") {
-          console.warn(`La cellule au chemin "${a}" n'est pas de type publipostageWord`);
-          continue;
-        }
-        try {
-          ConfigManager.setCellFileData(u.cell, { base64: l, fileName: o });
-        } catch (d) {
-          console.error(`Erreur chargement template docx ${a}:`, d);
-        }
-      }
-      this.setStatus("Fichiers embarqués chargés", "success");
-    },
-    handleSingleSourceDrop(t, e, n) {
-      const r = this.getCellAtPath(e, n);
-      if (!r || r.type !== "source") return;
-      r._isDragging = !1;
-      const s = t.dataTransfer.files;
-      s.length > 0 && this.loadSingleSourceFile(s[0], e, n);
-    },
-    handleSingleSourceFileSelect(t, e, n) {
-      const r = t.target.files;
-      r.length > 0 && this.loadSingleSourceFile(r[0], e, n);
-    },
-    async loadSingleSourceFile(t, e, n, r = {}) {
-      var a, o, l, c, u, d;
-      const s = this.getCellAtPath(e, n);
-      if (!s || s.type !== "source") return;
-      const i = r.skipRunNextCells === !0;
-      s._fileName = t.name, s._currentFile = t, this.isLoading = !0, s._status = "running", this.setStatus(`Chargement de ${s.name}...`, "loading");
-      try {
-        const p = s.name || "source1";
-        let g, h = !1, f = t.name;
-        if (((x) => {
-          const w = x.toLowerCase();
-          return w.endsWith(".csv.gz") ? "csv.gz" : w.endsWith(".tsv.gz") ? "tsv.gz" : w.endsWith(".txt.gz") ? "txt.gz" : w.split(".").pop();
-        })(f) === "xls") {
-          this.setStatus("Conversion Excel (.xls) via SheetJS...", "loading");
-          const x = ((a = s.json) == null ? void 0 : a.xlsx) || {}, { csv: w, csvFileName: _ } = await FileHandler.processExcelFile(
-            t,
-            x.options,
-            x.toCsvOptions,
-            x.sheetSelection
-          ), S = new Blob([w], { type: "text/csv" });
-          await DuckDBManager.registerFile(_, S), f = _, g = `CREATE OR REPLACE TABLE ${p} AS SELECT * FROM read_csv('${f}', HEADER = true, AUTO_DETECT = true, SAMPLE_SIZE = -1)`;
-        } else {
-          await DuckDBManager.registerFile(t.name, t);
-          const x = (ConfigManager.getCellQuery(s, "main") || ((l = (o = s.queries) == null ? void 0 : o[0]) == null ? void 0 : l.sql) || "").trim();
-          if (x) {
-            const w = { name: p, fileNameUpload: f, fileName: f }, S = { queries: [{ name: "main", sql: this.replaceSourceContext(x, w), engine: "sql", clientVisible: !1 }], _parseLevels: [] };
-            g = await this.parseQueryRecursively(S), s._parseLevels = S._parseLevels || [];
-          } else
-            g = `CREATE OR REPLACE TABLE ${p} AS SELECT * FROM '${f}'`;
-        }
-        try {
-          await DuckDBManager.executeQuery(g), h = !0;
-        } catch (x) {
-          const w = (ConfigManager.getCellQuery(s, "fallback") || ((u = (c = s.queries) == null ? void 0 : c[1]) == null ? void 0 : u.sql) || "").trim();
-          if (w) {
-            this.setStatus("Requête initiale échouée, tentative fallback...", "loading");
-            const _ = { name: p, fileNameUpload: f, fileName: f }, S = { type: "source", queries: [{ name: "main", sql: "" }, { name: "fallback", sql: this.replaceSourceContext(w, _), engine: "sql", clientVisible: !1 }], _parseLevels: [] };
-            try {
-              const b = await this.parseQueryRecursively(S, 1);
-              await DuckDBManager.executeQuery(b), h = !0, g = b, s._parseLevels = S._parseLevels || [], this.setStatus(`${s.name} chargé via requête de fallback`, "success");
-            } catch {
-            }
-          }
-          if (!h) throw x;
-        }
-        s._loaded = !0, s._status = "success", s._pendingFileLoad = !1, (d = s._parseLevels) != null && d.length || (s._parseLevels = [{ level: "final", innerQuery: g, replacement: null }]), this.setStatus(`${s.name} chargé!`, "success"), i || (await this.runCellsAfterWithStopConditions(e, n, s._id)).stopped || this.setStatus("Exécution terminée", "success");
-      } catch (p) {
-        s._status = "error", this.setStatus("Erreur: " + p.message, "error"), s._fileName = "", s._currentFile = null, Array.isArray(s.files) && (s.files = s.files.filter((g) => g.slot !== "source")), delete s.fileBase64, delete s.fileName;
-      } finally {
-        this.isLoading = !1;
-      }
-    },
-    async removeSingleSourceFile(t, e) {
-      const n = this.getCellAtPath(t, e);
-      if (!n || n.type !== "source") return;
-      if (n._fileName && DuckDBManager.dbInstance)
-        try {
-          await DuckDBManager.executeQuery(`DROP TABLE IF EXISTS "${n.name}"`);
-        } catch {
-        }
-      const r = n.name.replace(/[^a-zA-Z0-9_]/g, "_");
-      document.querySelectorAll(`script[id^="sourceFile_${r}"]`).forEach((i) => i.remove());
-      const s = document.getElementById("fileInput_" + n._id);
-      s && (s.value = ""), n._fileName = "", n._currentFile = null, n._loaded = !1, n._status = null, n._parseLevels = [], Array.isArray(n.files) && (n.files = n.files.filter((i) => i.slot !== "source")), delete n.fileBase64, delete n.fileName, this.setStatus(`Fichier supprimé de ${n.name}`, "success");
-    },
-    /** Valide le nom d'une cellule (unicité globale, format SQL pour source). */
-    validateCellName(t, e) {
-      const n = this.getCellAtPath(t, e);
-      if (!n) return;
-      let r = n.name != null ? String(n.name).trim() : "";
-      if (!r) {
-        this.setStatus("Le nom ne peut pas être vide", "error"), n.name = this.generateUniqueCellName(n.type, n._id);
-        return;
-      }
-      if (!ConfigManager.isCellNameValid(n, r)) {
-        this.setStatus("Le nom doit commencer par une lettre ou _ et ne contenir que des lettres, chiffres et _", "error"), n.name = r.replace(/[^a-zA-Z0-9_]/g, "_").replace(/^([0-9])/, "_$1");
-        return;
-      }
-      this.isCellNameUsed(r, n._id) && (this.setStatus(`Le nom "${r}" est déjà utilisé par une autre cellule`, "error"), n.name = this.generateUniqueCellName(n.type, n._id));
-    },
-    // ─────────────────────────────────────────────────────────────────
-    // GESTION DU TEMPLATE DOCX (publipostageWord)
-    // ─────────────────────────────────────────────────────────────────
-    handleDocxTemplateDrop(t, e, n) {
-      const r = this.getCellAtPath(e, n);
-      if (!r || r.type !== "publipostageWord") return;
-      r._isDragging = !1;
-      const s = t.dataTransfer.files;
-      s.length > 0 && this.loadDocxTemplate(s[0], e, n);
-    },
-    handleDocxTemplateFileSelect(t, e, n) {
-      const r = t.target.files;
-      r.length > 0 && this.loadDocxTemplate(r[0], e, n);
-    },
-    async loadDocxTemplate(t, e, n) {
-      const r = this.getCellAtPath(e, n);
-      if (!(!r || r.type !== "publipostageWord")) {
-        if (!t.name.endsWith(".docx")) {
-          this.setStatus("Seuls les fichiers .docx sont acceptés", "error");
-          return;
-        }
-        try {
-          this.setStatus("Chargement du template Word...", "loading");
-          const s = await t.arrayBuffer(), i = FileHandler.arrayBufferToBase64(s);
-          r.docxTemplateBase64 = i, r.docxTemplateFileName = t.name, ConfigManager.setCellFileData(r, { base64: i, fileName: t.name }), this.setStatus("Template Word chargé", "success");
-        } catch (s) {
-          this.setStatus("Erreur lors du chargement du template: " + s.message, "error");
-        }
-      }
-    },
-    downloadDocxTemplate(t, e) {
-      const n = this.getCellAtPath(t, e);
-      if (!(!n || n.type !== "publipostageWord")) {
-        if (!n.docxTemplateBase64 || !n.docxTemplateFileName) {
-          this.setStatus("Aucun template à télécharger", "error");
-          return;
-        }
-        try {
-          const r = FileHandler.base64ToUint8Array(n.docxTemplateBase64), s = new Blob([r], {
-            type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-          });
-          FileHandler.downloadFile(s, n.docxTemplateFileName), this.setStatus("Template Word téléchargé", "success");
-        } catch (r) {
-          this.setStatus("Erreur lors du téléchargement: " + r.message, "error");
-        }
-      }
-    },
-    removeDocxTemplate(t, e) {
-      const n = this.getCellAtPath(t, e);
-      if (!n || n.type !== "publipostageWord") return;
-      const r = document.getElementById("docxInput_" + n._id);
-      r && (r.value = ""), n.docxTemplateBase64 = null, n.docxTemplateFileName = "", Array.isArray(n.files) && (n.files = n.files.filter((s) => s.slot !== "docxTemplate")), delete n.fileBase64, delete n.fileName, this.setStatus("Template Word supprimé", "success");
-    },
-    async loadPendingSourceFiles() {
-      const t = async (n, r) => {
-        for (let s = 0; s < (n.cells || []).length; s++) {
-          const i = n.cells[s];
-          if (i.type === "source" && i._pendingFileLoad && i._currentFile)
-            try {
-              this.setStatus(`Chargement de ${i.name}...`, "loading"), await this.loadSingleSourceFile(i._currentFile, r, s, { skipRunNextCells: !0 }), i._pendingFileLoad = !1;
-            } catch (a) {
-              console.error(`Erreur chargement fichier source ${i.name}:`, a);
-            }
-        }
-        if (n.children)
-          for (let s = 0; s < n.children.length; s++)
-            await t(n.children[s], [...r, s]);
-      }, e = this.activePageIndex;
-      try {
-        for (let n = 0; n < this.pages.length; n++) {
-          this.activePageIndex = n;
-          const r = this.pages[n];
-          for (let s = 0; s < r.groups.length; s++)
-            await t(r.groups[s], [s]);
-        }
-      } finally {
-        this.activePageIndex = e;
-      }
-    }
-  };
-}
+const _rawTableDataStore = /* @__PURE__ */ new Map();
 function executionMixin() {
   return {
     async runGroupAtPath(t) {
@@ -10245,6 +9665,587 @@ function executionMixin() {
         }
       }
       this.isLoading = !1, this.setStatus("Toutes les cellules de la page exécutées", "success");
+    }
+  };
+}
+function cellsMixin() {
+  return {
+    // Helpers factorisés pour la taille des cellules (minSizePx/Percent, maxSizePx/Percent optionnels)
+    hasCellMinSize(t) {
+      const e = (n) => n != null && String(n).trim() !== "";
+      return t && (e(t.minSizePx) || e(t.minSizePercent));
+    },
+    hasCellMaxSize(t) {
+      const e = (n) => n != null && String(n).trim() !== "";
+      return t && (e(t.maxSizePx) || e(t.maxSizePercent));
+    },
+    hasCellHeight(t) {
+      const e = (n) => n != null && String(n).trim() !== "";
+      return t && (e(t.minHeightPx) || e(t.minHeightPercent) || e(t.maxHeightPx) || e(t.maxHeightPercent));
+    },
+    isSqlCellWithEditor(t) {
+      return ["sqlRecursiveParse", "table", "iframe", "sqlStat", "perspective", "pdfme", "publipostageWord"].includes(t);
+    },
+    /** Logique d'affichage pilotée par le schéma (bodyDisplay) */
+    bodyDisplayShouldShowSkeleton(t) {
+      var r, s;
+      if (!t || t.type === "markdown" && ConfigManager.getCellEngine(t, "main") === "text") return !1;
+      const e = CELL_TYPE_SCHEMAS.types[t.type], n = ((r = e == null ? void 0 : e.bodyDisplay) == null ? void 0 : r.showSkeleton) ?? { when: "running", excludeTypes: ["uiParameter"] };
+      return n.when === "never" || (s = n.excludeTypes) != null && s.includes(t.type) || n.excludeWhenSqlEditor && this.isSqlCellWithEditor(t.type) && this.showSqlEditorVisible(t) ? !1 : !!(t._status === "running" || n.sourceLoading && t.type === "source" && t._fileName && !t._loaded);
+    },
+    bodyDisplayShouldShowContent(t) {
+      return t ? !this.bodyDisplayShouldShowSkeleton(t) : !1;
+    },
+    /** Retourne les variables CSS pour la hauteur (à utiliser avec style). Utilise max/min en CSS. */
+    getCellHeightVars(t) {
+      if (!t) return "";
+      const e = (l) => {
+        if (l == null || String(l).trim() === "") return "";
+        const c = String(l).trim();
+        return /^\d+(\.\d+)?$/.test(c) ? c + "px" : c;
+      }, n = (l) => {
+        if (l == null || String(l).trim() === "") return "";
+        const c = String(l).trim();
+        return /^\d+(\.\d+)?$/.test(c) ? c + "%" : c;
+      }, r = [], s = e(t.minHeightPx), i = n(t.minHeightPercent);
+      s && r.push(`--cell-min-h-px:${s}`), i && r.push(`--cell-min-h-pct:${i}`);
+      const a = e(t.maxHeightPx), o = n(t.maxHeightPercent);
+      return a && r.push(`--cell-max-h-px:${a}`), o && r.push(`--cell-max-h-pct:${o}`), r.length ? r.join(";") : "";
+    },
+    getCellSizeOuterClass(t, e) {
+      return e ? "flex-col w-full" : this.hasCellMinSize(t) ? "" : "min-w-[200px]";
+    },
+    // Style pour le wrapper (flex child) : order + min/max width/height. Combinaison px et % via max()/min() CSS.
+    getCellWrapperStyle(t, e, n) {
+      const r = { order: n ?? 0 }, s = (a) => {
+        if (a == null) return null;
+        const o = String(a).trim();
+        return o === "" ? null : /^\d+(\.\d+)?$/.test(o) ? o + "px" : o;
+      }, i = (a) => {
+        if (a == null) return null;
+        const o = String(a).trim();
+        return o === "" ? null : /^\d+(\.\d+)?$/.test(o) ? o + "%" : o;
+      };
+      if (!e) {
+        const a = s(t == null ? void 0 : t.minSizePx) ?? s(t == null ? void 0 : t.minSize), o = i(t == null ? void 0 : t.minSizePercent);
+        a && o ? r.minWidth = `max(${a}, ${o})` : a ? r.minWidth = a : o && (r.minWidth = o);
+        const l = s(t == null ? void 0 : t.maxSizePx) ?? s(t == null ? void 0 : t.maxSize), c = i(t == null ? void 0 : t.maxSizePercent);
+        l && c ? r.maxWidth = `min(${l}, ${c})` : l ? r.maxWidth = l : c && (r.maxWidth = c);
+      }
+      return r;
+    },
+    getCellSizeInnerClass() {
+      return "w-full";
+    },
+    createNewCell(t) {
+      const e = {
+        _id: this.generateCellId(),
+        _status: null,
+        _results: null,
+        _resultInfo: null,
+        _order: 0,
+        type: t
+      }, n = this.generateUniqueCellName(t);
+      return e.name = n, CellConfigService.ensureCellFromSchema(e, t, { baseName: n }), t === "source" && (e._fileName = "", e._currentFile = null, e._isDragging = !1, e._loaded = !1), t === "uiParameter" && (e._value = "", e._options = [], e._initialized = !1, e._userModified = !1), t === "publipostageWord" && (e.docxTemplateBase64 = null, e.docxTemplateFileName = "", e._showParsedQuery = !1, e._showParsedQuery2 = !1, e._parseLevels = [], e._parseLevels2 = [], e._isDragging = !1), t === "pdfme" && ((!e.json || typeof e.json != "string" || e.json.length < 50) && (e.json = JSON.stringify({
+        basePdf: { width: 210, height: 297, padding: [20, 20, 9, 20], staticSchema: [
+          { name: "page_header", type: "text", position: { x: 20, y: 5 }, width: 170, height: 8, content: "{date}", fontSize: 9, fontColor: "#888888", alignment: "right", readOnly: !0 },
+          { name: "footer", type: "text", position: { x: 20, y: 288 }, width: 170, height: 10, content: "PIED DE PAGE - Page {currentPage} / {totalPages}", fontSize: 10, fontColor: "#888888", alignment: "center", readOnly: !0 }
+        ] },
+        schemas: [[
+          { name: "header", type: "text", position: { x: 20, y: 20 }, width: 170, height: 10, content: "ENTÊTE DU DOCUMENT", fontSize: 16, fontColor: "#6366f1", alignment: "center" },
+          { name: "datatable", type: "table", position: { x: 20, y: 35 }, width: 170, height: 50, content: '[["A","B","C"]]', showHead: !0, repeatHead: !0, head: ["Col1", "Col2", "Col3"], headWidthPercentages: [33, 33, 34], tableStyles: { borderWidth: 0.3, borderColor: "#000000" }, headStyles: { fontSize: 10, fontColor: "#ffffff", backgroundColor: "#6366f1" }, bodyStyles: { fontSize: 9, fontColor: "#333333", alternateBackgroundColor: "#f5f5f5" }, columnStyles: {} }
+        ]]
+      }, null, 2)), e._showParsedQuery = !1, e._showParsedQuery2 = !1, e._parseLevels = [], e._parseLevels2 = []), ["sqlRecursiveParse", "table", "iframe", "sqlStat", "perspective"].includes(t) && (e._showParsedQuery = !1), t === "perspective" && (e._perspectiveReady = !1, e._perspectiveWorker = null, e._perspectiveTable = null), e;
+    },
+    addGroup(t) {
+      const e = this.createNewGroup("row");
+      e.cells = [this.createNewCell(t)], this.groups.push(e), this.showAddGroupModal = !1;
+    },
+    // Ajouter une cellule à un groupe (accepte path ou groupIndex)
+    addCellToGroup(t, e) {
+      const n = Array.isArray(t) ? t : [t], r = this.getGroupAtPath(n);
+      if (r) {
+        r.cells || (r.cells = []);
+        const s = this.createNewCell(e);
+        s._order = this.getNextOrder(r), r.cells.push(s);
+      }
+      this.addCellToGroupModal = { open: !1, path: null };
+    },
+    // Ouvrir le modal pour ajouter une cellule à un groupe (accepte path ou groupIndex)
+    openAddCellToGroupModal(t) {
+      const e = Array.isArray(t) ? t : [t];
+      this.addCellToGroupModal = { open: !0, path: e };
+    },
+    // Ouvrir le modal pour insérer un groupe à une position
+    openInsertGroupModal(t) {
+      this.insertGroupModal = { open: !0, atIndex: t };
+    },
+    // Insérer un groupe à une position spécifique
+    insertGroupAt(t, e) {
+      const n = this.createNewGroup("row");
+      n.cells = [this.createNewCell(e)], this.groups.splice(t, 0, n), this.insertGroupModal = { open: !1, atIndex: null };
+    },
+    // Ouvrir le modal pour insérer une cellule à une position (accepte path ou groupIndex)
+    openInsertCellModal(t, e) {
+      const n = Array.isArray(t) ? t : [t];
+      this.insertCellModal = { open: !0, path: n, atCellIndex: e };
+    },
+    // Insérer une cellule à une position spécifique (accepte path ou groupIndex)
+    insertCellAt(t, e, n) {
+      const r = Array.isArray(t) ? t : [t], s = this.getGroupAtPath(r);
+      if (s) {
+        s.cells || (s.cells = []);
+        const i = this.createNewCell(n);
+        i._order = this.getNextOrder(s), s.cells.splice(e, 0, i);
+      }
+      this.insertCellModal = { open: !1, path: null, atCellIndex: null };
+    },
+    // Supprimer un groupe (wrapper pour deleteGroupAtPath)
+    deleteGroup(t) {
+      const e = Array.isArray(t) ? t : [t];
+      this.deleteGroupAtPath(e);
+    },
+    // Déplacer un groupe (wrapper pour moveGroupAtPath)
+    moveGroup(t, e) {
+      const n = Array.isArray(t) ? t : [t];
+      this.moveGroupAtPath(n, e);
+    },
+    // Supprimer une cellule (accepte path ou groupIndex)
+    deleteCellAt(t, e) {
+      const n = Array.isArray(t) ? t : [t], r = this.getGroupAtPath(n);
+      if (!r || !r.cells) return;
+      const s = r.children && r.children.length > 0;
+      if (r.cells.length === 1 && !s)
+        this.deleteGroupAtPath(n);
+      else if (confirm("Supprimer cette cellule ?")) {
+        const i = r.cells[e];
+        _rawTableDataStore.delete(i._id), this._tables && this._tables[i._id] && (this._tables[i._id].destroy(), delete this._tables[i._id]), r.cells.splice(e, 1);
+      }
+    },
+    // Déplacer une cellule dans un groupe (accepte path ou groupIndex)
+    moveCellInGroup(t, e, n) {
+      const r = Array.isArray(t) ? t : [t];
+      this.moveCellInGroupAtPath(r, e, n);
+    },
+    /** S'assure qu'une cellule a un nom unique (génération auto si absent). Rétrocompat : uiParameter referenceName → name. */
+    ensureCellName(t, e) {
+      const n = Array.isArray(t) ? t : [t], r = this.getCellAtPath(n, e);
+      if (!r || !r.type) return;
+      r.type === "uiParameter" && r.referenceName && (!r.name || !String(r.name).trim()) && (r.name = String(r.referenceName).trim()), (r.name != null ? String(r.name).trim() : "") || (r.name = this.generateUniqueCellName(r.type, r._id));
+    },
+    /** Parcourt toutes les cellules et assigne un nom unique à celles qui n'en ont pas. Rétrocompat : uiParameter referenceName → name. */
+    ensureAllCellsHaveNames() {
+      const t = (e, n) => {
+        for (let r = 0; r < (e || []).length; r++) {
+          const s = e[r], i = [...n, r];
+          for (let a = 0; a < (s.cells || []).length; a++) {
+            const o = s.cells[a];
+            !o || !o.type || (o.type === "uiParameter" && o.referenceName && (!o.name || !String(o.name).trim()) && (o.name = String(o.referenceName).trim()), (!o.name || !String(o.name).trim()) && (o.name = this.generateUniqueCellName(o.type, o._id)));
+          }
+          s.children && t(s.children, i);
+        }
+      };
+      for (let e = 0; e < this.pages.length; e++)
+        t(this.pages[e].groups || [], [e]), this.pages[e].linkGroups && t(this.pages[e].linkGroups, [-1, e]);
+    },
+    // Ouvrir la config d'une cellule (accepte path ou groupIndex)
+    openCellConfig(t, e) {
+      const n = Array.isArray(t) ? t : [t];
+      this.ensureCellName(n, e), this.cellConfigModal = { open: !0, path: n, cellIndex: e }, setTimeout(() => {
+        const r = document.querySelector('[aria-labelledby="modal-cell-config-title"]'), s = this.getCellAtPath(n, e);
+        if (!r || !s) return;
+        const i = r.querySelectorAll("select");
+        if (i[0] && (i[0].value = s.type), ["markdown", "iframe", "uiParameter"].includes(s.type) && i[1]) {
+          const a = ConfigManager.getCellEngine(s, "main");
+          a && i[1].value !== a && (i[1].value = a);
+        }
+      }, 50);
+    },
+    closeCellConfig() {
+      this.cellConfigModal.open = !1;
+    },
+    getCommonParamsForType(t) {
+      return CellConfigService.getCommonParamsForType(t);
+    },
+    getCommonParamsExcludingName(t) {
+      return (CellConfigService.getCommonParamsForType(t) ?? []).filter((e) => e !== "name");
+    },
+    getCommonParamDef(t, e) {
+      return CellConfigService.getCommonParamDef(t, e);
+    },
+    getSpecificParamsForType(t) {
+      return CellConfigService.getSpecificParamsForType(t);
+    },
+    isSpecificParamVisible(t, e) {
+      return CellConfigService.isSpecificParamVisible(t, e);
+    },
+    getQueryLabelForType(t, e) {
+      var s, i, a, o;
+      const n = CELL_TYPE_SCHEMAS.types[t], r = typeof e == "string" ? e : (s = n == null ? void 0 : n.queryNames) == null ? void 0 : s[e];
+      return ((i = n == null ? void 0 : n.queryLabels) == null ? void 0 : i[r]) || ((a = n == null ? void 0 : n.queryLabels) == null ? void 0 : a[e]) || ((o = CELL_TYPE_SCHEMAS.common.queries) == null ? void 0 : o.label) || "Requête SQL";
+    },
+    getQueryCountForType(t) {
+      var e;
+      return ((e = CELL_TYPE_SCHEMAS.types[t]) == null ? void 0 : e.queryCount) ?? 1;
+    },
+    getCellValueByPath(t, e) {
+      return CellConfigService.getCellValueByPath(t, e);
+    },
+    setCellValueByPath(t, e, n) {
+      CellConfigService.setCellValueByPath(t, e, n);
+    },
+    onCellTypeChange(t, e, n) {
+      var o, l, c, u, d, p, g, h, f, m;
+      const r = Array.isArray(t) ? t : [t], s = this.getCellAtPath(r, e);
+      if (!s) return;
+      _rawTableDataStore.delete(s._id), s._results = null, s._resultInfo = null;
+      const i = s.type, a = s.name && String(s.name).trim() ? s.name : this.generateUniqueCellName(i);
+      (!s.name || !String(s.name).trim()) && (s.name = a), CellConfigService.applyDefaultsOnTypeChange(s, i, { oldType: n, baseName: a }), s.type === "source" && (s.name ? (o = ConfigManager.getCellQuery(s, "main")) != null && o.trim() || ConfigManager.setCellQuery(s, "main", `CREATE OR REPLACE TABLE ${s.name} AS SELECT * FROM '{fileNameUpload}'`) : s.name = this.generateUniqueSourceName(), (l = ConfigManager.getCellQuery(s, "fallback")) != null && l.trim() || ConfigManager.setCellQuery(s, "fallback", ((p = (d = (u = (c = CELL_TYPE_SCHEMAS.types.source) == null ? void 0 : c.defaults) == null ? void 0 : u.queries) == null ? void 0 : d.find((y) => y.name === "fallback")) == null ? void 0 : p.sql) || ((m = (f = (h = (g = CELL_TYPE_SCHEMAS.types.source) == null ? void 0 : g.defaults) == null ? void 0 : h.queries) == null ? void 0 : f[1]) == null ? void 0 : m.sql) || `CREATE OR REPLACE TABLE ${s.name} AS SELECT * FROM read_csv('{fileNameUpload}', HEADER=true, AUTO_DETECT=true, SAMPLE_SIZE=-1, IGNORE_ERRORS=true)`), s._fileName === void 0 && (s._fileName = ""), s._currentFile === void 0 && (s._currentFile = null), s._isDragging === void 0 && (s._isDragging = !1), s._loaded === void 0 && (s._loaded = !1), s._showParsedQuery2 === void 0 && (s._showParsedQuery2 = !1)), s.type === "uiParameter" && (s.referenceName && (!s.name || !String(s.name).trim()) && (s.name = String(s.referenceName).trim()), ConfigManager.getCellReferenceName(s) || (s.name = this.generateUniqueCellName("uiParameter", s._id)), s._value === void 0 && (s._value = ""), s._options || (s._options = []), s._initialized = !1, s._userModified = !1), s.type === "publipostageWord" && (s.docxTemplateBase64 === void 0 && (s.docxTemplateBase64 = null), s.docxTemplateFileName === void 0 && (s.docxTemplateFileName = ""), s._showParsedQuery === void 0 && (s._showParsedQuery = !1), s._showParsedQuery2 === void 0 && (s._showParsedQuery2 = !1), s._parseLevels || (s._parseLevels = []), s._parseLevels2 || (s._parseLevels2 = []), s._isDragging === void 0 && (s._isDragging = !1)), ["sqlRecursiveParse", "table", "iframe", "sqlStat", "perspective"].includes(s.type) && s._showParsedQuery === void 0 && (s._showParsedQuery = !1), s.type === "perspective" && (s._perspectiveReady = !1, s._perspectiveWorker = null, s._perspectiveTable = null);
+    },
+    /** Génère un nom unique pour une cellule (tous types confondus). excludeId = _id de la cellule à exclure. */
+    generateUniqueCellName(t, e = null) {
+      var a;
+      const n = /* @__PURE__ */ new Set(), r = (o) => {
+        for (const l of o) {
+          for (const c of l.cells || [])
+            c.name && String(c.name).trim() && c._id !== e && n.add(String(c.name).trim());
+          l.children && r(l.children);
+        }
+      };
+      for (const o of this.pages)
+        r(o.groups || []), o.linkGroups && r(o.linkGroups);
+      const s = ((a = CELL_TYPE_SCHEMAS == null ? void 0 : CELL_TYPE_SCHEMAS.types[t]) == null ? void 0 : a.defaultNamePrefix) ?? "cell";
+      let i = 1;
+      for (; n.has(s + i); ) i++;
+      return s + i;
+    },
+    /** Vérifie si un nom est déjà utilisé par une autre cellule (tous types). */
+    isCellNameUsed(t, e = null) {
+      const n = t && String(t).trim();
+      if (!n) return !1;
+      const r = (s) => {
+        for (const i of s) {
+          for (const a of i.cells || [])
+            if (a._id !== e && a.name && String(a.name).trim() === n) return !0;
+          if (i.children && r(i.children)) return !0;
+        }
+        return !1;
+      };
+      for (const s of this.pages)
+        if (r(s.groups || []) || s.linkGroups && r(s.linkGroups)) return !0;
+      return !1;
+    },
+    generateUniqueSourceName() {
+      return this.generateUniqueCellName("source");
+    },
+    /** Valide le nom d'une cellule (unicité globale, format SQL pour source). */
+    validateCellName(t, e) {
+      const n = this.getCellAtPath(t, e);
+      if (!n) return;
+      let r = n.name != null ? String(n.name).trim() : "";
+      if (!r) {
+        this.setStatus("Le nom ne peut pas être vide", "error"), n.name = this.generateUniqueCellName(n.type, n._id);
+        return;
+      }
+      if (!ConfigManager.isCellNameValid(n, r)) {
+        this.setStatus("Le nom doit commencer par une lettre ou _ et ne contenir que des lettres, chiffres et _", "error"), n.name = r.replace(/[^a-zA-Z0-9_]/g, "_").replace(/^([0-9])/, "_$1");
+        return;
+      }
+      this.isCellNameUsed(r, n._id) && (this.setStatus(`Le nom "${r}" est déjà utilisé par une autre cellule`, "error"), n.name = this.generateUniqueCellName(n.type, n._id));
+    },
+    // Valider l'unicité du nom de source (accepte path ou groupIndex) - vérifie dans TOUTES les pages
+    validateSingleSourceName(t, e) {
+      var i;
+      const n = Array.isArray(t) ? t : [t], r = this.getCellAtPath(n, e);
+      if (!r || r.type !== "source") return;
+      const s = (i = r.name) == null ? void 0 : i.trim();
+      if (!s) {
+        this.setStatus("Le nom de la source ne peut pas être vide", "error"), r.name = this.generateUniqueSourceName();
+        return;
+      }
+      if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(s)) {
+        this.setStatus("Le nom doit commencer par une lettre ou _ et ne contenir que des lettres, chiffres et _", "error"), r.name = s.replace(/[^a-zA-Z0-9_]/g, "_").replace(/^([0-9])/, "_$1");
+        return;
+      }
+      this.isNameUniqueAcrossPages(s, "source", this.activePageIndex, n, e) || (this.setStatus(`Le nom de source "${s}" est déjà utilisé dans une autre page`, "error"), r.name = this.generateUniqueSourceName());
+    }
+  };
+}
+function filesMixin() {
+  return {
+    async loadEmbeddedFiles() {
+      const t = document.querySelectorAll('script[id^="sourceFile_"]'), e = document.querySelectorAll('script[id^="docxTemplate_"]');
+      if (t.length === 0 && e.length === 0)
+        return;
+      console.info("📂 " + (t.length + e.length) + " fichier(s) embarqué(s) trouvé(s)");
+      const n = (i) => {
+        for (let a = 0; a < this.pages.length; a++) {
+          const o = this.pages[a], l = r(o.groups, i, []);
+          if (l)
+            return { ...l, pageIndex: a };
+        }
+        return null;
+      }, r = (i, a, o) => {
+        for (let l = 0; l < i.length; l++) {
+          const c = i[l], u = [...o, l];
+          for (let d = 0; d < (c.cells || []).length; d++) {
+            const p = c.cells[d];
+            if (p.type === "source" && p.name === a)
+              return { path: u, cellIndex: d, source: p };
+          }
+          if (c.children && c.children.length > 0) {
+            const d = r(c.children, a, u);
+            if (d) return d;
+          }
+        }
+        return null;
+      }, s = (i, a) => {
+        try {
+          let o = i, l = null;
+          for (let d = 0; d < a.length - 1; d++) {
+            const p = a[d];
+            if (p === -1) {
+              o = this.linkGroups;
+              continue;
+            }
+            if (!o[p]) return null;
+            d === 0 ? (l = o[p], o = l.children || []) : (l = o[p], o = l.children || []);
+          }
+          const c = a[a.length - 1], u = a.length === 1 ? o[a[0]] : l;
+          return !u || !u.cells || !u.cells[c] ? null : {
+            cell: u.cells[c],
+            cellIndex: c
+          };
+        } catch (o) {
+          return console.error("Error finding cell by path:", o), null;
+        }
+      };
+      for (const i of t) {
+        const a = i.dataset.sourceName, o = i.dataset.fileName, l = i.textContent.trim();
+        if (!a || !o || !l) {
+          console.warn("Script source incomplet:", i.id);
+          continue;
+        }
+        const c = n(a);
+        if (!c) {
+          console.warn(`Source "${a}" non trouvée dans les cellules`);
+          continue;
+        }
+        const u = this.activePageIndex;
+        this.activePageIndex = c.pageIndex;
+        try {
+          this.setStatus(`Chargement de ${a}...`, "loading");
+          const d = FileHandler.base64ToUint8Array(l), p = await FileHandler.decompressGzip(d), g = new Blob([p]), h = new File([g], o, {
+            type: FileHandler.getMimeTypeFromFileName(o)
+          });
+          await this.loadSingleSourceFile(h, c.path, c.cellIndex, { skipRunNextCells: !0 });
+        } catch (d) {
+          console.error(`Erreur chargement fichier embarqué ${a}:`, d), this.setStatus(`Erreur: ${d.message}`, "error");
+        } finally {
+          this.activePageIndex = u;
+        }
+      }
+      for (const i of e) {
+        const a = i.dataset.cellPath, o = i.dataset.fileName;
+        let l = i.textContent.trim();
+        if (!a || !o || !l) {
+          console.warn("Script docx template incomplet:", i.id);
+          continue;
+        }
+        if (i.dataset.compressed === "true")
+          try {
+            const d = FileHandler.base64ToUint8Array(l), p = await FileHandler.decompressGzip(d);
+            l = FileHandler.arrayBufferToBase64(p);
+          } catch (d) {
+            console.error("Décompression template docx échouée:", d);
+            continue;
+          }
+        const c = a.split("_").map((d) => parseInt(d, 10)), u = s(this.groups, c);
+        if (!u) {
+          console.warn(`Cellule publipostageWord au chemin "${a}" non trouvée`);
+          continue;
+        }
+        if (u.cell.type !== "publipostageWord") {
+          console.warn(`La cellule au chemin "${a}" n'est pas de type publipostageWord`);
+          continue;
+        }
+        try {
+          ConfigManager.setCellFileData(u.cell, { base64: l, fileName: o });
+        } catch (d) {
+          console.error(`Erreur chargement template docx ${a}:`, d);
+        }
+      }
+      this.setStatus("Fichiers embarqués chargés", "success");
+    },
+    handleSingleSourceDrop(t, e, n) {
+      const r = this.getCellAtPath(e, n);
+      if (!r || r.type !== "source") return;
+      r._isDragging = !1;
+      const s = t.dataTransfer.files;
+      s.length > 0 && this.loadSingleSourceFile(s[0], e, n);
+    },
+    handleSingleSourceFileSelect(t, e, n) {
+      const r = t.target.files;
+      r.length > 0 && this.loadSingleSourceFile(r[0], e, n);
+    },
+    async loadSingleSourceFile(t, e, n, r = {}) {
+      var a, o, l, c, u, d;
+      const s = this.getCellAtPath(e, n);
+      if (!s || s.type !== "source") return;
+      const i = r.skipRunNextCells === !0;
+      s._fileName = t.name, s._currentFile = t, this.isLoading = !0, s._status = "running", this.setStatus(`Chargement de ${s.name}...`, "loading");
+      try {
+        const p = s.name || "source1";
+        let g, h = !1, f = t.name;
+        if (((x) => {
+          const w = x.toLowerCase();
+          return w.endsWith(".csv.gz") ? "csv.gz" : w.endsWith(".tsv.gz") ? "tsv.gz" : w.endsWith(".txt.gz") ? "txt.gz" : w.split(".").pop();
+        })(f) === "xls") {
+          this.setStatus("Conversion Excel (.xls) via SheetJS...", "loading");
+          const x = ((a = s.json) == null ? void 0 : a.xlsx) || {}, { csv: w, csvFileName: _ } = await FileHandler.processExcelFile(
+            t,
+            x.options,
+            x.toCsvOptions,
+            x.sheetSelection
+          ), S = new Blob([w], { type: "text/csv" });
+          await DuckDBManager.registerFile(_, S), f = _, g = `CREATE OR REPLACE TABLE ${p} AS SELECT * FROM read_csv('${f}', HEADER = true, AUTO_DETECT = true, SAMPLE_SIZE = -1)`;
+        } else {
+          await DuckDBManager.registerFile(t.name, t);
+          const x = (ConfigManager.getCellQuery(s, "main") || ((l = (o = s.queries) == null ? void 0 : o[0]) == null ? void 0 : l.sql) || "").trim();
+          if (x) {
+            const w = { name: p, fileNameUpload: f, fileName: f }, S = { queries: [{ name: "main", sql: this.replaceSourceContext(x, w), engine: "sql", clientVisible: !1 }], _parseLevels: [] };
+            g = await this.parseQueryRecursively(S), s._parseLevels = S._parseLevels || [];
+          } else
+            g = `CREATE OR REPLACE TABLE ${p} AS SELECT * FROM '${f}'`;
+        }
+        try {
+          await DuckDBManager.executeQuery(g), h = !0;
+        } catch (x) {
+          const w = (ConfigManager.getCellQuery(s, "fallback") || ((u = (c = s.queries) == null ? void 0 : c[1]) == null ? void 0 : u.sql) || "").trim();
+          if (w) {
+            this.setStatus("Requête initiale échouée, tentative fallback...", "loading");
+            const _ = { name: p, fileNameUpload: f, fileName: f }, S = { type: "source", queries: [{ name: "main", sql: "" }, { name: "fallback", sql: this.replaceSourceContext(w, _), engine: "sql", clientVisible: !1 }], _parseLevels: [] };
+            try {
+              const b = await this.parseQueryRecursively(S, 1);
+              await DuckDBManager.executeQuery(b), h = !0, g = b, s._parseLevels = S._parseLevels || [], this.setStatus(`${s.name} chargé via requête de fallback`, "success");
+            } catch {
+            }
+          }
+          if (!h) throw x;
+        }
+        s._loaded = !0, s._status = "success", s._pendingFileLoad = !1, (d = s._parseLevels) != null && d.length || (s._parseLevels = [{ level: "final", innerQuery: g, replacement: null }]), this.setStatus(`${s.name} chargé!`, "success"), i || (await this.runCellsAfterWithStopConditions(e, n, s._id)).stopped || this.setStatus("Exécution terminée", "success");
+      } catch (p) {
+        s._status = "error", this.setStatus("Erreur: " + p.message, "error"), s._fileName = "", s._currentFile = null, Array.isArray(s.files) && (s.files = s.files.filter((g) => g.slot !== "source")), delete s.fileBase64, delete s.fileName;
+      } finally {
+        this.isLoading = !1;
+      }
+    },
+    async removeSingleSourceFile(t, e) {
+      const n = this.getCellAtPath(t, e);
+      if (!n || n.type !== "source") return;
+      if (n._fileName && DuckDBManager.dbInstance)
+        try {
+          await DuckDBManager.executeQuery(`DROP TABLE IF EXISTS "${n.name}"`);
+        } catch {
+        }
+      const r = n.name.replace(/[^a-zA-Z0-9_]/g, "_");
+      document.querySelectorAll(`script[id^="sourceFile_${r}"]`).forEach((i) => i.remove());
+      const s = document.getElementById("fileInput_" + n._id);
+      s && (s.value = ""), n._fileName = "", n._currentFile = null, n._loaded = !1, n._status = null, n._parseLevels = [], Array.isArray(n.files) && (n.files = n.files.filter((i) => i.slot !== "source")), delete n.fileBase64, delete n.fileName, this.setStatus(`Fichier supprimé de ${n.name}`, "success");
+    },
+    /** Valide le nom d'une cellule (unicité globale, format SQL pour source). */
+    validateCellName(t, e) {
+      const n = this.getCellAtPath(t, e);
+      if (!n) return;
+      let r = n.name != null ? String(n.name).trim() : "";
+      if (!r) {
+        this.setStatus("Le nom ne peut pas être vide", "error"), n.name = this.generateUniqueCellName(n.type, n._id);
+        return;
+      }
+      if (!ConfigManager.isCellNameValid(n, r)) {
+        this.setStatus("Le nom doit commencer par une lettre ou _ et ne contenir que des lettres, chiffres et _", "error"), n.name = r.replace(/[^a-zA-Z0-9_]/g, "_").replace(/^([0-9])/, "_$1");
+        return;
+      }
+      this.isCellNameUsed(r, n._id) && (this.setStatus(`Le nom "${r}" est déjà utilisé par une autre cellule`, "error"), n.name = this.generateUniqueCellName(n.type, n._id));
+    },
+    // ─────────────────────────────────────────────────────────────────
+    // GESTION DU TEMPLATE DOCX (publipostageWord)
+    // ─────────────────────────────────────────────────────────────────
+    handleDocxTemplateDrop(t, e, n) {
+      const r = this.getCellAtPath(e, n);
+      if (!r || r.type !== "publipostageWord") return;
+      r._isDragging = !1;
+      const s = t.dataTransfer.files;
+      s.length > 0 && this.loadDocxTemplate(s[0], e, n);
+    },
+    handleDocxTemplateFileSelect(t, e, n) {
+      const r = t.target.files;
+      r.length > 0 && this.loadDocxTemplate(r[0], e, n);
+    },
+    async loadDocxTemplate(t, e, n) {
+      const r = this.getCellAtPath(e, n);
+      if (!(!r || r.type !== "publipostageWord")) {
+        if (!t.name.endsWith(".docx")) {
+          this.setStatus("Seuls les fichiers .docx sont acceptés", "error");
+          return;
+        }
+        try {
+          this.setStatus("Chargement du template Word...", "loading");
+          const s = await t.arrayBuffer(), i = FileHandler.arrayBufferToBase64(s);
+          r.docxTemplateBase64 = i, r.docxTemplateFileName = t.name, ConfigManager.setCellFileData(r, { base64: i, fileName: t.name }), this.setStatus("Template Word chargé", "success");
+        } catch (s) {
+          this.setStatus("Erreur lors du chargement du template: " + s.message, "error");
+        }
+      }
+    },
+    downloadDocxTemplate(t, e) {
+      const n = this.getCellAtPath(t, e);
+      if (!(!n || n.type !== "publipostageWord")) {
+        if (!n.docxTemplateBase64 || !n.docxTemplateFileName) {
+          this.setStatus("Aucun template à télécharger", "error");
+          return;
+        }
+        try {
+          const r = FileHandler.base64ToUint8Array(n.docxTemplateBase64), s = new Blob([r], {
+            type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+          });
+          FileHandler.downloadFile(s, n.docxTemplateFileName), this.setStatus("Template Word téléchargé", "success");
+        } catch (r) {
+          this.setStatus("Erreur lors du téléchargement: " + r.message, "error");
+        }
+      }
+    },
+    removeDocxTemplate(t, e) {
+      const n = this.getCellAtPath(t, e);
+      if (!n || n.type !== "publipostageWord") return;
+      const r = document.getElementById("docxInput_" + n._id);
+      r && (r.value = ""), n.docxTemplateBase64 = null, n.docxTemplateFileName = "", Array.isArray(n.files) && (n.files = n.files.filter((s) => s.slot !== "docxTemplate")), delete n.fileBase64, delete n.fileName, this.setStatus("Template Word supprimé", "success");
+    },
+    async loadPendingSourceFiles() {
+      const t = async (n, r) => {
+        for (let s = 0; s < (n.cells || []).length; s++) {
+          const i = n.cells[s];
+          if (i.type === "source" && i._pendingFileLoad && i._currentFile)
+            try {
+              this.setStatus(`Chargement de ${i.name}...`, "loading"), await this.loadSingleSourceFile(i._currentFile, r, s, { skipRunNextCells: !0 }), i._pendingFileLoad = !1;
+            } catch (a) {
+              console.error(`Erreur chargement fichier source ${i.name}:`, a);
+            }
+        }
+        if (n.children)
+          for (let s = 0; s < n.children.length; s++)
+            await t(n.children[s], [...r, s]);
+      }, e = this.activePageIndex;
+      try {
+        for (let n = 0; n < this.pages.length; n++) {
+          this.activePageIndex = n;
+          const r = this.pages[n];
+          for (let s = 0; s < r.groups.length; s++)
+            await t(r.groups[s], [s]);
+        }
+      } finally {
+        this.activePageIndex = e;
+      }
     }
   };
 }
