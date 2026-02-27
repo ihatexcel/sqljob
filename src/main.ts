@@ -14,6 +14,31 @@ import { DuckDBManager } from './lib/DuckDBManager'
 import { CellRenderer } from './lib/CellRenderer'
 import { CellBodyRenderer, CELL_BODY_FAMILIES } from './lib/CellBodyRenderer'
 
+// ═══════════════════════════════════════════════════════════════════════════
+// EXPOSITION GLOBALE pour Alpine.js
+// Dans le code original (inline <script>), toutes les déclarations de classes
+// et fonctions étaient automatiquement globales. En ES module, elles sont
+// isolées dans le scope du module. Alpine.js évalue ses expressions
+// (x-html, x-init, @change, :disabled...) dans le scope GLOBAL → on les
+// expose ici explicitement, AVANT que le IIFE async démarre.
+// ═══════════════════════════════════════════════════════════════════════════
+Object.assign(window, {
+    ConfigManager,
+    CellConfigService,
+    initializeCell,
+    CellRenderer,
+    CellBodyRenderer,
+    CELL_BODY_FAMILIES,
+    GistEncrypt,
+    GitHubGistManager,
+    FileHandler,
+    DuckDBManager,
+    CDNManager,
+    CELL_TYPE_SCHEMAS,
+    CELL_TYPE_HANDLERS,
+    formatValueForInputType,
+});
+
         function generateGistPassphraseModalHTML() {
             return `
     <div class="min-h-screen flex items-center justify-center p-4 bg-base-200" x-data="gistPassphraseModal()" x-init="init()">
@@ -6986,6 +7011,7 @@ FROM source1 LIMIT 10;`;
             if (loadResult && loadResult.needsPassphrase && loadResult.encryptedContent) {
                 window._pendingEncryptedGist = loadResult.encryptedContent;
                 window._encryptedSource = loadResult.source || 'gist';
+                window.gistPassphraseModal = gistPassphraseModal;
                 if (container) {
                     container.innerHTML = generateGistPassphraseModalHTML();
                     if (window.Alpine) Alpine.initTree(container);

@@ -104,7 +104,7 @@
             static async _initDuckDBWasm(onStatus) {
                 onStatus?.('Initialisation de DuckDB WASM...', 'loading');
 
-                const duckdb = await import(DuckDBManager.getDuckDBWasmUrl());
+                const duckdb = await import(/* @vite-ignore */ DuckDBManager.getDuckDBWasmUrl());
                 window.duckdbModule = duckdb;
                 DuckDBManager.duckdbModuleRef = duckdb;
 
@@ -150,7 +150,7 @@
                     return await DuckDBManager._initDuckDBWasm(onStatus);
                 }
 
-                const ducklings = await import(DuckDBManager.getDucklingsUrl());
+                const ducklings = await import(/* @vite-ignore */ DuckDBManager.getDucklingsUrl());
                 window.ducklingsModule = ducklings;
                 DuckDBManager.duckdbModuleRef = ducklings;
 
