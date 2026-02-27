@@ -1542,6 +1542,25 @@ export function executionMixin() {
                         await viewer.restore(config);
                         console.log('[Perspective] ✅ rendu terminé');
 
+                        // Diagnostic post-rendu : dimensions réelles et shadow DOM
+                        const _r = viewer.getBoundingClientRect();
+                        const _cs = getComputedStyle(viewer);
+                        console.log('[Perspective] POST-RENDER dimensions:', {
+                            width: _r.width, height: _r.height,
+                            display: _cs.display,
+                            minHeight: _cs.minHeight,
+                            visibility: _cs.visibility,
+                            opacity: _cs.opacity,
+                            overflow: _cs.overflow,
+                        });
+                        console.log('[Perspective] shadowRoot:', !!viewer.shadowRoot, '| shadowRoot children:', viewer.shadowRoot?.children?.length);
+                        const _parent = viewer.parentElement;
+                        if (_parent) {
+                            const _pr = _parent.getBoundingClientRect();
+                            const _pcs = getComputedStyle(_parent);
+                            console.log('[Perspective] parent dim:', { width: _pr.width, height: _pr.height, display: _pcs.display, overflow: _pcs.overflow, className: _parent.className });
+                        }
+
                         cell._perspectiveTable = table;
 
                     } catch (error) {

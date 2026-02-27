@@ -720,7 +720,7 @@ function registerTransitionsFromClassString(t, e, n) {
 function registerTransitionsFromHelper(t, e, n) {
   registerTransitionObject(t, setStyles);
   let r = !e.includes("in") && !e.includes("out") && !n, s = r || e.includes("in") || ["enter"].includes(n), i = r || e.includes("out") || ["leave"].includes(n);
-  e.includes("in") && !r && (e = e.filter((y, v) => v < e.indexOf("out"))), e.includes("out") && !r && (e = e.filter((y, v) => v > e.indexOf("out")));
+  e.includes("in") && !r && (e = e.filter((y, b) => b < e.indexOf("out"))), e.includes("out") && !r && (e = e.filter((y, b) => b > e.indexOf("out")));
   let a = !e.includes("opacity") && !e.includes("scale"), o = a || e.includes("opacity"), l = a || e.includes("scale"), c = o ? 0 : 1, u = l ? modifierValue$1(e, "scale", 95) / 100 : 1, d = modifierValue$1(e, "delay", 0) / 1e3, p = modifierValue$1(e, "origin", "center"), g = "opacity, transform", h = modifierValue$1(e, "duration", 150) / 1e3, f = modifierValue$1(e, "duration", 75) / 1e3, m = "cubic-bezier(0.4, 0.0, 0.2, 1)";
   s && (t._x_transition.enter.during = {
     transformOrigin: p,
@@ -2054,16 +2054,16 @@ function loop(t, e, n, r) {
     let o = t._x_lookup, l = t._x_prevKeys, c = [], u = [];
     if (s(a))
       a = Object.entries(a).map(([m, y]) => {
-        let v = getIterationScopeVariables(e, y, m, a);
+        let b = getIterationScopeVariables(e, y, m, a);
         r((w) => {
           u.includes(w) && warn("Duplicate key on x-for", t), u.push(w);
-        }, { scope: { index: m, ...v } }), c.push(v);
+        }, { scope: { index: m, ...b } }), c.push(b);
       });
     else
       for (let m = 0; m < a.length; m++) {
         let y = getIterationScopeVariables(e, a[m], m, a);
-        r((v) => {
-          u.includes(v) && warn("Duplicate key on x-for", t), u.push(v);
+        r((b) => {
+          u.includes(b) && warn("Duplicate key on x-for", t), u.push(b);
         }, { scope: { index: m, ...y } }), c.push(y);
       }
     let d = [], p = [], g = [], h = [];
@@ -2074,12 +2074,12 @@ function loop(t, e, n, r) {
     l = l.filter((m) => !g.includes(m));
     let f = "template";
     for (let m = 0; m < u.length; m++) {
-      let y = u[m], v = l.indexOf(y);
-      if (v === -1)
+      let y = u[m], b = l.indexOf(y);
+      if (b === -1)
         l.splice(m, 0, y), d.push([f, m]);
-      else if (v !== m) {
-        let w = l.splice(m, 1)[0], _ = l.splice(v - 1, 1)[0];
-        l.splice(m, 0, _), l.splice(v, 0, w), p.push([w, _]);
+      else if (b !== m) {
+        let w = l.splice(m, 1)[0], S = l.splice(b - 1, 1)[0];
+        l.splice(m, 0, S), l.splice(b, 0, w), p.push([w, S]);
       } else
         h.push(y);
       f = y;
@@ -2091,22 +2091,22 @@ function loop(t, e, n, r) {
       }), delete o[y]);
     }
     for (let m = 0; m < p.length; m++) {
-      let [y, v] = p[m], w = o[y], _ = o[v], S = document.createElement("div");
+      let [y, b] = p[m], w = o[y], S = o[b], _ = document.createElement("div");
       mutateDom(() => {
-        _ || warn('x-for ":key" is undefined or invalid', i, v, o), _.after(S), w.after(_), _._x_currentIfEl && _.after(_._x_currentIfEl), S.before(w), w._x_currentIfEl && w.after(w._x_currentIfEl), S.remove();
-      }), _._x_refreshXForScope(c[u.indexOf(v)]);
+        S || warn('x-for ":key" is undefined or invalid', i, b, o), S.after(_), w.after(S), S._x_currentIfEl && S.after(S._x_currentIfEl), _.before(w), w._x_currentIfEl && w.after(w._x_currentIfEl), _.remove();
+      }), S._x_refreshXForScope(c[u.indexOf(b)]);
     }
     for (let m = 0; m < d.length; m++) {
-      let [y, v] = d[m], w = y === "template" ? i : o[y];
+      let [y, b] = d[m], w = y === "template" ? i : o[y];
       w._x_currentIfEl && (w = w._x_currentIfEl);
-      let _ = c[v], S = u[v], b = document.importNode(i.content, !0).firstElementChild, x = reactive(_);
-      addScopeToNode(b, x, i), b._x_refreshXForScope = (E) => {
+      let S = c[b], _ = u[b], v = document.importNode(i.content, !0).firstElementChild, x = reactive(S);
+      addScopeToNode(v, x, i), v._x_refreshXForScope = (E) => {
         Object.entries(E).forEach(([I, T]) => {
           x[I] = T;
         });
       }, mutateDom(() => {
-        w.after(b), skipDuringClone(() => initTree(b))();
-      }), typeof S == "object" && warn("x-for key cannot be an object, it must be a string or an integer", i), o[S] = b;
+        w.after(v), skipDuringClone(() => initTree(v))();
+      }), typeof _ == "object" && warn("x-for key cannot be an object, it must be a string or an integer", i), o[_] = v;
     }
     for (let m = 0; m < h.length; m++)
       o[h[m]]._x_refreshXForScope(c[u.indexOf(h[m])]);
@@ -2445,21 +2445,21 @@ var activeFocusTraps = /* @__PURE__ */ function() {
     // timer ID for when delayInitialFocus is true and initial focus in this trap
     //  has been delayed during activation
     delayInitialFocusTimer: void 0
-  }, a, o = function(b, x, E) {
-    return b && b[x] !== void 0 ? b[x] : s[E || x];
-  }, l = function(b) {
+  }, a, o = function(v, x, E) {
+    return v && v[x] !== void 0 ? v[x] : s[E || x];
+  }, l = function(v) {
     return i.containerGroups.findIndex(function(x) {
       var E = x.container, I = x.tabbableNodes;
-      return E.contains(b) || // fall back to explicit tabbable search which will take into consideration any
+      return E.contains(v) || // fall back to explicit tabbable search which will take into consideration any
       //  web components if the `tabbableOptions.getShadowRoot` option was used for
       //  the trap, enabling shadow DOM support in tabbable (`Node.contains()` doesn't
       //  look inside web components even if open)
       I.find(function(T) {
-        return T === b;
+        return T === v;
       });
     });
-  }, c = function(b) {
-    var x = s[b];
+  }, c = function(v) {
+    var x = s[v];
     if (typeof x == "function") {
       for (var E = arguments.length, I = new Array(E > 1 ? E - 1 : 0), T = 1; T < E; T++)
         I[T - 1] = arguments[T];
@@ -2468,31 +2468,31 @@ var activeFocusTraps = /* @__PURE__ */ function() {
     if (x === !0 && (x = void 0), !x) {
       if (x === void 0 || x === !1)
         return x;
-      throw new Error("`".concat(b, "` was specified but was not a node, or did not return a node"));
+      throw new Error("`".concat(v, "` was specified but was not a node, or did not return a node"));
     }
     var P = x;
     if (typeof x == "string" && (P = r.querySelector(x), !P))
-      throw new Error("`".concat(b, "` as selector refers to no known node"));
+      throw new Error("`".concat(v, "` as selector refers to no known node"));
     return P;
   }, u = function() {
-    var b = c("initialFocus");
-    if (b === !1)
+    var v = c("initialFocus");
+    if (v === !1)
       return !1;
-    if (b === void 0)
+    if (v === void 0)
       if (l(r.activeElement) >= 0)
-        b = r.activeElement;
+        v = r.activeElement;
       else {
         var x = i.tabbableGroups[0], E = x && x.firstTabbableNode;
-        b = E || c("fallbackFocus");
+        v = E || c("fallbackFocus");
       }
-    if (!b)
+    if (!v)
       throw new Error("Your focus-trap needs to have at least one focusable element");
-    return b;
+    return v;
   }, d = function() {
-    if (i.containerGroups = i.containers.map(function(b) {
-      var x = tabbable(b, s.tabbableOptions), E = focusable(b, s.tabbableOptions);
+    if (i.containerGroups = i.containers.map(function(v) {
+      var x = tabbable(v, s.tabbableOptions), E = focusable(v, s.tabbableOptions);
       return {
-        container: b,
+        container: v,
         tabbableNodes: x,
         focusableNodes: E,
         firstTabbableNode: x.length > 0 ? x[0] : null,
@@ -2517,27 +2517,27 @@ var activeFocusTraps = /* @__PURE__ */ function() {
             });
         }
       };
-    }), i.tabbableGroups = i.containerGroups.filter(function(b) {
-      return b.tabbableNodes.length > 0;
+    }), i.tabbableGroups = i.containerGroups.filter(function(v) {
+      return v.tabbableNodes.length > 0;
     }), i.tabbableGroups.length <= 0 && !c("fallbackFocus"))
       throw new Error("Your focus-trap must have at least one container with at least one tabbable node in it at all times");
-  }, p = function S(b) {
-    if (b !== !1 && b !== r.activeElement) {
-      if (!b || !b.focus) {
-        S(u());
+  }, p = function _(v) {
+    if (v !== !1 && v !== r.activeElement) {
+      if (!v || !v.focus) {
+        _(u());
         return;
       }
-      b.focus({
+      v.focus({
         preventScroll: !!s.preventScroll
-      }), i.mostRecentlyFocusedNode = b, isSelectableInput(b) && b.select();
+      }), i.mostRecentlyFocusedNode = v, isSelectableInput(v) && v.select();
     }
-  }, g = function(b) {
-    var x = c("setReturnFocus", b);
-    return x || (x === !1 ? !1 : b);
-  }, h = function(b) {
-    var x = getActualTarget(b);
+  }, g = function(v) {
+    var x = c("setReturnFocus", v);
+    return x || (x === !1 ? !1 : v);
+  }, h = function(v) {
+    var x = getActualTarget(v);
     if (!(l(x) >= 0)) {
-      if (valueOrHandler(s.clickOutsideDeactivates, b)) {
+      if (valueOrHandler(s.clickOutsideDeactivates, v)) {
         a.deactivate({
           // if, on deactivation, we should return focus to the node originally-focused
           //  when the trap was activated (or the configured `setReturnFocus` node),
@@ -2554,20 +2554,20 @@ var activeFocusTraps = /* @__PURE__ */ function() {
         });
         return;
       }
-      valueOrHandler(s.allowOutsideClick, b) || b.preventDefault();
+      valueOrHandler(s.allowOutsideClick, v) || v.preventDefault();
     }
-  }, f = function(b) {
-    var x = getActualTarget(b), E = l(x) >= 0;
-    E || x instanceof Document ? E && (i.mostRecentlyFocusedNode = x) : (b.stopImmediatePropagation(), p(i.mostRecentlyFocusedNode || u()));
-  }, m = function(b) {
-    var x = getActualTarget(b);
+  }, f = function(v) {
+    var x = getActualTarget(v), E = l(x) >= 0;
+    E || x instanceof Document ? E && (i.mostRecentlyFocusedNode = x) : (v.stopImmediatePropagation(), p(i.mostRecentlyFocusedNode || u()));
+  }, m = function(v) {
+    var x = getActualTarget(v);
     d();
     var E = null;
     if (i.tabbableGroups.length > 0) {
       var I = l(x), T = I >= 0 ? i.containerGroups[I] : void 0;
       if (I < 0)
-        b.shiftKey ? E = i.tabbableGroups[i.tabbableGroups.length - 1].lastTabbableNode : E = i.tabbableGroups[0].firstTabbableNode;
-      else if (b.shiftKey) {
+        v.shiftKey ? E = i.tabbableGroups[i.tabbableGroups.length - 1].lastTabbableNode : E = i.tabbableGroups[0].firstTabbableNode;
+      else if (v.shiftKey) {
         var P = findIndex(i.tabbableGroups, function(F) {
           var j = F.firstTabbableNode;
           return x === j;
@@ -2588,19 +2588,19 @@ var activeFocusTraps = /* @__PURE__ */ function() {
       }
     } else
       E = c("fallbackFocus");
-    E && (b.preventDefault(), p(E));
-  }, y = function(b) {
-    if (isEscapeEvent(b) && valueOrHandler(s.escapeDeactivates, b) !== !1) {
-      b.preventDefault(), a.deactivate();
+    E && (v.preventDefault(), p(E));
+  }, y = function(v) {
+    if (isEscapeEvent(v) && valueOrHandler(s.escapeDeactivates, v) !== !1) {
+      v.preventDefault(), a.deactivate();
       return;
     }
-    if (isTabEvent(b)) {
-      m(b);
+    if (isTabEvent(v)) {
+      m(v);
       return;
     }
-  }, v = function(b) {
-    var x = getActualTarget(b);
-    l(x) >= 0 || valueOrHandler(s.clickOutsideDeactivates, b) || valueOrHandler(s.allowOutsideClick, b) || (b.preventDefault(), b.stopImmediatePropagation());
+  }, b = function(v) {
+    var x = getActualTarget(v);
+    l(x) >= 0 || valueOrHandler(s.clickOutsideDeactivates, v) || valueOrHandler(s.allowOutsideClick, v) || (v.preventDefault(), v.stopImmediatePropagation());
   }, w = function() {
     if (i.active)
       return activeFocusTraps.activateTrap(a), i.delayInitialFocusTimer = s.delayInitialFocus ? delay(function() {
@@ -2611,16 +2611,16 @@ var activeFocusTraps = /* @__PURE__ */ function() {
       }), r.addEventListener("touchstart", h, {
         capture: !0,
         passive: !1
-      }), r.addEventListener("click", v, {
+      }), r.addEventListener("click", b, {
         capture: !0,
         passive: !1
       }), r.addEventListener("keydown", y, {
         capture: !0,
         passive: !1
       }), a;
-  }, _ = function() {
+  }, S = function() {
     if (i.active)
-      return r.removeEventListener("focusin", f, !0), r.removeEventListener("mousedown", h, !0), r.removeEventListener("touchstart", h, !0), r.removeEventListener("click", v, !0), r.removeEventListener("keydown", y, !0), a;
+      return r.removeEventListener("focusin", f, !0), r.removeEventListener("mousedown", h, !0), r.removeEventListener("touchstart", h, !0), r.removeEventListener("click", b, !0), r.removeEventListener("keydown", y, !0), a;
   };
   return a = {
     get active() {
@@ -2629,25 +2629,25 @@ var activeFocusTraps = /* @__PURE__ */ function() {
     get paused() {
       return i.paused;
     },
-    activate: function(b) {
+    activate: function(v) {
       if (i.active)
         return this;
-      var x = o(b, "onActivate"), E = o(b, "onPostActivate"), I = o(b, "checkCanFocusTrap");
+      var x = o(v, "onActivate"), E = o(v, "onPostActivate"), I = o(v, "checkCanFocusTrap");
       I || d(), i.active = !0, i.paused = !1, i.nodeFocusedBeforeActivation = r.activeElement, x && x();
       var T = function() {
         I && d(), w(), E && E();
       };
       return I ? (I(i.containers.concat()).then(T, T), this) : (T(), this);
     },
-    deactivate: function(b) {
+    deactivate: function(v) {
       if (!i.active)
         return this;
       var x = _objectSpread2({
         onDeactivate: s.onDeactivate,
         onPostDeactivate: s.onPostDeactivate,
         checkCanReturnFocus: s.checkCanReturnFocus
-      }, b);
-      clearTimeout(i.delayInitialFocusTimer), i.delayInitialFocusTimer = void 0, _(), i.active = !1, i.paused = !1, activeFocusTraps.deactivateTrap(a);
+      }, v);
+      clearTimeout(i.delayInitialFocusTimer), i.delayInitialFocusTimer = void 0, S(), i.active = !1, i.paused = !1, activeFocusTraps.deactivateTrap(a);
       var E = o(x, "onDeactivate"), I = o(x, "onPostDeactivate"), T = o(x, "checkCanReturnFocus"), P = o(x, "returnFocus", "returnFocusOnDeactivate");
       E && E();
       var L = function() {
@@ -2658,13 +2658,13 @@ var activeFocusTraps = /* @__PURE__ */ function() {
       return P && T ? (T(g(i.nodeFocusedBeforeActivation)).then(L, L), this) : (L(), this);
     },
     pause: function() {
-      return i.paused || !i.active ? this : (i.paused = !0, _(), this);
+      return i.paused || !i.active ? this : (i.paused = !0, S(), this);
     },
     unpause: function() {
       return !i.paused || !i.active ? this : (i.paused = !1, d(), w(), this);
     },
-    updateContainerElements: function(b) {
-      var x = [].concat(b).filter(Boolean);
+    updateContainerElements: function(v) {
+      var x = [].concat(v).filter(Boolean);
       return i.containers = x.map(function(E) {
         return typeof E == "string" ? r.querySelector(E) : E;
       }), i.active && d(), this;
@@ -3344,14 +3344,14 @@ function iconToSVG(t, e) {
   let i = n.body;
   [n, r].forEach((h) => {
     const f = [], m = h.hFlip, y = h.vFlip;
-    let v = h.rotate;
-    m ? y ? v += 2 : (f.push(
+    let b = h.rotate;
+    m ? y ? b += 2 : (f.push(
       "translate(" + (s.width + s.left).toString() + " " + (0 - s.top).toString() + ")"
     ), f.push("scale(-1 1)"), s.top = s.left = 0) : y && (f.push(
       "translate(" + (0 - s.left).toString() + " " + (s.height + s.top).toString() + ")"
     ), f.push("scale(1 -1)"), s.top = s.left = 0);
     let w;
-    switch (v < 0 && (v -= Math.floor(v / 4) * 4), v = v % 4, v) {
+    switch (b < 0 && (b -= Math.floor(b / 4) * 4), b = b % 4, b) {
       case 1:
         w = s.height / 2 + s.top, f.unshift(
           "rotate(90 " + w.toString() + " " + w.toString() + ")"
@@ -3368,7 +3368,7 @@ function iconToSVG(t, e) {
         );
         break;
     }
-    v % 2 === 1 && (s.left !== s.top && (w = s.left, s.left = s.top, s.top = w), s.width !== s.height && (w = s.width, s.width = s.height, s.height = w)), f.length && (i = '<g transform="' + f.join(" ") + '">' + i + "</g>");
+    b % 2 === 1 && (s.left !== s.top && (w = s.left, s.left = s.top, s.top = w), s.width !== s.height && (w = s.width, s.width = s.height, s.height = w)), f.length && (i = '<g transform="' + f.join(" ") + '">' + i + "</g>");
   });
   const a = r.width, o = r.height, l = s.width, c = s.height;
   let u, d;
@@ -3772,12 +3772,12 @@ function sendQuery(t, e, n, r) {
   const s = t.resources.length, i = t.random ? Math.floor(Math.random() * s) : t.index;
   let a;
   if (t.random) {
-    let b = t.resources.slice(0);
-    for (a = []; b.length > 1; ) {
-      const x = Math.floor(Math.random() * b.length);
-      a.push(b[x]), b = b.slice(0, x).concat(b.slice(x + 1));
+    let v = t.resources.slice(0);
+    for (a = []; v.length > 1; ) {
+      const x = Math.floor(Math.random() * v.length);
+      a.push(v[x]), v = v.slice(0, x).concat(v.slice(x + 1));
     }
-    a = a.concat(b);
+    a = a.concat(v);
   } else
     a = t.resources.slice(i).concat(t.resources.slice(0, i));
   const o = Date.now();
@@ -3787,12 +3787,12 @@ function sendQuery(t, e, n, r) {
     d && (clearTimeout(d), d = null);
   }
   function f() {
-    l === "pending" && (l = "aborted"), h(), p.forEach((b) => {
-      b.status === "pending" && (b.status = "aborted");
+    l === "pending" && (l = "aborted"), h(), p.forEach((v) => {
+      v.status === "pending" && (v.status = "aborted");
     }), p = [];
   }
-  function m(b, x) {
-    x && (g = []), typeof b == "function" && g.push(b);
+  function m(v, x) {
+    x && (g = []), typeof v == "function" && g.push(v);
   }
   function y() {
     return {
@@ -3805,19 +3805,19 @@ function sendQuery(t, e, n, r) {
       abort: f
     };
   }
-  function v() {
-    l = "failed", g.forEach((b) => {
-      b(void 0, u);
+  function b() {
+    l = "failed", g.forEach((v) => {
+      v(void 0, u);
     });
   }
   function w() {
-    p.forEach((b) => {
-      b.status === "pending" && (b.status = "aborted");
+    p.forEach((v) => {
+      v.status === "pending" && (v.status = "aborted");
     }), p = [];
   }
-  function _(b, x, E) {
+  function S(v, x, E) {
     const I = x !== "success";
-    switch (p = p.filter((T) => T !== b), l) {
+    switch (p = p.filter((T) => T !== v), l) {
       case "pending":
         break;
       case "failed":
@@ -3828,46 +3828,46 @@ function sendQuery(t, e, n, r) {
         return;
     }
     if (x === "abort") {
-      u = E, v();
+      u = E, b();
       return;
     }
     if (I) {
-      u = E, p.length || (a.length ? S() : v());
+      u = E, p.length || (a.length ? _() : b());
       return;
     }
     if (h(), w(), !t.random) {
-      const T = t.resources.indexOf(b.resource);
+      const T = t.resources.indexOf(v.resource);
       T !== -1 && T !== t.index && (t.index = T);
     }
     l = "completed", g.forEach((T) => {
       T(E);
     });
   }
-  function S() {
+  function _() {
     if (l !== "pending")
       return;
     h();
-    const b = a.shift();
-    if (b === void 0) {
+    const v = a.shift();
+    if (v === void 0) {
       if (p.length) {
         d = setTimeout(() => {
-          h(), l === "pending" && (w(), v());
+          h(), l === "pending" && (w(), b());
         }, t.timeout);
         return;
       }
-      v();
+      b();
       return;
     }
     const x = {
       status: "pending",
-      resource: b,
+      resource: v,
       callback: (E, I) => {
-        _(x, E, I);
+        S(x, E, I);
       }
     };
-    p.push(x), c++, d = setTimeout(S, t.rotate), n(b, e, x.callback);
+    p.push(x), c++, d = setTimeout(_, t.rotate), n(v, e, x.callback);
   }
-  return setTimeout(S), y;
+  return setTimeout(_), y;
 }
 function initRedundancy(t) {
   const e = {
@@ -4860,7 +4860,7 @@ let CDNManager$1 = (A = class {
   }
   // Créer une instance d'éditeur CodeMirror SQL
   static createSqlEditor(e, n, r, s = {}) {
-    var v;
+    var b;
     if (!this.codeMirrorSQLModules)
       throw new Error("CodeMirror SQL non chargé. Appelez loadCodeMirrorSQL() d'abord.");
     const {
@@ -4872,7 +4872,7 @@ let CDNManager$1 = (A = class {
       sqlExtension: u,
       cteCompletionSource: d,
       oneDark: p
-    } = this.codeMirrorSQLModules, g = ((v = document.documentElement.getAttribute("data-theme")) == null ? void 0 : v.includes("dark")) || window.matchMedia("(prefers-color-scheme: dark)").matches, h = s.schema || {}, f = s.dialect === "duckdb" ? c : l, m = [
+    } = this.codeMirrorSQLModules, g = ((b = document.documentElement.getAttribute("data-theme")) == null ? void 0 : b.includes("dark")) || window.matchMedia("(prefers-color-scheme: dark)").matches, h = s.schema || {}, f = s.dialect === "duckdb" ? c : l, m = [
       a,
       o({
         dialect: f,
@@ -8866,8 +8866,8 @@ function executionMixin() {
           innerQuery: h,
           replacement: m
         });
-        const y = String(m).replace(/\$/g, "$$$$"), v = c.substring(0, d) + y + c.substring(u + 2);
-        return await o(v);
+        const y = String(m).replace(/\$/g, "$$$$"), b = c.substring(0, d) + y + c.substring(u + 2);
+        return await o(b);
       }, l = await o(s);
       return t[r].push({ level: "final", innerQuery: l, replacement: null }), l;
     },
@@ -8889,8 +8889,8 @@ function executionMixin() {
             await DuckDBManager.executeQuery(i);
             const c = l.toLowerCase().split(".").pop(), u = ["xlsx", "xls", "parquet", "pq", "arrow", "ipc", "avro"].includes(c), d = u ? 15 : 10, p = u ? 300 : 200, g = await DuckDBManager.waitForFile(l, d, p);
             if (((g == null ? void 0 : g.byteLength) ?? 0) > 0) {
-              const _ = g instanceof ArrayBuffer ? new Uint8Array(g) : new Uint8Array(g.buffer || g);
-              c === "xlsx" && (_[0] !== 80 || _[1] !== 75) && console.warn(`⚠️ [EXPORT] XLSX invalide: doit commencer par PK (0x50 0x4B), trouvé: 0x${(n = _[0]) == null ? void 0 : n.toString(16)} 0x${(r = _[1]) == null ? void 0 : r.toString(16)}`);
+              const S = g instanceof ArrayBuffer ? new Uint8Array(g) : new Uint8Array(g.buffer || g);
+              c === "xlsx" && (S[0] !== 80 || S[1] !== 75) && console.warn(`⚠️ [EXPORT] XLSX invalide: doit commencer par PK (0x50 0x4B), trouvé: 0x${(n = S[0]) == null ? void 0 : n.toString(16)} 0x${(r = S[1]) == null ? void 0 : r.toString(16)}`);
             }
             let f = "text/csv;charset=utf-8;";
             switch (c) {
@@ -8950,8 +8950,8 @@ function executionMixin() {
             }
             let m = g instanceof ArrayBuffer ? new Uint8Array(g) : new Uint8Array(g.buffer ?? g, g.byteOffset ?? 0, g.byteLength);
             c === "xlsx" && m.length >= 3 && m[0] !== 80 && m[1] === 80 && m[2] === 75 && (m = m.slice(1));
-            const y = m.slice(0), v = new Blob([y], { type: f }), w = l.split("/").pop();
-            this.downloadOrZipFile(w, v, f), t._results = [], t._resultInfo = `✅ Fichier exporté: ${l} (${g.byteLength} octets) - ${t._parseLevels.length - 1} niveau(x) de parsing`;
+            const y = m.slice(0), b = new Blob([y], { type: f }), w = l.split("/").pop();
+            this.downloadOrZipFile(w, b, f), t._results = [], t._resultInfo = `✅ Fichier exporté: ${l} (${g.byteLength} octets) - ${t._parseLevels.length - 1} niveau(x) de parsing`;
           } catch (c) {
             console.error("❌ Erreur lors de la récupération du fichier exporté:", c), this.setStatus("Récupération alternative des résultats...", "loading");
             const u = i.match(/COPY\s+\(([\s\S]+)\)\s+TO\s+/i);
@@ -8960,7 +8960,7 @@ function executionMixin() {
               if (p.length > 0) {
                 const g = Object.keys(p[0]), h = [
                   g.join("	"),
-                  ...p.map((y) => g.map((v) => y[v] ?? "").join("	"))
+                  ...p.map((y) => g.map((b) => y[b] ?? "").join("	"))
                 ].join(`
 `), f = new Blob([h], { type: "text/plain;charset=utf-8;" }), m = l.split("/").pop();
                 this.downloadOrZipFile(m, f, "text/plain;charset=utf-8;"), t._results = [], t._resultInfo = `✅ Fichier exporté (mode alternatif): ${l} - ${p.length} ligne(s)`;
@@ -9063,9 +9063,9 @@ function executionMixin() {
             }), d && d.childNodes && d.childNodes.forEach((g, h) => {
               g.attributes = g.attributes || {};
               const f = h % 2 === 0, m = f ? "bg-base-100" : "bg-base-200/50";
-              g.attributes.class = `${m} hover:bg-base-300/50 transition-colors`, g.childNodes && g.childNodes.forEach((y, v) => {
+              g.attributes.class = `${m} hover:bg-base-300/50 transition-colors`, g.childNodes && g.childNodes.forEach((y, b) => {
                 y.attributes = y.attributes || {};
-                const w = v === 0 ? ` sticky left-0 z-10 ${f ? "bg-base-100" : "bg-base-200"}` : "";
+                const w = b === 0 ? ` sticky left-0 z-10 ${f ? "bg-base-100" : "bg-base-200"}` : "";
                 y.attributes.class = "text-base-content text-sm px-3 py-2" + w;
               });
             });
@@ -9304,10 +9304,10 @@ function executionMixin() {
           let g = u;
           const h = Object.keys(u);
           if (h.length === 1) {
-            const v = u[h[0]];
-            if (typeof v == "string" && (v.startsWith("{") || v.startsWith("[")))
+            const b = u[h[0]];
+            if (typeof b == "string" && (b.startsWith("{") || b.startsWith("[")))
               try {
-                g = JSON.parse(v);
+                g = JSON.parse(b);
               } catch (w) {
                 console.warn("⚠️ Failed to parse JSON, using raw data:", w);
               }
@@ -9355,8 +9355,8 @@ function executionMixin() {
           this.setStatus("Récupération du nom de fichier...", "loading");
           const m = await this.parseQueryRecursively(t, 1, !0), y = await DuckDBManager.executeQuery(m);
           if (y && y.length > 0) {
-            const v = Object.values(y[0])[0];
-            v && (l = String(v));
+            const b = Object.values(y[0])[0];
+            b && (l = String(b));
           }
         }
         this.setStatus("Génération du PDF (pdfme)...", "loading");
@@ -9374,13 +9374,13 @@ function executionMixin() {
         }
         const d = {};
         for (const [m, y] of Object.entries(u)) {
-          const v = String(y).split(".");
+          const b = String(y).split(".");
           let w = e.schemas;
-          for (const _ of v)
-            if (w && w[_] !== void 0)
-              w = w[_];
+          for (const S of b)
+            if (w && w[S] !== void 0)
+              w = w[S];
             else
-              throw console.error(`[pdfme] Plugin introuvable: "${y}" partie "${_}"`, "Clés disponibles:", w ? Object.keys(w) : "obj est null/undefined"), new Error(`Plugin introuvable: "${y}" (partie "${_}" non trouvée dans @pdfme/schemas). Clés disponibles: ${w ? Object.keys(w).join(", ") : "aucune"}`);
+              throw console.error(`[pdfme] Plugin introuvable: "${y}" partie "${S}"`, "Clés disponibles:", w ? Object.keys(w) : "obj est null/undefined"), new Error(`Plugin introuvable: "${y}" (partie "${S}" non trouvée dans @pdfme/schemas). Clés disponibles: ${w ? Object.keys(w).join(", ") : "aucune"}`);
           d[m] = w;
         }
         const p = /* @__PURE__ */ new Set();
@@ -9390,31 +9390,31 @@ function executionMixin() {
           });
         });
         const g = o.map((m, y) => {
-          const v = {};
+          const b = {};
           c.schemas.forEach((w) => {
-            w.forEach((_) => {
-              if (_.name) {
-                let S = _.content || "";
+            w.forEach((S) => {
+              if (S.name) {
+                let _ = S.content || "";
                 try {
-                  const b = JSON.parse(S);
-                  v[_.name] = Array.isArray(b) || typeof b == "object" ? b : String(S);
+                  const v = JSON.parse(_);
+                  b[S.name] = Array.isArray(v) || typeof v == "object" ? v : String(_);
                 } catch {
-                  v[_.name] = String(S);
+                  b[S.name] = String(_);
                 }
               }
             });
           });
-          for (const [w, _] of Object.entries(m))
-            if (typeof _ == "string")
+          for (const [w, S] of Object.entries(m))
+            if (typeof S == "string")
               try {
-                const S = JSON.parse(_);
-                Array.isArray(S) || typeof S == "object" ? v[w] = S : v[w] = String(_);
+                const _ = JSON.parse(S);
+                Array.isArray(_) || typeof _ == "object" ? b[w] = _ : b[w] = String(S);
               } catch {
-                v[w] = String(_);
+                b[w] = String(S);
               }
             else
-              v[w] = String(_ ?? "");
-          return v;
+              b[w] = String(S ?? "");
+          return b;
         });
         if (!g || !Array.isArray(g) || g.length === 0) {
           console.warn("[pdfme] Aucun input généré par le mapping"), t._resultInfo = "Aucun input généré par le mapping";
@@ -9461,7 +9461,7 @@ function executionMixin() {
       }
     },
     async renderPerspectiveInContainer(t) {
-      var r, s, i;
+      var r, s, i, a, o;
       const e = "perspective-" + t._id, n = document.getElementById(e);
       if (console.log("[Perspective] renderPerspectiveInContainer — viewer=", n, "| _arrowTable=", !!t._arrowTable, "| _perspectiveRendering=", t._perspectiveRendering), !n || !t._arrowTable) {
         console.warn("[Perspective] viewer ou _arrowTable manquant — abandon");
@@ -9473,30 +9473,46 @@ function executionMixin() {
       }
       t._perspectiveRendering = !0;
       try {
-        const a = DuckDBManager.getEngine();
-        if (console.log("[Perspective] moteur DuckDB =", a), a !== "duckdb-wasm")
+        const l = DuckDBManager.getEngine();
+        if (console.log("[Perspective] moteur DuckDB =", l), l !== "duckdb-wasm")
           throw new Error("Perspective nécessite le moteur DuckDB WASM. Veuillez changer de moteur dans les paramètres.");
-        const o = DuckDBManager.getConnection(), l = window.perspectiveClient;
-        console.log("[Perspective] conn=", !!o, "| perspectiveClient=", !!l, "| perspective.worker=", typeof (l == null ? void 0 : l.worker));
-        let c = { theme: "Pro Light" };
-        const u = (r = t.json) == null ? void 0 : r.perspectiveConfig;
-        if (u != null && u !== "")
+        const c = DuckDBManager.getConnection(), u = window.perspectiveClient;
+        console.log("[Perspective] conn=", !!c, "| perspectiveClient=", !!u, "| perspective.worker=", typeof (u == null ? void 0 : u.worker));
+        let d = { theme: "Pro Light" };
+        const p = (r = t.json) == null ? void 0 : r.perspectiveConfig;
+        if (p != null && p !== "")
           try {
-            const f = typeof u == "string" ? JSON.parse(u.trim()) : u;
-            c = { ...c, ...f };
-          } catch (f) {
-            console.warn("Configuration Perspective invalide, utilisation des valeurs par défaut:", f);
+            const S = typeof p == "string" ? JSON.parse(p.trim()) : p;
+            d = { ...d, ...S };
+          } catch (S) {
+            console.warn("Configuration Perspective invalide, utilisation des valeurs par défaut:", S);
           }
-        const d = ((i = (s = t._parseLevels) == null ? void 0 : s.find((f) => f.level === "final")) == null ? void 0 : i.innerQuery) || ConfigManager.getCellQuery(t, 0);
+        const g = ((i = (s = t._parseLevels) == null ? void 0 : s.find((S) => S.level === "final")) == null ? void 0 : i.innerQuery) || ConfigManager.getCellQuery(t, 0);
         console.log("[Perspective] conn.query()...");
-        const p = await o.query(d), g = [];
-        for await (const f of p)
-          g.push(f);
-        console.log("[Perspective] batches Arrow collectés : ", g.length), t._perspectiveWorker || (console.log("[Perspective] création du worker..."), t._perspectiveWorker = await l.worker(), console.log("[Perspective] worker créé :", !!t._perspectiveWorker));
-        const h = await t._perspectiveWorker.table(g);
-        console.log("[Perspective] table Perspective créée :", !!h), await new Promise((f) => requestAnimationFrame(() => requestAnimationFrame(f))), console.log("[Perspective] viewer.resetThemes ?", typeof n.resetThemes), typeof n.resetThemes == "function" && await n.resetThemes(["Pro Light", "Pro Dark"]), console.log("[Perspective] viewer.load()..."), await n.load(h), console.log("[Perspective] viewer.restore()..."), await n.restore(c), console.log("[Perspective] ✅ rendu terminé"), t._perspectiveTable = h;
-      } catch (a) {
-        throw console.error("Erreur lors du rendu Perspective:", a), a;
+        const h = await c.query(g), f = [];
+        for await (const S of h)
+          f.push(S);
+        console.log("[Perspective] batches Arrow collectés : ", f.length), t._perspectiveWorker || (console.log("[Perspective] création du worker..."), t._perspectiveWorker = await u.worker(), console.log("[Perspective] worker créé :", !!t._perspectiveWorker));
+        const m = await t._perspectiveWorker.table(f);
+        console.log("[Perspective] table Perspective créée :", !!m), await new Promise((S) => requestAnimationFrame(() => requestAnimationFrame(S))), console.log("[Perspective] viewer.resetThemes ?", typeof n.resetThemes), typeof n.resetThemes == "function" && await n.resetThemes(["Pro Light", "Pro Dark"]), console.log("[Perspective] viewer.load()..."), await n.load(m), console.log("[Perspective] viewer.restore()..."), await n.restore(d), console.log("[Perspective] ✅ rendu terminé");
+        const y = n.getBoundingClientRect(), b = getComputedStyle(n);
+        console.log("[Perspective] POST-RENDER dimensions:", {
+          width: y.width,
+          height: y.height,
+          display: b.display,
+          minHeight: b.minHeight,
+          visibility: b.visibility,
+          opacity: b.opacity,
+          overflow: b.overflow
+        }), console.log("[Perspective] shadowRoot:", !!n.shadowRoot, "| shadowRoot children:", (o = (a = n.shadowRoot) == null ? void 0 : a.children) == null ? void 0 : o.length);
+        const w = n.parentElement;
+        if (w) {
+          const S = w.getBoundingClientRect(), _ = getComputedStyle(w);
+          console.log("[Perspective] parent dim:", { width: S.width, height: S.height, display: _.display, overflow: _.overflow, className: w.className });
+        }
+        t._perspectiveTable = m;
+      } catch (l) {
+        throw console.error("Erreur lors du rendu Perspective:", l), l;
       } finally {
         t._perspectiveRendering = !1;
       }
@@ -10107,41 +10123,41 @@ function filesMixin() {
       try {
         const p = s.name || "source1";
         let g, h = !1, f = t.name;
-        if (((v) => {
-          const w = v.toLowerCase();
+        if (((b) => {
+          const w = b.toLowerCase();
           return w.endsWith(".csv.gz") ? "csv.gz" : w.endsWith(".tsv.gz") ? "tsv.gz" : w.endsWith(".txt.gz") ? "txt.gz" : w.split(".").pop();
         })(f) === "xls") {
           this.setStatus("Conversion Excel (.xls) via SheetJS...", "loading");
-          const v = ((a = s.json) == null ? void 0 : a.xlsx) || {}, { csv: w, csvFileName: _ } = await FileHandler.processExcelFile(
+          const b = ((a = s.json) == null ? void 0 : a.xlsx) || {}, { csv: w, csvFileName: S } = await FileHandler.processExcelFile(
             t,
-            v.options,
-            v.toCsvOptions,
-            v.sheetSelection
-          ), S = new Blob([w], { type: "text/csv" });
-          await DuckDBManager.registerFile(_, S), f = _, g = `CREATE OR REPLACE TABLE ${p} AS SELECT * FROM read_csv('${f}', HEADER = true, AUTO_DETECT = true, SAMPLE_SIZE = -1)`;
+            b.options,
+            b.toCsvOptions,
+            b.sheetSelection
+          ), _ = new Blob([w], { type: "text/csv" });
+          await DuckDBManager.registerFile(S, _), f = S, g = `CREATE OR REPLACE TABLE ${p} AS SELECT * FROM read_csv('${f}', HEADER = true, AUTO_DETECT = true, SAMPLE_SIZE = -1)`;
         } else {
           await DuckDBManager.registerFile(t.name, t);
-          const v = (ConfigManager.getCellQuery(s, "main") || ((l = (o = s.queries) == null ? void 0 : o[0]) == null ? void 0 : l.sql) || "").trim();
-          if (v) {
-            const w = { name: p, fileNameUpload: f, fileName: f }, S = { queries: [{ name: "main", sql: this.replaceSourceContext(v, w), engine: "sql", clientVisible: !1 }], _parseLevels: [] };
-            g = await this.parseQueryRecursively(S), s._parseLevels = S._parseLevels || [];
+          const b = (ConfigManager.getCellQuery(s, "main") || ((l = (o = s.queries) == null ? void 0 : o[0]) == null ? void 0 : l.sql) || "").trim();
+          if (b) {
+            const w = { name: p, fileNameUpload: f, fileName: f }, _ = { queries: [{ name: "main", sql: this.replaceSourceContext(b, w), engine: "sql", clientVisible: !1 }], _parseLevels: [] };
+            g = await this.parseQueryRecursively(_), s._parseLevels = _._parseLevels || [];
           } else
             g = `CREATE OR REPLACE TABLE ${p} AS SELECT * FROM '${f}'`;
         }
         try {
           await DuckDBManager.executeQuery(g), h = !0;
-        } catch (v) {
+        } catch (b) {
           const w = (ConfigManager.getCellQuery(s, "fallback") || ((u = (c = s.queries) == null ? void 0 : c[1]) == null ? void 0 : u.sql) || "").trim();
           if (w) {
             this.setStatus("Requête initiale échouée, tentative fallback...", "loading");
-            const _ = { name: p, fileNameUpload: f, fileName: f }, S = { type: "source", queries: [{ name: "main", sql: "" }, { name: "fallback", sql: this.replaceSourceContext(w, _), engine: "sql", clientVisible: !1 }], _parseLevels: [] };
+            const S = { name: p, fileNameUpload: f, fileName: f }, _ = { type: "source", queries: [{ name: "main", sql: "" }, { name: "fallback", sql: this.replaceSourceContext(w, S), engine: "sql", clientVisible: !1 }], _parseLevels: [] };
             try {
-              const b = await this.parseQueryRecursively(S, 1);
-              await DuckDBManager.executeQuery(b), h = !0, g = b, s._parseLevels = S._parseLevels || [], this.setStatus(`${s.name} chargé via requête de fallback`, "success");
+              const v = await this.parseQueryRecursively(_, 1);
+              await DuckDBManager.executeQuery(v), h = !0, g = v, s._parseLevels = _._parseLevels || [], this.setStatus(`${s.name} chargé via requête de fallback`, "success");
             } catch {
             }
           }
-          if (!h) throw v;
+          if (!h) throw b;
         }
         s._loaded = !0, s._status = "success", s._pendingFileLoad = !1, (d = s._parseLevels) != null && d.length || (s._parseLevels = [{ level: "final", innerQuery: g, replacement: null }]), this.setStatus(`${s.name} chargé!`, "success"), i || (await this.runCellsAfterWithStopConditions(e, n, s._id)).stopped || this.setStatus("Exécution terminée", "success");
       } catch (p) {
@@ -10536,14 +10552,14 @@ return "Valeur"; // Pour input` : r ? "Saisir le texte (une ligne par option pou
     // queryType: 'query'|'query2' -> queryName: 'main'|'fallback'|'filename' selon le type de cellule
     // applySourceDefaultIfEmpty: si true et cell.type==='source', charge la requête par défaut du schéma à l'init si vide (placeholder reste simple)
     renderSqlQueryEditor(t, e, n, r = "query", s = "_showParsedQuery", i = null, a = null, o = null, l = null, c = null, u = !1) {
-      const d = t._id, p = r === "query2" ? ConfigManager.getQuery2Name(t) : "main", g = ConfigManager.getQueryIndexByName(t, p), h = t[s], f = r === "query2" ? "_parseLevels2" : "_parseLevels", m = ConfigManager.getCellEngine(t, p), y = m === "js", v = m === "text";
+      const d = t._id, p = r === "query2" ? ConfigManager.getQuery2Name(t) : "main", g = ConfigManager.getQueryIndexByName(t, p), h = t[s], f = r === "query2" ? "_parseLevels2" : "_parseLevels", m = ConfigManager.getCellEngine(t, p), y = m === "js", b = m === "text";
       return `
                         <div>
                             <div class="relative w-full">
                                 <div class="flex justify-between items-center mb-2">
                                     <span class="text-xs text-base-content/70 flex items-center gap-2">
-                                        <span class="badge badge-soft ${o || (y ? "badge-warning" : v ? "badge-ghost" : "badge-info")}">${a || (y ? "⚡" : v ? "📝" : "🗄️")} ${i || (y ? "JavaScript" : v ? "Texte" : "SQL")}</span>
-                                        ${this.devMode && !v ? `
+                                        <span class="badge badge-soft ${o || (y ? "badge-warning" : b ? "badge-ghost" : "badge-info")}">${a || (y ? "⚡" : b ? "📝" : "🗄️")} ${i || (y ? "JavaScript" : b ? "Texte" : "SQL")}</span>
+                                        ${this.devMode && !b ? `
                                             <label class="label cursor-pointer justify-start gap-2 py-0 min-h-0">
                                                 <input type="checkbox" class="toggle toggle-sm"
                                                        x-model="cellItem.cell.${s}" />
@@ -10552,7 +10568,7 @@ return "Valeur"; // Pour input` : r ? "Saisir le texte (une ligne par option pou
                                         ` : ""}
                                     </span>
                                     <div class="flex gap-1 items-center">
-                                        ${!h && this.devMode && !v ? `
+                                        ${!h && this.devMode && !b ? `
                                             <button 
                                                 @click="$store.templateModal.open('${d}', '${r}', '${m}')"
                                                 class="px-2 py-1 border border-base-300 bg-base-200 text-base-content/70 rounded cursor-pointer text-xs transition-all hover:border-primary hover:text-base-content" 
@@ -10597,31 +10613,31 @@ return "Valeur"; // Pour input` : r ? "Saisir le texte (une ligne par option pou
                                 ${h ? `
                                     <div>
                                         ${(function() {
-        const b = t[f] || [];
-        if (b.length > 0) return b;
+        const v = t[f] || [];
+        if (v.length > 0) return v;
         if (t.type === "source") {
           const x = ConfigManager.getCellQuery(t, "${queryName}") || "";
           return [{ level: "final", innerQuery: this.getParsedSqlQuery(x, { name: t.name || "source1", fileNameUpload: t._fileName || void 0 }), replacement: null }];
         }
         return [];
-      }).call(this).map((b, x) => `
+      }).call(this).map((v, x) => `
                                             <div class="relative w-full" style="margin-bottom: 0.75rem;">
                                                 <div class="flex justify-between items-center mb-2">
                                                     <span class="text-xs text-base-content/70 flex items-center gap-2">
-                                                        <span class="badge badge-soft badge-primary">${b.level === "final" ? "Final" : "Niveau " + b.level}</span>
-                                                        <span>${b.level === "final" ? y ? "Code final exécuté" : "Requête finale exécutée" : y ? "Code niveau " + b.level : "Requête niveau " + b.level}</span>
+                                                        <span class="badge badge-soft badge-primary">${v.level === "final" ? "Final" : "Niveau " + v.level}</span>
+                                                        <span>${v.level === "final" ? y ? "Code final exécuté" : "Requête finale exécutée" : y ? "Code niveau " + v.level : "Requête niveau " + v.level}</span>
                                                     </span>
                                                 </div>
-                                                <div class="w-full min-h-20 max-h-72 p-3 bg-base-200 border border-primary rounded-lg text-base-content font-mono text-sm overflow-auto whitespace-pre-wrap break-words">${(b.innerQuery || "").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/&/g, "&amp;")}</div>
-                                                ${b.replacement ? `
+                                                <div class="w-full min-h-20 max-h-72 p-3 bg-base-200 border border-primary rounded-lg text-base-content font-mono text-sm overflow-auto whitespace-pre-wrap break-words">${(v.innerQuery || "").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/&/g, "&amp;")}</div>
+                                                ${v.replacement ? `
                                                     <div style="margin-top: 0.1rem; padding: 0.5rem; background: var(--success-bg); border-left: 3px solid var(--success); font-family: monospace; font-size: 0.85rem;">
-                                                        <strong>→ ${y ? "Parsé en" : "Résultat"}:</strong> <span>${(b.replacement || "").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/&/g, "&amp;")}</span>
+                                                        <strong>→ ${y ? "Parsé en" : "Résultat"}:</strong> <span>${(v.replacement || "").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/&/g, "&amp;")}</span>
                                                     </div>
                                                 ` : ""}
                                             </div>
                                         `).join("")}
                                     </div>
-                                ` : y || v ? `
+                                ` : y || b ? `
                                     <textarea 
                                         class="textarea textarea-bordered w-full font-mono min-h-20 p-3 resize-y text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" 
                                         x-model="cellItem.cell.queries[${g}].sql"
@@ -10682,7 +10698,7 @@ return "Valeur"; // Pour input` : r ? "Saisir le texte (une ligne par option pou
     },
     // Init CodeMirror pour une cellule (appelé depuis x-init pour éviter erreurs de parsing Alpine)
     async initCodeMirrorForCell(t, e, n, r, s, i, a, o) {
-      var d, p, g, h, f, m, y, v, w, _;
+      var d, p, g, h, f, m, y, b, w, S;
       const l = document.getElementById("cm-" + e + "-" + n);
       if (!l) return;
       const c = typeof Alpine < "u" && Alpine.raw ? Alpine.raw(t.cell) : t.cell, u = c["_cmEditor_" + n];
@@ -10692,25 +10708,25 @@ return "Valeur"; // Pour input` : r ? "Saisir le texte (une ligne par option pou
         else return;
       try {
         await CDNManager.loadCodeMirrorSQL();
-        let S = ConfigManager.getCellQuery(t.cell, r) || "";
-        if (i && !S.trim() && t.cell.type === "source") {
-          const E = ((f = (h = (g = (p = (d = CELL_TYPE_SCHEMAS == null ? void 0 : CELL_TYPE_SCHEMAS.types) == null ? void 0 : d.source) == null ? void 0 : p.defaults) == null ? void 0 : g.queries) == null ? void 0 : h.find((I) => I.name === r)) == null ? void 0 : f.sql) ?? ((_ = (w = (v = (y = (m = CELL_TYPE_SCHEMAS == null ? void 0 : CELL_TYPE_SCHEMAS.types) == null ? void 0 : m.source) == null ? void 0 : y.defaults) == null ? void 0 : v.queries) == null ? void 0 : w[s]) == null ? void 0 : _.sql);
-          E && (S = E.replace(/\{name\}/g, t.cell.name || "source1"), ConfigManager.setCellQuery(t.cell, r, S));
+        let _ = ConfigManager.getCellQuery(t.cell, r) || "";
+        if (i && !_.trim() && t.cell.type === "source") {
+          const E = ((f = (h = (g = (p = (d = CELL_TYPE_SCHEMAS == null ? void 0 : CELL_TYPE_SCHEMAS.types) == null ? void 0 : d.source) == null ? void 0 : p.defaults) == null ? void 0 : g.queries) == null ? void 0 : h.find((I) => I.name === r)) == null ? void 0 : f.sql) ?? ((S = (w = (b = (y = (m = CELL_TYPE_SCHEMAS == null ? void 0 : CELL_TYPE_SCHEMAS.types) == null ? void 0 : m.source) == null ? void 0 : y.defaults) == null ? void 0 : b.queries) == null ? void 0 : w[s]) == null ? void 0 : S.sql);
+          E && (_ = E.replace(/\{name\}/g, t.cell.name || "source1"), ConfigManager.setCellQuery(t.cell, r, _));
         }
-        const b = {}, x = (o && o._x_dataStack ? o._x_dataStack[0] : o) || null;
+        const v = {}, x = (o && o._x_dataStack ? o._x_dataStack[0] : o) || null;
         if (x && x.tablesData)
           for (const [E, I] of Object.entries(x.tablesData))
-            I && I.length > 0 && (b[E] = Object.keys(I[0]));
+            I && I.length > 0 && (v[E] = Object.keys(I[0]));
         c["_cmEditor_" + n] = CDNManager.createSqlEditor(
           l,
-          S,
+          _,
           (E) => ConfigManager.setCellQuery(t.cell, r, E),
-          { schema: b, dialect: "duckdb" }
+          { schema: v, dialect: "duckdb" }
         );
-      } catch (S) {
-        console.error("Erreur init CodeMirror:", S);
-        const b = String(a || "").replace(/\\/g, "\\\\").replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/'/g, "\\'").replace(/"/g, "&quot;");
-        l.innerHTML = '<textarea class="textarea textarea-bordered w-full font-mono min-h-20 p-3 resize-y text-sm" x-model="cellItem.cell.queries[' + s + '].sql" placeholder="' + b + '"></textarea>';
+      } catch (_) {
+        console.error("Erreur init CodeMirror:", _);
+        const v = String(a || "").replace(/\\/g, "\\\\").replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/'/g, "\\'").replace(/"/g, "&quot;");
+        l.innerHTML = '<textarea class="textarea textarea-bordered w-full font-mono min-h-20 p-3 resize-y text-sm" x-model="cellItem.cell.queries[' + s + '].sql" placeholder="' + v + '"></textarea>';
       }
     },
     // Version sécurisée pour l'éditeur markdown (sql/js)
@@ -10820,8 +10836,8 @@ function exportImportMixin() {
             let c;
             const u = this.exportModal.encryptGist ? (this.exportModal.gistPassphrase || "").trim() || GistEncrypt.generatePassphrase() : null;
             if (u) {
-              const w = JSON.stringify(a), _ = await GistEncrypt.encrypt(w, u);
-              c = JSON.stringify(_);
+              const w = JSON.stringify(a), S = await GistEncrypt.encrypt(w, u);
+              c = JSON.stringify(S);
             } else
               c = JSON.stringify(a);
             const d = new Blob([c], { type: "application/json" }), p = e.endsWith(".json") ? e : e + ".json";
@@ -10834,8 +10850,8 @@ function exportImportMixin() {
             break;
           case "html":
             this.setStatus("Génération HTML...", "loading");
-            const y = e.endsWith(".html") ? e : e + ".html", v = this.exportModal.encryptGist ? (this.exportModal.gistPassphrase || "").trim() || GistEncrypt.generatePassphrase() : null;
-            await this.exportHTMLWithConfig(a, y, v), this.setStatus("HTML exporté", "success");
+            const y = e.endsWith(".html") ? e : e + ".html", b = this.exportModal.encryptGist ? (this.exportModal.gistPassphrase || "").trim() || GistEncrypt.generatePassphrase() : null;
+            await this.exportHTMLWithConfig(a, y, b), this.setStatus("HTML exporté", "success");
             break;
         }
       } catch (i) {
@@ -10857,15 +10873,15 @@ function exportImportMixin() {
         let c = "";
         const u = async (f, m = []) => {
           for (let y = 0; y < (f.cells || []).length; y++) {
-            const v = f.cells[y];
-            if (v.type === "source" && v._currentFile && v._fileName) {
-              const w = v.name.replace(/[^a-zA-Z0-9_]/g, "_"), _ = await v._currentFile.arrayBuffer(), S = await FileHandler.compressGzip(_), b = FileHandler.arrayBufferToBase64(S);
-              n ? r.push({ id: `sourceFile_${w}`, sourceName: v.name, fileName: v._fileName, base64: b }) : c += `    <script type="application/octet-stream" id="sourceFile_${w}" data-source-name="${v.name}" data-file-name="${v._fileName}">${b}<\/script>
+            const b = f.cells[y];
+            if (b.type === "source" && b._currentFile && b._fileName) {
+              const w = b.name.replace(/[^a-zA-Z0-9_]/g, "_"), S = await b._currentFile.arrayBuffer(), _ = await FileHandler.compressGzip(S), v = FileHandler.arrayBufferToBase64(_);
+              n ? r.push({ id: `sourceFile_${w}`, sourceName: b.name, fileName: b._fileName, base64: v }) : c += `    <script type="application/octet-stream" id="sourceFile_${w}" data-source-name="${b.name}" data-file-name="${b._fileName}">${v}<\/script>
 `;
             }
-            if (v.type === "publipostageWord" && v.docxTemplateBase64 && v.docxTemplateFileName) {
-              const w = [...m, y].join("_"), _ = `docxTemplate_${w}`, S = FileHandler.base64ToUint8Array(v.docxTemplateBase64), b = await FileHandler.compressGzip(S.buffer || S), x = FileHandler.arrayBufferToBase64(b);
-              n ? s.push({ id: _, cellPath: w, fileName: v.docxTemplateFileName, base64: x, compressed: !0 }) : c += `    <script type="application/octet-stream" id="${_}" data-cell-path="${w}" data-file-name="${v.docxTemplateFileName}" data-compressed="true">${x}<\/script>
+            if (b.type === "publipostageWord" && b.docxTemplateBase64 && b.docxTemplateFileName) {
+              const w = [...m, y].join("_"), S = `docxTemplate_${w}`, _ = FileHandler.base64ToUint8Array(b.docxTemplateBase64), v = await FileHandler.compressGzip(_.buffer || _), x = FileHandler.arrayBufferToBase64(v);
+              n ? s.push({ id: S, cellPath: w, fileName: b.docxTemplateFileName, base64: x, compressed: !0 }) : c += `    <script type="application/octet-stream" id="${S}" data-cell-path="${w}" data-file-name="${b.docxTemplateFileName}" data-compressed="true">${x}<\/script>
 `;
             }
           }
@@ -10925,7 +10941,7 @@ ${d}${c}</head>
             if (n)
               r.push({ id: `sourceFile_${g}`, sourceName: p.name, fileName: p._fileName, base64: m });
             else {
-              document.querySelectorAll(`script[id^="sourceFile_${g}"]`).forEach((v) => v.remove());
+              document.querySelectorAll(`script[id^="sourceFile_${g}"]`).forEach((b) => b.remove());
               const y = document.createElement("script");
               y.type = "application/octet-stream", y.id = `sourceFile_${g}`, y.dataset.sourceName = p.name, y.dataset.fileName = p._fileName, y.textContent = m, document.head.appendChild(y);
             }
@@ -10940,8 +10956,8 @@ ${d}${c}</head>
               s.push({ id: h, cellPath: g, fileName: p.docxTemplateFileName, base64: y, compressed: !0 });
             } else {
               document.querySelectorAll(`script[id="${h}"]`).forEach((w) => w.remove());
-              const f = FileHandler.base64ToUint8Array(p.docxTemplateBase64), m = await FileHandler.compressGzip(f.buffer || f), y = FileHandler.arrayBufferToBase64(m), v = document.createElement("script");
-              v.type = "application/octet-stream", v.id = h, v.dataset.cellPath = g, v.dataset.fileName = p.docxTemplateFileName, v.dataset.compressed = "true", v.textContent = y, document.head.appendChild(v);
+              const f = FileHandler.base64ToUint8Array(p.docxTemplateBase64), m = await FileHandler.compressGzip(f.buffer || f), y = FileHandler.arrayBufferToBase64(m), b = document.createElement("script");
+              b.type = "application/octet-stream", b.id = h, b.dataset.cellPath = g, b.dataset.fileName = p.docxTemplateFileName, b.dataset.compressed = "true", b.textContent = y, document.head.appendChild(b);
             }
           } else if (p.type === "publipostageWord" && !p.docxTemplateBase64 && !n) {
             const h = `docxTemplate_${[...u, d].join("_")}`;
@@ -11060,33 +11076,33 @@ ${d}${c}</head>
           direction: f.direction || "row",
           style: f.style || "",
           _order: ConfigManager.normalizeOrder(f.order, m),
-          cells: (f.cells || []).map((v, w) => e(ConfigManager.normalizeCell({ ...v }), w)),
+          cells: (f.cells || []).map((b, w) => e(ConfigManager.normalizeCell({ ...b }), w)),
           accordion: f.accordion || !1,
           title: f.title || "",
           accordionOpen: f.accordionOpen !== !1
           // true par défaut
         };
-        return y.tabsChild = f.tabsChild || !1, y.name = f.name || "", Array.isArray(f.queries) && f.queries.length > 0 ? y.queries = f.queries.map((v, w) => ({
-          name: v.name || "main",
-          sql: v.sql || "",
-          engine: v.engine || "sql",
-          clientVisible: v.clientVisible === !0
+        return y.tabsChild = f.tabsChild || !1, y.name = f.name || "", Array.isArray(f.queries) && f.queries.length > 0 ? y.queries = f.queries.map((b, w) => ({
+          name: b.name || "main",
+          sql: b.sql || "",
+          engine: b.engine || "sql",
+          clientVisible: b.clientVisible === !0
         })) : y.queries = [], f.loop ? y.loop = {
           enabled: f.loop.enabled || !1,
           query: f.loop.query || "",
           zip: f.loop.zip || !1,
           zipQuery: f.loop.zipQuery || ""
-        } : y.loop = { enabled: !1, query: "", zip: !1, zipQuery: "" }, f.children && f.children.length > 0 && (y.children = f.children.map((v, w) => {
-          const _ = n(v, w);
-          return _._order = ConfigManager.normalizeOrder(v.order, w), _;
+        } : y.loop = { enabled: !1, query: "", zip: !1, zipQuery: "" }, f.children && f.children.length > 0 && (y.children = f.children.map((b, w) => {
+          const S = n(b, w);
+          return S._order = ConfigManager.normalizeOrder(b.order, w), S;
         })), y;
       };
       let r = (((a = t.job) == null ? void 0 : a.pages) || []).map((f, m) => {
-        const y = (f.groups || []).map((_, S) => n(_, S)), v = y.filter((_) => _._type === "core"), w = y.filter((_) => _._type === "link");
+        const y = (f.groups || []).map((S, _) => n(S, _)), b = y.filter((S) => S._type === "core"), w = y.filter((S) => S._type === "link");
         return {
           _id: f.id || this.generatePageId(),
           name: f.name || `Feuille ${m + 1}`,
-          groups: v,
+          groups: b,
           linkGroups: w
         };
       });
@@ -11104,14 +11120,14 @@ ${d}${c}</head>
   };
 }
 function notebookApp$1() {
-  var h, f, m, y, v, w, _;
-  const t = window._loadedConfig || ConfigManager.getDefaultConfig(), e = (S, b) => initializeCell(S, b), n = (S, b) => {
-    const x = ConfigManager.normalizeGroup({ ...S }), E = {
+  var h, f, m, y, b, w, S;
+  const t = window._loadedConfig || ConfigManager.getDefaultConfig(), e = (_, v) => initializeCell(_, v), n = (_, v) => {
+    const x = ConfigManager.normalizeGroup({ ..._ }), E = {
       _id: x.id || ConfigManager.generateGroupId(),
       _type: x.type || "core",
       direction: x.direction || "row",
       style: x.style || "",
-      _order: ConfigManager.normalizeOrder(x.order, b),
+      _order: ConfigManager.normalizeOrder(x.order, v),
       cells: (x.cells || []).map((I, T) => e(ConfigManager.normalizeCell({ ...I }), T)),
       // Config de loop
       loop: x.loop ? {
@@ -11137,11 +11153,11 @@ function notebookApp$1() {
     })), E;
   };
   let r = [];
-  r = (((h = t.job) == null ? void 0 : h.pages) || []).map((S, b) => {
-    const x = (S.groups || []).map((T, P) => n(T, P)), E = x.filter((T) => T._type === "core"), I = x.filter((T) => T._type === "link");
+  r = (((h = t.job) == null ? void 0 : h.pages) || []).map((_, v) => {
+    const x = (_.groups || []).map((T, P) => n(T, P)), E = x.filter((T) => T._type === "core"), I = x.filter((T) => T._type === "link");
     return {
-      _id: S.id || ConfigManager.generatePageId(),
-      name: S.name || `Feuille ${b + 1}`,
+      _id: _.id || ConfigManager.generatePageId(),
+      name: _.name || `Feuille ${v + 1}`,
       groups: E,
       linkGroups: I
     };
@@ -11184,11 +11200,11 @@ function notebookApp$1() {
     "dim",
     "nord",
     "sunset"
-  ], o = localStorage.getItem("sqljob-theme"), c = ((v = t.ui) == null ? void 0 : v.theme) || o || "light";
+  ], o = localStorage.getItem("sqljob-theme"), c = ((b = t.ui) == null ? void 0 : b.theme) || o || "light";
   document.documentElement.setAttribute("data-theme", c);
   const u = localStorage.getItem("sqljob-dbEngine"), p = ((w = t.ui) == null ? void 0 : w.dbEngine) || u || "duckdb-wasm";
   DuckDBManager.setEngine(p);
-  const g = ((_ = t.ui) == null ? void 0 : _.directedAcyclicGraph) === !0;
+  const g = ((S = t.ui) == null ? void 0 : S.directedAcyclicGraph) === !0;
   return {
     // ─── État principal ────────────────────────────────────────────────
     pages: r,
@@ -11286,12 +11302,12 @@ function notebookApp$1() {
       return this.pages[this.activePageIndex] || this.pages[0];
     },
     get groups() {
-      var S;
-      return ((S = this.activePage) == null ? void 0 : S.groups) || [];
+      var _;
+      return ((_ = this.activePage) == null ? void 0 : _.groups) || [];
     },
     get linkGroups() {
-      var S;
-      return ((S = this.activePage) == null ? void 0 : S.linkGroups) || [];
+      var _;
+      return ((_ = this.activePage) == null ? void 0 : _.linkGroups) || [];
     },
     // ─── Méthodes par domaine (mixin spread pattern) ──────────────────
     ...pagesMixin(),
