@@ -227,10 +227,10 @@ FROM source1 LIMIT 10;`;
                 },
 
                 // Supprimer un groupe par chemin
-                deleteGroupAtPath(path) {
+                async deleteGroupAtPath(path) {
                     if (!path || path.length === 0) return;
 
-                    if (!confirm('Supprimer ce groupe et tout son contenu ?')) return;
+                    if (!await Alpine.store('confirmModal').show('Supprimer ce groupe et tout son contenu ?')) return;
 
                     if (path.length === 1) {
                         // Groupe de premier niveau
@@ -299,10 +299,10 @@ FROM source1 LIMIT 10;`;
                 },
 
                 // Supprimer le groupe enfant (link group) et fermer la modale
-                deleteChildGroupModal() {
+                async deleteChildGroupModal() {
                     if (!this.childGroupModal.group) return;
 
-                    if (!confirm('Supprimer ce groupe enfant ?')) return;
+                    if (!await Alpine.store('confirmModal').show('Supprimer ce groupe enfant ?')) return;
 
                     const groupId = this.childGroupModal.group._id;
 

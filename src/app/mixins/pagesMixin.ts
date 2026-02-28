@@ -13,12 +13,12 @@ export function pagesMixin() {
                     this.activePageIndex = this.pages.length - 1;
                 },
 
-                deletePage(index) {
+                async deletePage(index) {
                     if (this.pages.length <= 1) {
                         this.setStatus('Impossible de supprimer la dernière page', 'error');
                         return;
                     }
-                    if (confirm(`Supprimer la page "${this.pages[index].name}" ?`)) {
+                    if (await Alpine.store('confirmModal').show(`Supprimer la page "${this.pages[index].name}" ?`)) {
                         this.pages.splice(index, 1);
                         if (this.activePageIndex >= this.pages.length) {
                             this.activePageIndex = this.pages.length - 1;

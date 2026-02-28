@@ -227,7 +227,7 @@ export function cellsMixin() {
                 },
 
                 // Supprimer une cellule (accepte path ou groupIndex)
-                deleteCellAt(pathOrIndex, cellIndex) {
+                async deleteCellAt(pathOrIndex, cellIndex) {
                     const path = Array.isArray(pathOrIndex) ? pathOrIndex : [pathOrIndex];
                     const group = this.getGroupAtPath(path);
                     if (!group || !group.cells) return;
@@ -236,9 +236,9 @@ export function cellsMixin() {
 
                     if (group.cells.length === 1 && !hasChildren) {
                         // Si c'est la dernière cellule et pas d'enfants, supprimer le groupe
-                        this.deleteGroupAtPath(path);
+                        await this.deleteGroupAtPath(path);
                     } else {
-                        if (confirm('Supprimer cette cellule ?')) {
+                        if (await Alpine.store('confirmModal').show('Supprimer cette cellule ?')) {
                             const cell = group.cells[cellIndex];
                             _rawTableDataStore.delete(cell._id);
                             if (this._tables && this._tables[cell._id]) {

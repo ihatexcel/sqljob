@@ -184,5 +184,31 @@ if ($param1 === "Type A") {
                 }
             }
         });
+
+        Alpine.store('confirmModal', {
+            isOpen: false,
+            message: '',
+            _resolve: null,
+
+            show(message) {
+                return new Promise(resolve => {
+                    this._resolve = resolve;
+                    this.message = message;
+                    this.isOpen = true;
+                });
+            },
+
+            confirm() {
+                this.isOpen = false;
+                this._resolve?.(true);
+                this._resolve = null;
+            },
+
+            cancel() {
+                this.isOpen = false;
+                this._resolve?.(false);
+                this._resolve = null;
+            }
+        });
     });
 }

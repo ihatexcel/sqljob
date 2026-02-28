@@ -1284,5 +1284,21 @@ export function generateAppHTML() {
     </div>
 </template>
 
+    <!-- Modal de confirmation générique -->
+<template x-if="$store.confirmModal.isOpen">
+    <div class="modal modal-open z-[9999]" role="presentation">
+        <div class="modal-box max-w-sm" role="dialog" aria-modal="true" aria-labelledby="modal-confirm-title"
+             x-trap.noscroll="$store.confirmModal.isOpen">
+            <h3 class="text-lg font-semibold mb-4" id="modal-confirm-title">Confirmation</h3>
+            <p class="text-base-content/80" x-text="$store.confirmModal.message"></p>
+            <div class="modal-action">
+                <button @click="$store.confirmModal.cancel()" class="btn btn-ghost">Annuler</button>
+                <button @click="$store.confirmModal.confirm()" class="btn btn-error">Supprimer</button>
+            </div>
+        </div>
+        <div class="modal-backdrop" @click="$store.confirmModal.cancel()"></div>
+    </div>
+</template>
+
     </div>`;
 }
