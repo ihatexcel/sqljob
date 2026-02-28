@@ -10,18 +10,20 @@ export default defineConfig({
     sourcemap: true,
   },
 
-  // Le serveur de dev sert aussi les workers DuckDB-WASM (COOP/COEP headers)
+  // COOP uniquement — pas de COEP.
+  // COEP (require-corp ou credentialless) activerait crossOriginIsolated, ce qui
+  // hériterait dans les iframes créées via doc.write() et forcerait le chargement
+  // des ressources imbriquées (Carto, OpenStreetMap…) sans cookies → erreur auth.
+  // DuckDB WASM fonctionne sans SharedArrayBuffer grâce au bundle MVP (single-thread).
   server: {
     headers: {
       'Cross-Origin-Opener-Policy': 'same-origin',
-      'Cross-Origin-Embedder-Policy': 'credentialless',
     },
   },
 
   preview: {
     headers: {
       'Cross-Origin-Opener-Policy': 'same-origin',
-      'Cross-Origin-Embedder-Policy': 'credentialless',
     },
   },
 })
