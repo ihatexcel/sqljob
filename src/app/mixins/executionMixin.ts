@@ -1431,22 +1431,29 @@ export function executionMixin() {
                         // Récupérer les données en format Arrow (non converti en array)
                         const arrowTable = await DuckDBManager.executeQueryArrow(finalQuery);
 
-                        // Stocker la table Arrow pour le rendu
+                        // Stocker la table Arrow pour le rendu.
+                        // _perspectiveScheduled signale au x-init du viewer que executePerspectiveCell
+                        // va gérer le rendu → x-init ne doit pas démarrer une exécution concurrente.
                         cell._arrowTable = arrowTable;
+                        cell._perspectiveScheduled = true;
                         cell._perspectiveReady = true;
 
-                        // Attendre que Alpine ait inséré <perspective-viewer> dans le DOM.
-                        // x-if peut nécessiter plusieurs ticks selon la profondeur du composant.
-                        await this.$nextTick();
-                        const _containerId = 'perspective-' + cell._id;
-                        let _waited = 0;
-                        while (!document.getElementById(_containerId) && _waited < 2000) {
-                            await new Promise(r => setTimeout(r, 50));
-                            _waited += 50;
-                        }
+                        try {
+                            // Attendre que Alpine ait inséré <perspective-viewer> dans le DOM.
+                            await this.$nextTick();
+                            const _containerId = 'perspective-' + cell._id;
+                            let _waited = 0;
+                            while (!document.getElementById(_containerId) && _waited < 2000) {
+                                await new Promise(r => setTimeout(r, 50));
+                                _waited += 50;
+                            }
 
-                        // Rendre le viewer Perspective
-                        await this.renderPerspectiveInContainer(cell);
+                            cell._perspectiveScheduled = false;
+                            await this.renderPerspectiveInContainer(cell);
+                        } catch (renderError) {
+                            cell._perspectiveScheduled = false;
+                            throw renderError;
+                        }
 
                         const rowCount = arrowTable.numRows;
                         cell._resultInfo = `✅ ${rowCount} ligne(s)` +
