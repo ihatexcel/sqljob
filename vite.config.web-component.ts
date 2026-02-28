@@ -23,6 +23,11 @@ export default defineConfig({
         rollupOptions: {
             // Tout est bundlé — aucune dépendance externe
             external: [],
+            onwarn(warning, warn) {
+                // safeEvalJs utilise new Function() intentionnellement dans un sandbox restreint
+                if (warning.code === 'EVAL') return;
+                warn(warning);
+            },
         },
     },
 })

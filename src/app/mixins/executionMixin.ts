@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { safeEvalJs } from '../../lib/safeEval';
 
 // Stockage des données brutes hors Proxy Alpine pour éviter le freeze
 // sur les grands jeux de données (millions de traps lors de l'itération).
@@ -863,7 +864,7 @@ export function executionMixin() {
                             let jsCode = this.parseQueryWithParameters(cellQuery || '');
                             cell._parseLevels.push({ level: 'final', innerQuery: jsCode, replacement: null });
                             try {
-                                const result = eval(jsCode);
+                                const result = safeEvalJs(jsCode);
                                 mdContent = typeof result === 'string' ? result : String(result);
                             } catch (jsError) {
                                 throw new Error(`Erreur JS: ${jsError.message}`);
@@ -902,7 +903,7 @@ export function executionMixin() {
                             let jsCode = this.parseQueryWithParameters(cellQuery || '');
                             cell._parseLevels.push({ level: 'final', innerQuery: jsCode, replacement: null });
                             try {
-                                const result = eval(jsCode);
+                                const result = safeEvalJs(jsCode);
                                 htmlContent = typeof result === 'string' ? result : String(result);
                             } catch (jsError) {
                                 throw new Error(`Erreur JS: ${jsError.message}`);
@@ -1015,7 +1016,7 @@ export function executionMixin() {
 
                             // Exécuter le code JavaScript
                             try {
-                                const jsResult = eval(jsCode);
+                                const jsResult = safeEvalJs(jsCode);
 
                                 // Convertir le résultat en format compatible
                                 if (cell.paramType === 'dropdown') {

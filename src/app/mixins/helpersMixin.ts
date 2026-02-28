@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { safeEvalJs } from '../../lib/safeEval';
 
 export function helpersMixin() {
     return {
@@ -84,7 +85,7 @@ export function helpersMixin() {
                     try {
                         if (langType === 'js') {
                             const jsCode = this.parseQueryWithParameters(sql);
-                            const result = eval(jsCode);
+                            const result = safeEvalJs(jsCode);
                             const finalResult = result === true || (result !== null && result !== false && result !== undefined);
                             return finalResult;
                         } else {
