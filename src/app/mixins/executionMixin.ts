@@ -1448,7 +1448,9 @@ export function executionMixin() {
                                 _waited += 50;
                             }
 
-                            cell._perspectiveScheduled = false;
+                            // Ne pas effacer _perspectiveScheduled ici : renderPerspectiveInContainer
+                            // le fait de manière atomique avec _perspectiveRendering pour éviter la
+                            // race condition avec le x-init du <perspective-viewer>.
                             await this.renderPerspectiveInContainer(cell);
                         } catch (renderError) {
                             cell._perspectiveScheduled = false;
@@ -1474,13 +1476,15 @@ export function executionMixin() {
                         return;
                     }
 
-                    // Éviter les exécutions concurrentes
+                    // Éviter les exécutions concurrentes et effacer le flag de scheduling
+                    // de manière atomique (même bloc synchrone) pour empêcher le x-init de
+                    // lancer un second render dans la fenêtre entre les deux flags.
                     if (cell._perspectiveRendering) {
-                        console.warn('Rendu Perspective déjà en cours pour cette cellule');
+                        cell._perspectiveScheduled = false;
                         return;
                     }
-
                     cell._perspectiveRendering = true;
+                    cell._perspectiveScheduled = false;
 
                     try {
                         // Vérifier que le moteur est duckdb-wasm (Perspective ne supporte pas ducklings)

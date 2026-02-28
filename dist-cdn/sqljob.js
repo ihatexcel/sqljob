@@ -9487,7 +9487,7 @@ function executionMixin() {
           let a = 0;
           for (; !document.getElementById(i) && a < 2e3; )
             await new Promise((o) => setTimeout(o, 50)), a += 50;
-          t._perspectiveScheduled = !1, await this.renderPerspectiveInContainer(t);
+          await this.renderPerspectiveInContainer(t);
         } catch (i) {
           throw t._perspectiveScheduled = !1, i;
         }
@@ -9505,10 +9505,10 @@ function executionMixin() {
         return;
       }
       if (t._perspectiveRendering) {
-        console.warn("Rendu Perspective déjà en cours pour cette cellule");
+        t._perspectiveScheduled = !1;
         return;
       }
-      t._perspectiveRendering = !0;
+      t._perspectiveRendering = !0, t._perspectiveScheduled = !1;
       try {
         if (DuckDBManager.getEngine() !== "duckdb-wasm")
           throw new Error("Perspective nécessite le moteur DuckDB WASM. Veuillez changer de moteur dans les paramètres.");
