@@ -9498,7 +9498,7 @@ function executionMixin() {
       }
     },
     async renderPerspectiveInContainer(t) {
-      var r, s, i;
+      var r;
       const e = "perspective-" + t._id, n = document.getElementById(e);
       if (!n || !t._arrowTable) {
         console.warn("Perspective viewer ou données Arrow manquantes");
@@ -9512,24 +9512,24 @@ function executionMixin() {
       try {
         if (DuckDBManager.getEngine() !== "duckdb-wasm")
           throw new Error("Perspective nécessite le moteur DuckDB WASM. Veuillez changer de moteur dans les paramètres.");
-        const a = DuckDBManager.getConnection(), o = window.perspectiveClient;
-        let l = { theme: "Pro Light" };
-        const c = (r = t.json) == null ? void 0 : r.perspectiveConfig;
-        if (c != null && c !== "")
+        const s = window.perspectiveClient;
+        let i = { theme: "Pro Light" };
+        const a = (r = t.json) == null ? void 0 : r.perspectiveConfig;
+        if (a != null && a !== "")
           try {
-            const h = typeof c == "string" ? JSON.parse(c.trim()) : c;
-            l = { ...l, ...h };
-          } catch (h) {
-            console.warn("Configuration Perspective invalide, utilisation des valeurs par défaut:", h);
+            const u = typeof a == "string" ? JSON.parse(a.trim()) : a;
+            i = { ...i, ...u };
+          } catch (u) {
+            console.warn("Configuration Perspective invalide, utilisation des valeurs par défaut:", u);
           }
-        const u = ((i = (s = t._parseLevels) == null ? void 0 : s.find((h) => h.level === "final")) == null ? void 0 : i.innerQuery) || ConfigManager.getCellQuery(t, 0), d = await a.query(u), p = [];
-        for await (const h of d)
-          p.push(h);
-        t._perspectiveWorker || (t._perspectiveWorker = await o.worker());
-        const g = await t._perspectiveWorker.table(p);
-        await new Promise((h) => requestAnimationFrame(() => requestAnimationFrame(h))), typeof n.resetThemes == "function" && await n.resetThemes(["Pro Light", "Pro Dark"]), await n.load(g), await n.restore(l), t._perspectiveTable = g;
-      } catch (a) {
-        throw console.error("Erreur lors du rendu Perspective:", a), a;
+        t._perspectiveWorker || (t._perspectiveWorker = await s.worker());
+        let o;
+        const l = DuckDBManager.duckdbModuleRef;
+        l != null && l.tableToIPC ? o = l.tableToIPC(t._arrowTable).buffer : o = t._arrowTable.batches;
+        const c = await t._perspectiveWorker.table(o);
+        await new Promise((u) => requestAnimationFrame(() => requestAnimationFrame(u))), typeof n.resetThemes == "function" && await n.resetThemes(["Pro Light", "Pro Dark"]), await n.load(c), await n.restore(i), t._perspectiveTable = c;
+      } catch (s) {
+        throw console.error("Erreur lors du rendu Perspective:", s), s;
       } finally {
         t._perspectiveRendering = !1;
       }

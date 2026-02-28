@@ -1493,7 +1493,6 @@ export function executionMixin() {
                         }
 
                         // Obtenir la connexion DuckDB
-                        const conn = DuckDBManager.getConnection();
                         const perspective = window.perspectiveClient;
 
                         // Parser la configuration JSON si présente (string ou objet déjà parsé)
@@ -1510,20 +1509,23 @@ export function executionMixin() {
                             }
                         }
 
-                        // Récupérer la requête finale
-                        const finalQuery = cell._parseLevels?.find(l => l.level === 'final')?.innerQuery || ConfigManager.getCellQuery(cell, 0);
-
-                        // Flux natif : DuckDB requête → Arrow → Perspective
-                        const arrowResult = await conn.query(finalQuery);
-                        const batches = [];
-                        for await (const batch of arrowResult) {
-                            batches.push(batch);
-                        }
-
                         if (!cell._perspectiveWorker) {
                             cell._perspectiveWorker = await perspective.worker();
                         }
-                        const table = await cell._perspectiveWorker.table(batches);
+
+                        // Utiliser cell._arrowTable (déjà chargé dans executePerspectiveCell) plutôt
+                        // que de re-exécuter la requête SQL. Sérialiser en IPC Arrow binaire si
+                        // tableToIPC est disponible via le module DuckDB : l'ArrayBuffer est
+                        // transférable (zero-copy postMessage) au lieu d'un structured clone de batches.
+                        let tableData;
+                        const duckdbMod = DuckDBManager.duckdbModuleRef;
+                        if (duckdbMod?.tableToIPC) {
+                            const ipcBytes = duckdbMod.tableToIPC(cell._arrowTable);
+                            tableData = ipcBytes.buffer;
+                        } else {
+                            tableData = cell._arrowTable.batches;
+                        }
+                        const table = await cell._perspectiveWorker.table(tableData);
 
                         // Laisser le custom element perspective-viewer (WASM) s'initialiser complètement
                         await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
