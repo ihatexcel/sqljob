@@ -29,7 +29,7 @@ export const CELL_TYPE_SCHEMAS = {
                     bodyConfig: { devModeToolbar: ['bold', 'italic', 'heading', '|', 'quote', 'unordered-list', 'ordered-list', '|', 'link', 'image', '|', 'preview', '|', 'guide'], devTextareaId: 'markdown_dev_', clientTextareaId: 'markdown_cli_' }
                 },
                 source: {
-                    executeHandler: null,
+                    executeHandler: 'executeSourceCell',
                     defaultNamePrefix: 'source',
                     secondQueryName: 'fallback',
                     requiresFileBeforeRun: true,

@@ -322,7 +322,7 @@ export function executionMixin() {
                         const schema = CELL_TYPE_SCHEMAS?.types[cell?.type];
                         const handler = schema?.executeHandler;
                         if (handler && typeof this[handler] === 'function') {
-                            await this[handler](cell);
+                            await this[handler](cell, path, cellIndex);
                         } else if (handler !== null) {
                             console.warn('⚠️ Unknown cell type or missing handler:', cell.type);
                         }

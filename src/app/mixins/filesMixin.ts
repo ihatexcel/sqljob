@@ -307,6 +307,23 @@ export function filesMixin() {
                     }
                 },
 
+                async executeSourceCell(cell, path, cellIndex) {
+                    if (cell._currentFile) {
+                        await this.loadSingleSourceFile(cell._currentFile, path, cellIndex);
+                    } else if (cell._fileName) {
+                        const fileEntry = Array.isArray(cell.files) ? cell.files.find(f => f.slot === 'source') : null;
+                        const base64 = fileEntry?.base64 || cell.fileBase64;
+                        if (base64) {
+                            const bytes = FileHandler.base64ToUint8Array(base64);
+                            const blob = new Blob([bytes]);
+                            const file = new File([blob], cell._fileName, { type: FileHandler.getMimeTypeFromFileName(cell._fileName) });
+                            await this.loadSingleSourceFile(file, path, cellIndex);
+                        } else {
+                            throw new Error('Fichier source non disponible, veuillez le recharger');
+                        }
+                    }
+                },
+
                 async removeSingleSourceFile(path, cellIndex) {
                     const cell = this.getCellAtPath(path, cellIndex);
                     if (!cell || cell.type !== 'source') return;
