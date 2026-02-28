@@ -225,6 +225,9 @@ export function exportImportMixin() {
                             }
                         }
 
+                        // Déduire l'URL du CSS depuis celle du JS (sqljob.js → sqljob.css)
+                        const sqljobCss = sqljobSrc.replace(/\.js$/, '.css');
+
                         // Template HTML fixe — identique à test-cdn.html
                         const htmlContent = `<!DOCTYPE html>
 <html lang="fr">
@@ -232,7 +235,7 @@ export function exportImportMixin() {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>sqljob</title>
-    <!-- CSS injecté automatiquement par sqljob.js — aucun <link> nécessaire -->
+    <link rel="stylesheet" href="${sqljobCss}">
 ${configScriptTag}${embeddedScripts}</head>
 <body>
     <script src="${sqljobSrc}" type="module"></script>

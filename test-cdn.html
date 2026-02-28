@@ -14,16 +14,18 @@
         (ou npm run dev          → http://localhost:5173/test-cdn.html)
 
     Usage production CDN :
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sqljob/dist-cdn/sqljob.css">
         <script src="https://cdn.jsdelivr.net/npm/sqljob/dist-cdn/sqljob.js" type="module"></script>
 
     Usage test local (après npm run build:cdn) :
+        <link rel="stylesheet" href="./dist-cdn/sqljob.css">
         <script src="./dist-cdn/sqljob.js" type="module"></script>
 -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>sqljob CDN test</title>
-    <!-- CSS injecté automatiquement par sqljob.js — aucun <link> nécessaire -->
+    <link rel="stylesheet" href="./dist-cdn/sqljob.css">
 </head>
 <body>
     <script src="./dist-cdn/sqljob.js" type="module"></script>
