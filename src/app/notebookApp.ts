@@ -200,7 +200,7 @@ export function notebookApp() {
                     { type: 'markdown', label: 'Markdown', icon: '<span class="iconify" data-icon="material-symbols-light:edit-note" style="font-size:1.25rem"></span>' },
                     { type: 'source', label: 'Source', icon: '<span class="iconify" data-icon="material-symbols-light:folder-open" style="font-size:1.25rem"></span>' },
                     { type: 'uiParameter', label: 'Paramètre UI', icon: '<span class="iconify" data-icon="material-symbols-light:tune" style="font-size:1.25rem"></span>' },
-                    { type: 'buttonRunNextCells', label: 'Bouton Exécuter', icon: '<span class="iconify" data-icon="material-symbols-light:smart-button" style="font-size:1.25rem"></span>' },
+                    { type: 'buttonRunNextCells', label: 'Bouton Exécuter', icon: '<span class="iconify" data-icon="material-symbols-light:play-circle" style="font-size:1.25rem"></span>' },
                     { type: 'sqlRecursiveParse', label: 'SQL', icon: '<span class="iconify" data-icon="material-symbols-light:storage" style="font-size:1.25rem"></span>' },
                     { type: 'table', label: 'Tableau', icon: '<span class="iconify" data-icon="material-symbols-light:table" style="font-size:1.25rem"></span>' },
                     { type: 'iframe', label: 'HTML/Iframe', icon: '<span class="iconify" data-icon="material-symbols-light:web" style="font-size:1.25rem"></span>' },

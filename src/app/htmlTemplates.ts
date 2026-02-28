@@ -941,6 +941,12 @@ export function generateAppHTML() {
 
 <!-- DevMode Toggle -->
 <div class="fixed bottom-4 left-4 z-[1500] flex gap-1" x-show="showLayout">
+    <!-- Bouton Dev/View — toujours visible, tout à gauche -->
+    <button class="btn btn-sm" :class="devMode ? 'btn-soft' : 'btn-ghost'"
+            :title="devMode ? 'Mode client' : 'Mode développeur'"
+            @click="devMode = !devMode">
+            <span class="iconify" :data-icon="devMode ? 'material-symbols-light:visibility' : 'material-symbols-light:settings'" style="font-size:1.25rem"></span>
+    </button>
     <!-- Sélecteur de thème (devMode uniquement) -->
         <div class="dropdown dropdown-top" x-show="devMode">
             <div tabindex="0"  class="btn btn-sm  btn-ghost">
@@ -955,14 +961,9 @@ export function generateAppHTML() {
             </ul>
     </div>
     <!-- Bouton configuration moteur DB (devMode uniquement) -->
-    <button class="btn btn-sm" x-show="devMode" @click="showDbEngineModal = true" 
-            :class="directedAcyclicGraph ? 'btn-warning' : 'btn-ghost'"
+    <button class="btn btn-sm btn-ghost" x-show="devMode" @click="showDbEngineModal = true"
             :title="'Moteur: ' + (dbEngine === 'ducklings' ? 'Ducklings' : 'DuckDB WASM')">
         <span x-text="dbEngine === 'ducklings' ? '🐤' : '🦆'"></span>
-    </button>
-    <!-- Bouton Dev/View -->
-    <button class="btn btn-sm" :class="devMode ? 'btn-soft' : 'btn-ghost'" @click="devMode = !devMode">
-            <span class="iconify" :data-icon="devMode ? 'material-symbols-light:visibility' : 'material-symbols-light:settings'" style="font-size:1.25rem"></span>
     </button>
 </div>
 
