@@ -11365,6 +11365,10 @@ async function mountApp(t) {
   e && e.needsPassphrase && e.encryptedContent ? (window._pendingEncryptedGist = e.encryptedContent, window._encryptedSource = e.source || "gist", t.innerHTML = generateGistPassphraseModalHTML(), window.Alpine && Alpine.initTree(t)) : (window._loadedConfig = e, t.innerHTML = generateAppHTML(), window.Alpine && Alpine.initTree(t));
 }
 window.__sqljobScriptUrl = import.meta.url;
+window.location.protocol === "file:" && console.warn(
+  `[sqljob] Page servie via file:// — les cellules iframe avec contenu externe (cartes, Carto, OpenStreetMap…) ne fonctionneront pas : origine null bloquée par les CSP des sites tiers.
+Solution : servir via HTTP → npm run dev:cdn puis ouvrir http://localhost:5174/test-cdn.html`
+);
 let alpineStarted = !1;
 function ensureAlpine() {
   alpineStarted || (alpineStarted = !0, window.Alpine ? registerAlpineStores() : (module_default$2.plugin(module_default$1), module_default$2.plugin(module_default), registerAlpineStores(), window.Alpine = module_default$2, module_default$2.start()));

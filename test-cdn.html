@@ -2,7 +2,16 @@
 <html lang="fr">
 <!--
     Fichier de test pour le web component CDN <sqljob-app>.
-    Ouvrir directement dans le navigateur (file://) sans serveur.
+
+    ⚠️  NE PAS ouvrir via file:// si les cellules iframe embarquent du contenu
+    externe (cartes Carto, OpenStreetMap, etc.).
+    La raison : file:// donne une origine "null" à la page. Les CSP
+    frame-ancestors des sites tiers excluent explicitement null → connexion
+    refusée par le navigateur.
+
+    ✅  Pour tester le build CDN avec iframes externes, utiliser un serveur HTTP :
+        npm run dev:cdn          → http://localhost:5174/test-cdn.html
+        (ou npm run dev          → http://localhost:5173/test-cdn.html)
 
     Usage production CDN :
         <script src="https://cdn.jsdelivr.net/npm/sqljob/dist-cdn/sqljob.js" type="module"></script>

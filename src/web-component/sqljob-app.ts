@@ -23,6 +23,17 @@ import './styles.css'
 // pour retrouver exactement le bon élément <script src> dans la page hôte.
 window.__sqljobScriptUrl = import.meta.url
 
+// Avertissement file:// : les iframes avec contenu externe (Carto, OSM…) échouent
+// car l'origine null de file:// est exclue par CSP frame-ancestors et X-Frame-Options.
+if (window.location.protocol === 'file:') {
+    console.warn(
+        '[sqljob] Page servie via file:// — les cellules iframe avec contenu externe ' +
+        '(cartes, Carto, OpenStreetMap…) ne fonctionneront pas : origine null bloquée ' +
+        'par les CSP des sites tiers.\n' +
+        'Solution : servir via HTTP → npm run dev:cdn puis ouvrir http://localhost:5174/test-cdn.html'
+    )
+}
+
 // ─── Initialisation Alpine (une seule fois, même si plusieurs <sqljob-app>) ──
 
 let alpineStarted = false
