@@ -11,6 +11,7 @@ import { FileHandler } from './lib/FileHandler'
 import { DuckDBManager } from './lib/DuckDBManager'
 import { CellRenderer } from './lib/CellRenderer'
 import { CellBodyRenderer, CELL_BODY_FAMILIES } from './lib/CellBodyRenderer'
+import { EChartSqlParser } from './lib/EChartSqlParser'
 
 import { generateAppHTML, generateGistPassphraseModalHTML } from './app/htmlTemplates'
 import { gistPassphraseModal } from './app/gistModal'
@@ -31,6 +32,7 @@ Object.assign(window, {
     CellRenderer,
     CellBodyRenderer,
     CELL_BODY_FAMILIES,
+    EChartSqlParser,
     GistEncrypt,
     GitHubGistManager,
     FileHandler,

@@ -254,6 +254,36 @@ export const CELL_TYPE_SCHEMAS = {
                         defaultButtonLabel: '📑 Générer le PDF'
                     }
                 },
+                echart: {
+                    executeHandler: 'executeEchartCell',
+                    defaultNamePrefix: 'echart',
+                    showInViewWhenResultOrRunning: true,
+                    exportFields: ['queries'],
+                    initProps: { _showParsedQuery: false, _echartInstance: null, _echartReady: false },
+                    commonParams: ['name', 'queries'],
+                    queryCount: 1,
+                    queryNames: ['main'],
+                    queryLabels: { main: 'Requête SQL (alias de colonnes = rôles visuels)' },
+                    specificParams: [
+                        {
+                            key: 'queries.main.clientVisible',
+                            label: "Afficher l'éditeur SQL en mode client",
+                            tooltip: "Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur. En mode client, seul le graphique sera affiché.",
+                            inputType: 'checkbox'
+                        }
+                    ],
+                    defaults: {
+                        queries: [{
+                            name: 'main',
+                            sql: "SELECT\n    month        AS XAXIS,\n    revenue      AS revenue_BARCHART,\n    target       AS target_LINECHART\nFROM (VALUES\n    ('Jan', 42000, 40000),\n    ('Feb', 38000, 40000),\n    ('Mar', 51000, 45000),\n    ('Apr', 47000, 45000),\n    ('May', 60000, 50000),\n    ('Jun', 55000, 50000)\n) t(month, revenue, target)",
+                            engine: 'sql',
+                            clientVisible: false
+                        }]
+                    },
+                    bodyFamily: 'sqlWithEchart',
+                    bodyConfig: { minHeight: '350px' },
+                    bodyDisplay: { showSkeleton: { excludeWhenSqlEditor: true } }
+                },
                 perspective: {
                     executeHandler: 'executePerspectiveCell',
                     defaultNamePrefix: 'perspective',
