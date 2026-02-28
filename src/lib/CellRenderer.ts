@@ -82,7 +82,7 @@ import { CELL_BODY_FAMILIES } from './CellBodyRenderer'
                                 <button class="btn btn-sm gap-0"
                                         @click="openChildGroupModal(${pathExpr}, ${cellIdxExpr})"
                                         title="Ouvrir le groupe enfant">
-                                    <span class="iconify" data-icon="material-symbols-light:upload-file" style="font-size:1rem"></span>
+                                    <span class="iconify" data-icon="material-symbols-light:export-notes-outline-sharp" style="font-size:1rem"></span>
                                 </button>
                             </div>
                         </template>

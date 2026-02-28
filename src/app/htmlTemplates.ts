@@ -853,7 +853,7 @@ export function generateAppHTML() {
             <!-- Header sticky -->
             <div class="sticky top-0 z-10 flex items-center justify-between bg-primary text-primary-content px-6 py-4 shadow-md">
                 <h3 class="text-xl font-bold flex items-center gap-2" id="modal-child-group-title">
-                    <span class="iconify" data-icon="material-symbols-light:upload-file" style="font-size:1.5rem"></span>
+                    <span class="iconify" data-icon="material-symbols-light:export-notes-outline-sharp" style="font-size:1.5rem"></span>
                 </h3>
                 <button class="btn btn-sm btn-circle btn-ghost text-primary-content hover:bg-primary-focus" @click="closeChildGroupModal()"><span class="iconify" data-icon="material-symbols-light:close" style="font-size:1rem"></span></button>
             </div>
