@@ -5508,8 +5508,8 @@ let CellConfigService$1 = class {
     o && (o[a] = r);
   }
 };
-var D;
-let GistEncrypt$1 = (D = class {
+var $;
+let GistEncrypt$1 = ($ = class {
   static _uint8ArrayToBase64(e) {
     let r = "";
     for (let s = 0; s < e.length; s += 32768) {
@@ -5574,7 +5574,7 @@ let GistEncrypt$1 = (D = class {
   static isEncrypted(e) {
     return e && e[this.ENCRYPTED_MARKER] === !0 && !!e.ciphertext && !!e.salt && e.iv !== void 0;
   }
-}, k(D, "ENCRYPTED_MARKER", "_encrypted"), k(D, "DEFAULT_ITERATIONS", 6e5), D), FileHandler$1 = class {
+}, k($, "ENCRYPTED_MARKER", "_encrypted"), k($, "DEFAULT_ITERATIONS", 6e5), $), FileHandler$1 = class {
   static getMimeTypeFromFileName(e) {
     const n = e.split(".").pop().toLowerCase();
     return {
@@ -6217,8 +6217,8 @@ let ConfigManager$1 = (M = class {
     };
   }
 }, k(M, "SQLJOB_VERSION", "0.1"), M);
-var $;
-let GitHubGistManager$1 = ($ = class {
+var D;
+let GitHubGistManager$1 = (D = class {
   /**
    * Vérifie si un token d'accès est stocké
    */
@@ -6328,8 +6328,8 @@ let GitHubGistManager$1 = ($ = class {
       throw new Error("URL de gist invalide");
     return `https://ihatexcel.github.io/sqljob/?gist=${n}`;
   }
-}, k($, "CLIENT_ID", ""), // À configurer par l'utilisateur
-k($, "REDIRECT_URI", window.location.origin + window.location.pathname), k($, "ACCESS_TOKEN_KEY", "github_access_token"), $);
+}, k(D, "CLIENT_ID", ""), // À configurer par l'utilisateur
+k(D, "REDIRECT_URI", window.location.origin + window.location.pathname), k(D, "ACCESS_TOKEN_KEY", "github_access_token"), D);
 var C;
 let DuckDBManager$1 = (C = class {
   static getDuckDBWasmUrl() {
@@ -9498,7 +9498,7 @@ function executionMixin() {
       }
     },
     async renderPerspectiveInContainer(t) {
-      var r;
+      var r, s, i;
       const e = "perspective-" + t._id, n = document.getElementById(e);
       if (!n || !t._arrowTable) {
         console.warn("Perspective viewer ou données Arrow manquantes");
@@ -9512,21 +9512,24 @@ function executionMixin() {
       try {
         if (DuckDBManager.getEngine() !== "duckdb-wasm")
           throw new Error("Perspective nécessite le moteur DuckDB WASM. Veuillez changer de moteur dans les paramètres.");
-        const s = window.perspectiveClient;
-        let i = { theme: "Pro Light" };
-        const a = (r = t.json) == null ? void 0 : r.perspectiveConfig;
-        if (a != null && a !== "")
+        const a = DuckDBManager.getConnection(), o = window.perspectiveClient;
+        let l = { theme: "Pro Light" };
+        const c = (r = t.json) == null ? void 0 : r.perspectiveConfig;
+        if (c != null && c !== "")
           try {
-            const l = typeof a == "string" ? JSON.parse(a.trim()) : a;
-            i = { ...i, ...l };
-          } catch (l) {
-            console.warn("Configuration Perspective invalide, utilisation des valeurs par défaut:", l);
+            const h = typeof c == "string" ? JSON.parse(c.trim()) : c;
+            l = { ...l, ...h };
+          } catch (h) {
+            console.warn("Configuration Perspective invalide, utilisation des valeurs par défaut:", h);
           }
-        t._perspectiveWorker || (t._perspectiveWorker = await s.worker());
-        const o = await t._perspectiveWorker.table(t._arrowTable.batches);
-        await new Promise((l) => requestAnimationFrame(() => requestAnimationFrame(l))), typeof n.resetThemes == "function" && await n.resetThemes(["Pro Light", "Pro Dark"]), await n.load(o), await n.restore(i), t._perspectiveTable = o;
-      } catch (s) {
-        throw console.error("Erreur lors du rendu Perspective:", s), s;
+        const u = ((i = (s = t._parseLevels) == null ? void 0 : s.find((h) => h.level === "final")) == null ? void 0 : i.innerQuery) || ConfigManager.getCellQuery(t, 0), d = await a.query(u), p = [];
+        for await (const h of d)
+          p.push(h);
+        t._perspectiveWorker || (t._perspectiveWorker = await o.worker());
+        const g = await t._perspectiveWorker.table(p);
+        await new Promise((h) => requestAnimationFrame(() => requestAnimationFrame(h))), typeof n.resetThemes == "function" && await n.resetThemes(["Pro Light", "Pro Dark"]), await n.load(g), await n.restore(l), t._perspectiveTable = g;
+      } catch (a) {
+        throw console.error("Erreur lors du rendu Perspective:", a), a;
       } finally {
         t._perspectiveRendering = !1;
       }

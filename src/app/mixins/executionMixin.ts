@@ -1493,6 +1493,7 @@ export function executionMixin() {
                         }
 
                         // Obtenir la connexion DuckDB
+                        const conn = DuckDBManager.getConnection();
                         const perspective = window.perspectiveClient;
 
                         // Parser la configuration JSON si présente (string ou objet déjà parsé)
@@ -1509,13 +1510,24 @@ export function executionMixin() {
                             }
                         }
 
+                        // Récupérer la requête finale déjà parsée (evite de re-parser le SQL)
+                        const finalQuery = cell._parseLevels?.find(l => l.level === 'final')?.innerQuery
+                            || ConfigManager.getCellQuery(cell, 0);
+
+                        // Flux Arrow → Perspective. Le `for await` sur le résultat de conn.query()
+                        // produit des lignes JS plates reconnues par Perspective comme row-data JSON.
+                        // Utiliser .batches (RecordBatch[]) échoue car les prototypes Arrow sont
+                        // perdus après structured-clone → "Unknown JSON type".
+                        const arrowResult = await conn.query(finalQuery);
+                        const batches = [];
+                        for await (const batch of arrowResult) {
+                            batches.push(batch);
+                        }
+
                         if (!cell._perspectiveWorker) {
                             cell._perspectiveWorker = await perspective.worker();
                         }
-
-                        // Utiliser cell._arrowTable (déjà chargé dans executePerspectiveCell)
-                        // plutôt que de re-exécuter la requête SQL.
-                        const table = await cell._perspectiveWorker.table(cell._arrowTable.batches);
+                        const table = await cell._perspectiveWorker.table(batches);
 
                         // Laisser le custom element perspective-viewer (WASM) s'initialiser complètement
                         await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
