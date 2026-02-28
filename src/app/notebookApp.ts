@@ -197,17 +197,17 @@ export function notebookApp() {
 
                 // ─── Types de cellules disponibles ────────────────────────────────
                 cellTypes: [
-                    { type: 'markdown', label: 'Markdown', icon: '📝' },
-                    { type: 'source', label: 'Source', icon: '📄' },
-                    { type: 'uiParameter', label: 'Paramètre UI', icon: '🎛️' },
-                    { type: 'buttonRunNextCells', label: 'Bouton Exécuter', icon: '🚀' },
-                    { type: 'sqlRecursiveParse', label: 'SQL', icon: '🗄️' },
-                    { type: 'table', label: 'Tableau', icon: '📊' },
-                    { type: 'iframe', label: 'HTML/Iframe', icon: '🖼️' },
-                    { type: 'sqlStat', label: 'Stat SQL', icon: '📊' },
-                    { type: 'publipostageWord', label: 'Publipostage Word', icon: '📄' },
-                    { type: 'pdfme', label: 'PDF (pdfme)', icon: '📑' },
-                    { type: 'perspective', label: 'Perspective Viewer', icon: '🔍' }
+                    { type: 'markdown', label: 'Markdown', icon: '<span class="iconify" data-icon="material-symbols-light:edit-note" style="font-size:1.25rem"></span>' },
+                    { type: 'source', label: 'Source', icon: '<span class="iconify" data-icon="material-symbols-light:folder-open" style="font-size:1.25rem"></span>' },
+                    { type: 'uiParameter', label: 'Paramètre UI', icon: '<span class="iconify" data-icon="material-symbols-light:tune" style="font-size:1.25rem"></span>' },
+                    { type: 'buttonRunNextCells', label: 'Bouton Exécuter', icon: '<span class="iconify" data-icon="material-symbols-light:smart-button" style="font-size:1.25rem"></span>' },
+                    { type: 'sqlRecursiveParse', label: 'SQL', icon: '<span class="iconify" data-icon="material-symbols-light:storage" style="font-size:1.25rem"></span>' },
+                    { type: 'table', label: 'Tableau', icon: '<span class="iconify" data-icon="material-symbols-light:table" style="font-size:1.25rem"></span>' },
+                    { type: 'iframe', label: 'HTML/Iframe', icon: '<span class="iconify" data-icon="material-symbols-light:web" style="font-size:1.25rem"></span>' },
+                    { type: 'sqlStat', label: 'Stat SQL', icon: '<span class="iconify" data-icon="material-symbols-light:monitoring" style="font-size:1.25rem"></span>' },
+                    { type: 'publipostageWord', label: 'Publipostage Word', icon: '<span class="iconify" data-icon="material-symbols-light:description" style="font-size:1.25rem"></span>' },
+                    { type: 'pdfme', label: 'PDF (pdfme)', icon: '<span class="iconify" data-icon="material-symbols-light:picture-as-pdf" style="font-size:1.25rem"></span>' },
+                    { type: 'perspective', label: 'Perspective Viewer', icon: '<span class="iconify" data-icon="material-symbols-light:analytics" style="font-size:1.25rem"></span>' }
                 ],
 
                 // ─── Tables simple-datatables par cellule ─────────────────────────

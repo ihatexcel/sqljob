@@ -198,7 +198,7 @@ export function helpersMixin() {
 
                 getCellIcon(type) {
                     const found = this.cellTypes.find(ct => ct.type === type);
-                    return found ? found.icon : '📄';
+                    return found ? found.icon : '<span class="iconify" data-icon="material-symbols-light:description" style="font-size:1rem"></span>';
                 },
 
                 generateCellId() {

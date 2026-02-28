@@ -9,7 +9,7 @@ export function editorsMixin() {
                     const isText = languageType === 'text';
                     const placeholder = isJs ? 'return ["Option 1", "Option 2"]; // Pour dropdown\nreturn "Valeur"; // Pour input' : isText ? 'Saisir le texte (une ligne par option pour dropdown)' : 'SELECT * from source1';
                     const languageLabel = isJs ? 'JavaScript' : isText ? 'Texte' : 'SQL';
-                    const languageIcon = isJs ? '⚡' : isText ? '📝' : '🗄️';
+                    const languageIcon = isJs ? '<span class="iconify" data-icon="material-symbols-light:bolt" style="font-size:0.875rem"></span>' : isText ? '<span class="iconify" data-icon="material-symbols-light:article" style="font-size:0.875rem"></span>' : '<span class="iconify" data-icon="material-symbols-light:storage" style="font-size:0.875rem"></span>';
                     const badgeClass = isJs ? 'badge-warning' : isText ? 'badge-ghost' : 'badge-info';
 
                     return this.renderSqlQueryEditor(cell, placeholder, true, 'query', '_showParsedQuery', languageLabel, languageIcon, badgeClass);
@@ -25,17 +25,17 @@ export function editorsMixin() {
                     const isJs = langType === 'js';
                     const placeholder = isJs ? 'return true;  // ou return false; pour masquer le groupe' : 'SELECT true  -- ou SELECT false pour masquer le groupe';
                     const badgeClass = isJs ? 'badge-warning' : 'badge-info';
-                    const badgeIcon = isJs ? '⚡' : '🗄️';
+                    const badgeIcon = isJs ? '<span class="iconify" data-icon="material-symbols-light:bolt" style="font-size:0.875rem"></span>' : '<span class="iconify" data-icon="material-symbols-light:storage" style="font-size:0.875rem"></span>';
                     const badgeLabel = isJs ? 'JavaScript' : 'SQL';
                     if (isJs) {
                         return `<div>
-                            <span class="badge badge-soft ${badgeClass} text-xs mb-2">${badgeIcon} ${badgeLabel}</span>
+                            <span class="badge badge-soft ${badgeClass} text-xs mb-2 flex items-center gap-1">${badgeIcon} ${badgeLabel}</span>
                             <textarea class="textarea textarea-bordered w-full font-mono min-h-20 p-3 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" 
                                 placeholder="${placeholder}"></textarea>
                         </div>`;
                     }
                     return `<div>
-                        <span class="badge badge-soft ${badgeClass} text-xs mb-2">${badgeIcon} ${badgeLabel}</span>
+                        <span class="badge badge-soft ${badgeClass} text-xs mb-2 flex items-center gap-1">${badgeIcon} ${badgeLabel}</span>
                         <div class="codemirror-sql-container" x-ref="cm_${groupId}"
                             x-init="$nextTick(async () => {
                                 const container = $refs['cm_${groupId}'];
@@ -72,7 +72,7 @@ export function editorsMixin() {
                     const isJs = langType === 'js';
                     const placeholder = isJs ? 'return true;  // ou return false; pour masquer le groupe' : 'SELECT true  -- ou SELECT false pour masquer le groupe';
                     const badgeClass = isJs ? 'badge-warning' : 'badge-info';
-                    const badgeIcon = isJs ? '⚡' : '🗄️';
+                    const badgeIcon = isJs ? '<span class="iconify" data-icon="material-symbols-light:bolt" style="font-size:0.875rem"></span>' : '<span class="iconify" data-icon="material-symbols-light:storage" style="font-size:0.875rem"></span>';
                     const badgeLabel = isJs ? 'JavaScript' : 'SQL';
 
                     // Nettoyer l'éditeur existant
@@ -83,7 +83,7 @@ export function editorsMixin() {
 
                     if (isJs) {
                         container.innerHTML = `<div>
-                            <span class="badge badge-soft ${badgeClass} text-xs mb-2">${badgeIcon} ${badgeLabel}</span>
+                            <span class="badge badge-soft ${badgeClass} text-xs mb-2 flex items-center gap-1">${badgeIcon} ${badgeLabel}</span>
                             <textarea class="textarea textarea-bordered w-full font-mono min-h-20 p-3 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" 
                                 placeholder="${placeholder}"></textarea>
                         </div>`;
@@ -94,7 +94,7 @@ export function editorsMixin() {
                         }
                     } else {
                         container.innerHTML = `<div>
-                            <span class="badge badge-soft ${badgeClass} text-xs mb-2">${badgeIcon} ${badgeLabel}</span>
+                            <span class="badge badge-soft ${badgeClass} text-xs mb-2 flex items-center gap-1">${badgeIcon} ${badgeLabel}</span>
                             <div class="codemirror-sql-container"></div>
                         </div>`;
                         const cmContainer = container.querySelector('.codemirror-sql-container');
@@ -134,7 +134,7 @@ export function editorsMixin() {
                     const isJs = languageType === 'js';
                     const isText = languageType === 'text';
                     const finalLanguageLabel = languageLabel || (isJs ? 'JavaScript' : isText ? 'Texte' : 'SQL');
-                    const finalLanguageIcon = languageIcon || (isJs ? '⚡' : isText ? '📝' : '🗄️');
+                    const finalLanguageIcon = languageIcon || (isJs ? '<span class="iconify" data-icon="material-symbols-light:bolt" style="font-size:0.875rem"></span>' : isText ? '<span class="iconify" data-icon="material-symbols-light:article" style="font-size:0.875rem"></span>' : '<span class="iconify" data-icon="material-symbols-light:storage" style="font-size:0.875rem"></span>');
                     const finalBadgeClass = badgeClass || (isJs ? 'badge-warning' : isText ? 'badge-ghost' : 'badge-info');
 
                     return `
@@ -142,7 +142,7 @@ export function editorsMixin() {
                             <div class="relative w-full">
                                 <div class="flex justify-between items-center mb-2">
                                     <span class="text-xs text-base-content/70 flex items-center gap-2">
-                                        <span class="badge badge-soft ${finalBadgeClass}">${finalLanguageIcon} ${finalLanguageLabel}</span>
+                                        <span class="badge badge-soft ${finalBadgeClass} flex items-center gap-1">${finalLanguageIcon} ${finalLanguageLabel}</span>
                                         ${this.devMode && !isText ? `
                                             <label class="label cursor-pointer justify-start gap-2 py-0 min-h-0">
                                                 <input type="checkbox" class="toggle toggle-sm"
@@ -317,7 +317,7 @@ export function editorsMixin() {
                     const isJs = languageType === 'js';
                     const placeholder = isJs ? "return '## Titre\\n\\nContenu markdown';" : "SELECT '## Titre' as markdown";
                     const languageLabel = isJs ? 'JavaScript' : 'SQL';
-                    const languageIcon = isJs ? '⚡' : '🗄️';
+                    const languageIcon = isJs ? '<span class="iconify" data-icon="material-symbols-light:bolt" style="font-size:0.875rem"></span>' : '<span class="iconify" data-icon="material-symbols-light:storage" style="font-size:0.875rem"></span>';
                     const badgeClass = isJs ? 'badge-warning' : 'badge-info';
                     return this.renderSqlQueryEditor(cell, placeholder, true, 'query', '_showParsedQuery', languageLabel, languageIcon, badgeClass, pathExpr, cellIdxExpr);
                 },
@@ -387,7 +387,7 @@ export function editorsMixin() {
                             ? '<html><body><h1>Hello</h1></body></html>'
                             : "SELECT '<html><body><h1>Hello</h1></body></html>' as html";
                     const languageLabel = isJs ? 'JavaScript' : isText ? 'Texte' : 'SQL';
-                    const languageIcon = isJs ? '⚡' : isText ? '📝' : '🗄️';
+                    const languageIcon = isJs ? '<span class="iconify" data-icon="material-symbols-light:bolt" style="font-size:0.875rem"></span>' : isText ? '<span class="iconify" data-icon="material-symbols-light:article" style="font-size:0.875rem"></span>' : '<span class="iconify" data-icon="material-symbols-light:storage" style="font-size:0.875rem"></span>';
                     const badgeClass = isJs ? 'badge-warning' : isText ? 'badge-ghost' : 'badge-info';
                     return this.renderSqlQueryEditor(cell, placeholder, true, 'query', '_showParsedQuery', languageLabel, languageIcon, badgeClass, pathExpr, cellIdxExpr);
                 },

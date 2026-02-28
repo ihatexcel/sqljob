@@ -5,7 +5,7 @@ export function generateGistPassphraseModalHTML() {
     <div class="min-h-screen flex items-center justify-center p-4 bg-base-200" x-data="gistPassphraseModal()" x-init="init()">
 <div class="modal modal-open">
     <div class="modal-box max-w-md">
-        <h3 class="font-bold text-lg flex items-center gap-2">🔐 Configuration chiffrée</h3>
+        <h3 class="font-bold text-lg flex items-center gap-2"><span class="iconify" data-icon="material-symbols-light:lock" style="font-size:1.25rem"></span> Configuration chiffrée</h3>
         <p class="py-2 text-sm text-base-content/70">
             Cette configuration est protégée par un mot de passe. Entrez-le pour charger les données.
         </p>
@@ -57,39 +57,39 @@ export function generateAppHTML() {
                            @keydown.enter="page.name = tempName; editing = false; saveToLocalStorage();"
                            @keydown.escape="editing = false"
                            @blur="page.name = tempName; editing = false; saveToLocalStorage();">
-                    <button x-show="devMode && pages.length > 1 && !editing" 
+                    <button x-show="devMode && pages.length > 1 && !editing"
                             @click.stop="deletePage(index)"
                             class="btn btn-ghost btn-xs"
                             title="Supprimer la page">
-                        ✕
+                        <span class="iconify" data-icon="material-symbols-light:close" style="font-size:1rem"></span>
                     </button>
                 </div>
             </li>
         </template>
         <li x-show="devMode">
             <button @click="addPage()" class="btn btn-ghost btn-sm">
-                ➕ Ajouter une page
+                <span class="iconify" data-icon="material-symbols-light:add" style="font-size:1rem"></span> Ajouter une page
             </button>
         </li>
         <li class="divider"></li>
         <li x-show="devMode">
-            <button class="btn btn-sm" @click="runAllGroups(); document.getElementById('mobile-drawer').checked = false;" :disabled="isLoading">▶️ Tout exécuter</button>
+            <button class="btn btn-sm" @click="runAllGroups(); document.getElementById('mobile-drawer').checked = false;" :disabled="isLoading"><span class="iconify" data-icon="material-symbols-light:play-arrow" style="font-size:1rem"></span> Tout exécuter</button>
         </li>
         <template x-if="devMode">
             <li>
-                <a>📤 Export</a>
+                <a><span class="iconify" data-icon="material-symbols-light:upload" style="font-size:1rem"></span> Export</a>
                 <ul class="p-2">
-                    <li><button @click="openExportModal('html'); document.getElementById('mobile-drawer').checked = false;" :disabled="isLoading">💾 HTML</button></li>
-                    <li><button @click="openExportModal('json'); document.getElementById('mobile-drawer').checked = false;">📦 JSON</button></li>
-                    <li><button @click="openExportModal('base64'); document.getElementById('mobile-drawer').checked = false;">🔐 Base64</button></li>
-                    <li><button @click="openExportModal('gist'); document.getElementById('mobile-drawer').checked = false;" :disabled="isLoading">🐙 Partager via Gist</button></li>
+                    <li><button @click="openExportModal('html'); document.getElementById('mobile-drawer').checked = false;" :disabled="isLoading"><span class="iconify" data-icon="material-symbols-light:save" style="font-size:1rem"></span> HTML</button></li>
+                    <li><button @click="openExportModal('json'); document.getElementById('mobile-drawer').checked = false;"><span class="iconify" data-icon="material-symbols-light:data-object" style="font-size:1rem"></span> JSON</button></li>
+                    <li><button @click="openExportModal('base64'); document.getElementById('mobile-drawer').checked = false;"><span class="iconify" data-icon="material-symbols-light:lock" style="font-size:1rem"></span> Base64</button></li>
+                    <li><button @click="openExportModal('gist'); document.getElementById('mobile-drawer').checked = false;" :disabled="isLoading"><span class="iconify" data-icon="material-symbols-light:share" style="font-size:1rem"></span> Partager via Gist</button></li>
                 </ul>
             </li>
         </template>
         <template x-if="devMode">
             <li>
                 <label class="cursor-pointer">
-                    📂 Import JSON
+                    <span class="iconify" data-icon="material-symbols-light:folder-open" style="font-size:1rem"></span> Import JSON
                     <input type="file" accept=".json" @change="loadConfig($event); document.getElementById('mobile-drawer').checked = false;" hidden>
                 </label>
             </li>
@@ -138,19 +138,19 @@ export function generateAppHTML() {
                            @keydown.enter="page.name = tempName; editing = false; saveToLocalStorage();"
                            @keydown.escape="editing = false"
                            @blur="page.name = tempName; editing = false; saveToLocalStorage();">
-                    <button x-show="devMode && pages.length > 1" 
+                    <button x-show="devMode && pages.length > 1"
                             @click.stop="deletePage(index)"
                             class="btn btn-ghost btn-xs -ml-2"
                             title="Supprimer la page">
-                        ✕
+                        <span class="iconify" data-icon="material-symbols-light:close" style="font-size:1rem"></span>
                     </button>
                 </div>
             </template>
-            <button x-show="devMode" 
+            <button x-show="devMode"
                     @click="addPage()"
                     class="btn btn-ghost btn-sm self-center"
                     title="Ajouter une page">
-                ➕
+                <span class="iconify" data-icon="material-symbols-light:add" style="font-size:1rem"></span>
             </button>
         </div>
     </div>
@@ -164,25 +164,25 @@ export function generateAppHTML() {
             </svg>
         </label>
         <button x-show="devMode" class="btn btn-sm btn-primary hidden lg:flex" @click="runAllGroups()" :disabled="isLoading">
-            ▶️ Tout exécuter
+            <span class="iconify" data-icon="material-symbols-light:play-arrow" style="font-size:1rem"></span> Tout exécuter
         </button>
         <template x-if="devMode">
             <div class="join hidden lg:flex">
                 <!-- Mode dev : menu export complet -->
                 <div class="join-item dropdown dropdown-end">
                     <div tabindex="0" role="button" class="btn btn-sm join-item">
-                        📤 Export
+                        <span class="iconify" data-icon="material-symbols-light:upload" style="font-size:1rem"></span> Export
                     </div>
                     <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
-                        <li><button @click="openExportModal('html')" :disabled="isLoading">💾 HTML</button></li>
-                        <li><button @click="openExportModal('json')">📦 JSON</button></li>
-                        <li><button @click="openExportModal('base64')">🔐 Base64</button></li>
-                        <li><button @click="openExportModal('gist')" :disabled="isLoading">🐙 Partager via Gist</button></li>
+                        <li><button @click="openExportModal('html')" :disabled="isLoading"><span class="iconify" data-icon="material-symbols-light:save" style="font-size:1rem"></span> HTML</button></li>
+                        <li><button @click="openExportModal('json')"><span class="iconify" data-icon="material-symbols-light:data-object" style="font-size:1rem"></span> JSON</button></li>
+                        <li><button @click="openExportModal('base64')"><span class="iconify" data-icon="material-symbols-light:lock" style="font-size:1rem"></span> Base64</button></li>
+                        <li><button @click="openExportModal('gist')" :disabled="isLoading"><span class="iconify" data-icon="material-symbols-light:share" style="font-size:1rem"></span> Partager via Gist</button></li>
                     </ul>
                 </div>
                 <!-- Import JSON : seulement en mode dev -->
                 <label class="btn join-item btn-sm cursor-pointer">
-                    📂 Import JSON
+                    <span class="iconify" data-icon="material-symbols-light:folder-open" style="font-size:1rem"></span> Import JSON
                     <input type="file" accept=".json" @change="loadConfig($event)" hidden>
                 </label>
             </div>
@@ -236,27 +236,27 @@ export function generateAppHTML() {
                             <button class="btn btn-xs join-item" @click="toggleGroupDirection(item.path)" :title="item.group.direction === 'column' ? 'Passer en ligne' : 'Passer en colonne'">
                                 <span x-text="item.group.direction === 'column' ? '⇵' : '⇄'"></span>
                             </button>
-                            <button class="btn btn-xs join-item" :class="item.group.loop?.enabled ? 'btn-info' : ''" @click="openLoopConfigModal(item.path)" title="Configurer la boucle">🔁</button>
-                            <button class="btn btn-xs join-item" :class="item.group.accordion ? 'btn-accent' : ''" @click="openGroupSettingsModal(item.path)" title="Paramètres du groupe">⚙️</button>
-                            <button class="btn btn-xs btn-success join-item" @click="runGroupAtPath(item.path)" :disabled="isLoading" title="Exécuter">▶️</button>
-                            <button class="btn btn-xs join-item" @click="moveGroupAtPath(item.path, -1)" :disabled="item.isFirst" title="Monter">⬆️</button>
-                            <button class="btn btn-xs join-item" @click="moveGroupAtPath(item.path, 1)" :disabled="item.isLast" title="Descendre">⬇️</button>
-                            <button class="btn btn-xs join-item" @click="addNestedGroup(item.path)" title="Ajouter un sous-groupe">📁</button>
-                            <button class="btn btn-xs join-item" @click="openAddCellToGroupModal(item.path)" title="Ajouter une cellule">➕</button>
-                            <button class="btn btn-xs btn-error join-item" @click="deleteGroupAtPath(item.path)" title="Supprimer">🗑️</button>
+                            <button class="btn btn-xs join-item" :class="item.group.loop?.enabled ? 'btn-info' : ''" @click="openLoopConfigModal(item.path)" title="Configurer la boucle"><span class="iconify" data-icon="material-symbols-light:loop" style="font-size:1rem"></span></button>
+                            <button class="btn btn-xs join-item" :class="item.group.accordion ? 'btn-accent' : ''" @click="openGroupSettingsModal(item.path)" title="Paramètres du groupe"><span class="iconify" data-icon="material-symbols-light:settings" style="font-size:1rem"></span></button>
+                            <button class="btn btn-xs btn-success join-item" @click="runGroupAtPath(item.path)" :disabled="isLoading" title="Exécuter"><span class="iconify" data-icon="material-symbols-light:play-arrow" style="font-size:1rem"></span></button>
+                            <button class="btn btn-xs join-item" @click="moveGroupAtPath(item.path, -1)" :disabled="item.isFirst" title="Monter"><span class="iconify" data-icon="material-symbols-light:arrow-upward" style="font-size:1rem"></span></button>
+                            <button class="btn btn-xs join-item" @click="moveGroupAtPath(item.path, 1)" :disabled="item.isLast" title="Descendre"><span class="iconify" data-icon="material-symbols-light:arrow-downward" style="font-size:1rem"></span></button>
+                            <button class="btn btn-xs join-item" @click="addNestedGroup(item.path)" title="Ajouter un sous-groupe"><span class="iconify" data-icon="material-symbols-light:create-new-folder" style="font-size:1rem"></span></button>
+                            <button class="btn btn-xs join-item" @click="openAddCellToGroupModal(item.path)" title="Ajouter une cellule"><span class="iconify" data-icon="material-symbols-light:add" style="font-size:1rem"></span></button>
+                            <button class="btn btn-xs btn-error join-item" @click="deleteGroupAtPath(item.path)" title="Supprimer"><span class="iconify" data-icon="material-symbols-light:delete" style="font-size:1rem"></span></button>
                         </div>
                         <div class="dropdown hidden">
-                            <div tabindex="0" role="button" class="btn btn-xs">⋮</div>
+                            <div tabindex="0" role="button" class="btn btn-xs"><span class="iconify" data-icon="material-symbols-light:more-vert" style="font-size:1rem"></span></div>
                             <ul tabindex="-1" class="dropdown-content menu menu-xs bg-base-100 rounded-box z-[1] w-48 p-2 shadow-sm">
                                 <li><button @click="toggleGroupDirection(item.path)"><span x-text="item.group.direction === 'column' ? '⇵ Passer en ligne' : '⇄ Passer en colonne'"></span></button></li>
-                                <li><button @click="openLoopConfigModal(item.path)">🔁 Configurer la boucle</button></li>
-                                <li><button @click="openGroupSettingsModal(item.path)">⚙️ Paramètres du groupe</button></li>
-                                <li><button @click="runGroupAtPath(item.path)" :disabled="isLoading">▶️ Exécuter</button></li>
-                                <li><button @click="moveGroupAtPath(item.path, -1)" :disabled="item.isFirst">⬆️ Monter</button></li>
-                                <li><button @click="moveGroupAtPath(item.path, 1)" :disabled="item.isLast">⬇️ Descendre</button></li>
-                                <li><button @click="addNestedGroup(item.path)">📁 Ajouter un sous-groupe</button></li>
-                                <li><button @click="openAddCellToGroupModal(item.path)">➕ Ajouter une cellule</button></li>
-                                <li><button class="text-error" @click="deleteGroupAtPath(item.path)">🗑️ Supprimer</button></li>
+                                <li><button @click="openLoopConfigModal(item.path)"><span class="iconify" data-icon="material-symbols-light:loop" style="font-size:1rem"></span> Configurer la boucle</button></li>
+                                <li><button @click="openGroupSettingsModal(item.path)"><span class="iconify" data-icon="material-symbols-light:settings" style="font-size:1rem"></span> Paramètres du groupe</button></li>
+                                <li><button @click="runGroupAtPath(item.path)" :disabled="isLoading"><span class="iconify" data-icon="material-symbols-light:play-arrow" style="font-size:1rem"></span> Exécuter</button></li>
+                                <li><button @click="moveGroupAtPath(item.path, -1)" :disabled="item.isFirst"><span class="iconify" data-icon="material-symbols-light:arrow-upward" style="font-size:1rem"></span> Monter</button></li>
+                                <li><button @click="moveGroupAtPath(item.path, 1)" :disabled="item.isLast"><span class="iconify" data-icon="material-symbols-light:arrow-downward" style="font-size:1rem"></span> Descendre</button></li>
+                                <li><button @click="addNestedGroup(item.path)"><span class="iconify" data-icon="material-symbols-light:create-new-folder" style="font-size:1rem"></span> Ajouter un sous-groupe</button></li>
+                                <li><button @click="openAddCellToGroupModal(item.path)"><span class="iconify" data-icon="material-symbols-light:add" style="font-size:1rem"></span> Ajouter une cellule</button></li>
+                                <li><button class="text-error" @click="deleteGroupAtPath(item.path)"><span class="iconify" data-icon="material-symbols-light:delete" style="font-size:1rem"></span> Supprimer</button></li>
                             </ul>
                         </div>
                     </div>
@@ -321,7 +321,7 @@ export function generateAppHTML() {
     
     <div x-show="devMode" class="flex justify-center p-4">
         <button class="btn btn-primary btn-sm" @click="openAddGroupModal()">
-            ➕ Ajouter un groupe
+            <span class="iconify" data-icon="material-symbols-light:add" style="font-size:1rem"></span> Ajouter un groupe
         </button>
     </div>
 </div>
@@ -332,15 +332,15 @@ export function generateAppHTML() {
         <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-add-group-title"
              x-trap.noscroll="showAddGroupModal">
             <div class="flex items-center justify-between gap-2">
-                <h3 class="text-lg font-semibold" id="modal-add-group-title">➕ Ajouter un groupe</h3>
-                <button class="btn btn-sm btn-ghost" @click="showAddGroupModal = false" x-focus="showAddGroupModal">✕</button>
+                <h3 class="text-lg font-semibold flex items-center gap-2" id="modal-add-group-title"><span class="iconify" data-icon="material-symbols-light:add" style="font-size:1.25rem"></span> Ajouter un groupe</h3>
+                <button class="btn btn-sm btn-ghost" @click="showAddGroupModal = false" x-focus="showAddGroupModal"><span class="iconify" data-icon="material-symbols-light:close" style="font-size:1rem"></span></button>
             </div>
             <div class="mt-4">
                 <p class="text-sm text-base-content/60 mb-4">Choisissez le type de cellule pour le nouveau groupe :</p>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <template x-for="cellType in cellTypes" :key="cellType.type">
                         <button class="btn justify-start" @click="addGroup(cellType.type)">
-                            <span x-text="cellType.icon"></span>
+                            <span x-html="cellType.icon"></span>
                             <span x-text="cellType.label"></span>
                         </button>
                     </template>
@@ -356,8 +356,8 @@ export function generateAppHTML() {
         <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-db-engine-title"
              x-trap.noscroll="showDbEngineModal">
             <div class="flex items-center justify-between gap-2">
-                <h3 class="text-lg font-semibold" id="modal-db-engine-title">⚙️ Configuration job générale</h3>
-                <button class="btn btn-sm btn-ghost" @click="showDbEngineModal = false">✕</button>
+                <h3 class="text-lg font-semibold flex items-center gap-2" id="modal-db-engine-title"><span class="iconify" data-icon="material-symbols-light:settings" style="font-size:1.25rem"></span> Configuration job générale</h3>
+                <button class="btn btn-sm btn-ghost" @click="showDbEngineModal = false"><span class="iconify" data-icon="material-symbols-light:close" style="font-size:1rem"></span></button>
             </div>
             <div class="mt-4 space-y-4">
                 <p class="text-sm text-base-content/60">Choisissez le moteur SQL pour ce notebook :</p>
@@ -416,7 +416,7 @@ export function generateAppHTML() {
                 <div class="flex items-center justify-between gap-4 p-4 rounded-lg bg-base-200">
                     <div>
                         <h4 class="font-semibold flex items-center gap-2">
-                            <span class="iconify" data-icon="material-symbols:account-tree-outline" style="font-size: 1.25rem;"></span>
+                            <span class="iconify" data-icon="material-symbols-light:account-tree" style="font-size:1.25rem"></span>
                             DAG (graphe acyclique dirigé)
                         </h4>
                         <p class="text-sm text-base-content/60 mt-1">Les cellules dépendantes se rafraîchissent automatiquement.</p>
@@ -442,15 +442,15 @@ export function generateAppHTML() {
         <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-add-cell-title"
              x-trap.noscroll="addCellToGroupModal.open">
             <div class="flex items-center justify-between gap-2">
-                <h3 class="text-lg font-semibold" id="modal-add-cell-title">➕ Ajouter une cellule au groupe</h3>
-                <button class="btn btn-sm btn-ghost" @click="addCellToGroupModal.open = false" x-focus="addCellToGroupModal.open">✕</button>
+                <h3 class="text-lg font-semibold flex items-center gap-2" id="modal-add-cell-title"><span class="iconify" data-icon="material-symbols-light:add" style="font-size:1.25rem"></span> Ajouter une cellule au groupe</h3>
+                <button class="btn btn-sm btn-ghost" @click="addCellToGroupModal.open = false" x-focus="addCellToGroupModal.open"><span class="iconify" data-icon="material-symbols-light:close" style="font-size:1rem"></span></button>
             </div>
             <div class="mt-4">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <template x-for="cellType in cellTypes" :key="cellType.type">
                         <button class="btn justify-start" 
                                 @click="addCellToGroup(addCellToGroupModal.path ?? addCellToGroupModal.groupIndex, cellType.type)">
-                            <span x-text="cellType.icon"></span>
+                            <span x-html="cellType.icon"></span>
                             <span x-text="cellType.label"></span>
                         </button>
                     </template>
@@ -466,15 +466,15 @@ export function generateAppHTML() {
         <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-insert-group-title"
              x-trap.noscroll="insertGroupModal.open">
             <div class="flex items-center justify-between gap-2">
-                <h3 class="text-lg font-semibold" id="modal-insert-group-title">➕ Insérer un groupe à la position <span x-text="insertGroupModal.atIndex + 1"></span></h3>
-                <button class="btn btn-sm btn-ghost" @click="insertGroupModal.open = false" x-focus="insertGroupModal.open">✕</button>
+                <h3 class="text-lg font-semibold flex items-center gap-2" id="modal-insert-group-title"><span class="iconify" data-icon="material-symbols-light:add" style="font-size:1.25rem"></span> Insérer un groupe à la position <span x-text="insertGroupModal.atIndex + 1"></span></h3>
+                <button class="btn btn-sm btn-ghost" @click="insertGroupModal.open = false" x-focus="insertGroupModal.open"><span class="iconify" data-icon="material-symbols-light:close" style="font-size:1rem"></span></button>
             </div>
             <div class="mt-4">
                 <p class="text-sm text-base-content/60 mb-4">Choisissez le type de cellule pour le nouveau groupe :</p>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <template x-for="cellType in cellTypes" :key="cellType.type">
                         <button class="btn justify-start" @click="insertGroupAt(insertGroupModal.atIndex, cellType.type)">
-                            <span x-text="cellType.icon"></span>
+                            <span x-html="cellType.icon"></span>
                             <span x-text="cellType.label"></span>
                         </button>
                     </template>
@@ -490,14 +490,14 @@ export function generateAppHTML() {
         <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-insert-cell-title"
              x-trap.noscroll="insertCellModal.open">
             <div class="flex items-center justify-between gap-2">
-                <h3 class="text-lg font-semibold" id="modal-insert-cell-title">➕ Insérer une cellule à la position <span x-text="insertCellModal.atCellIndex + 1"></span></h3>
-                <button class="btn btn-sm btn-ghost" @click="insertCellModal.open = false" x-focus="insertCellModal.open">✕</button>
+                <h3 class="text-lg font-semibold flex items-center gap-2" id="modal-insert-cell-title"><span class="iconify" data-icon="material-symbols-light:add" style="font-size:1.25rem"></span> Insérer une cellule à la position <span x-text="insertCellModal.atCellIndex + 1"></span></h3>
+                <button class="btn btn-sm btn-ghost" @click="insertCellModal.open = false" x-focus="insertCellModal.open"><span class="iconify" data-icon="material-symbols-light:close" style="font-size:1rem"></span></button>
             </div>
             <div class="mt-4">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <template x-for="cellType in cellTypes" :key="cellType.type">
                         <button class="btn justify-start" @click="insertCellAt(insertCellModal.groupIndex, insertCellModal.atCellIndex, cellType.type)">
-                            <span x-text="cellType.icon"></span>
+                            <span x-html="cellType.icon"></span>
                             <span x-text="cellType.label"></span>
                         </button>
                     </template>
@@ -513,8 +513,8 @@ export function generateAppHTML() {
         <div class="modal-box max-w-2xl" role="dialog" aria-modal="true" aria-labelledby="modal-loop-config-title"
              x-trap.noscroll="true">
             <div class="flex items-center justify-between gap-2">
-                <h3 class="text-lg font-semibold" id="modal-loop-config-title">🔁 Configuration de la boucle</h3>
-                <button class="btn btn-sm btn-ghost" @click="loopConfigModal.open = false">✕</button>
+                <h3 class="text-lg font-semibold flex items-center gap-2" id="modal-loop-config-title"><span class="iconify" data-icon="material-symbols-light:loop" style="font-size:1.25rem"></span> Configuration de la boucle</h3>
+                <button class="btn btn-sm btn-ghost" @click="loopConfigModal.open = false"><span class="iconify" data-icon="material-symbols-light:close" style="font-size:1rem"></span></button>
             </div>
             <div class="mt-4">
                 <div class="form-control mb-4">
@@ -544,7 +544,7 @@ export function generateAppHTML() {
                     
                     <div class="mt-2 mb-4">
                         <button class="btn btn-sm btn-outline" @click="getGroupAtPath(loopConfigModal.path).loop.query = getDefaultLoopQuery()">
-                            📝 Requête par défaut
+                            <span class="iconify" data-icon="material-symbols-light:article" style="font-size:1rem"></span> Requête par défaut
                         </button>
                     </div>
 
@@ -554,7 +554,7 @@ export function generateAppHTML() {
                     <div class="form-control mb-4">
                         <label class="label cursor-pointer justify-start gap-3">
                             <input type="checkbox" class="toggle toggle-secondary" x-model="getGroupAtPath(loopConfigModal.path).loop.zip" />
-                            <span class="label-text">📦 Zipper les fichiers générés</span>
+                            <span class="label-text"><span class="iconify" data-icon="material-symbols-light:archive" style="font-size:1rem"></span> Zipper les fichiers générés</span>
                         </label>
                         <p class="text-xs text-base-content/60 ml-12">Les fichiers produits (SQL COPY, Publipostage Word, pdfme) seront regroupés dans un ZIP à la fin de la boucle.</p>
                     </div>
@@ -572,7 +572,7 @@ export function generateAppHTML() {
                         
                         <div class="mt-2">
                             <button class="btn btn-sm btn-outline" @click="getGroupAtPath(loopConfigModal.path).loop.zipQuery = getDefaultZipQuery()">
-                                📝 Requête par défaut
+                                <span class="iconify" data-icon="material-symbols-light:article" style="font-size:1rem"></span> Requête par défaut
                             </button>
                         </div>
                     </div>
@@ -591,8 +591,8 @@ export function generateAppHTML() {
         <div class="modal-box max-w-lg" role="dialog" aria-modal="true" aria-labelledby="modal-group-settings-title"
              x-trap.noscroll="groupSettingsModal.open">
             <div class="flex items-center justify-between gap-2">
-                <h3 class="text-lg font-semibold" id="modal-group-settings-title">⚙️ Paramètres du groupe</h3>
-                <button class="btn btn-sm btn-ghost" @click="groupSettingsModal.open = false">✕</button>
+                <h3 class="text-lg font-semibold flex items-center gap-2" id="modal-group-settings-title"><span class="iconify" data-icon="material-symbols-light:settings" style="font-size:1.25rem"></span> Paramètres du groupe</h3>
+                <button class="btn btn-sm btn-ghost" @click="groupSettingsModal.open = false"><span class="iconify" data-icon="material-symbols-light:close" style="font-size:1rem"></span></button>
             </div>
             <div class="mt-4">
                 <div class="form-control mb-4">
@@ -662,8 +662,8 @@ export function generateAppHTML() {
                             <select class="select select-bordered select-sm w-full" 
                                     :value="(ConfigManager.getGroupIfQuery(getGroupAtPath(groupSettingsModal.path))?.engine || 'sql')"
                                     @change="(() => { const g = getGroupAtPath(groupSettingsModal.path); const q = ConfigManager.ensureGroupQueries(g); if (q) { g._cmEditor_ifQuery?.destroy(); g._cmEditor_ifQuery = null; q.engine = $event.target.value; } })()">
-                                <option value="sql">🗄️ SQL</option>
-                                <option value="js">⚡ JavaScript</option>
+                                <option value="sql">SQL</option>
+                                <option value="js">JavaScript</option>
                             </select>
                         </div>
                         <div class="form-control">
@@ -674,7 +674,7 @@ export function generateAppHTML() {
                         </div>
                         <div class="mt-2 flex gap-2">
                             <button type="button" class="btn btn-sm btn-outline" @click="testGroupIfQuery(groupSettingsModal.path)" :disabled="!ConfigManager.getGroupIfQuery(getGroupAtPath(groupSettingsModal.path)) || isLoading">
-                                ▶️ Tester
+                                <span class="iconify" data-icon="material-symbols-light:play-arrow" style="font-size:1rem"></span> Tester
                             </button>
                         </div>
                     </div>
@@ -693,9 +693,9 @@ export function generateAppHTML() {
         <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-cell-config-title"
              x-trap.noscroll="cellConfigModal.open">
             <form method="dialog">
-                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" @click="closeCellConfig()">✕</button>
+                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" @click="closeCellConfig()"><span class="iconify" data-icon="material-symbols-light:close" style="font-size:1rem"></span></button>
             </form>
-            <h3 class="text-lg font-bold" id="modal-cell-config-title">⚙️ Configuration de la cellule</h3>
+            <h3 class="text-lg font-bold flex items-center gap-2" id="modal-cell-config-title"><span class="iconify" data-icon="material-symbols-light:settings" style="font-size:1.25rem"></span> Configuration de la cellule</h3>
             <div class="mt-4 space-y-4" :key="'cellcfg-'+(cellConfigModal.path?.join?.('-')??'')+'-'+(cellConfigModal.cellIndex??'')"
                  x-init="(function(){ const c = getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex); if (c?.type) CellConfigService.ensureCellFromSchema(c, c.type, { baseName: c.name }); })()"
                  x-show="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex)">
@@ -704,17 +704,17 @@ export function generateAppHTML() {
                     <select class="select select-bordered select-sm w-full" x-ref="typeSelect"
                             x-effect="if (cellConfigModal.open && cellConfigModal.path !== null) $refs.typeSelect.value = getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex)?.type"
                             @change="(function(){ const c=getCellAtPath(cellConfigModal.path,cellConfigModal.cellIndex); const oldType=c?.type; c.type=$event.target.value; onCellTypeChange(cellConfigModal.path,cellConfigModal.cellIndex,oldType); })()">
-                        <option value="markdown">📝 Markdown</option>
-                        <option value="source">📄 Source</option>
-                        <option value="uiParameter">🎛️ Paramètre UI</option>
-                        <option value="buttonRunNextCells">🚀 Bouton Exécuter</option>
-                        <option value="sqlRecursiveParse">🗄️ SQL</option>
-                        <option value="table">📊 Tableau</option>
-                        <option value="iframe">🖼️ HTML/Iframe</option>
-                        <option value="sqlStat">💯 Stat SQL (daisyui)</option>
-                        <option value="publipostageWord">📄 Publipostage Word</option>
+                        <option value="markdown">Markdown</option>
+                        <option value="source">Source</option>
+                        <option value="uiParameter">Paramètre UI</option>
+                        <option value="buttonRunNextCells">Bouton Exécuter</option>
+                        <option value="sqlRecursiveParse">SQL</option>
+                        <option value="table">Tableau</option>
+                        <option value="iframe">HTML/Iframe</option>
+                        <option value="sqlStat">Stat SQL (daisyui)</option>
+                        <option value="publipostageWord">Publipostage Word</option>
                         <option value="pdfme">PDF (pdfme)</option>
-                        <option value="perspective">🔍 Perspective Viewer</option>
+                        <option value="perspective">Perspective Viewer</option>
                     </select>
                 </div>
 
@@ -853,9 +853,9 @@ export function generateAppHTML() {
             <!-- Header sticky -->
             <div class="sticky top-0 z-10 flex items-center justify-between bg-primary text-primary-content px-6 py-4 shadow-md">
                 <h3 class="text-xl font-bold flex items-center gap-2" id="modal-child-group-title">
-                    <span class="iconify" data-icon="material-symbols:export-notes-outline-sharp" style="font-size: 1.5rem;"></span>
+                    <span class="iconify" data-icon="material-symbols-light:upload-file" style="font-size:1.5rem"></span>
                 </h3>
-                <button class="btn btn-sm btn-circle btn-ghost text-primary-content hover:bg-primary-focus" @click="closeChildGroupModal()">✕</button>
+                <button class="btn btn-sm btn-circle btn-ghost text-primary-content hover:bg-primary-focus" @click="closeChildGroupModal()"><span class="iconify" data-icon="material-symbols-light:close" style="font-size:1rem"></span></button>
             </div>
             
             <!-- Contenu scrollable -->
@@ -872,10 +872,10 @@ export function generateAppHTML() {
                                             :title="childGroupModal.group.direction === 'column' ? 'Passer en ligne' : 'Passer en colonne'">
                                         <span x-text="childGroupModal.group.direction === 'column' ? '↕️' : '↔️'"></span>
                                     </button>
-                                    <button class="btn btn-xs btn-success join-item" @click="runGroupAtPath([-1])" :disabled="isLoading" title="Exécuter">▶️</button>
-                                    <button class="btn btn-xs join-item" @click="addNestedGroup([-1])" title="Ajouter un sous-groupe">📁</button>
-                                    <button class="btn btn-xs join-item" @click="openAddCellToGroupModal([-1])" title="Ajouter une cellule">➕</button>
-                                    <button class="btn btn-xs btn-error join-item" @click="deleteChildGroupModal()" title="Supprimer le groupe">🗑️</button>
+                                    <button class="btn btn-xs btn-success join-item" @click="runGroupAtPath([-1])" :disabled="isLoading" title="Exécuter"><span class="iconify" data-icon="material-symbols-light:play-arrow" style="font-size:1rem"></span></button>
+                                    <button class="btn btn-xs join-item" @click="addNestedGroup([-1])" title="Ajouter un sous-groupe"><span class="iconify" data-icon="material-symbols-light:create-new-folder" style="font-size:1rem"></span></button>
+                                    <button class="btn btn-xs join-item" @click="openAddCellToGroupModal([-1])" title="Ajouter une cellule"><span class="iconify" data-icon="material-symbols-light:add" style="font-size:1rem"></span></button>
+                                    <button class="btn btn-xs btn-error join-item" @click="deleteChildGroupModal()" title="Supprimer le groupe"><span class="iconify" data-icon="material-symbols-light:delete" style="font-size:1rem"></span></button>
                                 </div>
                             </div>
                             
@@ -897,17 +897,17 @@ export function generateAppHTML() {
                                             <!-- Header de cellule -->
                                             <div class="flex justify-between items-center py-2 px-4 bg-base-200 border-b border-base-300" x-show="devMode">
                                                 <div class="flex items-center gap-2 text-sm text-base-content/60">
-                                                    <span class="text-base" x-text="getCellIcon(cellItem.cell.type)"></span>
+                                                    <span x-html="getCellIcon(cellItem.cell.type)"></span>
                                                     <span x-text="cellItem.cell.type"></span>
-                                                    <span x-show="cellItem.cell._status === 'running'" style="color: var(--warning);">⏳</span>
+                                                    <span x-show="cellItem.cell._status === 'running'" class="loading loading-spinner loading-xs" style="color:var(--warning)"></span>
                                                 </div>
                                                 <div class="flex gap-1 items-center">
                                                     <div class="join">
-                                                        <button class="btn btn-xs btn-success join-item" @click="runCellAt([-1], cellItem.originalIndex)" :disabled="isLoading" title="Exécuter">▶️</button>
-                                                        <button class="btn btn-xs join-item" @click="openCellConfig([-1], cellItem.originalIndex)" title="Configurer">⚙️</button>
-                                                        <button class="btn btn-xs join-item" @click="moveItemInGroup([-1], 'cell', cellItem.originalIndex, -1)" :disabled="isFirstInGroup(childGroupModal.group, 'cell', cellItem.originalIndex)" title="Déplacer à gauche">⬅️</button>
-                                                        <button class="btn btn-xs join-item" @click="moveItemInGroup([-1], 'cell', cellItem.originalIndex, 1)" :disabled="isLastInGroup(childGroupModal.group, 'cell', cellItem.originalIndex)" title="Déplacer à droite">➡️</button>
-                                                        <button class="btn btn-xs btn-error join-item" @click="deleteCellAt([-1], cellItem.originalIndex)" title="Supprimer">🗑️</button>
+                                                        <button class="btn btn-xs btn-success join-item" @click="runCellAt([-1], cellItem.originalIndex)" :disabled="isLoading" title="Exécuter"><span class="iconify" data-icon="material-symbols-light:play-arrow" style="font-size:1rem"></span></button>
+                                                        <button class="btn btn-xs join-item" @click="openCellConfig([-1], cellItem.originalIndex)" title="Configurer"><span class="iconify" data-icon="material-symbols-light:settings" style="font-size:1rem"></span></button>
+                                                        <button class="btn btn-xs join-item" @click="moveItemInGroup([-1], 'cell', cellItem.originalIndex, -1)" :disabled="isFirstInGroup(childGroupModal.group, 'cell', cellItem.originalIndex)" title="Déplacer à gauche"><span class="iconify" data-icon="material-symbols-light:arrow-back" style="font-size:1rem"></span></button>
+                                                        <button class="btn btn-xs join-item" @click="moveItemInGroup([-1], 'cell', cellItem.originalIndex, 1)" :disabled="isLastInGroup(childGroupModal.group, 'cell', cellItem.originalIndex)" title="Déplacer à droite"><span class="iconify" data-icon="material-symbols-light:arrow-forward" style="font-size:1rem"></span></button>
+                                                        <button class="btn btn-xs btn-error join-item" @click="deleteCellAt([-1], cellItem.originalIndex)" title="Supprimer"><span class="iconify" data-icon="material-symbols-light:delete" style="font-size:1rem"></span></button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -944,7 +944,7 @@ export function generateAppHTML() {
     <!-- Sélecteur de thème (devMode uniquement) -->
         <div class="dropdown dropdown-top" x-show="devMode">
             <div tabindex="0"  class="btn btn-sm  btn-ghost">
-                <span class="iconify" data-icon="material-symbols:palette" style="font-size: 1.25rem;"></span>
+                <span class="iconify" data-icon="material-symbols-light:palette" style="font-size:1.25rem"></span>
             </div>
             <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-40 p-2 shadow max-h-60 overflow-y-auto">
                 <template x-for="themeName in availableThemes" :key="themeName">
@@ -962,7 +962,7 @@ export function generateAppHTML() {
     </button>
     <!-- Bouton Dev/View -->
     <button class="btn btn-sm" :class="devMode ? 'btn-soft' : 'btn-ghost'" @click="devMode = !devMode">
-            <span class="iconify" :data-icon="devMode ? 'material-symbols:eye-tracking-outline-sharp' : 'material-symbols:settings-outline'" style="font-size: 1.25rem;"></span>
+            <span class="iconify" :data-icon="devMode ? 'material-symbols-light:visibility' : 'material-symbols-light:settings'" style="font-size:1.25rem"></span>
     </button>
 </div>
 
@@ -992,7 +992,7 @@ export function generateAppHTML() {
         <!-- Header -->
         <div class="flex items-center justify-between p-4 border-b border-base-300">
             <h3 class="text-lg font-semibold" x-text="$store.templateModal.getModalTitle()"></h3>
-            <button @click="$store.templateModal.close()" class="btn btn-ghost btn-sm btn-circle">✕</button>
+            <button @click="$store.templateModal.close()" class="btn btn-ghost btn-sm btn-circle"><span class="iconify" data-icon="material-symbols-light:close" style="font-size:1rem"></span></button>
         </div>
         
         <!-- Recherche -->
@@ -1043,12 +1043,12 @@ export function generateAppHTML() {
              x-trap.noscroll="exportModal.show">
             <div class="flex items-center justify-between gap-2">
                 <h3 class="text-lg font-semibold" id="modal-export-title">
-                    <span x-show="exportModal.type === 'gist'">🐙 Partager via GitHub Gist</span>
-                    <span x-show="exportModal.type === 'json'">📦 Export JSON</span>
-                    <span x-show="exportModal.type === 'base64'">🔐 Export Base64</span>
-                    <span x-show="exportModal.type === 'html'">💾 Export HTML</span>
+                    <span x-show="exportModal.type === 'gist'" class="flex items-center gap-2"><span class="iconify" data-icon="material-symbols-light:share" style="font-size:1.25rem"></span> Partager via GitHub Gist</span>
+                    <span x-show="exportModal.type === 'json'" class="flex items-center gap-2"><span class="iconify" data-icon="material-symbols-light:data-object" style="font-size:1.25rem"></span> Export JSON</span>
+                    <span x-show="exportModal.type === 'base64'" class="flex items-center gap-2"><span class="iconify" data-icon="material-symbols-light:lock" style="font-size:1.25rem"></span> Export Base64</span>
+                    <span x-show="exportModal.type === 'html'" class="flex items-center gap-2"><span class="iconify" data-icon="material-symbols-light:save" style="font-size:1.25rem"></span> Export HTML</span>
                 </h3>
-                <button class="btn btn-sm btn-ghost" @click="cancelExport()">✕</button>
+                <button class="btn btn-sm btn-ghost" @click="cancelExport()"><span class="iconify" data-icon="material-symbols-light:close" style="font-size:1rem"></span></button>
             </div>
             <div class="mt-4 space-y-4">
                 <!-- Description (seulement pour Gist) -->
@@ -1116,7 +1116,7 @@ export function generateAppHTML() {
                         <input type="checkbox" class="toggle toggle-primary" x-model="exportModal.encryptGist"
                             @change="if (exportModal.encryptGist && !exportModal.gistPassphrase) exportModal.gistPassphrase = GistEncrypt.generatePassphrase()" />
                         <div>
-                            <span class="label-text font-semibold">🔐 Chiffrer la configuration</span>
+                            <span class="label-text font-semibold flex items-center gap-2"><span class="iconify" data-icon="material-symbols-light:lock" style="font-size:1rem"></span> Chiffrer la configuration</span>
                             <p class="text-xs text-base-content/60">Chiffre la config et les datachunks avec un mot de passe</p>
                         </div>
                     </label>
@@ -1159,8 +1159,8 @@ export function generateAppHTML() {
         <div class="modal-box max-w-lg" role="dialog" aria-modal="true" aria-labelledby="modal-github-token-title"
              x-trap.noscroll="showGistTokenModal">
             <div class="flex items-center justify-between gap-2">
-                <h3 class="text-lg font-semibold" id="modal-github-token-title">🐙 Configuration GitHub</h3>
-                <button class="btn btn-sm btn-ghost" @click="cancelGithubToken()">✕</button>
+                <h3 class="text-lg font-semibold flex items-center gap-2" id="modal-github-token-title"><span class="iconify" data-icon="material-symbols-light:settings" style="font-size:1.25rem"></span> Configuration GitHub</h3>
+                <button class="btn btn-sm btn-ghost" @click="cancelGithubToken()"><span class="iconify" data-icon="material-symbols-light:close" style="font-size:1rem"></span></button>
             </div>
             <div class="mt-4 space-y-4">
                 <p class="text-sm text-base-content/60">
@@ -1202,8 +1202,8 @@ export function generateAppHTML() {
         <div class="modal-box max-w-2xl" role="dialog" aria-modal="true" aria-labelledby="modal-gist-result-title"
              x-trap.noscroll="showGistModal">
             <div class="flex items-center justify-between gap-2">
-                <h3 class="text-lg font-semibold" id="modal-gist-result-title">✅ Gist créé avec succès</h3>
-                <button class="btn btn-sm btn-ghost" @click="closeGistModal()">✕</button>
+                <h3 class="text-lg font-semibold flex items-center gap-2" id="modal-gist-result-title"><span class="iconify text-success" data-icon="material-symbols-light:check-circle" style="font-size:1.25rem"></span> Gist créé avec succès</h3>
+                <button class="btn btn-sm btn-ghost" @click="closeGistModal()"><span class="iconify" data-icon="material-symbols-light:close" style="font-size:1rem"></span></button>
             </div>
             <div class="mt-4 space-y-4">
                 <p class="text-sm text-base-content/60">
@@ -1217,7 +1217,7 @@ export function generateAppHTML() {
                             readonly 
                             class="input input-bordered join-item flex-1 font-mono text-sm"
                             @click="$event.target.select()">
-                        <button @click="copyGistUrl()" class="btn join-item btn-primary">📋 Copier</button>
+                        <button @click="copyGistUrl()" class="btn join-item btn-primary"><span class="iconify" data-icon="material-symbols-light:content-copy" style="font-size:1rem"></span> Copier</button>
                     </div>
                 </div>
                 <div class="alert alert-info">
@@ -1239,7 +1239,7 @@ export function generateAppHTML() {
                         <input type="text" :value="gistPassphraseToShare" readonly
                             class="input input-bordered join-item flex-1 font-mono text-sm"
                             @click="$event.target.select()">
-                        <button @click="copyGistPassphrase()" class="btn join-item btn-primary">📋 Copier la mot de passe</button>
+                        <button @click="copyGistPassphrase()" class="btn join-item btn-primary"><span class="iconify" data-icon="material-symbols-light:content-copy" style="font-size:1rem"></span> Copier le mot de passe</button>
                     </div>
                 </div>
             </div>
@@ -1257,8 +1257,8 @@ export function generateAppHTML() {
         <div class="modal-box max-w-md" role="dialog" aria-modal="true" aria-labelledby="modal-json-passphrase-title"
              x-trap.noscroll="showJsonPassphraseModal">
             <div class="flex items-center justify-between gap-2">
-                <h3 class="text-lg font-semibold" id="modal-json-passphrase-title">🔐 Fichier JSON chiffré</h3>
-                <button class="btn btn-sm btn-ghost" @click="cancelJsonPassphraseModal()">✕</button>
+                <h3 class="text-lg font-semibold flex items-center gap-2" id="modal-json-passphrase-title"><span class="iconify" data-icon="material-symbols-light:lock" style="font-size:1.25rem"></span> Fichier JSON chiffré</h3>
+                <button class="btn btn-sm btn-ghost" @click="cancelJsonPassphraseModal()"><span class="iconify" data-icon="material-symbols-light:close" style="font-size:1rem"></span></button>
             </div>
             <p class="py-2 text-sm text-base-content/70">
                 Ce fichier est protégé par un mot de passe. Entrez-la pour charger la configuration.

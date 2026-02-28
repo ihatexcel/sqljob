@@ -8,27 +8,27 @@ import { CELL_BODY_FAMILIES } from './CellBodyRenderer'
                 return `
                     <div class="flex justify-between items-center py-2 px-4 bg-base-200 border-b border-base-300 cell-header-responsive" x-show="devMode">
                         <div class="flex items-center gap-2 text-sm text-base-content/60">
-                            <span class="text-base" x-text="getCellIcon(cellItem.cell.type)"></span>
+                            <span x-html="getCellIcon(cellItem.cell.type)"></span>
                             <span x-text="cellItem.cell.type"></span>
-                            <span x-show="cellItem.cell._status === 'running'" style="color: var(--warning);">⏳</span>
+                            <span x-show="cellItem.cell._status === 'running'" class="loading loading-spinner loading-xs" style="color:var(--warning)"></span>
                         </div>
                         <div class="flex gap-1 items-center">
                             <div class="join">
-                                <button class="btn btn-xs btn-success join-item" @click="runCellAt(${pathExpr}, ${cellIdxExpr})" :disabled="isLoading" title="Exécuter">▶️</button>
-                                <button class="btn btn-xs join-item" @click="openCellConfig(${pathExpr}, ${cellIdxExpr})" title="Configurer">⚙️</button>
-                                <button class="btn btn-xs join-item" @click="openChildGroupModal(${pathExpr}, ${cellIdxExpr})" title="Groupe enfant"><span class="iconify" data-icon="material-symbols:add-notes-outline-sharp" style="font-size: 1.0rem;"></span></button>
-                                <button class="btn btn-xs join-item" @click="moveItemInGroup(${pathExpr}, 'cell', ${cellIdxExpr}, -1)" :disabled="isFirstInGroup(${groupExpr}, 'cell', ${cellIdxExpr})" title="Déplacer à gauche">⬅️</button>
-                                <button class="btn btn-xs join-item" @click="moveItemInGroup(${pathExpr}, 'cell', ${cellIdxExpr}, 1)" :disabled="isLastInGroup(${groupExpr}, 'cell', ${cellIdxExpr})" title="Déplacer à droite">➡️</button>
-                                <button class="btn btn-xs btn-error join-item" @click="deleteCellAt(${pathExpr}, ${cellIdxExpr})" title="Supprimer">🗑️</button>
+                                <button class="btn btn-xs btn-success join-item" @click="runCellAt(${pathExpr}, ${cellIdxExpr})" :disabled="isLoading" title="Exécuter"><span class="iconify" data-icon="material-symbols-light:play-arrow" style="font-size:1rem"></span></button>
+                                <button class="btn btn-xs join-item" @click="openCellConfig(${pathExpr}, ${cellIdxExpr})" title="Configurer"><span class="iconify" data-icon="material-symbols-light:settings" style="font-size:1rem"></span></button>
+                                <button class="btn btn-xs join-item" @click="openChildGroupModal(${pathExpr}, ${cellIdxExpr})" title="Groupe enfant"><span class="iconify" data-icon="material-symbols-light:note-add" style="font-size:1rem"></span></button>
+                                <button class="btn btn-xs join-item" @click="moveItemInGroup(${pathExpr}, 'cell', ${cellIdxExpr}, -1)" :disabled="isFirstInGroup(${groupExpr}, 'cell', ${cellIdxExpr})" title="Déplacer à gauche"><span class="iconify" data-icon="material-symbols-light:arrow-back" style="font-size:1rem"></span></button>
+                                <button class="btn btn-xs join-item" @click="moveItemInGroup(${pathExpr}, 'cell', ${cellIdxExpr}, 1)" :disabled="isLastInGroup(${groupExpr}, 'cell', ${cellIdxExpr})" title="Déplacer à droite"><span class="iconify" data-icon="material-symbols-light:arrow-forward" style="font-size:1rem"></span></button>
+                                <button class="btn btn-xs btn-error join-item" @click="deleteCellAt(${pathExpr}, ${cellIdxExpr})" title="Supprimer"><span class="iconify" data-icon="material-symbols-light:delete" style="font-size:1rem"></span></button>
                             </div>
                             <div class="dropdown dropdown-end hidden">
-                                <div tabindex="0" role="button" class="btn btn-xs">⋮</div>
+                                <div tabindex="0" role="button" class="btn btn-xs"><span class="iconify" data-icon="material-symbols-light:more-vert" style="font-size:1rem"></span></div>
                                 <ul tabindex="-1" class="dropdown-content menu menu-xs bg-base-100 rounded-box z-[1] w-48 p-2 shadow-sm">
-                                    <li><button @click="runCellAt(${pathExpr}, ${cellIdxExpr})" :disabled="isLoading">▶️ Exécuter</button></li>
-                                    <li><button @click="openCellConfig(${pathExpr}, ${cellIdxExpr})">⚙️ Configurer</button></li>
-                                    <li><button @click="moveItemInGroup(${pathExpr}, 'cell', ${cellIdxExpr}, -1)" :disabled="isFirstInGroup(${groupExpr}, 'cell', ${cellIdxExpr})">⬅️ Déplacer à gauche</button></li>
-                                    <li><button @click="moveItemInGroup(${pathExpr}, 'cell', ${cellIdxExpr}, 1)" :disabled="isLastInGroup(${groupExpr}, 'cell', ${cellIdxExpr})">➡️ Déplacer à droite</button></li>
-                                    <li><button class="text-error" @click="deleteCellAt(${pathExpr}, ${cellIdxExpr})">🗑️ Supprimer</button></li>
+                                    <li><button @click="runCellAt(${pathExpr}, ${cellIdxExpr})" :disabled="isLoading"><span class="iconify" data-icon="material-symbols-light:play-arrow" style="font-size:1rem"></span> Exécuter</button></li>
+                                    <li><button @click="openCellConfig(${pathExpr}, ${cellIdxExpr})"><span class="iconify" data-icon="material-symbols-light:settings" style="font-size:1rem"></span> Configurer</button></li>
+                                    <li><button @click="moveItemInGroup(${pathExpr}, 'cell', ${cellIdxExpr}, -1)" :disabled="isFirstInGroup(${groupExpr}, 'cell', ${cellIdxExpr})"><span class="iconify" data-icon="material-symbols-light:arrow-back" style="font-size:1rem"></span> Déplacer à gauche</button></li>
+                                    <li><button @click="moveItemInGroup(${pathExpr}, 'cell', ${cellIdxExpr}, 1)" :disabled="isLastInGroup(${groupExpr}, 'cell', ${cellIdxExpr})"><span class="iconify" data-icon="material-symbols-light:arrow-forward" style="font-size:1rem"></span> Déplacer à droite</button></li>
+                                    <li><button class="text-error" @click="deleteCellAt(${pathExpr}, ${cellIdxExpr})"><span class="iconify" data-icon="material-symbols-light:delete" style="font-size:1rem"></span> Supprimer</button></li>
                                 </ul>
                             </div>
                         </div>
@@ -82,7 +82,7 @@ import { CELL_BODY_FAMILIES } from './CellBodyRenderer'
                                 <button class="btn btn-sm gap-0"
                                         @click="openChildGroupModal(${pathExpr}, ${cellIdxExpr})"
                                         title="Ouvrir le groupe enfant">
-                                    <span class="iconify" data-icon="material-symbols:export-notes-outline-sharp" style="font-size: 1.0rem;"></span>
+                                    <span class="iconify" data-icon="material-symbols-light:upload-file" style="font-size:1rem"></span>
                                 </button>
                             </div>
                         </template>

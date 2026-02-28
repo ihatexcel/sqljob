@@ -21,7 +21,7 @@ export const CELL_TYPE_SCHEMAS = {
                     queryCount: 1,
                     queryNames: ['main'],
                     specificParams: [
-                        { key: 'queries.main.engine', label: 'Type de langage', tooltip: "Texte: Markdown saisi directement | SQL: requête retournant du Markdown | JS: expression JavaScript retournant du Markdown", inputType: 'select', options: [{ value: 'text', label: '📝Texte' }, { value: 'sql', label: '🗄️SQL' }, { value: 'js', label: '⚡JavaScript' }] },
+                        { key: 'queries.main.engine', label: 'Type de langage', tooltip: "Texte: Markdown saisi directement | SQL: requête retournant du Markdown | JS: expression JavaScript retournant du Markdown", inputType: 'select', options: [{ value: 'text', label: 'Texte' }, { value: 'sql', label: 'SQL' }, { value: 'js', label: 'JavaScript' }] },
                         { key: 'queries.main.clientVisible', label: "Afficher l'éditeur en mode client", inputType: 'checkbox' }
                     ],
                     defaults: { queries: [{ name: 'main', sql: '# Nouvelle section', engine: 'text', clientVisible: false }] },
@@ -57,7 +57,7 @@ export const CELL_TYPE_SCHEMAS = {
                         json: { xlsx: { options: { type: 'array', raw: false, dateNF: 'dd/mm/yyyy', cellDates: true }, toCsvOptions: { dateNF: 'dd/mm/yyyy', FS: ',', RS: '\n' }, sheetSelection: { type: { auto: true }, index: 0, name: '' } } }
                     },
                     bodyFamily: 'fileDropZone',
-                    bodyConfig: { fileSlot: 'source', fileKey: '_fileName', fileBase64Key: 'fileBase64', fileFileNameKey: 'fileName', accept: '.csv,.parquet,.xlsx,.xls', inputId: 'fileInput_', emptyIcon: '📁', emptyTitleKey: 'title', emptySubtitle: "→ {name}", handlers: { drop: 'handleSingleSourceDrop', select: 'handleSingleSourceFileSelect', remove: 'removeSingleSourceFile', download: 'downloadSourceFile' }, minHeight: '80px', showQueryInDevMode: true },
+                    bodyConfig: { fileSlot: 'source', fileKey: '_fileName', fileBase64Key: 'fileBase64', fileFileNameKey: 'fileName', accept: '.csv,.parquet,.xlsx,.xls', inputId: 'fileInput_', emptyIcon: 'material-symbols-light:create-new-folder', emptyTitleKey: 'title', emptySubtitle: "→ {name}", handlers: { drop: 'handleSingleSourceDrop', select: 'handleSingleSourceFileSelect', remove: 'removeSingleSourceFile', download: 'downloadSourceFile' }, minHeight: '80px', showQueryInDevMode: true },
                     bodyDisplay: { showSkeleton: { when: 'running', sourceLoading: true } }
                 },
                 buttonRunNextCells: {
@@ -68,9 +68,9 @@ export const CELL_TYPE_SCHEMAS = {
                     exportFields: ['buttonLabel'],
                     commonParams: ['name', 'buttonLabel'],
                     specificParams: [],
-                    defaults: { buttonLabel: '▶️ Exécuter' },
+                    defaults: { buttonLabel: 'Exécuter' },
                     bodyFamily: 'buttonRun',
-                    bodyConfig: { defaultLabel: '▶️ Exécuter', action: 'runCellsAfter' }
+                    bodyConfig: { defaultLabel: 'Exécuter', action: 'runCellsAfter' }
                 },
                 sqlRecursiveParse: {
                     executeHandler: 'executeSqlRecursiveParseCell',
@@ -116,7 +116,7 @@ export const CELL_TYPE_SCHEMAS = {
                     queryCount: 1,
                     queryNames: ['main'],
                     specificParams: [
-                        { key: 'queries.main.engine', label: 'Type de langage', tooltip: "SQL: requête retournant du HTML | JS: retourne une chaîne HTML | Texte: HTML saisi directement", inputType: 'select', options: [{ value: 'sql', label: '🗄️SQL' }, { value: 'js', label: '⚡JavaScript' }, { value: 'text', label: '📝Texte' }] },
+                        { key: 'queries.main.engine', label: 'Type de langage', tooltip: "SQL: requête retournant du HTML | JS: retourne une chaîne HTML | Texte: HTML saisi directement", inputType: 'select', options: [{ value: 'sql', label: 'SQL' }, { value: 'js', label: 'JavaScript' }, { value: 'text', label: 'Texte' }] },
                         { key: 'queries.main.clientVisible', label: "Afficher l'éditeur SQL en mode client", tooltip: "Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur. En mode client, seul le résultat sera affiché.", inputType: 'checkbox' }
                     ],
                     defaults: { queries: [{ name: 'main', sql: '<html><body><h1>Hello</h1></body></html>', engine: 'text', clientVisible: false }] },
@@ -157,12 +157,12 @@ export const CELL_TYPE_SCHEMAS = {
                     titleLabel: "Libellé",
                     titleTooltip: "Texte affiché à gauche du champ de saisie",
                     specificParams: [
-                        { key: 'queries.main.engine', label: 'Type de langage', tooltip: "SQL: exécute une requête SQL | JS: exécute une expression JavaScript | Texte: valeur retournée directement sans moteur", inputType: 'select', options: [{ value: 'sql', label: '🗄️SQL' }, { value: 'js', label: '⚡JavaScript' }, { value: 'text', label: '📝Texte' }] },
-                        { key: 'paramType', label: 'Type de composant', tooltip: "Choisissez le type de composant d'interface pour ce paramètre", inputType: 'select', options: [{ value: 'input', label: '📝 Champ texte (input)' }, { value: 'dropdown', label: '📋 Liste déroulante (dropdown)' }, { value: 'range', label: '🎚️ Curseur (range)' }] },
+                        { key: 'queries.main.engine', label: 'Type de langage', tooltip: "SQL: exécute une requête SQL | JS: exécute une expression JavaScript | Texte: valeur retournée directement sans moteur", inputType: 'select', options: [{ value: 'sql', label: 'SQL' }, { value: 'js', label: 'JavaScript' }, { value: 'text', label: 'Texte' }] },
+                        { key: 'paramType', label: 'Type de composant', tooltip: "Choisissez le type de composant d'interface pour ce paramètre", inputType: 'select', options: [{ value: 'input', label: 'Champ texte (input)' }, { value: 'dropdown', label: 'Liste déroulante (dropdown)' }, { value: 'range', label: 'Curseur (range)' }] },
                         { key: 'userVisible', label: 'Visible en mode client', tooltip: "Si décoché, ce paramètre sera caché en mode client (paramètre intermédiaire)", inputType: 'checkbox' },
                         { key: 'userEditable', label: 'Modifiable par l\'utilisateur', tooltip: "Si décoché, l'utilisateur ne pourra pas modifier la valeur calculée par SQL", inputType: 'checkbox' },
                         { key: 'preserveUserValue', label: 'Préserver la valeur utilisateur lors de la ré-exécution', tooltip: "Si coché et que l'utilisateur a modifié la valeur, la ré-exécution de la cellule ne réinitialisera pas la valeur", inputType: 'checkbox' },
-                        { key: 'inputType', label: 'Type de champ', tooltip: "Choisissez le type HTML du champ de saisie", inputType: 'select', when: { paramType: 'input' }, options: [{ value: 'text', label: '📝 Texte' }, { value: 'password', label: '🔒 Mot de passe' }, { value: 'email', label: '📧 Email' }, { value: 'number', label: '🔢 Nombre' }, { value: 'date', label: '📅 Date' }, { value: 'datetime-local', label: '📆 Date et heure' }, { value: 'week', label: '📅 Semaine' }, { value: 'month', label: '📅 Mois' }, { value: 'tel', label: '📞 Téléphone' }, { value: 'url', label: '🔗 URL' }, { value: 'search', label: '🔍 Recherche' }, { value: 'time', label: '⏰ Heure' }] },
+                        { key: 'inputType', label: 'Type de champ', tooltip: "Choisissez le type HTML du champ de saisie", inputType: 'select', when: { paramType: 'input' }, options: [{ value: 'text', label: 'Texte' }, { value: 'password', label: 'Mot de passe' }, { value: 'email', label: 'Email' }, { value: 'number', label: 'Nombre' }, { value: 'date', label: 'Date' }, { value: 'datetime-local', label: 'Date et heure' }, { value: 'week', label: 'Semaine' }, { value: 'month', label: 'Mois' }, { value: 'tel', label: 'Téléphone' }, { value: 'url', label: 'URL' }, { value: 'search', label: 'Recherche' }, { value: 'time', label: 'Heure' }] },
                         { key: 'rangeMin', label: 'Valeur minimum', tooltip: "Valeur minimale du curseur (défaut: 0)", inputType: 'number', when: { paramType: 'range' }, placeholder: '0' },
                         { key: 'rangeMax', label: 'Valeur maximum', tooltip: "Valeur maximale du curseur (défaut: 100)", inputType: 'number', when: { paramType: 'range' }, placeholder: '100' },
                         { key: 'rangeStep', label: 'Pas (step)', tooltip: "Incrément entre chaque valeur du curseur (défaut: 1)", inputType: 'number', when: { paramType: 'range' }, placeholder: '1', min: 0.001 }
@@ -207,7 +207,7 @@ export const CELL_TYPE_SCHEMAS = {
                             { name: 'main', sql: 'SELECT * FROM source1 LIMIT 10', engine: 'sql', clientVisible: false },
                             { name: 'filename', sql: "SELECT 'document_' || STRFTIME(current_timestamp::TIMESTAMP, '%Y-%m-%d_%H-%M-%S') || '.docx' AS filename;", engine: 'sql', clientVisible: false }
                         ],
-                        buttonLabel: '📄 Générer les documents'
+                        buttonLabel: 'Générer les documents'
                     },
                     bodyFamily: 'publipostageWord',
                     bodyConfig: {
@@ -215,11 +215,11 @@ export const CELL_TYPE_SCHEMAS = {
                         fileKey: 'docxTemplateFileName',
                         fileBase64Key: 'docxTemplateBase64',
                         fileFileNameKey: 'docxTemplateFileName',
-                        accept: '.docx', emptyIcon: '📄',
+                        accept: '.docx', emptyIcon: 'material-symbols-light:description',
                         emptyTitle: 'Glissez-déposez votre template Word (.docx)',
                         emptySubtitle: 'Template de publipostage',
                         queryLabels: ['Requête de données', 'Requête de nom de fichier'],
-                        defaultButtonLabel: '📄 Générer les documents',
+                        defaultButtonLabel: 'Générer les documents',
                         buttonDisabledCondition: '!cellItem.cell.docxTemplateFileName'
                     }
                 },
@@ -306,7 +306,7 @@ export const CELL_TYPE_SCHEMAS = {
             },
             publipostageWord: {
                 onInit(cell, newCell) {
-                    if (newCell.buttonLabel === undefined) newCell.buttonLabel = '📄 Générer les documents';
+                    if (newCell.buttonLabel === undefined) newCell.buttonLabel = 'Générer les documents';
                 }
             },
             pdfme: {

@@ -1,7 +1,7 @@
-(function(){"use strict";try{if(typeof document<"u"){var e=document.createElement("style");e.appendChild(document.createTextNode(`/*! tailwindcss v4.2.1 | MIT License | https://tailwindcss.com */@layer properties{@supports (((-webkit-hyphens:none)) and (not (margin-trim:inline))) or ((-moz-orient:inline) and (not (color:rgb(from red r g b)))){*,:before,:after,::backdrop{--tw-translate-x:0;--tw-translate-y:0;--tw-translate-z:0;--tw-scale-x:1;--tw-scale-y:1;--tw-scale-z:1;--tw-rotate-x:initial;--tw-rotate-y:initial;--tw-rotate-z:initial;--tw-skew-x:initial;--tw-skew-y:initial;--tw-space-y-reverse:0;--tw-border-style:solid;--tw-font-weight:initial;--tw-shadow:0 0 #0000;--tw-shadow-color:initial;--tw-shadow-alpha:100%;--tw-inset-shadow:0 0 #0000;--tw-inset-shadow-color:initial;--tw-inset-shadow-alpha:100%;--tw-ring-color:initial;--tw-ring-shadow:0 0 #0000;--tw-inset-ring-color:initial;--tw-inset-ring-shadow:0 0 #0000;--tw-ring-inset:initial;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-offset-shadow:0 0 #0000;--tw-outline-style:solid;--tw-blur:initial;--tw-brightness:initial;--tw-contrast:initial;--tw-grayscale:initial;--tw-hue-rotate:initial;--tw-invert:initial;--tw-opacity:initial;--tw-saturate:initial;--tw-sepia:initial;--tw-drop-shadow:initial;--tw-drop-shadow-color:initial;--tw-drop-shadow-alpha:100%;--tw-drop-shadow-size:initial;--tw-duration:initial;--tw-ease:initial}}}@layer theme{:root,:host{--font-sans:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";--font-mono:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;--color-black:#000;--color-white:#fff;--spacing:.25rem;--container-sm:24rem;--container-md:28rem;--container-lg:32rem;--container-2xl:42rem;--container-3xl:48rem;--container-7xl:80rem;--text-xs:.75rem;--text-xs--line-height:calc(1 / .75);--text-sm:.875rem;--text-sm--line-height:calc(1.25 / .875);--text-base:1rem;--text-base--line-height: 1.5 ;--text-lg:1.125rem;--text-lg--line-height:calc(1.75 / 1.125);--text-xl:1.25rem;--text-xl--line-height:calc(1.75 / 1.25);--text-3xl:1.875rem;--text-3xl--line-height: 1.2 ;--text-4xl:2.25rem;--text-4xl--line-height:calc(2.5 / 2.25);--font-weight-medium:500;--font-weight-semibold:600;--font-weight-bold:700;--radius-lg:.5rem;--ease-out:cubic-bezier(0, 0, .2, 1);--ease-in-out:cubic-bezier(.4, 0, .2, 1);--default-transition-duration:.15s;--default-transition-timing-function:cubic-bezier(.4, 0, .2, 1);--default-font-family:var(--font-sans);--default-mono-font-family:var(--font-mono)}}@layer base{*,:after,:before,::backdrop{box-sizing:border-box;border:0 solid;margin:0;padding:0}::file-selector-button{box-sizing:border-box;border:0 solid;margin:0;padding:0}html,:host{-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;line-height:1.5;font-family:var(--default-font-family,ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji");font-feature-settings:var(--default-font-feature-settings,normal);font-variation-settings:var(--default-font-variation-settings,normal);-webkit-tap-highlight-color:transparent}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;-webkit-text-decoration:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,samp,pre{font-family:var(--default-mono-font-family,ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace);font-feature-settings:var(--default-mono-font-feature-settings,normal);font-variation-settings:var(--default-mono-font-variation-settings,normal);font-size:1em}small{font-size:80%}sub,sup{vertical-align:baseline;font-size:75%;line-height:0;position:relative}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}:-moz-focusring{outline:auto}progress{vertical-align:baseline}summary{display:list-item}ol,ul,menu{list-style:none}img,svg,video,canvas,audio,iframe,embed,object{vertical-align:middle;display:block}img,video{max-width:100%;height:auto}button,input,select,optgroup,textarea{font:inherit;font-feature-settings:inherit;font-variation-settings:inherit;letter-spacing:inherit;color:inherit;opacity:1;background-color:#0000;border-radius:0}::file-selector-button{font:inherit;font-feature-settings:inherit;font-variation-settings:inherit;letter-spacing:inherit;color:inherit;opacity:1;background-color:#0000;border-radius:0}:where(select:is([multiple],[size])) optgroup{font-weight:bolder}:where(select:is([multiple],[size])) optgroup option{padding-inline-start:20px}::file-selector-button{margin-inline-end:4px}::placeholder{opacity:1}@supports (not ((-webkit-appearance:-apple-pay-button))) or (contain-intrinsic-size:1px){::placeholder{color:currentColor}@supports (color:color-mix(in lab,red,red)){::placeholder{color:color-mix(in oklab,currentcolor 50%,transparent)}}}textarea{resize:vertical}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-date-and-time-value{min-height:1lh;text-align:inherit}::-webkit-datetime-edit{display:inline-flex}::-webkit-datetime-edit-fields-wrapper{padding:0}::-webkit-datetime-edit{padding-block:0}::-webkit-datetime-edit-year-field{padding-block:0}::-webkit-datetime-edit-month-field{padding-block:0}::-webkit-datetime-edit-day-field{padding-block:0}::-webkit-datetime-edit-hour-field{padding-block:0}::-webkit-datetime-edit-minute-field{padding-block:0}::-webkit-datetime-edit-second-field{padding-block:0}::-webkit-datetime-edit-millisecond-field{padding-block:0}::-webkit-datetime-edit-meridiem-field{padding-block:0}::-webkit-calendar-picker-indicator{line-height:1}:-moz-ui-invalid{box-shadow:none}button,input:where([type=button],[type=reset],[type=submit]){-webkit-appearance:button;-moz-appearance:button;appearance:button}::file-selector-button{-webkit-appearance:button;-moz-appearance:button;appearance:button}::-webkit-inner-spin-button{height:auto}::-webkit-outer-spin-button{height:auto}[hidden]:where(:not([hidden=until-found])){display:none!important}:where(:root),:root:has(input.theme-controller[value=light]:checked),[data-theme=light]{color-scheme:light;--color-base-100:oklch(100% 0 0);--color-base-200:oklch(98% 0 0);--color-base-300:oklch(95% 0 0);--color-base-content:oklch(21% .006 285.885);--color-primary:oklch(45% .24 277.023);--color-primary-content:oklch(93% .034 272.788);--color-secondary:oklch(65% .241 354.308);--color-secondary-content:oklch(94% .028 342.258);--color-accent:oklch(77% .152 181.912);--color-accent-content:oklch(38% .063 188.416);--color-neutral:oklch(14% .005 285.823);--color-neutral-content:oklch(92% .004 286.32);--color-info:oklch(74% .16 232.661);--color-info-content:oklch(29% .066 243.157);--color-success:oklch(76% .177 163.223);--color-success-content:oklch(37% .077 168.94);--color-warning:oklch(82% .189 84.429);--color-warning-content:oklch(41% .112 45.904);--color-error:oklch(71% .194 13.428);--color-error-content:oklch(27% .105 12.094);--radius-selector:.5rem;--radius-field:.25rem;--radius-box:.5rem;--size-selector:.25rem;--size-field:.25rem;--border:1px;--depth:1;--noise:0}@media (prefers-color-scheme:dark){:root:not([data-theme]){color-scheme:dark;--color-base-100:oklch(25.33% .016 252.42);--color-base-200:oklch(23.26% .014 253.1);--color-base-300:oklch(21.15% .012 254.09);--color-base-content:oklch(97.807% .029 256.847);--color-primary:oklch(58% .233 277.117);--color-primary-content:oklch(96% .018 272.314);--color-secondary:oklch(65% .241 354.308);--color-secondary-content:oklch(94% .028 342.258);--color-accent:oklch(77% .152 181.912);--color-accent-content:oklch(38% .063 188.416);--color-neutral:oklch(14% .005 285.823);--color-neutral-content:oklch(92% .004 286.32);--color-info:oklch(74% .16 232.661);--color-info-content:oklch(29% .066 243.157);--color-success:oklch(76% .177 163.223);--color-success-content:oklch(37% .077 168.94);--color-warning:oklch(82% .189 84.429);--color-warning-content:oklch(41% .112 45.904);--color-error:oklch(71% .194 13.428);--color-error-content:oklch(27% .105 12.094);--radius-selector:.5rem;--radius-field:.25rem;--radius-box:.5rem;--size-selector:.25rem;--size-field:.25rem;--border:1px;--depth:1;--noise:0}}:root:has(input.theme-controller[value=light]:checked),[data-theme=light]{color-scheme:light;--color-base-100:oklch(100% 0 0);--color-base-200:oklch(98% 0 0);--color-base-300:oklch(95% 0 0);--color-base-content:oklch(21% .006 285.885);--color-primary:oklch(45% .24 277.023);--color-primary-content:oklch(93% .034 272.788);--color-secondary:oklch(65% .241 354.308);--color-secondary-content:oklch(94% .028 342.258);--color-accent:oklch(77% .152 181.912);--color-accent-content:oklch(38% .063 188.416);--color-neutral:oklch(14% .005 285.823);--color-neutral-content:oklch(92% .004 286.32);--color-info:oklch(74% .16 232.661);--color-info-content:oklch(29% .066 243.157);--color-success:oklch(76% .177 163.223);--color-success-content:oklch(37% .077 168.94);--color-warning:oklch(82% .189 84.429);--color-warning-content:oklch(41% .112 45.904);--color-error:oklch(71% .194 13.428);--color-error-content:oklch(27% .105 12.094);--radius-selector:.5rem;--radius-field:.25rem;--radius-box:.5rem;--size-selector:.25rem;--size-field:.25rem;--border:1px;--depth:1;--noise:0}:root:has(input.theme-controller[value=dark]:checked),[data-theme=dark]{color-scheme:dark;--color-base-100:oklch(25.33% .016 252.42);--color-base-200:oklch(23.26% .014 253.1);--color-base-300:oklch(21.15% .012 254.09);--color-base-content:oklch(97.807% .029 256.847);--color-primary:oklch(58% .233 277.117);--color-primary-content:oklch(96% .018 272.314);--color-secondary:oklch(65% .241 354.308);--color-secondary-content:oklch(94% .028 342.258);--color-accent:oklch(77% .152 181.912);--color-accent-content:oklch(38% .063 188.416);--color-neutral:oklch(14% .005 285.823);--color-neutral-content:oklch(92% .004 286.32);--color-info:oklch(74% .16 232.661);--color-info-content:oklch(29% .066 243.157);--color-success:oklch(76% .177 163.223);--color-success-content:oklch(37% .077 168.94);--color-warning:oklch(82% .189 84.429);--color-warning-content:oklch(41% .112 45.904);--color-error:oklch(71% .194 13.428);--color-error-content:oklch(27% .105 12.094);--radius-selector:.5rem;--radius-field:.25rem;--radius-box:.5rem;--size-selector:.25rem;--size-field:.25rem;--border:1px;--depth:1;--noise:0}:root{--fx-noise:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cfilter id='a'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.34' numOctaves='4' stitchTiles='stitch'%3E%3C/feTurbulence%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23a)' opacity='0.2'%3E%3C/rect%3E%3C/svg%3E");scrollbar-color:currentColor #0000}@supports (color:color-mix(in lab,red,red)){:root{scrollbar-color:color-mix(in oklch,currentColor 35%,#0000) #0000}}@property --radialprogress{syntax:"<percentage>";inherits:true;initial-value:0%}:root:not(span){overflow:var(--page-overflow)}:root{background:var(--page-scroll-bg,var(--root-bg));--page-scroll-bg-on:linear-gradient(var(--root-bg,#0000), var(--root-bg,#0000)) var(--root-bg,#0000)}@supports (color:color-mix(in lab,red,red)){:root{--page-scroll-bg-on:linear-gradient(var(--root-bg,#0000), var(--root-bg,#0000)) color-mix(in srgb, var(--root-bg,#0000), oklch(0% 0 0) calc(var(--page-has-backdrop,0) * 40%))}}:root{--page-scroll-transition-on:background-color .3s ease-out;transition:var(--page-scroll-transition);scrollbar-gutter:var(--page-scroll-gutter,unset);scrollbar-gutter:if(style(--page-has-scroll: 1): var(--page-scroll-gutter,unset) ; else: unset)}@keyframes set-page-has-scroll{0%,to{--page-has-scroll:1}}:root,[data-theme]{background:var(--page-scroll-bg,var(--root-bg));color:var(--color-base-content)}:where(:root,[data-theme]){--root-bg:var(--color-base-100)}}@layer components;@layer utilities{.\\@container{container-type:inline-size}@layer daisyui.l1.l2.l3{.modal{pointer-events:none;visibility:hidden;width:100%;max-width:none;height:100%;max-height:none;color:inherit;transition:visibility .3s allow-discrete,background-color .3s ease-out,opacity .1s ease-out;overscroll-behavior:contain;z-index:999;scrollbar-gutter:auto;background-color:#0000;place-items:center;margin:0;padding:0;display:grid;position:fixed;top:0;right:0;bottom:0;left:0;overflow:clip}.modal::backdrop{display:none}:where(.drawer-side){overflow:hidden}.drawer-side{pointer-events:none;visibility:hidden;z-index:10;overscroll-behavior:contain;opacity:0;width:100%;transition:opacity .2s ease-out .1s allow-discrete,visibility .3s ease-out .1s allow-discrete;inset-inline-start:0;background-color:#0000;grid-template-rows:repeat(1,minmax(0,1fr));grid-template-columns:repeat(1,minmax(0,1fr));grid-row-start:1;grid-column-start:1;place-items:flex-start start;height:100dvh;display:grid;position:fixed;top:0}.drawer-side>.drawer-overlay{cursor:pointer;background-color:#0006;place-self:stretch stretch;position:sticky;top:0}.drawer-side>*{grid-row-start:1;grid-column-start:1}.drawer-side>:not(.drawer-overlay){will-change:transform;transition:translate .3s ease-out,width .2s ease-out;translate:-100%}[dir=rtl] :is(.drawer-side>:not(.drawer-overlay)){translate:100%}.drawer-toggle{-webkit-appearance:none;-moz-appearance:none;appearance:none;opacity:0;width:0;height:0;position:fixed}:where(.drawer-toggle:checked~.drawer-side){scrollbar-color:currentColor oklch(0 0 0 / calc(var(--page-has-backdrop,0) * .4))}@supports (color:color-mix(in lab,red,red)){:where(.drawer-toggle:checked~.drawer-side){scrollbar-color:color-mix(in oklch,currentColor 35%,#0000) oklch(0 0 0 / calc(var(--page-has-backdrop,0) * .4))}}:where(:root:has(.drawer-toggle:checked)){--page-has-backdrop:1;--page-overflow:hidden;--page-scroll-bg:var(--page-scroll-bg-on);--page-scroll-gutter:stable;--page-scroll-transition:var(--page-scroll-transition-on);animation:forwards set-page-has-scroll;animation-timeline:scroll()}.tooltip{--tt-bg:var(--color-neutral);--tt-off: calc(100% + .5rem) ;--tt-tail: calc(100% + 1px + .25rem) ;display:inline-block;position:relative}.tooltip>.tooltip-content,.tooltip[data-tip]:before{border-radius:var(--radius-field);text-align:center;white-space:normal;max-width:20rem;color:var(--color-neutral-content);opacity:0;background-color:var(--tt-bg);pointer-events:none;z-index:2;--tw-content:attr(data-tip);content:var(--tw-content);width:max-content;padding-block:.25rem;padding-inline:.5rem;font-size:.875rem;line-height:1.25;position:absolute}.tooltip:after{opacity:0;background-color:var(--tt-bg);content:"";pointer-events:none;--mask-tooltip:url("data:image/svg+xml,%3Csvg width='10' height='4' viewBox='0 0 8 4' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0.500009 1C3.5 1 3.00001 4 5.00001 4C7 4 6.5 1 9.5 1C10 1 10 0.499897 10 0H0C-1.99338e-08 0.5 0 1 0.500009 1Z' fill='black'/%3E%3C/svg%3E%0A");width:.625rem;height:.25rem;-webkit-mask-position:-1px 0;mask-position:-1px 0;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-image:var(--mask-tooltip);mask-image:var(--mask-tooltip);display:block;position:absolute}@media (prefers-reduced-motion:no-preference){.tooltip>.tooltip-content,.tooltip[data-tip]:before,.tooltip:after{transition:opacity .2s cubic-bezier(.4,0,.2,1) 75ms,transform .2s cubic-bezier(.4,0,.2,1) 75ms}}:is(.tooltip:is([data-tip]:not([data-tip=""]),:has(.tooltip-content:not(:empty))).tooltip-open,.tooltip:is([data-tip]:not([data-tip=""]),:has(.tooltip-content:not(:empty))):hover,.tooltip:is([data-tip]:not([data-tip=""]),:has(.tooltip-content:not(:empty))):has(:focus-visible))>.tooltip-content,:is(.tooltip:is([data-tip]:not([data-tip=""]),:has(.tooltip-content:not(:empty))).tooltip-open,.tooltip:is([data-tip]:not([data-tip=""]),:has(.tooltip-content:not(:empty))):hover,.tooltip:is([data-tip]:not([data-tip=""]),:has(.tooltip-content:not(:empty))):has(:focus-visible))[data-tip]:before,:is(.tooltip:is([data-tip]:not([data-tip=""]),:has(.tooltip-content:not(:empty))).tooltip-open,.tooltip:is([data-tip]:not([data-tip=""]),:has(.tooltip-content:not(:empty))):hover,.tooltip:is([data-tip]:not([data-tip=""]),:has(.tooltip-content:not(:empty))):has(:focus-visible)):after{opacity:1;--tt-pos:0rem}@media (prefers-reduced-motion:no-preference){:is(.tooltip:is([data-tip]:not([data-tip=""]),:has(.tooltip-content:not(:empty))).tooltip-open,.tooltip:is([data-tip]:not([data-tip=""]),:has(.tooltip-content:not(:empty))):hover,.tooltip:is([data-tip]:not([data-tip=""]),:has(.tooltip-content:not(:empty))):has(:focus-visible))>.tooltip-content,:is(.tooltip:is([data-tip]:not([data-tip=""]),:has(.tooltip-content:not(:empty))).tooltip-open,.tooltip:is([data-tip]:not([data-tip=""]),:has(.tooltip-content:not(:empty))):hover,.tooltip:is([data-tip]:not([data-tip=""]),:has(.tooltip-content:not(:empty))):has(:focus-visible))[data-tip]:before,:is(.tooltip:is([data-tip]:not([data-tip=""]),:has(.tooltip-content:not(:empty))).tooltip-open,.tooltip:is([data-tip]:not([data-tip=""]),:has(.tooltip-content:not(:empty))):hover,.tooltip:is([data-tip]:not([data-tip=""]),:has(.tooltip-content:not(:empty))):has(:focus-visible)):after{transition:opacity .2s cubic-bezier(.4,0,.2,1),transform .2s cubic-bezier(.4,0,.2,1)}}.tab{cursor:pointer;-webkit-appearance:none;-moz-appearance:none;appearance:none;text-align:center;webkit-user-select:none;-webkit-user-select:none;user-select:none;flex-wrap:wrap;justify-content:center;align-items:center;display:inline-flex;position:relative}@media (hover:hover){.tab:hover{color:var(--color-base-content)}}.tab{--tab-p:.75rem;--tab-bg:var(--color-base-100);--tab-border-color:var(--color-base-300);--tab-radius-ss:0;--tab-radius-se:0;--tab-radius-es:0;--tab-radius-ee:0;--tab-order:0;--tab-radius-min:calc(.75rem - var(--border));--tab-radius-limit:min(var(--radius-field), var(--tab-radius-min));--tab-radius-grad:#0000 calc(69% - var(--border)), var(--tab-border-color) calc(69% - var(--border) + .25px), var(--tab-border-color) 69%, var(--tab-bg) calc(69% + .25px) ;order:var(--tab-order);height:var(--tab-height);padding-inline:var(--tab-p);border-color:#0000;font-size:.875rem}.tab:is(input[type=radio]){min-width:fit-content}.tab:is(input[type=radio]):after{--tw-content:attr(aria-label);content:var(--tw-content)}.tab:is(label){position:relative}.tab:is(label) input{cursor:pointer;-webkit-appearance:none;-moz-appearance:none;appearance:none;opacity:0;position:absolute;top:0;right:0;bottom:0;left:0}:is(.tab:checked,.tab:is(label:has(:checked)),.tab:is(.tab-active,[aria-selected=true],[aria-current=true],[aria-current=page]))+.tab-content{display:block}.tab:not(:checked,label:has(:checked),:hover,.tab-active,[aria-selected=true],[aria-current=true],[aria-current=page]){color:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){.tab:not(:checked,label:has(:checked),:hover,.tab-active,[aria-selected=true],[aria-current=true],[aria-current=page]){color:color-mix(in oklab,var(--color-base-content) 50%,transparent)}}.tab:not(input):empty{cursor:default;flex-grow:1}.tab:focus{--tw-outline-style:none;outline-style:none}@media (forced-colors:active){.tab:focus{outline-offset:2px;outline:2px solid #0000}}.tab:focus-visible,.tab:is(label:has(:checked:focus-visible)){outline-offset:-5px;outline:2px solid}.tab[disabled]{pointer-events:none;opacity:.4}.menu{--menu-active-fg:var(--color-neutral-content);--menu-active-bg:var(--color-neutral);flex-flow:column wrap;width:fit-content;padding:.5rem;font-size:.875rem;display:flex}.menu :where(li ul){white-space:nowrap;margin-inline-start:1rem;padding-inline-start:.5rem;position:relative}.menu :where(li ul):before{background-color:var(--color-base-content);opacity:.1;width:var(--border);content:"";inset-inline-start:0;position:absolute;top:.75rem;bottom:.75rem}.menu :where(li>.menu-dropdown:not(.menu-dropdown-show)){display:none}.menu :where(li:not(.menu-title)>:not(ul,details,.menu-title,.btn)),.menu :where(li:not(.menu-title)>details>summary:not(.menu-title)){border-radius:var(--radius-field);text-align:start;text-wrap:balance;-webkit-user-select:none;user-select:none;grid-auto-columns:minmax(auto,max-content) auto max-content;grid-auto-flow:column;align-content:flex-start;align-items:center;gap:.5rem;padding-block:.375rem;padding-inline:.75rem;transition-property:color,background-color,box-shadow;transition-duration:.2s;transition-timing-function:cubic-bezier(0,0,.2,1);display:grid}.menu :where(li>details>summary){--tw-outline-style:none;outline-style:none}@media (forced-colors:active){.menu :where(li>details>summary){outline-offset:2px;outline:2px solid #0000}}.menu :where(li>details>summary)::-webkit-details-marker{display:none}:is(.menu :where(li>details>summary),.menu :where(li>.menu-dropdown-toggle)):after{content:"";transform-origin:50%;pointer-events:none;justify-self:flex-end;width:.375rem;height:.375rem;transition-property:rotate,translate;transition-duration:.2s;display:block;translate:0 -1px;rotate:-135deg;box-shadow:inset 2px 2px}.menu details{interpolate-size:allow-keywords;overflow:hidden}.menu details::details-content{block-size:0}@media (prefers-reduced-motion:no-preference){.menu details::details-content{transition-behavior:allow-discrete;transition-property:block-size,content-visibility;transition-duration:.2s;transition-timing-function:cubic-bezier(0,0,.2,1)}}.menu details[open]::details-content{block-size:auto}.menu :where(li>details[open]>summary):after,.menu :where(li>.menu-dropdown-toggle.menu-dropdown-show):after{translate:0 1px;rotate:45deg}.menu :where(li:not(.menu-title,.disabled)>:not(ul,details,.menu-title),li:not(.menu-title,.disabled)>details>summary:not(.menu-title)):not(.menu-active,:active,.btn).menu-focus,.menu :where(li:not(.menu-title,.disabled)>:not(ul,details,.menu-title),li:not(.menu-title,.disabled)>details>summary:not(.menu-title)):not(.menu-active,:active,.btn):focus-visible{cursor:pointer;background-color:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){.menu :where(li:not(.menu-title,.disabled)>:not(ul,details,.menu-title),li:not(.menu-title,.disabled)>details>summary:not(.menu-title)):not(.menu-active,:active,.btn).menu-focus,.menu :where(li:not(.menu-title,.disabled)>:not(ul,details,.menu-title),li:not(.menu-title,.disabled)>details>summary:not(.menu-title)):not(.menu-active,:active,.btn):focus-visible{background-color:color-mix(in oklab,var(--color-base-content) 10%,transparent)}}.menu :where(li:not(.menu-title,.disabled)>:not(ul,details,.menu-title),li:not(.menu-title,.disabled)>details>summary:not(.menu-title)):not(.menu-active,:active,.btn).menu-focus,.menu :where(li:not(.menu-title,.disabled)>:not(ul,details,.menu-title),li:not(.menu-title,.disabled)>details>summary:not(.menu-title)):not(.menu-active,:active,.btn):focus-visible{color:var(--color-base-content);--tw-outline-style:none;outline-style:none}@media (forced-colors:active){.menu :where(li:not(.menu-title,.disabled)>:not(ul,details,.menu-title),li:not(.menu-title,.disabled)>details>summary:not(.menu-title)):not(.menu-active,:active,.btn).menu-focus,.menu :where(li:not(.menu-title,.disabled)>:not(ul,details,.menu-title),li:not(.menu-title,.disabled)>details>summary:not(.menu-title)):not(.menu-active,:active,.btn):focus-visible{outline-offset:2px;outline:2px solid #0000}}.menu :where(li:not(.menu-title,.disabled)>:not(ul,details,.menu-title):not(.menu-active,:active,.btn):hover,li:not(.menu-title,.disabled)>details>summary:not(.menu-title):not(.menu-active,:active,.btn):hover){cursor:pointer;background-color:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){.menu :where(li:not(.menu-title,.disabled)>:not(ul,details,.menu-title):not(.menu-active,:active,.btn):hover,li:not(.menu-title,.disabled)>details>summary:not(.menu-title):not(.menu-active,:active,.btn):hover){background-color:color-mix(in oklab,var(--color-base-content) 10%,transparent)}}.menu :where(li:not(.menu-title,.disabled)>:not(ul,details,.menu-title):not(.menu-active,:active,.btn):hover,li:not(.menu-title,.disabled)>details>summary:not(.menu-title):not(.menu-active,:active,.btn):hover){--tw-outline-style:none;outline-style:none}@media (forced-colors:active){.menu :where(li:not(.menu-title,.disabled)>:not(ul,details,.menu-title):not(.menu-active,:active,.btn):hover,li:not(.menu-title,.disabled)>details>summary:not(.menu-title):not(.menu-active,:active,.btn):hover){outline-offset:2px;outline:2px solid #0000}}.menu :where(li:not(.menu-title,.disabled)>:not(ul,details,.menu-title):not(.menu-active,:active,.btn):hover,li:not(.menu-title,.disabled)>details>summary:not(.menu-title):not(.menu-active,:active,.btn):hover){box-shadow:inset 0 1px #00000003,inset 0 -1px #ffffff03}.menu :where(li:empty){background-color:var(--color-base-content);opacity:.1;height:1px;margin:.5rem 1rem}.menu :where(li){flex-flow:column wrap;flex-shrink:0;align-items:stretch;display:flex;position:relative}.menu :where(li) .badge{justify-self:flex-end}.menu :where(li)>:not(ul,.menu-title,details,.btn):active,.menu :where(li)>:not(ul,.menu-title,details,.btn).menu-active,.menu :where(li)>details>summary:active{--tw-outline-style:none;outline-style:none}@media (forced-colors:active){.menu :where(li)>:not(ul,.menu-title,details,.btn):active,.menu :where(li)>:not(ul,.menu-title,details,.btn).menu-active,.menu :where(li)>details>summary:active{outline-offset:2px;outline:2px solid #0000}}.menu :where(li)>:not(ul,.menu-title,details,.btn):active,.menu :where(li)>:not(ul,.menu-title,details,.btn).menu-active,.menu :where(li)>details>summary:active{color:var(--menu-active-fg);background-color:var(--menu-active-bg);background-size:auto,calc(var(--noise) * 100%);background-image:none,var(--fx-noise)}:is(.menu :where(li)>:not(ul,.menu-title,details,.btn):active,.menu :where(li)>:not(ul,.menu-title,details,.btn).menu-active,.menu :where(li)>details>summary:active):not(:is(.menu :where(li)>:not(ul,.menu-title,details,.btn):active,.menu :where(li)>:not(ul,.menu-title,details,.btn).menu-active,.menu :where(li)>details>summary:active):active){box-shadow:0 2px calc(var(--depth) * 3px) -2px var(--menu-active-bg)}.menu :where(li).menu-disabled{pointer-events:none;color:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){.menu :where(li).menu-disabled{color:color-mix(in oklab,var(--color-base-content) 20%,transparent)}}.menu .dropdown:focus-within .menu-dropdown-toggle:after{translate:0 1px;rotate:45deg}.menu .dropdown-content{margin-top:.5rem;padding:.5rem}.menu .dropdown-content:before{display:none}.dropdown{position-area:var(--anchor-v,bottom) var(--anchor-h,span-right);display:inline-block;position:relative}.dropdown>:not(:has(~[class*=dropdown-content])):focus{--tw-outline-style:none;outline-style:none}@media (forced-colors:active){.dropdown>:not(:has(~[class*=dropdown-content])):focus{outline-offset:2px;outline:2px solid #0000}}.dropdown .dropdown-content{position:absolute}.dropdown.dropdown-close .dropdown-content,.dropdown:not(details,.dropdown-open,.dropdown-hover:hover,:focus-within) .dropdown-content,.dropdown.dropdown-hover:not(:hover) [tabindex]:first-child:focus:not(:focus-visible)~.dropdown-content{transform-origin:top;opacity:0;display:none;scale:95%}.dropdown[popover],.dropdown .dropdown-content{z-index:999}@media (prefers-reduced-motion:no-preference){.dropdown[popover],.dropdown .dropdown-content{transition-behavior:allow-discrete;transition-property:opacity,scale,display;transition-duration:.2s;transition-timing-function:cubic-bezier(.4,0,.2,1);animation:.2s dropdown}}@starting-style{.dropdown[popover],.dropdown .dropdown-content{opacity:0;scale:95%}}:is(.dropdown:not(.dropdown-close).dropdown-open,.dropdown:not(.dropdown-close):not(.dropdown-hover):focus,.dropdown:not(.dropdown-close):focus-within)>[tabindex]:first-child{pointer-events:none}:is(.dropdown:not(.dropdown-close).dropdown-open,.dropdown:not(.dropdown-close):not(.dropdown-hover):focus,.dropdown:not(.dropdown-close):focus-within) .dropdown-content,.dropdown:not(.dropdown-close).dropdown-hover:hover .dropdown-content{opacity:1;scale:100%}.dropdown:is(details) summary::-webkit-details-marker{display:none}.dropdown:where([popover]){background:0 0}.dropdown[popover]{color:inherit;position:fixed}@supports not (position-area:bottom){.dropdown[popover]{margin:auto}.dropdown[popover].dropdown-close{transform-origin:top;opacity:0;display:none;scale:95%}.dropdown[popover].dropdown-open:not(:popover-open){transform-origin:top;opacity:0;display:none;scale:95%}.dropdown[popover]::backdrop{background-color:oklab(0% none none/.3)}}:is(.dropdown[popover].dropdown-close,.dropdown[popover]:not(.dropdown-open,:popover-open)){transform-origin:top;opacity:0;display:none;scale:95%}:where(.btn){width:unset}.btn{cursor:pointer;text-align:center;vertical-align:middle;outline-offset:2px;webkit-user-select:none;-webkit-user-select:none;user-select:none;padding-inline:var(--btn-p);color:var(--btn-fg);--tw-prose-links:var(--btn-fg);height:var(--size);font-size:var(--fontsize,.875rem);outline-color:var(--btn-color,var(--color-base-content));background-color:var(--btn-bg);background-size:auto,calc(var(--noise) * 100%);background-image:none,var(--btn-noise);border-width:var(--border);border-style:solid;border-color:var(--btn-border);text-shadow:0 .5px oklch(100% 0 0 / calc(var(--depth) * .15));touch-action:manipulation;box-shadow:0 .5px 0 .5px oklch(100% 0 0 / calc(var(--depth) * 6%)) inset,var(--btn-shadow);--size:calc(var(--size-field,.25rem) * 10);--btn-bg:var(--btn-color,var(--color-base-200));--btn-fg:var(--color-base-content);--btn-p:1rem;--btn-border:var(--btn-bg);border-start-start-radius:var(--join-ss,var(--radius-field));border-start-end-radius:var(--join-se,var(--radius-field));border-end-end-radius:var(--join-ee,var(--radius-field));border-end-start-radius:var(--join-es,var(--radius-field));flex-wrap:nowrap;flex-shrink:0;justify-content:center;align-items:center;gap:.375rem;font-weight:600;transition-property:color,background-color,border-color,box-shadow;transition-duration:.2s;transition-timing-function:cubic-bezier(0,0,.2,1);display:inline-flex}@supports (color:color-mix(in lab,red,red)){.btn{--btn-border:color-mix(in oklab, var(--btn-bg), #000 calc(var(--depth) * 5%))}}.btn{--btn-shadow:0 3px 2px -2px var(--btn-bg), 0 4px 3px -2px var(--btn-bg)}@supports (color:color-mix(in lab,red,red)){.btn{--btn-shadow:0 3px 2px -2px color-mix(in oklab, var(--btn-bg) calc(var(--depth) * 30%), #0000), 0 4px 3px -2px color-mix(in oklab, var(--btn-bg) calc(var(--depth) * 30%), #0000)}}.btn{--btn-noise:var(--fx-noise)}@media (hover:hover){.btn:hover{--btn-bg:var(--btn-color,var(--color-base-200))}@supports (color:color-mix(in lab,red,red)){.btn:hover{--btn-bg:color-mix(in oklab, var(--btn-color,var(--color-base-200)), #000 7%)}}}.btn:focus-visible,.btn:has(:focus-visible){isolation:isolate;outline-width:2px;outline-style:solid}.btn:active:not(.btn-active){--btn-bg:var(--btn-color,var(--color-base-200));translate:0 .5px}@supports (color:color-mix(in lab,red,red)){.btn:active:not(.btn-active){--btn-bg:color-mix(in oklab, var(--btn-color,var(--color-base-200)), #000 5%)}}.btn:active:not(.btn-active){--btn-border:var(--btn-color,var(--color-base-200))}@supports (color:color-mix(in lab,red,red)){.btn:active:not(.btn-active){--btn-border:color-mix(in oklab, var(--btn-color,var(--color-base-200)), #000 7%)}}.btn:active:not(.btn-active){--btn-shadow:0 0 0 0 oklch(0% 0 0/0), 0 0 0 0 oklch(0% 0 0/0)}.btn:is(input[type=checkbox],input[type=radio]){-webkit-appearance:none;-moz-appearance:none;appearance:none}.btn:is(input[type=checkbox],input[type=radio])[aria-label]:after{--tw-content:attr(aria-label);content:var(--tw-content)}.btn:where(input:checked:not(.filter .btn)){--btn-color:var(--color-primary);--btn-fg:var(--color-primary-content);isolation:isolate}.\\!loading{pointer-events:none!important;aspect-ratio:1!important;vertical-align:middle!important;width:calc(var(--size-selector,.25rem) * 6)!important;background-color:currentColor!important;display:inline-block!important;-webkit-mask-image:url("data:image/svg+xml,%3Csvg width='24' height='24' stroke='black' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cg transform-origin='center'%3E%3Ccircle cx='12' cy='12' r='9.5' fill='none' stroke-width='3' stroke-linecap='round'%3E%3CanimateTransform attributeName='transform' type='rotate' from='0 12 12' to='360 12 12' dur='2s' repeatCount='indefinite'/%3E%3Canimate attributeName='stroke-dasharray' values='0,150;42,150;42,150' keyTimes='0;0.475;1' dur='1.5s' repeatCount='indefinite'/%3E%3Canimate attributeName='stroke-dashoffset' values='0;-16;-59' keyTimes='0;0.475;1' dur='1.5s' repeatCount='indefinite'/%3E%3C/circle%3E%3C/g%3E%3C/svg%3E")!important;mask-image:url("data:image/svg+xml,%3Csvg width='24' height='24' stroke='black' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cg transform-origin='center'%3E%3Ccircle cx='12' cy='12' r='9.5' fill='none' stroke-width='3' stroke-linecap='round'%3E%3CanimateTransform attributeName='transform' type='rotate' from='0 12 12' to='360 12 12' dur='2s' repeatCount='indefinite'/%3E%3Canimate attributeName='stroke-dasharray' values='0,150;42,150;42,150' keyTimes='0;0.475;1' dur='1.5s' repeatCount='indefinite'/%3E%3Canimate attributeName='stroke-dashoffset' values='0;-16;-59' keyTimes='0;0.475;1' dur='1.5s' repeatCount='indefinite'/%3E%3C/circle%3E%3C/g%3E%3C/svg%3E")!important;-webkit-mask-position:50%!important;mask-position:50%!important;-webkit-mask-size:100%!important;mask-size:100%!important;-webkit-mask-repeat:no-repeat!important;mask-repeat:no-repeat!important}.loading{pointer-events:none;aspect-ratio:1;vertical-align:middle;width:calc(var(--size-selector,.25rem) * 6);background-color:currentColor;display:inline-block;-webkit-mask-image:url("data:image/svg+xml,%3Csvg width='24' height='24' stroke='black' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cg transform-origin='center'%3E%3Ccircle cx='12' cy='12' r='9.5' fill='none' stroke-width='3' stroke-linecap='round'%3E%3CanimateTransform attributeName='transform' type='rotate' from='0 12 12' to='360 12 12' dur='2s' repeatCount='indefinite'/%3E%3Canimate attributeName='stroke-dasharray' values='0,150;42,150;42,150' keyTimes='0;0.475;1' dur='1.5s' repeatCount='indefinite'/%3E%3Canimate attributeName='stroke-dashoffset' values='0;-16;-59' keyTimes='0;0.475;1' dur='1.5s' repeatCount='indefinite'/%3E%3C/circle%3E%3C/g%3E%3C/svg%3E");mask-image:url("data:image/svg+xml,%3Csvg width='24' height='24' stroke='black' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cg transform-origin='center'%3E%3Ccircle cx='12' cy='12' r='9.5' fill='none' stroke-width='3' stroke-linecap='round'%3E%3CanimateTransform attributeName='transform' type='rotate' from='0 12 12' to='360 12 12' dur='2s' repeatCount='indefinite'/%3E%3Canimate attributeName='stroke-dasharray' values='0,150;42,150;42,150' keyTimes='0;0.475;1' dur='1.5s' repeatCount='indefinite'/%3E%3Canimate attributeName='stroke-dashoffset' values='0;-16;-59' keyTimes='0;0.475;1' dur='1.5s' repeatCount='indefinite'/%3E%3C/circle%3E%3C/g%3E%3C/svg%3E");-webkit-mask-position:50%;mask-position:50%;-webkit-mask-size:100%;mask-size:100%;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}.collapse{border-radius:var(--radius-box,1rem);isolation:isolate;grid-template-rows:max-content 0fr;grid-template-columns:minmax(0,1fr);width:100%;display:grid;position:relative;overflow:hidden}@media (prefers-reduced-motion:no-preference){.collapse{transition:grid-template-rows .2s}}.collapse>input:is([type=checkbox],[type=radio]){-webkit-appearance:none;-moz-appearance:none;appearance:none;opacity:0;z-index:1;grid-row-start:1;grid-column-start:1;width:100%;min-height:1lh;padding:1rem;padding-inline-end:3rem;transition:background-color .2s ease-out}.collapse:is([open],[tabindex]:focus:not(.collapse-close),[tabindex]:focus-within:not(.collapse-close)),.collapse:not(.collapse-close):has(>input:is([type=checkbox],[type=radio]):checked){grid-template-rows:max-content 1fr}.collapse:is([open],[tabindex]:focus:not(.collapse-close),[tabindex]:focus-within:not(.collapse-close))>.collapse-content,.collapse:not(.collapse-close)>:where(input:is([type=checkbox],[type=radio]):checked~.collapse-content){content-visibility:visible;min-height:fit-content}@supports not (content-visibility:visible){.collapse:is([open],[tabindex]:focus:not(.collapse-close),[tabindex]:focus-within:not(.collapse-close))>.collapse-content,.collapse:not(.collapse-close)>:where(input:is([type=checkbox],[type=radio]):checked~.collapse-content){visibility:visible}}.collapse:focus-visible,.collapse:has(>input:is([type=checkbox],[type=radio]):focus-visible),.collapse:has(summary:focus-visible){outline-color:var(--color-base-content);outline-offset:2px;outline-width:2px;outline-style:solid}.collapse:not(.collapse-close)>input[type=checkbox],.collapse:not(.collapse-close)>input[type=radio]:not(:checked),.collapse:not(.collapse-close)>.collapse-title{cursor:pointer}:is(.collapse[tabindex]:focus:not(.collapse-close,.collapse[open]),.collapse[tabindex]:focus-within:not(.collapse-close,.collapse[open]))>.collapse-title{cursor:unset}.collapse:is([open],[tabindex]:focus:not(.collapse-close),[tabindex]:focus-within:not(.collapse-close))>:where(.collapse-content),.collapse:not(.collapse-close)>:where(input:is([type=checkbox],[type=radio]):checked~.collapse-content){padding-bottom:1rem}.collapse:is(details){width:100%}@media (prefers-reduced-motion:no-preference){.collapse:is(details)::details-content{transition:content-visibility .2s allow-discrete,visibility .2s allow-discrete,min-height .2s ease-out allow-discrete,padding .1s ease-out 20ms,background-color .2s ease-out,height .2s;interpolate-size:allow-keywords;height:0}.collapse:is(details):where([open])::details-content{height:auto}}.collapse:is(details) summary{display:block;position:relative}.collapse:is(details) summary::-webkit-details-marker{display:none}.collapse:is(details)>.collapse-content{content-visibility:visible}.collapse:is(details) summary{outline:none}.collapse-content{content-visibility:hidden;min-height:0;cursor:unset;grid-row-start:2;grid-column-start:1;padding-left:1rem;padding-right:1rem}@supports not (content-visibility:hidden){.collapse-content{visibility:hidden}}@media (prefers-reduced-motion:no-preference){.collapse-content{transition:content-visibility .2s allow-discrete,visibility .2s allow-discrete,min-height .2s ease-out allow-discrete,padding .1s ease-out 20ms,background-color .2s ease-out}}.validator-hint{visibility:hidden;margin-top:.5rem;font-size:.75rem}.validator:user-valid{--input-color:var(--color-success)}.validator:user-valid:focus{--input-color:var(--color-success)}.validator:user-valid:checked{--input-color:var(--color-success)}.validator:user-valid[aria-checked=true]{--input-color:var(--color-success)}.validator:user-valid:focus-within{--input-color:var(--color-success)}.validator:has(:user-valid){--input-color:var(--color-success)}.validator:has(:user-valid):focus{--input-color:var(--color-success)}.validator:has(:user-valid):checked{--input-color:var(--color-success)}.validator:has(:user-valid)[aria-checked=true]{--input-color:var(--color-success)}.validator:has(:user-valid):focus-within{--input-color:var(--color-success)}.validator:user-invalid{--input-color:var(--color-error)}.validator:user-invalid:focus{--input-color:var(--color-error)}.validator:user-invalid:checked{--input-color:var(--color-error)}.validator:user-invalid[aria-checked=true]{--input-color:var(--color-error)}.validator:user-invalid:focus-within{--input-color:var(--color-error)}.validator:user-invalid~.validator-hint{visibility:visible;color:var(--color-error)}.validator:has(:user-invalid){--input-color:var(--color-error)}.validator:has(:user-invalid):focus{--input-color:var(--color-error)}.validator:has(:user-invalid):checked{--input-color:var(--color-error)}.validator:has(:user-invalid)[aria-checked=true]{--input-color:var(--color-error)}.validator:has(:user-invalid):focus-within{--input-color:var(--color-error)}.validator:has(:user-invalid)~.validator-hint{visibility:visible;color:var(--color-error)}:is(.validator[aria-invalid]:not([aria-invalid=false]),.validator:has([aria-invalid]:not([aria-invalid=false]))),:is(.validator[aria-invalid]:not([aria-invalid=false]),.validator:has([aria-invalid]:not([aria-invalid=false]))):focus,:is(.validator[aria-invalid]:not([aria-invalid=false]),.validator:has([aria-invalid]:not([aria-invalid=false]))):checked,:is(.validator[aria-invalid]:not([aria-invalid=false]),.validator:has([aria-invalid]:not([aria-invalid=false])))[aria-checked=true],:is(.validator[aria-invalid]:not([aria-invalid=false]),.validator:has([aria-invalid]:not([aria-invalid=false]))):focus-within{--input-color:var(--color-error)}:is(.validator[aria-invalid]:not([aria-invalid=false]),.validator:has([aria-invalid]:not([aria-invalid=false])))~.validator-hint{visibility:visible;color:var(--color-error)}.list{flex-direction:column;font-size:.875rem;display:flex}.list .list-row{--list-grid-cols:minmax(0, auto) 1fr;border-radius:var(--radius-box);word-break:break-word;grid-auto-flow:column;grid-template-columns:var(--list-grid-cols);gap:1rem;padding:1rem;display:grid;position:relative}:is(.list>:not(:last-child).list-row,.list>:not(:last-child) .list-row):after{content:"";border-bottom:var(--border) solid;inset-inline:var(--radius-box);border-color:var(--color-base-content);position:absolute;bottom:0}@supports (color:color-mix(in lab,red,red)){:is(.list>:not(:last-child).list-row,.list>:not(:last-child) .list-row):after{border-color:color-mix(in oklab,var(--color-base-content) 5%,transparent)}}.toast{translate:var(--toast-x,0) var(--toast-y,0);inset-inline:auto 1rem;background-color:#0000;flex-direction:column;gap:.5rem;width:max-content;max-width:calc(100vw - 2rem);display:flex;position:fixed;top:auto;bottom:1rem}@media (prefers-reduced-motion:no-preference){.toast>*{animation:.25s ease-out toast}}.toggle{border:var(--border) solid currentColor;color:var(--input-color);cursor:pointer;-webkit-appearance:none;-moz-appearance:none;appearance:none;vertical-align:middle;webkit-user-select:none;-webkit-user-select:none;user-select:none;--radius-selector-max:calc(var(--radius-selector) + var(--radius-selector) + var(--radius-selector));border-radius:calc(var(--radius-selector) + min(var(--toggle-p),var(--radius-selector-max)) + min(var(--border),var(--radius-selector-max)));padding:var(--toggle-p);flex-shrink:0;grid-template-columns:0fr 1fr 1fr;place-content:center;display:inline-grid;position:relative;box-shadow:inset 0 1px}@supports (color:color-mix(in lab,red,red)){.toggle{box-shadow:0 1px color-mix(in oklab,currentColor calc(var(--depth) * 10%),#0000) inset}}.toggle{--input-color:var(--color-base-content);transition:color .3s,grid-template-columns .2s}@supports (color:color-mix(in lab,red,red)){.toggle{--input-color:color-mix(in oklab, var(--color-base-content) 50%, #0000)}}.toggle{--toggle-p:calc(var(--size) * .125);--size:calc(var(--size-selector,.25rem) * 6);width:calc((var(--size) * 2) - (var(--border) + var(--toggle-p)) * 2);height:var(--size)}.toggle>*{z-index:1;cursor:pointer;-webkit-appearance:none;-moz-appearance:none;appearance:none;background-color:#0000;border:none;grid-column:2/span 1;grid-row-start:1;height:100%;padding:.125rem;transition:opacity .2s,rotate .4s}.toggle>:focus{--tw-outline-style:none;outline-style:none}@media (forced-colors:active){.toggle>:focus{outline-offset:2px;outline:2px solid #0000}}.toggle>:nth-child(2){color:var(--color-base-100);rotate:none}.toggle>:nth-child(3){color:var(--color-base-100);opacity:0;rotate:-15deg}.toggle:has(:checked)>:nth-child(2){opacity:0;rotate:15deg}.toggle:has(:checked)>:nth-child(3){opacity:1;rotate:none}.toggle:before{aspect-ratio:1;border-radius:var(--radius-selector);--tw-content:"";content:var(--tw-content);width:100%;height:100%;box-shadow:0 -1px oklch(0% 0 0 / calc(var(--depth) * .1)) inset,0 8px 0 -4px oklch(100% 0 0 / calc(var(--depth) * .1)) inset,0 1px currentColor;background-color:currentColor;grid-row-start:1;grid-column-start:2;transition:background-color .1s,translate .2s,inset-inline-start .2s;position:relative;inset-inline-start:0;translate:0}@supports (color:color-mix(in lab,red,red)){.toggle:before{box-shadow:0 -1px oklch(0% 0 0 / calc(var(--depth) * .1)) inset,0 8px 0 -4px oklch(100% 0 0 / calc(var(--depth) * .1)) inset,0 1px color-mix(in oklab,currentColor calc(var(--depth) * 10%),#0000)}}.toggle:before{background-size:auto,calc(var(--noise) * 100%);background-image:none,var(--fx-noise)}@media (forced-colors:active){.toggle:before{outline-style:var(--tw-outline-style);outline-offset:-1px;outline-width:1px}}@media print{.toggle:before{outline-offset:-1rem;outline:.25rem solid}}.toggle:focus-visible,.toggle:has(:focus-visible){outline-offset:2px;outline:2px solid}.toggle:checked,.toggle[aria-checked=true],.toggle:has(>input:checked){background-color:var(--color-base-100);--input-color:var(--color-base-content);grid-template-columns:1fr 1fr 0fr}:is(.toggle:checked,.toggle[aria-checked=true],.toggle:has(>input:checked)):before{background-color:currentColor}@starting-style{:is(.toggle:checked,.toggle[aria-checked=true],.toggle:has(>input:checked)):before{opacity:0}}.toggle:indeterminate{grid-template-columns:.5fr 1fr .5fr}.toggle:disabled{cursor:not-allowed;opacity:.3}.toggle:disabled:before{border:var(--border) solid currentColor;background-color:#0000}.input{cursor:text;border:var(--border) solid #0000;-webkit-appearance:none;-moz-appearance:none;appearance:none;background-color:var(--color-base-100);vertical-align:middle;white-space:nowrap;width:clamp(3rem,20rem,100%);height:var(--size);font-size:max(var(--font-size,.875rem),.875rem);touch-action:manipulation;border-color:var(--input-color);box-shadow:0 1px var(--input-color) inset,0 -1px oklch(100% 0 0 / calc(var(--depth) * .1)) inset;border-start-start-radius:var(--join-ss,var(--radius-field));border-start-end-radius:var(--join-se,var(--radius-field));border-end-end-radius:var(--join-ee,var(--radius-field));border-end-start-radius:var(--join-es,var(--radius-field));flex-shrink:1;align-items:center;gap:.5rem;padding-inline:.75rem;display:inline-flex;position:relative}@supports (color:color-mix(in lab,red,red)){.input{box-shadow:0 1px color-mix(in oklab,var(--input-color) calc(var(--depth) * 10%),#0000) inset,0 -1px oklch(100% 0 0 / calc(var(--depth) * .1)) inset}}.input{--size:calc(var(--size-field,.25rem) * 10);--input-color:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){.input{--input-color:color-mix(in oklab, var(--color-base-content) 20%, #0000)}}.input:where(input){display:inline-flex}.input :where(input){-webkit-appearance:none;-moz-appearance:none;appearance:none;background-color:#0000;border:none;width:100%;height:100%;display:inline-flex}.input :where(input):focus,.input :where(input):focus-within{--tw-outline-style:none;outline-style:none}@media (forced-colors:active){.input :where(input):focus,.input :where(input):focus-within{outline-offset:2px;outline:2px solid #0000}}.input :where(input[type=url]),.input :where(input[type=email]){direction:ltr}.input :where(input[type=date]){display:inline-flex}.input:focus,.input:focus-within{--input-color:var(--color-base-content);box-shadow:0 1px var(--input-color)}@supports (color:color-mix(in lab,red,red)){.input:focus,.input:focus-within{box-shadow:0 1px color-mix(in oklab,var(--input-color) calc(var(--depth) * 10%),#0000)}}.input:focus,.input:focus-within{outline:2px solid var(--input-color);outline-offset:2px;isolation:isolate}@media (pointer:coarse){@supports (-webkit-touch-callout:none){.input:focus,.input:focus-within{--font-size:1rem}}}.input:has(>input[disabled]),.input:is(:disabled,[disabled]),fieldset:disabled .input{cursor:not-allowed;border-color:var(--color-base-200);background-color:var(--color-base-200);color:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){.input:has(>input[disabled]),.input:is(:disabled,[disabled]),fieldset:disabled .input{color:color-mix(in oklab,var(--color-base-content) 40%,transparent)}}:is(.input:has(>input[disabled]),.input:is(:disabled,[disabled]),fieldset:disabled .input)::placeholder{color:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){:is(.input:has(>input[disabled]),.input:is(:disabled,[disabled]),fieldset:disabled .input)::placeholder{color:color-mix(in oklab,var(--color-base-content) 20%,transparent)}}.input:has(>input[disabled]),.input:is(:disabled,[disabled]),fieldset:disabled .input{box-shadow:none}.input:has(>input[disabled])>input[disabled]{cursor:not-allowed}.input::-webkit-date-and-time-value{text-align:inherit}.input[type=number]::-webkit-inner-spin-button{margin-block:-.75rem;margin-inline-end:-.75rem}.input::-webkit-calendar-picker-indicator{position:absolute;inset-inline-end:.75em}.input:has(>input[type=date]) :where(input[type=date]){webkit-appearance:none;-webkit-appearance:none;-moz-appearance:none;appearance:none;display:inline-flex}.input:has(>input[type=date]) input[type=date]::-webkit-calendar-picker-indicator{cursor:pointer;width:1em;height:1em;position:absolute;inset-inline-end:.75em}.table{border-collapse:separate;--tw-border-spacing-x: 0rem ;--tw-border-spacing-y: 0rem ;width:100%;border-spacing:var(--tw-border-spacing-x) var(--tw-border-spacing-y);border-radius:var(--radius-box);text-align:left;font-size:.875rem;position:relative}.table:where(:dir(rtl),[dir=rtl],[dir=rtl] *){text-align:right}@media (hover:hover){:is(.table tr.row-hover,.table tr.row-hover:nth-child(2n)):hover{background-color:var(--color-base-200)}}.table :where(th,td){vertical-align:middle;padding-block:.75rem;padding-inline:1rem}.table :where(thead,tfoot){white-space:nowrap;color:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){.table :where(thead,tfoot){color:color-mix(in oklab,var(--color-base-content) 60%,transparent)}}.table :where(thead,tfoot){font-size:.875rem;font-weight:600}.table :where(tfoot tr:first-child :is(td,th)){border-top:var(--border) solid var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){.table :where(tfoot tr:first-child :is(td,th)){border-top:var(--border) solid color-mix(in oklch,var(--color-base-content) 5%,#0000)}}.table :where(.table-pin-rows thead tr){z-index:1;background-color:var(--color-base-100);position:sticky;top:0}.table :where(.table-pin-rows tfoot tr){z-index:1;background-color:var(--color-base-100);position:sticky;bottom:0}.table :where(.table-pin-cols tr th){background-color:var(--color-base-100);position:sticky;left:0;right:0}.table :where(thead tr :is(td,th),tbody tr:not(:last-child) :is(td,th)){border-bottom:var(--border) solid var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){.table :where(thead tr :is(td,th),tbody tr:not(:last-child) :is(td,th)){border-bottom:var(--border) solid color-mix(in oklch,var(--color-base-content) 5%,#0000)}}.range{-webkit-appearance:none;-moz-appearance:none;appearance:none;webkit-appearance:none;--range-thumb:var(--color-base-100);--range-thumb-size:calc(var(--size-selector,.25rem) * 6);--range-progress:currentColor;--range-fill:1;--range-p:.25rem;--range-bg:currentColor}@supports (color:color-mix(in lab,red,red)){.range{--range-bg:color-mix(in oklab, currentColor 10%, #0000)}}.range{cursor:pointer;vertical-align:middle;--radius-selector-max:calc(var(--radius-selector) + var(--radius-selector) + var(--radius-selector));border-radius:calc(var(--radius-selector) + min(var(--range-p),var(--radius-selector-max)));width:clamp(3rem,20rem,100%);height:var(--range-thumb-size);background-color:#0000;border:none;overflow:hidden}[dir=rtl] .range{--range-dir:-1}.range:focus{outline:none}.range:focus-visible{outline-offset:2px;outline:2px solid}.range::-webkit-slider-runnable-track{background-color:var(--range-bg);border-radius:var(--radius-selector);width:100%;height:calc(var(--range-thumb-size) * .5)}@media (forced-colors:active){.range::-webkit-slider-runnable-track{border:1px solid}.range::-moz-range-track{border:1px solid}}.range::-webkit-slider-thumb{box-sizing:border-box;border-radius:calc(var(--radius-selector) + min(var(--range-p),var(--radius-selector-max)));background-color:var(--range-thumb);height:var(--range-thumb-size);width:var(--range-thumb-size);border:var(--range-p) solid;-webkit-appearance:none;-moz-appearance:none;appearance:none;webkit-appearance:none;color:var(--range-progress);box-shadow:0 -1px oklch(0% 0 0 / calc(var(--depth) * .1)) inset,0 8px 0 -4px oklch(100% 0 0 / calc(var(--depth) * .1)) inset,0 1px currentColor,0 0 0 2rem var(--range-thumb) inset,calc((var(--range-dir,1) * -100cqw) - (var(--range-dir,1) * var(--range-thumb-size) / 2)) 0 0 calc(100cqw * var(--range-fill));position:relative;top:50%;transform:translateY(-50%)}@supports (color:color-mix(in lab,red,red)){.range::-webkit-slider-thumb{box-shadow:0 -1px oklch(0% 0 0 / calc(var(--depth) * .1)) inset,0 8px 0 -4px oklch(100% 0 0 / calc(var(--depth) * .1)) inset,0 1px color-mix(in oklab,currentColor calc(var(--depth) * 10%),#0000),0 0 0 2rem var(--range-thumb) inset,calc((var(--range-dir,1) * -100cqw) - (var(--range-dir,1) * var(--range-thumb-size) / 2)) 0 0 calc(100cqw * var(--range-fill))}}.range::-moz-range-track{background-color:var(--range-bg);border-radius:var(--radius-selector);width:100%;height:calc(var(--range-thumb-size) * .5)}.range::-moz-range-thumb{box-sizing:border-box;border-radius:calc(var(--radius-selector) + min(var(--range-p),var(--radius-selector-max)));height:var(--range-thumb-size);width:var(--range-thumb-size);border:var(--range-p) solid;color:var(--range-progress);box-shadow:0 -1px oklch(0% 0 0 / calc(var(--depth) * .1)) inset,0 8px 0 -4px oklch(100% 0 0 / calc(var(--depth) * .1)) inset,0 1px currentColor,0 0 0 2rem var(--range-thumb) inset,calc((var(--range-dir,1) * -100cqw) - (var(--range-dir,1) * var(--range-thumb-size) / 2)) 0 0 calc(100cqw * var(--range-fill));background-color:currentColor;position:relative;top:50%}@supports (color:color-mix(in lab,red,red)){.range::-moz-range-thumb{box-shadow:0 -1px oklch(0% 0 0 / calc(var(--depth) * .1)) inset,0 8px 0 -4px oklch(100% 0 0 / calc(var(--depth) * .1)) inset,0 1px color-mix(in oklab,currentColor calc(var(--depth) * 10%),#0000),0 0 0 2rem var(--range-thumb) inset,calc((var(--range-dir,1) * -100cqw) - (var(--range-dir,1) * var(--range-thumb-size) / 2)) 0 0 calc(100cqw * var(--range-fill))}}.range:disabled{cursor:not-allowed;opacity:.3}.select{border:var(--border) solid #0000;-webkit-appearance:none;-moz-appearance:none;appearance:none;background-color:var(--color-base-100);vertical-align:middle;width:clamp(3rem,20rem,100%);height:var(--size);touch-action:manipulation;white-space:nowrap;text-overflow:ellipsis;box-shadow:0 1px var(--input-color) inset,0 -1px oklch(100% 0 0 / calc(var(--depth) * .1)) inset;background-image:linear-gradient(45deg,#0000 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,#0000 50%);background-position:calc(100% - 20px) calc(1px + 50%),calc(100% - 16.1px) calc(1px + 50%);background-repeat:no-repeat;background-size:4px 4px,4px 4px;border-start-start-radius:var(--join-ss,var(--radius-field));border-start-end-radius:var(--join-se,var(--radius-field));border-end-end-radius:var(--join-ee,var(--radius-field));border-end-start-radius:var(--join-es,var(--radius-field));flex-shrink:1;align-items:center;gap:.375rem;padding-inline:.75rem 1.75rem;font-size:.875rem;display:inline-flex;position:relative;overflow:hidden}@supports (color:color-mix(in lab,red,red)){.select{box-shadow:0 1px color-mix(in oklab,var(--input-color) calc(var(--depth) * 10%),#0000) inset,0 -1px oklch(100% 0 0 / calc(var(--depth) * .1)) inset}}.select{border-color:var(--input-color);--input-color:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){.select{--input-color:color-mix(in oklab, var(--color-base-content) 20%, #0000)}}.select{--size:calc(var(--size-field,.25rem) * 10)}[dir=rtl] .select{background-position:12px calc(1px + 50%),16px calc(1px + 50%)}[dir=rtl] .select::picker(select){translate:.5rem}[dir=rtl] .select select::picker(select){translate:.5rem}.select[multiple]{background-image:none;height:auto;padding-block:.75rem;padding-inline-end:.75rem;overflow:auto}.select select{-webkit-appearance:none;-moz-appearance:none;appearance:none;width:calc(100% + 2.75rem);height:calc(100% - calc(var(--border) * 2));background:inherit;border-radius:inherit;border-style:none;align-items:center;margin-inline:-.75rem -1.75rem;padding-inline:.75rem 1.75rem}.select select:focus,.select select:focus-within{--tw-outline-style:none;outline-style:none}@media (forced-colors:active){.select select:focus,.select select:focus-within{outline-offset:2px;outline:2px solid #0000}}.select select:not(:last-child){background-image:none;margin-inline-end:-1.375rem}.select:focus,.select:focus-within{--input-color:var(--color-base-content);box-shadow:0 1px var(--input-color)}@supports (color:color-mix(in lab,red,red)){.select:focus,.select:focus-within{box-shadow:0 1px color-mix(in oklab,var(--input-color) calc(var(--depth) * 10%),#0000)}}.select:focus,.select:focus-within{outline:2px solid var(--input-color);outline-offset:2px;isolation:isolate}.select:has(>select[disabled]),.select:is(:disabled,[disabled]),fieldset:disabled .select{cursor:not-allowed;border-color:var(--color-base-200);background-color:var(--color-base-200);color:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){.select:has(>select[disabled]),.select:is(:disabled,[disabled]),fieldset:disabled .select{color:color-mix(in oklab,var(--color-base-content) 40%,transparent)}}:is(.select:has(>select[disabled]),.select:is(:disabled,[disabled]),fieldset:disabled .select)::placeholder{color:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){:is(.select:has(>select[disabled]),.select:is(:disabled,[disabled]),fieldset:disabled .select)::placeholder{color:color-mix(in oklab,var(--color-base-content) 20%,transparent)}}.select:has(>select[disabled])>select[disabled]{cursor:not-allowed}@supports (appearance:base-select){.select,.select select{-webkit-appearance:base-select;-moz-appearance:base-select;appearance:base-select}:is(.select,.select select)::picker(select){-webkit-appearance:base-select;-moz-appearance:base-select;appearance:base-select}}:is(.select,.select select)::picker(select){color:inherit;border:var(--border) solid var(--color-base-200);border-radius:var(--radius-box);background-color:inherit;max-height:min(24rem,70dvh);box-shadow:0 2px calc(var(--depth) * 3px) -2px #0003;box-shadow:0 20px 25px -5px rgb(0 0 0/calc(var(--depth) * .1)),0 8px 10px -6px rgb(0 0 0/calc(var(--depth) * .1));margin-block:.5rem;margin-inline:.5rem;padding:.5rem;translate:-.5rem}:is(.select,.select select)::picker-icon{display:none}:is(.select,.select select) optgroup{padding-top:.5em}:is(.select,.select select) optgroup option:first-child{margin-top:.5em}:is(.select,.select select) option{border-radius:var(--radius-field);white-space:normal;padding-block:.375rem;padding-inline:.75rem;transition-property:color,background-color;transition-duration:.2s;transition-timing-function:cubic-bezier(0,0,.2,1)}:is(.select,.select select) option:not(:disabled):hover,:is(.select,.select select) option:not(:disabled):focus-visible{cursor:pointer;background-color:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){:is(.select,.select select) option:not(:disabled):hover,:is(.select,.select select) option:not(:disabled):focus-visible{background-color:color-mix(in oklab,var(--color-base-content) 10%,transparent)}}:is(.select,.select select) option:not(:disabled):hover,:is(.select,.select select) option:not(:disabled):focus-visible{--tw-outline-style:none;outline-style:none}@media (forced-colors:active){:is(.select,.select select) option:not(:disabled):hover,:is(.select,.select select) option:not(:disabled):focus-visible{outline-offset:2px;outline:2px solid #0000}}:is(.select,.select select) option:not(:disabled):active{background-color:var(--color-neutral);color:var(--color-neutral-content);box-shadow:0 2px calc(var(--depth) * 3px) -2px var(--color-neutral)}.collapse-title{grid-row-start:1;grid-column-start:1;width:100%;min-height:1lh;padding:1rem;padding-inline-end:3rem;transition:background-color .2s ease-out;position:relative}.checkbox{border:var(--border) solid var(--input-color,var(--color-base-content))}@supports (color:color-mix(in lab,red,red)){.checkbox{border:var(--border) solid var(--input-color,color-mix(in oklab, var(--color-base-content) 20%, #0000))}}.checkbox{cursor:pointer;-webkit-appearance:none;-moz-appearance:none;appearance:none;border-radius:var(--radius-selector);vertical-align:middle;color:var(--color-base-content);box-shadow:0 1px oklch(0% 0 0 / calc(var(--depth) * .1)) inset,0 0 #0000 inset,0 0 #0000;--size:calc(var(--size-selector,.25rem) * 6);width:var(--size);height:var(--size);background-size:auto,calc(var(--noise) * 100%);background-image:none,var(--fx-noise);flex-shrink:0;padding:.25rem;transition:background-color .2s,box-shadow .2s;display:inline-block;position:relative}.checkbox:before{--tw-content:"";content:var(--tw-content);opacity:0;clip-path:polygon(20% 100%,20% 80%,50% 80%,50% 80%,70% 80%,70% 100%);width:100%;height:100%;box-shadow:0 3px oklch(100% 0 0 / calc(var(--depth) * .1)) inset;background-color:currentColor;font-size:1rem;line-height:.75;transition:clip-path .3s .1s,opacity .1s .1s,rotate .3s .1s,translate .3s .1s;display:block;rotate:45deg}.checkbox:focus-visible{outline:2px solid var(--input-color,currentColor);outline-offset:2px}.checkbox:checked,.checkbox[aria-checked=true]{background-color:var(--input-color,#0000);box-shadow:0 0 #0000 inset,0 8px 0 -4px oklch(100% 0 0 / calc(var(--depth) * .1)) inset,0 1px oklch(0% 0 0 / calc(var(--depth) * .1))}:is(.checkbox:checked,.checkbox[aria-checked=true]):before{clip-path:polygon(20% 100%,20% 80%,50% 80%,50% 0%,70% 0%,70% 100%);opacity:1}@media (forced-colors:active){:is(.checkbox:checked,.checkbox[aria-checked=true]):before{--tw-content:"✔︎";clip-path:none;background-color:#0000;rotate:none}}@media print{:is(.checkbox:checked,.checkbox[aria-checked=true]):before{--tw-content:"✔︎";clip-path:none;background-color:#0000;rotate:none}}.checkbox:indeterminate{background-color:var(--input-color,var(--color-base-content))}@supports (color:color-mix(in lab,red,red)){.checkbox:indeterminate{background-color:var(--input-color,color-mix(in oklab, var(--color-base-content) 20%, #0000))}}.checkbox:indeterminate:before{opacity:1;clip-path:polygon(20% 100%,20% 80%,50% 80%,50% 80%,80% 80%,80% 100%);translate:0 -35%;rotate:none}.radio{cursor:pointer;-webkit-appearance:none;-moz-appearance:none;appearance:none;vertical-align:middle;border:var(--border) solid var(--input-color,currentColor);border-radius:3.40282e38px;flex-shrink:0;padding:.25rem;display:inline-block;position:relative}@supports (color:color-mix(in lab,red,red)){.radio{border:var(--border) solid var(--input-color,color-mix(in srgb, currentColor 20%, #0000))}}.radio{box-shadow:0 1px oklch(0% 0 0 / calc(var(--depth) * .1)) inset;--size:calc(var(--size-selector,.25rem) * 6);width:var(--size);height:var(--size);color:var(--input-color,currentColor)}.radio:before{--tw-content:"";content:var(--tw-content);background-size:auto,calc(var(--noise) * 100%);background-image:none,var(--fx-noise);border-radius:3.40282e38px;width:100%;height:100%;display:block}.radio:focus-visible{outline:2px solid}.radio:checked,.radio[aria-checked=true]{background-color:var(--color-base-100);border-color:currentColor}@media (prefers-reduced-motion:no-preference){.radio:checked,.radio[aria-checked=true]{animation:.2s ease-out radio}}:is(.radio:checked,.radio[aria-checked=true]):before{box-shadow:0 -1px oklch(0% 0 0 / calc(var(--depth) * .1)) inset,0 8px 0 -4px oklch(100% 0 0 / calc(var(--depth) * .1)) inset,0 1px oklch(0% 0 0 / calc(var(--depth) * .1));background-color:currentColor}@media (forced-colors:active){:is(.radio:checked,.radio[aria-checked=true]):before{outline-style:var(--tw-outline-style);outline-offset:-1px;outline-width:1px}}@media print{:is(.radio:checked,.radio[aria-checked=true]):before{outline-offset:-1rem;outline:.25rem solid}}.rating{vertical-align:middle;display:inline-flex;position:relative}.rating input{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:none}.rating :where(*){background-color:var(--color-base-content);opacity:.2;border-radius:0;width:1.5rem;height:1.5rem}@media (prefers-reduced-motion:no-preference){.rating :where(*){animation:.25s ease-out rating}}.rating :where(*):is(input){cursor:pointer}.rating .rating-hidden{background-color:#0000;width:.5rem}.rating input[type=radio]:checked{background-image:none}.rating :checked,.rating [aria-checked=true],.rating [aria-current=true],.rating :has(~:checked,~[aria-checked=true],~[aria-current=true]){opacity:1}.rating :focus-visible{scale:1.1}@media (prefers-reduced-motion:no-preference){.rating :focus-visible{transition:scale .2s ease-out}}.rating :active:focus{animation:none;scale:1.1}.navbar{align-items:center;width:100%;min-height:4rem;padding:.5rem;display:flex}.drawer{grid-auto-columns:max-content auto;width:100%;display:grid;position:relative}.card{border-radius:var(--radius-box);outline-offset:2px;outline:0 solid #0000;flex-direction:column;transition:outline .2s ease-in-out;display:flex;position:relative}.card:focus{--tw-outline-style:none;outline-style:none}@media (forced-colors:active){.card:focus{outline-offset:2px;outline:2px solid #0000}}.card:focus-visible{outline-color:currentColor}.card :where(figure:first-child){border-start-start-radius:inherit;border-start-end-radius:inherit;border-end-end-radius:unset;border-end-start-radius:unset;overflow:hidden}.card :where(figure:last-child){border-start-start-radius:unset;border-start-end-radius:unset;border-end-end-radius:inherit;border-end-start-radius:inherit;overflow:hidden}.card figure{justify-content:center;align-items:center;display:flex}.card:has(>input:is(input[type=checkbox],input[type=radio])){cursor:pointer;-webkit-user-select:none;user-select:none}.card:has(>:checked){outline:2px solid}.progress{-webkit-appearance:none;-moz-appearance:none;appearance:none;border-radius:var(--radius-box);background-color:currentColor;width:100%;height:.5rem;position:relative;overflow:hidden}@supports (color:color-mix(in lab,red,red)){.progress{background-color:color-mix(in oklab,currentcolor 20%,transparent)}}.progress{color:var(--color-base-content)}.progress:indeterminate{background-image:repeating-linear-gradient(90deg,currentColor -1% 10%,#0000 10% 90%);background-position-x:15%;background-size:200%}@media (prefers-reduced-motion:no-preference){.progress:indeterminate{animation:5s ease-in-out infinite progress}}@supports ((-moz-appearance:none)){.progress:indeterminate::-moz-progress-bar{background-color:#0000}@media (prefers-reduced-motion:no-preference){.progress:indeterminate::-moz-progress-bar{background-image:repeating-linear-gradient(90deg,currentColor -1% 10%,#0000 10% 90%);background-position-x:15%;background-size:200%;animation:5s ease-in-out infinite progress}}.progress::-moz-progress-bar{border-radius:var(--radius-box);background-color:currentColor}}@supports ((-webkit-appearance:none)){.progress::-webkit-progress-bar{border-radius:var(--radius-box);background-color:#0000}.progress::-webkit-progress-value{border-radius:var(--radius-box);background-color:currentColor}}.textarea{border:var(--border) solid #0000;-webkit-appearance:none;-moz-appearance:none;appearance:none;border-radius:var(--radius-field);background-color:var(--color-base-100);vertical-align:middle;width:clamp(3rem,20rem,100%);min-height:5rem;font-size:max(var(--font-size,.875rem),.875rem);touch-action:manipulation;border-color:var(--input-color);box-shadow:0 1px var(--input-color) inset,0 -1px oklch(100% 0 0 / calc(var(--depth) * .1)) inset;flex-shrink:1;padding-block:.5rem;padding-inline:.75rem}@supports (color:color-mix(in lab,red,red)){.textarea{box-shadow:0 1px color-mix(in oklab,var(--input-color) calc(var(--depth) * 10%),#0000) inset,0 -1px oklch(100% 0 0 / calc(var(--depth) * .1)) inset}}.textarea{--input-color:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){.textarea{--input-color:color-mix(in oklab, var(--color-base-content) 20%, #0000)}}.textarea textarea{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-color:#0000;border:none}.textarea textarea:focus,.textarea textarea:focus-within{--tw-outline-style:none;outline-style:none}@media (forced-colors:active){.textarea textarea:focus,.textarea textarea:focus-within{outline-offset:2px;outline:2px solid #0000}}.textarea:focus,.textarea:focus-within{--input-color:var(--color-base-content);box-shadow:0 1px var(--input-color)}@supports (color:color-mix(in lab,red,red)){.textarea:focus,.textarea:focus-within{box-shadow:0 1px color-mix(in oklab,var(--input-color) calc(var(--depth) * 10%),#0000)}}.textarea:focus,.textarea:focus-within{outline:2px solid var(--input-color);outline-offset:2px;isolation:isolate}@media (pointer:coarse){@supports (-webkit-touch-callout:none){.textarea:focus,.textarea:focus-within{--font-size:1rem}}}.textarea:has(>textarea[disabled]),.textarea:is(:disabled,[disabled]){cursor:not-allowed;border-color:var(--color-base-200);background-color:var(--color-base-200);color:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){.textarea:has(>textarea[disabled]),.textarea:is(:disabled,[disabled]){color:color-mix(in oklab,var(--color-base-content) 40%,transparent)}}:is(.textarea:has(>textarea[disabled]),.textarea:is(:disabled,[disabled]))::placeholder{color:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){:is(.textarea:has(>textarea[disabled]),.textarea:is(:disabled,[disabled]))::placeholder{color:color-mix(in oklab,var(--color-base-content) 20%,transparent)}}.textarea:has(>textarea[disabled]),.textarea:is(:disabled,[disabled]){box-shadow:none}.textarea:has(>textarea[disabled])>textarea[disabled]{cursor:not-allowed}.stack{grid-template-rows:3px 4px 1fr 4px 3px;grid-template-columns:3px 4px 1fr 4px 3px;display:inline-grid}.stack>*{width:100%;height:100%}.stack>:nth-child(n+2){opacity:.7;width:100%}.stack>:nth-child(2){z-index:2;opacity:.9}.stack>:first-child{z-index:3;width:100%}.modal-backdrop{color:#0000;z-index:-1;grid-row-start:1;grid-column-start:1;place-self:stretch stretch;display:grid}.modal-backdrop button{cursor:pointer}.tab-content{order:var(--tabcontent-order);--tabcontent-radius-ss:var(--radius-box);--tabcontent-radius-se:var(--radius-box);--tabcontent-radius-es:var(--radius-box);--tabcontent-radius-ee:var(--radius-box);--tabcontent-order:1;width:100%;height:calc(100% - var(--tab-height) + var(--border));margin:var(--tabcontent-margin);border-color:#0000;border-width:var(--border);border-start-start-radius:var(--tabcontent-radius-ss);border-start-end-radius:var(--tabcontent-radius-se);border-end-end-radius:var(--tabcontent-radius-ee);border-end-start-radius:var(--tabcontent-radius-es);display:none}.stat-figure{grid-row:1/span 3;grid-column-start:2;place-self:center flex-end}.modal-box{background-color:var(--color-base-100);border-top-left-radius:var(--modal-tl,var(--radius-box));border-top-right-radius:var(--modal-tr,var(--radius-box));border-bottom-left-radius:var(--modal-bl,var(--radius-box));border-bottom-right-radius:var(--modal-br,var(--radius-box));opacity:0;overscroll-behavior:contain;grid-row-start:1;grid-column-start:1;width:91.6667%;max-width:32rem;max-height:100vh;padding:1.5rem;transition:translate .3s ease-out,scale .3s ease-out,opacity .2s ease-out 50ms,box-shadow .3s ease-out;overflow-y:auto;scale:95%;box-shadow:0 25px 50px -12px #00000040}.drawer-content{grid-row-start:1;grid-column-start:2;min-width:0}.stat-value{white-space:nowrap;grid-column-start:1;font-size:2rem;font-weight:800}.stat-desc{white-space:nowrap;color:var(--color-base-content);grid-column-start:1}@supports (color:color-mix(in lab,red,red)){.stat-desc{color:color-mix(in oklab,var(--color-base-content) 60%,transparent)}}.stat-desc{font-size:.75rem}.stat-title{white-space:nowrap;color:var(--color-base-content);grid-column-start:1}@supports (color:color-mix(in lab,red,red)){.stat-title{color:color-mix(in oklab,var(--color-base-content) 60%,transparent)}}.stat-title{font-size:.75rem}.divider{white-space:nowrap;height:1rem;margin:var(--divider-m,1rem 0);--divider-color:var(--color-base-content);flex-direction:row;align-self:stretch;align-items:center;display:flex}@supports (color:color-mix(in lab,red,red)){.divider{--divider-color:color-mix(in oklab, var(--color-base-content) 10%, transparent)}}.divider:before,.divider:after{content:"";background-color:var(--divider-color);flex-grow:1;width:100%;height:.125rem}@media print{.divider:before,.divider:after{border:.5px solid}}.divider:not(:empty){gap:1rem}.filter{flex-wrap:wrap;display:flex}.filter input[type=radio]{width:auto}.filter input{opacity:1;transition:margin .1s,opacity .3s,padding .3s,border-width .1s;overflow:hidden;scale:1}.filter input:not(:last-child){margin-inline-end:.25rem}.filter input.filter-reset{aspect-ratio:1}.filter input.filter-reset:after{--tw-content:"×";content:var(--tw-content)}.filter:not(:has(input:checked:not(.filter-reset))) .filter-reset,.filter:not(:has(input:checked:not(.filter-reset))) input[type=reset],.filter:has(input:checked:not(.filter-reset)) input:not(:checked,.filter-reset,input[type=reset]){opacity:0;border-width:0;width:0;margin-inline:0;padding-inline:0;scale:0}.label{white-space:nowrap;color:currentColor;align-items:center;gap:.375rem;display:inline-flex}@supports (color:color-mix(in lab,red,red)){.label{color:color-mix(in oklab,currentcolor 60%,transparent)}}.label:has(input){cursor:pointer}.label:is(.input>*,.select>*){white-space:nowrap;height:calc(100% - .5rem);font-size:inherit;align-items:center;padding-inline:.75rem;display:flex}.label:is(.input>*,.select>*):first-child{border-inline-end:var(--border) solid currentColor;margin-inline:-.75rem .75rem}@supports (color:color-mix(in lab,red,red)){.label:is(.input>*,.select>*):first-child{border-inline-end:var(--border) solid color-mix(in oklab,currentColor 10%,#0000)}}.label:is(.input>*,.select>*):last-child{border-inline-start:var(--border) solid currentColor;margin-inline:.75rem -.75rem}@supports (color:color-mix(in lab,red,red)){.label:is(.input>*,.select>*):last-child{border-inline-start:var(--border) solid color-mix(in oklab,currentColor 10%,#0000)}}.modal-action{justify-content:flex-end;gap:.5rem;margin-top:1.5rem;display:flex}.fieldset-legend{color:var(--color-base-content);justify-content:space-between;align-items:center;gap:.5rem;margin-bottom:-.25rem;padding-block:.5rem;font-weight:600;display:flex}.status{aspect-ratio:1;border-radius:var(--radius-selector);background-color:var(--color-base-content);width:.5rem;height:.5rem;display:inline-block}@supports (color:color-mix(in lab,red,red)){.status{background-color:color-mix(in oklab,var(--color-base-content) 20%,transparent)}}.status{vertical-align:middle;color:#0000004d;background-position:50%;background-repeat:no-repeat}@supports (color:color-mix(in lab,red,red)){.status{color:color-mix(in oklab,var(--color-black) 30%,transparent)}}.status{background-image:radial-gradient(circle at 35% 30%,oklch(1 0 0 / calc(var(--depth) * .5)),#0000);box-shadow:0 2px 3px -1px}@supports (color:color-mix(in lab,red,red)){.status{box-shadow:0 2px 3px -1px color-mix(in oklab,currentColor calc(var(--depth) * 100%),#0000)}}.badge{border-radius:var(--radius-selector);vertical-align:middle;color:var(--badge-fg);border:var(--border) solid var(--badge-color,var(--color-base-200));background-size:auto,calc(var(--noise) * 100%);background-image:none,var(--fx-noise);background-color:var(--badge-bg);--badge-bg:var(--badge-color,var(--color-base-100));--badge-fg:var(--color-base-content);--size:calc(var(--size-selector,.25rem) * 6);width:fit-content;height:var(--size);padding-inline:calc(var(--size) / 2 - var(--border));justify-content:center;align-items:center;gap:.5rem;font-size:.875rem;display:inline-flex}.tabs{--tabs-height:auto;--tabs-direction:row;--tab-height:calc(var(--size-field,.25rem) * 10);height:var(--tabs-height);flex-wrap:wrap;flex-direction:var(--tabs-direction);display:flex}.footer{grid-auto-flow:row;place-items:start;gap:2.5rem 1rem;width:100%;font-size:.875rem;line-height:1.25rem;display:grid}.footer>*{place-items:start;gap:.5rem;display:grid}.footer.footer-center{text-align:center;grid-auto-flow:column dense;place-items:center}.footer.footer-center>*{place-items:center}.stat{grid-template-columns:repeat(1,1fr);column-gap:1rem;width:100%;padding-block:1rem;padding-inline:1.5rem;display:inline-grid}.stat:not(:last-child){border-inline-end:var(--border) dashed currentColor}@supports (color:color-mix(in lab,red,red)){.stat:not(:last-child){border-inline-end:var(--border) dashed color-mix(in oklab,currentColor 10%,#0000)}}.stat:not(:last-child){border-block-end:none}.navbar-end{justify-content:flex-end;align-items:center;width:50%;display:inline-flex}.navbar-start{justify-content:flex-start;align-items:center;width:50%;display:inline-flex}.card-body{padding:var(--card-p,1.5rem);font-size:var(--card-fs,.875rem);flex-direction:column;flex:auto;gap:.5rem;display:flex}.card-body :where(p){flex-grow:1}.navbar-center{flex-shrink:0;align-items:center;display:inline-flex}.alert{--alert-border-color:var(--color-base-200);border-radius:var(--radius-box);color:var(--color-base-content);background-color:var(--alert-color,var(--color-base-200));text-align:start;background-size:auto,calc(var(--noise) * 100%);background-image:none,var(--fx-noise);box-shadow:0 3px 0 -2px oklch(100% 0 0 / calc(var(--depth) * .08)) inset,0 1px #000,0 4px 3px -2px oklch(0% 0 0 / calc(var(--depth) * .08));border-style:solid;grid-template-columns:auto;grid-auto-flow:column;justify-content:start;place-items:center start;gap:1rem;padding-block:.75rem;padding-inline:1rem;font-size:.875rem;line-height:1.25rem;display:grid}@supports (color:color-mix(in lab,red,red)){.alert{box-shadow:0 3px 0 -2px oklch(100% 0 0 / calc(var(--depth) * .08)) inset,0 1px color-mix(in oklab,color-mix(in oklab,#000 20%,var(--alert-color,var(--color-base-200))) calc(var(--depth) * 20%),#0000),0 4px 3px -2px oklch(0% 0 0 / calc(var(--depth) * .08))}}.alert:has(:nth-child(2)){grid-template-columns:auto minmax(auto,1fr)}.fieldset{grid-template-columns:1fr;grid-auto-rows:max-content;gap:.375rem;padding-block:.25rem;font-size:.75rem;display:grid}.card-title{font-size:var(--cardtitle-fs,1.125rem);align-items:center;gap:.5rem;font-weight:600;display:flex}.mask{vertical-align:middle;display:inline-block;-webkit-mask-position:50%;mask-position:50%;-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}.skeleton{border-radius:var(--radius-box);background-color:var(--color-base-300)}@media (prefers-reduced-motion:reduce){.skeleton{transition-duration:15s}}.skeleton{will-change:background-position;background-image:linear-gradient(105deg,#0000 0% 40%,var(--color-base-100) 50%,#0000 60% 100%);background-position-x:-50%;background-size:200%}@media (prefers-reduced-motion:no-preference){.skeleton{animation:1.8s ease-in-out infinite skeleton}}.link{cursor:pointer;text-decoration-line:underline}.link:focus{--tw-outline-style:none;outline-style:none}@media (forced-colors:active){.link:focus{outline-offset:2px;outline:2px solid #0000}}.link:focus-visible{outline-offset:2px;outline:2px solid}.menu-title{color:var(--color-base-content);padding-block:.5rem;padding-inline:.75rem}@supports (color:color-mix(in lab,red,red)){.menu-title{color:color-mix(in oklab,var(--color-base-content) 40%,transparent)}}.menu-title{font-size:.875rem;font-weight:600}.btn-accent{--btn-color:var(--color-accent);--btn-fg:var(--color-accent-content)}.btn-error{--btn-color:var(--color-error);--btn-fg:var(--color-error-content)}.btn-info{--btn-color:var(--color-info);--btn-fg:var(--color-info-content)}.btn-primary{--btn-color:var(--color-primary);--btn-fg:var(--color-primary-content)}.btn-success{--btn-color:var(--color-success);--btn-fg:var(--color-success-content)}.btn-warning{--btn-color:var(--color-warning);--btn-fg:var(--color-warning-content)}}@layer daisyui.l1.l2{.modal.modal-open,.modal[open],.modal:target,.modal-toggle:checked+.modal{pointer-events:auto;visibility:visible;opacity:1;transition:visibility 0s allow-discrete,background-color .3s ease-out,opacity .1s ease-out;background-color:#0006}:is(.modal.modal-open,.modal[open],.modal:target,.modal-toggle:checked+.modal) .modal-box{opacity:1;translate:0;scale:1}:root:has(:is(.modal.modal-open,.modal[open],.modal:target,.modal-toggle:checked+.modal)){--page-has-backdrop:1;--page-overflow:hidden;--page-scroll-bg:var(--page-scroll-bg-on);--page-scroll-gutter:stable;--page-scroll-transition:var(--page-scroll-transition-on);animation:forwards set-page-has-scroll;animation-timeline:scroll()}@starting-style{.modal.modal-open,.modal[open],.modal:target,.modal-toggle:checked+.modal{opacity:0}}:where(.drawer-toggle:checked~.drawer-side){pointer-events:auto;visibility:visible;opacity:1;overflow-y:auto}:where(.drawer-toggle:checked~.drawer-side)>:not(.drawer-overlay){translate:0%}.drawer-toggle:focus-visible~.drawer-content label.drawer-button{outline-offset:2px;outline:2px solid}.tooltip>.tooltip-content,.tooltip[data-tip]:before{transform:translate(-50%) translateY(var(--tt-pos,.25rem));inset:auto auto var(--tt-off) 50%}.tooltip:after{transform:translate(-50%) translateY(var(--tt-pos,.25rem));inset:auto auto var(--tt-tail) 50%}.collapse-arrow>.collapse-title:after{width:.5rem;height:.5rem;display:block;position:absolute;transform:translateY(-100%)rotate(45deg)}@media (prefers-reduced-motion:no-preference){.collapse-arrow>.collapse-title:after{transition-property:all;transition-duration:.2s;transition-timing-function:cubic-bezier(.4,0,.2,1)}}.collapse-arrow>.collapse-title:after{content:"";transform-origin:75% 75%;pointer-events:none;top:50%;inset-inline-end:1.4rem;box-shadow:2px 2px}.btn:disabled:not(.btn-link,.btn-ghost){background-color:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){.btn:disabled:not(.btn-link,.btn-ghost){background-color:color-mix(in oklab,var(--color-base-content) 10%,transparent)}}.btn:disabled:not(.btn-link,.btn-ghost){box-shadow:none}.btn:disabled{pointer-events:none;--btn-border:#0000;--btn-noise:none;--btn-fg:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){.btn:disabled{--btn-fg:color-mix(in oklch, var(--color-base-content) 20%, #0000)}}.btn[disabled]:not(.btn-link,.btn-ghost){background-color:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){.btn[disabled]:not(.btn-link,.btn-ghost){background-color:color-mix(in oklab,var(--color-base-content) 10%,transparent)}}.btn[disabled]:not(.btn-link,.btn-ghost){box-shadow:none}.btn[disabled]{pointer-events:none;--btn-border:#0000;--btn-noise:none;--btn-fg:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){.btn[disabled]{--btn-fg:color-mix(in oklch, var(--color-base-content) 20%, #0000)}}@media (prefers-reduced-motion:no-preference){.collapse[open].collapse-arrow>.collapse-title:after,.collapse.collapse-open.collapse-arrow>.collapse-title:after{transform:translateY(-50%)rotate(225deg)}}.collapse.collapse-open.collapse-plus>.collapse-title:after{--tw-content:"−";content:var(--tw-content)}:is(.collapse[tabindex].collapse-arrow:focus:not(.collapse-close),.collapse.collapse-arrow[tabindex]:focus-within:not(.collapse-close))>.collapse-title:after,.collapse.collapse-arrow:not(.collapse-close)>input:is([type=checkbox],[type=radio]):checked~.collapse-title:after{transform:translateY(-50%)rotate(225deg)}.collapse[open].collapse-plus>.collapse-title:after,.collapse[tabindex].collapse-plus:focus:not(.collapse-close)>.collapse-title:after,.collapse.collapse-plus:not(.collapse-close)>input:is([type=checkbox],[type=radio]):checked~.collapse-title:after{--tw-content:"−";content:var(--tw-content)}.list .list-row:has(.list-col-grow:first-child){--list-grid-cols:1fr}.list .list-row:has(.list-col-grow:nth-child(2)){--list-grid-cols:minmax(0, auto) 1fr}.list .list-row:has(.list-col-grow:nth-child(3)){--list-grid-cols:minmax(0, auto) minmax(0, auto) 1fr}.list .list-row:has(.list-col-grow:nth-child(4)){--list-grid-cols:minmax(0, auto) minmax(0, auto) minmax(0, auto) 1fr}.list .list-row:has(.list-col-grow:nth-child(5)){--list-grid-cols:minmax(0, auto) minmax(0, auto) minmax(0, auto) minmax(0, auto) 1fr}.list .list-row:has(.list-col-grow:nth-child(6)){--list-grid-cols:minmax(0, auto) minmax(0, auto) minmax(0, auto) minmax(0, auto) minmax(0, auto) 1fr}.list .list-row>*{grid-row-start:1}.checkbox:disabled,.radio:disabled{cursor:not-allowed;opacity:.2}.rating.rating-xs :where(:not(.rating-hidden)){width:1rem;height:1rem}.rating.rating-sm :where(:not(.rating-hidden)){width:1.25rem;height:1.25rem}.rating.rating-md :where(:not(.rating-hidden)){width:1.5rem;height:1.5rem}.rating.rating-lg :where(:not(.rating-hidden)){width:1.75rem;height:1.75rem}.rating.rating-xl :where(:not(.rating-hidden)){width:2rem;height:2rem}:where(.navbar){position:relative}.tooltip-bottom>.tooltip-content,.tooltip-bottom[data-tip]:before{transform:translate(-50%) translateY(var(--tt-pos,-.25rem));inset:var(--tt-off) auto auto 50%}.tooltip-bottom:after{transform:translate(-50%) translateY(var(--tt-pos,-.25rem)) rotate(180deg);inset:var(--tt-tail) auto auto 50%}.toast-end{--toast-x:0;inset-inline:auto 1rem}.dropdown-right{--anchor-h:right;--anchor-v:span-bottom}.dropdown-right .dropdown-content{transform-origin:0;inset-inline-start:100%;top:0;bottom:auto}.dropdown-left{--anchor-h:left;--anchor-v:span-bottom}.dropdown-left .dropdown-content{transform-origin:100%;inset-inline-end:100%;top:0;bottom:auto}.dropdown-end{--anchor-h:span-left}.dropdown-end :where(.dropdown-content){inset-inline-end:0;translate:0}[dir=rtl] :is(.dropdown-end :where(.dropdown-content)){translate:0}.dropdown-end.dropdown-left{--anchor-h:left;--anchor-v:span-top}.dropdown-end.dropdown-left .dropdown-content{top:auto;bottom:0}.dropdown-end.dropdown-right{--anchor-h:right;--anchor-v:span-top}.dropdown-end.dropdown-right .dropdown-content{top:auto;bottom:0}.dropdown-top{--anchor-v:top}.dropdown-top .dropdown-content{transform-origin:bottom;top:auto;bottom:100%}.toast-bottom{--toast-y:0;top:auto;bottom:1rem}:is(.stack,.stack.stack-bottom)>*{grid-area:3/3/6/4}:is(.stack,.stack.stack-bottom)>:nth-child(2){grid-area:2/2/5/5}:is(.stack,.stack.stack-bottom)>:first-child{grid-area:1/1/4/6}.stack.stack-top>*{grid-area:1/3/4/4}.stack.stack-top>:nth-child(2){grid-area:2/2/5/5}.stack.stack-top>:first-child{grid-area:3/1/6/6}.stack.stack-start>*{grid-area:3/1/4/4}.stack.stack-start>:nth-child(2){grid-area:2/2/5/5}.stack.stack-start>:first-child{grid-area:1/3/6/6}.stack.stack-end>*{grid-area:3/3/4/6}.stack.stack-end>:nth-child(2){grid-area:2/2/5/5}.stack.stack-end>:first-child{grid-area:1/1/6/4}.tabs-box{background-color:var(--color-base-200);--tabs-box-radius:calc(3 * var(--radius-field));border-radius:calc(min(var(--tab-height) / 2,var(--radius-field)) + min(.25rem,var(--tabs-box-radius)));box-shadow:0 -.5px oklch(100% 0 0 / calc(var(--depth) * .1)) inset,0 .5px oklch(0% 0 0 / calc(var(--depth) * .05)) inset;padding:.25rem}.tabs-box>.tab{border-radius:var(--radius-field);border-style:none}.tabs-box>.tab:focus-visible,.tabs-box>.tab:is(label:has(:checked:focus-visible)){outline-offset:2px}.tabs-box>.tab:focus-visible{z-index:1}.tabs-box>:is(.tab-active,[aria-selected=true],[aria-current=true],[aria-current=page]):not(.tab-disabled,[disabled]),.tabs-box>:is(input:checked),.tabs-box>:is(label:has(:checked)){background-color:var(--tab-bg,var(--color-base-100));box-shadow:0 1px oklch(100% 0 0 / calc(var(--depth) * .1)) inset,0 1px 1px -1px var(--color-neutral),0 1px 6px -4px var(--color-neutral)}@supports (color:color-mix(in lab,red,red)){.tabs-box>:is(.tab-active,[aria-selected=true],[aria-current=true],[aria-current=page]):not(.tab-disabled,[disabled]),.tabs-box>:is(input:checked),.tabs-box>:is(label:has(:checked)){box-shadow:0 1px oklch(100% 0 0 / calc(var(--depth) * .1)) inset,0 1px 1px -1px color-mix(in oklab,var(--color-neutral) calc(var(--depth) * 50%),#0000),0 1px 6px -4px color-mix(in oklab,var(--color-neutral) calc(var(--depth) * 100%),#0000)}}@media (forced-colors:active){.tabs-box>:is(.tab-active,[aria-selected=true],[aria-current=true],[aria-current=page]):not(.tab-disabled,[disabled]),.tabs-box>:is(input:checked),.tabs-box>:is(label:has(:checked)){border:1px solid}}.tabs-box>.tab-content{height:calc(100% - var(--tab-height) + var(--border) - .5rem);border-radius:calc(min(var(--tab-height) / 2,var(--radius-field)) + min(.25rem,var(--tabs-box-radius)) - var(--border));margin-top:.25rem}.drawer-end{grid-auto-columns:auto max-content}.drawer-end>.drawer-toggle~.drawer-content{grid-column-start:1}.drawer-end>.drawer-toggle~.drawer-side{grid-column-start:2;justify-items:end}.drawer-end>.drawer-toggle~.drawer-side>:not(.drawer-overlay){translate:100%}[dir=rtl] :is(.drawer-end>.drawer-toggle~.drawer-side>:not(.drawer-overlay)){translate:-100%}.drawer-end>.drawer-toggle:checked~.drawer-side>:not(.drawer-overlay){translate:0%}.input-sm{--size:calc(var(--size-field,.25rem) * 8);font-size:max(var(--font-size,.75rem),.75rem)}.input-sm[type=number]::-webkit-inner-spin-button{margin-block:-.5rem;margin-inline-end:-.75rem}.input-xs{--size:calc(var(--size-field,.25rem) * 6);font-size:max(var(--font-size,.6875rem),.6875rem)}.input-xs[type=number]::-webkit-inner-spin-button{margin-block:-.25rem;margin-inline-end:-.75rem}.btn-circle{width:var(--size);height:var(--size);border-radius:3.40282e38px;padding-inline:0}.loading-md{width:calc(var(--size-selector,.25rem) * 6)}.loading-sm{width:calc(var(--size-selector,.25rem) * 5)}.menu-xs :where(li:not(.menu-title)>:not(ul,details,.menu-title)),.menu-xs :where(li:not(.menu-title)>details>summary:not(.menu-title)){border-radius:var(--radius-field);padding-block:.25rem;padding-inline:.5rem;font-size:.6875rem}.menu-xs .menu-title{padding-block:.25rem;padding-inline:.5rem}.badge-ghost{border-color:var(--color-base-200);background-color:var(--color-base-200);color:var(--color-base-content);background-image:none}.badge-soft{color:var(--badge-color,var(--color-base-content));background-color:var(--badge-color,var(--color-base-content))}@supports (color:color-mix(in lab,red,red)){.badge-soft{background-color:color-mix(in oklab,var(--badge-color,var(--color-base-content)) 8%,var(--color-base-100))}}.badge-soft{border-color:var(--badge-color,var(--color-base-content))}@supports (color:color-mix(in lab,red,red)){.badge-soft{border-color:color-mix(in oklab,var(--badge-color,var(--color-base-content)) 10%,var(--color-base-100))}}.badge-soft{background-image:none}.table-zebra tbody tr:where(:nth-child(2n)),.table-zebra tbody tr:where(:nth-child(2n)) :where(.table-pin-cols tr th){background-color:var(--color-base-200)}@media (hover:hover){:is(.table-zebra tbody tr.row-hover,.table-zebra tbody tr.row-hover:where(:nth-child(2n))):hover{background-color:var(--color-base-300)}}.loading-spinner{-webkit-mask-image:url("data:image/svg+xml,%3Csvg width='24' height='24' stroke='black' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cg transform-origin='center'%3E%3Ccircle cx='12' cy='12' r='9.5' fill='none' stroke-width='3' stroke-linecap='round'%3E%3CanimateTransform attributeName='transform' type='rotate' from='0 12 12' to='360 12 12' dur='2s' repeatCount='indefinite'/%3E%3Canimate attributeName='stroke-dasharray' values='0,150;42,150;42,150' keyTimes='0;0.475;1' dur='1.5s' repeatCount='indefinite'/%3E%3Canimate attributeName='stroke-dashoffset' values='0;-16;-59' keyTimes='0;0.475;1' dur='1.5s' repeatCount='indefinite'/%3E%3C/circle%3E%3C/g%3E%3C/svg%3E");mask-image:url("data:image/svg+xml,%3Csvg width='24' height='24' stroke='black' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cg transform-origin='center'%3E%3Ccircle cx='12' cy='12' r='9.5' fill='none' stroke-width='3' stroke-linecap='round'%3E%3CanimateTransform attributeName='transform' type='rotate' from='0 12 12' to='360 12 12' dur='2s' repeatCount='indefinite'/%3E%3Canimate attributeName='stroke-dasharray' values='0,150;42,150;42,150' keyTimes='0;0.475;1' dur='1.5s' repeatCount='indefinite'/%3E%3Canimate attributeName='stroke-dashoffset' values='0;-16;-59' keyTimes='0;0.475;1' dur='1.5s' repeatCount='indefinite'/%3E%3C/circle%3E%3C/g%3E%3C/svg%3E")}.checkbox-sm{--size:calc(var(--size-selector,.25rem) * 5);padding:.1875rem}.select-sm{--size:calc(var(--size-field,.25rem) * 8);font-size:.75rem}.select-sm option{padding-block:.25rem;padding-inline:.625rem}.badge-sm{--size:calc(var(--size-selector,.25rem) * 5);font-size:.75rem}.alert-error{color:var(--color-error-content);--alert-border-color:var(--color-error);--alert-color:var(--color-error)}.alert-info{color:var(--color-info-content);--alert-border-color:var(--color-info);--alert-color:var(--color-info)}.alert-success{color:var(--color-success-content);--alert-border-color:var(--color-success);--alert-color:var(--color-success)}.alert-warning{color:var(--color-warning-content);--alert-border-color:var(--color-warning);--alert-color:var(--color-warning)}.link-primary{color:var(--color-primary)}@media (hover:hover){.link-primary:hover{color:var(--color-primary)}@supports (color:color-mix(in lab,red,red)){.link-primary:hover{color:color-mix(in oklab,var(--color-primary) 80%,#000)}}}.range-primary{color:var(--color-primary);--range-thumb:var(--color-primary-content)}.btn-sm{--fontsize:.75rem;--btn-p:.75rem;--size:calc(var(--size-field,.25rem) * 8)}.btn-xs{--fontsize:.6875rem;--btn-p:.5rem;--size:calc(var(--size-field,.25rem) * 6)}.badge-error{--badge-color:var(--color-error);--badge-fg:var(--color-error-content)}.badge-info{--badge-color:var(--color-info);--badge-fg:var(--color-info-content)}.badge-neutral{--badge-color:var(--color-neutral);--badge-fg:var(--color-neutral-content)}.badge-primary{--badge-color:var(--color-primary);--badge-fg:var(--color-primary-content)}.badge-success{--badge-color:var(--color-success);--badge-fg:var(--color-success-content)}.badge-warning{--badge-color:var(--color-warning);--badge-fg:var(--color-warning-content)}.radio-primary{--input-color:var(--color-primary)}.range-sm{--range-thumb-size:calc(var(--size-selector,.25rem) * 5)}.toggle-primary:checked,.toggle-primary[aria-checked=true]{--input-color:var(--color-primary)}.toggle-secondary:checked,.toggle-secondary[aria-checked=true]{--input-color:var(--color-secondary)}.toggle-sm[type=checkbox],.toggle-sm:has([type=checkbox]){--size:calc(var(--size-selector,.25rem) * 5)}}.collapse:not(td,tr,colgroup){visibility:revert-layer}.validator:user-invalid~.validator-hint{display:revert-layer}.validator:has(:user-invalid)~.validator-hint{display:revert-layer}:is(.validator[aria-invalid]:not([aria-invalid=false]),.validator:has([aria-invalid]:not([aria-invalid=false])))~.validator-hint{display:revert-layer}.collapse{visibility:collapse}.visible{visibility:visible}.absolute{position:absolute}.fixed{position:fixed}.relative{position:relative}.static{position:static}.sticky{position:sticky}.inset-0{inset:calc(var(--spacing) * 0)}.start{inset-inline-start:var(--spacing)}.end{inset-inline-end:var(--spacing)}.top-0{top:calc(var(--spacing) * 0)}.top-2{top:calc(var(--spacing) * 2)}.right-0{right:calc(var(--spacing) * 0)}.right-2{right:calc(var(--spacing) * 2)}.bottom-4{bottom:calc(var(--spacing) * 4)}.left-0{left:calc(var(--spacing) * 0)}.left-1{left:calc(var(--spacing) * 1)}.left-1\\/2{left:50%}.left-4{left:calc(var(--spacing) * 4)}.join{--join-ss:0;--join-se:0;--join-es:0;--join-ee:0;align-items:stretch;display:inline-flex}.join :where(.join-item){border-start-start-radius:var(--join-ss,0);border-start-end-radius:var(--join-se,0);border-end-end-radius:var(--join-ee,0);border-end-start-radius:var(--join-es,0)}.join :where(.join-item) *{--join-ss:var(--radius-field);--join-se:var(--radius-field);--join-es:var(--radius-field);--join-ee:var(--radius-field)}.join>.join-item:where(:first-child),.join :first-child:not(:last-child) :where(.join-item){--join-ss:var(--radius-field);--join-se:0;--join-es:var(--radius-field);--join-ee:0}.join>.join-item:where(:last-child),.join :last-child:not(:first-child) :where(.join-item){--join-ss:0;--join-se:var(--radius-field);--join-es:0;--join-ee:var(--radius-field)}.join>.join-item:where(:only-child),.join :only-child :where(.join-item){--join-ss:var(--radius-field);--join-se:var(--radius-field);--join-es:var(--radius-field);--join-ee:var(--radius-field)}.join>:where(:focus,:has(:focus)){z-index:1}@media (hover:hover){.join>:where(.btn:hover,:has(.btn:hover)){isolation:isolate}}.z-10{z-index:10}.z-20{z-index:20}.z-50{z-index:50}.z-\\[1\\]{z-index:1}.z-\\[1500\\]{z-index:1500}.z-\\[2000\\]{z-index:2000}.z-\\[2100\\]{z-index:2100}.z-\\[9999\\]{z-index:9999}.col-span-2{grid-column:span 2/span 2}.container{width:100%}@media (min-width:40rem){.container{max-width:40rem}}@media (min-width:48rem){.container{max-width:48rem}}@media (min-width:64rem){.container{max-width:64rem}}@media (min-width:80rem){.container{max-width:80rem}}@media (min-width:96rem){.container{max-width:96rem}}.m-0{margin:calc(var(--spacing) * 0)}.m-4{margin:calc(var(--spacing) * 4)}.mx-auto{margin-inline:auto}.my-\\[-0\\.25rem\\]{margin-block:-.25rem}.join-item:where(:not(:first-child,:disabled,[disabled],.btn-disabled)){margin-block-start:0;margin-inline-start:calc(var(--border,1px) * -1)}.join-item:where(:is(:disabled,[disabled],.btn-disabled)){border-width:var(--border,1px) 0 var(--border,1px) var(--border,1px)}.mt-0{margin-top:calc(var(--spacing) * 0)}.mt-1{margin-top:calc(var(--spacing) * 1)}.mt-2{margin-top:calc(var(--spacing) * 2)}.mt-3{margin-top:calc(var(--spacing) * 3)}.mt-4{margin-top:calc(var(--spacing) * 4)}.mt-6{margin-top:calc(var(--spacing) * 6)}.mb-0{margin-bottom:calc(var(--spacing) * 0)}.mb-1{margin-bottom:calc(var(--spacing) * 1)}.mb-2{margin-bottom:calc(var(--spacing) * 2)}.mb-4{margin-bottom:calc(var(--spacing) * 4)}.-ml-2{margin-left:calc(var(--spacing) * -2)}.ml-12{margin-left:calc(var(--spacing) * 12)}.alert{border-width:var(--border);border-color:var(--alert-border-color,var(--color-base-200))}:root .prose{--tw-prose-body:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){:root .prose{--tw-prose-body:color-mix(in oklab, var(--color-base-content) 80%, #0000)}}:root .prose{--tw-prose-headings:var(--color-base-content);--tw-prose-lead:var(--color-base-content);--tw-prose-links:var(--color-base-content);--tw-prose-bold:var(--color-base-content);--tw-prose-counters:var(--color-base-content);--tw-prose-bullets:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){:root .prose{--tw-prose-bullets:color-mix(in oklab, var(--color-base-content) 50%, #0000)}}:root .prose{--tw-prose-hr:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){:root .prose{--tw-prose-hr:color-mix(in oklab, var(--color-base-content) 20%, #0000)}}:root .prose{--tw-prose-quotes:var(--color-base-content);--tw-prose-quote-borders:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){:root .prose{--tw-prose-quote-borders:color-mix(in oklab, var(--color-base-content) 20%, #0000)}}:root .prose{--tw-prose-captions:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){:root .prose{--tw-prose-captions:color-mix(in oklab, var(--color-base-content) 50%, #0000)}}:root .prose{--tw-prose-code:var(--color-base-content);--tw-prose-pre-code:var(--color-neutral-content);--tw-prose-pre-bg:var(--color-neutral);--tw-prose-th-borders:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){:root .prose{--tw-prose-th-borders:color-mix(in oklab, var(--color-base-content) 50%, #0000)}}:root .prose{--tw-prose-td-borders:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){:root .prose{--tw-prose-td-borders:color-mix(in oklab, var(--color-base-content) 20%, #0000)}}:root .prose{--tw-prose-kbd:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){:root .prose{--tw-prose-kbd:color-mix(in oklab, var(--color-base-content) 80%, #0000)}}:root .prose :where(code):not(pre>code){background-color:var(--color-base-200);border-radius:var(--radius-selector);border:var(--border) solid var(--color-base-300);font-weight:inherit;padding-block:.2em;padding-inline:.5em}:root .prose :where(code):not(pre>code):before,:root .prose :where(code):not(pre>code):after{display:none}.flex{display:flex}.grid{display:grid}.hidden{display:none}.inline{display:inline}.inline-block{display:inline-block}.table{display:table}.h-2{height:calc(var(--spacing) * 2)}.h-4{height:calc(var(--spacing) * 4)}.h-5{height:calc(var(--spacing) * 5)}.h-6{height:calc(var(--spacing) * 6)}.h-8{height:calc(var(--spacing) * 8)}.h-\\[2px\\]{height:2px}.h-full{height:100%}.max-h-60{max-height:calc(var(--spacing) * 60)}.max-h-72{max-height:calc(var(--spacing) * 72)}.max-h-\\[90vh\\]{max-height:90vh}.max-h-none{max-height:none}.min-h-0{min-height:calc(var(--spacing) * 0)}.min-h-16{min-height:calc(var(--spacing) * 16)}.min-h-20{min-height:calc(var(--spacing) * 20)}.min-h-32{min-height:calc(var(--spacing) * 32)}.min-h-\\[120px\\]{min-height:120px}.min-h-full{min-height:100%}.min-h-screen{min-height:100vh}.w-3{width:calc(var(--spacing) * 3)}.w-3\\/4{width:75%}.w-3\\/5{width:60%}.w-5{width:calc(var(--spacing) * 5)}.w-6{width:calc(var(--spacing) * 6)}.w-8{width:calc(var(--spacing) * 8)}.w-28{width:calc(var(--spacing) * 28)}.w-32{width:calc(var(--spacing) * 32)}.w-40{width:calc(var(--spacing) * 40)}.w-48{width:calc(var(--spacing) * 48)}.w-52{width:calc(var(--spacing) * 52)}.w-80{width:calc(var(--spacing) * 80)}.w-full{width:100%}.max-w-2xl{max-width:var(--container-2xl)}.max-w-3xl{max-width:var(--container-3xl)}.max-w-7xl{max-width:var(--container-7xl)}.max-w-lg{max-width:var(--container-lg)}.max-w-md{max-width:var(--container-md)}.max-w-none{max-width:none}.max-w-sm{max-width:var(--container-sm)}.min-w-0{min-width:calc(var(--spacing) * 0)}.min-w-\\[2rem\\]{min-width:2rem}.min-w-\\[3rem\\]{min-width:3rem}.min-w-\\[200px\\]{min-width:200px}.flex-1{flex:1}.shrink-0{flex-shrink:0}.-translate-x-1{--tw-translate-x:calc(var(--spacing) * -1);translate:var(--tw-translate-x) var(--tw-translate-y)}.-translate-x-1\\/2{--tw-translate-x: -50% ;translate:var(--tw-translate-x) var(--tw-translate-y)}.scale-90{--tw-scale-x:90%;--tw-scale-y:90%;--tw-scale-z:90%;scale:var(--tw-scale-x) var(--tw-scale-y)}.rotate-90{rotate:90deg}.transform{transform:var(--tw-rotate-x,) var(--tw-rotate-y,) var(--tw-rotate-z,) var(--tw-skew-x,) var(--tw-skew-y,)}.cursor-default{cursor:default}.cursor-help{cursor:help}.cursor-not-allowed{cursor:not-allowed}.cursor-pointer{cursor:pointer}.resize-y{resize:vertical}.list-inside{list-style-position:inside}.list-decimal{list-style-type:decimal}.grid-cols-1{grid-template-columns:repeat(1,minmax(0,1fr))}.grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.flex-col{flex-direction:column}.flex-row{flex-direction:row}.flex-wrap{flex-wrap:wrap}.place-items-center{place-items:center}.items-center{align-items:center}.justify-between{justify-content:space-between}.justify-center{justify-content:center}.justify-end{justify-content:flex-end}.justify-start{justify-content:flex-start}.gap-0{gap:calc(var(--spacing) * 0)}.gap-1{gap:calc(var(--spacing) * 1)}.gap-2{gap:calc(var(--spacing) * 2)}.gap-3{gap:calc(var(--spacing) * 3)}.gap-4{gap:calc(var(--spacing) * 4)}:where(.space-y-2>:not(:last-child)){--tw-space-y-reverse:0;margin-block-start:calc(calc(var(--spacing) * 2) * var(--tw-space-y-reverse));margin-block-end:calc(calc(var(--spacing) * 2) * calc(1 - var(--tw-space-y-reverse)))}:where(.space-y-3>:not(:last-child)){--tw-space-y-reverse:0;margin-block-start:calc(calc(var(--spacing) * 3) * var(--tw-space-y-reverse));margin-block-end:calc(calc(var(--spacing) * 3) * calc(1 - var(--tw-space-y-reverse)))}:where(.space-y-4>:not(:last-child)){--tw-space-y-reverse:0;margin-block-start:calc(calc(var(--spacing) * 4) * var(--tw-space-y-reverse));margin-block-end:calc(calc(var(--spacing) * 4) * calc(1 - var(--tw-space-y-reverse)))}.self-center{align-self:center}.truncate{text-overflow:ellipsis;white-space:nowrap;overflow:hidden}.overflow-auto{overflow:auto}.overflow-hidden{overflow:hidden}.overflow-x-auto{overflow-x:auto}.overflow-y-auto{overflow-y:auto}.rounded{border-radius:.25rem}.rounded-box{border-radius:var(--radius-box)}.rounded-lg{border-radius:var(--radius-lg)}.rounded-none{border-radius:0}.border{border-style:var(--tw-border-style);border-width:1px}.border-0{border-style:var(--tw-border-style);border-width:0}.border-2{border-style:var(--tw-border-style);border-width:2px}.border-t{border-top-style:var(--tw-border-style);border-top-width:1px}.border-b{border-bottom-style:var(--tw-border-style);border-bottom-width:1px}.border-dashed{--tw-border-style:dashed;border-style:dashed}.border-none{--tw-border-style:none;border-style:none}.border-solid{--tw-border-style:solid;border-style:solid}.border-accent{border-color:var(--color-accent)}.border-base-300{border-color:var(--color-base-300)}.border-error{border-color:var(--color-error)}.border-primary{border-color:var(--color-primary)}.border-success{border-color:var(--color-success)}.border-transparent{border-color:#0000}.border-warning{border-color:var(--color-warning)}.bg-accent,.bg-accent\\/10{background-color:var(--color-accent)}@supports (color:color-mix(in lab,red,red)){.bg-accent\\/10{background-color:color-mix(in oklab,var(--color-accent) 10%,transparent)}}.bg-base-100{background-color:var(--color-base-100)}.bg-base-200,.bg-base-200\\/50{background-color:var(--color-base-200)}@supports (color:color-mix(in lab,red,red)){.bg-base-200\\/50{background-color:color-mix(in oklab,var(--color-base-200) 50%,transparent)}}.bg-base-300{background-color:var(--color-base-300)}.bg-black{background-color:var(--color-black)}.bg-black\\/50{background-color:#00000080}@supports (color:color-mix(in lab,red,red)){.bg-black\\/50{background-color:color-mix(in oklab,var(--color-black) 50%,transparent)}}.bg-error,.bg-error\\/10{background-color:var(--color-error)}@supports (color:color-mix(in lab,red,red)){.bg-error\\/10{background-color:color-mix(in oklab,var(--color-error) 10%,transparent)}}.bg-primary,.bg-primary\\/5{background-color:var(--color-primary)}@supports (color:color-mix(in lab,red,red)){.bg-primary\\/5{background-color:color-mix(in oklab,var(--color-primary) 5%,transparent)}}.bg-primary\\/10{background-color:var(--color-primary)}@supports (color:color-mix(in lab,red,red)){.bg-primary\\/10{background-color:color-mix(in oklab,var(--color-primary) 10%,transparent)}}.bg-success,.bg-success\\/10{background-color:var(--color-success)}@supports (color:color-mix(in lab,red,red)){.bg-success\\/10{background-color:color-mix(in oklab,var(--color-success) 10%,transparent)}}.bg-white{background-color:var(--color-white)}.stroke-current{stroke:currentColor}.p-0{padding:calc(var(--spacing) * 0)}.p-1{padding:calc(var(--spacing) * 1)}.p-1\\.5{padding:calc(var(--spacing) * 1.5)}.p-2{padding:calc(var(--spacing) * 2)}.p-3{padding:calc(var(--spacing) * 3)}.p-4{padding:calc(var(--spacing) * 4)}.p-6{padding:calc(var(--spacing) * 6)}.px-2{padding-inline:calc(var(--spacing) * 2)}.px-3{padding-inline:calc(var(--spacing) * 3)}.px-4{padding-inline:calc(var(--spacing) * 4)}.px-6{padding-inline:calc(var(--spacing) * 6)}.py-0{padding-block:calc(var(--spacing) * 0)}.py-1{padding-block:calc(var(--spacing) * 1)}.py-2{padding-block:calc(var(--spacing) * 2)}.py-3{padding-block:calc(var(--spacing) * 3)}.py-4{padding-block:calc(var(--spacing) * 4)}.pt-0{padding-top:calc(var(--spacing) * 0)}.pt-1{padding-top:calc(var(--spacing) * 1)}.pt-16{padding-top:calc(var(--spacing) * 16)}.pt-20{padding-top:calc(var(--spacing) * 20)}.pr-2{padding-right:calc(var(--spacing) * 2)}.pb-1{padding-bottom:calc(var(--spacing) * 1)}.pb-8{padding-bottom:calc(var(--spacing) * 8)}.pl-2{padding-left:calc(var(--spacing) * 2)}.text-center{text-align:center}.text-right{text-align:right}.font-mono{font-family:var(--font-mono)}.font-sans{font-family:var(--font-sans)}.text-3xl{font-size:var(--text-3xl);line-height:var(--tw-leading,var(--text-3xl--line-height))}.text-4xl{font-size:var(--text-4xl);line-height:var(--tw-leading,var(--text-4xl--line-height))}.text-base{font-size:var(--text-base);line-height:var(--tw-leading,var(--text-base--line-height))}.text-lg{font-size:var(--text-lg);line-height:var(--tw-leading,var(--text-lg--line-height))}.text-sm{font-size:var(--text-sm);line-height:var(--tw-leading,var(--text-sm--line-height))}.text-xl{font-size:var(--text-xl);line-height:var(--tw-leading,var(--text-xl--line-height))}.text-xs{font-size:var(--text-xs);line-height:var(--tw-leading,var(--text-xs--line-height))}.font-bold{--tw-font-weight:var(--font-weight-bold);font-weight:var(--font-weight-bold)}.font-medium{--tw-font-weight:var(--font-weight-medium);font-weight:var(--font-weight-medium)}.font-semibold{--tw-font-weight:var(--font-weight-semibold);font-weight:var(--font-weight-semibold)}.break-words{overflow-wrap:break-word}.whitespace-pre-wrap{white-space:pre-wrap}.text-accent{color:var(--color-accent)}.text-base-content,.text-base-content\\/40{color:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){.text-base-content\\/40{color:color-mix(in oklab,var(--color-base-content) 40%,transparent)}}.text-base-content\\/50{color:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){.text-base-content\\/50{color:color-mix(in oklab,var(--color-base-content) 50%,transparent)}}.text-base-content\\/60{color:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){.text-base-content\\/60{color:color-mix(in oklab,var(--color-base-content) 60%,transparent)}}.text-base-content\\/70{color:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){.text-base-content\\/70{color:color-mix(in oklab,var(--color-base-content) 70%,transparent)}}.text-base-content\\/80{color:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){.text-base-content\\/80{color:color-mix(in oklab,var(--color-base-content) 80%,transparent)}}.text-error{color:var(--color-error)}.text-primary{color:var(--color-primary)}.text-primary-content{color:var(--color-primary-content)}.text-secondary{color:var(--color-secondary)}.text-success{color:var(--color-success)}.text-warning{color:var(--color-warning)}.capitalize{text-transform:capitalize}.italic{font-style:italic}.prose :where(a.btn:not(.btn-link)):not(:where([class~=not-prose],[class~=not-prose] *)){text-decoration-line:none}.opacity-0{opacity:0}.opacity-50{opacity:.5}.shadow{--tw-shadow:0 1px 3px 0 var(--tw-shadow-color,#0000001a), 0 1px 2px -1px var(--tw-shadow-color,#0000001a);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow)}.shadow-\\[0_0_10px_rgba\\(251\\,191\\,36\\,0\\.3\\)\\]{--tw-shadow:0 0 10px var(--tw-shadow-color,#fbbf244d);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow)}.shadow-md{--tw-shadow:0 4px 6px -1px var(--tw-shadow-color,#0000001a), 0 2px 4px -2px var(--tw-shadow-color,#0000001a);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow)}.shadow-none{--tw-shadow:0 0 #0000;box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow)}.shadow-sm{--tw-shadow:0 1px 3px 0 var(--tw-shadow-color,#0000001a), 0 1px 2px -1px var(--tw-shadow-color,#0000001a);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow)}.shadow-xl{--tw-shadow:0 20px 25px -5px var(--tw-shadow-color,#0000001a), 0 8px 10px -6px var(--tw-shadow-color,#0000001a);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow)}.ring-2{--tw-ring-shadow:var(--tw-ring-inset,) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color,currentcolor);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow)}.ring-primary{--tw-ring-color:var(--color-primary)}.outline{outline-style:var(--tw-outline-style);outline-width:1px}@layer daisyui.l1{.btn-ghost:not(.btn-active,:hover,:active:focus,:focus-visible,input:checked:not(.filter .btn)){--btn-shadow:"";--btn-bg:#0000;--btn-border:#0000;--btn-noise:none}.btn-ghost:not(.btn-active,:hover,:active:focus,:focus-visible,input:checked:not(.filter .btn)):not(:disabled,[disabled],.btn-disabled){--btn-fg:var(--btn-color,currentColor);outline-color:currentColor}@media (hover:none){.btn-ghost:not(.btn-active,:active,:focus-visible,input:checked:not(.filter .btn)):hover{--btn-shadow:"";--btn-bg:#0000;--btn-fg:var(--btn-color,currentColor);--btn-border:#0000;--btn-noise:none;outline-color:currentColor}}.btn-outline:not(.btn-active,:hover,:active:focus,:focus-visible,input:checked:not(.filter .btn),:disabled,[disabled],.btn-disabled){--btn-shadow:"";--btn-bg:#0000;--btn-fg:var(--btn-color);--btn-border:var(--btn-color);--btn-noise:none}@media (hover:none){.btn-outline:not(.btn-active,:active,:focus-visible,input:checked:not(.filter .btn)):hover{--btn-shadow:"";--btn-bg:#0000;--btn-fg:var(--btn-color);--btn-border:var(--btn-color);--btn-noise:none}}.btn-soft:not(.btn-active,:hover,:active:focus,:focus-visible,input:checked:not(.filter .btn),:disabled,[disabled],.btn-disabled){--btn-shadow:"";--btn-fg:var(--btn-color,var(--color-base-content));--btn-bg:var(--btn-color,var(--color-base-content))}@supports (color:color-mix(in lab,red,red)){.btn-soft:not(.btn-active,:hover,:active:focus,:focus-visible,input:checked:not(.filter .btn),:disabled,[disabled],.btn-disabled){--btn-bg:color-mix(in oklab, var(--btn-color,var(--color-base-content)) 8%, var(--color-base-100))}}.btn-soft:not(.btn-active,:hover,:active:focus,:focus-visible,input:checked:not(.filter .btn),:disabled,[disabled],.btn-disabled){--btn-border:var(--btn-color,var(--color-base-content))}@supports (color:color-mix(in lab,red,red)){.btn-soft:not(.btn-active,:hover,:active:focus,:focus-visible,input:checked:not(.filter .btn),:disabled,[disabled],.btn-disabled){--btn-border:color-mix(in oklab, var(--btn-color,var(--color-base-content)) 10%, var(--color-base-100))}}.btn-soft:not(.btn-active,:hover,:active:focus,:focus-visible,input:checked:not(.filter .btn),:disabled,[disabled],.btn-disabled){--btn-noise:none}@media (hover:none){.btn-soft:not(.btn-active,:active,:focus-visible,input:checked:not(.filter .btn)):hover{--btn-shadow:"";--btn-fg:var(--btn-color,var(--color-base-content));--btn-bg:var(--btn-color,var(--color-base-content))}@supports (color:color-mix(in lab,red,red)){.btn-soft:not(.btn-active,:active,:focus-visible,input:checked:not(.filter .btn)):hover{--btn-bg:color-mix(in oklab, var(--btn-color,var(--color-base-content)) 8%, var(--color-base-100))}}.btn-soft:not(.btn-active,:active,:focus-visible,input:checked:not(.filter .btn)):hover{--btn-border:var(--btn-color,var(--color-base-content))}@supports (color:color-mix(in lab,red,red)){.btn-soft:not(.btn-active,:active,:focus-visible,input:checked:not(.filter .btn)):hover{--btn-border:color-mix(in oklab, var(--btn-color,var(--color-base-content)) 10%, var(--color-base-100))}}.btn-soft:not(.btn-active,:active,:focus-visible,input:checked:not(.filter .btn)):hover{--btn-noise:none}}}.blur{--tw-blur:blur(8px);filter:var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,)}.filter{filter:var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,)}.transition{transition-property:color,background-color,border-color,outline-color,text-decoration-color,fill,stroke,--tw-gradient-from,--tw-gradient-via,--tw-gradient-to,opacity,box-shadow,transform,translate,scale,rotate,filter,-webkit-backdrop-filter,backdrop-filter,display,content-visibility,overlay,pointer-events;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration))}.transition-\\[border-color\\,box-shadow\\]{transition-property:border-color,box-shadow;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration))}.transition-all{transition-property:all;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration))}.transition-colors{transition-property:color,background-color,border-color,outline-color,text-decoration-color,fill,stroke,--tw-gradient-from,--tw-gradient-via,--tw-gradient-to;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration))}.transition-transform{transition-property:transform,translate,scale,rotate;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration))}.duration-200{--tw-duration:.2s;transition-duration:.2s}.ease-in-out{--tw-ease:var(--ease-in-out);transition-timing-function:var(--ease-in-out)}.ease-out{--tw-ease:var(--ease-out);transition-timing-function:var(--ease-out)}.select-none{-webkit-user-select:none;user-select:none}@media (hover:hover){.group-hover\\:w-4\\/5:is(:where(.group):hover *){width:80%}.group-hover\\:scale-100:is(:where(.group):hover *){--tw-scale-x:100%;--tw-scale-y:100%;--tw-scale-z:100%;scale:var(--tw-scale-x) var(--tw-scale-y)}.group-hover\\:opacity-100:is(:where(.group):hover *){opacity:1}.hover\\:border-accent:hover{border-color:var(--color-accent)}.hover\\:border-primary:hover{border-color:var(--color-primary)}.hover\\:bg-accent\\/10:hover{background-color:var(--color-accent)}@supports (color:color-mix(in lab,red,red)){.hover\\:bg-accent\\/10:hover{background-color:color-mix(in oklab,var(--color-accent) 10%,transparent)}}.hover\\:bg-base-300:hover,.hover\\:bg-base-300\\/50:hover{background-color:var(--color-base-300)}@supports (color:color-mix(in lab,red,red)){.hover\\:bg-base-300\\/50:hover{background-color:color-mix(in oklab,var(--color-base-300) 50%,transparent)}}.hover\\:text-base-content:hover{color:var(--color-base-content)}.hover\\:shadow-lg:hover{--tw-shadow:0 10px 15px -3px var(--tw-shadow-color,#0000001a), 0 4px 6px -4px var(--tw-shadow-color,#0000001a);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow)}.hover\\:shadow-md:hover{--tw-shadow:0 4px 6px -1px var(--tw-shadow-color,#0000001a), 0 2px 4px -2px var(--tw-shadow-color,#0000001a);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow)}}.focus\\:border-primary:focus{border-color:var(--color-primary)}.focus\\:ring-2:focus{--tw-ring-shadow:var(--tw-ring-inset,) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color,currentcolor);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow)}.focus\\:ring-primary\\/20:focus{--tw-ring-color:var(--color-primary)}@supports (color:color-mix(in lab,red,red)){.focus\\:ring-primary\\/20:focus{--tw-ring-color:color-mix(in oklab, var(--color-primary) 20%, transparent)}}.focus\\:outline-none:focus{--tw-outline-style:none;outline-style:none}.disabled\\:cursor-not-allowed:disabled{cursor:not-allowed}.disabled\\:opacity-50:disabled{opacity:.5}@media (min-width:40rem){@layer daisyui.l1.l2{.sm\\:footer-horizontal{grid-auto-flow:column}.sm\\:footer-horizontal.footer-center{grid-auto-flow:dense}}.sm\\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}}@media (min-width:64rem){.lg\\:flex{display:flex}.lg\\:hidden{display:none}}}[x-cloak]{display:none!important}.datatable-wrapper,.datatable-top,.datatable-bottom,.datatable-container{background:0 0!important}.datatable-input,.datatable-selector{background:oklch(var(--b1))!important;color:oklch(var(--bc))!important;border-color:oklch(var(--b3))!important}.cell-container{flex-direction:column;min-height:0;display:flex;container-type:inline-size}@container (max-width:350px){.cell-header-responsive .flex.gap-1.items-center>.join{display:none}.cell-header-responsive .flex.gap-1.items-center>.dropdown.hidden{display:block}}.flex-1.bg-base-100.border{container-type:inline-size}@container (max-width:500px){.flex-1.bg-base-100.border .flex.items-center.justify-between>.join{display:none}.flex-1.bg-base-100.border .flex.items-center.justify-between>.dropdown.hidden{display:block}}.editor-preview-active :not(h1):not(h2):not(h3):not(h4):not(h5):not(h6),.editor-preview :not(h1):not(h2):not(h3):not(h4):not(h5):not(h6),.editor-preview-side :not(h1):not(h2):not(h3):not(h4):not(h5):not(h6),.editor-preview-full :not(h1):not(h2):not(h3):not(h4):not(h5):not(h6){all:revert}.editor-preview-full{overflow:visible}.editor-preview{background-color:var(--color-base-100)!important}.EasyMDEContainer .editor-preview-active~.CodeMirror{display:none}.easymde-client{opacity:0;transition:opacity .15s ease-in}.easymde-client.easymde-ready{opacity:1}.easymde-client .EasyMDEContainer,.easymde-client .CodeMirror,.easymde-client .cm-editor,.easymde-client .editor-preview,.easymde-client .editor-preview-full{border:none!important}.easymde-client .CodeMirror,.easymde-client .CodeMirror-scroll,.easymde-client .cm-editor,.easymde-client .cm-scroller,.easymde-client .editor-preview,.easymde-client .editor-preview-full{scrollbar-width:none;-ms-overflow-style:none}.easymde-client .CodeMirror::-webkit-scrollbar{display:none}.easymde-client .CodeMirror-scroll::-webkit-scrollbar{display:none}.easymde-client .cm-editor::-webkit-scrollbar{display:none}.easymde-client .cm-scroller::-webkit-scrollbar{display:none}.easymde-client .editor-preview::-webkit-scrollbar{display:none}.easymde-client .editor-preview-full::-webkit-scrollbar{display:none}.cell-body-has-height{min-height:max(var(--cell-min-h-px,0),var(--cell-min-h-pct,0%));max-height:min(var(--cell-max-h-px,9999px),var(--cell-max-h-pct,9999px))}.cell-body .perspective-fill-height perspective-viewer{flex:1;min-width:0;min-height:0}.cell-body .flex-1.min-h-0 .EasyMDEContainer{flex-direction:column;flex:1;min-height:0;display:flex}.cell-body .flex-1.min-h-0 .EasyMDEContainer .CodeMirror,.cell-body .flex-1.min-h-0 .EasyMDEContainer .cm-editor,.cell-body .flex-1.min-h-0 .EasyMDEContainer .editor-preview,.cell-body .flex-1.min-h-0 .EasyMDEContainer .editor-preview-full{flex:1;min-height:0}.editor-preview-active h1,.editor-preview h1,.editor-preview-side h1,.editor-preview-full h1{font-size:2.25rem;font-weight:700;line-height:2.5rem;color:var(--color-primary)!important}.editor-preview-active h2,.editor-preview h2,.editor-preview-side h2,.editor-preview-full h2{font-size:1.875rem;font-weight:600;line-height:2.25rem;color:var(--color-secondary)!important}.codemirror-sql-container{width:100%;min-height:20px}.codemirror-sql-container .cm-editor{background:oklch(var(--b1))}.codemirror-sql-container .cm-gutters{background:oklch(var(--b2));border-right:1px solid oklch(var(--b3))}.codemirror-sql-container .cm-activeLineGutter{background:oklch(var(--b3))}.codemirror-sql-container .cm-line{color:oklch(var(--bc))}.cm-tooltip{background:oklch(var(--b2))!important;border:1px solid oklch(var(--b3))!important;border-radius:.5rem!important;box-shadow:0 4px 6px -1px #0000001a!important}.cm-tooltip-autocomplete{background:oklch(var(--b2))!important}.cm-tooltip-autocomplete>ul>li{color:oklch(var(--bc))!important}.cm-tooltip-autocomplete>ul>li[aria-selected]{background:oklch(var(--p) / .2)!important;color:oklch(var(--bc))!important}.codemirror-sql-container .cm-cursor{border-left-color:oklch(var(--p))!important}.codemirror-sql-container div::selection{color:var(--color-secondary)!important;background-color:var(--color-base-300)!important}@keyframes rating{0%,40%{filter:brightness(1.05)contrast(1.05);scale:1.1}}@keyframes dropdown{0%{opacity:0}}@keyframes radio{0%{padding:5px}50%{padding:3px}}@keyframes toast{0%{opacity:0;scale:.9}to{opacity:1;scale:1}}@keyframes rotator{89.9999%,to{--first-item-position:0 0%}90%,99.9999%{--first-item-position:0 calc(var(--items) * 100%)}to{translate:0 -100%}}@keyframes skeleton{0%{background-position:150%}to{background-position:-50%}}@keyframes menu{0%{opacity:0}}@keyframes progress{50%{background-position-x:-115%}}@property --tw-translate-x{syntax:"*";inherits:false;initial-value:0}@property --tw-translate-y{syntax:"*";inherits:false;initial-value:0}@property --tw-translate-z{syntax:"*";inherits:false;initial-value:0}@property --tw-scale-x{syntax:"*";inherits:false;initial-value:1}@property --tw-scale-y{syntax:"*";inherits:false;initial-value:1}@property --tw-scale-z{syntax:"*";inherits:false;initial-value:1}@property --tw-rotate-x{syntax:"*";inherits:false}@property --tw-rotate-y{syntax:"*";inherits:false}@property --tw-rotate-z{syntax:"*";inherits:false}@property --tw-skew-x{syntax:"*";inherits:false}@property --tw-skew-y{syntax:"*";inherits:false}@property --tw-space-y-reverse{syntax:"*";inherits:false;initial-value:0}@property --tw-border-style{syntax:"*";inherits:false;initial-value:solid}@property --tw-font-weight{syntax:"*";inherits:false}@property --tw-shadow{syntax:"*";inherits:false;initial-value:0 0 #0000}@property --tw-shadow-color{syntax:"*";inherits:false}@property --tw-shadow-alpha{syntax:"<percentage>";inherits:false;initial-value:100%}@property --tw-inset-shadow{syntax:"*";inherits:false;initial-value:0 0 #0000}@property --tw-inset-shadow-color{syntax:"*";inherits:false}@property --tw-inset-shadow-alpha{syntax:"<percentage>";inherits:false;initial-value:100%}@property --tw-ring-color{syntax:"*";inherits:false}@property --tw-ring-shadow{syntax:"*";inherits:false;initial-value:0 0 #0000}@property --tw-inset-ring-color{syntax:"*";inherits:false}@property --tw-inset-ring-shadow{syntax:"*";inherits:false;initial-value:0 0 #0000}@property --tw-ring-inset{syntax:"*";inherits:false}@property --tw-ring-offset-width{syntax:"<length>";inherits:false;initial-value:0}@property --tw-ring-offset-color{syntax:"*";inherits:false;initial-value:#fff}@property --tw-ring-offset-shadow{syntax:"*";inherits:false;initial-value:0 0 #0000}@property --tw-outline-style{syntax:"*";inherits:false;initial-value:solid}@property --tw-blur{syntax:"*";inherits:false}@property --tw-brightness{syntax:"*";inherits:false}@property --tw-contrast{syntax:"*";inherits:false}@property --tw-grayscale{syntax:"*";inherits:false}@property --tw-hue-rotate{syntax:"*";inherits:false}@property --tw-invert{syntax:"*";inherits:false}@property --tw-opacity{syntax:"*";inherits:false}@property --tw-saturate{syntax:"*";inherits:false}@property --tw-sepia{syntax:"*";inherits:false}@property --tw-drop-shadow{syntax:"*";inherits:false}@property --tw-drop-shadow-color{syntax:"*";inherits:false}@property --tw-drop-shadow-alpha{syntax:"<percentage>";inherits:false;initial-value:100%}@property --tw-drop-shadow-size{syntax:"*";inherits:false}@property --tw-duration{syntax:"*";inherits:false}@property --tw-ease{syntax:"*";inherits:false}`)),document.head.appendChild(e)}}catch(o){console.error("vite-plugin-css-injected-by-js",o)}})();
-var Q = Object.defineProperty;
-var H = (t, e, n) => e in t ? Q(t, e, { enumerable: !0, configurable: !0, writable: !0, value: n }) : t[e] = n;
-var k = (t, e, n) => H(t, typeof e != "symbol" ? e + "" : e, n);
+(function(){"use strict";try{if(typeof document<"u"){var e=document.createElement("style");e.appendChild(document.createTextNode(`/*! tailwindcss v4.2.1 | MIT License | https://tailwindcss.com */@layer properties{@supports (((-webkit-hyphens:none)) and (not (margin-trim:inline))) or ((-moz-orient:inline) and (not (color:rgb(from red r g b)))){*,:before,:after,::backdrop{--tw-translate-x:0;--tw-translate-y:0;--tw-translate-z:0;--tw-scale-x:1;--tw-scale-y:1;--tw-scale-z:1;--tw-rotate-x:initial;--tw-rotate-y:initial;--tw-rotate-z:initial;--tw-skew-x:initial;--tw-skew-y:initial;--tw-space-y-reverse:0;--tw-border-style:solid;--tw-font-weight:initial;--tw-shadow:0 0 #0000;--tw-shadow-color:initial;--tw-shadow-alpha:100%;--tw-inset-shadow:0 0 #0000;--tw-inset-shadow-color:initial;--tw-inset-shadow-alpha:100%;--tw-ring-color:initial;--tw-ring-shadow:0 0 #0000;--tw-inset-ring-color:initial;--tw-inset-ring-shadow:0 0 #0000;--tw-ring-inset:initial;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-offset-shadow:0 0 #0000;--tw-outline-style:solid;--tw-blur:initial;--tw-brightness:initial;--tw-contrast:initial;--tw-grayscale:initial;--tw-hue-rotate:initial;--tw-invert:initial;--tw-opacity:initial;--tw-saturate:initial;--tw-sepia:initial;--tw-drop-shadow:initial;--tw-drop-shadow-color:initial;--tw-drop-shadow-alpha:100%;--tw-drop-shadow-size:initial;--tw-duration:initial;--tw-ease:initial}}}@layer theme{:root,:host{--font-sans:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";--font-mono:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;--color-black:#000;--color-white:#fff;--spacing:.25rem;--container-sm:24rem;--container-md:28rem;--container-lg:32rem;--container-2xl:42rem;--container-3xl:48rem;--container-7xl:80rem;--text-xs:.75rem;--text-xs--line-height:calc(1 / .75);--text-sm:.875rem;--text-sm--line-height:calc(1.25 / .875);--text-base:1rem;--text-base--line-height: 1.5 ;--text-lg:1.125rem;--text-lg--line-height:calc(1.75 / 1.125);--text-xl:1.25rem;--text-xl--line-height:calc(1.75 / 1.25);--text-3xl:1.875rem;--text-3xl--line-height: 1.2 ;--text-4xl:2.25rem;--text-4xl--line-height:calc(2.5 / 2.25);--font-weight-medium:500;--font-weight-semibold:600;--font-weight-bold:700;--radius-lg:.5rem;--ease-out:cubic-bezier(0, 0, .2, 1);--ease-in-out:cubic-bezier(.4, 0, .2, 1);--default-transition-duration:.15s;--default-transition-timing-function:cubic-bezier(.4, 0, .2, 1);--default-font-family:var(--font-sans);--default-mono-font-family:var(--font-mono)}}@layer base{*,:after,:before,::backdrop{box-sizing:border-box;border:0 solid;margin:0;padding:0}::file-selector-button{box-sizing:border-box;border:0 solid;margin:0;padding:0}html,:host{-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;line-height:1.5;font-family:var(--default-font-family,ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji");font-feature-settings:var(--default-font-feature-settings,normal);font-variation-settings:var(--default-font-variation-settings,normal);-webkit-tap-highlight-color:transparent}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;-webkit-text-decoration:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,samp,pre{font-family:var(--default-mono-font-family,ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace);font-feature-settings:var(--default-mono-font-feature-settings,normal);font-variation-settings:var(--default-mono-font-variation-settings,normal);font-size:1em}small{font-size:80%}sub,sup{vertical-align:baseline;font-size:75%;line-height:0;position:relative}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}:-moz-focusring{outline:auto}progress{vertical-align:baseline}summary{display:list-item}ol,ul,menu{list-style:none}img,svg,video,canvas,audio,iframe,embed,object{vertical-align:middle;display:block}img,video{max-width:100%;height:auto}button,input,select,optgroup,textarea{font:inherit;font-feature-settings:inherit;font-variation-settings:inherit;letter-spacing:inherit;color:inherit;opacity:1;background-color:#0000;border-radius:0}::file-selector-button{font:inherit;font-feature-settings:inherit;font-variation-settings:inherit;letter-spacing:inherit;color:inherit;opacity:1;background-color:#0000;border-radius:0}:where(select:is([multiple],[size])) optgroup{font-weight:bolder}:where(select:is([multiple],[size])) optgroup option{padding-inline-start:20px}::file-selector-button{margin-inline-end:4px}::placeholder{opacity:1}@supports (not ((-webkit-appearance:-apple-pay-button))) or (contain-intrinsic-size:1px){::placeholder{color:currentColor}@supports (color:color-mix(in lab,red,red)){::placeholder{color:color-mix(in oklab,currentcolor 50%,transparent)}}}textarea{resize:vertical}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-date-and-time-value{min-height:1lh;text-align:inherit}::-webkit-datetime-edit{display:inline-flex}::-webkit-datetime-edit-fields-wrapper{padding:0}::-webkit-datetime-edit{padding-block:0}::-webkit-datetime-edit-year-field{padding-block:0}::-webkit-datetime-edit-month-field{padding-block:0}::-webkit-datetime-edit-day-field{padding-block:0}::-webkit-datetime-edit-hour-field{padding-block:0}::-webkit-datetime-edit-minute-field{padding-block:0}::-webkit-datetime-edit-second-field{padding-block:0}::-webkit-datetime-edit-millisecond-field{padding-block:0}::-webkit-datetime-edit-meridiem-field{padding-block:0}::-webkit-calendar-picker-indicator{line-height:1}:-moz-ui-invalid{box-shadow:none}button,input:where([type=button],[type=reset],[type=submit]){-webkit-appearance:button;-moz-appearance:button;appearance:button}::file-selector-button{-webkit-appearance:button;-moz-appearance:button;appearance:button}::-webkit-inner-spin-button{height:auto}::-webkit-outer-spin-button{height:auto}[hidden]:where(:not([hidden=until-found])){display:none!important}:where(:root),:root:has(input.theme-controller[value=light]:checked),[data-theme=light]{color-scheme:light;--color-base-100:oklch(100% 0 0);--color-base-200:oklch(98% 0 0);--color-base-300:oklch(95% 0 0);--color-base-content:oklch(21% .006 285.885);--color-primary:oklch(45% .24 277.023);--color-primary-content:oklch(93% .034 272.788);--color-secondary:oklch(65% .241 354.308);--color-secondary-content:oklch(94% .028 342.258);--color-accent:oklch(77% .152 181.912);--color-accent-content:oklch(38% .063 188.416);--color-neutral:oklch(14% .005 285.823);--color-neutral-content:oklch(92% .004 286.32);--color-info:oklch(74% .16 232.661);--color-info-content:oklch(29% .066 243.157);--color-success:oklch(76% .177 163.223);--color-success-content:oklch(37% .077 168.94);--color-warning:oklch(82% .189 84.429);--color-warning-content:oklch(41% .112 45.904);--color-error:oklch(71% .194 13.428);--color-error-content:oklch(27% .105 12.094);--radius-selector:.5rem;--radius-field:.25rem;--radius-box:.5rem;--size-selector:.25rem;--size-field:.25rem;--border:1px;--depth:1;--noise:0}@media (prefers-color-scheme:dark){:root:not([data-theme]){color-scheme:dark;--color-base-100:oklch(25.33% .016 252.42);--color-base-200:oklch(23.26% .014 253.1);--color-base-300:oklch(21.15% .012 254.09);--color-base-content:oklch(97.807% .029 256.847);--color-primary:oklch(58% .233 277.117);--color-primary-content:oklch(96% .018 272.314);--color-secondary:oklch(65% .241 354.308);--color-secondary-content:oklch(94% .028 342.258);--color-accent:oklch(77% .152 181.912);--color-accent-content:oklch(38% .063 188.416);--color-neutral:oklch(14% .005 285.823);--color-neutral-content:oklch(92% .004 286.32);--color-info:oklch(74% .16 232.661);--color-info-content:oklch(29% .066 243.157);--color-success:oklch(76% .177 163.223);--color-success-content:oklch(37% .077 168.94);--color-warning:oklch(82% .189 84.429);--color-warning-content:oklch(41% .112 45.904);--color-error:oklch(71% .194 13.428);--color-error-content:oklch(27% .105 12.094);--radius-selector:.5rem;--radius-field:.25rem;--radius-box:.5rem;--size-selector:.25rem;--size-field:.25rem;--border:1px;--depth:1;--noise:0}}:root:has(input.theme-controller[value=light]:checked),[data-theme=light]{color-scheme:light;--color-base-100:oklch(100% 0 0);--color-base-200:oklch(98% 0 0);--color-base-300:oklch(95% 0 0);--color-base-content:oklch(21% .006 285.885);--color-primary:oklch(45% .24 277.023);--color-primary-content:oklch(93% .034 272.788);--color-secondary:oklch(65% .241 354.308);--color-secondary-content:oklch(94% .028 342.258);--color-accent:oklch(77% .152 181.912);--color-accent-content:oklch(38% .063 188.416);--color-neutral:oklch(14% .005 285.823);--color-neutral-content:oklch(92% .004 286.32);--color-info:oklch(74% .16 232.661);--color-info-content:oklch(29% .066 243.157);--color-success:oklch(76% .177 163.223);--color-success-content:oklch(37% .077 168.94);--color-warning:oklch(82% .189 84.429);--color-warning-content:oklch(41% .112 45.904);--color-error:oklch(71% .194 13.428);--color-error-content:oklch(27% .105 12.094);--radius-selector:.5rem;--radius-field:.25rem;--radius-box:.5rem;--size-selector:.25rem;--size-field:.25rem;--border:1px;--depth:1;--noise:0}:root:has(input.theme-controller[value=dark]:checked),[data-theme=dark]{color-scheme:dark;--color-base-100:oklch(25.33% .016 252.42);--color-base-200:oklch(23.26% .014 253.1);--color-base-300:oklch(21.15% .012 254.09);--color-base-content:oklch(97.807% .029 256.847);--color-primary:oklch(58% .233 277.117);--color-primary-content:oklch(96% .018 272.314);--color-secondary:oklch(65% .241 354.308);--color-secondary-content:oklch(94% .028 342.258);--color-accent:oklch(77% .152 181.912);--color-accent-content:oklch(38% .063 188.416);--color-neutral:oklch(14% .005 285.823);--color-neutral-content:oklch(92% .004 286.32);--color-info:oklch(74% .16 232.661);--color-info-content:oklch(29% .066 243.157);--color-success:oklch(76% .177 163.223);--color-success-content:oklch(37% .077 168.94);--color-warning:oklch(82% .189 84.429);--color-warning-content:oklch(41% .112 45.904);--color-error:oklch(71% .194 13.428);--color-error-content:oklch(27% .105 12.094);--radius-selector:.5rem;--radius-field:.25rem;--radius-box:.5rem;--size-selector:.25rem;--size-field:.25rem;--border:1px;--depth:1;--noise:0}:root{--fx-noise:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cfilter id='a'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.34' numOctaves='4' stitchTiles='stitch'%3E%3C/feTurbulence%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23a)' opacity='0.2'%3E%3C/rect%3E%3C/svg%3E");scrollbar-color:currentColor #0000}@supports (color:color-mix(in lab,red,red)){:root{scrollbar-color:color-mix(in oklch,currentColor 35%,#0000) #0000}}@property --radialprogress{syntax:"<percentage>";inherits:true;initial-value:0%}:root:not(span){overflow:var(--page-overflow)}:root{background:var(--page-scroll-bg,var(--root-bg));--page-scroll-bg-on:linear-gradient(var(--root-bg,#0000), var(--root-bg,#0000)) var(--root-bg,#0000)}@supports (color:color-mix(in lab,red,red)){:root{--page-scroll-bg-on:linear-gradient(var(--root-bg,#0000), var(--root-bg,#0000)) color-mix(in srgb, var(--root-bg,#0000), oklch(0% 0 0) calc(var(--page-has-backdrop,0) * 40%))}}:root{--page-scroll-transition-on:background-color .3s ease-out;transition:var(--page-scroll-transition);scrollbar-gutter:var(--page-scroll-gutter,unset);scrollbar-gutter:if(style(--page-has-scroll: 1): var(--page-scroll-gutter,unset) ; else: unset)}@keyframes set-page-has-scroll{0%,to{--page-has-scroll:1}}:root,[data-theme]{background:var(--page-scroll-bg,var(--root-bg));color:var(--color-base-content)}:where(:root,[data-theme]){--root-bg:var(--color-base-100)}}@layer components;@layer utilities{.\\@container{container-type:inline-size}@layer daisyui.l1.l2.l3{.modal{pointer-events:none;visibility:hidden;width:100%;max-width:none;height:100%;max-height:none;color:inherit;transition:visibility .3s allow-discrete,background-color .3s ease-out,opacity .1s ease-out;overscroll-behavior:contain;z-index:999;scrollbar-gutter:auto;background-color:#0000;place-items:center;margin:0;padding:0;display:grid;position:fixed;top:0;right:0;bottom:0;left:0;overflow:clip}.modal::backdrop{display:none}:where(.drawer-side){overflow:hidden}.drawer-side{pointer-events:none;visibility:hidden;z-index:10;overscroll-behavior:contain;opacity:0;width:100%;transition:opacity .2s ease-out .1s allow-discrete,visibility .3s ease-out .1s allow-discrete;inset-inline-start:0;background-color:#0000;grid-template-rows:repeat(1,minmax(0,1fr));grid-template-columns:repeat(1,minmax(0,1fr));grid-row-start:1;grid-column-start:1;place-items:flex-start start;height:100dvh;display:grid;position:fixed;top:0}.drawer-side>.drawer-overlay{cursor:pointer;background-color:#0006;place-self:stretch stretch;position:sticky;top:0}.drawer-side>*{grid-row-start:1;grid-column-start:1}.drawer-side>:not(.drawer-overlay){will-change:transform;transition:translate .3s ease-out,width .2s ease-out;translate:-100%}[dir=rtl] :is(.drawer-side>:not(.drawer-overlay)){translate:100%}.drawer-toggle{-webkit-appearance:none;-moz-appearance:none;appearance:none;opacity:0;width:0;height:0;position:fixed}:where(.drawer-toggle:checked~.drawer-side){scrollbar-color:currentColor oklch(0 0 0 / calc(var(--page-has-backdrop,0) * .4))}@supports (color:color-mix(in lab,red,red)){:where(.drawer-toggle:checked~.drawer-side){scrollbar-color:color-mix(in oklch,currentColor 35%,#0000) oklch(0 0 0 / calc(var(--page-has-backdrop,0) * .4))}}:where(:root:has(.drawer-toggle:checked)){--page-has-backdrop:1;--page-overflow:hidden;--page-scroll-bg:var(--page-scroll-bg-on);--page-scroll-gutter:stable;--page-scroll-transition:var(--page-scroll-transition-on);animation:forwards set-page-has-scroll;animation-timeline:scroll()}.tooltip{--tt-bg:var(--color-neutral);--tt-off: calc(100% + .5rem) ;--tt-tail: calc(100% + 1px + .25rem) ;display:inline-block;position:relative}.tooltip>.tooltip-content,.tooltip[data-tip]:before{border-radius:var(--radius-field);text-align:center;white-space:normal;max-width:20rem;color:var(--color-neutral-content);opacity:0;background-color:var(--tt-bg);pointer-events:none;z-index:2;--tw-content:attr(data-tip);content:var(--tw-content);width:max-content;padding-block:.25rem;padding-inline:.5rem;font-size:.875rem;line-height:1.25;position:absolute}.tooltip:after{opacity:0;background-color:var(--tt-bg);content:"";pointer-events:none;--mask-tooltip:url("data:image/svg+xml,%3Csvg width='10' height='4' viewBox='0 0 8 4' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0.500009 1C3.5 1 3.00001 4 5.00001 4C7 4 6.5 1 9.5 1C10 1 10 0.499897 10 0H0C-1.99338e-08 0.5 0 1 0.500009 1Z' fill='black'/%3E%3C/svg%3E%0A");width:.625rem;height:.25rem;-webkit-mask-position:-1px 0;mask-position:-1px 0;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-image:var(--mask-tooltip);mask-image:var(--mask-tooltip);display:block;position:absolute}@media (prefers-reduced-motion:no-preference){.tooltip>.tooltip-content,.tooltip[data-tip]:before,.tooltip:after{transition:opacity .2s cubic-bezier(.4,0,.2,1) 75ms,transform .2s cubic-bezier(.4,0,.2,1) 75ms}}:is(.tooltip:is([data-tip]:not([data-tip=""]),:has(.tooltip-content:not(:empty))).tooltip-open,.tooltip:is([data-tip]:not([data-tip=""]),:has(.tooltip-content:not(:empty))):hover,.tooltip:is([data-tip]:not([data-tip=""]),:has(.tooltip-content:not(:empty))):has(:focus-visible))>.tooltip-content,:is(.tooltip:is([data-tip]:not([data-tip=""]),:has(.tooltip-content:not(:empty))).tooltip-open,.tooltip:is([data-tip]:not([data-tip=""]),:has(.tooltip-content:not(:empty))):hover,.tooltip:is([data-tip]:not([data-tip=""]),:has(.tooltip-content:not(:empty))):has(:focus-visible))[data-tip]:before,:is(.tooltip:is([data-tip]:not([data-tip=""]),:has(.tooltip-content:not(:empty))).tooltip-open,.tooltip:is([data-tip]:not([data-tip=""]),:has(.tooltip-content:not(:empty))):hover,.tooltip:is([data-tip]:not([data-tip=""]),:has(.tooltip-content:not(:empty))):has(:focus-visible)):after{opacity:1;--tt-pos:0rem}@media (prefers-reduced-motion:no-preference){:is(.tooltip:is([data-tip]:not([data-tip=""]),:has(.tooltip-content:not(:empty))).tooltip-open,.tooltip:is([data-tip]:not([data-tip=""]),:has(.tooltip-content:not(:empty))):hover,.tooltip:is([data-tip]:not([data-tip=""]),:has(.tooltip-content:not(:empty))):has(:focus-visible))>.tooltip-content,:is(.tooltip:is([data-tip]:not([data-tip=""]),:has(.tooltip-content:not(:empty))).tooltip-open,.tooltip:is([data-tip]:not([data-tip=""]),:has(.tooltip-content:not(:empty))):hover,.tooltip:is([data-tip]:not([data-tip=""]),:has(.tooltip-content:not(:empty))):has(:focus-visible))[data-tip]:before,:is(.tooltip:is([data-tip]:not([data-tip=""]),:has(.tooltip-content:not(:empty))).tooltip-open,.tooltip:is([data-tip]:not([data-tip=""]),:has(.tooltip-content:not(:empty))):hover,.tooltip:is([data-tip]:not([data-tip=""]),:has(.tooltip-content:not(:empty))):has(:focus-visible)):after{transition:opacity .2s cubic-bezier(.4,0,.2,1),transform .2s cubic-bezier(.4,0,.2,1)}}.tab{cursor:pointer;-webkit-appearance:none;-moz-appearance:none;appearance:none;text-align:center;webkit-user-select:none;-webkit-user-select:none;user-select:none;flex-wrap:wrap;justify-content:center;align-items:center;display:inline-flex;position:relative}@media (hover:hover){.tab:hover{color:var(--color-base-content)}}.tab{--tab-p:.75rem;--tab-bg:var(--color-base-100);--tab-border-color:var(--color-base-300);--tab-radius-ss:0;--tab-radius-se:0;--tab-radius-es:0;--tab-radius-ee:0;--tab-order:0;--tab-radius-min:calc(.75rem - var(--border));--tab-radius-limit:min(var(--radius-field), var(--tab-radius-min));--tab-radius-grad:#0000 calc(69% - var(--border)), var(--tab-border-color) calc(69% - var(--border) + .25px), var(--tab-border-color) 69%, var(--tab-bg) calc(69% + .25px) ;order:var(--tab-order);height:var(--tab-height);padding-inline:var(--tab-p);border-color:#0000;font-size:.875rem}.tab:is(input[type=radio]){min-width:fit-content}.tab:is(input[type=radio]):after{--tw-content:attr(aria-label);content:var(--tw-content)}.tab:is(label){position:relative}.tab:is(label) input{cursor:pointer;-webkit-appearance:none;-moz-appearance:none;appearance:none;opacity:0;position:absolute;top:0;right:0;bottom:0;left:0}:is(.tab:checked,.tab:is(label:has(:checked)),.tab:is(.tab-active,[aria-selected=true],[aria-current=true],[aria-current=page]))+.tab-content{display:block}.tab:not(:checked,label:has(:checked),:hover,.tab-active,[aria-selected=true],[aria-current=true],[aria-current=page]){color:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){.tab:not(:checked,label:has(:checked),:hover,.tab-active,[aria-selected=true],[aria-current=true],[aria-current=page]){color:color-mix(in oklab,var(--color-base-content) 50%,transparent)}}.tab:not(input):empty{cursor:default;flex-grow:1}.tab:focus{--tw-outline-style:none;outline-style:none}@media (forced-colors:active){.tab:focus{outline-offset:2px;outline:2px solid #0000}}.tab:focus-visible,.tab:is(label:has(:checked:focus-visible)){outline-offset:-5px;outline:2px solid}.tab[disabled]{pointer-events:none;opacity:.4}.menu{--menu-active-fg:var(--color-neutral-content);--menu-active-bg:var(--color-neutral);flex-flow:column wrap;width:fit-content;padding:.5rem;font-size:.875rem;display:flex}.menu :where(li ul){white-space:nowrap;margin-inline-start:1rem;padding-inline-start:.5rem;position:relative}.menu :where(li ul):before{background-color:var(--color-base-content);opacity:.1;width:var(--border);content:"";inset-inline-start:0;position:absolute;top:.75rem;bottom:.75rem}.menu :where(li>.menu-dropdown:not(.menu-dropdown-show)){display:none}.menu :where(li:not(.menu-title)>:not(ul,details,.menu-title,.btn)),.menu :where(li:not(.menu-title)>details>summary:not(.menu-title)){border-radius:var(--radius-field);text-align:start;text-wrap:balance;-webkit-user-select:none;user-select:none;grid-auto-columns:minmax(auto,max-content) auto max-content;grid-auto-flow:column;align-content:flex-start;align-items:center;gap:.5rem;padding-block:.375rem;padding-inline:.75rem;transition-property:color,background-color,box-shadow;transition-duration:.2s;transition-timing-function:cubic-bezier(0,0,.2,1);display:grid}.menu :where(li>details>summary){--tw-outline-style:none;outline-style:none}@media (forced-colors:active){.menu :where(li>details>summary){outline-offset:2px;outline:2px solid #0000}}.menu :where(li>details>summary)::-webkit-details-marker{display:none}:is(.menu :where(li>details>summary),.menu :where(li>.menu-dropdown-toggle)):after{content:"";transform-origin:50%;pointer-events:none;justify-self:flex-end;width:.375rem;height:.375rem;transition-property:rotate,translate;transition-duration:.2s;display:block;translate:0 -1px;rotate:-135deg;box-shadow:inset 2px 2px}.menu details{interpolate-size:allow-keywords;overflow:hidden}.menu details::details-content{block-size:0}@media (prefers-reduced-motion:no-preference){.menu details::details-content{transition-behavior:allow-discrete;transition-property:block-size,content-visibility;transition-duration:.2s;transition-timing-function:cubic-bezier(0,0,.2,1)}}.menu details[open]::details-content{block-size:auto}.menu :where(li>details[open]>summary):after,.menu :where(li>.menu-dropdown-toggle.menu-dropdown-show):after{translate:0 1px;rotate:45deg}.menu :where(li:not(.menu-title,.disabled)>:not(ul,details,.menu-title),li:not(.menu-title,.disabled)>details>summary:not(.menu-title)):not(.menu-active,:active,.btn).menu-focus,.menu :where(li:not(.menu-title,.disabled)>:not(ul,details,.menu-title),li:not(.menu-title,.disabled)>details>summary:not(.menu-title)):not(.menu-active,:active,.btn):focus-visible{cursor:pointer;background-color:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){.menu :where(li:not(.menu-title,.disabled)>:not(ul,details,.menu-title),li:not(.menu-title,.disabled)>details>summary:not(.menu-title)):not(.menu-active,:active,.btn).menu-focus,.menu :where(li:not(.menu-title,.disabled)>:not(ul,details,.menu-title),li:not(.menu-title,.disabled)>details>summary:not(.menu-title)):not(.menu-active,:active,.btn):focus-visible{background-color:color-mix(in oklab,var(--color-base-content) 10%,transparent)}}.menu :where(li:not(.menu-title,.disabled)>:not(ul,details,.menu-title),li:not(.menu-title,.disabled)>details>summary:not(.menu-title)):not(.menu-active,:active,.btn).menu-focus,.menu :where(li:not(.menu-title,.disabled)>:not(ul,details,.menu-title),li:not(.menu-title,.disabled)>details>summary:not(.menu-title)):not(.menu-active,:active,.btn):focus-visible{color:var(--color-base-content);--tw-outline-style:none;outline-style:none}@media (forced-colors:active){.menu :where(li:not(.menu-title,.disabled)>:not(ul,details,.menu-title),li:not(.menu-title,.disabled)>details>summary:not(.menu-title)):not(.menu-active,:active,.btn).menu-focus,.menu :where(li:not(.menu-title,.disabled)>:not(ul,details,.menu-title),li:not(.menu-title,.disabled)>details>summary:not(.menu-title)):not(.menu-active,:active,.btn):focus-visible{outline-offset:2px;outline:2px solid #0000}}.menu :where(li:not(.menu-title,.disabled)>:not(ul,details,.menu-title):not(.menu-active,:active,.btn):hover,li:not(.menu-title,.disabled)>details>summary:not(.menu-title):not(.menu-active,:active,.btn):hover){cursor:pointer;background-color:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){.menu :where(li:not(.menu-title,.disabled)>:not(ul,details,.menu-title):not(.menu-active,:active,.btn):hover,li:not(.menu-title,.disabled)>details>summary:not(.menu-title):not(.menu-active,:active,.btn):hover){background-color:color-mix(in oklab,var(--color-base-content) 10%,transparent)}}.menu :where(li:not(.menu-title,.disabled)>:not(ul,details,.menu-title):not(.menu-active,:active,.btn):hover,li:not(.menu-title,.disabled)>details>summary:not(.menu-title):not(.menu-active,:active,.btn):hover){--tw-outline-style:none;outline-style:none}@media (forced-colors:active){.menu :where(li:not(.menu-title,.disabled)>:not(ul,details,.menu-title):not(.menu-active,:active,.btn):hover,li:not(.menu-title,.disabled)>details>summary:not(.menu-title):not(.menu-active,:active,.btn):hover){outline-offset:2px;outline:2px solid #0000}}.menu :where(li:not(.menu-title,.disabled)>:not(ul,details,.menu-title):not(.menu-active,:active,.btn):hover,li:not(.menu-title,.disabled)>details>summary:not(.menu-title):not(.menu-active,:active,.btn):hover){box-shadow:inset 0 1px #00000003,inset 0 -1px #ffffff03}.menu :where(li:empty){background-color:var(--color-base-content);opacity:.1;height:1px;margin:.5rem 1rem}.menu :where(li){flex-flow:column wrap;flex-shrink:0;align-items:stretch;display:flex;position:relative}.menu :where(li) .badge{justify-self:flex-end}.menu :where(li)>:not(ul,.menu-title,details,.btn):active,.menu :where(li)>:not(ul,.menu-title,details,.btn).menu-active,.menu :where(li)>details>summary:active{--tw-outline-style:none;outline-style:none}@media (forced-colors:active){.menu :where(li)>:not(ul,.menu-title,details,.btn):active,.menu :where(li)>:not(ul,.menu-title,details,.btn).menu-active,.menu :where(li)>details>summary:active{outline-offset:2px;outline:2px solid #0000}}.menu :where(li)>:not(ul,.menu-title,details,.btn):active,.menu :where(li)>:not(ul,.menu-title,details,.btn).menu-active,.menu :where(li)>details>summary:active{color:var(--menu-active-fg);background-color:var(--menu-active-bg);background-size:auto,calc(var(--noise) * 100%);background-image:none,var(--fx-noise)}:is(.menu :where(li)>:not(ul,.menu-title,details,.btn):active,.menu :where(li)>:not(ul,.menu-title,details,.btn).menu-active,.menu :where(li)>details>summary:active):not(:is(.menu :where(li)>:not(ul,.menu-title,details,.btn):active,.menu :where(li)>:not(ul,.menu-title,details,.btn).menu-active,.menu :where(li)>details>summary:active):active){box-shadow:0 2px calc(var(--depth) * 3px) -2px var(--menu-active-bg)}.menu :where(li).menu-disabled{pointer-events:none;color:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){.menu :where(li).menu-disabled{color:color-mix(in oklab,var(--color-base-content) 20%,transparent)}}.menu .dropdown:focus-within .menu-dropdown-toggle:after{translate:0 1px;rotate:45deg}.menu .dropdown-content{margin-top:.5rem;padding:.5rem}.menu .dropdown-content:before{display:none}.dropdown{position-area:var(--anchor-v,bottom) var(--anchor-h,span-right);display:inline-block;position:relative}.dropdown>:not(:has(~[class*=dropdown-content])):focus{--tw-outline-style:none;outline-style:none}@media (forced-colors:active){.dropdown>:not(:has(~[class*=dropdown-content])):focus{outline-offset:2px;outline:2px solid #0000}}.dropdown .dropdown-content{position:absolute}.dropdown.dropdown-close .dropdown-content,.dropdown:not(details,.dropdown-open,.dropdown-hover:hover,:focus-within) .dropdown-content,.dropdown.dropdown-hover:not(:hover) [tabindex]:first-child:focus:not(:focus-visible)~.dropdown-content{transform-origin:top;opacity:0;display:none;scale:95%}.dropdown[popover],.dropdown .dropdown-content{z-index:999}@media (prefers-reduced-motion:no-preference){.dropdown[popover],.dropdown .dropdown-content{transition-behavior:allow-discrete;transition-property:opacity,scale,display;transition-duration:.2s;transition-timing-function:cubic-bezier(.4,0,.2,1);animation:.2s dropdown}}@starting-style{.dropdown[popover],.dropdown .dropdown-content{opacity:0;scale:95%}}:is(.dropdown:not(.dropdown-close).dropdown-open,.dropdown:not(.dropdown-close):not(.dropdown-hover):focus,.dropdown:not(.dropdown-close):focus-within)>[tabindex]:first-child{pointer-events:none}:is(.dropdown:not(.dropdown-close).dropdown-open,.dropdown:not(.dropdown-close):not(.dropdown-hover):focus,.dropdown:not(.dropdown-close):focus-within) .dropdown-content,.dropdown:not(.dropdown-close).dropdown-hover:hover .dropdown-content{opacity:1;scale:100%}.dropdown:is(details) summary::-webkit-details-marker{display:none}.dropdown:where([popover]){background:0 0}.dropdown[popover]{color:inherit;position:fixed}@supports not (position-area:bottom){.dropdown[popover]{margin:auto}.dropdown[popover].dropdown-close{transform-origin:top;opacity:0;display:none;scale:95%}.dropdown[popover].dropdown-open:not(:popover-open){transform-origin:top;opacity:0;display:none;scale:95%}.dropdown[popover]::backdrop{background-color:oklab(0% none none/.3)}}:is(.dropdown[popover].dropdown-close,.dropdown[popover]:not(.dropdown-open,:popover-open)){transform-origin:top;opacity:0;display:none;scale:95%}:where(.btn){width:unset}.btn{cursor:pointer;text-align:center;vertical-align:middle;outline-offset:2px;webkit-user-select:none;-webkit-user-select:none;user-select:none;padding-inline:var(--btn-p);color:var(--btn-fg);--tw-prose-links:var(--btn-fg);height:var(--size);font-size:var(--fontsize,.875rem);outline-color:var(--btn-color,var(--color-base-content));background-color:var(--btn-bg);background-size:auto,calc(var(--noise) * 100%);background-image:none,var(--btn-noise);border-width:var(--border);border-style:solid;border-color:var(--btn-border);text-shadow:0 .5px oklch(100% 0 0 / calc(var(--depth) * .15));touch-action:manipulation;box-shadow:0 .5px 0 .5px oklch(100% 0 0 / calc(var(--depth) * 6%)) inset,var(--btn-shadow);--size:calc(var(--size-field,.25rem) * 10);--btn-bg:var(--btn-color,var(--color-base-200));--btn-fg:var(--color-base-content);--btn-p:1rem;--btn-border:var(--btn-bg);border-start-start-radius:var(--join-ss,var(--radius-field));border-start-end-radius:var(--join-se,var(--radius-field));border-end-end-radius:var(--join-ee,var(--radius-field));border-end-start-radius:var(--join-es,var(--radius-field));flex-wrap:nowrap;flex-shrink:0;justify-content:center;align-items:center;gap:.375rem;font-weight:600;transition-property:color,background-color,border-color,box-shadow;transition-duration:.2s;transition-timing-function:cubic-bezier(0,0,.2,1);display:inline-flex}@supports (color:color-mix(in lab,red,red)){.btn{--btn-border:color-mix(in oklab, var(--btn-bg), #000 calc(var(--depth) * 5%))}}.btn{--btn-shadow:0 3px 2px -2px var(--btn-bg), 0 4px 3px -2px var(--btn-bg)}@supports (color:color-mix(in lab,red,red)){.btn{--btn-shadow:0 3px 2px -2px color-mix(in oklab, var(--btn-bg) calc(var(--depth) * 30%), #0000), 0 4px 3px -2px color-mix(in oklab, var(--btn-bg) calc(var(--depth) * 30%), #0000)}}.btn{--btn-noise:var(--fx-noise)}@media (hover:hover){.btn:hover{--btn-bg:var(--btn-color,var(--color-base-200))}@supports (color:color-mix(in lab,red,red)){.btn:hover{--btn-bg:color-mix(in oklab, var(--btn-color,var(--color-base-200)), #000 7%)}}}.btn:focus-visible,.btn:has(:focus-visible){isolation:isolate;outline-width:2px;outline-style:solid}.btn:active:not(.btn-active){--btn-bg:var(--btn-color,var(--color-base-200));translate:0 .5px}@supports (color:color-mix(in lab,red,red)){.btn:active:not(.btn-active){--btn-bg:color-mix(in oklab, var(--btn-color,var(--color-base-200)), #000 5%)}}.btn:active:not(.btn-active){--btn-border:var(--btn-color,var(--color-base-200))}@supports (color:color-mix(in lab,red,red)){.btn:active:not(.btn-active){--btn-border:color-mix(in oklab, var(--btn-color,var(--color-base-200)), #000 7%)}}.btn:active:not(.btn-active){--btn-shadow:0 0 0 0 oklch(0% 0 0/0), 0 0 0 0 oklch(0% 0 0/0)}.btn:is(input[type=checkbox],input[type=radio]){-webkit-appearance:none;-moz-appearance:none;appearance:none}.btn:is(input[type=checkbox],input[type=radio])[aria-label]:after{--tw-content:attr(aria-label);content:var(--tw-content)}.btn:where(input:checked:not(.filter .btn)){--btn-color:var(--color-primary);--btn-fg:var(--color-primary-content);isolation:isolate}.\\!loading{pointer-events:none!important;aspect-ratio:1!important;vertical-align:middle!important;width:calc(var(--size-selector,.25rem) * 6)!important;background-color:currentColor!important;display:inline-block!important;-webkit-mask-image:url("data:image/svg+xml,%3Csvg width='24' height='24' stroke='black' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cg transform-origin='center'%3E%3Ccircle cx='12' cy='12' r='9.5' fill='none' stroke-width='3' stroke-linecap='round'%3E%3CanimateTransform attributeName='transform' type='rotate' from='0 12 12' to='360 12 12' dur='2s' repeatCount='indefinite'/%3E%3Canimate attributeName='stroke-dasharray' values='0,150;42,150;42,150' keyTimes='0;0.475;1' dur='1.5s' repeatCount='indefinite'/%3E%3Canimate attributeName='stroke-dashoffset' values='0;-16;-59' keyTimes='0;0.475;1' dur='1.5s' repeatCount='indefinite'/%3E%3C/circle%3E%3C/g%3E%3C/svg%3E")!important;mask-image:url("data:image/svg+xml,%3Csvg width='24' height='24' stroke='black' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cg transform-origin='center'%3E%3Ccircle cx='12' cy='12' r='9.5' fill='none' stroke-width='3' stroke-linecap='round'%3E%3CanimateTransform attributeName='transform' type='rotate' from='0 12 12' to='360 12 12' dur='2s' repeatCount='indefinite'/%3E%3Canimate attributeName='stroke-dasharray' values='0,150;42,150;42,150' keyTimes='0;0.475;1' dur='1.5s' repeatCount='indefinite'/%3E%3Canimate attributeName='stroke-dashoffset' values='0;-16;-59' keyTimes='0;0.475;1' dur='1.5s' repeatCount='indefinite'/%3E%3C/circle%3E%3C/g%3E%3C/svg%3E")!important;-webkit-mask-position:50%!important;mask-position:50%!important;-webkit-mask-size:100%!important;mask-size:100%!important;-webkit-mask-repeat:no-repeat!important;mask-repeat:no-repeat!important}.loading{pointer-events:none;aspect-ratio:1;vertical-align:middle;width:calc(var(--size-selector,.25rem) * 6);background-color:currentColor;display:inline-block;-webkit-mask-image:url("data:image/svg+xml,%3Csvg width='24' height='24' stroke='black' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cg transform-origin='center'%3E%3Ccircle cx='12' cy='12' r='9.5' fill='none' stroke-width='3' stroke-linecap='round'%3E%3CanimateTransform attributeName='transform' type='rotate' from='0 12 12' to='360 12 12' dur='2s' repeatCount='indefinite'/%3E%3Canimate attributeName='stroke-dasharray' values='0,150;42,150;42,150' keyTimes='0;0.475;1' dur='1.5s' repeatCount='indefinite'/%3E%3Canimate attributeName='stroke-dashoffset' values='0;-16;-59' keyTimes='0;0.475;1' dur='1.5s' repeatCount='indefinite'/%3E%3C/circle%3E%3C/g%3E%3C/svg%3E");mask-image:url("data:image/svg+xml,%3Csvg width='24' height='24' stroke='black' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cg transform-origin='center'%3E%3Ccircle cx='12' cy='12' r='9.5' fill='none' stroke-width='3' stroke-linecap='round'%3E%3CanimateTransform attributeName='transform' type='rotate' from='0 12 12' to='360 12 12' dur='2s' repeatCount='indefinite'/%3E%3Canimate attributeName='stroke-dasharray' values='0,150;42,150;42,150' keyTimes='0;0.475;1' dur='1.5s' repeatCount='indefinite'/%3E%3Canimate attributeName='stroke-dashoffset' values='0;-16;-59' keyTimes='0;0.475;1' dur='1.5s' repeatCount='indefinite'/%3E%3C/circle%3E%3C/g%3E%3C/svg%3E");-webkit-mask-position:50%;mask-position:50%;-webkit-mask-size:100%;mask-size:100%;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}.collapse{border-radius:var(--radius-box,1rem);isolation:isolate;grid-template-rows:max-content 0fr;grid-template-columns:minmax(0,1fr);width:100%;display:grid;position:relative;overflow:hidden}@media (prefers-reduced-motion:no-preference){.collapse{transition:grid-template-rows .2s}}.collapse>input:is([type=checkbox],[type=radio]){-webkit-appearance:none;-moz-appearance:none;appearance:none;opacity:0;z-index:1;grid-row-start:1;grid-column-start:1;width:100%;min-height:1lh;padding:1rem;padding-inline-end:3rem;transition:background-color .2s ease-out}.collapse:is([open],[tabindex]:focus:not(.collapse-close),[tabindex]:focus-within:not(.collapse-close)),.collapse:not(.collapse-close):has(>input:is([type=checkbox],[type=radio]):checked){grid-template-rows:max-content 1fr}.collapse:is([open],[tabindex]:focus:not(.collapse-close),[tabindex]:focus-within:not(.collapse-close))>.collapse-content,.collapse:not(.collapse-close)>:where(input:is([type=checkbox],[type=radio]):checked~.collapse-content){content-visibility:visible;min-height:fit-content}@supports not (content-visibility:visible){.collapse:is([open],[tabindex]:focus:not(.collapse-close),[tabindex]:focus-within:not(.collapse-close))>.collapse-content,.collapse:not(.collapse-close)>:where(input:is([type=checkbox],[type=radio]):checked~.collapse-content){visibility:visible}}.collapse:focus-visible,.collapse:has(>input:is([type=checkbox],[type=radio]):focus-visible),.collapse:has(summary:focus-visible){outline-color:var(--color-base-content);outline-offset:2px;outline-width:2px;outline-style:solid}.collapse:not(.collapse-close)>input[type=checkbox],.collapse:not(.collapse-close)>input[type=radio]:not(:checked),.collapse:not(.collapse-close)>.collapse-title{cursor:pointer}:is(.collapse[tabindex]:focus:not(.collapse-close,.collapse[open]),.collapse[tabindex]:focus-within:not(.collapse-close,.collapse[open]))>.collapse-title{cursor:unset}.collapse:is([open],[tabindex]:focus:not(.collapse-close),[tabindex]:focus-within:not(.collapse-close))>:where(.collapse-content),.collapse:not(.collapse-close)>:where(input:is([type=checkbox],[type=radio]):checked~.collapse-content){padding-bottom:1rem}.collapse:is(details){width:100%}@media (prefers-reduced-motion:no-preference){.collapse:is(details)::details-content{transition:content-visibility .2s allow-discrete,visibility .2s allow-discrete,min-height .2s ease-out allow-discrete,padding .1s ease-out 20ms,background-color .2s ease-out,height .2s;interpolate-size:allow-keywords;height:0}.collapse:is(details):where([open])::details-content{height:auto}}.collapse:is(details) summary{display:block;position:relative}.collapse:is(details) summary::-webkit-details-marker{display:none}.collapse:is(details)>.collapse-content{content-visibility:visible}.collapse:is(details) summary{outline:none}.collapse-content{content-visibility:hidden;min-height:0;cursor:unset;grid-row-start:2;grid-column-start:1;padding-left:1rem;padding-right:1rem}@supports not (content-visibility:hidden){.collapse-content{visibility:hidden}}@media (prefers-reduced-motion:no-preference){.collapse-content{transition:content-visibility .2s allow-discrete,visibility .2s allow-discrete,min-height .2s ease-out allow-discrete,padding .1s ease-out 20ms,background-color .2s ease-out}}.validator-hint{visibility:hidden;margin-top:.5rem;font-size:.75rem}.validator:user-valid{--input-color:var(--color-success)}.validator:user-valid:focus{--input-color:var(--color-success)}.validator:user-valid:checked{--input-color:var(--color-success)}.validator:user-valid[aria-checked=true]{--input-color:var(--color-success)}.validator:user-valid:focus-within{--input-color:var(--color-success)}.validator:has(:user-valid){--input-color:var(--color-success)}.validator:has(:user-valid):focus{--input-color:var(--color-success)}.validator:has(:user-valid):checked{--input-color:var(--color-success)}.validator:has(:user-valid)[aria-checked=true]{--input-color:var(--color-success)}.validator:has(:user-valid):focus-within{--input-color:var(--color-success)}.validator:user-invalid{--input-color:var(--color-error)}.validator:user-invalid:focus{--input-color:var(--color-error)}.validator:user-invalid:checked{--input-color:var(--color-error)}.validator:user-invalid[aria-checked=true]{--input-color:var(--color-error)}.validator:user-invalid:focus-within{--input-color:var(--color-error)}.validator:user-invalid~.validator-hint{visibility:visible;color:var(--color-error)}.validator:has(:user-invalid){--input-color:var(--color-error)}.validator:has(:user-invalid):focus{--input-color:var(--color-error)}.validator:has(:user-invalid):checked{--input-color:var(--color-error)}.validator:has(:user-invalid)[aria-checked=true]{--input-color:var(--color-error)}.validator:has(:user-invalid):focus-within{--input-color:var(--color-error)}.validator:has(:user-invalid)~.validator-hint{visibility:visible;color:var(--color-error)}:is(.validator[aria-invalid]:not([aria-invalid=false]),.validator:has([aria-invalid]:not([aria-invalid=false]))),:is(.validator[aria-invalid]:not([aria-invalid=false]),.validator:has([aria-invalid]:not([aria-invalid=false]))):focus,:is(.validator[aria-invalid]:not([aria-invalid=false]),.validator:has([aria-invalid]:not([aria-invalid=false]))):checked,:is(.validator[aria-invalid]:not([aria-invalid=false]),.validator:has([aria-invalid]:not([aria-invalid=false])))[aria-checked=true],:is(.validator[aria-invalid]:not([aria-invalid=false]),.validator:has([aria-invalid]:not([aria-invalid=false]))):focus-within{--input-color:var(--color-error)}:is(.validator[aria-invalid]:not([aria-invalid=false]),.validator:has([aria-invalid]:not([aria-invalid=false])))~.validator-hint{visibility:visible;color:var(--color-error)}.list{flex-direction:column;font-size:.875rem;display:flex}.list .list-row{--list-grid-cols:minmax(0, auto) 1fr;border-radius:var(--radius-box);word-break:break-word;grid-auto-flow:column;grid-template-columns:var(--list-grid-cols);gap:1rem;padding:1rem;display:grid;position:relative}:is(.list>:not(:last-child).list-row,.list>:not(:last-child) .list-row):after{content:"";border-bottom:var(--border) solid;inset-inline:var(--radius-box);border-color:var(--color-base-content);position:absolute;bottom:0}@supports (color:color-mix(in lab,red,red)){:is(.list>:not(:last-child).list-row,.list>:not(:last-child) .list-row):after{border-color:color-mix(in oklab,var(--color-base-content) 5%,transparent)}}.toast{translate:var(--toast-x,0) var(--toast-y,0);inset-inline:auto 1rem;background-color:#0000;flex-direction:column;gap:.5rem;width:max-content;max-width:calc(100vw - 2rem);display:flex;position:fixed;top:auto;bottom:1rem}@media (prefers-reduced-motion:no-preference){.toast>*{animation:.25s ease-out toast}}.toggle{border:var(--border) solid currentColor;color:var(--input-color);cursor:pointer;-webkit-appearance:none;-moz-appearance:none;appearance:none;vertical-align:middle;webkit-user-select:none;-webkit-user-select:none;user-select:none;--radius-selector-max:calc(var(--radius-selector) + var(--radius-selector) + var(--radius-selector));border-radius:calc(var(--radius-selector) + min(var(--toggle-p),var(--radius-selector-max)) + min(var(--border),var(--radius-selector-max)));padding:var(--toggle-p);flex-shrink:0;grid-template-columns:0fr 1fr 1fr;place-content:center;display:inline-grid;position:relative;box-shadow:inset 0 1px}@supports (color:color-mix(in lab,red,red)){.toggle{box-shadow:0 1px color-mix(in oklab,currentColor calc(var(--depth) * 10%),#0000) inset}}.toggle{--input-color:var(--color-base-content);transition:color .3s,grid-template-columns .2s}@supports (color:color-mix(in lab,red,red)){.toggle{--input-color:color-mix(in oklab, var(--color-base-content) 50%, #0000)}}.toggle{--toggle-p:calc(var(--size) * .125);--size:calc(var(--size-selector,.25rem) * 6);width:calc((var(--size) * 2) - (var(--border) + var(--toggle-p)) * 2);height:var(--size)}.toggle>*{z-index:1;cursor:pointer;-webkit-appearance:none;-moz-appearance:none;appearance:none;background-color:#0000;border:none;grid-column:2/span 1;grid-row-start:1;height:100%;padding:.125rem;transition:opacity .2s,rotate .4s}.toggle>:focus{--tw-outline-style:none;outline-style:none}@media (forced-colors:active){.toggle>:focus{outline-offset:2px;outline:2px solid #0000}}.toggle>:nth-child(2){color:var(--color-base-100);rotate:none}.toggle>:nth-child(3){color:var(--color-base-100);opacity:0;rotate:-15deg}.toggle:has(:checked)>:nth-child(2){opacity:0;rotate:15deg}.toggle:has(:checked)>:nth-child(3){opacity:1;rotate:none}.toggle:before{aspect-ratio:1;border-radius:var(--radius-selector);--tw-content:"";content:var(--tw-content);width:100%;height:100%;box-shadow:0 -1px oklch(0% 0 0 / calc(var(--depth) * .1)) inset,0 8px 0 -4px oklch(100% 0 0 / calc(var(--depth) * .1)) inset,0 1px currentColor;background-color:currentColor;grid-row-start:1;grid-column-start:2;transition:background-color .1s,translate .2s,inset-inline-start .2s;position:relative;inset-inline-start:0;translate:0}@supports (color:color-mix(in lab,red,red)){.toggle:before{box-shadow:0 -1px oklch(0% 0 0 / calc(var(--depth) * .1)) inset,0 8px 0 -4px oklch(100% 0 0 / calc(var(--depth) * .1)) inset,0 1px color-mix(in oklab,currentColor calc(var(--depth) * 10%),#0000)}}.toggle:before{background-size:auto,calc(var(--noise) * 100%);background-image:none,var(--fx-noise)}@media (forced-colors:active){.toggle:before{outline-style:var(--tw-outline-style);outline-offset:-1px;outline-width:1px}}@media print{.toggle:before{outline-offset:-1rem;outline:.25rem solid}}.toggle:focus-visible,.toggle:has(:focus-visible){outline-offset:2px;outline:2px solid}.toggle:checked,.toggle[aria-checked=true],.toggle:has(>input:checked){background-color:var(--color-base-100);--input-color:var(--color-base-content);grid-template-columns:1fr 1fr 0fr}:is(.toggle:checked,.toggle[aria-checked=true],.toggle:has(>input:checked)):before{background-color:currentColor}@starting-style{:is(.toggle:checked,.toggle[aria-checked=true],.toggle:has(>input:checked)):before{opacity:0}}.toggle:indeterminate{grid-template-columns:.5fr 1fr .5fr}.toggle:disabled{cursor:not-allowed;opacity:.3}.toggle:disabled:before{border:var(--border) solid currentColor;background-color:#0000}.input{cursor:text;border:var(--border) solid #0000;-webkit-appearance:none;-moz-appearance:none;appearance:none;background-color:var(--color-base-100);vertical-align:middle;white-space:nowrap;width:clamp(3rem,20rem,100%);height:var(--size);font-size:max(var(--font-size,.875rem),.875rem);touch-action:manipulation;border-color:var(--input-color);box-shadow:0 1px var(--input-color) inset,0 -1px oklch(100% 0 0 / calc(var(--depth) * .1)) inset;border-start-start-radius:var(--join-ss,var(--radius-field));border-start-end-radius:var(--join-se,var(--radius-field));border-end-end-radius:var(--join-ee,var(--radius-field));border-end-start-radius:var(--join-es,var(--radius-field));flex-shrink:1;align-items:center;gap:.5rem;padding-inline:.75rem;display:inline-flex;position:relative}@supports (color:color-mix(in lab,red,red)){.input{box-shadow:0 1px color-mix(in oklab,var(--input-color) calc(var(--depth) * 10%),#0000) inset,0 -1px oklch(100% 0 0 / calc(var(--depth) * .1)) inset}}.input{--size:calc(var(--size-field,.25rem) * 10);--input-color:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){.input{--input-color:color-mix(in oklab, var(--color-base-content) 20%, #0000)}}.input:where(input){display:inline-flex}.input :where(input){-webkit-appearance:none;-moz-appearance:none;appearance:none;background-color:#0000;border:none;width:100%;height:100%;display:inline-flex}.input :where(input):focus,.input :where(input):focus-within{--tw-outline-style:none;outline-style:none}@media (forced-colors:active){.input :where(input):focus,.input :where(input):focus-within{outline-offset:2px;outline:2px solid #0000}}.input :where(input[type=url]),.input :where(input[type=email]){direction:ltr}.input :where(input[type=date]){display:inline-flex}.input:focus,.input:focus-within{--input-color:var(--color-base-content);box-shadow:0 1px var(--input-color)}@supports (color:color-mix(in lab,red,red)){.input:focus,.input:focus-within{box-shadow:0 1px color-mix(in oklab,var(--input-color) calc(var(--depth) * 10%),#0000)}}.input:focus,.input:focus-within{outline:2px solid var(--input-color);outline-offset:2px;isolation:isolate}@media (pointer:coarse){@supports (-webkit-touch-callout:none){.input:focus,.input:focus-within{--font-size:1rem}}}.input:has(>input[disabled]),.input:is(:disabled,[disabled]),fieldset:disabled .input{cursor:not-allowed;border-color:var(--color-base-200);background-color:var(--color-base-200);color:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){.input:has(>input[disabled]),.input:is(:disabled,[disabled]),fieldset:disabled .input{color:color-mix(in oklab,var(--color-base-content) 40%,transparent)}}:is(.input:has(>input[disabled]),.input:is(:disabled,[disabled]),fieldset:disabled .input)::placeholder{color:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){:is(.input:has(>input[disabled]),.input:is(:disabled,[disabled]),fieldset:disabled .input)::placeholder{color:color-mix(in oklab,var(--color-base-content) 20%,transparent)}}.input:has(>input[disabled]),.input:is(:disabled,[disabled]),fieldset:disabled .input{box-shadow:none}.input:has(>input[disabled])>input[disabled]{cursor:not-allowed}.input::-webkit-date-and-time-value{text-align:inherit}.input[type=number]::-webkit-inner-spin-button{margin-block:-.75rem;margin-inline-end:-.75rem}.input::-webkit-calendar-picker-indicator{position:absolute;inset-inline-end:.75em}.input:has(>input[type=date]) :where(input[type=date]){webkit-appearance:none;-webkit-appearance:none;-moz-appearance:none;appearance:none;display:inline-flex}.input:has(>input[type=date]) input[type=date]::-webkit-calendar-picker-indicator{cursor:pointer;width:1em;height:1em;position:absolute;inset-inline-end:.75em}.table{border-collapse:separate;--tw-border-spacing-x: 0rem ;--tw-border-spacing-y: 0rem ;width:100%;border-spacing:var(--tw-border-spacing-x) var(--tw-border-spacing-y);border-radius:var(--radius-box);text-align:left;font-size:.875rem;position:relative}.table:where(:dir(rtl),[dir=rtl],[dir=rtl] *){text-align:right}@media (hover:hover){:is(.table tr.row-hover,.table tr.row-hover:nth-child(2n)):hover{background-color:var(--color-base-200)}}.table :where(th,td){vertical-align:middle;padding-block:.75rem;padding-inline:1rem}.table :where(thead,tfoot){white-space:nowrap;color:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){.table :where(thead,tfoot){color:color-mix(in oklab,var(--color-base-content) 60%,transparent)}}.table :where(thead,tfoot){font-size:.875rem;font-weight:600}.table :where(tfoot tr:first-child :is(td,th)){border-top:var(--border) solid var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){.table :where(tfoot tr:first-child :is(td,th)){border-top:var(--border) solid color-mix(in oklch,var(--color-base-content) 5%,#0000)}}.table :where(.table-pin-rows thead tr){z-index:1;background-color:var(--color-base-100);position:sticky;top:0}.table :where(.table-pin-rows tfoot tr){z-index:1;background-color:var(--color-base-100);position:sticky;bottom:0}.table :where(.table-pin-cols tr th){background-color:var(--color-base-100);position:sticky;left:0;right:0}.table :where(thead tr :is(td,th),tbody tr:not(:last-child) :is(td,th)){border-bottom:var(--border) solid var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){.table :where(thead tr :is(td,th),tbody tr:not(:last-child) :is(td,th)){border-bottom:var(--border) solid color-mix(in oklch,var(--color-base-content) 5%,#0000)}}.range{-webkit-appearance:none;-moz-appearance:none;appearance:none;webkit-appearance:none;--range-thumb:var(--color-base-100);--range-thumb-size:calc(var(--size-selector,.25rem) * 6);--range-progress:currentColor;--range-fill:1;--range-p:.25rem;--range-bg:currentColor}@supports (color:color-mix(in lab,red,red)){.range{--range-bg:color-mix(in oklab, currentColor 10%, #0000)}}.range{cursor:pointer;vertical-align:middle;--radius-selector-max:calc(var(--radius-selector) + var(--radius-selector) + var(--radius-selector));border-radius:calc(var(--radius-selector) + min(var(--range-p),var(--radius-selector-max)));width:clamp(3rem,20rem,100%);height:var(--range-thumb-size);background-color:#0000;border:none;overflow:hidden}[dir=rtl] .range{--range-dir:-1}.range:focus{outline:none}.range:focus-visible{outline-offset:2px;outline:2px solid}.range::-webkit-slider-runnable-track{background-color:var(--range-bg);border-radius:var(--radius-selector);width:100%;height:calc(var(--range-thumb-size) * .5)}@media (forced-colors:active){.range::-webkit-slider-runnable-track{border:1px solid}.range::-moz-range-track{border:1px solid}}.range::-webkit-slider-thumb{box-sizing:border-box;border-radius:calc(var(--radius-selector) + min(var(--range-p),var(--radius-selector-max)));background-color:var(--range-thumb);height:var(--range-thumb-size);width:var(--range-thumb-size);border:var(--range-p) solid;-webkit-appearance:none;-moz-appearance:none;appearance:none;webkit-appearance:none;color:var(--range-progress);box-shadow:0 -1px oklch(0% 0 0 / calc(var(--depth) * .1)) inset,0 8px 0 -4px oklch(100% 0 0 / calc(var(--depth) * .1)) inset,0 1px currentColor,0 0 0 2rem var(--range-thumb) inset,calc((var(--range-dir,1) * -100cqw) - (var(--range-dir,1) * var(--range-thumb-size) / 2)) 0 0 calc(100cqw * var(--range-fill));position:relative;top:50%;transform:translateY(-50%)}@supports (color:color-mix(in lab,red,red)){.range::-webkit-slider-thumb{box-shadow:0 -1px oklch(0% 0 0 / calc(var(--depth) * .1)) inset,0 8px 0 -4px oklch(100% 0 0 / calc(var(--depth) * .1)) inset,0 1px color-mix(in oklab,currentColor calc(var(--depth) * 10%),#0000),0 0 0 2rem var(--range-thumb) inset,calc((var(--range-dir,1) * -100cqw) - (var(--range-dir,1) * var(--range-thumb-size) / 2)) 0 0 calc(100cqw * var(--range-fill))}}.range::-moz-range-track{background-color:var(--range-bg);border-radius:var(--radius-selector);width:100%;height:calc(var(--range-thumb-size) * .5)}.range::-moz-range-thumb{box-sizing:border-box;border-radius:calc(var(--radius-selector) + min(var(--range-p),var(--radius-selector-max)));height:var(--range-thumb-size);width:var(--range-thumb-size);border:var(--range-p) solid;color:var(--range-progress);box-shadow:0 -1px oklch(0% 0 0 / calc(var(--depth) * .1)) inset,0 8px 0 -4px oklch(100% 0 0 / calc(var(--depth) * .1)) inset,0 1px currentColor,0 0 0 2rem var(--range-thumb) inset,calc((var(--range-dir,1) * -100cqw) - (var(--range-dir,1) * var(--range-thumb-size) / 2)) 0 0 calc(100cqw * var(--range-fill));background-color:currentColor;position:relative;top:50%}@supports (color:color-mix(in lab,red,red)){.range::-moz-range-thumb{box-shadow:0 -1px oklch(0% 0 0 / calc(var(--depth) * .1)) inset,0 8px 0 -4px oklch(100% 0 0 / calc(var(--depth) * .1)) inset,0 1px color-mix(in oklab,currentColor calc(var(--depth) * 10%),#0000),0 0 0 2rem var(--range-thumb) inset,calc((var(--range-dir,1) * -100cqw) - (var(--range-dir,1) * var(--range-thumb-size) / 2)) 0 0 calc(100cqw * var(--range-fill))}}.range:disabled{cursor:not-allowed;opacity:.3}.select{border:var(--border) solid #0000;-webkit-appearance:none;-moz-appearance:none;appearance:none;background-color:var(--color-base-100);vertical-align:middle;width:clamp(3rem,20rem,100%);height:var(--size);touch-action:manipulation;white-space:nowrap;text-overflow:ellipsis;box-shadow:0 1px var(--input-color) inset,0 -1px oklch(100% 0 0 / calc(var(--depth) * .1)) inset;background-image:linear-gradient(45deg,#0000 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,#0000 50%);background-position:calc(100% - 20px) calc(1px + 50%),calc(100% - 16.1px) calc(1px + 50%);background-repeat:no-repeat;background-size:4px 4px,4px 4px;border-start-start-radius:var(--join-ss,var(--radius-field));border-start-end-radius:var(--join-se,var(--radius-field));border-end-end-radius:var(--join-ee,var(--radius-field));border-end-start-radius:var(--join-es,var(--radius-field));flex-shrink:1;align-items:center;gap:.375rem;padding-inline:.75rem 1.75rem;font-size:.875rem;display:inline-flex;position:relative;overflow:hidden}@supports (color:color-mix(in lab,red,red)){.select{box-shadow:0 1px color-mix(in oklab,var(--input-color) calc(var(--depth) * 10%),#0000) inset,0 -1px oklch(100% 0 0 / calc(var(--depth) * .1)) inset}}.select{border-color:var(--input-color);--input-color:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){.select{--input-color:color-mix(in oklab, var(--color-base-content) 20%, #0000)}}.select{--size:calc(var(--size-field,.25rem) * 10)}[dir=rtl] .select{background-position:12px calc(1px + 50%),16px calc(1px + 50%)}[dir=rtl] .select::picker(select){translate:.5rem}[dir=rtl] .select select::picker(select){translate:.5rem}.select[multiple]{background-image:none;height:auto;padding-block:.75rem;padding-inline-end:.75rem;overflow:auto}.select select{-webkit-appearance:none;-moz-appearance:none;appearance:none;width:calc(100% + 2.75rem);height:calc(100% - calc(var(--border) * 2));background:inherit;border-radius:inherit;border-style:none;align-items:center;margin-inline:-.75rem -1.75rem;padding-inline:.75rem 1.75rem}.select select:focus,.select select:focus-within{--tw-outline-style:none;outline-style:none}@media (forced-colors:active){.select select:focus,.select select:focus-within{outline-offset:2px;outline:2px solid #0000}}.select select:not(:last-child){background-image:none;margin-inline-end:-1.375rem}.select:focus,.select:focus-within{--input-color:var(--color-base-content);box-shadow:0 1px var(--input-color)}@supports (color:color-mix(in lab,red,red)){.select:focus,.select:focus-within{box-shadow:0 1px color-mix(in oklab,var(--input-color) calc(var(--depth) * 10%),#0000)}}.select:focus,.select:focus-within{outline:2px solid var(--input-color);outline-offset:2px;isolation:isolate}.select:has(>select[disabled]),.select:is(:disabled,[disabled]),fieldset:disabled .select{cursor:not-allowed;border-color:var(--color-base-200);background-color:var(--color-base-200);color:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){.select:has(>select[disabled]),.select:is(:disabled,[disabled]),fieldset:disabled .select{color:color-mix(in oklab,var(--color-base-content) 40%,transparent)}}:is(.select:has(>select[disabled]),.select:is(:disabled,[disabled]),fieldset:disabled .select)::placeholder{color:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){:is(.select:has(>select[disabled]),.select:is(:disabled,[disabled]),fieldset:disabled .select)::placeholder{color:color-mix(in oklab,var(--color-base-content) 20%,transparent)}}.select:has(>select[disabled])>select[disabled]{cursor:not-allowed}@supports (appearance:base-select){.select,.select select{-webkit-appearance:base-select;-moz-appearance:base-select;appearance:base-select}:is(.select,.select select)::picker(select){-webkit-appearance:base-select;-moz-appearance:base-select;appearance:base-select}}:is(.select,.select select)::picker(select){color:inherit;border:var(--border) solid var(--color-base-200);border-radius:var(--radius-box);background-color:inherit;max-height:min(24rem,70dvh);box-shadow:0 2px calc(var(--depth) * 3px) -2px #0003;box-shadow:0 20px 25px -5px rgb(0 0 0/calc(var(--depth) * .1)),0 8px 10px -6px rgb(0 0 0/calc(var(--depth) * .1));margin-block:.5rem;margin-inline:.5rem;padding:.5rem;translate:-.5rem}:is(.select,.select select)::picker-icon{display:none}:is(.select,.select select) optgroup{padding-top:.5em}:is(.select,.select select) optgroup option:first-child{margin-top:.5em}:is(.select,.select select) option{border-radius:var(--radius-field);white-space:normal;padding-block:.375rem;padding-inline:.75rem;transition-property:color,background-color;transition-duration:.2s;transition-timing-function:cubic-bezier(0,0,.2,1)}:is(.select,.select select) option:not(:disabled):hover,:is(.select,.select select) option:not(:disabled):focus-visible{cursor:pointer;background-color:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){:is(.select,.select select) option:not(:disabled):hover,:is(.select,.select select) option:not(:disabled):focus-visible{background-color:color-mix(in oklab,var(--color-base-content) 10%,transparent)}}:is(.select,.select select) option:not(:disabled):hover,:is(.select,.select select) option:not(:disabled):focus-visible{--tw-outline-style:none;outline-style:none}@media (forced-colors:active){:is(.select,.select select) option:not(:disabled):hover,:is(.select,.select select) option:not(:disabled):focus-visible{outline-offset:2px;outline:2px solid #0000}}:is(.select,.select select) option:not(:disabled):active{background-color:var(--color-neutral);color:var(--color-neutral-content);box-shadow:0 2px calc(var(--depth) * 3px) -2px var(--color-neutral)}.collapse-title{grid-row-start:1;grid-column-start:1;width:100%;min-height:1lh;padding:1rem;padding-inline-end:3rem;transition:background-color .2s ease-out;position:relative}.checkbox{border:var(--border) solid var(--input-color,var(--color-base-content))}@supports (color:color-mix(in lab,red,red)){.checkbox{border:var(--border) solid var(--input-color,color-mix(in oklab, var(--color-base-content) 20%, #0000))}}.checkbox{cursor:pointer;-webkit-appearance:none;-moz-appearance:none;appearance:none;border-radius:var(--radius-selector);vertical-align:middle;color:var(--color-base-content);box-shadow:0 1px oklch(0% 0 0 / calc(var(--depth) * .1)) inset,0 0 #0000 inset,0 0 #0000;--size:calc(var(--size-selector,.25rem) * 6);width:var(--size);height:var(--size);background-size:auto,calc(var(--noise) * 100%);background-image:none,var(--fx-noise);flex-shrink:0;padding:.25rem;transition:background-color .2s,box-shadow .2s;display:inline-block;position:relative}.checkbox:before{--tw-content:"";content:var(--tw-content);opacity:0;clip-path:polygon(20% 100%,20% 80%,50% 80%,50% 80%,70% 80%,70% 100%);width:100%;height:100%;box-shadow:0 3px oklch(100% 0 0 / calc(var(--depth) * .1)) inset;background-color:currentColor;font-size:1rem;line-height:.75;transition:clip-path .3s .1s,opacity .1s .1s,rotate .3s .1s,translate .3s .1s;display:block;rotate:45deg}.checkbox:focus-visible{outline:2px solid var(--input-color,currentColor);outline-offset:2px}.checkbox:checked,.checkbox[aria-checked=true]{background-color:var(--input-color,#0000);box-shadow:0 0 #0000 inset,0 8px 0 -4px oklch(100% 0 0 / calc(var(--depth) * .1)) inset,0 1px oklch(0% 0 0 / calc(var(--depth) * .1))}:is(.checkbox:checked,.checkbox[aria-checked=true]):before{clip-path:polygon(20% 100%,20% 80%,50% 80%,50% 0%,70% 0%,70% 100%);opacity:1}@media (forced-colors:active){:is(.checkbox:checked,.checkbox[aria-checked=true]):before{--tw-content:"✔︎";clip-path:none;background-color:#0000;rotate:none}}@media print{:is(.checkbox:checked,.checkbox[aria-checked=true]):before{--tw-content:"✔︎";clip-path:none;background-color:#0000;rotate:none}}.checkbox:indeterminate{background-color:var(--input-color,var(--color-base-content))}@supports (color:color-mix(in lab,red,red)){.checkbox:indeterminate{background-color:var(--input-color,color-mix(in oklab, var(--color-base-content) 20%, #0000))}}.checkbox:indeterminate:before{opacity:1;clip-path:polygon(20% 100%,20% 80%,50% 80%,50% 80%,80% 80%,80% 100%);translate:0 -35%;rotate:none}.radio{cursor:pointer;-webkit-appearance:none;-moz-appearance:none;appearance:none;vertical-align:middle;border:var(--border) solid var(--input-color,currentColor);border-radius:3.40282e38px;flex-shrink:0;padding:.25rem;display:inline-block;position:relative}@supports (color:color-mix(in lab,red,red)){.radio{border:var(--border) solid var(--input-color,color-mix(in srgb, currentColor 20%, #0000))}}.radio{box-shadow:0 1px oklch(0% 0 0 / calc(var(--depth) * .1)) inset;--size:calc(var(--size-selector,.25rem) * 6);width:var(--size);height:var(--size);color:var(--input-color,currentColor)}.radio:before{--tw-content:"";content:var(--tw-content);background-size:auto,calc(var(--noise) * 100%);background-image:none,var(--fx-noise);border-radius:3.40282e38px;width:100%;height:100%;display:block}.radio:focus-visible{outline:2px solid}.radio:checked,.radio[aria-checked=true]{background-color:var(--color-base-100);border-color:currentColor}@media (prefers-reduced-motion:no-preference){.radio:checked,.radio[aria-checked=true]{animation:.2s ease-out radio}}:is(.radio:checked,.radio[aria-checked=true]):before{box-shadow:0 -1px oklch(0% 0 0 / calc(var(--depth) * .1)) inset,0 8px 0 -4px oklch(100% 0 0 / calc(var(--depth) * .1)) inset,0 1px oklch(0% 0 0 / calc(var(--depth) * .1));background-color:currentColor}@media (forced-colors:active){:is(.radio:checked,.radio[aria-checked=true]):before{outline-style:var(--tw-outline-style);outline-offset:-1px;outline-width:1px}}@media print{:is(.radio:checked,.radio[aria-checked=true]):before{outline-offset:-1rem;outline:.25rem solid}}.rating{vertical-align:middle;display:inline-flex;position:relative}.rating input{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:none}.rating :where(*){background-color:var(--color-base-content);opacity:.2;border-radius:0;width:1.5rem;height:1.5rem}@media (prefers-reduced-motion:no-preference){.rating :where(*){animation:.25s ease-out rating}}.rating :where(*):is(input){cursor:pointer}.rating .rating-hidden{background-color:#0000;width:.5rem}.rating input[type=radio]:checked{background-image:none}.rating :checked,.rating [aria-checked=true],.rating [aria-current=true],.rating :has(~:checked,~[aria-checked=true],~[aria-current=true]){opacity:1}.rating :focus-visible{scale:1.1}@media (prefers-reduced-motion:no-preference){.rating :focus-visible{transition:scale .2s ease-out}}.rating :active:focus{animation:none;scale:1.1}.navbar{align-items:center;width:100%;min-height:4rem;padding:.5rem;display:flex}.drawer{grid-auto-columns:max-content auto;width:100%;display:grid;position:relative}.card{border-radius:var(--radius-box);outline-offset:2px;outline:0 solid #0000;flex-direction:column;transition:outline .2s ease-in-out;display:flex;position:relative}.card:focus{--tw-outline-style:none;outline-style:none}@media (forced-colors:active){.card:focus{outline-offset:2px;outline:2px solid #0000}}.card:focus-visible{outline-color:currentColor}.card :where(figure:first-child){border-start-start-radius:inherit;border-start-end-radius:inherit;border-end-end-radius:unset;border-end-start-radius:unset;overflow:hidden}.card :where(figure:last-child){border-start-start-radius:unset;border-start-end-radius:unset;border-end-end-radius:inherit;border-end-start-radius:inherit;overflow:hidden}.card figure{justify-content:center;align-items:center;display:flex}.card:has(>input:is(input[type=checkbox],input[type=radio])){cursor:pointer;-webkit-user-select:none;user-select:none}.card:has(>:checked){outline:2px solid}.progress{-webkit-appearance:none;-moz-appearance:none;appearance:none;border-radius:var(--radius-box);background-color:currentColor;width:100%;height:.5rem;position:relative;overflow:hidden}@supports (color:color-mix(in lab,red,red)){.progress{background-color:color-mix(in oklab,currentcolor 20%,transparent)}}.progress{color:var(--color-base-content)}.progress:indeterminate{background-image:repeating-linear-gradient(90deg,currentColor -1% 10%,#0000 10% 90%);background-position-x:15%;background-size:200%}@media (prefers-reduced-motion:no-preference){.progress:indeterminate{animation:5s ease-in-out infinite progress}}@supports ((-moz-appearance:none)){.progress:indeterminate::-moz-progress-bar{background-color:#0000}@media (prefers-reduced-motion:no-preference){.progress:indeterminate::-moz-progress-bar{background-image:repeating-linear-gradient(90deg,currentColor -1% 10%,#0000 10% 90%);background-position-x:15%;background-size:200%;animation:5s ease-in-out infinite progress}}.progress::-moz-progress-bar{border-radius:var(--radius-box);background-color:currentColor}}@supports ((-webkit-appearance:none)){.progress::-webkit-progress-bar{border-radius:var(--radius-box);background-color:#0000}.progress::-webkit-progress-value{border-radius:var(--radius-box);background-color:currentColor}}.textarea{border:var(--border) solid #0000;-webkit-appearance:none;-moz-appearance:none;appearance:none;border-radius:var(--radius-field);background-color:var(--color-base-100);vertical-align:middle;width:clamp(3rem,20rem,100%);min-height:5rem;font-size:max(var(--font-size,.875rem),.875rem);touch-action:manipulation;border-color:var(--input-color);box-shadow:0 1px var(--input-color) inset,0 -1px oklch(100% 0 0 / calc(var(--depth) * .1)) inset;flex-shrink:1;padding-block:.5rem;padding-inline:.75rem}@supports (color:color-mix(in lab,red,red)){.textarea{box-shadow:0 1px color-mix(in oklab,var(--input-color) calc(var(--depth) * 10%),#0000) inset,0 -1px oklch(100% 0 0 / calc(var(--depth) * .1)) inset}}.textarea{--input-color:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){.textarea{--input-color:color-mix(in oklab, var(--color-base-content) 20%, #0000)}}.textarea textarea{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-color:#0000;border:none}.textarea textarea:focus,.textarea textarea:focus-within{--tw-outline-style:none;outline-style:none}@media (forced-colors:active){.textarea textarea:focus,.textarea textarea:focus-within{outline-offset:2px;outline:2px solid #0000}}.textarea:focus,.textarea:focus-within{--input-color:var(--color-base-content);box-shadow:0 1px var(--input-color)}@supports (color:color-mix(in lab,red,red)){.textarea:focus,.textarea:focus-within{box-shadow:0 1px color-mix(in oklab,var(--input-color) calc(var(--depth) * 10%),#0000)}}.textarea:focus,.textarea:focus-within{outline:2px solid var(--input-color);outline-offset:2px;isolation:isolate}@media (pointer:coarse){@supports (-webkit-touch-callout:none){.textarea:focus,.textarea:focus-within{--font-size:1rem}}}.textarea:has(>textarea[disabled]),.textarea:is(:disabled,[disabled]){cursor:not-allowed;border-color:var(--color-base-200);background-color:var(--color-base-200);color:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){.textarea:has(>textarea[disabled]),.textarea:is(:disabled,[disabled]){color:color-mix(in oklab,var(--color-base-content) 40%,transparent)}}:is(.textarea:has(>textarea[disabled]),.textarea:is(:disabled,[disabled]))::placeholder{color:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){:is(.textarea:has(>textarea[disabled]),.textarea:is(:disabled,[disabled]))::placeholder{color:color-mix(in oklab,var(--color-base-content) 20%,transparent)}}.textarea:has(>textarea[disabled]),.textarea:is(:disabled,[disabled]){box-shadow:none}.textarea:has(>textarea[disabled])>textarea[disabled]{cursor:not-allowed}.stack{grid-template-rows:3px 4px 1fr 4px 3px;grid-template-columns:3px 4px 1fr 4px 3px;display:inline-grid}.stack>*{width:100%;height:100%}.stack>:nth-child(n+2){opacity:.7;width:100%}.stack>:nth-child(2){z-index:2;opacity:.9}.stack>:first-child{z-index:3;width:100%}.modal-backdrop{color:#0000;z-index:-1;grid-row-start:1;grid-column-start:1;place-self:stretch stretch;display:grid}.modal-backdrop button{cursor:pointer}.tab-content{order:var(--tabcontent-order);--tabcontent-radius-ss:var(--radius-box);--tabcontent-radius-se:var(--radius-box);--tabcontent-radius-es:var(--radius-box);--tabcontent-radius-ee:var(--radius-box);--tabcontent-order:1;width:100%;height:calc(100% - var(--tab-height) + var(--border));margin:var(--tabcontent-margin);border-color:#0000;border-width:var(--border);border-start-start-radius:var(--tabcontent-radius-ss);border-start-end-radius:var(--tabcontent-radius-se);border-end-end-radius:var(--tabcontent-radius-ee);border-end-start-radius:var(--tabcontent-radius-es);display:none}.stat-figure{grid-row:1/span 3;grid-column-start:2;place-self:center flex-end}.modal-box{background-color:var(--color-base-100);border-top-left-radius:var(--modal-tl,var(--radius-box));border-top-right-radius:var(--modal-tr,var(--radius-box));border-bottom-left-radius:var(--modal-bl,var(--radius-box));border-bottom-right-radius:var(--modal-br,var(--radius-box));opacity:0;overscroll-behavior:contain;grid-row-start:1;grid-column-start:1;width:91.6667%;max-width:32rem;max-height:100vh;padding:1.5rem;transition:translate .3s ease-out,scale .3s ease-out,opacity .2s ease-out 50ms,box-shadow .3s ease-out;overflow-y:auto;scale:95%;box-shadow:0 25px 50px -12px #00000040}.drawer-content{grid-row-start:1;grid-column-start:2;min-width:0}.stat-value{white-space:nowrap;grid-column-start:1;font-size:2rem;font-weight:800}.stat-desc{white-space:nowrap;color:var(--color-base-content);grid-column-start:1}@supports (color:color-mix(in lab,red,red)){.stat-desc{color:color-mix(in oklab,var(--color-base-content) 60%,transparent)}}.stat-desc{font-size:.75rem}.stat-title{white-space:nowrap;color:var(--color-base-content);grid-column-start:1}@supports (color:color-mix(in lab,red,red)){.stat-title{color:color-mix(in oklab,var(--color-base-content) 60%,transparent)}}.stat-title{font-size:.75rem}.divider{white-space:nowrap;height:1rem;margin:var(--divider-m,1rem 0);--divider-color:var(--color-base-content);flex-direction:row;align-self:stretch;align-items:center;display:flex}@supports (color:color-mix(in lab,red,red)){.divider{--divider-color:color-mix(in oklab, var(--color-base-content) 10%, transparent)}}.divider:before,.divider:after{content:"";background-color:var(--divider-color);flex-grow:1;width:100%;height:.125rem}@media print{.divider:before,.divider:after{border:.5px solid}}.divider:not(:empty){gap:1rem}.filter{flex-wrap:wrap;display:flex}.filter input[type=radio]{width:auto}.filter input{opacity:1;transition:margin .1s,opacity .3s,padding .3s,border-width .1s;overflow:hidden;scale:1}.filter input:not(:last-child){margin-inline-end:.25rem}.filter input.filter-reset{aspect-ratio:1}.filter input.filter-reset:after{--tw-content:"×";content:var(--tw-content)}.filter:not(:has(input:checked:not(.filter-reset))) .filter-reset,.filter:not(:has(input:checked:not(.filter-reset))) input[type=reset],.filter:has(input:checked:not(.filter-reset)) input:not(:checked,.filter-reset,input[type=reset]){opacity:0;border-width:0;width:0;margin-inline:0;padding-inline:0;scale:0}.label{white-space:nowrap;color:currentColor;align-items:center;gap:.375rem;display:inline-flex}@supports (color:color-mix(in lab,red,red)){.label{color:color-mix(in oklab,currentcolor 60%,transparent)}}.label:has(input){cursor:pointer}.label:is(.input>*,.select>*){white-space:nowrap;height:calc(100% - .5rem);font-size:inherit;align-items:center;padding-inline:.75rem;display:flex}.label:is(.input>*,.select>*):first-child{border-inline-end:var(--border) solid currentColor;margin-inline:-.75rem .75rem}@supports (color:color-mix(in lab,red,red)){.label:is(.input>*,.select>*):first-child{border-inline-end:var(--border) solid color-mix(in oklab,currentColor 10%,#0000)}}.label:is(.input>*,.select>*):last-child{border-inline-start:var(--border) solid currentColor;margin-inline:.75rem -.75rem}@supports (color:color-mix(in lab,red,red)){.label:is(.input>*,.select>*):last-child{border-inline-start:var(--border) solid color-mix(in oklab,currentColor 10%,#0000)}}.modal-action{justify-content:flex-end;gap:.5rem;margin-top:1.5rem;display:flex}.fieldset-legend{color:var(--color-base-content);justify-content:space-between;align-items:center;gap:.5rem;margin-bottom:-.25rem;padding-block:.5rem;font-weight:600;display:flex}.status{aspect-ratio:1;border-radius:var(--radius-selector);background-color:var(--color-base-content);width:.5rem;height:.5rem;display:inline-block}@supports (color:color-mix(in lab,red,red)){.status{background-color:color-mix(in oklab,var(--color-base-content) 20%,transparent)}}.status{vertical-align:middle;color:#0000004d;background-position:50%;background-repeat:no-repeat}@supports (color:color-mix(in lab,red,red)){.status{color:color-mix(in oklab,var(--color-black) 30%,transparent)}}.status{background-image:radial-gradient(circle at 35% 30%,oklch(1 0 0 / calc(var(--depth) * .5)),#0000);box-shadow:0 2px 3px -1px}@supports (color:color-mix(in lab,red,red)){.status{box-shadow:0 2px 3px -1px color-mix(in oklab,currentColor calc(var(--depth) * 100%),#0000)}}.badge{border-radius:var(--radius-selector);vertical-align:middle;color:var(--badge-fg);border:var(--border) solid var(--badge-color,var(--color-base-200));background-size:auto,calc(var(--noise) * 100%);background-image:none,var(--fx-noise);background-color:var(--badge-bg);--badge-bg:var(--badge-color,var(--color-base-100));--badge-fg:var(--color-base-content);--size:calc(var(--size-selector,.25rem) * 6);width:fit-content;height:var(--size);padding-inline:calc(var(--size) / 2 - var(--border));justify-content:center;align-items:center;gap:.5rem;font-size:.875rem;display:inline-flex}.tabs{--tabs-height:auto;--tabs-direction:row;--tab-height:calc(var(--size-field,.25rem) * 10);height:var(--tabs-height);flex-wrap:wrap;flex-direction:var(--tabs-direction);display:flex}.footer{grid-auto-flow:row;place-items:start;gap:2.5rem 1rem;width:100%;font-size:.875rem;line-height:1.25rem;display:grid}.footer>*{place-items:start;gap:.5rem;display:grid}.footer.footer-center{text-align:center;grid-auto-flow:column dense;place-items:center}.footer.footer-center>*{place-items:center}.stat{grid-template-columns:repeat(1,1fr);column-gap:1rem;width:100%;padding-block:1rem;padding-inline:1.5rem;display:inline-grid}.stat:not(:last-child){border-inline-end:var(--border) dashed currentColor}@supports (color:color-mix(in lab,red,red)){.stat:not(:last-child){border-inline-end:var(--border) dashed color-mix(in oklab,currentColor 10%,#0000)}}.stat:not(:last-child){border-block-end:none}.navbar-end{justify-content:flex-end;align-items:center;width:50%;display:inline-flex}.navbar-start{justify-content:flex-start;align-items:center;width:50%;display:inline-flex}.card-body{padding:var(--card-p,1.5rem);font-size:var(--card-fs,.875rem);flex-direction:column;flex:auto;gap:.5rem;display:flex}.card-body :where(p){flex-grow:1}.navbar-center{flex-shrink:0;align-items:center;display:inline-flex}.alert{--alert-border-color:var(--color-base-200);border-radius:var(--radius-box);color:var(--color-base-content);background-color:var(--alert-color,var(--color-base-200));text-align:start;background-size:auto,calc(var(--noise) * 100%);background-image:none,var(--fx-noise);box-shadow:0 3px 0 -2px oklch(100% 0 0 / calc(var(--depth) * .08)) inset,0 1px #000,0 4px 3px -2px oklch(0% 0 0 / calc(var(--depth) * .08));border-style:solid;grid-template-columns:auto;grid-auto-flow:column;justify-content:start;place-items:center start;gap:1rem;padding-block:.75rem;padding-inline:1rem;font-size:.875rem;line-height:1.25rem;display:grid}@supports (color:color-mix(in lab,red,red)){.alert{box-shadow:0 3px 0 -2px oklch(100% 0 0 / calc(var(--depth) * .08)) inset,0 1px color-mix(in oklab,color-mix(in oklab,#000 20%,var(--alert-color,var(--color-base-200))) calc(var(--depth) * 20%),#0000),0 4px 3px -2px oklch(0% 0 0 / calc(var(--depth) * .08))}}.alert:has(:nth-child(2)){grid-template-columns:auto minmax(auto,1fr)}.fieldset{grid-template-columns:1fr;grid-auto-rows:max-content;gap:.375rem;padding-block:.25rem;font-size:.75rem;display:grid}.card-title{font-size:var(--cardtitle-fs,1.125rem);align-items:center;gap:.5rem;font-weight:600;display:flex}.mask{vertical-align:middle;display:inline-block;-webkit-mask-position:50%;mask-position:50%;-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}.skeleton{border-radius:var(--radius-box);background-color:var(--color-base-300)}@media (prefers-reduced-motion:reduce){.skeleton{transition-duration:15s}}.skeleton{will-change:background-position;background-image:linear-gradient(105deg,#0000 0% 40%,var(--color-base-100) 50%,#0000 60% 100%);background-position-x:-50%;background-size:200%}@media (prefers-reduced-motion:no-preference){.skeleton{animation:1.8s ease-in-out infinite skeleton}}.link{cursor:pointer;text-decoration-line:underline}.link:focus{--tw-outline-style:none;outline-style:none}@media (forced-colors:active){.link:focus{outline-offset:2px;outline:2px solid #0000}}.link:focus-visible{outline-offset:2px;outline:2px solid}.menu-title{color:var(--color-base-content);padding-block:.5rem;padding-inline:.75rem}@supports (color:color-mix(in lab,red,red)){.menu-title{color:color-mix(in oklab,var(--color-base-content) 40%,transparent)}}.menu-title{font-size:.875rem;font-weight:600}.btn-accent{--btn-color:var(--color-accent);--btn-fg:var(--color-accent-content)}.btn-error{--btn-color:var(--color-error);--btn-fg:var(--color-error-content)}.btn-info{--btn-color:var(--color-info);--btn-fg:var(--color-info-content)}.btn-primary{--btn-color:var(--color-primary);--btn-fg:var(--color-primary-content)}.btn-success{--btn-color:var(--color-success);--btn-fg:var(--color-success-content)}.btn-warning{--btn-color:var(--color-warning);--btn-fg:var(--color-warning-content)}}@layer daisyui.l1.l2{.modal.modal-open,.modal[open],.modal:target,.modal-toggle:checked+.modal{pointer-events:auto;visibility:visible;opacity:1;transition:visibility 0s allow-discrete,background-color .3s ease-out,opacity .1s ease-out;background-color:#0006}:is(.modal.modal-open,.modal[open],.modal:target,.modal-toggle:checked+.modal) .modal-box{opacity:1;translate:0;scale:1}:root:has(:is(.modal.modal-open,.modal[open],.modal:target,.modal-toggle:checked+.modal)){--page-has-backdrop:1;--page-overflow:hidden;--page-scroll-bg:var(--page-scroll-bg-on);--page-scroll-gutter:stable;--page-scroll-transition:var(--page-scroll-transition-on);animation:forwards set-page-has-scroll;animation-timeline:scroll()}@starting-style{.modal.modal-open,.modal[open],.modal:target,.modal-toggle:checked+.modal{opacity:0}}:where(.drawer-toggle:checked~.drawer-side){pointer-events:auto;visibility:visible;opacity:1;overflow-y:auto}:where(.drawer-toggle:checked~.drawer-side)>:not(.drawer-overlay){translate:0%}.drawer-toggle:focus-visible~.drawer-content label.drawer-button{outline-offset:2px;outline:2px solid}.tooltip>.tooltip-content,.tooltip[data-tip]:before{transform:translate(-50%) translateY(var(--tt-pos,.25rem));inset:auto auto var(--tt-off) 50%}.tooltip:after{transform:translate(-50%) translateY(var(--tt-pos,.25rem));inset:auto auto var(--tt-tail) 50%}.collapse-arrow>.collapse-title:after{width:.5rem;height:.5rem;display:block;position:absolute;transform:translateY(-100%)rotate(45deg)}@media (prefers-reduced-motion:no-preference){.collapse-arrow>.collapse-title:after{transition-property:all;transition-duration:.2s;transition-timing-function:cubic-bezier(.4,0,.2,1)}}.collapse-arrow>.collapse-title:after{content:"";transform-origin:75% 75%;pointer-events:none;top:50%;inset-inline-end:1.4rem;box-shadow:2px 2px}.btn:disabled:not(.btn-link,.btn-ghost){background-color:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){.btn:disabled:not(.btn-link,.btn-ghost){background-color:color-mix(in oklab,var(--color-base-content) 10%,transparent)}}.btn:disabled:not(.btn-link,.btn-ghost){box-shadow:none}.btn:disabled{pointer-events:none;--btn-border:#0000;--btn-noise:none;--btn-fg:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){.btn:disabled{--btn-fg:color-mix(in oklch, var(--color-base-content) 20%, #0000)}}.btn[disabled]:not(.btn-link,.btn-ghost){background-color:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){.btn[disabled]:not(.btn-link,.btn-ghost){background-color:color-mix(in oklab,var(--color-base-content) 10%,transparent)}}.btn[disabled]:not(.btn-link,.btn-ghost){box-shadow:none}.btn[disabled]{pointer-events:none;--btn-border:#0000;--btn-noise:none;--btn-fg:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){.btn[disabled]{--btn-fg:color-mix(in oklch, var(--color-base-content) 20%, #0000)}}@media (prefers-reduced-motion:no-preference){.collapse[open].collapse-arrow>.collapse-title:after,.collapse.collapse-open.collapse-arrow>.collapse-title:after{transform:translateY(-50%)rotate(225deg)}}.collapse.collapse-open.collapse-plus>.collapse-title:after{--tw-content:"−";content:var(--tw-content)}:is(.collapse[tabindex].collapse-arrow:focus:not(.collapse-close),.collapse.collapse-arrow[tabindex]:focus-within:not(.collapse-close))>.collapse-title:after,.collapse.collapse-arrow:not(.collapse-close)>input:is([type=checkbox],[type=radio]):checked~.collapse-title:after{transform:translateY(-50%)rotate(225deg)}.collapse[open].collapse-plus>.collapse-title:after,.collapse[tabindex].collapse-plus:focus:not(.collapse-close)>.collapse-title:after,.collapse.collapse-plus:not(.collapse-close)>input:is([type=checkbox],[type=radio]):checked~.collapse-title:after{--tw-content:"−";content:var(--tw-content)}.list .list-row:has(.list-col-grow:first-child){--list-grid-cols:1fr}.list .list-row:has(.list-col-grow:nth-child(2)){--list-grid-cols:minmax(0, auto) 1fr}.list .list-row:has(.list-col-grow:nth-child(3)){--list-grid-cols:minmax(0, auto) minmax(0, auto) 1fr}.list .list-row:has(.list-col-grow:nth-child(4)){--list-grid-cols:minmax(0, auto) minmax(0, auto) minmax(0, auto) 1fr}.list .list-row:has(.list-col-grow:nth-child(5)){--list-grid-cols:minmax(0, auto) minmax(0, auto) minmax(0, auto) minmax(0, auto) 1fr}.list .list-row:has(.list-col-grow:nth-child(6)){--list-grid-cols:minmax(0, auto) minmax(0, auto) minmax(0, auto) minmax(0, auto) minmax(0, auto) 1fr}.list .list-row>*{grid-row-start:1}.checkbox:disabled,.radio:disabled{cursor:not-allowed;opacity:.2}.rating.rating-xs :where(:not(.rating-hidden)){width:1rem;height:1rem}.rating.rating-sm :where(:not(.rating-hidden)){width:1.25rem;height:1.25rem}.rating.rating-md :where(:not(.rating-hidden)){width:1.5rem;height:1.5rem}.rating.rating-lg :where(:not(.rating-hidden)){width:1.75rem;height:1.75rem}.rating.rating-xl :where(:not(.rating-hidden)){width:2rem;height:2rem}:where(.navbar){position:relative}.tooltip-bottom>.tooltip-content,.tooltip-bottom[data-tip]:before{transform:translate(-50%) translateY(var(--tt-pos,-.25rem));inset:var(--tt-off) auto auto 50%}.tooltip-bottom:after{transform:translate(-50%) translateY(var(--tt-pos,-.25rem)) rotate(180deg);inset:var(--tt-tail) auto auto 50%}.toast-end{--toast-x:0;inset-inline:auto 1rem}.dropdown-right{--anchor-h:right;--anchor-v:span-bottom}.dropdown-right .dropdown-content{transform-origin:0;inset-inline-start:100%;top:0;bottom:auto}.dropdown-left{--anchor-h:left;--anchor-v:span-bottom}.dropdown-left .dropdown-content{transform-origin:100%;inset-inline-end:100%;top:0;bottom:auto}.dropdown-end{--anchor-h:span-left}.dropdown-end :where(.dropdown-content){inset-inline-end:0;translate:0}[dir=rtl] :is(.dropdown-end :where(.dropdown-content)){translate:0}.dropdown-end.dropdown-left{--anchor-h:left;--anchor-v:span-top}.dropdown-end.dropdown-left .dropdown-content{top:auto;bottom:0}.dropdown-end.dropdown-right{--anchor-h:right;--anchor-v:span-top}.dropdown-end.dropdown-right .dropdown-content{top:auto;bottom:0}.dropdown-top{--anchor-v:top}.dropdown-top .dropdown-content{transform-origin:bottom;top:auto;bottom:100%}.toast-bottom{--toast-y:0;top:auto;bottom:1rem}:is(.stack,.stack.stack-bottom)>*{grid-area:3/3/6/4}:is(.stack,.stack.stack-bottom)>:nth-child(2){grid-area:2/2/5/5}:is(.stack,.stack.stack-bottom)>:first-child{grid-area:1/1/4/6}.stack.stack-top>*{grid-area:1/3/4/4}.stack.stack-top>:nth-child(2){grid-area:2/2/5/5}.stack.stack-top>:first-child{grid-area:3/1/6/6}.stack.stack-start>*{grid-area:3/1/4/4}.stack.stack-start>:nth-child(2){grid-area:2/2/5/5}.stack.stack-start>:first-child{grid-area:1/3/6/6}.stack.stack-end>*{grid-area:3/3/4/6}.stack.stack-end>:nth-child(2){grid-area:2/2/5/5}.stack.stack-end>:first-child{grid-area:1/1/6/4}.tabs-box{background-color:var(--color-base-200);--tabs-box-radius:calc(3 * var(--radius-field));border-radius:calc(min(var(--tab-height) / 2,var(--radius-field)) + min(.25rem,var(--tabs-box-radius)));box-shadow:0 -.5px oklch(100% 0 0 / calc(var(--depth) * .1)) inset,0 .5px oklch(0% 0 0 / calc(var(--depth) * .05)) inset;padding:.25rem}.tabs-box>.tab{border-radius:var(--radius-field);border-style:none}.tabs-box>.tab:focus-visible,.tabs-box>.tab:is(label:has(:checked:focus-visible)){outline-offset:2px}.tabs-box>.tab:focus-visible{z-index:1}.tabs-box>:is(.tab-active,[aria-selected=true],[aria-current=true],[aria-current=page]):not(.tab-disabled,[disabled]),.tabs-box>:is(input:checked),.tabs-box>:is(label:has(:checked)){background-color:var(--tab-bg,var(--color-base-100));box-shadow:0 1px oklch(100% 0 0 / calc(var(--depth) * .1)) inset,0 1px 1px -1px var(--color-neutral),0 1px 6px -4px var(--color-neutral)}@supports (color:color-mix(in lab,red,red)){.tabs-box>:is(.tab-active,[aria-selected=true],[aria-current=true],[aria-current=page]):not(.tab-disabled,[disabled]),.tabs-box>:is(input:checked),.tabs-box>:is(label:has(:checked)){box-shadow:0 1px oklch(100% 0 0 / calc(var(--depth) * .1)) inset,0 1px 1px -1px color-mix(in oklab,var(--color-neutral) calc(var(--depth) * 50%),#0000),0 1px 6px -4px color-mix(in oklab,var(--color-neutral) calc(var(--depth) * 100%),#0000)}}@media (forced-colors:active){.tabs-box>:is(.tab-active,[aria-selected=true],[aria-current=true],[aria-current=page]):not(.tab-disabled,[disabled]),.tabs-box>:is(input:checked),.tabs-box>:is(label:has(:checked)){border:1px solid}}.tabs-box>.tab-content{height:calc(100% - var(--tab-height) + var(--border) - .5rem);border-radius:calc(min(var(--tab-height) / 2,var(--radius-field)) + min(.25rem,var(--tabs-box-radius)) - var(--border));margin-top:.25rem}.drawer-end{grid-auto-columns:auto max-content}.drawer-end>.drawer-toggle~.drawer-content{grid-column-start:1}.drawer-end>.drawer-toggle~.drawer-side{grid-column-start:2;justify-items:end}.drawer-end>.drawer-toggle~.drawer-side>:not(.drawer-overlay){translate:100%}[dir=rtl] :is(.drawer-end>.drawer-toggle~.drawer-side>:not(.drawer-overlay)){translate:-100%}.drawer-end>.drawer-toggle:checked~.drawer-side>:not(.drawer-overlay){translate:0%}.input-sm{--size:calc(var(--size-field,.25rem) * 8);font-size:max(var(--font-size,.75rem),.75rem)}.input-sm[type=number]::-webkit-inner-spin-button{margin-block:-.5rem;margin-inline-end:-.75rem}.input-xs{--size:calc(var(--size-field,.25rem) * 6);font-size:max(var(--font-size,.6875rem),.6875rem)}.input-xs[type=number]::-webkit-inner-spin-button{margin-block:-.25rem;margin-inline-end:-.75rem}.btn-circle{width:var(--size);height:var(--size);border-radius:3.40282e38px;padding-inline:0}.loading-md{width:calc(var(--size-selector,.25rem) * 6)}.loading-sm{width:calc(var(--size-selector,.25rem) * 5)}.loading-xs{width:calc(var(--size-selector,.25rem) * 4)}.menu-xs :where(li:not(.menu-title)>:not(ul,details,.menu-title)),.menu-xs :where(li:not(.menu-title)>details>summary:not(.menu-title)){border-radius:var(--radius-field);padding-block:.25rem;padding-inline:.5rem;font-size:.6875rem}.menu-xs .menu-title{padding-block:.25rem;padding-inline:.5rem}.badge-ghost{border-color:var(--color-base-200);background-color:var(--color-base-200);color:var(--color-base-content);background-image:none}.badge-soft{color:var(--badge-color,var(--color-base-content));background-color:var(--badge-color,var(--color-base-content))}@supports (color:color-mix(in lab,red,red)){.badge-soft{background-color:color-mix(in oklab,var(--badge-color,var(--color-base-content)) 8%,var(--color-base-100))}}.badge-soft{border-color:var(--badge-color,var(--color-base-content))}@supports (color:color-mix(in lab,red,red)){.badge-soft{border-color:color-mix(in oklab,var(--badge-color,var(--color-base-content)) 10%,var(--color-base-100))}}.badge-soft{background-image:none}.table-zebra tbody tr:where(:nth-child(2n)),.table-zebra tbody tr:where(:nth-child(2n)) :where(.table-pin-cols tr th){background-color:var(--color-base-200)}@media (hover:hover){:is(.table-zebra tbody tr.row-hover,.table-zebra tbody tr.row-hover:where(:nth-child(2n))):hover{background-color:var(--color-base-300)}}.loading-spinner{-webkit-mask-image:url("data:image/svg+xml,%3Csvg width='24' height='24' stroke='black' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cg transform-origin='center'%3E%3Ccircle cx='12' cy='12' r='9.5' fill='none' stroke-width='3' stroke-linecap='round'%3E%3CanimateTransform attributeName='transform' type='rotate' from='0 12 12' to='360 12 12' dur='2s' repeatCount='indefinite'/%3E%3Canimate attributeName='stroke-dasharray' values='0,150;42,150;42,150' keyTimes='0;0.475;1' dur='1.5s' repeatCount='indefinite'/%3E%3Canimate attributeName='stroke-dashoffset' values='0;-16;-59' keyTimes='0;0.475;1' dur='1.5s' repeatCount='indefinite'/%3E%3C/circle%3E%3C/g%3E%3C/svg%3E");mask-image:url("data:image/svg+xml,%3Csvg width='24' height='24' stroke='black' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cg transform-origin='center'%3E%3Ccircle cx='12' cy='12' r='9.5' fill='none' stroke-width='3' stroke-linecap='round'%3E%3CanimateTransform attributeName='transform' type='rotate' from='0 12 12' to='360 12 12' dur='2s' repeatCount='indefinite'/%3E%3Canimate attributeName='stroke-dasharray' values='0,150;42,150;42,150' keyTimes='0;0.475;1' dur='1.5s' repeatCount='indefinite'/%3E%3Canimate attributeName='stroke-dashoffset' values='0;-16;-59' keyTimes='0;0.475;1' dur='1.5s' repeatCount='indefinite'/%3E%3C/circle%3E%3C/g%3E%3C/svg%3E")}.checkbox-sm{--size:calc(var(--size-selector,.25rem) * 5);padding:.1875rem}.select-sm{--size:calc(var(--size-field,.25rem) * 8);font-size:.75rem}.select-sm option{padding-block:.25rem;padding-inline:.625rem}.badge-sm{--size:calc(var(--size-selector,.25rem) * 5);font-size:.75rem}.alert-error{color:var(--color-error-content);--alert-border-color:var(--color-error);--alert-color:var(--color-error)}.alert-info{color:var(--color-info-content);--alert-border-color:var(--color-info);--alert-color:var(--color-info)}.alert-success{color:var(--color-success-content);--alert-border-color:var(--color-success);--alert-color:var(--color-success)}.alert-warning{color:var(--color-warning-content);--alert-border-color:var(--color-warning);--alert-color:var(--color-warning)}.link-primary{color:var(--color-primary)}@media (hover:hover){.link-primary:hover{color:var(--color-primary)}@supports (color:color-mix(in lab,red,red)){.link-primary:hover{color:color-mix(in oklab,var(--color-primary) 80%,#000)}}}.range-primary{color:var(--color-primary);--range-thumb:var(--color-primary-content)}.btn-sm{--fontsize:.75rem;--btn-p:.75rem;--size:calc(var(--size-field,.25rem) * 8)}.btn-xs{--fontsize:.6875rem;--btn-p:.5rem;--size:calc(var(--size-field,.25rem) * 6)}.badge-error{--badge-color:var(--color-error);--badge-fg:var(--color-error-content)}.badge-info{--badge-color:var(--color-info);--badge-fg:var(--color-info-content)}.badge-neutral{--badge-color:var(--color-neutral);--badge-fg:var(--color-neutral-content)}.badge-primary{--badge-color:var(--color-primary);--badge-fg:var(--color-primary-content)}.badge-success{--badge-color:var(--color-success);--badge-fg:var(--color-success-content)}.badge-warning{--badge-color:var(--color-warning);--badge-fg:var(--color-warning-content)}.radio-primary{--input-color:var(--color-primary)}.range-sm{--range-thumb-size:calc(var(--size-selector,.25rem) * 5)}.toggle-primary:checked,.toggle-primary[aria-checked=true]{--input-color:var(--color-primary)}.toggle-secondary:checked,.toggle-secondary[aria-checked=true]{--input-color:var(--color-secondary)}.toggle-sm[type=checkbox],.toggle-sm:has([type=checkbox]){--size:calc(var(--size-selector,.25rem) * 5)}}.collapse:not(td,tr,colgroup){visibility:revert-layer}.validator:user-invalid~.validator-hint{display:revert-layer}.validator:has(:user-invalid)~.validator-hint{display:revert-layer}:is(.validator[aria-invalid]:not([aria-invalid=false]),.validator:has([aria-invalid]:not([aria-invalid=false])))~.validator-hint{display:revert-layer}.collapse{visibility:collapse}.visible{visibility:visible}.absolute{position:absolute}.fixed{position:fixed}.relative{position:relative}.static{position:static}.sticky{position:sticky}.inset-0{inset:calc(var(--spacing) * 0)}.start{inset-inline-start:var(--spacing)}.end{inset-inline-end:var(--spacing)}.top-0{top:calc(var(--spacing) * 0)}.top-2{top:calc(var(--spacing) * 2)}.right-0{right:calc(var(--spacing) * 0)}.right-2{right:calc(var(--spacing) * 2)}.bottom-4{bottom:calc(var(--spacing) * 4)}.left-0{left:calc(var(--spacing) * 0)}.left-1{left:calc(var(--spacing) * 1)}.left-1\\/2{left:50%}.left-4{left:calc(var(--spacing) * 4)}.join{--join-ss:0;--join-se:0;--join-es:0;--join-ee:0;align-items:stretch;display:inline-flex}.join :where(.join-item){border-start-start-radius:var(--join-ss,0);border-start-end-radius:var(--join-se,0);border-end-end-radius:var(--join-ee,0);border-end-start-radius:var(--join-es,0)}.join :where(.join-item) *{--join-ss:var(--radius-field);--join-se:var(--radius-field);--join-es:var(--radius-field);--join-ee:var(--radius-field)}.join>.join-item:where(:first-child),.join :first-child:not(:last-child) :where(.join-item){--join-ss:var(--radius-field);--join-se:0;--join-es:var(--radius-field);--join-ee:0}.join>.join-item:where(:last-child),.join :last-child:not(:first-child) :where(.join-item){--join-ss:0;--join-se:var(--radius-field);--join-es:0;--join-ee:var(--radius-field)}.join>.join-item:where(:only-child),.join :only-child :where(.join-item){--join-ss:var(--radius-field);--join-se:var(--radius-field);--join-es:var(--radius-field);--join-ee:var(--radius-field)}.join>:where(:focus,:has(:focus)){z-index:1}@media (hover:hover){.join>:where(.btn:hover,:has(.btn:hover)){isolation:isolate}}.z-10{z-index:10}.z-20{z-index:20}.z-50{z-index:50}.z-\\[1\\]{z-index:1}.z-\\[1500\\]{z-index:1500}.z-\\[2000\\]{z-index:2000}.z-\\[2100\\]{z-index:2100}.z-\\[9999\\]{z-index:9999}.col-span-2{grid-column:span 2/span 2}.container{width:100%}@media (min-width:40rem){.container{max-width:40rem}}@media (min-width:48rem){.container{max-width:48rem}}@media (min-width:64rem){.container{max-width:64rem}}@media (min-width:80rem){.container{max-width:80rem}}@media (min-width:96rem){.container{max-width:96rem}}.m-0{margin:calc(var(--spacing) * 0)}.m-4{margin:calc(var(--spacing) * 4)}.mx-auto{margin-inline:auto}.my-\\[-0\\.25rem\\]{margin-block:-.25rem}.join-item:where(:not(:first-child,:disabled,[disabled],.btn-disabled)){margin-block-start:0;margin-inline-start:calc(var(--border,1px) * -1)}.join-item:where(:is(:disabled,[disabled],.btn-disabled)){border-width:var(--border,1px) 0 var(--border,1px) var(--border,1px)}.mt-0{margin-top:calc(var(--spacing) * 0)}.mt-1{margin-top:calc(var(--spacing) * 1)}.mt-2{margin-top:calc(var(--spacing) * 2)}.mt-3{margin-top:calc(var(--spacing) * 3)}.mt-4{margin-top:calc(var(--spacing) * 4)}.mt-6{margin-top:calc(var(--spacing) * 6)}.mb-0{margin-bottom:calc(var(--spacing) * 0)}.mb-1{margin-bottom:calc(var(--spacing) * 1)}.mb-2{margin-bottom:calc(var(--spacing) * 2)}.mb-4{margin-bottom:calc(var(--spacing) * 4)}.-ml-2{margin-left:calc(var(--spacing) * -2)}.ml-12{margin-left:calc(var(--spacing) * 12)}.alert{border-width:var(--border);border-color:var(--alert-border-color,var(--color-base-200))}:root .prose{--tw-prose-body:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){:root .prose{--tw-prose-body:color-mix(in oklab, var(--color-base-content) 80%, #0000)}}:root .prose{--tw-prose-headings:var(--color-base-content);--tw-prose-lead:var(--color-base-content);--tw-prose-links:var(--color-base-content);--tw-prose-bold:var(--color-base-content);--tw-prose-counters:var(--color-base-content);--tw-prose-bullets:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){:root .prose{--tw-prose-bullets:color-mix(in oklab, var(--color-base-content) 50%, #0000)}}:root .prose{--tw-prose-hr:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){:root .prose{--tw-prose-hr:color-mix(in oklab, var(--color-base-content) 20%, #0000)}}:root .prose{--tw-prose-quotes:var(--color-base-content);--tw-prose-quote-borders:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){:root .prose{--tw-prose-quote-borders:color-mix(in oklab, var(--color-base-content) 20%, #0000)}}:root .prose{--tw-prose-captions:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){:root .prose{--tw-prose-captions:color-mix(in oklab, var(--color-base-content) 50%, #0000)}}:root .prose{--tw-prose-code:var(--color-base-content);--tw-prose-pre-code:var(--color-neutral-content);--tw-prose-pre-bg:var(--color-neutral);--tw-prose-th-borders:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){:root .prose{--tw-prose-th-borders:color-mix(in oklab, var(--color-base-content) 50%, #0000)}}:root .prose{--tw-prose-td-borders:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){:root .prose{--tw-prose-td-borders:color-mix(in oklab, var(--color-base-content) 20%, #0000)}}:root .prose{--tw-prose-kbd:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){:root .prose{--tw-prose-kbd:color-mix(in oklab, var(--color-base-content) 80%, #0000)}}:root .prose :where(code):not(pre>code){background-color:var(--color-base-200);border-radius:var(--radius-selector);border:var(--border) solid var(--color-base-300);font-weight:inherit;padding-block:.2em;padding-inline:.5em}:root .prose :where(code):not(pre>code):before,:root .prose :where(code):not(pre>code):after{display:none}.flex{display:flex}.grid{display:grid}.hidden{display:none}.inline{display:inline}.inline-block{display:inline-block}.table{display:table}.h-2{height:calc(var(--spacing) * 2)}.h-4{height:calc(var(--spacing) * 4)}.h-5{height:calc(var(--spacing) * 5)}.h-6{height:calc(var(--spacing) * 6)}.h-8{height:calc(var(--spacing) * 8)}.h-\\[2px\\]{height:2px}.h-full{height:100%}.max-h-60{max-height:calc(var(--spacing) * 60)}.max-h-72{max-height:calc(var(--spacing) * 72)}.max-h-\\[90vh\\]{max-height:90vh}.max-h-none{max-height:none}.min-h-0{min-height:calc(var(--spacing) * 0)}.min-h-16{min-height:calc(var(--spacing) * 16)}.min-h-20{min-height:calc(var(--spacing) * 20)}.min-h-32{min-height:calc(var(--spacing) * 32)}.min-h-\\[120px\\]{min-height:120px}.min-h-full{min-height:100%}.min-h-screen{min-height:100vh}.w-3{width:calc(var(--spacing) * 3)}.w-3\\/4{width:75%}.w-3\\/5{width:60%}.w-5{width:calc(var(--spacing) * 5)}.w-6{width:calc(var(--spacing) * 6)}.w-8{width:calc(var(--spacing) * 8)}.w-28{width:calc(var(--spacing) * 28)}.w-32{width:calc(var(--spacing) * 32)}.w-40{width:calc(var(--spacing) * 40)}.w-48{width:calc(var(--spacing) * 48)}.w-52{width:calc(var(--spacing) * 52)}.w-80{width:calc(var(--spacing) * 80)}.w-full{width:100%}.max-w-2xl{max-width:var(--container-2xl)}.max-w-3xl{max-width:var(--container-3xl)}.max-w-7xl{max-width:var(--container-7xl)}.max-w-lg{max-width:var(--container-lg)}.max-w-md{max-width:var(--container-md)}.max-w-none{max-width:none}.max-w-sm{max-width:var(--container-sm)}.min-w-0{min-width:calc(var(--spacing) * 0)}.min-w-\\[2rem\\]{min-width:2rem}.min-w-\\[3rem\\]{min-width:3rem}.min-w-\\[200px\\]{min-width:200px}.flex-1{flex:1}.shrink-0{flex-shrink:0}.-translate-x-1{--tw-translate-x:calc(var(--spacing) * -1);translate:var(--tw-translate-x) var(--tw-translate-y)}.-translate-x-1\\/2{--tw-translate-x: -50% ;translate:var(--tw-translate-x) var(--tw-translate-y)}.scale-90{--tw-scale-x:90%;--tw-scale-y:90%;--tw-scale-z:90%;scale:var(--tw-scale-x) var(--tw-scale-y)}.rotate-90{rotate:90deg}.transform{transform:var(--tw-rotate-x,) var(--tw-rotate-y,) var(--tw-rotate-z,) var(--tw-skew-x,) var(--tw-skew-y,)}.cursor-default{cursor:default}.cursor-help{cursor:help}.cursor-not-allowed{cursor:not-allowed}.cursor-pointer{cursor:pointer}.resize-y{resize:vertical}.list-inside{list-style-position:inside}.list-decimal{list-style-type:decimal}.grid-cols-1{grid-template-columns:repeat(1,minmax(0,1fr))}.grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.flex-col{flex-direction:column}.flex-row{flex-direction:row}.flex-wrap{flex-wrap:wrap}.place-items-center{place-items:center}.items-center{align-items:center}.justify-between{justify-content:space-between}.justify-center{justify-content:center}.justify-end{justify-content:flex-end}.justify-start{justify-content:flex-start}.gap-0{gap:calc(var(--spacing) * 0)}.gap-1{gap:calc(var(--spacing) * 1)}.gap-2{gap:calc(var(--spacing) * 2)}.gap-3{gap:calc(var(--spacing) * 3)}.gap-4{gap:calc(var(--spacing) * 4)}:where(.space-y-2>:not(:last-child)){--tw-space-y-reverse:0;margin-block-start:calc(calc(var(--spacing) * 2) * var(--tw-space-y-reverse));margin-block-end:calc(calc(var(--spacing) * 2) * calc(1 - var(--tw-space-y-reverse)))}:where(.space-y-3>:not(:last-child)){--tw-space-y-reverse:0;margin-block-start:calc(calc(var(--spacing) * 3) * var(--tw-space-y-reverse));margin-block-end:calc(calc(var(--spacing) * 3) * calc(1 - var(--tw-space-y-reverse)))}:where(.space-y-4>:not(:last-child)){--tw-space-y-reverse:0;margin-block-start:calc(calc(var(--spacing) * 4) * var(--tw-space-y-reverse));margin-block-end:calc(calc(var(--spacing) * 4) * calc(1 - var(--tw-space-y-reverse)))}.self-center{align-self:center}.truncate{text-overflow:ellipsis;white-space:nowrap;overflow:hidden}.overflow-auto{overflow:auto}.overflow-hidden{overflow:hidden}.overflow-x-auto{overflow-x:auto}.overflow-y-auto{overflow-y:auto}.rounded{border-radius:.25rem}.rounded-box{border-radius:var(--radius-box)}.rounded-lg{border-radius:var(--radius-lg)}.rounded-none{border-radius:0}.border{border-style:var(--tw-border-style);border-width:1px}.border-0{border-style:var(--tw-border-style);border-width:0}.border-2{border-style:var(--tw-border-style);border-width:2px}.border-t{border-top-style:var(--tw-border-style);border-top-width:1px}.border-b{border-bottom-style:var(--tw-border-style);border-bottom-width:1px}.border-dashed{--tw-border-style:dashed;border-style:dashed}.border-none{--tw-border-style:none;border-style:none}.border-solid{--tw-border-style:solid;border-style:solid}.border-accent{border-color:var(--color-accent)}.border-base-300{border-color:var(--color-base-300)}.border-error{border-color:var(--color-error)}.border-primary{border-color:var(--color-primary)}.border-success{border-color:var(--color-success)}.border-transparent{border-color:#0000}.border-warning{border-color:var(--color-warning)}.bg-accent,.bg-accent\\/10{background-color:var(--color-accent)}@supports (color:color-mix(in lab,red,red)){.bg-accent\\/10{background-color:color-mix(in oklab,var(--color-accent) 10%,transparent)}}.bg-base-100{background-color:var(--color-base-100)}.bg-base-200,.bg-base-200\\/50{background-color:var(--color-base-200)}@supports (color:color-mix(in lab,red,red)){.bg-base-200\\/50{background-color:color-mix(in oklab,var(--color-base-200) 50%,transparent)}}.bg-base-300{background-color:var(--color-base-300)}.bg-black{background-color:var(--color-black)}.bg-black\\/50{background-color:#00000080}@supports (color:color-mix(in lab,red,red)){.bg-black\\/50{background-color:color-mix(in oklab,var(--color-black) 50%,transparent)}}.bg-error,.bg-error\\/10{background-color:var(--color-error)}@supports (color:color-mix(in lab,red,red)){.bg-error\\/10{background-color:color-mix(in oklab,var(--color-error) 10%,transparent)}}.bg-primary,.bg-primary\\/5{background-color:var(--color-primary)}@supports (color:color-mix(in lab,red,red)){.bg-primary\\/5{background-color:color-mix(in oklab,var(--color-primary) 5%,transparent)}}.bg-primary\\/10{background-color:var(--color-primary)}@supports (color:color-mix(in lab,red,red)){.bg-primary\\/10{background-color:color-mix(in oklab,var(--color-primary) 10%,transparent)}}.bg-success,.bg-success\\/10{background-color:var(--color-success)}@supports (color:color-mix(in lab,red,red)){.bg-success\\/10{background-color:color-mix(in oklab,var(--color-success) 10%,transparent)}}.bg-white{background-color:var(--color-white)}.stroke-current{stroke:currentColor}.p-0{padding:calc(var(--spacing) * 0)}.p-1{padding:calc(var(--spacing) * 1)}.p-1\\.5{padding:calc(var(--spacing) * 1.5)}.p-2{padding:calc(var(--spacing) * 2)}.p-3{padding:calc(var(--spacing) * 3)}.p-4{padding:calc(var(--spacing) * 4)}.p-6{padding:calc(var(--spacing) * 6)}.px-2{padding-inline:calc(var(--spacing) * 2)}.px-3{padding-inline:calc(var(--spacing) * 3)}.px-4{padding-inline:calc(var(--spacing) * 4)}.px-6{padding-inline:calc(var(--spacing) * 6)}.py-0{padding-block:calc(var(--spacing) * 0)}.py-1{padding-block:calc(var(--spacing) * 1)}.py-2{padding-block:calc(var(--spacing) * 2)}.py-3{padding-block:calc(var(--spacing) * 3)}.py-4{padding-block:calc(var(--spacing) * 4)}.pt-0{padding-top:calc(var(--spacing) * 0)}.pt-1{padding-top:calc(var(--spacing) * 1)}.pt-16{padding-top:calc(var(--spacing) * 16)}.pt-20{padding-top:calc(var(--spacing) * 20)}.pr-2{padding-right:calc(var(--spacing) * 2)}.pb-1{padding-bottom:calc(var(--spacing) * 1)}.pb-8{padding-bottom:calc(var(--spacing) * 8)}.pl-2{padding-left:calc(var(--spacing) * 2)}.text-center{text-align:center}.text-right{text-align:right}.font-mono{font-family:var(--font-mono)}.font-sans{font-family:var(--font-sans)}.text-3xl{font-size:var(--text-3xl);line-height:var(--tw-leading,var(--text-3xl--line-height))}.text-4xl{font-size:var(--text-4xl);line-height:var(--tw-leading,var(--text-4xl--line-height))}.text-base{font-size:var(--text-base);line-height:var(--tw-leading,var(--text-base--line-height))}.text-lg{font-size:var(--text-lg);line-height:var(--tw-leading,var(--text-lg--line-height))}.text-sm{font-size:var(--text-sm);line-height:var(--tw-leading,var(--text-sm--line-height))}.text-xl{font-size:var(--text-xl);line-height:var(--tw-leading,var(--text-xl--line-height))}.text-xs{font-size:var(--text-xs);line-height:var(--tw-leading,var(--text-xs--line-height))}.font-bold{--tw-font-weight:var(--font-weight-bold);font-weight:var(--font-weight-bold)}.font-medium{--tw-font-weight:var(--font-weight-medium);font-weight:var(--font-weight-medium)}.font-semibold{--tw-font-weight:var(--font-weight-semibold);font-weight:var(--font-weight-semibold)}.break-words{overflow-wrap:break-word}.whitespace-pre-wrap{white-space:pre-wrap}.text-accent{color:var(--color-accent)}.text-base-content,.text-base-content\\/40{color:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){.text-base-content\\/40{color:color-mix(in oklab,var(--color-base-content) 40%,transparent)}}.text-base-content\\/50{color:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){.text-base-content\\/50{color:color-mix(in oklab,var(--color-base-content) 50%,transparent)}}.text-base-content\\/60{color:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){.text-base-content\\/60{color:color-mix(in oklab,var(--color-base-content) 60%,transparent)}}.text-base-content\\/70{color:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){.text-base-content\\/70{color:color-mix(in oklab,var(--color-base-content) 70%,transparent)}}.text-base-content\\/80{color:var(--color-base-content)}@supports (color:color-mix(in lab,red,red)){.text-base-content\\/80{color:color-mix(in oklab,var(--color-base-content) 80%,transparent)}}.text-error{color:var(--color-error)}.text-primary{color:var(--color-primary)}.text-primary-content{color:var(--color-primary-content)}.text-secondary{color:var(--color-secondary)}.text-success{color:var(--color-success)}.text-warning{color:var(--color-warning)}.capitalize{text-transform:capitalize}.italic{font-style:italic}.prose :where(a.btn:not(.btn-link)):not(:where([class~=not-prose],[class~=not-prose] *)){text-decoration-line:none}.opacity-0{opacity:0}.opacity-50{opacity:.5}.shadow{--tw-shadow:0 1px 3px 0 var(--tw-shadow-color,#0000001a), 0 1px 2px -1px var(--tw-shadow-color,#0000001a);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow)}.shadow-\\[0_0_10px_rgba\\(251\\,191\\,36\\,0\\.3\\)\\]{--tw-shadow:0 0 10px var(--tw-shadow-color,#fbbf244d);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow)}.shadow-md{--tw-shadow:0 4px 6px -1px var(--tw-shadow-color,#0000001a), 0 2px 4px -2px var(--tw-shadow-color,#0000001a);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow)}.shadow-none{--tw-shadow:0 0 #0000;box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow)}.shadow-sm{--tw-shadow:0 1px 3px 0 var(--tw-shadow-color,#0000001a), 0 1px 2px -1px var(--tw-shadow-color,#0000001a);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow)}.shadow-xl{--tw-shadow:0 20px 25px -5px var(--tw-shadow-color,#0000001a), 0 8px 10px -6px var(--tw-shadow-color,#0000001a);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow)}.ring-2{--tw-ring-shadow:var(--tw-ring-inset,) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color,currentcolor);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow)}.ring-primary{--tw-ring-color:var(--color-primary)}.outline{outline-style:var(--tw-outline-style);outline-width:1px}@layer daisyui.l1{.btn-ghost:not(.btn-active,:hover,:active:focus,:focus-visible,input:checked:not(.filter .btn)){--btn-shadow:"";--btn-bg:#0000;--btn-border:#0000;--btn-noise:none}.btn-ghost:not(.btn-active,:hover,:active:focus,:focus-visible,input:checked:not(.filter .btn)):not(:disabled,[disabled],.btn-disabled){--btn-fg:var(--btn-color,currentColor);outline-color:currentColor}@media (hover:none){.btn-ghost:not(.btn-active,:active,:focus-visible,input:checked:not(.filter .btn)):hover{--btn-shadow:"";--btn-bg:#0000;--btn-fg:var(--btn-color,currentColor);--btn-border:#0000;--btn-noise:none;outline-color:currentColor}}.btn-outline:not(.btn-active,:hover,:active:focus,:focus-visible,input:checked:not(.filter .btn),:disabled,[disabled],.btn-disabled){--btn-shadow:"";--btn-bg:#0000;--btn-fg:var(--btn-color);--btn-border:var(--btn-color);--btn-noise:none}@media (hover:none){.btn-outline:not(.btn-active,:active,:focus-visible,input:checked:not(.filter .btn)):hover{--btn-shadow:"";--btn-bg:#0000;--btn-fg:var(--btn-color);--btn-border:var(--btn-color);--btn-noise:none}}.btn-soft:not(.btn-active,:hover,:active:focus,:focus-visible,input:checked:not(.filter .btn),:disabled,[disabled],.btn-disabled){--btn-shadow:"";--btn-fg:var(--btn-color,var(--color-base-content));--btn-bg:var(--btn-color,var(--color-base-content))}@supports (color:color-mix(in lab,red,red)){.btn-soft:not(.btn-active,:hover,:active:focus,:focus-visible,input:checked:not(.filter .btn),:disabled,[disabled],.btn-disabled){--btn-bg:color-mix(in oklab, var(--btn-color,var(--color-base-content)) 8%, var(--color-base-100))}}.btn-soft:not(.btn-active,:hover,:active:focus,:focus-visible,input:checked:not(.filter .btn),:disabled,[disabled],.btn-disabled){--btn-border:var(--btn-color,var(--color-base-content))}@supports (color:color-mix(in lab,red,red)){.btn-soft:not(.btn-active,:hover,:active:focus,:focus-visible,input:checked:not(.filter .btn),:disabled,[disabled],.btn-disabled){--btn-border:color-mix(in oklab, var(--btn-color,var(--color-base-content)) 10%, var(--color-base-100))}}.btn-soft:not(.btn-active,:hover,:active:focus,:focus-visible,input:checked:not(.filter .btn),:disabled,[disabled],.btn-disabled){--btn-noise:none}@media (hover:none){.btn-soft:not(.btn-active,:active,:focus-visible,input:checked:not(.filter .btn)):hover{--btn-shadow:"";--btn-fg:var(--btn-color,var(--color-base-content));--btn-bg:var(--btn-color,var(--color-base-content))}@supports (color:color-mix(in lab,red,red)){.btn-soft:not(.btn-active,:active,:focus-visible,input:checked:not(.filter .btn)):hover{--btn-bg:color-mix(in oklab, var(--btn-color,var(--color-base-content)) 8%, var(--color-base-100))}}.btn-soft:not(.btn-active,:active,:focus-visible,input:checked:not(.filter .btn)):hover{--btn-border:var(--btn-color,var(--color-base-content))}@supports (color:color-mix(in lab,red,red)){.btn-soft:not(.btn-active,:active,:focus-visible,input:checked:not(.filter .btn)):hover{--btn-border:color-mix(in oklab, var(--btn-color,var(--color-base-content)) 10%, var(--color-base-100))}}.btn-soft:not(.btn-active,:active,:focus-visible,input:checked:not(.filter .btn)):hover{--btn-noise:none}}}.blur{--tw-blur:blur(8px);filter:var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,)}.filter{filter:var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,)}.transition{transition-property:color,background-color,border-color,outline-color,text-decoration-color,fill,stroke,--tw-gradient-from,--tw-gradient-via,--tw-gradient-to,opacity,box-shadow,transform,translate,scale,rotate,filter,-webkit-backdrop-filter,backdrop-filter,display,content-visibility,overlay,pointer-events;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration))}.transition-\\[border-color\\,box-shadow\\]{transition-property:border-color,box-shadow;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration))}.transition-all{transition-property:all;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration))}.transition-colors{transition-property:color,background-color,border-color,outline-color,text-decoration-color,fill,stroke,--tw-gradient-from,--tw-gradient-via,--tw-gradient-to;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration))}.transition-transform{transition-property:transform,translate,scale,rotate;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration))}.duration-200{--tw-duration:.2s;transition-duration:.2s}.ease-in-out{--tw-ease:var(--ease-in-out);transition-timing-function:var(--ease-in-out)}.ease-out{--tw-ease:var(--ease-out);transition-timing-function:var(--ease-out)}.select-none{-webkit-user-select:none;user-select:none}@media (hover:hover){.group-hover\\:w-4\\/5:is(:where(.group):hover *){width:80%}.group-hover\\:scale-100:is(:where(.group):hover *){--tw-scale-x:100%;--tw-scale-y:100%;--tw-scale-z:100%;scale:var(--tw-scale-x) var(--tw-scale-y)}.group-hover\\:opacity-100:is(:where(.group):hover *){opacity:1}.hover\\:border-accent:hover{border-color:var(--color-accent)}.hover\\:border-primary:hover{border-color:var(--color-primary)}.hover\\:bg-accent\\/10:hover{background-color:var(--color-accent)}@supports (color:color-mix(in lab,red,red)){.hover\\:bg-accent\\/10:hover{background-color:color-mix(in oklab,var(--color-accent) 10%,transparent)}}.hover\\:bg-base-300:hover,.hover\\:bg-base-300\\/50:hover{background-color:var(--color-base-300)}@supports (color:color-mix(in lab,red,red)){.hover\\:bg-base-300\\/50:hover{background-color:color-mix(in oklab,var(--color-base-300) 50%,transparent)}}.hover\\:text-base-content:hover{color:var(--color-base-content)}.hover\\:shadow-lg:hover{--tw-shadow:0 10px 15px -3px var(--tw-shadow-color,#0000001a), 0 4px 6px -4px var(--tw-shadow-color,#0000001a);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow)}.hover\\:shadow-md:hover{--tw-shadow:0 4px 6px -1px var(--tw-shadow-color,#0000001a), 0 2px 4px -2px var(--tw-shadow-color,#0000001a);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow)}}.focus\\:border-primary:focus{border-color:var(--color-primary)}.focus\\:ring-2:focus{--tw-ring-shadow:var(--tw-ring-inset,) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color,currentcolor);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow)}.focus\\:ring-primary\\/20:focus{--tw-ring-color:var(--color-primary)}@supports (color:color-mix(in lab,red,red)){.focus\\:ring-primary\\/20:focus{--tw-ring-color:color-mix(in oklab, var(--color-primary) 20%, transparent)}}.focus\\:outline-none:focus{--tw-outline-style:none;outline-style:none}.disabled\\:cursor-not-allowed:disabled{cursor:not-allowed}.disabled\\:opacity-50:disabled{opacity:.5}@media (min-width:40rem){@layer daisyui.l1.l2{.sm\\:footer-horizontal{grid-auto-flow:column}.sm\\:footer-horizontal.footer-center{grid-auto-flow:dense}}.sm\\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}}@media (min-width:64rem){.lg\\:flex{display:flex}.lg\\:hidden{display:none}}}[x-cloak]{display:none!important}.datatable-wrapper,.datatable-top,.datatable-bottom,.datatable-container{background:0 0!important}.datatable-input,.datatable-selector{background:oklch(var(--b1))!important;color:oklch(var(--bc))!important;border-color:oklch(var(--b3))!important}.cell-container{flex-direction:column;min-height:0;display:flex;container-type:inline-size}@container (max-width:350px){.cell-header-responsive .flex.gap-1.items-center>.join{display:none}.cell-header-responsive .flex.gap-1.items-center>.dropdown.hidden{display:block}}.flex-1.bg-base-100.border{container-type:inline-size}@container (max-width:500px){.flex-1.bg-base-100.border .flex.items-center.justify-between>.join{display:none}.flex-1.bg-base-100.border .flex.items-center.justify-between>.dropdown.hidden{display:block}}.editor-preview-active :not(h1):not(h2):not(h3):not(h4):not(h5):not(h6),.editor-preview :not(h1):not(h2):not(h3):not(h4):not(h5):not(h6),.editor-preview-side :not(h1):not(h2):not(h3):not(h4):not(h5):not(h6),.editor-preview-full :not(h1):not(h2):not(h3):not(h4):not(h5):not(h6){all:revert}.editor-preview-full{overflow:visible}.editor-preview{background-color:var(--color-base-100)!important}.EasyMDEContainer .editor-preview-active~.CodeMirror{display:none}.easymde-client{opacity:0;transition:opacity .15s ease-in}.easymde-client.easymde-ready{opacity:1}.easymde-client .EasyMDEContainer,.easymde-client .CodeMirror,.easymde-client .cm-editor,.easymde-client .editor-preview,.easymde-client .editor-preview-full{border:none!important}.easymde-client .CodeMirror,.easymde-client .CodeMirror-scroll,.easymde-client .cm-editor,.easymde-client .cm-scroller,.easymde-client .editor-preview,.easymde-client .editor-preview-full{scrollbar-width:none;-ms-overflow-style:none}.easymde-client .CodeMirror::-webkit-scrollbar{display:none}.easymde-client .CodeMirror-scroll::-webkit-scrollbar{display:none}.easymde-client .cm-editor::-webkit-scrollbar{display:none}.easymde-client .cm-scroller::-webkit-scrollbar{display:none}.easymde-client .editor-preview::-webkit-scrollbar{display:none}.easymde-client .editor-preview-full::-webkit-scrollbar{display:none}.cell-body-has-height{min-height:max(var(--cell-min-h-px,0),var(--cell-min-h-pct,0%));max-height:min(var(--cell-max-h-px,9999px),var(--cell-max-h-pct,9999px))}.cell-body .perspective-fill-height perspective-viewer{flex:1;min-width:0;min-height:0}.cell-body .flex-1.min-h-0 .EasyMDEContainer{flex-direction:column;flex:1;min-height:0;display:flex}.cell-body .flex-1.min-h-0 .EasyMDEContainer .CodeMirror,.cell-body .flex-1.min-h-0 .EasyMDEContainer .cm-editor,.cell-body .flex-1.min-h-0 .EasyMDEContainer .editor-preview,.cell-body .flex-1.min-h-0 .EasyMDEContainer .editor-preview-full{flex:1;min-height:0}.editor-preview-active h1,.editor-preview h1,.editor-preview-side h1,.editor-preview-full h1{font-size:2.25rem;font-weight:700;line-height:2.5rem;color:var(--color-primary)!important}.editor-preview-active h2,.editor-preview h2,.editor-preview-side h2,.editor-preview-full h2{font-size:1.875rem;font-weight:600;line-height:2.25rem;color:var(--color-secondary)!important}.codemirror-sql-container{width:100%;min-height:20px}.codemirror-sql-container .cm-editor{background:oklch(var(--b1))}.codemirror-sql-container .cm-gutters{background:oklch(var(--b2));border-right:1px solid oklch(var(--b3))}.codemirror-sql-container .cm-activeLineGutter{background:oklch(var(--b3))}.codemirror-sql-container .cm-line{color:oklch(var(--bc))}.cm-tooltip{background:oklch(var(--b2))!important;border:1px solid oklch(var(--b3))!important;border-radius:.5rem!important;box-shadow:0 4px 6px -1px #0000001a!important}.cm-tooltip-autocomplete{background:oklch(var(--b2))!important}.cm-tooltip-autocomplete>ul>li{color:oklch(var(--bc))!important}.cm-tooltip-autocomplete>ul>li[aria-selected]{background:oklch(var(--p) / .2)!important;color:oklch(var(--bc))!important}.codemirror-sql-container .cm-cursor{border-left-color:oklch(var(--p))!important}.codemirror-sql-container div::selection{color:var(--color-secondary)!important;background-color:var(--color-base-300)!important}@keyframes rating{0%,40%{filter:brightness(1.05)contrast(1.05);scale:1.1}}@keyframes dropdown{0%{opacity:0}}@keyframes radio{0%{padding:5px}50%{padding:3px}}@keyframes toast{0%{opacity:0;scale:.9}to{opacity:1;scale:1}}@keyframes rotator{89.9999%,to{--first-item-position:0 0%}90%,99.9999%{--first-item-position:0 calc(var(--items) * 100%)}to{translate:0 -100%}}@keyframes skeleton{0%{background-position:150%}to{background-position:-50%}}@keyframes menu{0%{opacity:0}}@keyframes progress{50%{background-position-x:-115%}}@property --tw-translate-x{syntax:"*";inherits:false;initial-value:0}@property --tw-translate-y{syntax:"*";inherits:false;initial-value:0}@property --tw-translate-z{syntax:"*";inherits:false;initial-value:0}@property --tw-scale-x{syntax:"*";inherits:false;initial-value:1}@property --tw-scale-y{syntax:"*";inherits:false;initial-value:1}@property --tw-scale-z{syntax:"*";inherits:false;initial-value:1}@property --tw-rotate-x{syntax:"*";inherits:false}@property --tw-rotate-y{syntax:"*";inherits:false}@property --tw-rotate-z{syntax:"*";inherits:false}@property --tw-skew-x{syntax:"*";inherits:false}@property --tw-skew-y{syntax:"*";inherits:false}@property --tw-space-y-reverse{syntax:"*";inherits:false;initial-value:0}@property --tw-border-style{syntax:"*";inherits:false;initial-value:solid}@property --tw-font-weight{syntax:"*";inherits:false}@property --tw-shadow{syntax:"*";inherits:false;initial-value:0 0 #0000}@property --tw-shadow-color{syntax:"*";inherits:false}@property --tw-shadow-alpha{syntax:"<percentage>";inherits:false;initial-value:100%}@property --tw-inset-shadow{syntax:"*";inherits:false;initial-value:0 0 #0000}@property --tw-inset-shadow-color{syntax:"*";inherits:false}@property --tw-inset-shadow-alpha{syntax:"<percentage>";inherits:false;initial-value:100%}@property --tw-ring-color{syntax:"*";inherits:false}@property --tw-ring-shadow{syntax:"*";inherits:false;initial-value:0 0 #0000}@property --tw-inset-ring-color{syntax:"*";inherits:false}@property --tw-inset-ring-shadow{syntax:"*";inherits:false;initial-value:0 0 #0000}@property --tw-ring-inset{syntax:"*";inherits:false}@property --tw-ring-offset-width{syntax:"<length>";inherits:false;initial-value:0}@property --tw-ring-offset-color{syntax:"*";inherits:false;initial-value:#fff}@property --tw-ring-offset-shadow{syntax:"*";inherits:false;initial-value:0 0 #0000}@property --tw-outline-style{syntax:"*";inherits:false;initial-value:solid}@property --tw-blur{syntax:"*";inherits:false}@property --tw-brightness{syntax:"*";inherits:false}@property --tw-contrast{syntax:"*";inherits:false}@property --tw-grayscale{syntax:"*";inherits:false}@property --tw-hue-rotate{syntax:"*";inherits:false}@property --tw-invert{syntax:"*";inherits:false}@property --tw-opacity{syntax:"*";inherits:false}@property --tw-saturate{syntax:"*";inherits:false}@property --tw-sepia{syntax:"*";inherits:false}@property --tw-drop-shadow{syntax:"*";inherits:false}@property --tw-drop-shadow-color{syntax:"*";inherits:false}@property --tw-drop-shadow-alpha{syntax:"<percentage>";inherits:false;initial-value:100%}@property --tw-drop-shadow-size{syntax:"*";inherits:false}@property --tw-duration{syntax:"*";inherits:false}@property --tw-ease{syntax:"*";inherits:false}`)),document.head.appendChild(e)}}catch(o){console.error("vite-plugin-css-injected-by-js",o)}})();
+var z = Object.defineProperty;
+var Q = (t, e, n) => e in t ? z(t, e, { enumerable: !0, configurable: !0, writable: !0, value: n }) : t[e] = n;
+var k = (t, e, n) => Q(t, typeof e != "symbol" ? e + "" : e, n);
 var flushPending = !1, flushing = !1, queue = [], lastFlushedIndex = -1, transactionActive = !1;
 function scheduler(t) {
   queueJob(t);
@@ -50,7 +50,7 @@ function elementBoundEffect(t) {
   return [(r) => {
     let s = effect(r);
     return t._x_effects || (t._x_effects = /* @__PURE__ */ new Set(), t._x_runEffects = () => {
-      t._x_effects.forEach((i) => i());
+      t._x_effects.forEach((a) => a());
     }), t._x_effects.add(s), e = () => {
       s !== void 0 && (t._x_effects.delete(s), release(s));
     }, s;
@@ -60,14 +60,14 @@ function elementBoundEffect(t) {
 }
 function watch(t, e) {
   let n = !0, r, s = effect(() => {
-    let i = t();
-    if (JSON.stringify(i), !n && (typeof i == "object" || i !== r)) {
-      let a = r;
+    let a = t();
+    if (JSON.stringify(a), !n && (typeof a == "object" || a !== r)) {
+      let i = r;
       queueMicrotask(() => {
-        e(i, a);
+        e(a, i);
       });
     }
-    r = i, n = !1;
+    r = a, n = !1;
   });
   return () => release(s);
 }
@@ -140,34 +140,34 @@ function onMutate(t) {
     return;
   }
   let e = [], n = /* @__PURE__ */ new Set(), r = /* @__PURE__ */ new Map(), s = /* @__PURE__ */ new Map();
-  for (let i = 0; i < t.length; i++)
-    if (!t[i].target._x_ignoreMutationObserver && (t[i].type === "childList" && (t[i].removedNodes.forEach((a) => {
-      a.nodeType === 1 && a._x_marker && n.add(a);
-    }), t[i].addedNodes.forEach((a) => {
-      if (a.nodeType === 1) {
-        if (n.has(a)) {
-          n.delete(a);
+  for (let a = 0; a < t.length; a++)
+    if (!t[a].target._x_ignoreMutationObserver && (t[a].type === "childList" && (t[a].removedNodes.forEach((i) => {
+      i.nodeType === 1 && i._x_marker && n.add(i);
+    }), t[a].addedNodes.forEach((i) => {
+      if (i.nodeType === 1) {
+        if (n.has(i)) {
+          n.delete(i);
           return;
         }
-        a._x_marker || e.push(a);
+        i._x_marker || e.push(i);
       }
-    })), t[i].type === "attributes")) {
-      let a = t[i].target, o = t[i].attributeName, l = t[i].oldValue, c = () => {
-        r.has(a) || r.set(a, []), r.get(a).push({ name: o, value: a.getAttribute(o) });
+    })), t[a].type === "attributes")) {
+      let i = t[a].target, o = t[a].attributeName, l = t[a].oldValue, c = () => {
+        r.has(i) || r.set(i, []), r.get(i).push({ name: o, value: i.getAttribute(o) });
       }, u = () => {
-        s.has(a) || s.set(a, []), s.get(a).push(o);
+        s.has(i) || s.set(i, []), s.get(i).push(o);
       };
-      a.hasAttribute(o) && l === null ? c() : a.hasAttribute(o) ? (u(), c()) : u();
+      i.hasAttribute(o) && l === null ? c() : i.hasAttribute(o) ? (u(), c()) : u();
     }
-  s.forEach((i, a) => {
-    cleanupAttributes(a, i);
-  }), r.forEach((i, a) => {
-    onAttributeAddeds.forEach((o) => o(a, i));
+  s.forEach((a, i) => {
+    cleanupAttributes(i, a);
+  }), r.forEach((a, i) => {
+    onAttributeAddeds.forEach((o) => o(i, a));
   });
-  for (let i of n)
-    e.some((a) => a.contains(i)) || onElRemoveds.forEach((a) => a(i));
-  for (let i of e)
-    i.isConnected && onElAddeds.forEach((a) => a(i));
+  for (let a of n)
+    e.some((i) => i.contains(a)) || onElRemoveds.forEach((i) => i(a));
+  for (let a of e)
+    a.isConnected && onElAddeds.forEach((i) => i(a));
   e = null, n = null, r = null, s = null;
 }
 function scope(t) {
@@ -206,9 +206,9 @@ var mergeProxyTrap = {
   },
   set({ objects: t }, e, n, r) {
     const s = t.find(
-      (a) => Object.prototype.hasOwnProperty.call(a, e)
-    ) || t[t.length - 1], i = Object.getOwnPropertyDescriptor(s, e);
-    return i != null && i.set && (i != null && i.get) ? i.set.call(r, n) || !0 : Reflect.set(s, e, n);
+      (i) => Object.prototype.hasOwnProperty.call(i, e)
+    ) || t[t.length - 1], a = Object.getOwnPropertyDescriptor(s, e);
+    return a != null && a.set && (a != null && a.get) ? a.set.call(r, n) || !0 : Reflect.set(s, e, n);
   }
 };
 function collapseProxies() {
@@ -216,11 +216,11 @@ function collapseProxies() {
 }
 function initInterceptors(t) {
   let e = (r) => typeof r == "object" && !Array.isArray(r) && r !== null, n = (r, s = "") => {
-    Object.entries(Object.getOwnPropertyDescriptors(r)).forEach(([i, { value: a, enumerable: o }]) => {
-      if (o === !1 || a === void 0 || typeof a == "object" && a !== null && a.__v_skip)
+    Object.entries(Object.getOwnPropertyDescriptors(r)).forEach(([a, { value: i, enumerable: o }]) => {
+      if (o === !1 || i === void 0 || typeof i == "object" && i !== null && i.__v_skip)
         return;
-      let l = s === "" ? i : `${s}.${i}`;
-      typeof a == "object" && a !== null && a._x_interceptor ? r[i] = a.initialize(t, l, i) : e(a) && a !== r && !(a instanceof Element) && n(a, l);
+      let l = s === "" ? a : `${s}.${a}`;
+      typeof i == "object" && i !== null && i._x_interceptor ? r[a] = i.initialize(t, l, a) : e(i) && i !== r && !(i instanceof Element) && n(i, l);
     });
   };
   return n(t);
@@ -230,16 +230,16 @@ function interceptor(t, e = () => {
   let n = {
     initialValue: void 0,
     _x_interceptor: !0,
-    initialize(r, s, i) {
-      return t(this.initialValue, () => get(r, s), (a) => set(r, s, a), s, i);
+    initialize(r, s, a) {
+      return t(this.initialValue, () => get(r, s), (i) => set(r, s, i), s, a);
     }
   };
   return e(n), (r) => {
     if (typeof r == "object" && r !== null && r._x_interceptor) {
       let s = n.initialize.bind(n);
-      n.initialize = (i, a, o) => {
-        let l = r.initialize(i, a, o);
-        return n.initialValue = l, s(i, a, o);
+      n.initialize = (a, i, o) => {
+        let l = r.initialize(a, i, o);
+        return n.initialValue = l, s(a, i, o);
       };
     } else
       n.initialValue = r;
@@ -333,13 +333,13 @@ function normalEvaluator(t, e) {
 }
 function generateEvaluatorFromFunction(t, e) {
   return (n = () => {
-  }, { scope: r = {}, params: s = [], context: i } = {}) => {
+  }, { scope: r = {}, params: s = [], context: a } = {}) => {
     if (!shouldAutoEvaluateFunctions) {
       runIfTypeOfFunction(n, e, mergeProxies([r, ...t]), s);
       return;
     }
-    let a = e.apply(mergeProxies([r, ...t]), s);
-    runIfTypeOfFunction(n, a);
+    let i = e.apply(mergeProxies([r, ...t]), s);
+    runIfTypeOfFunction(n, i);
   };
 }
 var evaluatorMemo = {};
@@ -347,40 +347,40 @@ function generateFunctionFromString(t, e) {
   if (evaluatorMemo[t])
     return evaluatorMemo[t];
   let n = Object.getPrototypeOf(async function() {
-  }).constructor, r = /^[\n\s]*if.*\(.*\)/.test(t.trim()) || /^(let|const)\s/.test(t.trim()) ? `(async()=>{ ${t} })()` : t, i = (() => {
+  }).constructor, r = /^[\n\s]*if.*\(.*\)/.test(t.trim()) || /^(let|const)\s/.test(t.trim()) ? `(async()=>{ ${t} })()` : t, a = (() => {
     try {
-      let a = new n(
+      let i = new n(
         ["__self", "scope"],
         `with (scope) { __self.result = ${r} }; __self.finished = true; return __self.result;`
       );
-      return Object.defineProperty(a, "name", {
+      return Object.defineProperty(i, "name", {
         value: `[Alpine] ${t}`
-      }), a;
-    } catch (a) {
-      return handleError(a, e, t), Promise.resolve();
+      }), i;
+    } catch (i) {
+      return handleError(i, e, t), Promise.resolve();
     }
   })();
-  return evaluatorMemo[t] = i, i;
+  return evaluatorMemo[t] = a, a;
 }
 function generateEvaluatorFromString(t, e, n) {
   let r = generateFunctionFromString(e, n);
   return (s = () => {
-  }, { scope: i = {}, params: a = [], context: o } = {}) => {
+  }, { scope: a = {}, params: i = [], context: o } = {}) => {
     r.result = void 0, r.finished = !1;
-    let l = mergeProxies([i, ...t]);
+    let l = mergeProxies([a, ...t]);
     if (typeof r == "function") {
       let c = r.call(o, r, l).catch((u) => handleError(u, n, e));
-      r.finished ? (runIfTypeOfFunction(s, r.result, l, a, n), r.result = void 0) : c.then((u) => {
-        runIfTypeOfFunction(s, u, l, a, n);
+      r.finished ? (runIfTypeOfFunction(s, r.result, l, i, n), r.result = void 0) : c.then((u) => {
+        runIfTypeOfFunction(s, u, l, i, n);
       }).catch((u) => handleError(u, n, e)).finally(() => r.result = void 0);
     }
   };
 }
 function runIfTypeOfFunction(t, e, n, r, s) {
   if (shouldAutoEvaluateFunctions && typeof e == "function") {
-    let i = e.apply(n, r);
-    i instanceof Promise ? i.then((a) => runIfTypeOfFunction(t, a, n, r)).catch((a) => handleError(a, s, e)) : t(i);
-  } else typeof e == "object" && e instanceof Promise ? e.then((i) => t(i)) : t(e);
+    let a = e.apply(n, r);
+    a instanceof Promise ? a.then((i) => runIfTypeOfFunction(t, i, n, r)).catch((i) => handleError(i, s, e)) : t(a);
+  } else typeof e == "object" && e instanceof Promise ? e.then((a) => t(a)) : t(e);
 }
 function evaluateRaw(...t) {
   return theRawEvaluatorFunction(...t);
@@ -388,20 +388,20 @@ function evaluateRaw(...t) {
 function normalRawEvaluator(t, e, n = {}) {
   let r = {};
   injectMagics(r, t);
-  let s = [r, ...closestDataStack(t)], i = mergeProxies([n.scope ?? {}, ...s]), a = n.params ?? [];
+  let s = [r, ...closestDataStack(t)], a = mergeProxies([n.scope ?? {}, ...s]), i = n.params ?? [];
   if (e.includes("await")) {
     let o = Object.getPrototypeOf(async function() {
     }).constructor, l = /^[\n\s]*if.*\(.*\)/.test(e.trim()) || /^(let|const)\s/.test(e.trim()) ? `(async()=>{ ${e} })()` : e;
     return new o(
       ["scope"],
       `with (scope) { let __result = ${l}; return __result }`
-    ).call(n.context, i);
+    ).call(n.context, a);
   } else {
     let o = /^[\n\s]*if.*\(.*\)/.test(e.trim()) || /^(let|const)\s/.test(e.trim()) ? `(()=>{ ${e} })()` : e, c = new Function(
       ["scope"],
       `with (scope) { let __result = ${o}; return __result }`
-    ).call(n.context, i);
-    return typeof c == "function" && shouldAutoEvaluateFunctions ? c.apply(i, a) : c;
+    ).call(n.context, a);
+    return typeof c == "function" && shouldAutoEvaluateFunctions ? c.apply(a, i) : c;
   }
 }
 var prefixAsString = "x-";
@@ -429,14 +429,14 @@ function directiveExists(t) {
 }
 function directives(t, e, n) {
   if (e = Array.from(e), t._x_virtualDirectives) {
-    let i = Object.entries(t._x_virtualDirectives).map(([o, l]) => ({ name: o, value: l })), a = attributesOnly(i);
-    i = i.map((o) => a.find((l) => l.name === o.name) ? {
+    let a = Object.entries(t._x_virtualDirectives).map(([o, l]) => ({ name: o, value: l })), i = attributesOnly(a);
+    a = a.map((o) => i.find((l) => l.name === o.name) ? {
       name: `x-bind:${o.name}`,
       value: `"${o.value}"`
-    } : o), e = e.concat(i);
+    } : o), e = e.concat(a);
   }
   let r = {};
-  return e.map(toTransformedAttributes((i, a) => r[i] = a)).filter(outNonAlpineAttributes).map(toParsedDirectives(r, n)).sort(byPriority).map((i) => getDirectiveHandler(t, i));
+  return e.map(toTransformedAttributes((a, i) => r[a] = i)).filter(outNonAlpineAttributes).map(toParsedDirectives(r, n)).sort(byPriority).map((a) => getDirectiveHandler(t, a));
 }
 function attributesOnly(t) {
   return Array.from(t).map(toTransformedAttributes()).filter((e) => !outNonAlpineAttributes(e));
@@ -467,18 +467,18 @@ function getElementBoundUtilities(t) {
 }
 function getDirectiveHandler(t, e) {
   let n = () => {
-  }, r = directiveHandlers[e.type] || n, [s, i] = getElementBoundUtilities(t);
-  onAttributeRemoved(t, e.original, i);
-  let a = () => {
+  }, r = directiveHandlers[e.type] || n, [s, a] = getElementBoundUtilities(t);
+  onAttributeRemoved(t, e.original, a);
+  let i = () => {
     t._x_ignore || t._x_ignoreSelf || (r.inline && r.inline(t, e, s), r = r.bind(r, t, e, s), isDeferringHandlers ? directiveHandlerStacks.get(currentHandlerStackKey).push(r) : r());
   };
-  return a.runCleanups = i, a;
+  return i.runCleanups = a, i;
 }
 var startingWith = (t, e) => ({ name: n, value: r }) => (n.startsWith(t) && (n = n.replace(t, e)), { name: n, value: r }), into = (t) => t;
 function toTransformedAttributes(t = () => {
 }) {
   return ({ name: e, value: n }) => {
-    let { name: r, value: s } = attributeTransformers.reduce((i, a) => a(i), { name: e, value: n });
+    let { name: r, value: s } = attributeTransformers.reduce((a, i) => i(a), { name: e, value: n });
     return r !== e && t(r, e), { name: r, value: s };
   };
 }
@@ -493,11 +493,11 @@ var alpineAttributeRegex = () => new RegExp(`^${prefixAsString}([^:^.]+)\\b`);
 function toParsedDirectives(t, e) {
   return ({ name: n, value: r }) => {
     n === r && (r = "");
-    let s = n.match(alpineAttributeRegex()), i = n.match(/:([a-zA-Z0-9\-_:]+)/), a = n.match(/\.[^.\]]+(?=[^\]]*$)/g) || [], o = e || t[n] || n;
+    let s = n.match(alpineAttributeRegex()), a = n.match(/:([a-zA-Z0-9\-_:]+)/), i = n.match(/\.[^.\]]+(?=[^\]]*$)/g) || [], o = e || t[n] || n;
     return {
       type: s ? s[1] : null,
-      value: i ? i[1] : null,
-      modifiers: a.map((l) => l.replace(".", "")),
+      value: a ? a[1] : null,
+      modifiers: i.map((l) => l.replace(".", "")),
       expression: r,
       original: o
     };
@@ -603,7 +603,7 @@ function initTree(t, e = walk, n = () => {
 }) {
   findClosest(t, (r) => r._x_ignore) || deferHandlingDirectives(() => {
     e(t, (r, s) => {
-      r._x_marker || (n(r, s), initInterceptors2.forEach((i) => i(r, s)), directives(r, r.attributes).forEach((i) => i()), r._x_ignore || (r._x_marker = markerDispenser++), r._x_ignore && s());
+      r._x_marker || (n(r, s), initInterceptors2.forEach((a) => a(r, s)), directives(r, r.attributes).forEach((a) => a()), r._x_ignore || (r._x_marker = markerDispenser++), r._x_ignore && s());
     });
   });
 }
@@ -648,19 +648,19 @@ function setClasses(t, e) {
   return Array.isArray(e) ? setClassesFromString(t, e.join(" ")) : typeof e == "object" && e !== null ? setClassesFromObject(t, e) : typeof e == "function" ? setClasses(t, e()) : setClassesFromString(t, e);
 }
 function setClassesFromString(t, e) {
-  let n = (s) => s.split(" ").filter((i) => !t.classList.contains(i)).filter(Boolean), r = (s) => (t.classList.add(...s), () => {
+  let n = (s) => s.split(" ").filter((a) => !t.classList.contains(a)).filter(Boolean), r = (s) => (t.classList.add(...s), () => {
     t.classList.remove(...s);
   });
   return e = e === !0 ? e = "" : e || "", r(n(e));
 }
 function setClassesFromObject(t, e) {
-  let n = (o) => o.split(" ").filter(Boolean), r = Object.entries(e).flatMap(([o, l]) => l ? n(o) : !1).filter(Boolean), s = Object.entries(e).flatMap(([o, l]) => l ? !1 : n(o)).filter(Boolean), i = [], a = [];
+  let n = (o) => o.split(" ").filter(Boolean), r = Object.entries(e).flatMap(([o, l]) => l ? n(o) : !1).filter(Boolean), s = Object.entries(e).flatMap(([o, l]) => l ? !1 : n(o)).filter(Boolean), a = [], i = [];
   return s.forEach((o) => {
-    t.classList.contains(o) && (t.classList.remove(o), a.push(o));
+    t.classList.contains(o) && (t.classList.remove(o), i.push(o));
   }), r.forEach((o) => {
-    t.classList.contains(o) || (t.classList.add(o), i.push(o));
+    t.classList.contains(o) || (t.classList.add(o), a.push(o));
   }), () => {
-    a.forEach((o) => t.classList.add(o)), i.forEach((o) => t.classList.remove(o));
+    i.forEach((o) => t.classList.add(o)), a.forEach((o) => t.classList.remove(o));
   };
 }
 function setStyles(t, e) {
@@ -719,27 +719,27 @@ function registerTransitionsFromClassString(t, e, n) {
 }
 function registerTransitionsFromHelper(t, e, n) {
   registerTransitionObject(t, setStyles);
-  let r = !e.includes("in") && !e.includes("out") && !n, s = r || e.includes("in") || ["enter"].includes(n), i = r || e.includes("out") || ["leave"].includes(n);
+  let r = !e.includes("in") && !e.includes("out") && !n, s = r || e.includes("in") || ["enter"].includes(n), a = r || e.includes("out") || ["leave"].includes(n);
   e.includes("in") && !r && (e = e.filter((y, v) => v < e.indexOf("out"))), e.includes("out") && !r && (e = e.filter((y, v) => v > e.indexOf("out")));
-  let a = !e.includes("opacity") && !e.includes("scale"), o = a || e.includes("opacity"), l = a || e.includes("scale"), c = o ? 0 : 1, u = l ? modifierValue$1(e, "scale", 95) / 100 : 1, d = modifierValue$1(e, "delay", 0) / 1e3, p = modifierValue$1(e, "origin", "center"), g = "opacity, transform", h = modifierValue$1(e, "duration", 150) / 1e3, f = modifierValue$1(e, "duration", 75) / 1e3, m = "cubic-bezier(0.4, 0.0, 0.2, 1)";
+  let i = !e.includes("opacity") && !e.includes("scale"), o = i || e.includes("opacity"), l = i || e.includes("scale"), c = o ? 0 : 1, u = l ? modifierValue$1(e, "scale", 95) / 100 : 1, d = modifierValue$1(e, "delay", 0) / 1e3, p = modifierValue$1(e, "origin", "center"), m = "opacity, transform", h = modifierValue$1(e, "duration", 150) / 1e3, f = modifierValue$1(e, "duration", 75) / 1e3, g = "cubic-bezier(0.4, 0.0, 0.2, 1)";
   s && (t._x_transition.enter.during = {
     transformOrigin: p,
     transitionDelay: `${d}s`,
-    transitionProperty: g,
+    transitionProperty: m,
     transitionDuration: `${h}s`,
-    transitionTimingFunction: m
+    transitionTimingFunction: g
   }, t._x_transition.enter.start = {
     opacity: c,
     transform: `scale(${u})`
   }, t._x_transition.enter.end = {
     opacity: 1,
     transform: "scale(1)"
-  }), i && (t._x_transition.leave.during = {
+  }), a && (t._x_transition.leave.during = {
     transformOrigin: p,
     transitionDelay: `${d}s`,
-    transitionProperty: g,
+    transitionProperty: m,
     transitionDuration: `${f}s`,
-    transitionTimingFunction: m
+    transitionTimingFunction: g
   }, t._x_transition.leave.start = {
     opacity: 1,
     transform: "scale(1)"
@@ -774,17 +774,17 @@ function registerTransitionObject(t, e, n = {}) {
 }
 window.Element.prototype._x_toggleAndCascadeWithTransitions = function(t, e, n, r) {
   const s = document.visibilityState === "visible" ? requestAnimationFrame : setTimeout;
-  let i = () => s(n);
+  let a = () => s(n);
   if (e) {
-    t._x_transition && (t._x_transition.enter || t._x_transition.leave) ? t._x_transition.enter && (Object.entries(t._x_transition.enter.during).length || Object.entries(t._x_transition.enter.start).length || Object.entries(t._x_transition.enter.end).length) ? t._x_transition.in(n) : i() : t._x_transition ? t._x_transition.in(n) : i();
+    t._x_transition && (t._x_transition.enter || t._x_transition.leave) ? t._x_transition.enter && (Object.entries(t._x_transition.enter.during).length || Object.entries(t._x_transition.enter.start).length || Object.entries(t._x_transition.enter.end).length) ? t._x_transition.in(n) : a() : t._x_transition ? t._x_transition.in(n) : a();
     return;
   }
-  t._x_hidePromise = t._x_transition ? new Promise((a, o) => {
+  t._x_hidePromise = t._x_transition ? new Promise((i, o) => {
     t._x_transition.out(() => {
-    }, () => a(r)), t._x_transitioning && t._x_transitioning.beforeCancel(() => o({ isFromCancelledTransition: !0 }));
+    }, () => i(r)), t._x_transitioning && t._x_transitioning.beforeCancel(() => o({ isFromCancelledTransition: !0 }));
   }) : Promise.resolve(r), queueMicrotask(() => {
-    let a = closestHide(t);
-    a ? (a._x_hideChildren || (a._x_hideChildren = []), a._x_hideChildren.push(t)) : s(() => {
+    let i = closestHide(t);
+    i ? (i._x_hideChildren || (i._x_hideChildren = []), i._x_hideChildren.push(t)) : s(() => {
       let o = (l) => {
         let c = Promise.all([
           l._x_hidePromise,
@@ -804,11 +804,11 @@ function closestHide(t) {
   if (e)
     return e._x_hidePromise ? e : closestHide(e);
 }
-function transition(t, e, { during: n, start: r, end: s } = {}, i = () => {
-}, a = () => {
+function transition(t, e, { during: n, start: r, end: s } = {}, a = () => {
+}, i = () => {
 }) {
   if (t._x_transitioning && t._x_transitioning.cancel(), Object.keys(n).length === 0 && Object.keys(r).length === 0 && Object.keys(s).length === 0) {
-    i(), a();
+    a(), i();
     return;
   }
   let o, l, c;
@@ -819,45 +819,45 @@ function transition(t, e, { during: n, start: r, end: s } = {}, i = () => {
     during() {
       l = e(t, n);
     },
-    before: i,
+    before: a,
     end() {
       o(), c = e(t, s);
     },
-    after: a,
+    after: i,
     cleanup() {
       l(), c();
     }
   });
 }
 function performTransition(t, e) {
-  let n, r, s, i = once(() => {
+  let n, r, s, a = once(() => {
     mutateDom(() => {
       n = !0, r || e.before(), s || (e.end(), releaseNextTicks()), e.after(), t.isConnected && e.cleanup(), delete t._x_transitioning;
     });
   });
   t._x_transitioning = {
     beforeCancels: [],
-    beforeCancel(a) {
-      this.beforeCancels.push(a);
+    beforeCancel(i) {
+      this.beforeCancels.push(i);
     },
     cancel: once(function() {
       for (; this.beforeCancels.length; )
         this.beforeCancels.shift()();
-      i();
+      a();
     }),
-    finish: i
+    finish: a
   }, mutateDom(() => {
     e.start(), e.during();
   }), holdNextTicks(), requestAnimationFrame(() => {
     if (n)
       return;
-    let a = Number(getComputedStyle(t).transitionDuration.replace(/,.*/, "").replace("s", "")) * 1e3, o = Number(getComputedStyle(t).transitionDelay.replace(/,.*/, "").replace("s", "")) * 1e3;
-    a === 0 && (a = Number(getComputedStyle(t).animationDuration.replace("s", "")) * 1e3), mutateDom(() => {
+    let i = Number(getComputedStyle(t).transitionDuration.replace(/,.*/, "").replace("s", "")) * 1e3, o = Number(getComputedStyle(t).transitionDelay.replace(/,.*/, "").replace("s", "")) * 1e3;
+    i === 0 && (i = Number(getComputedStyle(t).animationDuration.replace("s", "")) * 1e3), mutateDom(() => {
       e.before();
     }), r = !0, requestAnimationFrame(() => {
       n || (mutateDom(() => {
         e.end();
-      }), releaseNextTicks(), setTimeout(t._x_transitioning.finish, a + o), s = !0);
+      }), releaseNextTicks(), setTimeout(t._x_transitioning.finish, i + o), s = !0);
     });
   });
 }
@@ -903,10 +903,10 @@ function clone(t, e) {
 function cloneTree(t) {
   let e = !1;
   initTree(t, (r, s) => {
-    walk(r, (i, a) => {
-      if (e && isRoot(i))
-        return a();
-      e = !0, s(i, a);
+    walk(r, (a, i) => {
+      if (e && isRoot(a))
+        return i();
+      e = !0, s(a, i);
     });
   });
 }
@@ -1044,10 +1044,10 @@ function isRadio$1(t) {
 function debounce(t, e) {
   let n;
   return function() {
-    const r = this, s = arguments, i = function() {
+    const r = this, s = arguments, a = function() {
       n = null, t.apply(r, s);
     };
-    clearTimeout(n), n = setTimeout(i, e);
+    clearTimeout(n), n = setTimeout(a, e);
   };
 }
 function throttle(t, e) {
@@ -1058,18 +1058,18 @@ function throttle(t, e) {
   };
 }
 function entangle({ get: t, set: e }, { get: n, set: r }) {
-  let s = !0, i, a = effect(() => {
+  let s = !0, a, i = effect(() => {
     let o = t(), l = n();
     if (s)
       r(cloneIfObject(o)), s = !1;
     else {
       let c = JSON.stringify(o), u = JSON.stringify(l);
-      c !== i ? r(cloneIfObject(o)) : c !== u && e(cloneIfObject(l));
+      c !== a ? r(cloneIfObject(o)) : c !== u && e(cloneIfObject(l));
     }
-    i = JSON.stringify(t()), JSON.stringify(n());
+    a = JSON.stringify(t()), JSON.stringify(n());
   });
   return () => {
-    release(a);
+    release(i);
   };
 }
 function cloneIfObject(t) {
@@ -1106,12 +1106,12 @@ function applyBindingsObject(t, e, n) {
   let r = [];
   for (; r.length; )
     r.pop()();
-  let s = Object.entries(e).map(([a, o]) => ({ name: a, value: o })), i = attributesOnly(s);
-  return s = s.map((a) => i.find((o) => o.name === a.name) ? {
-    name: `x-bind:${a.name}`,
-    value: `"${a.value}"`
-  } : a), directives(t, s, n).map((a) => {
-    r.push(a.runCleanups), a();
+  let s = Object.entries(e).map(([i, o]) => ({ name: i, value: o })), a = attributesOnly(s);
+  return s = s.map((i) => a.find((o) => o.name === i.name) ? {
+    name: `x-bind:${i.name}`,
+    value: `"${i.value}"`
+  } : i), directives(t, s, n).map((i) => {
+    r.push(i.runCleanups), i();
   }), () => {
     for (; r.length; )
       r.pop()();
@@ -1279,9 +1279,9 @@ function track(t, e, n) {
     key: n
   }));
 }
-function trigger(t, e, n, r, s, i) {
-  const a = targetMap.get(t);
-  if (!a)
+function trigger(t, e, n, r, s, a) {
+  const i = targetMap.get(t);
+  if (!i)
     return;
   const o = /* @__PURE__ */ new Set(), l = (u) => {
     u && u.forEach((d) => {
@@ -1289,21 +1289,21 @@ function trigger(t, e, n, r, s, i) {
     });
   };
   if (e === "clear")
-    a.forEach(l);
+    i.forEach(l);
   else if (n === "length" && isArray(t))
-    a.forEach((u, d) => {
+    i.forEach((u, d) => {
       (d === "length" || d >= r) && l(u);
     });
   else
-    switch (n !== void 0 && l(a.get(n)), e) {
+    switch (n !== void 0 && l(i.get(n)), e) {
       case "add":
-        isArray(t) ? isIntegerKey(n) && l(a.get("length")) : (l(a.get(ITERATE_KEY)), isMap(t) && l(a.get(MAP_KEY_ITERATE_KEY)));
+        isArray(t) ? isIntegerKey(n) && l(i.get("length")) : (l(i.get(ITERATE_KEY)), isMap(t) && l(i.get(MAP_KEY_ITERATE_KEY)));
         break;
       case "delete":
-        isArray(t) || (l(a.get(ITERATE_KEY)), isMap(t) && l(a.get(MAP_KEY_ITERATE_KEY)));
+        isArray(t) || (l(i.get(ITERATE_KEY)), isMap(t) && l(i.get(MAP_KEY_ITERATE_KEY)));
         break;
       case "set":
-        isMap(t) && l(a.get(ITERATE_KEY));
+        isMap(t) && l(i.get(ITERATE_KEY));
         break;
     }
   const c = (u) => {
@@ -1314,7 +1314,7 @@ function trigger(t, e, n, r, s, i) {
       type: e,
       newValue: r,
       oldValue: s,
-      oldTarget: i
+      oldTarget: a
     }), u.options.scheduler ? u.options.scheduler(u) : u();
   };
   o.forEach(c);
@@ -1325,8 +1325,8 @@ function createArrayInstrumentations() {
   return ["includes", "indexOf", "lastIndexOf"].forEach((e) => {
     t[e] = function(...n) {
       const r = toRaw(this);
-      for (let i = 0, a = this.length; i < a; i++)
-        track(r, "get", i + "");
+      for (let a = 0, i = this.length; a < i; a++)
+        track(r, "get", a + "");
       const s = r[e](...n);
       return s === -1 || s === !1 ? r[e](...n.map(toRaw)) : s;
     };
@@ -1339,28 +1339,28 @@ function createArrayInstrumentations() {
   }), t;
 }
 function createGetter(t = !1, e = !1) {
-  return function(r, s, i) {
+  return function(r, s, a) {
     if (s === "__v_isReactive")
       return !t;
     if (s === "__v_isReadonly")
       return t;
-    if (s === "__v_raw" && i === (t ? e ? shallowReadonlyMap : readonlyMap : e ? shallowReactiveMap : reactiveMap).get(r))
+    if (s === "__v_raw" && a === (t ? e ? shallowReadonlyMap : readonlyMap : e ? shallowReactiveMap : reactiveMap).get(r))
       return r;
-    const a = isArray(r);
-    if (!t && a && hasOwn(arrayInstrumentations, s))
-      return Reflect.get(arrayInstrumentations, s, i);
-    const o = Reflect.get(r, s, i);
-    return (isSymbol(s) ? builtInSymbols.has(s) : isNonTrackableKeys(s)) || (t || track(r, "get", s), e) ? o : isRef(o) ? !a || !isIntegerKey(s) ? o.value : o : isObject(o) ? t ? readonly(o) : reactive2(o) : o;
+    const i = isArray(r);
+    if (!t && i && hasOwn(arrayInstrumentations, s))
+      return Reflect.get(arrayInstrumentations, s, a);
+    const o = Reflect.get(r, s, a);
+    return (isSymbol(s) ? builtInSymbols.has(s) : isNonTrackableKeys(s)) || (t || track(r, "get", s), e) ? o : isRef(o) ? !i || !isIntegerKey(s) ? o.value : o : isObject(o) ? t ? readonly(o) : reactive2(o) : o;
   };
 }
 var set2 = /* @__PURE__ */ createSetter();
 function createSetter(t = !1) {
-  return function(n, r, s, i) {
-    let a = n[r];
-    if (!t && (s = toRaw(s), a = toRaw(a), !isArray(n) && isRef(a) && !isRef(s)))
-      return a.value = s, !0;
-    const o = isArray(n) && isIntegerKey(r) ? Number(r) < n.length : hasOwn(n, r), l = Reflect.set(n, r, s, i);
-    return n === toRaw(i) && (o ? hasChanged(s, a) && trigger(n, "set", r, s, a) : trigger(n, "add", r, s)), l;
+  return function(n, r, s, a) {
+    let i = n[r];
+    if (!t && (s = toRaw(s), i = toRaw(i), !isArray(n) && isRef(i) && !isRef(s)))
+      return i.value = s, !0;
+    const o = isArray(n) && isIntegerKey(r) ? Number(r) < n.length : hasOwn(n, r), l = Reflect.set(n, r, s, a);
+    return n === toRaw(a) && (o ? hasChanged(s, i) && trigger(n, "set", r, s, i) : trigger(n, "add", r, s)), l;
   };
 }
 function deleteProperty(t, e) {
@@ -1391,13 +1391,13 @@ var mutableHandlers = {
 }, toReactive = (t) => isObject(t) ? reactive2(t) : t, toReadonly = (t) => isObject(t) ? readonly(t) : t, toShallow = (t) => t, getProto = (t) => Reflect.getPrototypeOf(t);
 function get$1(t, e, n = !1, r = !1) {
   t = t.__v_raw;
-  const s = toRaw(t), i = toRaw(e);
-  e !== i && !n && track(s, "get", e), !n && track(s, "get", i);
-  const { has: a } = getProto(s), o = r ? toShallow : n ? toReadonly : toReactive;
-  if (a.call(s, e))
+  const s = toRaw(t), a = toRaw(e);
+  e !== a && !n && track(s, "get", e), !n && track(s, "get", a);
+  const { has: i } = getProto(s), o = r ? toShallow : n ? toReadonly : toReactive;
+  if (i.call(s, e))
     return o(t.get(e));
-  if (a.call(s, i))
-    return o(t.get(i));
+  if (i.call(s, a))
+    return o(t.get(a));
   t !== s && t.get(e);
 }
 function has$1(t, e = !1) {
@@ -1415,17 +1415,17 @@ function add(t) {
 function set$1(t, e) {
   e = toRaw(e);
   const n = toRaw(this), { has: r, get: s } = getProto(n);
-  let i = r.call(n, t);
-  i ? checkIdentityKeys(n, r, t) : (t = toRaw(t), i = r.call(n, t));
-  const a = s.call(n, t);
-  return n.set(t, e), i ? hasChanged(e, a) && trigger(n, "set", t, e, a) : trigger(n, "add", t, e), this;
+  let a = r.call(n, t);
+  a ? checkIdentityKeys(n, r, t) : (t = toRaw(t), a = r.call(n, t));
+  const i = s.call(n, t);
+  return n.set(t, e), a ? hasChanged(e, i) && trigger(n, "set", t, e, i) : trigger(n, "add", t, e), this;
 }
 function deleteEntry(t) {
   const e = toRaw(this), { has: n, get: r } = getProto(e);
   let s = n.call(e, t);
   s ? checkIdentityKeys(e, n, t) : (t = toRaw(t), s = n.call(e, t));
-  const i = r ? r.call(e, t) : void 0, a = e.delete(t);
-  return s && trigger(e, "delete", t, void 0, i), a;
+  const a = r ? r.call(e, t) : void 0, i = e.delete(t);
+  return s && trigger(e, "delete", t, void 0, a), i;
 }
 function clear() {
   const t = toRaw(this), e = t.size !== 0, n = isMap(t) ? new Map(t) : new Set(t), r = t.clear();
@@ -1433,14 +1433,14 @@ function clear() {
 }
 function createForEach(t, e) {
   return function(r, s) {
-    const i = this, a = i.__v_raw, o = toRaw(a), l = e ? toShallow : t ? toReadonly : toReactive;
-    return !t && track(o, "iterate", ITERATE_KEY), a.forEach((c, u) => r.call(s, l(c), l(u), i));
+    const a = this, i = a.__v_raw, o = toRaw(i), l = e ? toShallow : t ? toReadonly : toReactive;
+    return !t && track(o, "iterate", ITERATE_KEY), i.forEach((c, u) => r.call(s, l(c), l(u), a));
   };
 }
 function createIterableMethod(t, e, n) {
   return function(...r) {
-    const s = this.__v_raw, i = toRaw(s), a = isMap(i), o = t === "entries" || t === Symbol.iterator && a, l = t === "keys" && a, c = s[t](...r), u = n ? toShallow : e ? toReadonly : toReactive;
-    return !e && track(i, "iterate", l ? MAP_KEY_ITERATE_KEY : ITERATE_KEY), {
+    const s = this.__v_raw, a = toRaw(s), i = isMap(a), o = t === "entries" || t === Symbol.iterator && i, l = t === "keys" && i, c = s[t](...r), u = n ? toShallow : e ? toReadonly : toReactive;
+    return !e && track(a, "iterate", l ? MAP_KEY_ITERATE_KEY : ITERATE_KEY), {
       // iterator protocol
       next() {
         const { value: d, done: p } = c.next();
@@ -1467,8 +1467,8 @@ function createReadonlyMethod(t) {
 }
 function createInstrumentations() {
   const t = {
-    get(i) {
-      return get$1(this, i);
+    get(a) {
+      return get$1(this, a);
     },
     get size() {
       return size(this);
@@ -1480,8 +1480,8 @@ function createInstrumentations() {
     clear,
     forEach: createForEach(!1, !1)
   }, e = {
-    get(i) {
-      return get$1(this, i, !1, !0);
+    get(a) {
+      return get$1(this, a, !1, !0);
     },
     get size() {
       return size(this);
@@ -1493,14 +1493,14 @@ function createInstrumentations() {
     clear,
     forEach: createForEach(!1, !0)
   }, n = {
-    get(i) {
-      return get$1(this, i, !0);
+    get(a) {
+      return get$1(this, a, !0);
     },
     get size() {
       return size(this, !0);
     },
-    has(i) {
-      return has$1.call(this, i, !0);
+    has(a) {
+      return has$1.call(this, a, !0);
     },
     add: createReadonlyMethod(
       "add"
@@ -1520,14 +1520,14 @@ function createInstrumentations() {
     ),
     forEach: createForEach(!0, !1)
   }, r = {
-    get(i) {
-      return get$1(this, i, !0, !0);
+    get(a) {
+      return get$1(this, a, !0, !0);
     },
     get size() {
       return size(this, !0);
     },
-    has(i) {
-      return has$1.call(this, i, !0);
+    has(a) {
+      return has$1.call(this, a, !0);
     },
     add: createReadonlyMethod(
       "add"
@@ -1547,8 +1547,8 @@ function createInstrumentations() {
     ),
     forEach: createForEach(!0, !0)
   };
-  return ["keys", "values", "entries", Symbol.iterator].forEach((i) => {
-    t[i] = createIterableMethod(i, !1, !1), n[i] = createIterableMethod(i, !0, !1), e[i] = createIterableMethod(i, !1, !0), r[i] = createIterableMethod(i, !0, !0);
+  return ["keys", "values", "entries", Symbol.iterator].forEach((a) => {
+    t[a] = createIterableMethod(a, !1, !1), n[a] = createIterableMethod(a, !0, !1), e[a] = createIterableMethod(a, !1, !0), r[a] = createIterableMethod(a, !0, !0);
   }), [
     t,
     n,
@@ -1559,7 +1559,7 @@ function createInstrumentations() {
 var [mutableInstrumentations, readonlyInstrumentations] = /* @__PURE__ */ createInstrumentations();
 function createInstrumentationGetter(t, e) {
   const n = t ? readonlyInstrumentations : mutableInstrumentations;
-  return (r, s, i) => s === "__v_isReactive" ? !t : s === "__v_isReadonly" ? t : s === "__v_raw" ? r : Reflect.get(hasOwn(n, s) && s in r ? n : r, s, i);
+  return (r, s, a) => s === "__v_isReactive" ? !t : s === "__v_isReadonly" ? t : s === "__v_raw" ? r : Reflect.get(hasOwn(n, s) && s in r ? n : r, s, a);
 }
 var mutableCollectionHandlers = {
   get: /* @__PURE__ */ createInstrumentationGetter(!1)
@@ -1602,13 +1602,13 @@ function createReactiveObject(t, e, n, r, s) {
     return console.warn(`value cannot be made reactive: ${String(t)}`), t;
   if (t.__v_raw && !(e && t.__v_isReactive))
     return t;
-  const i = s.get(t);
-  if (i)
-    return i;
-  const a = getTargetType(t);
-  if (a === 0)
+  const a = s.get(t);
+  if (a)
+    return a;
+  const i = getTargetType(t);
+  if (i === 0)
     return t;
-  const o = new Proxy(t, a === 2 ? r : n);
+  const o = new Proxy(t, i === 2 ? r : n);
   return s.set(t, o), o;
 }
 function toRaw(t) {
@@ -1620,9 +1620,9 @@ function isRef(t) {
 magic("nextTick", () => nextTick);
 magic("dispatch", (t) => dispatch.bind(dispatch, t));
 magic("watch", (t, { evaluateLater: e, cleanup: n }) => (r, s) => {
-  let i = e(r), o = watch(() => {
+  let a = e(r), o = watch(() => {
     let l;
-    return i((c) => l = c), l;
+    return a((c) => l = c), l;
   }, s);
   n(o);
 });
@@ -1652,8 +1652,8 @@ function setIdRoot(t, e) {
 magic("id", (t, { cleanup: e }) => (n, r = null) => {
   let s = `${n}${r ? `-${r}` : ""}`;
   return cacheIdByNameOnElement(t, s, e, () => {
-    let i = closestIdRoot(t, n), a = i ? i._x_ids[n] : findAndIncrementId(n);
-    return r ? `${n}-${a}-${r}` : `${n}-${a}`;
+    let a = closestIdRoot(t, n), i = a ? a._x_ids[n] : findAndIncrementId(n);
+    return r ? `${n}-${i}-${r}` : `${n}-${i}`;
   });
 });
 interceptClone((t, e) => {
@@ -1674,11 +1674,11 @@ function warnMissingPluginMagic(t, e, n) {
   magic(e, (r) => warn(`You can't use [$${e}] without first installing the "${t}" plugin here: https://alpinejs.dev/plugins/${n}`, r));
 }
 directive("modelable", (t, { expression: e }, { effect: n, evaluateLater: r, cleanup: s }) => {
-  let i = r(e), a = () => {
+  let a = r(e), i = () => {
     let u;
-    return i((d) => u = d), u;
+    return a((d) => u = d), u;
   }, o = r(`${e} = __placeholder`), l = (u) => o(() => {
-  }, { scope: { __placeholder: u } }), c = a();
+  }, { scope: { __placeholder: u } }), c = i();
   l(c), queueMicrotask(() => {
     if (!t._x_model)
       return;
@@ -1688,16 +1688,16 @@ directive("modelable", (t, { expression: e }, { effect: n, evaluateLater: r, cle
         get() {
           return u();
         },
-        set(g) {
-          d(g);
+        set(m) {
+          d(m);
         }
       },
       {
         get() {
-          return a();
+          return i();
         },
-        set(g) {
-          l(g);
+        set(m) {
+          l(m);
         }
       }
     );
@@ -1706,27 +1706,27 @@ directive("modelable", (t, { expression: e }, { effect: n, evaluateLater: r, cle
 });
 directive("teleport", (t, { modifiers: e, expression: n }, { cleanup: r }) => {
   t.tagName.toLowerCase() !== "template" && warn("x-teleport can only be used on a <template> tag", t);
-  let s = getTarget(n), i = t.content.cloneNode(!0).firstElementChild;
-  t._x_teleport = i, i._x_teleportBack = t, t.setAttribute("data-teleport-template", !0), i.setAttribute("data-teleport-target", !0), t._x_forwardEvents && t._x_forwardEvents.forEach((o) => {
-    i.addEventListener(o, (l) => {
+  let s = getTarget(n), a = t.content.cloneNode(!0).firstElementChild;
+  t._x_teleport = a, a._x_teleportBack = t, t.setAttribute("data-teleport-template", !0), a.setAttribute("data-teleport-target", !0), t._x_forwardEvents && t._x_forwardEvents.forEach((o) => {
+    a.addEventListener(o, (l) => {
       l.stopPropagation(), t.dispatchEvent(new l.constructor(l.type, l));
     });
-  }), addScopeToNode(i, {}, t);
-  let a = (o, l, c) => {
+  }), addScopeToNode(a, {}, t);
+  let i = (o, l, c) => {
     c.includes("prepend") ? l.parentNode.insertBefore(o, l) : c.includes("append") ? l.parentNode.insertBefore(o, l.nextSibling) : l.appendChild(o);
   };
   mutateDom(() => {
-    a(i, s, e), skipDuringClone(() => {
-      initTree(i);
+    i(a, s, e), skipDuringClone(() => {
+      initTree(a);
     })();
   }), t._x_teleportPutBack = () => {
     let o = getTarget(n);
     mutateDom(() => {
-      a(t._x_teleport, o, e);
+      i(t._x_teleport, o, e);
     });
   }, r(
     () => mutateDom(() => {
-      i.remove(), destroyTree(i);
+      a.remove(), destroyTree(a);
     })
   );
 });
@@ -1747,31 +1747,31 @@ directive("effect", skipDuringClone((t, { expression: e }, { effect: n }) => {
   n(evaluateLater(t, e));
 }));
 function on(t, e, n, r) {
-  let s = t, i = (l) => r(l), a = {}, o = (l, c) => (u) => c(l, u);
-  if (n.includes("dot") && (e = dotSyntax(e)), n.includes("camel") && (e = camelCase2(e)), n.includes("passive") && (a.passive = !0), n.includes("capture") && (a.capture = !0), n.includes("window") && (s = window), n.includes("document") && (s = document), n.includes("debounce")) {
+  let s = t, a = (l) => r(l), i = {}, o = (l, c) => (u) => c(l, u);
+  if (n.includes("dot") && (e = dotSyntax(e)), n.includes("camel") && (e = camelCase2(e)), n.includes("passive") && (i.passive = !0), n.includes("capture") && (i.capture = !0), n.includes("window") && (s = window), n.includes("document") && (s = document), n.includes("debounce")) {
     let l = n[n.indexOf("debounce") + 1] || "invalid-wait", c = isNumeric(l.split("ms")[0]) ? Number(l.split("ms")[0]) : 250;
-    i = debounce(i, c);
+    a = debounce(a, c);
   }
   if (n.includes("throttle")) {
     let l = n[n.indexOf("throttle") + 1] || "invalid-wait", c = isNumeric(l.split("ms")[0]) ? Number(l.split("ms")[0]) : 250;
-    i = throttle(i, c);
+    a = throttle(a, c);
   }
-  return n.includes("prevent") && (i = o(i, (l, c) => {
+  return n.includes("prevent") && (a = o(a, (l, c) => {
     c.preventDefault(), l(c);
-  })), n.includes("stop") && (i = o(i, (l, c) => {
+  })), n.includes("stop") && (a = o(a, (l, c) => {
     c.stopPropagation(), l(c);
-  })), n.includes("once") && (i = o(i, (l, c) => {
-    l(c), s.removeEventListener(e, i, a);
-  })), (n.includes("away") || n.includes("outside")) && (s = document, i = o(i, (l, c) => {
+  })), n.includes("once") && (a = o(a, (l, c) => {
+    l(c), s.removeEventListener(e, a, i);
+  })), (n.includes("away") || n.includes("outside")) && (s = document, a = o(a, (l, c) => {
     t.contains(c.target) || c.target.isConnected !== !1 && (t.offsetWidth < 1 && t.offsetHeight < 1 || t._x_isShown !== !1 && l(c));
-  })), n.includes("self") && (i = o(i, (l, c) => {
+  })), n.includes("self") && (a = o(a, (l, c) => {
     c.target === t && l(c);
-  })), e === "submit" && (i = o(i, (l, c) => {
+  })), e === "submit" && (a = o(a, (l, c) => {
     c.target._x_pendingModelUpdates && c.target._x_pendingModelUpdates.forEach((u) => u()), l(c);
-  })), (isKeyEvent(e) || isClickEvent(e)) && (i = o(i, (l, c) => {
+  })), (isKeyEvent(e) || isClickEvent(e)) && (a = o(a, (l, c) => {
     isListeningForASpecificKeyThatHasntBeenPressed(c, n) || l(c);
-  })), s.addEventListener(e, i, a), () => {
-    s.removeEventListener(e, i, a);
+  })), s.addEventListener(e, a, i), () => {
+    s.removeEventListener(e, a, i);
   };
 }
 function dotSyntax(t) {
@@ -1795,19 +1795,19 @@ function isClickEvent(t) {
   return ["contextmenu", "click", "mouse"].some((e) => t.includes(e));
 }
 function isListeningForASpecificKeyThatHasntBeenPressed(t, e) {
-  let n = e.filter((i) => !["window", "document", "prevent", "stop", "once", "capture", "self", "away", "outside", "passive", "preserve-scroll", "blur", "change", "lazy"].includes(i));
+  let n = e.filter((a) => !["window", "document", "prevent", "stop", "once", "capture", "self", "away", "outside", "passive", "preserve-scroll", "blur", "change", "lazy"].includes(a));
   if (n.includes("debounce")) {
-    let i = n.indexOf("debounce");
-    n.splice(i, isNumeric((n[i + 1] || "invalid-wait").split("ms")[0]) ? 2 : 1);
+    let a = n.indexOf("debounce");
+    n.splice(a, isNumeric((n[a + 1] || "invalid-wait").split("ms")[0]) ? 2 : 1);
   }
   if (n.includes("throttle")) {
-    let i = n.indexOf("throttle");
-    n.splice(i, isNumeric((n[i + 1] || "invalid-wait").split("ms")[0]) ? 2 : 1);
+    let a = n.indexOf("throttle");
+    n.splice(a, isNumeric((n[a + 1] || "invalid-wait").split("ms")[0]) ? 2 : 1);
   }
   if (n.length === 0 || n.length === 1 && keyToModifiers(t.key).includes(n[0]))
     return !1;
-  const s = ["ctrl", "shift", "alt", "meta", "cmd", "super"].filter((i) => n.includes(i));
-  return n = n.filter((i) => !s.includes(i)), !(s.length > 0 && s.filter((a) => ((a === "cmd" || a === "super") && (a = "meta"), t[`${a}Key`])).length === s.length && (isClickEvent(t.type) || keyToModifiers(t.key).includes(n[0])));
+  const s = ["ctrl", "shift", "alt", "meta", "cmd", "super"].filter((a) => n.includes(a));
+  return n = n.filter((a) => !s.includes(a)), !(s.length > 0 && s.filter((i) => ((i === "cmd" || i === "super") && (i = "meta"), t[`${i}Key`])).length === s.length && (isClickEvent(t.type) || keyToModifiers(t.key).includes(n[0])));
 }
 function keyToModifiers(t) {
   if (!t)
@@ -1836,17 +1836,17 @@ function keyToModifiers(t) {
   }).filter((n) => n);
 }
 directive("model", (t, { modifiers: e, expression: n }, { effect: r, cleanup: s }) => {
-  let i = t;
-  e.includes("parent") && (i = t.parentNode);
-  let a = evaluateLater(i, n), o;
-  typeof n == "string" ? o = evaluateLater(i, `${n} = __placeholder`) : typeof n == "function" && typeof n() == "string" ? o = evaluateLater(i, `${n()} = __placeholder`) : o = () => {
+  let a = t;
+  e.includes("parent") && (a = t.parentNode);
+  let i = evaluateLater(a, n), o;
+  typeof n == "string" ? o = evaluateLater(a, `${n} = __placeholder`) : typeof n == "function" && typeof n() == "string" ? o = evaluateLater(a, `${n()} = __placeholder`) : o = () => {
   };
   let l = () => {
     let f;
-    return a((m) => f = m), isGetterSetter(f) ? f.get() : f;
+    return i((g) => f = g), isGetterSetter(f) ? f.get() : f;
   }, c = (f) => {
-    let m;
-    a((y) => m = y), isGetterSetter(m) ? m.set(f) : o(() => {
+    let g;
+    i((y) => g = y), isGetterSetter(g) ? g.set(f) : o(() => {
     }, {
       scope: { __placeholder: f }
     });
@@ -1854,29 +1854,29 @@ directive("model", (t, { modifiers: e, expression: n }, { effect: r, cleanup: s 
   typeof n == "string" && t.type === "radio" && mutateDom(() => {
     t.hasAttribute("name") || t.setAttribute("name", n);
   });
-  let u = e.includes("change") || e.includes("lazy"), d = e.includes("blur"), p = e.includes("enter"), g = u || d || p, h;
+  let u = e.includes("change") || e.includes("lazy"), d = e.includes("blur"), p = e.includes("enter"), m = u || d || p, h;
   if (isCloning)
     h = () => {
     };
-  else if (g) {
-    let f = [], m = (y) => c(getInputValue(t, e, y, l()));
-    if (u && f.push(on(t, "change", e, m)), d && (f.push(on(t, "blur", e, m)), t.form)) {
-      let y = () => m({ target: t });
+  else if (m) {
+    let f = [], g = (y) => c(getInputValue(t, e, y, l()));
+    if (u && f.push(on(t, "change", e, g)), d && (f.push(on(t, "blur", e, g)), t.form)) {
+      let y = () => g({ target: t });
       t.form._x_pendingModelUpdates || (t.form._x_pendingModelUpdates = []), t.form._x_pendingModelUpdates.push(y), s(() => t.form._x_pendingModelUpdates.splice(t.form._x_pendingModelUpdates.indexOf(y), 1));
     }
     p && f.push(on(t, "keydown", e, (y) => {
-      y.key === "Enter" && m(y);
+      y.key === "Enter" && g(y);
     })), h = () => f.forEach((y) => y());
   } else {
     let f = t.tagName.toLowerCase() === "select" || ["checkbox", "radio"].includes(t.type) ? "change" : "input";
-    h = on(t, f, e, (m) => {
-      c(getInputValue(t, e, m, l()));
+    h = on(t, f, e, (g) => {
+      c(getInputValue(t, e, g, l()));
     });
   }
   if (e.includes("fill") && ([void 0, null, ""].includes(l()) || isCheckbox(t) && Array.isArray(l()) || t.tagName.toLowerCase() === "select" && t.multiple) && c(
     getInputValue(t, e, { target: t }, l())
   ), t._x_removeModelListeners || (t._x_removeModelListeners = {}), t._x_removeModelListeners.default = h, s(() => t._x_removeModelListeners.default()), t.form) {
-    let f = on(t.form, "reset", [], (m) => {
+    let f = on(t.form, "reset", [], (g) => {
       nextTick(() => t._x_model && t._x_model.set(getInputValue(t, e, { target: t }, l())));
     });
     s(() => f());
@@ -1902,17 +1902,17 @@ function getInputValue(t, e, n, r) {
     if (isCheckbox(t))
       if (Array.isArray(r)) {
         let s = null;
-        return e.includes("number") ? s = safeParseNumber(n.target.value) : e.includes("boolean") ? s = safeParseBoolean(n.target.value) : s = n.target.value, n.target.checked ? r.includes(s) ? r : r.concat([s]) : r.filter((i) => !checkedAttrLooseCompare2(i, s));
+        return e.includes("number") ? s = safeParseNumber(n.target.value) : e.includes("boolean") ? s = safeParseBoolean(n.target.value) : s = n.target.value, n.target.checked ? r.includes(s) ? r : r.concat([s]) : r.filter((a) => !checkedAttrLooseCompare2(a, s));
       } else
         return n.target.checked;
     else {
       if (t.tagName.toLowerCase() === "select" && t.multiple)
         return e.includes("number") ? Array.from(n.target.selectedOptions).map((s) => {
-          let i = s.value || s.text;
-          return safeParseNumber(i);
+          let a = s.value || s.text;
+          return safeParseNumber(a);
         }) : e.includes("boolean") ? Array.from(n.target.selectedOptions).map((s) => {
-          let i = s.value || s.text;
-          return safeParseBoolean(i);
+          let a = s.value || s.text;
+          return safeParseBoolean(a);
         }) : Array.from(n.target.selectedOptions).map((s) => s.value || s.text);
       {
         let s;
@@ -1940,9 +1940,9 @@ directive("init", skipDuringClone((t, { expression: e }, { evaluate: n }) => typ
 directive("text", (t, { expression: e }, { effect: n, evaluateLater: r }) => {
   let s = r(e);
   n(() => {
-    s((i) => {
+    s((a) => {
       mutateDom(() => {
-        t.textContent = i;
+        t.textContent = a;
       });
     });
   });
@@ -1950,15 +1950,15 @@ directive("text", (t, { expression: e }, { effect: n, evaluateLater: r }) => {
 directive("html", (t, { expression: e }, { effect: n, evaluateLater: r }) => {
   let s = r(e);
   n(() => {
-    s((i) => {
+    s((a) => {
       mutateDom(() => {
-        t.innerHTML = i, t._x_ignoreSelf = !0, initTree(t), delete t._x_ignoreSelf;
+        t.innerHTML = a, t._x_ignoreSelf = !0, initTree(t), delete t._x_ignoreSelf;
       });
     });
   });
 });
 mapAttributes(startingWith(":", into(prefix("bind:"))));
-var handler2 = (t, { value: e, modifiers: n, expression: r, original: s }, { effect: i, cleanup: a }) => {
+var handler2 = (t, { value: e, modifiers: n, expression: r, original: s }, { effect: a, cleanup: i }) => {
   if (!e) {
     let l = {};
     injectBindingProviders(l), evaluateLater(t, r)((u) => {
@@ -1971,9 +1971,9 @@ var handler2 = (t, { value: e, modifiers: n, expression: r, original: s }, { eff
   if (t._x_inlineBindings && t._x_inlineBindings[e] && t._x_inlineBindings[e].extract)
     return;
   let o = evaluateLater(t, r);
-  i(() => o((l) => {
+  a(() => o((l) => {
     l === void 0 && typeof r == "string" && r.match(/\./) && (l = ""), mutateDom(() => bind(t, e, l, n));
-  })), a(() => {
+  })), i(() => {
     t._x_undoAddedClasses && t._x_undoAddedClasses(), t._x_undoAddedStyles && t._x_undoAddedStyles();
   });
 };
@@ -1993,13 +1993,13 @@ directive("data", (t, { expression: e }, { cleanup: n }) => {
   injectMagics(r, t);
   let s = {};
   injectDataProviders(s, r);
-  let i = evaluate(t, e, { scope: s });
-  (i === void 0 || i === !0) && (i = {}), injectMagics(i, t);
-  let a = reactive(i);
-  initInterceptors(a);
-  let o = addScopeToNode(t, a);
-  a.init && evaluate(t, a.init), n(() => {
-    a.destroy && evaluate(t, a.destroy), o();
+  let a = evaluate(t, e, { scope: s });
+  (a === void 0 || a === !0) && (a = {}), injectMagics(a, t);
+  let i = reactive(a);
+  initInterceptors(i);
+  let o = addScopeToNode(t, i);
+  i.init && evaluate(t, i.init), n(() => {
+    i.destroy && evaluate(t, i.destroy), o();
   });
 });
 interceptClone((t, e) => {
@@ -2019,27 +2019,27 @@ directive("show", (t, { modifiers: e, expression: n }, { effect: r }) => {
       t.style.length === 1 && t.style.display === "none" ? t.removeAttribute("style") : t.style.removeProperty("display");
     });
   });
-  let i = () => {
+  let a = () => {
     t._x_doHide(), t._x_isShown = !1;
-  }, a = () => {
+  }, i = () => {
     t._x_doShow(), t._x_isShown = !0;
-  }, o = () => setTimeout(a), l = once(
-    (d) => d ? a() : i(),
+  }, o = () => setTimeout(i), l = once(
+    (d) => d ? i() : a(),
     (d) => {
-      typeof t._x_toggleAndCascadeWithTransitions == "function" ? t._x_toggleAndCascadeWithTransitions(t, d, a, i) : d ? o() : i();
+      typeof t._x_toggleAndCascadeWithTransitions == "function" ? t._x_toggleAndCascadeWithTransitions(t, d, i, a) : d ? o() : a();
     }
   ), c, u = !0;
   r(() => s((d) => {
-    !u && d === c || (e.includes("immediate") && (d ? o() : i()), l(d), c = d, u = !1);
+    !u && d === c || (e.includes("immediate") && (d ? o() : a()), l(d), c = d, u = !1);
   }));
 });
 directive("for", (t, { expression: e }, { effect: n, cleanup: r }) => {
-  let s = parseForExpression(e), i = evaluateLater(t, s.items), a = evaluateLater(
+  let s = parseForExpression(e), a = evaluateLater(t, s.items), i = evaluateLater(
     t,
     // the x-bind:key expression is stored for our use instead of evaluated.
     t._x_keyExpression || "index"
   );
-  t._x_prevKeys = [], t._x_lookup = {}, n(() => loop(t, s, i, a)), r(() => {
+  t._x_prevKeys = [], t._x_lookup = {}, n(() => loop(t, s, a, i)), r(() => {
     Object.values(t._x_lookup).forEach((o) => mutateDom(
       () => {
         destroyTree(o), o.remove();
@@ -2048,86 +2048,86 @@ directive("for", (t, { expression: e }, { effect: n, cleanup: r }) => {
   });
 });
 function loop(t, e, n, r) {
-  let s = (a) => typeof a == "object" && !Array.isArray(a), i = t;
-  n((a) => {
-    isNumeric3(a) && a >= 0 && (a = Array.from(Array(a).keys(), (m) => m + 1)), a === void 0 && (a = []);
+  let s = (i) => typeof i == "object" && !Array.isArray(i), a = t;
+  n((i) => {
+    isNumeric3(i) && i >= 0 && (i = Array.from(Array(i).keys(), (g) => g + 1)), i === void 0 && (i = []);
     let o = t._x_lookup, l = t._x_prevKeys, c = [], u = [];
-    if (s(a))
-      a = Object.entries(a).map(([m, y]) => {
-        let v = getIterationScopeVariables(e, y, m, a);
+    if (s(i))
+      i = Object.entries(i).map(([g, y]) => {
+        let v = getIterationScopeVariables(e, y, g, i);
         r((w) => {
           u.includes(w) && warn("Duplicate key on x-for", t), u.push(w);
-        }, { scope: { index: m, ...v } }), c.push(v);
+        }, { scope: { index: g, ...v } }), c.push(v);
       });
     else
-      for (let m = 0; m < a.length; m++) {
-        let y = getIterationScopeVariables(e, a[m], m, a);
+      for (let g = 0; g < i.length; g++) {
+        let y = getIterationScopeVariables(e, i[g], g, i);
         r((v) => {
           u.includes(v) && warn("Duplicate key on x-for", t), u.push(v);
-        }, { scope: { index: m, ...y } }), c.push(y);
+        }, { scope: { index: g, ...y } }), c.push(y);
       }
-    let d = [], p = [], g = [], h = [];
-    for (let m = 0; m < l.length; m++) {
-      let y = l[m];
-      u.indexOf(y) === -1 && g.push(y);
+    let d = [], p = [], m = [], h = [];
+    for (let g = 0; g < l.length; g++) {
+      let y = l[g];
+      u.indexOf(y) === -1 && m.push(y);
     }
-    l = l.filter((m) => !g.includes(m));
+    l = l.filter((g) => !m.includes(g));
     let f = "template";
-    for (let m = 0; m < u.length; m++) {
-      let y = u[m], v = l.indexOf(y);
+    for (let g = 0; g < u.length; g++) {
+      let y = u[g], v = l.indexOf(y);
       if (v === -1)
-        l.splice(m, 0, y), d.push([f, m]);
-      else if (v !== m) {
-        let w = l.splice(m, 1)[0], _ = l.splice(v - 1, 1)[0];
-        l.splice(m, 0, _), l.splice(v, 0, w), p.push([w, _]);
+        l.splice(g, 0, y), d.push([f, g]);
+      else if (v !== g) {
+        let w = l.splice(g, 1)[0], _ = l.splice(v - 1, 1)[0];
+        l.splice(g, 0, _), l.splice(v, 0, w), p.push([w, _]);
       } else
         h.push(y);
       f = y;
     }
-    for (let m = 0; m < g.length; m++) {
-      let y = g[m];
+    for (let g = 0; g < m.length; g++) {
+      let y = m[g];
       y in o && (mutateDom(() => {
         destroyTree(o[y]), o[y].remove();
       }), delete o[y]);
     }
-    for (let m = 0; m < p.length; m++) {
-      let [y, v] = p[m], w = o[y], _ = o[v], S = document.createElement("div");
+    for (let g = 0; g < p.length; g++) {
+      let [y, v] = p[g], w = o[y], _ = o[v], S = document.createElement("div");
       mutateDom(() => {
-        _ || warn('x-for ":key" is undefined or invalid', i, v, o), _.after(S), w.after(_), _._x_currentIfEl && _.after(_._x_currentIfEl), S.before(w), w._x_currentIfEl && w.after(w._x_currentIfEl), S.remove();
+        _ || warn('x-for ":key" is undefined or invalid', a, v, o), _.after(S), w.after(_), _._x_currentIfEl && _.after(_._x_currentIfEl), S.before(w), w._x_currentIfEl && w.after(w._x_currentIfEl), S.remove();
       }), _._x_refreshXForScope(c[u.indexOf(v)]);
     }
-    for (let m = 0; m < d.length; m++) {
-      let [y, v] = d[m], w = y === "template" ? i : o[y];
+    for (let g = 0; g < d.length; g++) {
+      let [y, v] = d[g], w = y === "template" ? a : o[y];
       w._x_currentIfEl && (w = w._x_currentIfEl);
-      let _ = c[v], S = u[v], b = document.importNode(i.content, !0).firstElementChild, x = reactive(_);
-      addScopeToNode(b, x, i), b._x_refreshXForScope = (E) => {
+      let _ = c[v], S = u[v], b = document.importNode(a.content, !0).firstElementChild, x = reactive(_);
+      addScopeToNode(b, x, a), b._x_refreshXForScope = (E) => {
         Object.entries(E).forEach(([I, T]) => {
           x[I] = T;
         });
       }, mutateDom(() => {
         w.after(b), skipDuringClone(() => initTree(b))();
-      }), typeof S == "object" && warn("x-for key cannot be an object, it must be a string or an integer", i), o[S] = b;
+      }), typeof S == "object" && warn("x-for key cannot be an object, it must be a string or an integer", a), o[S] = b;
     }
-    for (let m = 0; m < h.length; m++)
-      o[h[m]]._x_refreshXForScope(c[u.indexOf(h[m])]);
-    i._x_prevKeys = u;
+    for (let g = 0; g < h.length; g++)
+      o[h[g]]._x_refreshXForScope(c[u.indexOf(h[g])]);
+    a._x_prevKeys = u;
   });
 }
 function parseForExpression(t) {
   let e = /,([^,\}\]]*)(?:,([^,\}\]]*))?$/, n = /^\s*\(|\)\s*$/g, r = /([\s\S]*?)\s+(?:in|of)\s+([\s\S]*)/, s = t.match(r);
   if (!s)
     return;
-  let i = {};
-  i.items = s[2].trim();
-  let a = s[1].replace(n, "").trim(), o = a.match(e);
-  return o ? (i.item = a.replace(e, "").trim(), i.index = o[1].trim(), o[2] && (i.collection = o[2].trim())) : i.item = a, i;
+  let a = {};
+  a.items = s[2].trim();
+  let i = s[1].replace(n, "").trim(), o = i.match(e);
+  return o ? (a.item = i.replace(e, "").trim(), a.index = o[1].trim(), o[2] && (a.collection = o[2].trim())) : a.item = i, a;
 }
 function getIterationScopeVariables(t, e, n, r) {
   let s = {};
-  return /^\[.*\]$/.test(t.item) && Array.isArray(e) ? t.item.replace("[", "").replace("]", "").split(",").map((a) => a.trim()).forEach((a, o) => {
-    s[a] = e[o];
-  }) : /^\{.*\}$/.test(t.item) && !Array.isArray(e) && typeof e == "object" ? t.item.replace("{", "").replace("}", "").split(",").map((a) => a.trim()).forEach((a) => {
-    s[a] = e[a];
+  return /^\[.*\]$/.test(t.item) && Array.isArray(e) ? t.item.replace("[", "").replace("]", "").split(",").map((i) => i.trim()).forEach((i, o) => {
+    s[i] = e[o];
+  }) : /^\{.*\}$/.test(t.item) && !Array.isArray(e) && typeof e == "object" ? t.item.replace("{", "").replace("}", "").split(",").map((i) => i.trim()).forEach((i) => {
+    s[i] = e[i];
   }) : s[t.item] = e, t.index && (s[t.index] = n), t.collection && (s[t.collection] = r), s;
 }
 function isNumeric3(t) {
@@ -2142,7 +2142,7 @@ handler3.inline = (t, { expression: e }, { cleanup: n }) => {
 directive("ref", handler3);
 directive("if", (t, { expression: e }, { effect: n, cleanup: r }) => {
   t.tagName.toLowerCase() !== "template" && warn("x-if can only be used on a <template> tag", t);
-  let s = evaluateLater(t, e), i = () => {
+  let s = evaluateLater(t, e), a = () => {
     if (t._x_currentIfEl)
       return t._x_currentIfEl;
     let o = t.content.cloneNode(!0).firstElementChild;
@@ -2153,11 +2153,11 @@ directive("if", (t, { expression: e }, { effect: n, cleanup: r }) => {
         destroyTree(o), o.remove();
       }), delete t._x_currentIfEl;
     }, o;
-  }, a = () => {
+  }, i = () => {
     t._x_undoIf && (t._x_undoIf(), delete t._x_undoIf);
   };
   n(() => s((o) => {
-    o ? i() : a();
+    o ? a() : i();
   })), r(() => t._x_undoIf && t._x_undoIf());
 });
 directive("id", (t, { expression: e }, { evaluate: n }) => {
@@ -2168,14 +2168,14 @@ interceptClone((t, e) => {
 });
 mapAttributes(startingWith("@", into(prefix("on:"))));
 directive("on", skipDuringClone((t, { value: e, modifiers: n, expression: r }, { cleanup: s }) => {
-  let i = r ? evaluateLater(t, r) : () => {
+  let a = r ? evaluateLater(t, r) : () => {
   };
   t.tagName.toLowerCase() === "template" && (t._x_forwardEvents || (t._x_forwardEvents = []), t._x_forwardEvents.includes(e) || t._x_forwardEvents.push(e));
-  let a = on(t, e, n, (o) => {
-    i(() => {
+  let i = on(t, e, n, (o) => {
+    a(() => {
     }, { scope: { $event: o }, params: [o] });
   });
-  s(() => a());
+  s(() => i());
 }));
 warnMissingPluginDirective("Collapse", "collapse", "collapse");
 warnMissingPluginDirective("Intersect", "intersect", "intersect");
@@ -2196,27 +2196,27 @@ var src_default$2 = alpine_default, module_default$2 = src_default$2, candidateS
   var s = Array.prototype.slice.apply(e.querySelectorAll(candidateSelector));
   return n && matches.call(e, candidateSelector) && s.unshift(e), s = s.filter(r), s;
 }, getCandidatesIteratively = function t(e, n, r) {
-  for (var s = [], i = Array.from(e); i.length; ) {
-    var a = i.shift();
-    if (a.tagName === "SLOT") {
-      var o = a.assignedElements(), l = o.length ? o : a.children, c = t(l, !0, r);
+  for (var s = [], a = Array.from(e); a.length; ) {
+    var i = a.shift();
+    if (i.tagName === "SLOT") {
+      var o = i.assignedElements(), l = o.length ? o : i.children, c = t(l, !0, r);
       r.flatten ? s.push.apply(s, c) : s.push({
-        scope: a,
+        scope: i,
         candidates: c
       });
     } else {
-      var u = matches.call(a, candidateSelector);
-      u && r.filter(a) && (n || !e.includes(a)) && s.push(a);
-      var d = a.shadowRoot || // check for an undisclosed shadow
-      typeof r.getShadowRoot == "function" && r.getShadowRoot(a), p = !r.shadowRootFilter || r.shadowRootFilter(a);
+      var u = matches.call(i, candidateSelector);
+      u && r.filter(i) && (n || !e.includes(i)) && s.push(i);
+      var d = i.shadowRoot || // check for an undisclosed shadow
+      typeof r.getShadowRoot == "function" && r.getShadowRoot(i), p = !r.shadowRootFilter || r.shadowRootFilter(i);
       if (d && p) {
-        var g = t(d === !0 ? a.children : d.children, !0, r);
-        r.flatten ? s.push.apply(s, g) : s.push({
-          scope: a,
-          candidates: g
+        var m = t(d === !0 ? i.children : d.children, !0, r);
+        r.flatten ? s.push.apply(s, m) : s.push({
+          scope: i,
+          candidates: m
         });
       } else
-        i.unshift.apply(i, a.children);
+        a.unshift.apply(a, i.children);
     }
   }
   return s;
@@ -2248,11 +2248,11 @@ var src_default$2 = alpine_default, module_default$2 = src_default$2, candidateS
   else
     try {
       s = r(e.name);
-    } catch (a) {
-      return console.error("Looks like you have a radio button with a name attribute containing invalid CSS selector characters and need the CSS.escape polyfill: %s", a.message), !1;
+    } catch (i) {
+      return console.error("Looks like you have a radio button with a name attribute containing invalid CSS selector characters and need the CSS.escape polyfill: %s", i.message), !1;
     }
-  var i = getCheckedRadio(s, e.form);
-  return !i || i === e;
+  var a = getCheckedRadio(s, e.form);
+  return !a || a === e;
 }, isRadio = function(e) {
   return isInput(e) && e.type === "radio";
 }, isNonTabbableRadio = function(e) {
@@ -2264,8 +2264,8 @@ var src_default$2 = alpine_default, module_default$2 = src_default$2, candidateS
   var r = n.displayCheck, s = n.getShadowRoot;
   if (getComputedStyle(e).visibility === "hidden")
     return !0;
-  var i = matches.call(e, "details>summary:first-of-type"), a = i ? e.parentElement : e;
-  if (matches.call(a, "details:not([open]) *"))
+  var a = matches.call(e, "details>summary:first-of-type"), i = a ? e.parentElement : e;
+  if (matches.call(i, "details:not([open]) *"))
     return !0;
   var o = getRootNode(e).host, l = (o == null ? void 0 : o.ownerDocument.contains(o)) || e.ownerDocument.contains(e);
   if (!r || r === "full") {
@@ -2307,17 +2307,17 @@ var src_default$2 = alpine_default, module_default$2 = src_default$2, candidateS
   return !!(isNaN(n) || n >= 0);
 }, sortByOrder = function t(e) {
   var n = [], r = [];
-  return e.forEach(function(s, i) {
-    var a = !!s.scope, o = a ? s.scope : s, l = getTabindex(o, a), c = a ? t(s.candidates) : o;
-    l === 0 ? a ? n.push.apply(n, c) : n.push(o) : r.push({
-      documentOrder: i,
+  return e.forEach(function(s, a) {
+    var i = !!s.scope, o = i ? s.scope : s, l = getTabindex(o, i), c = i ? t(s.candidates) : o;
+    l === 0 ? i ? n.push.apply(n, c) : n.push(o) : r.push({
+      documentOrder: a,
       tabIndex: l,
       item: s,
-      isScope: a,
+      isScope: i,
       content: c
     });
-  }), r.sort(sortOrderedTabbables).reduce(function(s, i) {
-    return i.isScope ? s.push.apply(s, i.content) : s.push(i.content), s;
+  }), r.sort(sortOrderedTabbables).reduce(function(s, a) {
+    return a.isScope ? s.push.apply(s, a.content) : s.push(a.content), s;
   }, []).concat(n);
 }, tabbable = function(e, n) {
   n = n || {};
@@ -2400,8 +2400,8 @@ var activeFocusTraps = /* @__PURE__ */ function() {
   return setTimeout(e, 0);
 }, findIndex = function(e, n) {
   var r = -1;
-  return e.every(function(s, i) {
-    return n(s) ? (r = i, !1) : !0;
+  return e.every(function(s, a) {
+    return n(s) ? (r = a, !1) : !0;
   }), r;
 }, valueOrHandler = function(e) {
   for (var n = arguments.length, r = new Array(n > 1 ? n - 1 : 0), s = 1; s < n; s++)
@@ -2414,7 +2414,7 @@ var activeFocusTraps = /* @__PURE__ */ function() {
     returnFocusOnDeactivate: !0,
     escapeDeactivates: !0,
     delayInitialFocus: !0
-  }, n), i = {
+  }, n), a = {
     // containers given to createFocusTrap()
     // @type {Array<HTMLElement>}
     containers: [],
@@ -2445,10 +2445,10 @@ var activeFocusTraps = /* @__PURE__ */ function() {
     // timer ID for when delayInitialFocus is true and initial focus in this trap
     //  has been delayed during activation
     delayInitialFocusTimer: void 0
-  }, a, o = function(b, x, E) {
+  }, i, o = function(b, x, E) {
     return b && b[x] !== void 0 ? b[x] : s[E || x];
   }, l = function(b) {
-    return i.containerGroups.findIndex(function(x) {
+    return a.containerGroups.findIndex(function(x) {
       var E = x.container, I = x.tabbableNodes;
       return E.contains(b) || // fall back to explicit tabbable search which will take into consideration any
       //  web components if the `tabbableOptions.getShadowRoot` option was used for
@@ -2482,14 +2482,14 @@ var activeFocusTraps = /* @__PURE__ */ function() {
       if (l(r.activeElement) >= 0)
         b = r.activeElement;
       else {
-        var x = i.tabbableGroups[0], E = x && x.firstTabbableNode;
+        var x = a.tabbableGroups[0], E = x && x.firstTabbableNode;
         b = E || c("fallbackFocus");
       }
     if (!b)
       throw new Error("Your focus-trap needs to have at least one focusable element");
     return b;
   }, d = function() {
-    if (i.containerGroups = i.containers.map(function(b) {
+    if (a.containerGroups = a.containers.map(function(b) {
       var x = tabbable(b, s.tabbableOptions), E = focusable(b, s.tabbableOptions);
       return {
         container: b,
@@ -2517,9 +2517,9 @@ var activeFocusTraps = /* @__PURE__ */ function() {
             });
         }
       };
-    }), i.tabbableGroups = i.containerGroups.filter(function(b) {
+    }), a.tabbableGroups = a.containerGroups.filter(function(b) {
       return b.tabbableNodes.length > 0;
-    }), i.tabbableGroups.length <= 0 && !c("fallbackFocus"))
+    }), a.tabbableGroups.length <= 0 && !c("fallbackFocus"))
       throw new Error("Your focus-trap must have at least one container with at least one tabbable node in it at all times");
   }, p = function S(b) {
     if (b !== !1 && b !== r.activeElement) {
@@ -2529,16 +2529,16 @@ var activeFocusTraps = /* @__PURE__ */ function() {
       }
       b.focus({
         preventScroll: !!s.preventScroll
-      }), i.mostRecentlyFocusedNode = b, isSelectableInput(b) && b.select();
+      }), a.mostRecentlyFocusedNode = b, isSelectableInput(b) && b.select();
     }
-  }, g = function(b) {
+  }, m = function(b) {
     var x = c("setReturnFocus", b);
     return x || (x === !1 ? !1 : b);
   }, h = function(b) {
     var x = getActualTarget(b);
     if (!(l(x) >= 0)) {
       if (valueOrHandler(s.clickOutsideDeactivates, b)) {
-        a.deactivate({
+        i.deactivate({
           // if, on deactivation, we should return focus to the node originally-focused
           //  when the trap was activated (or the configured `setReturnFocus` node),
           //  then assume it's also OK to return focus to the outside node that was
@@ -2558,31 +2558,31 @@ var activeFocusTraps = /* @__PURE__ */ function() {
     }
   }, f = function(b) {
     var x = getActualTarget(b), E = l(x) >= 0;
-    E || x instanceof Document ? E && (i.mostRecentlyFocusedNode = x) : (b.stopImmediatePropagation(), p(i.mostRecentlyFocusedNode || u()));
-  }, m = function(b) {
+    E || x instanceof Document ? E && (a.mostRecentlyFocusedNode = x) : (b.stopImmediatePropagation(), p(a.mostRecentlyFocusedNode || u()));
+  }, g = function(b) {
     var x = getActualTarget(b);
     d();
     var E = null;
-    if (i.tabbableGroups.length > 0) {
-      var I = l(x), T = I >= 0 ? i.containerGroups[I] : void 0;
+    if (a.tabbableGroups.length > 0) {
+      var I = l(x), T = I >= 0 ? a.containerGroups[I] : void 0;
       if (I < 0)
-        b.shiftKey ? E = i.tabbableGroups[i.tabbableGroups.length - 1].lastTabbableNode : E = i.tabbableGroups[0].firstTabbableNode;
+        b.shiftKey ? E = a.tabbableGroups[a.tabbableGroups.length - 1].lastTabbableNode : E = a.tabbableGroups[0].firstTabbableNode;
       else if (b.shiftKey) {
-        var P = findIndex(i.tabbableGroups, function(F) {
-          var G = F.firstTabbableNode;
-          return x === G;
+        var P = findIndex(a.tabbableGroups, function(F) {
+          var j = F.firstTabbableNode;
+          return x === j;
         });
         if (P < 0 && (T.container === x || isFocusable(x, s.tabbableOptions) && !isTabbable(x, s.tabbableOptions) && !T.nextTabbableNode(x, !1)) && (P = I), P >= 0) {
-          var L = P === 0 ? i.tabbableGroups.length - 1 : P - 1, N = i.tabbableGroups[L];
+          var L = P === 0 ? a.tabbableGroups.length - 1 : P - 1, N = a.tabbableGroups[L];
           E = N.lastTabbableNode;
         }
       } else {
-        var R = findIndex(i.tabbableGroups, function(F) {
-          var G = F.lastTabbableNode;
-          return x === G;
+        var R = findIndex(a.tabbableGroups, function(F) {
+          var j = F.lastTabbableNode;
+          return x === j;
         });
         if (R < 0 && (T.container === x || isFocusable(x, s.tabbableOptions) && !isTabbable(x, s.tabbableOptions) && !T.nextTabbableNode(x)) && (R = I), R >= 0) {
-          var O = R === i.tabbableGroups.length - 1 ? 0 : R + 1, B = i.tabbableGroups[O];
+          var O = R === a.tabbableGroups.length - 1 ? 0 : R + 1, B = a.tabbableGroups[O];
           E = B.firstTabbableNode;
         }
       }
@@ -2591,19 +2591,19 @@ var activeFocusTraps = /* @__PURE__ */ function() {
     E && (b.preventDefault(), p(E));
   }, y = function(b) {
     if (isEscapeEvent(b) && valueOrHandler(s.escapeDeactivates, b) !== !1) {
-      b.preventDefault(), a.deactivate();
+      b.preventDefault(), i.deactivate();
       return;
     }
     if (isTabEvent(b)) {
-      m(b);
+      g(b);
       return;
     }
   }, v = function(b) {
     var x = getActualTarget(b);
     l(x) >= 0 || valueOrHandler(s.clickOutsideDeactivates, b) || valueOrHandler(s.allowOutsideClick, b) || (b.preventDefault(), b.stopImmediatePropagation());
   }, w = function() {
-    if (i.active)
-      return activeFocusTraps.activateTrap(a), i.delayInitialFocusTimer = s.delayInitialFocus ? delay(function() {
+    if (a.active)
+      return activeFocusTraps.activateTrap(i), a.delayInitialFocusTimer = s.delayInitialFocus ? delay(function() {
         p(u());
       }) : p(u()), r.addEventListener("focusin", f, !0), r.addEventListener("mousedown", h, {
         capture: !0,
@@ -2617,59 +2617,59 @@ var activeFocusTraps = /* @__PURE__ */ function() {
       }), r.addEventListener("keydown", y, {
         capture: !0,
         passive: !1
-      }), a;
+      }), i;
   }, _ = function() {
-    if (i.active)
-      return r.removeEventListener("focusin", f, !0), r.removeEventListener("mousedown", h, !0), r.removeEventListener("touchstart", h, !0), r.removeEventListener("click", v, !0), r.removeEventListener("keydown", y, !0), a;
+    if (a.active)
+      return r.removeEventListener("focusin", f, !0), r.removeEventListener("mousedown", h, !0), r.removeEventListener("touchstart", h, !0), r.removeEventListener("click", v, !0), r.removeEventListener("keydown", y, !0), i;
   };
-  return a = {
+  return i = {
     get active() {
-      return i.active;
+      return a.active;
     },
     get paused() {
-      return i.paused;
+      return a.paused;
     },
     activate: function(b) {
-      if (i.active)
+      if (a.active)
         return this;
       var x = o(b, "onActivate"), E = o(b, "onPostActivate"), I = o(b, "checkCanFocusTrap");
-      I || d(), i.active = !0, i.paused = !1, i.nodeFocusedBeforeActivation = r.activeElement, x && x();
+      I || d(), a.active = !0, a.paused = !1, a.nodeFocusedBeforeActivation = r.activeElement, x && x();
       var T = function() {
         I && d(), w(), E && E();
       };
-      return I ? (I(i.containers.concat()).then(T, T), this) : (T(), this);
+      return I ? (I(a.containers.concat()).then(T, T), this) : (T(), this);
     },
     deactivate: function(b) {
-      if (!i.active)
+      if (!a.active)
         return this;
       var x = _objectSpread2({
         onDeactivate: s.onDeactivate,
         onPostDeactivate: s.onPostDeactivate,
         checkCanReturnFocus: s.checkCanReturnFocus
       }, b);
-      clearTimeout(i.delayInitialFocusTimer), i.delayInitialFocusTimer = void 0, _(), i.active = !1, i.paused = !1, activeFocusTraps.deactivateTrap(a);
+      clearTimeout(a.delayInitialFocusTimer), a.delayInitialFocusTimer = void 0, _(), a.active = !1, a.paused = !1, activeFocusTraps.deactivateTrap(i);
       var E = o(x, "onDeactivate"), I = o(x, "onPostDeactivate"), T = o(x, "checkCanReturnFocus"), P = o(x, "returnFocus", "returnFocusOnDeactivate");
       E && E();
       var L = function() {
         delay(function() {
-          P && p(g(i.nodeFocusedBeforeActivation)), I && I();
+          P && p(m(a.nodeFocusedBeforeActivation)), I && I();
         });
       };
-      return P && T ? (T(g(i.nodeFocusedBeforeActivation)).then(L, L), this) : (L(), this);
+      return P && T ? (T(m(a.nodeFocusedBeforeActivation)).then(L, L), this) : (L(), this);
     },
     pause: function() {
-      return i.paused || !i.active ? this : (i.paused = !0, _(), this);
+      return a.paused || !a.active ? this : (a.paused = !0, _(), this);
     },
     unpause: function() {
-      return !i.paused || !i.active ? this : (i.paused = !1, d(), w(), this);
+      return !a.paused || !a.active ? this : (a.paused = !1, d(), w(), this);
     },
     updateContainerElements: function(b) {
       var x = [].concat(b).filter(Boolean);
-      return i.containers = x.map(function(E) {
+      return a.containers = x.map(function(E) {
         return typeof E == "string" ? r.querySelector(E) : E;
-      }), i.active && d(), this;
+      }), a.active && d(), this;
     }
-  }, a.updateContainerElements(e), a;
+  }, i.updateContainerElements(e), i;
 };
 function src_default$1(t) {
   let e, n;
@@ -2680,8 +2680,8 @@ function src_default$1(t) {
     return {
       __noscroll: !1,
       __wrapAround: !1,
-      within(i) {
-        return s = i, this;
+      within(a) {
+        return s = a, this;
       },
       withoutScrolling() {
         return this.__noscroll = !0, this;
@@ -2695,8 +2695,8 @@ function src_default$1(t) {
       wrap() {
         return this.withWrapAround();
       },
-      focusable(i) {
-        return isFocusable(i);
+      focusable(a) {
+        return isFocusable(a);
       },
       previouslyFocused() {
         return e;
@@ -2713,13 +2713,13 @@ function src_default$1(t) {
       all() {
         return this.focusables();
       },
-      isFirst(i) {
-        let a = this.all();
-        return a[0] && a[0].isSameNode(i);
+      isFirst(a) {
+        let i = this.all();
+        return i[0] && i[0].isSameNode(a);
       },
-      isLast(i) {
-        let a = this.all();
-        return a.length && a.slice(-1)[0].isSameNode(i);
+      isLast(a) {
+        let i = this.all();
+        return i.length && i.slice(-1)[0].isSameNode(a);
       },
       getFirst() {
         return this.all()[0];
@@ -2728,14 +2728,14 @@ function src_default$1(t) {
         return this.all().slice(-1)[0];
       },
       getNext() {
-        let i = this.all(), a = document.activeElement;
-        if (i.indexOf(a) !== -1)
-          return this.__wrapAround && i.indexOf(a) === i.length - 1 ? i[0] : i[i.indexOf(a) + 1];
+        let a = this.all(), i = document.activeElement;
+        if (a.indexOf(i) !== -1)
+          return this.__wrapAround && a.indexOf(i) === a.length - 1 ? a[0] : a[a.indexOf(i) + 1];
       },
       getPrevious() {
-        let i = this.all(), a = document.activeElement;
-        if (i.indexOf(a) !== -1)
-          return this.__wrapAround && i.indexOf(a) === 0 ? i.slice(-1)[0] : i[i.indexOf(a) - 1];
+        let a = this.all(), i = document.activeElement;
+        if (a.indexOf(i) !== -1)
+          return this.__wrapAround && a.indexOf(i) === 0 ? a.slice(-1)[0] : a[a.indexOf(i) - 1];
       },
       first() {
         this.focus(this.getFirst());
@@ -2752,51 +2752,51 @@ function src_default$1(t) {
       prev() {
         return this.previous();
       },
-      focus(i) {
-        i && setTimeout(() => {
-          i.hasAttribute("tabindex") || i.setAttribute("tabindex", "0"), i.focus({ preventScroll: this.__noscroll });
+      focus(a) {
+        a && setTimeout(() => {
+          a.hasAttribute("tabindex") || a.setAttribute("tabindex", "0"), a.focus({ preventScroll: this.__noscroll });
         });
       }
     };
   }), t.directive("trap", t.skipDuringClone(
-    (r, { expression: s, modifiers: i }, { effect: a, evaluateLater: o, cleanup: l }) => {
+    (r, { expression: s, modifiers: a }, { effect: i, evaluateLater: o, cleanup: l }) => {
       let c = o(s), u = !1, d = {
         escapeDeactivates: !1,
         allowOutsideClick: !0,
         fallbackFocus: () => r
       }, p = () => {
       };
-      if (i.includes("noautofocus"))
+      if (a.includes("noautofocus"))
         d.initialFocus = !1;
       else {
-        let m = r.querySelector("[autofocus]");
-        m && (d.initialFocus = m);
+        let g = r.querySelector("[autofocus]");
+        g && (d.initialFocus = g);
       }
-      i.includes("inert") && (d.onPostActivate = () => {
+      a.includes("inert") && (d.onPostActivate = () => {
         t.nextTick(() => {
           p = setInert(r);
         });
       });
-      let g = createFocusTrap(r, d), h = () => {
+      let m = createFocusTrap(r, d), h = () => {
       };
       const f = () => {
         p(), p = () => {
         }, h(), h = () => {
-        }, g.deactivate({
-          returnFocus: !i.includes("noreturn")
+        }, m.deactivate({
+          returnFocus: !a.includes("noreturn")
         });
       };
-      a(() => c((m) => {
-        u !== m && (m && !u && (i.includes("noscroll") && (h = disableScrolling()), setTimeout(() => {
-          g.activate();
-        }, 15)), !m && u && f(), u = !!m);
+      i(() => c((g) => {
+        u !== g && (g && !u && (a.includes("noscroll") && (h = disableScrolling()), setTimeout(() => {
+          m.activate();
+        }, 15)), !g && u && f(), u = !!g);
       })), l(f);
     },
     // When cloning, we only want to add aria-hidden attributes to the
     // DOM and not try to actually trap, as trapping can mess with the
     // live DOM and isn't just isolated to the cloned DOM.
-    (r, { expression: s, modifiers: i }, { evaluate: a }) => {
-      i.includes("inert") && a(s) && setInert(r);
+    (r, { expression: s, modifiers: a }, { evaluate: i }) => {
+      a.includes("inert") && i(s) && setInert(r);
     }
   ));
 }
@@ -2843,8 +2843,8 @@ function src_default(t) {
     });
   };
   function e(n, { modifiers: r }) {
-    let s = modifierValue(r, "duration", 250) / 1e3, i = modifierValue(r, "min", 0), a = !r.includes("min");
-    n._x_isShown || (n.style.height = `${i}px`), !n._x_isShown && a && (n.hidden = !0), n._x_isShown || (n.style.overflow = "hidden");
+    let s = modifierValue(r, "duration", 250) / 1e3, a = modifierValue(r, "min", 0), i = !r.includes("min");
+    n._x_isShown || (n.style.height = `${a}px`), !n._x_isShown && i && (n.hidden = !0), n._x_isShown || (n.style.overflow = "hidden");
     let o = (c, u) => {
       let d = t.setStyles(c, u);
       return u.height ? () => {
@@ -2858,11 +2858,11 @@ function src_default(t) {
       in(c = () => {
       }, u = () => {
       }) {
-        a && (n.hidden = !1), a && (n.style.display = null);
+        i && (n.hidden = !1), i && (n.style.display = null);
         let d = n.getBoundingClientRect().height;
         n.style.height = "auto";
         let p = n.getBoundingClientRect().height;
-        d === p && (d = i), t.transition(n, t.setStyles, {
+        d === p && (d = a), t.transition(n, t.setStyles, {
           during: l,
           start: { height: d + "px" },
           end: { height: p + "px" }
@@ -2877,9 +2877,9 @@ function src_default(t) {
         t.transition(n, o, {
           during: l,
           start: { height: d + "px" },
-          end: { height: i + "px" }
+          end: { height: a + "px" }
         }, () => n.style.overflow = "hidden", () => {
-          n._x_isShown = !1, n.style.height == `${i}px` && a && (n.style.display = "none", n.hidden = !0);
+          n._x_isShown = !1, n.style.height == `${a}px` && i && (n.style.display = "none", n.hidden = !0);
         });
       }
     };
@@ -3120,28 +3120,28 @@ function mergeIconData(t, e) {
 }
 function getIconsTree(t, e) {
   const n = t.icons, r = t.aliases || /* @__PURE__ */ Object.create(null), s = /* @__PURE__ */ Object.create(null);
-  function i(a) {
-    if (n[a])
-      return s[a] = [];
-    if (!(a in s)) {
-      s[a] = null;
-      const o = r[a] && r[a].parent, l = o && i(o);
-      l && (s[a] = [o].concat(l));
+  function a(i) {
+    if (n[i])
+      return s[i] = [];
+    if (!(i in s)) {
+      s[i] = null;
+      const o = r[i] && r[i].parent, l = o && a(o);
+      l && (s[i] = [o].concat(l));
     }
-    return s[a];
+    return s[i];
   }
-  return Object.keys(n).concat(Object.keys(r)).forEach(i), s;
+  return Object.keys(n).concat(Object.keys(r)).forEach(a), s;
 }
 function internalGetIconData(t, e, n) {
   const r = t.icons, s = t.aliases || /* @__PURE__ */ Object.create(null);
-  let i = {};
-  function a(o) {
-    i = mergeIconData(
+  let a = {};
+  function i(o) {
+    a = mergeIconData(
       r[o] || s[o],
-      i
+      a
     );
   }
-  return a(e), n.forEach(a), mergeIconData(t, i);
+  return i(e), n.forEach(i), mergeIconData(t, a);
 }
 function parseIconSet(t, e) {
   const n = [];
@@ -3152,8 +3152,8 @@ function parseIconSet(t, e) {
   });
   const r = getIconsTree(t);
   for (const s in r) {
-    const i = r[s];
-    i && (e(s, internalGetIconData(t, s, i)), n.push(s));
+    const a = r[s];
+    a && (e(s, internalGetIconData(t, s, a)), n.push(s));
   }
   return n;
 }
@@ -3175,12 +3175,12 @@ const matchIconName = /^[a-z0-9]+(-[a-z0-9]+)*$/, stringToIcon = (t, e, n, r = "
     };
     return e && !validateIconName(c) ? null : c;
   }
-  const i = s[0], a = i.split("-");
-  if (a.length > 1) {
+  const a = s[0], i = a.split("-");
+  if (i.length > 1) {
     const o = {
       provider: r,
-      prefix: a.shift(),
-      name: a.join("-")
+      prefix: i.shift(),
+      name: i.join("-")
     };
     return e && !validateIconName(o) ? null : o;
   }
@@ -3188,7 +3188,7 @@ const matchIconName = /^[a-z0-9]+(-[a-z0-9]+)*$/, stringToIcon = (t, e, n, r = "
     const o = {
       provider: r,
       prefix: "",
-      name: i
+      name: a
     };
     return e && !validateIconName(o, n) ? null : o;
   }
@@ -3213,18 +3213,18 @@ function quicklyValidateIconSet(t) {
     return null;
   const n = e.icons;
   for (const s in n) {
-    const i = n[s];
-    if (!s.match(matchIconName) || typeof i.body != "string" || !checkOptionalProps(
-      i,
+    const a = n[s];
+    if (!s.match(matchIconName) || typeof a.body != "string" || !checkOptionalProps(
+      a,
       defaultExtendedIconProps
     ))
       return null;
   }
   const r = e.aliases || /* @__PURE__ */ Object.create(null);
   for (const s in r) {
-    const i = r[s], a = i.parent;
-    if (!s.match(matchIconName) || typeof a != "string" || !n[a] && !r[a] || !checkOptionalProps(
-      i,
+    const a = r[s], i = a.parent;
+    if (!s.match(matchIconName) || typeof i != "string" || !n[i] && !r[i] || !checkOptionalProps(
+      a,
       defaultExtendedIconProps
     ))
       return null;
@@ -3260,11 +3260,11 @@ function addIconToStorage(t, e, n) {
 function listIcons(t, e) {
   let n = [];
   return (typeof t == "string" ? [t] : Object.keys(dataStorage)).forEach((s) => {
-    (typeof s == "string" && typeof e == "string" ? [e] : Object.keys(dataStorage[s] || {})).forEach((a) => {
-      const o = getStorage(s, a);
+    (typeof s == "string" && typeof e == "string" ? [e] : Object.keys(dataStorage[s] || {})).forEach((i) => {
+      const o = getStorage(s, i);
       n = n.concat(
         Object.keys(o.icons).map(
-          (l) => (s !== "" ? "@" + s + ":" : "") + a + ":" + l
+          (l) => (s !== "" ? "@" + s + ":" : "") + i + ":" + l
         )
       );
     });
@@ -3332,16 +3332,16 @@ function calculateSize(t, e, n) {
   if (r === null || !r.length)
     return t;
   const s = [];
-  let i = r.shift(), a = unitsTest.test(i);
+  let a = r.shift(), i = unitsTest.test(a);
   for (; ; ) {
-    if (a) {
-      const o = parseFloat(i);
-      isNaN(o) ? s.push(i) : s.push(Math.ceil(o * e * n) / n);
+    if (i) {
+      const o = parseFloat(a);
+      isNaN(o) ? s.push(a) : s.push(Math.ceil(o * e * n) / n);
     } else
-      s.push(i);
-    if (i = r.shift(), i === void 0)
+      s.push(a);
+    if (a = r.shift(), a === void 0)
       return s.join("");
-    a = !a;
+    i = !i;
   }
 }
 const isUnsetKeyword = (t) => t === "unset" || t === "undefined" || t === "none";
@@ -3358,11 +3358,11 @@ function iconToSVG(t, e) {
     width: n.width,
     height: n.height
   };
-  let i = n.body;
+  let a = n.body;
   [n, r].forEach((h) => {
-    const f = [], m = h.hFlip, y = h.vFlip;
+    const f = [], g = h.hFlip, y = h.vFlip;
     let v = h.rotate;
-    m ? y ? v += 2 : (f.push(
+    g ? y ? v += 2 : (f.push(
       "translate(" + (s.width + s.left).toString() + " " + (0 - s.top).toString() + ")"
     ), f.push("scale(-1 1)"), s.top = s.left = 0) : y && (f.push(
       "translate(" + (0 - s.left).toString() + " " + (s.height + s.top).toString() + ")"
@@ -3385,17 +3385,17 @@ function iconToSVG(t, e) {
         );
         break;
     }
-    v % 2 === 1 && (s.left !== s.top && (w = s.left, s.left = s.top, s.top = w), s.width !== s.height && (w = s.width, s.width = s.height, s.height = w)), f.length && (i = '<g transform="' + f.join(" ") + '">' + i + "</g>");
+    v % 2 === 1 && (s.left !== s.top && (w = s.left, s.left = s.top, s.top = w), s.width !== s.height && (w = s.width, s.width = s.height, s.height = w)), f.length && (a = '<g transform="' + f.join(" ") + '">' + a + "</g>");
   });
-  const a = r.width, o = r.height, l = s.width, c = s.height;
+  const i = r.width, o = r.height, l = s.width, c = s.height;
   let u, d;
-  a === null ? (d = o === null ? "1em" : o === "auto" ? c : o, u = calculateSize(d, l / c)) : (u = a === "auto" ? l : a, d = o === null ? calculateSize(u, c / l) : o === "auto" ? c : o);
-  const p = {}, g = (h, f) => {
+  i === null ? (d = o === null ? "1em" : o === "auto" ? c : o, u = calculateSize(d, l / c)) : (u = i === "auto" ? l : i, d = o === null ? calculateSize(u, c / l) : o === "auto" ? c : o);
+  const p = {}, m = (h, f) => {
     isUnsetKeyword(f) || (p[h] = f.toString());
   };
-  return g("width", u), g("height", d), p.viewBox = s.left.toString() + " " + s.top.toString() + " " + l.toString() + " " + c.toString(), {
+  return m("width", u), m("height", d), p.viewBox = s.left.toString() + " " + s.top.toString() + " " + l.toString() + " " + c.toString(), {
     attributes: p,
-    body: i
+    body: a
   };
 }
 const regex = /\sid="(\S+)"/g, randomPrefix = "IconifyId" + Date.now().toString(16) + (Math.random() * 16777216 | 0).toString(16);
@@ -3408,13 +3408,13 @@ function replaceIDs(t, e = randomPrefix) {
   if (!n.length)
     return t;
   const s = "suffix" + (Math.random() * 16777216 | Date.now()).toString(16);
-  return n.forEach((i) => {
-    const a = typeof e == "function" ? e(i) : e + (counter++).toString(), o = i.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return n.forEach((a) => {
+    const i = typeof e == "function" ? e(a) : e + (counter++).toString(), o = a.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     t = t.replace(
       // Allowed characters before id: [#;"]
       // Allowed characters after id: [)"], .[a-z]
       new RegExp('([#;"])(' + o + ')([")]|\\.[a-z])', "g"),
-      "$1" + a + s + "$3"
+      "$1" + i + s + "$3"
     );
   }), t = t.replace(new RegExp(s, "g"), ""), t;
 }
@@ -3478,7 +3478,7 @@ function iterateBrowserStorage(t, e) {
     setStoredItem(n, browserCacheVersionKey, browserCacheVersion), setBrowserStorageItemsCount(n, 0);
     return;
   }
-  const s = Math.floor(Date.now() / browserStorageHour) - browserStorageCacheExpiration, i = (o) => {
+  const s = Math.floor(Date.now() / browserStorageHour) - browserStorageCacheExpiration, a = (o) => {
     const l = browserCachePrefix + o.toString(), c = getStoredItem(n, l);
     if (typeof c == "string") {
       try {
@@ -3491,23 +3491,23 @@ function iterateBrowserStorage(t, e) {
       removeStoredItem(n, l);
     }
   };
-  let a = getBrowserStorageItemsCount(n);
-  for (let o = a - 1; o >= 0; o--)
-    i(o) || (o === a - 1 ? (a--, setBrowserStorageItemsCount(n, a)) : browserStorageEmptyItems[t].add(o));
+  let i = getBrowserStorageItemsCount(n);
+  for (let o = i - 1; o >= 0; o--)
+    a(o) || (o === i - 1 ? (i--, setBrowserStorageItemsCount(n, i)) : browserStorageEmptyItems[t].add(o));
 }
 function initBrowserStorage() {
   if (!browserStorageStatus) {
     setBrowserStorageStatus(!0);
     for (const t in browserStorageConfig)
       iterateBrowserStorage(t, (e) => {
-        const n = e.data, r = e.provider, s = n.prefix, i = getStorage(
+        const n = e.data, r = e.provider, s = n.prefix, a = getStorage(
           r,
           s
         );
-        if (!addIconSet(i, n).length)
+        if (!addIconSet(a, n).length)
           return !1;
-        const a = n.lastModified || -1;
-        return i.lastModifiedCached = i.lastModifiedCached ? Math.min(i.lastModifiedCached, a) : a, !0;
+        const i = n.lastModified || -1;
+        return a.lastModifiedCached = a.lastModifiedCached ? Math.min(a.lastModifiedCached, i) : i, !0;
       });
   }
 }
@@ -3598,11 +3598,11 @@ function calculateMaxLength(t, e) {
     r = 0;
   else {
     let s = 0;
-    n.resources.forEach((a) => {
-      s = Math.max(s, a.length);
+    n.resources.forEach((i) => {
+      s = Math.max(s, i.length);
     });
-    const i = e + ".json?icons=";
-    r = n.maxURL - s - n.path.length - i.length;
+    const a = e + ".json?icons=";
+    r = n.maxURL - s - n.path.length - a.length;
   }
   return r;
 }
@@ -3610,21 +3610,21 @@ function shouldAbort(t) {
   return t === 404;
 }
 const prepare = (t, e, n) => {
-  const r = [], s = calculateMaxLength(t, e), i = "icons";
-  let a = {
-    type: i,
+  const r = [], s = calculateMaxLength(t, e), a = "icons";
+  let i = {
+    type: a,
     provider: t,
     prefix: e,
     icons: []
   }, o = 0;
   return n.forEach((l, c) => {
-    o += l.length + 1, o >= s && c > 0 && (r.push(a), a = {
-      type: i,
+    o += l.length + 1, o >= s && c > 0 && (r.push(i), i = {
+      type: a,
       provider: t,
       prefix: e,
       icons: []
-    }, o = l.length), a.icons.push(l);
-  }), r.push(a), r;
+    }, o = l.length), i.icons.push(l);
+  }), r.push(i), r;
 };
 function getPath(t) {
   if (typeof t == "string") {
@@ -3642,15 +3642,15 @@ const send = (t, e, n) => {
   let r = getPath(e.provider);
   switch (e.type) {
     case "icons": {
-      const i = e.prefix, o = e.icons.join(","), l = new URLSearchParams({
+      const a = e.prefix, o = e.icons.join(","), l = new URLSearchParams({
         icons: o
       });
-      r += i + ".json?" + l.toString();
+      r += a + ".json?" + l.toString();
       break;
     }
     case "custom": {
-      const i = e.uri;
-      r += i.slice(0, 1) === "/" ? i.slice(1) : i;
+      const a = e.uri;
+      r += a.slice(0, 1) === "/" ? a.slice(1) : a;
       break;
     }
     default:
@@ -3658,24 +3658,24 @@ const send = (t, e, n) => {
       return;
   }
   let s = 503;
-  fetchModule(t + r).then((i) => {
-    const a = i.status;
-    if (a !== 200) {
+  fetchModule(t + r).then((a) => {
+    const i = a.status;
+    if (i !== 200) {
       setTimeout(() => {
-        n(shouldAbort(a) ? "abort" : "next", a);
+        n(shouldAbort(i) ? "abort" : "next", i);
       });
       return;
     }
-    return s = 501, i.json();
-  }).then((i) => {
-    if (typeof i != "object" || i === null) {
+    return s = 501, a.json();
+  }).then((a) => {
+    if (typeof a != "object" || a === null) {
       setTimeout(() => {
-        i === 404 ? n("abort", i) : n("next", s);
+        a === 404 ? n("abort", a) : n("next", s);
       });
       return;
     }
     setTimeout(() => {
-      n("success", i);
+      n("success", a);
     });
   }).catch(() => {
     n("next", s);
@@ -3690,7 +3690,7 @@ function sortIcons(t) {
     missing: [],
     pending: []
   }, n = /* @__PURE__ */ Object.create(null);
-  t.sort((s, i) => s.provider !== i.provider ? s.provider.localeCompare(i.provider) : s.prefix !== i.prefix ? s.prefix.localeCompare(i.prefix) : s.name.localeCompare(i.name));
+  t.sort((s, a) => s.provider !== a.provider ? s.provider.localeCompare(a.provider) : s.prefix !== a.prefix ? s.prefix.localeCompare(a.prefix) : s.name.localeCompare(a.name));
   let r = {
     provider: "",
     prefix: "",
@@ -3700,12 +3700,12 @@ function sortIcons(t) {
     if (r.name === s.name && r.prefix === s.prefix && r.provider === s.provider)
       return;
     r = s;
-    const i = s.provider, a = s.prefix, o = s.name, l = n[i] || (n[i] = /* @__PURE__ */ Object.create(null)), c = l[a] || (l[a] = getStorage(i, a));
+    const a = s.provider, i = s.prefix, o = s.name, l = n[a] || (n[a] = /* @__PURE__ */ Object.create(null)), c = l[i] || (l[i] = getStorage(a, i));
     let u;
-    o in c.icons ? u = e.loaded : a === "" || c.missing.has(o) ? u = e.missing : u = e.pending;
+    o in c.icons ? u = e.loaded : i === "" || c.missing.has(o) ? u = e.missing : u = e.pending;
     const d = {
-      provider: i,
-      prefix: a,
+      provider: a,
+      prefix: i,
       name: o
     };
     u.push(d);
@@ -3725,20 +3725,20 @@ function updateCallbacks(t) {
       return;
     let n = !1;
     const r = t.provider, s = t.prefix;
-    e.forEach((i) => {
-      const a = i.icons, o = a.pending.length;
-      a.pending = a.pending.filter((l) => {
+    e.forEach((a) => {
+      const i = a.icons, o = i.pending.length;
+      i.pending = i.pending.filter((l) => {
         if (l.prefix !== s)
           return !0;
         const c = l.name;
         if (t.icons[c])
-          a.loaded.push({
+          i.loaded.push({
             provider: r,
             prefix: s,
             name: c
           });
         else if (t.missing.has(c))
-          a.missing.push({
+          i.missing.push({
             provider: r,
             prefix: s,
             name: c
@@ -3746,11 +3746,11 @@ function updateCallbacks(t) {
         else
           return n = !0, !0;
         return !1;
-      }), a.pending.length !== o && (n || removeCallback([t], i.id), i.callback(
-        a.loaded.slice(0),
-        a.missing.slice(0),
-        a.pending.slice(0),
-        i.abort
+      }), i.pending.length !== o && (n || removeCallback([t], a.id), a.callback(
+        i.loaded.slice(0),
+        i.missing.slice(0),
+        i.pending.slice(0),
+        a.abort
       ));
     });
   }));
@@ -3760,21 +3760,21 @@ function storeCallback(t, e, n) {
   const r = idCounter++, s = removeCallback.bind(null, n, r);
   if (!e.pending.length)
     return s;
-  const i = {
+  const a = {
     id: r,
     icons: e,
     callback: t,
     abort: s
   };
-  return n.forEach((a) => {
-    (a.loaderCallbacks || (a.loaderCallbacks = [])).push(i);
+  return n.forEach((i) => {
+    (i.loaderCallbacks || (i.loaderCallbacks = [])).push(a);
   }), s;
 }
 function listToIcons(t, e = !0, n = !1) {
   const r = [];
   return t.forEach((s) => {
-    const i = typeof s == "string" ? stringToIcon(s, e, n) : s;
-    i && r.push(i);
+    const a = typeof s == "string" ? stringToIcon(s, e, n) : s;
+    a && r.push(a);
   }), r;
 }
 var defaultConfig = {
@@ -3786,20 +3786,20 @@ var defaultConfig = {
   dataAfterTimeout: !1
 };
 function sendQuery(t, e, n, r) {
-  const s = t.resources.length, i = t.random ? Math.floor(Math.random() * s) : t.index;
-  let a;
+  const s = t.resources.length, a = t.random ? Math.floor(Math.random() * s) : t.index;
+  let i;
   if (t.random) {
     let b = t.resources.slice(0);
-    for (a = []; b.length > 1; ) {
+    for (i = []; b.length > 1; ) {
       const x = Math.floor(Math.random() * b.length);
-      a.push(b[x]), b = b.slice(0, x).concat(b.slice(x + 1));
+      i.push(b[x]), b = b.slice(0, x).concat(b.slice(x + 1));
     }
-    a = a.concat(b);
+    i = i.concat(b);
   } else
-    a = t.resources.slice(i).concat(t.resources.slice(0, i));
+    i = t.resources.slice(a).concat(t.resources.slice(0, a));
   const o = Date.now();
-  let l = "pending", c = 0, u, d = null, p = [], g = [];
-  typeof r == "function" && g.push(r);
+  let l = "pending", c = 0, u, d = null, p = [], m = [];
+  typeof r == "function" && m.push(r);
   function h() {
     d && (clearTimeout(d), d = null);
   }
@@ -3808,8 +3808,8 @@ function sendQuery(t, e, n, r) {
       b.status === "pending" && (b.status = "aborted");
     }), p = [];
   }
-  function m(b, x) {
-    x && (g = []), typeof b == "function" && g.push(b);
+  function g(b, x) {
+    x && (m = []), typeof b == "function" && m.push(b);
   }
   function y() {
     return {
@@ -3818,12 +3818,12 @@ function sendQuery(t, e, n, r) {
       status: l,
       queriesSent: c,
       queriesPending: p.length,
-      subscribe: m,
+      subscribe: g,
       abort: f
     };
   }
   function v() {
-    l = "failed", g.forEach((b) => {
+    l = "failed", m.forEach((b) => {
       b(void 0, u);
     });
   }
@@ -3849,14 +3849,14 @@ function sendQuery(t, e, n, r) {
       return;
     }
     if (I) {
-      u = E, p.length || (a.length ? S() : v());
+      u = E, p.length || (i.length ? S() : v());
       return;
     }
     if (h(), w(), !t.random) {
       const T = t.resources.indexOf(b.resource);
       T !== -1 && T !== t.index && (t.index = T);
     }
-    l = "completed", g.forEach((T) => {
+    l = "completed", m.forEach((T) => {
       T(E);
     });
   }
@@ -3864,7 +3864,7 @@ function sendQuery(t, e, n, r) {
     if (l !== "pending")
       return;
     h();
-    const b = a.shift();
+    const b = i.shift();
     if (b === void 0) {
       if (p.length) {
         d = setTimeout(() => {
@@ -3906,12 +3906,12 @@ function initRedundancy(t) {
     );
     return n.push(u), u;
   }
-  function i(o) {
+  function a(o) {
     return n.find((l) => o(l)) || null;
   }
   return {
     query: s,
-    find: i,
+    find: a,
     setIndex: (o) => {
       e.index = o;
     },
@@ -3938,17 +3938,17 @@ function getRedundancyCache(t) {
 function sendAPIQuery(t, e, n) {
   let r, s;
   if (typeof t == "string") {
-    const i = getAPIModule(t);
-    if (!i)
+    const a = getAPIModule(t);
+    if (!a)
       return n(void 0, 424), emptyCallback$1;
-    s = i.send;
-    const a = getRedundancyCache(t);
-    a && (r = a.redundancy);
+    s = a.send;
+    const i = getRedundancyCache(t);
+    i && (r = i.redundancy);
   } else {
-    const i = createAPIConfig(t);
-    if (i) {
-      r = initRedundancy(i);
-      const a = t.resources ? t.resources[0] : "", o = getAPIModule(a);
+    const a = createAPIConfig(t);
+    if (a) {
+      r = initRedundancy(a);
+      const i = t.resources ? t.resources[0] : "", o = getAPIModule(i);
       o && (s = o.send);
     }
   }
@@ -3964,8 +3964,8 @@ function updateLastModified(t, e) {
   if (t.lastModifiedCached = e, n)
     for (const r in browserStorageConfig)
       iterateBrowserStorage(r, (s) => {
-        const i = s.data;
-        return s.provider !== t.provider || i.prefix !== t.prefix || i.lastModified === e;
+        const a = s.data;
+        return s.provider !== t.provider || a.prefix !== t.prefix || a.lastModified === e;
       });
   return !0;
 }
@@ -3975,11 +3975,11 @@ function storeInBrowserStorage(t, e) {
     let s;
     if (!browserStorageConfig[r] || !(s = getBrowserStorage(r)))
       return;
-    const i = browserStorageEmptyItems[r];
-    let a;
-    if (i.size)
-      i.delete(a = Array.from(i).shift());
-    else if (a = getBrowserStorageItemsCount(s), !setBrowserStorageItemsCount(s, a + 1))
+    const a = browserStorageEmptyItems[r];
+    let i;
+    if (a.size)
+      a.delete(i = Array.from(a).shift());
+    else if (i = getBrowserStorageItemsCount(s), !setBrowserStorageItemsCount(s, i + 1))
       return;
     const o = {
       cached: Math.floor(Date.now() / browserStorageHour),
@@ -3988,7 +3988,7 @@ function storeInBrowserStorage(t, e) {
     };
     return setStoredItem(
       s,
-      browserCachePrefix + a.toString(),
+      browserCachePrefix + i.toString(),
       JSON.stringify(o)
     );
   }
@@ -4006,10 +4006,10 @@ function loadNewIcons(t, e) {
     t.iconsQueueFlag = !1;
     const { provider: n, prefix: r } = t, s = t.iconsToLoad;
     delete t.iconsToLoad;
-    let i;
-    if (!s || !(i = getAPIModule(n)))
+    let a;
+    if (!s || !(a = getAPIModule(n)))
       return;
-    i.prepare(n, r, s).forEach((o) => {
+    a.prepare(n, r, s).forEach((o) => {
       sendAPIQuery(n, o, (l) => {
         if (typeof l != "object")
           o.icons.forEach((c) => {
@@ -4056,22 +4056,22 @@ const isPending = (t) => {
       l = !1;
     };
   }
-  const s = /* @__PURE__ */ Object.create(null), i = [];
-  let a, o;
+  const s = /* @__PURE__ */ Object.create(null), a = [];
+  let i, o;
   return r.pending.forEach((l) => {
     const { provider: c, prefix: u } = l;
-    if (u === o && c === a)
+    if (u === o && c === i)
       return;
-    a = c, o = u, i.push(getStorage(c, u));
+    i = c, o = u, a.push(getStorage(c, u));
     const d = s[c] || (s[c] = /* @__PURE__ */ Object.create(null));
     d[u] || (d[u] = []);
   }), r.pending.forEach((l) => {
-    const { provider: c, prefix: u, name: d } = l, p = getStorage(c, u), g = p.pendingIcons || (p.pendingIcons = /* @__PURE__ */ new Set());
-    g.has(d) || (g.add(d), s[c][u].push(d));
-  }), i.forEach((l) => {
+    const { provider: c, prefix: u, name: d } = l, p = getStorage(c, u), m = p.pendingIcons || (p.pendingIcons = /* @__PURE__ */ new Set());
+    m.has(d) || (m.add(d), s[c][u].push(d));
+  }), a.forEach((l) => {
     const { provider: c, prefix: u } = l;
     s[c][u].length && loadNewIcons(l, s[c][u]);
-  }), e ? storeCallback(e, r, i) : emptyCallback;
+  }), e ? storeCallback(e, r, a) : emptyCallback;
 }, loadIcon = (t) => new Promise((e, n) => {
   const r = typeof t == "string" ? stringToIcon(t, !0) : t;
   if (!r) {
@@ -4080,11 +4080,11 @@ const isPending = (t) => {
   }
   loadIcons([r || t], (s) => {
     if (s.length && r) {
-      const i = getIconData(r);
-      if (i) {
+      const a = getIconData(r);
+      if (a) {
         e({
           ...defaultIconProps,
-          ...i
+          ...a
         });
         return;
       }
@@ -4097,8 +4097,8 @@ function mergeCustomisations(t, e) {
     ...t
   };
   for (const r in e) {
-    const s = e[r], i = typeof s;
-    r in defaultIconSizeCustomisations ? (s === null || s && (i === "string" || i === "number")) && (n[r] = s) : i === typeof n[r] && (n[r] = r === "rotate" ? s % 4 : s);
+    const s = e[r], a = typeof s;
+    r in defaultIconSizeCustomisations ? (s === null || s && (a === "string" || a === "number")) && (n[r] = s) : a === typeof n[r] && (n[r] = r === "rotate" ? s % 4 : s);
   }
   return n;
 }
@@ -4278,8 +4278,8 @@ function rotateFromString(t, e = 0) {
         s = 90;
     }
     if (s) {
-      let i = parseFloat(t.slice(0, t.length - n.length));
-      return isNaN(i) ? 0 : (i = i / s, i % 1 === 0 ? r(i) : 0);
+      let a = parseFloat(t.slice(0, t.length - n.length));
+      return isNaN(a) ? 0 : (a = a / s, a % 1 === 0 ? r(a) : 0);
     }
   }
   return e;
@@ -4319,17 +4319,17 @@ function getElementProps(t) {
   });
   const s = t.getAttribute("data-rotate");
   typeof s == "string" && (r.rotate = rotateFromString(s));
-  const i = t.getAttribute("data-flip");
-  typeof i == "string" && flipFromString(r, i), booleanAttributes.forEach((o) => {
+  const a = t.getAttribute("data-flip");
+  typeof a == "string" && flipFromString(r, a), booleanAttributes.forEach((o) => {
     const l = "data-" + o, c = getBooleanAttribute(t.getAttribute(l), l);
     typeof c == "boolean" && (r[o] = c);
   });
-  const a = t.getAttribute("data-mode");
+  const i = t.getAttribute("data-mode");
   return {
     name: e,
     icon: n,
     customisations: r,
-    mode: a
+    mode: i
   };
 }
 const selector = "svg." + blockClass + ", i." + blockClass + ", span." + blockClass + ", i." + inlineClass + ", span." + inlineClass;
@@ -4372,26 +4372,26 @@ function iconClasses(t) {
 function applyClasses(t, e, n, r) {
   const s = t.classList;
   if (r) {
-    const a = r.classList;
-    Array.from(a).forEach((o) => {
+    const i = r.classList;
+    Array.from(i).forEach((o) => {
       s.add(o);
     });
   }
-  const i = [];
-  return e.forEach((a) => {
-    s.contains(a) ? n.has(a) && i.push(a) : (s.add(a), i.push(a));
-  }), n.forEach((a) => {
-    e.has(a) || s.remove(a);
-  }), i;
+  const a = [];
+  return e.forEach((i) => {
+    s.contains(i) ? n.has(i) && a.push(i) : (s.add(i), a.push(i));
+  }), n.forEach((i) => {
+    e.has(i) || s.remove(i);
+  }), a;
 }
 function applyStyle(t, e, n) {
   const r = t.style;
-  (n || []).forEach((i) => {
-    r.removeProperty(i);
+  (n || []).forEach((a) => {
+    r.removeProperty(a);
   });
   const s = [];
-  for (const i in e)
-    r.getPropertyValue(i) || (s.push(i), r.setProperty(i, e[i]));
+  for (const a in e)
+    r.getPropertyValue(a) || (s.push(a), r.setProperty(a, e[a]));
   return s;
 }
 function renderInlineSVG(t, e, n) {
@@ -4401,26 +4401,26 @@ function renderInlineSVG(t, e, n) {
   } catch {
     return t;
   }
-  const s = e.customisations, i = iconToSVG(n, s), a = t[elementDataProperty], o = iconToHTML(replaceIDs(i.body), {
+  const s = e.customisations, a = iconToSVG(n, s), i = t[elementDataProperty], o = iconToHTML(replaceIDs(a.body), {
     "aria-hidden": "true",
     role: "img",
-    ...i.attributes
+    ...a.attributes
   });
   r.innerHTML = cleanUpInnerHTML(o);
   const l = r.childNodes[0], c = t.attributes;
   for (let h = 0; h < c.length; h++) {
-    const f = c.item(h), m = f.name;
-    m !== "class" && !l.hasAttribute(m) && l.setAttribute(m, f.value);
+    const f = c.item(h), g = f.name;
+    g !== "class" && !l.hasAttribute(g) && l.setAttribute(g, f.value);
   }
-  const u = iconClasses(e.icon), d = applyClasses(l, u, new Set(a && a.addedClasses), t), p = applyStyle(l, s.inline ? {
+  const u = iconClasses(e.icon), d = applyClasses(l, u, new Set(i && i.addedClasses), t), p = applyStyle(l, s.inline ? {
     "vertical-align": "-0.125em"
-  } : {}, a && a.addedStyles), g = {
+  } : {}, i && i.addedStyles), m = {
     ...e,
     status: "loaded",
     addedClasses: d,
     addedStyles: p
   };
-  return l[elementDataProperty] = g, t.parentNode && t.parentNode.replaceChild(l, t), l;
+  return l[elementDataProperty] = m, t.parentNode && t.parentNode.replaceChild(l, t), l;
 }
 function encodeSVGforURL(t) {
   return t.replace(/"/g, "'").replace(/%/g, "%25").replace(/#/g, "%23").replace(/</g, "%3C").replace(/>/g, "%3E").replace(/\s+/g, " ");
@@ -4455,23 +4455,23 @@ function fixSize(t) {
   return t + (t.match(/^[-0-9.]+$/) ? "px" : "");
 }
 function renderBackground(t, e, n, r) {
-  const s = e.customisations, i = iconToSVG(n, s), a = i.attributes, o = t[elementDataProperty], l = iconToHTML(i.body, {
-    ...a,
+  const s = e.customisations, a = iconToSVG(n, s), i = a.attributes, o = t[elementDataProperty], l = iconToHTML(a.body, {
+    ...i,
     width: n.width + "",
     height: n.height + ""
   }), c = iconClasses(e.icon), u = applyClasses(t, c, new Set(o && o.addedClasses)), p = {
     "--svg": svgToURL(l),
-    width: fixSize(a.width),
-    height: fixSize(a.height),
+    width: fixSize(i.width),
+    height: fixSize(i.height),
     ...commonProps,
     ...r ? monotoneProps : coloredProps
   };
   s.inline && (p["vertical-align"] = "-0.125em");
-  const g = applyStyle(t, p, o && o.addedStyles), h = {
+  const m = applyStyle(t, p, o && o.addedStyles), h = {
     ...e,
     status: "loaded",
     addedClasses: u,
-    addedStyles: g
+    addedStyles: m
   };
   return t[elementDataProperty] = h, t;
 }
@@ -4483,8 +4483,8 @@ function checkPendingIcons() {
 }
 function scanDOM(t, e = !1) {
   const n = /* @__PURE__ */ Object.create(null);
-  function r(s, i) {
-    const { provider: a, prefix: o, name: l } = s, c = getStorage(a, o), u = c.icons[l];
+  function r(s, a) {
+    const { provider: i, prefix: o, name: l } = s, c = getStorage(i, o), u = c.icons[l];
     if (u)
       return {
         status: "loaded",
@@ -4494,8 +4494,8 @@ function scanDOM(t, e = !1) {
       return {
         status: "missing"
       };
-    if (i && !isPending(s)) {
-      const d = n[a] || (n[a] = /* @__PURE__ */ Object.create(null));
+    if (a && !isPending(s)) {
+      const d = n[i] || (n[i] = /* @__PURE__ */ Object.create(null));
       (d[o] || (d[o] = /* @__PURE__ */ new Set())).add(l);
     }
     return {
@@ -4503,41 +4503,41 @@ function scanDOM(t, e = !1) {
     };
   }
   (t ? [t] : listRootNodes()).forEach((s) => {
-    const i = typeof s.node == "function" ? s.node() : s.node;
-    if (!i || !i.querySelectorAll)
+    const a = typeof s.node == "function" ? s.node() : s.node;
+    if (!a || !a.querySelectorAll)
       return;
-    let a = !1, o = !1;
+    let i = !1, o = !1;
     function l(c, u, d) {
       if (o || (o = !0, pauseObservingNode(s)), c.tagName.toUpperCase() !== "SVG") {
-        const p = u.mode, g = p === "mask" || (p === "bg" ? !1 : p === "style" ? d.body.indexOf("currentColor") !== -1 : null);
-        if (typeof g == "boolean") {
+        const p = u.mode, m = p === "mask" || (p === "bg" ? !1 : p === "style" ? d.body.indexOf("currentColor") !== -1 : null);
+        if (typeof m == "boolean") {
           renderBackground(c, u, {
             ...defaultIconProps,
             ...d
-          }, g);
+          }, m);
           return;
         }
       }
       renderInlineSVG(c, u, d);
     }
-    scanRootNode(i).forEach(({ node: c, props: u }) => {
+    scanRootNode(a).forEach(({ node: c, props: u }) => {
       const d = c[elementDataProperty];
       if (!d) {
-        const { status: g, icon: h } = r(u.icon, !0);
+        const { status: m, icon: h } = r(u.icon, !0);
         if (h) {
           l(c, u, h);
           return;
         }
-        a = a || g === "loading", c[elementDataProperty] = {
+        i = i || m === "loading", c[elementDataProperty] = {
           ...u,
-          status: g
+          status: m
         };
         return;
       }
       let p;
       if (propsChanged(d, u)) {
         if (p = r(u.icon, d.name !== u.name), !p.icon) {
-          a = a || p.status === "loading", Object.assign(d, {
+          i = i || p.status === "loading", Object.assign(d, {
             ...u,
             status: p.status
           });
@@ -4552,15 +4552,15 @@ function scanDOM(t, e = !1) {
         }
       }
       l(c, u, p.icon);
-    }), s.temporary && !a ? stopObserving(i) : e && a ? observe(i, !0) : o && s.observer && resumeObservingNode(s);
+    }), s.temporary && !i ? stopObserving(a) : e && i ? observe(a, !0) : o && s.observer && resumeObservingNode(s);
   });
   for (const s in n) {
-    const i = n[s];
-    for (const a in i) {
-      const o = i[a];
+    const a = n[s];
+    for (const i in a) {
+      const o = a[i];
       loadIcons(Array.from(o).map((l) => ({
         provider: s,
-        prefix: a,
+        prefix: i,
         name: l
       })), checkPendingIcons);
     }
@@ -4577,12 +4577,12 @@ function generateIcon(t, e, n = !1) {
   const r = getIconData(t);
   if (!r)
     return null;
-  const s = stringToIcon(t), i = mergeCustomisations(defaultExtendedIconCustomisations, e || {}), a = renderInlineSVG(document.createElement("span"), {
+  const s = stringToIcon(t), a = mergeCustomisations(defaultExtendedIconCustomisations, e || {}), i = renderInlineSVG(document.createElement("span"), {
     name: t,
     icon: s,
-    customisations: i
+    customisations: a
   }, r);
-  return n ? a.outerHTML : a;
+  return n ? i.outerHTML : i;
 }
 function getVersion() {
   return "3.1.1";
@@ -4705,14 +4705,14 @@ function formatValueForInputType$1(t, e) {
   switch (e) {
     case "date":
       if (n) {
-        const r = n.getFullYear(), s = String(n.getMonth() + 1).padStart(2, "0"), i = String(n.getDate()).padStart(2, "0");
-        return `${r}-${s}-${i}`;
+        const r = n.getFullYear(), s = String(n.getMonth() + 1).padStart(2, "0"), a = String(n.getDate()).padStart(2, "0");
+        return `${r}-${s}-${a}`;
       }
       break;
     case "datetime-local":
       if (n) {
-        const r = n.getFullYear(), s = String(n.getMonth() + 1).padStart(2, "0"), i = String(n.getDate()).padStart(2, "0"), a = String(n.getHours()).padStart(2, "0"), o = String(n.getMinutes()).padStart(2, "0");
-        return `${r}-${s}-${i}T${a}:${o}`;
+        const r = n.getFullYear(), s = String(n.getMonth() + 1).padStart(2, "0"), a = String(n.getDate()).padStart(2, "0"), i = String(n.getHours()).padStart(2, "0"), o = String(n.getMinutes()).padStart(2, "0");
+        return `${r}-${s}-${a}T${i}:${o}`;
       }
       break;
     case "time":
@@ -4735,8 +4735,8 @@ function formatValueForInputType$1(t, e) {
       if (n) {
         const r = new Date(n.getTime());
         r.setHours(0, 0, 0, 0), r.setDate(r.getDate() + 3 - (r.getDay() + 6) % 7);
-        const s = new Date(r.getFullYear(), 0, 4), i = 1 + Math.round(((r.getTime() - s.getTime()) / 864e5 - 3 + (s.getDay() + 6) % 7) / 7);
-        return `${r.getFullYear()}-W${String(i).padStart(2, "0")}`;
+        const s = new Date(r.getFullYear(), 0, 4), a = 1 + Math.round(((r.getTime() - s.getTime()) / 864e5 - 3 + (s.getDay() + 6) % 7) / 7);
+        return `${r.getFullYear()}-W${String(a).padStart(2, "0")}`;
       }
       break;
   }
@@ -4750,12 +4750,12 @@ let CDNManager$1 = (A = class {
     if (this.loadingPromises.has(e))
       return this.loadingPromises.get(e);
     const n = new Promise((r, s) => {
-      const i = document.createElement("script");
-      i.src = e, i.onload = () => {
+      const a = document.createElement("script");
+      a.src = e, a.onload = () => {
         this.loadedScripts.add(e), this.loadingPromises.delete(e), r();
-      }, i.onerror = () => {
+      }, a.onerror = () => {
         this.loadingPromises.delete(e), s(new Error(`Échec du chargement: ${e}`));
-      }, document.head.appendChild(i);
+      }, document.head.appendChild(a);
     });
     return this.loadingPromises.set(e, n), n;
   }
@@ -4783,8 +4783,8 @@ let CDNManager$1 = (A = class {
     if (window._pdfmeModules)
       return window._pdfmeModules;
     try {
-      const e = import("https://cdn.jsdelivr.net/npm/@pdfme/common@5.5.8/+esm"), n = import("https://cdn.jsdelivr.net/npm/@pdfme/generator@5.5.8/+esm"), r = import("https://cdn.jsdelivr.net/npm/@pdfme/schemas@5.5.8/+esm"), [s, i, a] = await Promise.all([e, n, r]);
-      return window._pdfmeModules = { common: s, generator: i, schemas: a }, window._pdfmeModules;
+      const e = import("https://cdn.jsdelivr.net/npm/@pdfme/common@5.5.8/+esm"), n = import("https://cdn.jsdelivr.net/npm/@pdfme/generator@5.5.8/+esm"), r = import("https://cdn.jsdelivr.net/npm/@pdfme/schemas@5.5.8/+esm"), [s, a, i] = await Promise.all([e, n, r]);
+      return window._pdfmeModules = { common: s, generator: a, schemas: i }, window._pdfmeModules;
     } catch (e) {
       throw console.error("[pdfme CDN] ERREUR chargement:", e), console.error("[pdfme CDN] Stack:", e.stack), e;
     }
@@ -4832,7 +4832,7 @@ let CDNManager$1 = (A = class {
             }
           }), document.head.insertBefore(u, document.head.firstChild), await new Promise((d) => setTimeout(d, 0));
         }
-        const e = await import("https://esm.sh/@codemirror/state@6.4.1"), n = await import("https://esm.sh/@codemirror/view@6.26.3?deps=@codemirror/state@6.4.1"), r = await import("https://esm.sh/@codemirror/language@6.10.1?deps=@codemirror/state@6.4.1,@codemirror/view@6.26.3"), s = await import("https://esm.sh/@codemirror/commands@6.5.0?deps=@codemirror/state@6.4.1,@codemirror/view@6.26.3,@codemirror/language@6.10.1"), i = await import("https://esm.sh/@codemirror/search@6.5.6?deps=@codemirror/state@6.4.1,@codemirror/view@6.26.3"), a = await import("https://esm.sh/@codemirror/autocomplete@6.16.0?deps=@codemirror/state@6.4.1,@codemirror/view@6.26.3,@codemirror/language@6.10.1,@codemirror/commands@6.5.0"), o = await import("https://esm.sh/@codemirror/lang-sql@6.6.4?deps=@codemirror/state@6.4.1,@codemirror/view@6.26.3,@codemirror/language@6.10.1,@codemirror/autocomplete@6.16.0"), l = await import("https://esm.sh/@codemirror/theme-one-dark@6.1.2?deps=@codemirror/state@6.4.1,@codemirror/view@6.26.3"), c = [
+        const e = await import("https://esm.sh/@codemirror/state@6.4.1"), n = await import("https://esm.sh/@codemirror/view@6.26.3?deps=@codemirror/state@6.4.1"), r = await import("https://esm.sh/@codemirror/language@6.10.1?deps=@codemirror/state@6.4.1,@codemirror/view@6.26.3"), s = await import("https://esm.sh/@codemirror/commands@6.5.0?deps=@codemirror/state@6.4.1,@codemirror/view@6.26.3,@codemirror/language@6.10.1"), a = await import("https://esm.sh/@codemirror/search@6.5.6?deps=@codemirror/state@6.4.1,@codemirror/view@6.26.3"), i = await import("https://esm.sh/@codemirror/autocomplete@6.16.0?deps=@codemirror/state@6.4.1,@codemirror/view@6.26.3,@codemirror/language@6.10.1,@codemirror/commands@6.5.0"), o = await import("https://esm.sh/@codemirror/lang-sql@6.6.4?deps=@codemirror/state@6.4.1,@codemirror/view@6.26.3,@codemirror/language@6.10.1,@codemirror/autocomplete@6.16.0"), l = await import("https://esm.sh/@codemirror/theme-one-dark@6.1.2?deps=@codemirror/state@6.4.1,@codemirror/view@6.26.3"), c = [
           n.lineNumbers(),
           n.highlightActiveLineGutter(),
           n.highlightSpecialChars(),
@@ -4844,19 +4844,19 @@ let CDNManager$1 = (A = class {
           r.indentOnInput(),
           r.syntaxHighlighting(r.defaultHighlightStyle, { fallback: !0 }),
           r.bracketMatching(),
-          a.closeBrackets(),
-          a.autocompletion(),
+          i.closeBrackets(),
+          i.autocompletion(),
           n.rectangularSelection(),
           n.crosshairCursor(),
           n.highlightActiveLine(),
-          i.highlightSelectionMatches(),
+          a.highlightSelectionMatches(),
           n.keymap.of([
-            ...a.closeBracketsKeymap,
+            ...i.closeBracketsKeymap,
             ...s.defaultKeymap,
-            ...i.searchKeymap,
+            ...a.searchKeymap,
             ...s.historyKeymap,
             ...r.foldKeymap,
-            ...a.completionKeymap
+            ...i.completionKeymap
           ])
         ];
         return this.codeMirrorSQLModules = {
@@ -4881,25 +4881,25 @@ let CDNManager$1 = (A = class {
     if (!this.codeMirrorSQLModules)
       throw new Error("CodeMirror SQL non chargé. Appelez loadCodeMirrorSQL() d'abord.");
     const {
-      EditorView: i,
-      basicSetup: a,
+      EditorView: a,
+      basicSetup: i,
       sql: o,
       StandardSQL: l,
       DuckDBSQL: c,
       sqlExtension: u,
       cteCompletionSource: d,
       oneDark: p
-    } = this.codeMirrorSQLModules, g = ((v = document.documentElement.getAttribute("data-theme")) == null ? void 0 : v.includes("dark")) || window.matchMedia("(prefers-color-scheme: dark)").matches, h = s.schema || {}, f = s.dialect === "duckdb" ? c : l, m = [
-      a,
+    } = this.codeMirrorSQLModules, m = ((v = document.documentElement.getAttribute("data-theme")) == null ? void 0 : v.includes("dark")) || window.matchMedia("(prefers-color-scheme: dark)").matches, h = s.schema || {}, f = s.dialect === "duckdb" ? c : l, g = [
+      i,
       o({
         dialect: f,
         schema: h,
         upperCaseKeywords: !0
       }),
-      i.updateListener.of((w) => {
+      a.updateListener.of((w) => {
         w.docChanged && r && r(w.state.doc.toString());
       }),
-      i.theme({
+      a.theme({
         "&": {
           fontSize: "14px",
           minHeight: "20px",
@@ -4924,9 +4924,9 @@ let CDNManager$1 = (A = class {
         }
       })
     ];
-    return d && m.push(f.language.data.of({
+    return d && g.push(f.language.data.of({
       autocomplete: d
-    })), u && m.push(u({
+    })), u && g.push(u({
       linterConfig: { delay: 300 },
       gutterConfig: {
         backgroundColor: "#3b82f6",
@@ -4941,9 +4941,9 @@ let CDNManager$1 = (A = class {
         enableTables: !0,
         enableColumns: !0
       }
-    })), g && m.push(p), new i({
+    })), m && g.push(p), new a({
       doc: n || "",
-      extensions: m,
+      extensions: g,
       parent: e
     });
   }
@@ -4953,8 +4953,8 @@ let CDNManager$1 = (A = class {
         const e = "https://cdn.jsdelivr.net/npm/@perspective-dev/viewer/dist/css/themes.css";
         if (!document.querySelector(`link[href="${e}"]`)) {
           const r = document.createElement("link");
-          r.rel = "stylesheet", r.crossOrigin = "anonymous", r.href = e, await new Promise((s, i) => {
-            r.onload = s, r.onerror = i, document.head.appendChild(r);
+          r.rel = "stylesheet", r.crossOrigin = "anonymous", r.href = e, await new Promise((s, a) => {
+            r.onload = s, r.onerror = a, document.head.appendChild(r);
           });
         }
         await import("https://cdn.jsdelivr.net/npm/@perspective-dev/viewer@4.1.0/dist/cdn/perspective-viewer.js"), await import("https://cdn.jsdelivr.net/npm/@perspective-dev/viewer-datagrid@4.1.0/dist/cdn/perspective-viewer-datagrid.js"), await import("https://cdn.jsdelivr.net/npm/@perspective-dev/viewer-d3fc@4.1.0/dist/cdn/perspective-viewer-d3fc.js"), await import("https://cdn.jsdelivr.net/npm/@perspective-dev/viewer-openlayers@4.1.0/dist/cdn/perspective-viewer-openlayers.js");
@@ -4985,7 +4985,7 @@ const CELL_TYPE_SCHEMAS$1 = {
       queryCount: 1,
       queryNames: ["main"],
       specificParams: [
-        { key: "queries.main.engine", label: "Type de langage", tooltip: "Texte: Markdown saisi directement | SQL: requête retournant du Markdown | JS: expression JavaScript retournant du Markdown", inputType: "select", options: [{ value: "text", label: "📝Texte" }, { value: "sql", label: "🗄️SQL" }, { value: "js", label: "⚡JavaScript" }] },
+        { key: "queries.main.engine", label: "Type de langage", tooltip: "Texte: Markdown saisi directement | SQL: requête retournant du Markdown | JS: expression JavaScript retournant du Markdown", inputType: "select", options: [{ value: "text", label: "Texte" }, { value: "sql", label: "SQL" }, { value: "js", label: "JavaScript" }] },
         { key: "queries.main.clientVisible", label: "Afficher l'éditeur en mode client", inputType: "checkbox" }
       ],
       defaults: { queries: [{ name: "main", sql: "# Nouvelle section", engine: "text", clientVisible: !1 }] },
@@ -5057,7 +5057,7 @@ END AS fallback_query;
 ` }, sheetSelection: { type: { auto: !0 }, index: 0, name: "" } } }
       },
       bodyFamily: "fileDropZone",
-      bodyConfig: { fileSlot: "source", fileKey: "_fileName", fileBase64Key: "fileBase64", fileFileNameKey: "fileName", accept: ".csv,.parquet,.xlsx,.xls", inputId: "fileInput_", emptyIcon: "📁", emptyTitleKey: "title", emptySubtitle: "→ {name}", handlers: { drop: "handleSingleSourceDrop", select: "handleSingleSourceFileSelect", remove: "removeSingleSourceFile", download: "downloadSourceFile" }, minHeight: "80px", showQueryInDevMode: !0 },
+      bodyConfig: { fileSlot: "source", fileKey: "_fileName", fileBase64Key: "fileBase64", fileFileNameKey: "fileName", accept: ".csv,.parquet,.xlsx,.xls", inputId: "fileInput_", emptyIcon: "material-symbols-light:create-new-folder", emptyTitleKey: "title", emptySubtitle: "→ {name}", handlers: { drop: "handleSingleSourceDrop", select: "handleSingleSourceFileSelect", remove: "removeSingleSourceFile", download: "downloadSourceFile" }, minHeight: "80px", showQueryInDevMode: !0 },
       bodyDisplay: { showSkeleton: { when: "running", sourceLoading: !0 } }
     },
     buttonRunNextCells: {
@@ -5068,9 +5068,9 @@ END AS fallback_query;
       exportFields: ["buttonLabel"],
       commonParams: ["name", "buttonLabel"],
       specificParams: [],
-      defaults: { buttonLabel: "▶️ Exécuter" },
+      defaults: { buttonLabel: "Exécuter" },
       bodyFamily: "buttonRun",
-      bodyConfig: { defaultLabel: "▶️ Exécuter", action: "runCellsAfter" }
+      bodyConfig: { defaultLabel: "Exécuter", action: "runCellsAfter" }
     },
     sqlRecursiveParse: {
       executeHandler: "executeSqlRecursiveParseCell",
@@ -5116,7 +5116,7 @@ END AS fallback_query;
       queryCount: 1,
       queryNames: ["main"],
       specificParams: [
-        { key: "queries.main.engine", label: "Type de langage", tooltip: "SQL: requête retournant du HTML | JS: retourne une chaîne HTML | Texte: HTML saisi directement", inputType: "select", options: [{ value: "sql", label: "🗄️SQL" }, { value: "js", label: "⚡JavaScript" }, { value: "text", label: "📝Texte" }] },
+        { key: "queries.main.engine", label: "Type de langage", tooltip: "SQL: requête retournant du HTML | JS: retourne une chaîne HTML | Texte: HTML saisi directement", inputType: "select", options: [{ value: "sql", label: "SQL" }, { value: "js", label: "JavaScript" }, { value: "text", label: "Texte" }] },
         { key: "queries.main.clientVisible", label: "Afficher l'éditeur SQL en mode client", tooltip: "Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur. En mode client, seul le résultat sera affiché.", inputType: "checkbox" }
       ],
       defaults: { queries: [{ name: "main", sql: "<html><body><h1>Hello</h1></body></html>", engine: "text", clientVisible: !1 }] },
@@ -5157,12 +5157,12 @@ END AS fallback_query;
       titleLabel: "Libellé",
       titleTooltip: "Texte affiché à gauche du champ de saisie",
       specificParams: [
-        { key: "queries.main.engine", label: "Type de langage", tooltip: "SQL: exécute une requête SQL | JS: exécute une expression JavaScript | Texte: valeur retournée directement sans moteur", inputType: "select", options: [{ value: "sql", label: "🗄️SQL" }, { value: "js", label: "⚡JavaScript" }, { value: "text", label: "📝Texte" }] },
-        { key: "paramType", label: "Type de composant", tooltip: "Choisissez le type de composant d'interface pour ce paramètre", inputType: "select", options: [{ value: "input", label: "📝 Champ texte (input)" }, { value: "dropdown", label: "📋 Liste déroulante (dropdown)" }, { value: "range", label: "🎚️ Curseur (range)" }] },
+        { key: "queries.main.engine", label: "Type de langage", tooltip: "SQL: exécute une requête SQL | JS: exécute une expression JavaScript | Texte: valeur retournée directement sans moteur", inputType: "select", options: [{ value: "sql", label: "SQL" }, { value: "js", label: "JavaScript" }, { value: "text", label: "Texte" }] },
+        { key: "paramType", label: "Type de composant", tooltip: "Choisissez le type de composant d'interface pour ce paramètre", inputType: "select", options: [{ value: "input", label: "Champ texte (input)" }, { value: "dropdown", label: "Liste déroulante (dropdown)" }, { value: "range", label: "Curseur (range)" }] },
         { key: "userVisible", label: "Visible en mode client", tooltip: "Si décoché, ce paramètre sera caché en mode client (paramètre intermédiaire)", inputType: "checkbox" },
         { key: "userEditable", label: "Modifiable par l'utilisateur", tooltip: "Si décoché, l'utilisateur ne pourra pas modifier la valeur calculée par SQL", inputType: "checkbox" },
         { key: "preserveUserValue", label: "Préserver la valeur utilisateur lors de la ré-exécution", tooltip: "Si coché et que l'utilisateur a modifié la valeur, la ré-exécution de la cellule ne réinitialisera pas la valeur", inputType: "checkbox" },
-        { key: "inputType", label: "Type de champ", tooltip: "Choisissez le type HTML du champ de saisie", inputType: "select", when: { paramType: "input" }, options: [{ value: "text", label: "📝 Texte" }, { value: "password", label: "🔒 Mot de passe" }, { value: "email", label: "📧 Email" }, { value: "number", label: "🔢 Nombre" }, { value: "date", label: "📅 Date" }, { value: "datetime-local", label: "📆 Date et heure" }, { value: "week", label: "📅 Semaine" }, { value: "month", label: "📅 Mois" }, { value: "tel", label: "📞 Téléphone" }, { value: "url", label: "🔗 URL" }, { value: "search", label: "🔍 Recherche" }, { value: "time", label: "⏰ Heure" }] },
+        { key: "inputType", label: "Type de champ", tooltip: "Choisissez le type HTML du champ de saisie", inputType: "select", when: { paramType: "input" }, options: [{ value: "text", label: "Texte" }, { value: "password", label: "Mot de passe" }, { value: "email", label: "Email" }, { value: "number", label: "Nombre" }, { value: "date", label: "Date" }, { value: "datetime-local", label: "Date et heure" }, { value: "week", label: "Semaine" }, { value: "month", label: "Mois" }, { value: "tel", label: "Téléphone" }, { value: "url", label: "URL" }, { value: "search", label: "Recherche" }, { value: "time", label: "Heure" }] },
         { key: "rangeMin", label: "Valeur minimum", tooltip: "Valeur minimale du curseur (défaut: 0)", inputType: "number", when: { paramType: "range" }, placeholder: "0" },
         { key: "rangeMax", label: "Valeur maximum", tooltip: "Valeur maximale du curseur (défaut: 100)", inputType: "number", when: { paramType: "range" }, placeholder: "100" },
         { key: "rangeStep", label: "Pas (step)", tooltip: "Incrément entre chaque valeur du curseur (défaut: 1)", inputType: "number", when: { paramType: "range" }, placeholder: "1", min: 1e-3 }
@@ -5211,7 +5211,7 @@ END AS fallback_query;
           { name: "main", sql: "SELECT * FROM source1 LIMIT 10", engine: "sql", clientVisible: !1 },
           { name: "filename", sql: "SELECT 'document_' || STRFTIME(current_timestamp::TIMESTAMP, '%Y-%m-%d_%H-%M-%S') || '.docx' AS filename;", engine: "sql", clientVisible: !1 }
         ],
-        buttonLabel: "📄 Générer les documents"
+        buttonLabel: "Générer les documents"
       },
       bodyFamily: "publipostageWord",
       bodyConfig: {
@@ -5220,11 +5220,11 @@ END AS fallback_query;
         fileBase64Key: "docxTemplateBase64",
         fileFileNameKey: "docxTemplateFileName",
         accept: ".docx",
-        emptyIcon: "📄",
+        emptyIcon: "material-symbols-light:description",
         emptyTitle: "Glissez-déposez votre template Word (.docx)",
         emptySubtitle: "Template de publipostage",
         queryLabels: ["Requête de données", "Requête de nom de fichier"],
-        defaultButtonLabel: "📄 Générer les documents",
+        defaultButtonLabel: "Générer les documents",
         buttonDisabledCondition: "!cellItem.cell.docxTemplateFileName"
       }
     },
@@ -5303,7 +5303,7 @@ FROM v_source LIMIT 10`, engine: "sql", clientVisible: !1 },
   },
   publipostageWord: {
     onInit(t, e) {
-      e.buttonLabel === void 0 && (e.buttonLabel = "📄 Générer les documents");
+      e.buttonLabel === void 0 && (e.buttonLabel = "Générer les documents");
     }
   },
   pdfme: {
@@ -5320,12 +5320,12 @@ function initializeCell$1(t, e, n = {}) {
     _results: null,
     _resultInfo: null,
     _order: ConfigManager.normalizeOrder(t.order, e)
-  }, i = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[t == null ? void 0 : t.type];
-  if (i != null && i.initProps)
-    for (const [o, l] of Object.entries(i.initProps))
+  }, a = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[t == null ? void 0 : t.type];
+  if (a != null && a.initProps)
+    for (const [o, l] of Object.entries(a.initProps))
       s[o] = Array.isArray(l) ? [] : l;
-  if (i != null && i.initFileSlot) {
-    const { slot: o, asBlob: l } = i.initFileSlot;
+  if (a != null && a.initFileSlot) {
+    const { slot: o, asBlob: l } = a.initFileSlot;
     ConfigManager.ensureCellFiles(t), s.files = t.files;
     const c = ConfigManager.getCellFileData(t);
     if (l)
@@ -5337,8 +5337,8 @@ function initializeCell$1(t, e, n = {}) {
         s._fileName = "", s._currentFile = null;
     else c && (s.docxTemplateBase64 = c.base64, s.docxTemplateFileName = c.fileName);
   }
-  const a = CELL_TYPE_HANDLERS[t == null ? void 0 : t.type];
-  return a != null && a.onInit && a.onInit(t, s), s;
+  const i = CELL_TYPE_HANDLERS[t == null ? void 0 : t.type];
+  return i != null && i.onInit && i.onInit(t, s), s;
 }
 let CellConfigService$1 = class {
   static getSchemaForType(e) {
@@ -5350,8 +5350,8 @@ let CellConfigService$1 = class {
     const s = CELL_TYPE_SCHEMAS$1.types[n];
     if (!s) return r;
     s[e + "Label"] || s[e + "Tooltip"] || s[e + "Placeholder"];
-    const i = s[e + "Label"] ?? r.label, a = s[e + "Tooltip"] ?? r.tooltip, o = s[e + "Placeholder"] ?? r.placeholder;
-    return { ...r, label: i, tooltip: a, placeholder: o };
+    const a = s[e + "Label"] ?? r.label, i = s[e + "Tooltip"] ?? r.tooltip, o = s[e + "Placeholder"] ?? r.placeholder;
+    return { ...r, label: a, tooltip: i, placeholder: o };
   }
   static getCommonParamsForType(e) {
     const n = CELL_TYPE_SCHEMAS$1.types[e];
@@ -5365,18 +5365,18 @@ let CellConfigService$1 = class {
     var l;
     const s = CELL_TYPE_SCHEMAS$1.types[n];
     if (!s || !e) return;
-    const { baseName: i } = r, a = s.defaults || {};
-    for (const [c, u] of Object.entries(a))
+    const { baseName: a } = r, i = s.defaults || {};
+    for (const [c, u] of Object.entries(i))
       if (c === "queries") {
-        const d = s.queryNames ?? (s.queryCount ? Array.from({ length: s.queryCount }, (p, g) => g === 0 ? "main" : g === 1 ? "filename" : "query" + g) : ["main"]);
+        const d = s.queryNames ?? (s.queryCount ? Array.from({ length: s.queryCount }, (p, m) => m === 0 ? "main" : m === 1 ? "filename" : "query" + m) : ["main"]);
         for (let p = 0; p < d.length; p++) {
-          const g = d[p];
-          ConfigManager.ensureCellQueries(e, g);
-          const h = Array.isArray(u) ? u.find((m) => m.name === g) || u[p] : { sql: "", engine: "sql", clientVisible: !1 }, f = ConfigManager.getQueryByName(e, g);
+          const m = d[p];
+          ConfigManager.ensureCellQueries(e, m);
+          const h = Array.isArray(u) ? u.find((g) => g.name === m) || u[p] : { sql: "", engine: "sql", clientVisible: !1 }, f = ConfigManager.getQueryByName(e, m);
           if (f && h) {
             if (!f.sql && h.sql) {
-              const m = typeof h.sql == "string" && i ? h.sql.replace(/\{name\}/g, i) : h.sql;
-              f.sql = m;
+              const g = typeof h.sql == "string" && a ? h.sql.replace(/\{name\}/g, a) : h.sql;
+              f.sql = g;
             }
             h.engine !== void 0 && f.engine === void 0 && (f.engine = h.engine), h.clientVisible !== void 0 && f.clientVisible === void 0 && (f.clientVisible = h.clientVisible);
           }
@@ -5394,11 +5394,11 @@ let CellConfigService$1 = class {
     if (!e) return;
     const s = CELL_TYPE_SCHEMAS$1.types[n];
     if (!s) return;
-    const i = r.oldType || e.type;
-    CELL_TYPE_SCHEMAS$1.types[i];
-    const a = /* @__PURE__ */ new Set([...s.commonParams || [], ...(s.specificParams || []).map((l) => (typeof l == "object" ? l.key : l).split(".")[0].split("[")[0])]), o = ["content", "paramType", "inputType", "rangeMin", "rangeMax", "rangeStep", "userVisible", "userEditable", "preserveUserValue", "maxRows", "perspectiveCdns"];
+    const a = r.oldType || e.type;
+    CELL_TYPE_SCHEMAS$1.types[a];
+    const i = /* @__PURE__ */ new Set([...s.commonParams || [], ...(s.specificParams || []).map((l) => (typeof l == "object" ? l.key : l).split(".")[0].split("[")[0])]), o = ["content", "paramType", "inputType", "rangeMin", "rangeMax", "rangeStep", "userVisible", "userEditable", "preserveUserValue", "maxRows", "perspectiveCdns"];
     for (const l of o)
-      a.has(l) || delete e[l];
+      i.has(l) || delete e[l];
     delete e.json, e.type = n, this.ensureCellFromSchema(e, n, r);
   }
   static isSpecificParamVisible(e, n) {
@@ -5409,16 +5409,16 @@ let CellConfigService$1 = class {
   }
   /** Lit une valeur via un chemin (ex: 'queries.main.sql', 'queries[0].sql' rétrocompat, 'json.xlsx'). Pour json.xlsx retourne JSON.stringify. */
   static getCellValueByPath(e, n) {
-    var a, o, l, c, u;
+    var i, o, l, c, u;
     if (!e || !n) return;
     if (n === "content") {
       const d = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[e == null ? void 0 : e.type];
       if (d != null && d.contentKey) {
-        const p = ConfigManager.getCellEngine(e, "main"), g = ConfigManager.getCellQuery(e, "main") || "";
-        return p === "sql" || p === "js" ? g : ConfigManager.getCellEditableContent(e);
+        const p = ConfigManager.getCellEngine(e, "main"), m = ConfigManager.getCellQuery(e, "main") || "";
+        return p === "sql" || p === "js" ? m : ConfigManager.getCellEditableContent(e);
       }
     }
-    if (n === "json.xlsx") return JSON.stringify(((a = e.json) == null ? void 0 : a.xlsx) || {}, null, 2);
+    if (n === "json.xlsx") return JSON.stringify(((i = e.json) == null ? void 0 : i.xlsx) || {}, null, 2);
     if (n === "json.perspectiveConfig") {
       const d = (o = e.json) == null ? void 0 : o.perspectiveConfig;
       return typeof d == "string" ? d : d != null ? JSON.stringify(d, null, 2) : "";
@@ -5429,28 +5429,28 @@ let CellConfigService$1 = class {
     }
     const r = n.match(/^queries\[(\d+)\]\.(.*)$/);
     if (r) {
-      const d = parseInt(r[1], 10), p = r[2], g = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[e == null ? void 0 : e.type], h = ((l = g == null ? void 0 : g.queryNames) == null ? void 0 : l[d]) ?? (d === 0 ? "main" : d === 1 ? "filename" : "");
+      const d = parseInt(r[1], 10), p = r[2], m = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[e == null ? void 0 : e.type], h = ((l = m == null ? void 0 : m.queryNames) == null ? void 0 : l[d]) ?? (d === 0 ? "main" : d === 1 ? "filename" : "");
       h && (n = `queries.${h}.${p}`);
     }
     if (n.startsWith("queries.")) {
       const d = n.split(".");
       if (d.length >= 3 && d[0] === "queries") {
-        const p = d[1], g = d.slice(2).join(".");
+        const p = d[1], m = d.slice(2).join(".");
         let h = Array.isArray(e.queries) && e.queries.find((f) => f.name === p);
         if (!h) {
-          const f = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[e == null ? void 0 : e.type], m = (c = f == null ? void 0 : f.queryNames) == null ? void 0 : c.indexOf(p);
-          m >= 0 && ((u = e.queries) != null && u[m]) && (h = e.queries[m]);
+          const f = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[e == null ? void 0 : e.type], g = (c = f == null ? void 0 : f.queryNames) == null ? void 0 : c.indexOf(p);
+          g >= 0 && ((u = e.queries) != null && u[g]) && (h = e.queries[g]);
         }
-        if (h && g) {
-          const f = h[g], m = ConfigManager.getDefaultEngineForType(e == null ? void 0 : e.type, p);
-          return g === "engine" && f === void 0 ? m : f;
+        if (h && m) {
+          const f = h[m], g = ConfigManager.getDefaultEngineForType(e == null ? void 0 : e.type, p);
+          return m === "engine" && f === void 0 ? g : f;
         }
       }
     }
     const s = n.replace(/\]/g, "").split(/\.|\[/).filter(Boolean);
-    let i = e;
-    for (const d of s) i = i == null ? void 0 : i[isNaN(d) ? d : parseInt(d, 10)];
-    return i;
+    let a = e;
+    for (const d of s) a = a == null ? void 0 : a[isNaN(d) ? d : parseInt(d, 10)];
+    return a;
   }
   /** Écrit une valeur via un chemin. Pour json.xlsx : value est une chaîne JSON. Supporte queries.main.xxx et queries[0].xxx (rétrocompat). */
   static setCellValueByPath(e, n, r) {
@@ -5490,22 +5490,22 @@ let CellConfigService$1 = class {
       if (c.length >= 3 && c[0] === "queries") {
         const u = c[1], d = c.slice(2).join(".");
         Array.isArray(e.queries) || (e.queries = []);
-        let p = e.queries.find((g) => g.name === u);
+        let p = e.queries.find((m) => m.name === u);
         if (!p) {
-          const g = ConfigManager.getDefaultEngineForType(e == null ? void 0 : e.type, u);
-          p = { name: u, sql: "", engine: g, clientVisible: !1 }, e.queries.push(p);
+          const m = ConfigManager.getDefaultEngineForType(e == null ? void 0 : e.type, u);
+          p = { name: u, sql: "", engine: m, clientVisible: !1 }, e.queries.push(p);
         }
         p && d && (p[d] = r);
         return;
       }
     }
-    const i = n.replace(/\]/g, "").split(/\.|\[/).filter(Boolean), a = i.pop();
+    const a = n.replace(/\]/g, "").split(/\.|\[/).filter(Boolean), i = a.pop();
     let o = e;
-    for (let c = 0; c < i.length; c++) {
-      const u = i[c], d = isNaN(u) ? u : parseInt(u, 10), p = i[c + 1];
+    for (let c = 0; c < a.length; c++) {
+      const u = a[c], d = isNaN(u) ? u : parseInt(u, 10), p = a[c + 1];
       o[d] === void 0 && (o[d] = p !== void 0 && !isNaN(p) ? [] : {}), o = o[d];
     }
-    o && (o[a] = r);
+    o && (o[i] = r);
   }
 };
 var $;
@@ -5513,8 +5513,8 @@ let GistEncrypt$1 = ($ = class {
   static _uint8ArrayToBase64(e) {
     let r = "";
     for (let s = 0; s < e.length; s += 32768) {
-      const i = e.subarray(s, Math.min(s + 32768, e.length));
-      r += String.fromCharCode.apply(null, i);
+      const a = e.subarray(s, Math.min(s + 32768, e.length));
+      r += String.fromCharCode.apply(null, a);
     }
     return btoa(r);
   }
@@ -5530,10 +5530,10 @@ let GistEncrypt$1 = ($ = class {
   }
   /** Dérive une clé AES depuis la passphrase */
   static async deriveKey(e, n, r = this.DEFAULT_ITERATIONS) {
-    const s = new TextEncoder(), i = await crypto.subtle.importKey("raw", s.encode(e), "PBKDF2", !1, ["deriveBits", "deriveKey"]);
+    const s = new TextEncoder(), a = await crypto.subtle.importKey("raw", s.encode(e), "PBKDF2", !1, ["deriveBits", "deriveKey"]);
     return crypto.subtle.deriveKey(
       { name: "PBKDF2", salt: n, iterations: r, hash: "SHA-256" },
-      i,
+      a,
       { name: "AES-GCM", length: 256 },
       !1,
       ["encrypt", "decrypt"]
@@ -5544,10 +5544,10 @@ let GistEncrypt$1 = ($ = class {
    * { _encrypted, kdf, iterations, salt, iv, ciphertext }
    */
   static async encrypt(e, n) {
-    const r = crypto.getRandomValues(new Uint8Array(16)), s = crypto.getRandomValues(new Uint8Array(12)), i = await this.deriveKey(n, r), a = new TextEncoder(), o = await crypto.subtle.encrypt(
+    const r = crypto.getRandomValues(new Uint8Array(16)), s = crypto.getRandomValues(new Uint8Array(12)), a = await this.deriveKey(n, r), i = new TextEncoder(), o = await crypto.subtle.encrypt(
       { name: "AES-GCM", iv: s },
-      i,
-      a.encode(e)
+      a,
+      i.encode(e)
     );
     return {
       [this.ENCRYPTED_MARKER]: !0,
@@ -5564,10 +5564,10 @@ let GistEncrypt$1 = ($ = class {
   static async decrypt(e, n) {
     if (!e || !e[this.ENCRYPTED_MARKER] || !e.ciphertext || !e.salt || e.iv === void 0)
       throw new Error("Contenu non chiffré ou format invalide");
-    const r = this._base64ToUint8Array(e.salt), s = this._base64ToUint8Array(e.iv), i = this._base64ToUint8Array(e.ciphertext), a = e.iterations || this.DEFAULT_ITERATIONS, o = await this.deriveKey(n, r, a), l = await crypto.subtle.decrypt(
+    const r = this._base64ToUint8Array(e.salt), s = this._base64ToUint8Array(e.iv), a = this._base64ToUint8Array(e.ciphertext), i = e.iterations || this.DEFAULT_ITERATIONS, o = await this.deriveKey(n, r, i), l = await crypto.subtle.decrypt(
       { name: "AES-GCM", iv: s },
       o,
-      i
+      a
     );
     return new TextDecoder().decode(l);
   }
@@ -5587,26 +5587,26 @@ let GistEncrypt$1 = ($ = class {
   static async compressGzip(e) {
     if (typeof CompressionStream > "u")
       throw new Error("CompressionStream non supporté");
-    const n = new CompressionStream("gzip"), r = n.readable.getReader(), s = [], i = (async () => {
+    const n = new CompressionStream("gzip"), r = n.readable.getReader(), s = [], a = (async () => {
       let o = !1;
       for (; !o; ) {
         const { value: l, done: c } = await r.read();
         o = c, l && s.push(l);
       }
-    })(), a = n.writable.getWriter();
-    return await a.write(new Uint8Array(e)), await a.close(), await i, await new Blob(s).arrayBuffer();
+    })(), i = n.writable.getWriter();
+    return await i.write(new Uint8Array(e)), await i.close(), await a, await new Blob(s).arrayBuffer();
   }
   static async decompressGzip(e) {
     if (typeof DecompressionStream > "u")
       throw new Error("DecompressionStream non supporté");
-    const n = new DecompressionStream("gzip"), r = n.readable.getReader(), s = [], i = (async () => {
+    const n = new DecompressionStream("gzip"), r = n.readable.getReader(), s = [], a = (async () => {
       let o = !1;
       for (; !o; ) {
         const { value: l, done: c } = await r.read();
         o = c, l && s.push(l);
       }
-    })(), a = n.writable.getWriter();
-    return await a.write(e), await a.close(), await i, await new Blob(s).arrayBuffer();
+    })(), i = n.writable.getWriter();
+    return await i.write(e), await i.close(), await a, await new Blob(s).arrayBuffer();
   }
   static arrayBufferToBase64(e) {
     const n = new Uint8Array(e);
@@ -5624,15 +5624,15 @@ let GistEncrypt$1 = ($ = class {
   static async processExcelFile(e, n, r, s) {
     var u, d;
     await CDNManager$1.loadXlsx();
-    const i = XLSX.read(await e.arrayBuffer(), { type: "array", ...n });
-    let a = i.SheetNames[0];
+    const a = XLSX.read(await e.arrayBuffer(), { type: "array", ...n });
+    let i = a.SheetNames[0];
     const o = s || { type: {} };
-    (u = o.type) != null && u.name && o.name ? i.SheetNames.includes(o.name) && (a = o.name) : (d = o.type) != null && d.index && o.index > 0 && o.index < i.SheetNames.length && (a = i.SheetNames[o.index]);
-    const l = i.Sheets[a];
+    (u = o.type) != null && u.name && o.name ? a.SheetNames.includes(o.name) && (i = o.name) : (d = o.type) != null && d.index && o.index > 0 && o.index < a.SheetNames.length && (i = a.SheetNames[o.index]);
+    const l = a.Sheets[i];
     return {
       csv: XLSX.utils.sheet_to_csv(l, r || {}),
       csvFileName: e.name.replace(/\.(xlsx|xls)$/i, ".csv"),
-      sheetName: a
+      sheetName: i
     };
   }
   static downloadFile(e, n) {
@@ -5648,8 +5648,8 @@ let ConfigManager$1 = (M = class {
       const n = document.getElementById("defaultConfigBase64"), r = (e = n == null ? void 0 : n.textContent) == null ? void 0 : e.trim();
       if (!r) return { job: { cells: [] } };
       try {
-        const s = atob(r), i = decodeURIComponent(escape(s));
-        return JSON.parse(i);
+        const s = atob(r), a = decodeURIComponent(escape(s));
+        return JSON.parse(a);
       } catch {
         return JSON.parse(atob(r));
       }
@@ -5667,20 +5667,20 @@ let ConfigManager$1 = (M = class {
     if (!n) return { config: { job: { cells: [] } } };
     try {
       const s = atob(n);
-      let i;
+      let a;
       try {
-        i = decodeURIComponent(escape(s));
+        a = decodeURIComponent(escape(s));
       } catch {
-        i = s;
+        a = s;
       }
-      const a = JSON.parse(i);
-      return GistEncrypt$1.isEncrypted(a) ? { needsPassphrase: !0, encryptedContent: a, source: "html" } : { config: a };
+      const i = JSON.parse(a);
+      return GistEncrypt$1.isEncrypted(i) ? { needsPassphrase: !0, encryptedContent: i, source: "html" } : { config: i };
     } catch {
       try {
-        const i = JSON.parse(atob(n));
-        return GistEncrypt$1.isEncrypted(i) ? { needsPassphrase: !0, encryptedContent: i, source: "html" } : { config: i };
-      } catch (i) {
-        return console.error("Erreur de décodage config:", i), { config: { job: { cells: [] } } };
+        const a = JSON.parse(atob(n));
+        return GistEncrypt$1.isEncrypted(a) ? { needsPassphrase: !0, encryptedContent: a, source: "html" } : { config: a };
+      } catch (a) {
+        return console.error("Erreur de décodage config:", a), { config: { job: { cells: [] } } };
       }
     }
   }
@@ -5702,9 +5702,9 @@ let ConfigManager$1 = (M = class {
     }
     if (Array.isArray(n.queries) && n.queries.length > 0) {
       const r = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[n.type], s = (r == null ? void 0 : r.queryNames) ?? ["main"];
-      n.queries = n.queries.map((i, a) => ({
-        ...i,
-        name: i.name || s[a] || (a === 0 ? "main" : a === 1 ? "filename" : "query" + a)
+      n.queries = n.queries.map((a, i) => ({
+        ...a,
+        name: a.name || s[i] || (i === 0 ? "main" : i === 1 ? "filename" : "query" + i)
       }));
     }
     return n.type === "pdfme" && typeof n.json == "object" && n.json !== null && (n.json = JSON.stringify(n.json, null, 2)), n;
@@ -5736,21 +5736,21 @@ let ConfigManager$1 = (M = class {
   static getQueryByName(e, n) {
     var s;
     if (!e || !Array.isArray(e.queries)) return null;
-    let r = e.queries.find((i) => i.name === n);
+    let r = e.queries.find((a) => a.name === n);
     if (!r) {
-      const i = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[e == null ? void 0 : e.type], a = (s = i == null ? void 0 : i.queryNames) == null ? void 0 : s.indexOf(n);
-      a >= 0 && e.queries[a] && (r = e.queries[a]);
+      const a = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[e == null ? void 0 : e.type], i = (s = a == null ? void 0 : a.queryNames) == null ? void 0 : s.indexOf(n);
+      i >= 0 && e.queries[i] && (r = e.queries[i]);
     }
     return r || null;
   }
   /** Retourne l'index d'une requête par nom (pour x-model). Rétrocompat: si pas de name, utilise ordre schema. */
   static getQueryIndexByName(e, n) {
-    var a;
+    var i;
     if (!(e != null && e.queries)) return 0;
     const r = e.queries.findIndex((o) => o.name === n);
     if (r >= 0) return r;
-    const s = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[e == null ? void 0 : e.type], i = (a = s == null ? void 0 : s.queryNames) == null ? void 0 : a.indexOf(n);
-    return i >= 0 ? i : 0;
+    const s = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[e == null ? void 0 : e.type], a = (i = s == null ? void 0 : s.queryNames) == null ? void 0 : i.indexOf(n);
+    return a >= 0 ? a : 0;
   }
   /** Retourne le nom de la requête pour un index (rétrocompat). */
   static getQueryNameForIndex(e, n) {
@@ -5769,8 +5769,8 @@ let ConfigManager$1 = (M = class {
     var o, l;
     const r = typeof e == "object" ? e == null ? void 0 : e.type : e, s = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[r];
     if (!((o = s == null ? void 0 : s.defaults) != null && o.queries)) return "sql";
-    const i = typeof n == "number" ? n : ((l = s == null ? void 0 : s.queryNames) == null ? void 0 : l.indexOf(n)) ?? 0, a = s.defaults.queries[i];
-    return (a == null ? void 0 : a.engine) ?? "sql";
+    const a = typeof n == "number" ? n : ((l = s == null ? void 0 : s.queryNames) == null ? void 0 : l.indexOf(n)) ?? 0, i = s.defaults.queries[a];
+    return (i == null ? void 0 : i.engine) ?? "sql";
   }
   /** Contenu éditable (depuis contentKey du schéma). Ex: queries.main.sql pour markdown. */
   static getCellEditableContent(e) {
@@ -5857,11 +5857,11 @@ let ConfigManager$1 = (M = class {
   }
   static hasCellsWithExportSlot(e, n) {
     const r = (s) => {
-      var i;
-      for (const a of s || []) {
-        for (const o of a.cells || [])
-          if (((i = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[o == null ? void 0 : o.type]) == null ? void 0 : i.exportFileSlot) === n) return !0;
-        if (r(a.children)) return !0;
+      var a;
+      for (const i of s || []) {
+        for (const o of i.cells || [])
+          if (((a = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[o == null ? void 0 : o.type]) == null ? void 0 : a.exportFileSlot) === n) return !0;
+        if (r(i.children)) return !0;
       }
       return !1;
     };
@@ -5880,7 +5880,7 @@ let ConfigManager$1 = (M = class {
    * @returns {{ base64: string, fileName: string } | null}
    */
   static getCellFileData(e) {
-    var a, o, l;
+    var i, o, l;
     if (!e) return null;
     const n = M.getCellFileSlot(e);
     if (!n) return null;
@@ -5888,8 +5888,8 @@ let ConfigManager$1 = (M = class {
       const c = e.files.find((u) => u.slot === n) || e.files[0];
       if (c != null && c.base64 && (c != null && c.fileName)) return { base64: c.base64, fileName: c.fileName, compressed: c.compressed === !0 };
     }
-    const r = (a = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[e == null ? void 0 : e.type]) == null ? void 0 : a.bodyConfig, s = r == null ? void 0 : r.fileBase64Key, i = (r == null ? void 0 : r.fileFileNameKey) ?? (r == null ? void 0 : r.fileKey);
-    return s && i && e[s] && e[i] ? { base64: e[s], fileName: e[i], compressed: ((l = (o = e.files) == null ? void 0 : o[0]) == null ? void 0 : l.compressed) === !0 } : null;
+    const r = (i = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[e == null ? void 0 : e.type]) == null ? void 0 : i.bodyConfig, s = r == null ? void 0 : r.fileBase64Key, a = (r == null ? void 0 : r.fileFileNameKey) ?? (r == null ? void 0 : r.fileKey);
+    return s && a && e[s] && e[a] ? { base64: e[s], fileName: e[a], compressed: ((l = (o = e.files) == null ? void 0 : o[0]) == null ? void 0 : l.compressed) === !0 } : null;
   }
   /**
    * Écrit les données fichier (structure unifiée files[]) et met à jour les champs legacy depuis le schéma.
@@ -5900,8 +5900,8 @@ let ConfigManager$1 = (M = class {
     const s = M.getCellFileSlot(e);
     if (!s) return;
     M.ensureCellFiles(e);
-    const i = e.files.findIndex((d) => d.slot === s), a = { slot: s, base64: n, fileName: r };
-    i >= 0 ? e.files[i] = a : e.files.push(a);
+    const a = e.files.findIndex((d) => d.slot === s), i = { slot: s, base64: n, fileName: r };
+    a >= 0 ? e.files[a] = i : e.files.push(i);
     const o = (u = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[e == null ? void 0 : e.type]) == null ? void 0 : u.bodyConfig, l = o == null ? void 0 : o.fileBase64Key, c = (o == null ? void 0 : o.fileFileNameKey) ?? (o == null ? void 0 : o.fileKey);
     l && (e[l] = n), c && (e[c] = r);
   }
@@ -5917,28 +5917,28 @@ let ConfigManager$1 = (M = class {
   /** Retourne le moteur de la requête (queries[].engine). Valeurs: sql, js, text. Défaut depuis schéma. */
   static getCellEngine(e, n = "main") {
     if (!e) return "sql";
-    const r = typeof n == "number" ? M.getQueryNameForIndex(e, n) || "main" : n, s = M.getQueryByName(e, r), i = M.getDefaultEngineForType(e, r), a = s != null && s.engine ? s.engine : i;
-    return a === "duckdb-wasm" ? "sql" : a;
+    const r = typeof n == "number" ? M.getQueryNameForIndex(e, n) || "main" : n, s = M.getQueryByName(e, r), a = M.getDefaultEngineForType(e, r), i = s != null && s.engine ? s.engine : a;
+    return i === "duckdb-wasm" ? "sql" : i;
   }
   /** S'assure que cell.queries existe et que la requête avec ce nom existe. Retourne la ref. Migre les queries sans name. */
   static ensureCellQueries(e, n = "main") {
-    var a, o, l;
+    var i, o, l;
     if (!e) return null;
     Array.isArray(e.queries) || (e.queries = []);
-    const r = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[e == null ? void 0 : e.type], s = typeof n == "number" ? ((a = r == null ? void 0 : r.queryNames) == null ? void 0 : a[n]) ?? (n === 0 ? "main" : "filename") : n;
-    let i = e.queries.find((c) => c.name === s);
-    if (!i) {
+    const r = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[e == null ? void 0 : e.type], s = typeof n == "number" ? ((i = r == null ? void 0 : r.queryNames) == null ? void 0 : i[n]) ?? (n === 0 ? "main" : "filename") : n;
+    let a = e.queries.find((c) => c.name === s);
+    if (!a) {
       const c = (o = r == null ? void 0 : r.queryNames) == null ? void 0 : o.indexOf(s);
       if (c >= 0 && e.queries[c] && !e.queries[c].name)
-        e.queries[c].name = s, i = e.queries[c];
+        e.queries[c].name = s, a = e.queries[c];
       else {
         const u = M.getDefaultEngineForType(e, s);
-        i = { name: s, sql: "", engine: u, clientVisible: !1 };
+        a = { name: s, sql: "", engine: u, clientVisible: !1 };
         const d = ((l = r == null ? void 0 : r.queryNames) == null ? void 0 : l.indexOf(s)) ?? e.queries.length;
-        d < e.queries.length ? e.queries.splice(d, 0, i) : e.queries.push(i);
+        d < e.queries.length ? e.queries.splice(d, 0, a) : e.queries.push(a);
       }
     }
-    return i;
+    return a;
   }
   /** S'assure que group.queries existe et que la requête condition d'affichage existe (name: 'main'). Retourne la requête. */
   static ensureGroupQueries(e) {
@@ -6018,8 +6018,8 @@ let ConfigManager$1 = (M = class {
     var r;
     if (!((r = e == null ? void 0 : e.job) != null && r.pages)) return e;
     const n = async (s) => {
-      var i, a, o;
-      if ((i = s.children) != null && i.length)
+      var a, i, o;
+      if ((a = s.children) != null && a.length)
         for (const l of s.children) await n(l);
       for (const l of s.cells || [])
         if (Array.isArray(l.files)) {
@@ -6031,7 +6031,7 @@ let ConfigManager$1 = (M = class {
               } catch (u) {
                 console.warn("Décompression fichier échouée:", c.fileName, u);
               }
-          if (l.fileBase64 && ((o = (a = l.files) == null ? void 0 : a[0]) != null && o.compressed))
+          if (l.fileBase64 && ((o = (i = l.files) == null ? void 0 : i[0]) != null && o.compressed))
             try {
               const c = FileHandler$1.base64ToUint8Array(l.fileBase64), u = await FileHandler$1.decompressGzip(c);
               l.fileBase64 = FileHandler$1.arrayBufferToBase64(u), l.files[0] && delete l.files[0].compressed;
@@ -6041,7 +6041,7 @@ let ConfigManager$1 = (M = class {
         }
     };
     for (const s of e.job.pages)
-      for (const i of s.groups || []) await n(i);
+      for (const a of s.groups || []) await n(a);
     return e;
   }
   /**
@@ -6055,20 +6055,20 @@ let ConfigManager$1 = (M = class {
         const o = s.match(/gist\.github\.com\/[^\/]+\/([a-f0-9]{32})/i);
         if (o) return o[1];
       }
-      const i = r.get("config");
-      if (i) {
-        const o = i.match(/gist\.github\.com\/[^\/]+\/([a-f0-9]{32})/i);
+      const a = r.get("config");
+      if (a) {
+        const o = a.match(/gist\.github\.com\/[^\/]+\/([a-f0-9]{32})/i);
         if (o) return o[1];
       }
-      const a = window.location.href.match(/gist\.github\.com\/[^\/]+\/([a-f0-9]{32})/i);
-      return a ? a[1] : null;
+      const i = window.location.href.match(/gist\.github\.com\/[^\/]+\/([a-f0-9]{32})/i);
+      return i ? i[1] : null;
     })();
     let n = null;
     if (e)
       try {
         const r = `https://api.github.com/gists/${e}`, s = await fetch(r);
         if (s.ok) {
-          const i = await s.json(), o = Object.values(i.files || {}).find(
+          const a = await s.json(), o = Object.values(a.files || {}).find(
             (l) => l.filename.toLowerCase().endsWith(".json") || l.type === "application/json"
           );
           if (o)
@@ -6099,14 +6099,14 @@ let ConfigManager$1 = (M = class {
   /** Bâtit le tableau queries[] pour l'export (schéma unifié). Assure que chaque query a un name. */
   static _buildQueriesForClean(e) {
     if (Array.isArray(e.queries) && e.queries.length > 0) {
-      const i = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[e == null ? void 0 : e.type];
-      return e.queries.map((a, o) => {
+      const a = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[e == null ? void 0 : e.type];
+      return e.queries.map((i, o) => {
         var l;
         return {
-          name: a.name || ((l = i == null ? void 0 : i.queryNames) == null ? void 0 : l[o]) || (o === 0 ? "main" : o === 1 ? "filename" : "query" + o),
-          sql: a.sql || "",
-          engine: a.engine || M.getDefaultEngineForType(e == null ? void 0 : e.type, o),
-          clientVisible: a.clientVisible === !0
+          name: i.name || ((l = a == null ? void 0 : a.queryNames) == null ? void 0 : l[o]) || (o === 0 ? "main" : o === 1 ? "filename" : "query" + o),
+          sql: i.sql || "",
+          engine: i.engine || M.getDefaultEngineForType(e == null ? void 0 : e.type, o),
+          clientVisible: i.clientVisible === !0
         };
       });
     }
@@ -6117,8 +6117,8 @@ let ConfigManager$1 = (M = class {
   }
   static async cleanCell(e, n = !1) {
     var l, c;
-    const r = { type: e.type }, s = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[e == null ? void 0 : e.type], i = (s == null ? void 0 : s.exportFields) ?? ["queries"];
-    for (const u of i)
+    const r = { type: e.type }, s = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[e == null ? void 0 : e.type], a = (s == null ? void 0 : s.exportFields) ?? ["queries"];
+    for (const u of a)
       if (u === "queries")
         r.queries = M._buildQueriesForClean(e), e.type === "markdown" && (!Array.isArray(r.queries) || r.queries.length === 0) && (r.queries = [{ name: "main", sql: M.getCellEditableContent(e), engine: M.getCellEngine(e, "main"), clientVisible: M.getCellQueryClientVisible(e, "main") }]);
       else if (u === "name") {
@@ -6138,28 +6138,28 @@ let ConfigManager$1 = (M = class {
       const u = s.exportFileSlot;
       if (u === "source" && e._currentFile && e._fileName)
         try {
-          const d = await e._currentFile.arrayBuffer(), p = await FileHandler$1.compressGzip(d), g = FileHandler$1.arrayBufferToBase64(p);
-          r.files = [{ slot: u, base64: g, fileName: e._fileName, compressed: !0 }];
+          const d = await e._currentFile.arrayBuffer(), p = await FileHandler$1.compressGzip(d), m = FileHandler$1.arrayBufferToBase64(p);
+          r.files = [{ slot: u, base64: m, fileName: e._fileName, compressed: !0 }];
         } catch (d) {
           console.warn("Impossible de lire le fichier source:", d);
         }
       else {
         const d = M.getCellFileData(e);
         if (d) {
-          let p = d.base64, g = !!d.compressed;
-          if (!g)
+          let p = d.base64, m = !!d.compressed;
+          if (!m)
             try {
-              const h = FileHandler$1.base64ToUint8Array(p), f = h.buffer.slice(h.byteOffset, h.byteOffset + h.byteLength), m = await FileHandler$1.compressGzip(f);
-              p = FileHandler$1.arrayBufferToBase64(m), g = !0;
+              const h = FileHandler$1.base64ToUint8Array(p), f = h.buffer.slice(h.byteOffset, h.byteOffset + h.byteLength), g = await FileHandler$1.compressGzip(f);
+              p = FileHandler$1.arrayBufferToBase64(g), m = !0;
             } catch (h) {
               console.warn("Compression fichier échouée:", h);
             }
-          r.files = [{ slot: u, base64: p, fileName: d.fileName, compressed: g }];
+          r.files = [{ slot: u, base64: p, fileName: d.fileName, compressed: m }];
         }
       }
     }
-    const a = M.normalizeOrder(e._order, void 0);
-    a !== void 0 && (r.order = a), e.childGroupId && (r.childGroupId = e.childGroupId), e.name !== void 0 && e.name !== "" && (r.name = e.name);
+    const i = M.normalizeOrder(e._order, void 0);
+    i !== void 0 && (r.order = i), e.childGroupId && (r.childGroupId = e.childGroupId), e.name !== void 0 && e.name !== "" && (r.name = e.name);
     const o = (u, d) => {
       d != null && String(d).trim() !== "" && (r[u] = d);
     };
@@ -6169,15 +6169,15 @@ let ConfigManager$1 = (M = class {
     const r = {
       direction: e.direction || "row",
       style: e.style || "",
-      cells: await Promise.all((e.cells || []).map((i) => M.cleanCell(i, n)))
+      cells: await Promise.all((e.cells || []).map((a) => M.cleanCell(a, n)))
     };
     if (e.accordion && (r.accordion = !0, r.title = e.title || "", r.accordionOpen = e.accordionOpen !== !1), e.tabsChild && (r.tabsChild = !0), e.name !== void 0 && e.name !== "" && (r.name = e.name), Array.isArray(e.queries) && e.queries.length > 0) {
-      const i = M.getGroupIfQuery(e) || e.queries[0];
-      i && (i.sql || "").trim() && (r.queries = [{
+      const a = M.getGroupIfQuery(e) || e.queries[0];
+      a && (a.sql || "").trim() && (r.queries = [{
         name: "main",
-        sql: i.sql.trim(),
-        engine: i.engine || "sql",
-        clientVisible: i.clientVisible === !0
+        sql: a.sql.trim(),
+        engine: a.engine || "sql",
+        clientVisible: a.clientVisible === !0
       }]);
     }
     e.loop && e.loop.enabled && (r.loop = {
@@ -6188,14 +6188,14 @@ let ConfigManager$1 = (M = class {
     });
     const s = e.type ?? e._type ?? "core";
     if (r.type = s, r.id = e.id ?? e._id ?? M.generateGroupId(), s === "core") {
-      const i = M.normalizeOrder(e.order ?? e._order, void 0);
-      i !== void 0 && (r.order = i);
+      const a = M.normalizeOrder(e.order ?? e._order, void 0);
+      a !== void 0 && (r.order = a);
     }
-    return e.children && e.children.length > 0 && (r.children = await Promise.all(e.children.map((i) => M.cleanGroup(i, n)))), r;
+    return e.children && e.children.length > 0 && (r.children = await Promise.all(e.children.map((a) => M.cleanGroup(a, n)))), r;
   }
-  static async buildConfigFromState(e, n = !0, r = !0, s = !1, i = "light", a = "duckdb-wasm", o = !1) {
+  static async buildConfigFromState(e, n = !0, r = !0, s = !1, a = "light", i = "duckdb-wasm", o = !1) {
     const l = await Promise.all(e.map(async (c) => {
-      const u = await Promise.all(c.groups.map((g) => M.cleanGroup(g, s))), d = await Promise.all((c.linkGroups || []).map((g) => M.cleanGroup(g, s))), p = [...u, ...d];
+      const u = await Promise.all(c.groups.map((m) => M.cleanGroup(m, s))), d = await Promise.all((c.linkGroups || []).map((m) => M.cleanGroup(m, s))), p = [...u, ...d];
       return {
         name: c.name,
         groups: p
@@ -6207,8 +6207,8 @@ let ConfigManager$1 = (M = class {
       ui: {
         devMode: n,
         showLayout: r,
-        theme: i,
-        dbEngine: a,
+        theme: a,
+        dbEngine: i,
         directedAcyclicGraph: o
       },
       job: {
@@ -6278,21 +6278,21 @@ let GitHubGistManager$1 = (D = class {
    * @returns {Promise<string>} URL du gist créé
    */
   static async createGist(e, n = "sqljob Notebook Configuration", r = "gistconfig.sqljob.json", s = null) {
-    const i = this.getAccessToken();
-    if (!i)
+    const a = this.getAccessToken();
+    if (!a)
       throw new Error("Non authentifié. Veuillez configurer un Personal Access Token.");
-    let a;
+    let i;
     if (s && s.trim()) {
       const c = JSON.stringify(e), u = await GistEncrypt$1.encrypt(c, s.trim());
-      u.createdAt = e.createdAt || (/* @__PURE__ */ new Date()).toISOString(), a = JSON.stringify(u);
+      u.createdAt = e.createdAt || (/* @__PURE__ */ new Date()).toISOString(), i = JSON.stringify(u);
     } else
-      a = JSON.stringify(e);
+      i = JSON.stringify(e);
     const o = r.endsWith(".json") ? r : `${r}.json`, l = {
       description: n,
       public: !1,
       files: {
         [o]: {
-          content: a
+          content: i
         }
       }
     };
@@ -6300,7 +6300,7 @@ let GitHubGistManager$1 = (D = class {
       const c = await fetch("https://api.github.com/gists", {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${i}`,
+          Authorization: `Bearer ${a}`,
           Accept: "application/vnd.github+json",
           "Content-Type": "application/json",
           "X-GitHub-Api-Version": "2022-11-28"
@@ -6347,10 +6347,10 @@ let DuckDBManager$1 = (C = class {
     C.currentEngine = e;
   }
   static async destroy(e) {
-    var n, r, s, i, a, o, l, c;
+    var n, r, s, a, i, o, l, c;
     e == null || e("Destruction de la base de données...", "loading");
     try {
-      C.connInstance && (C.currentEngine === "ducklings" && await ((r = (n = C.connInstance).close) == null ? void 0 : r.call(n)), C.connInstance = null), C.dbInstance && (C.currentEngine === "ducklings" ? await ((i = (s = C.dbInstance).close) == null ? void 0 : i.call(s)) : await ((o = (a = C.dbInstance).terminate) == null ? void 0 : o.call(a)), C.dbInstance = null), C.workerRef && ((c = (l = C.workerRef).terminate) == null || c.call(l), C.workerRef = null), C.duckdbModuleRef = null, window.duckdbModule = null, window.ducklingsModule = null, e == null || e("Base de données détruite", "success");
+      C.connInstance && (C.currentEngine === "ducklings" && await ((r = (n = C.connInstance).close) == null ? void 0 : r.call(n)), C.connInstance = null), C.dbInstance && (C.currentEngine === "ducklings" ? await ((a = (s = C.dbInstance).close) == null ? void 0 : a.call(s)) : await ((o = (i = C.dbInstance).terminate) == null ? void 0 : o.call(i)), C.dbInstance = null), C.workerRef && ((c = (l = C.workerRef).terminate) == null || c.call(l), C.workerRef = null), C.duckdbModuleRef = null, window.duckdbModule = null, window.ducklingsModule = null, e == null || e("Base de données détruite", "success");
     } catch (u) {
       console.error("Erreur destruction DB:", u), e == null || e("Erreur destruction: " + u.message, "error");
     }
@@ -6374,19 +6374,19 @@ let DuckDBManager$1 = (C = class {
       C.getDuckDBWasmUrl()
     );
     window.duckdbModule = n, C.duckdbModuleRef = n;
-    const r = n.getJsDelivrBundles(), s = await n.selectBundle(r), i = URL.createObjectURL(
+    const r = n.getJsDelivrBundles(), s = await n.selectBundle(r), a = URL.createObjectURL(
       new Blob([`importScripts("${s.mainWorker}");`], { type: "text/javascript" })
-    ), a = new Worker(i);
-    C.workerRef = a;
+    ), i = new Worker(a);
+    C.workerRef = i;
     const o = {
       log(l) {
       }
     };
-    return C.dbInstance = new n.AsyncDuckDB(o, a), URL.revokeObjectURL(i), await C.dbInstance.instantiate(s.mainModule, s.pthreadWorker), C.connInstance = await C.dbInstance.connect(), e == null || e("Chargement extension Excel...", "loading"), await C.connInstance.query("INSTALL excel;"), await C.connInstance.query("LOAD excel;"), e == null || e("DuckDB WASM prêt", "success"), { db: C.dbInstance, conn: C.connInstance };
+    return C.dbInstance = new n.AsyncDuckDB(o, i), URL.revokeObjectURL(a), await C.dbInstance.instantiate(s.mainModule, s.pthreadWorker), C.connInstance = await C.dbInstance.connect(), e == null || e("Chargement extension Excel...", "loading"), await C.connInstance.query("INSTALL excel;"), await C.connInstance.query("LOAD excel;"), e == null || e("DuckDB WASM prêt", "success"), { db: C.dbInstance, conn: C.connInstance };
   }
   static async _initDucklings(e) {
     if (e == null || e("Initialisation de Ducklings...", "loading"), location.protocol === "file:")
-      return e == null || e("Ducklings nécessite un serveur HTTP. Basculement vers DuckDB WASM...", "warning"), await new Promise((i) => setTimeout(i, 1500)), C.currentEngine = "duckdb-wasm", await C._initDuckDBWasm(e);
+      return e == null || e("Ducklings nécessite un serveur HTTP. Basculement vers DuckDB WASM...", "warning"), await new Promise((a) => setTimeout(a, 1500)), C.currentEngine = "duckdb-wasm", await C._initDuckDBWasm(e);
     const n = await import(
       /* @vite-ignore */
       C.getDucklingsUrl()
@@ -6425,12 +6425,12 @@ let DuckDBManager$1 = (C = class {
   static async waitForFile(e, n = 10, r = 200) {
     for (let s = 0; s < n; s++) {
       try {
-        const i = await C.dbInstance.copyFileToBuffer(e);
-        if (i && i.byteLength > 0)
-          return i;
+        const a = await C.dbInstance.copyFileToBuffer(e);
+        if (a && a.byteLength > 0)
+          return a;
       } catch {
       }
-      await new Promise((i) => setTimeout(i, r));
+      await new Promise((a) => setTimeout(a, r));
     }
     throw new Error(`Le fichier ${e} n'est pas disponible après ${n} tentatives`);
   }
@@ -6465,15 +6465,15 @@ class CellBodyRenderer {
     return (e ?? "").replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/\n/g, "\\n");
   }
   static _defaultSql(e, n = 0, r = "SELECT 1") {
-    var s, i, a;
-    return this._sqlPlaceholder(((a = (i = (s = e == null ? void 0 : e.defaults) == null ? void 0 : s.queries) == null ? void 0 : i[n]) == null ? void 0 : a.sql) ?? r);
+    var s, a, i;
+    return this._sqlPlaceholder(((i = (a = (s = e == null ? void 0 : e.defaults) == null ? void 0 : s.queries) == null ? void 0 : a[n]) == null ? void 0 : i.sql) ?? r);
   }
   static _defaultSqls(e, n = ["SELECT 1"]) {
     var s;
     const r = ((s = e == null ? void 0 : e.defaults) == null ? void 0 : s.queries) ?? [];
-    return n.map((i, a) => {
+    return n.map((a, i) => {
       var o;
-      return this._sqlPlaceholder(((o = r[a]) == null ? void 0 : o.sql) ?? i);
+      return this._sqlPlaceholder(((o = r[i]) == null ? void 0 : o.sql) ?? a);
     });
   }
   static renderResultInfoBlock(e = !1) {
@@ -6513,20 +6513,20 @@ class CellBodyRenderer {
                 </div>`;
   }
   static renderFileDropZone(e, n, r) {
-    const s = r.bodyConfig || {}, i = s.fileKey || "_fileName", a = s.accept || ".csv,.parquet,.xlsx,.xls", o = s.inputId || "fileInput_", l = s.emptyIcon || "📁", c = s.emptyTitleKey || "title", u = "'→ ' + cellItem.cell.name", [d, p] = this._defaultSqls(r, ["CREATE OR REPLACE TABLE {name} AS SELECT * FROM '{fileNameUpload}'", "SELECT 1"]), g = s.showQueryInDevMode ? `<div x-show="devMode" class="mt-3 flex flex-col gap-3"><div><div class="text-sm font-semibold text-primary mb-1">Requête d'import</div><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${d}', false, 'query', '_showParsedQuery', null, null, null, '${e}', '${n}', true)"></div></div><div><div class="text-sm font-semibold text-primary mb-1">Requête de fallback (si erreur)</div><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${p}', false, 'query2', '_showParsedQuery2', null, null, null, '${e}', '${n}', true)"></div></div></div>` : "";
-    return `<div class="flex flex-col gap-2"><div class="flex items-center justify-center rounded-lg transition-all duration-200 mt-1 mb-1 min-h-[${s.minHeight || "20"}px]" :class="[cellItem.cell.${i} ? 'border-2 border-solid border-success bg-success/10 cursor-default' : (cellItem.cell._isDragging ? 'border-2 border-solid border-accent bg-accent/10 cursor-pointer' : 'border-2 border-dashed border-primary bg-primary/5 cursor-pointer hover:border-accent hover:bg-accent/10'), hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0' : '']" @click="!cellItem.cell.${i} && document.getElementById('${o}' + cellItem.cell._id).click()" @dragover.prevent="cellItem.cell._isDragging = true" @dragleave.prevent="cellItem.cell._isDragging = false" @drop.prevent="handleSingleSourceDrop($event, ${e}, ${n})">
-                    <template x-if="!cellItem.cell.${i}"><div class="text-center p-1"><div class="text-4xl mb-0">${l}</div><p class="m-0 text-base-content/60 text-sm" x-text="cellItem.cell.${c} || 'Glissez-déposez ici'"></p><p class="mt-0 mb-0 text-accent text-xs font-semibold" x-text="${u}"></p></div></template>
-                    <template x-if="cellItem.cell.${i}"><div class="flex flex-wrap items-center gap-3 px-4 py-3 w-full"><span class="text-xl">✅</span><span class="flex-1 text-success font-medium truncate" x-text="cellItem.cell.${i}"></span><span class="text-base-content/60 text-xs" x-text="'→ ' + cellItem.cell.name"></span><button class="btn btn-ghost" @click.stop="downloadSourceFile(${e}, ${n})" title="Télécharger"><span class="iconify" data-icon="material-symbols:download" style="font-size: 1.25rem;"></span></button><button class="btn btn-ghost btn-error" @click.stop="removeSingleSourceFile(${e}, ${n})" title="Supprimer"><span class="iconify" data-icon="material-symbols:close" style="font-size: 1.5rem;"></span></button></div></template>
-                    <input type="file" hidden :id="'${o}' + cellItem.cell._id" accept="${a}" @change="handleSingleSourceFileSelect($event, ${e}, ${n})"></div>${g}</div>`;
+    const s = r.bodyConfig || {}, a = s.fileKey || "_fileName", i = s.accept || ".csv,.parquet,.xlsx,.xls", o = s.inputId || "fileInput_", l = s.emptyIcon || "material-symbols-light:create-new-folder", c = s.emptyTitleKey || "title", u = "'→ ' + cellItem.cell.name", [d, p] = this._defaultSqls(r, ["CREATE OR REPLACE TABLE {name} AS SELECT * FROM '{fileNameUpload}'", "SELECT 1"]), m = s.showQueryInDevMode ? `<div x-show="devMode" class="mt-3 flex flex-col gap-3"><div><div class="text-sm font-semibold text-primary mb-1">Requête d'import</div><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${d}', false, 'query', '_showParsedQuery', null, null, null, '${e}', '${n}', true)"></div></div><div><div class="text-sm font-semibold text-primary mb-1">Requête de fallback (si erreur)</div><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${p}', false, 'query2', '_showParsedQuery2', null, null, null, '${e}', '${n}', true)"></div></div></div>` : "";
+    return `<div class="flex flex-col gap-2"><div class="flex items-center justify-center rounded-lg transition-all duration-200 mt-1 mb-1 min-h-[${s.minHeight || "20"}px]" :class="[cellItem.cell.${a} ? 'border-2 border-solid border-success bg-success/10 cursor-default' : (cellItem.cell._isDragging ? 'border-2 border-solid border-accent bg-accent/10 cursor-pointer' : 'border-2 border-dashed border-primary bg-primary/5 cursor-pointer hover:border-accent hover:bg-accent/10'), hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0' : '']" @click="!cellItem.cell.${a} && document.getElementById('${o}' + cellItem.cell._id).click()" @dragover.prevent="cellItem.cell._isDragging = true" @dragleave.prevent="cellItem.cell._isDragging = false" @drop.prevent="handleSingleSourceDrop($event, ${e}, ${n})">
+                    <template x-if="!cellItem.cell.${a}"><div class="text-center p-1"><div class="mb-0"><span class="iconify" data-icon="${l}" style="font-size:3rem"></span></div><p class="m-0 text-base-content/60 text-sm" x-text="cellItem.cell.${c} || 'Glissez-déposez ici'"></p><p class="mt-0 mb-0 text-accent text-xs font-semibold" x-text="${u}"></p></div></template>
+                    <template x-if="cellItem.cell.${a}"><div class="flex flex-wrap items-center gap-3 px-4 py-3 w-full"><span class="iconify text-success" data-icon="material-symbols-light:check-circle" style="font-size:1.25rem"></span><span class="flex-1 text-success font-medium truncate" x-text="cellItem.cell.${a}"></span><span class="text-base-content/60 text-xs" x-text="'→ ' + cellItem.cell.name"></span><button class="btn btn-ghost" @click.stop="downloadSourceFile(${e}, ${n})" title="Télécharger"><span class="iconify" data-icon="material-symbols-light:download" style="font-size: 1.25rem;"></span></button><button class="btn btn-ghost btn-error" @click.stop="removeSingleSourceFile(${e}, ${n})" title="Supprimer"><span class="iconify" data-icon="material-symbols-light:close" style="font-size: 1.5rem;"></span></button></div></template>
+                    <input type="file" hidden :id="'${o}' + cellItem.cell._id" accept="${i}" @change="handleSingleSourceFileSelect($event, ${e}, ${n})"></div>${m}</div>`;
   }
   static renderButtonRun(e, n, r) {
-    const i = ((r.bodyConfig || {}).defaultLabel || "▶️ Exécuter").replace(/'/g, "\\'");
-    return `<div class="flex justify-center p-0"><button class="btn btn-primary btn-sm" @click="runCellsAfter(${e}, ${n})" :disabled="isLoading"><span x-text="cellItem.cell.buttonLabel || '${i}'"></span></button></div>`;
+    const a = ((r.bodyConfig || {}).defaultLabel || "Exécuter").replace(/'/g, "\\'");
+    return `<div class="flex justify-center p-0"><button class="btn btn-primary btn-sm" @click="runCellsAfter(${e}, ${n})" :disabled="isLoading"><span x-text="cellItem.cell.buttonLabel || '${a}'"></span></button></div>`;
   }
   static renderSqlWithTable(e, n, r) {
-    const s = r.bodyConfig || {}, i = this._defaultSql(r, 0, "SELECT * FROM source1 LIMIT 100"), a = CellRenderer$1.renderTableSkeleton(), o = s.showTextResult === !0;
+    const s = r.bodyConfig || {}, a = this._defaultSql(r, 0, "SELECT * FROM source1 LIMIT 100"), i = CellRenderer$1.renderTableSkeleton(), o = s.showTextResult === !0;
     let l = `<div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 flex flex-col' : ''">`;
-    return l += `<div x-show="showSqlEditorVisible(cellItem.cell)" x-effect="safeRenderSqlEditor($el, cellItem.cell, '${i}', false, 'query', '_showParsedQuery', null, null, null, '${e}', '${n}')"></div>`, o ? (l += `<template x-if="(showSqlEditorVisible(cellItem.cell)) && isSqlResultTabular(cellItem.cell)"><div class="relative rounded-lg mt-2" :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 overflow-auto' : ''"><div x-show="cellItem.cell._status === 'running'" class="bg-base-100 rounded-lg overflow-x-auto">${a}</div><div x-show="cellItem.cell._status !== 'running'" class="bg-base-100 rounded-lg overflow-x-auto" :id="'table-' + cellItem.cell._id" x-init="$nextTick(async () => { if (cellItem.cell._results && cellItem.cell._results.length > 0) { await renderTableInContainer(cellItem.cell); } })"></div></div></template>`, l += '<template x-if="(showSqlEditorVisible(cellItem.cell)) && isSqlResultText(cellItem.cell)"><textarea class="textarea textarea-bordered w-full mt-2 min-h-[120px] font-mono text-sm" placeholder="Résultat texte/JSON" readonly :value="getSqlResultAsText(cellItem.cell)"></textarea></template>') : l += `<div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 overflow-auto' : ''"><div x-show="cellItem.cell._status === 'running'" class="bg-base-100 rounded-lg overflow-x-auto">${a}</div><div x-show="cellItem.cell._status !== 'running'" class="bg-base-100 rounded-lg overflow-x-auto" :id="'table-' + cellItem.cell._id" x-init="$nextTick(async () => { if (cellItem.cell._results && cellItem.cell._results.length > 0) { await renderTableInContainer(cellItem.cell); } })"></div></div>`, l += this.renderResultInfoBlock(!1) + "</div>", l;
+    return l += `<div x-show="showSqlEditorVisible(cellItem.cell)" x-effect="safeRenderSqlEditor($el, cellItem.cell, '${a}', false, 'query', '_showParsedQuery', null, null, null, '${e}', '${n}')"></div>`, o ? (l += `<template x-if="(showSqlEditorVisible(cellItem.cell)) && isSqlResultTabular(cellItem.cell)"><div class="relative rounded-lg mt-2" :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 overflow-auto' : ''"><div x-show="cellItem.cell._status === 'running'" class="bg-base-100 rounded-lg overflow-x-auto">${i}</div><div x-show="cellItem.cell._status !== 'running'" class="bg-base-100 rounded-lg overflow-x-auto" :id="'table-' + cellItem.cell._id" x-init="$nextTick(async () => { if (cellItem.cell._results && cellItem.cell._results.length > 0) { await renderTableInContainer(cellItem.cell); } })"></div></div></template>`, l += '<template x-if="(showSqlEditorVisible(cellItem.cell)) && isSqlResultText(cellItem.cell)"><textarea class="textarea textarea-bordered w-full mt-2 min-h-[120px] font-mono text-sm" placeholder="Résultat texte/JSON" readonly :value="getSqlResultAsText(cellItem.cell)"></textarea></template>') : l += `<div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 overflow-auto' : ''"><div x-show="cellItem.cell._status === 'running'" class="bg-base-100 rounded-lg overflow-x-auto">${i}</div><div x-show="cellItem.cell._status !== 'running'" class="bg-base-100 rounded-lg overflow-x-auto" :id="'table-' + cellItem.cell._id" x-init="$nextTick(async () => { if (cellItem.cell._results && cellItem.cell._results.length > 0) { await renderTableInContainer(cellItem.cell); } })"></div></div>`, l += this.renderResultInfoBlock(!1) + "</div>", l;
   }
   static renderSqlWithIframe(e, n, r) {
     return r.bodyConfig, `<div class="flex flex-col flex-1 min-h-0 overflow-hidden"><div x-show="showSqlEditorVisible(cellItem.cell)" x-effect="safeRenderIframeEditor($el, cellItem.cell, ${e}, ${n})"></div><iframe class="flex-1 min-h-0 w-full border-none rounded-lg bg-white" :id="'iframe-' + cellItem.cell._id" x-init="$nextTick(() => { if (cellItem.cell._htmlContent) { renderIframeInContainer(cellItem.cell); } })"></iframe></div>`;
@@ -6539,19 +6539,19 @@ class CellBodyRenderer {
   }
   static renderPublipostageWord(e, n, r) {
     r.bodyConfig;
-    const [s, i] = this._defaultSqls(r, ["SELECT * FROM source1 LIMIT 10", "SELECT 'document_' || STRFTIME(current_timestamp::TIMESTAMP, '%Y-%m-%d_%H-%M-%S') || '.docx' AS filename;"]);
-    return `<div class="flex flex-col gap-3"><div class="flex items-center justify-center rounded-lg transition-all duration-200 mt-1 mb-1" :class="cellItem.cell.docxTemplateFileName ? 'border-2 border-solid border-success bg-success/10 cursor-default' : (cellItem.cell._isDragging ? 'border-2 border-solid border-accent bg-accent/10 cursor-pointer' : 'border-2 border-dashed border-primary bg-primary/5 cursor-pointer hover:border-accent hover:bg-accent/10')" @click="!cellItem.cell.docxTemplateFileName && document.getElementById('docxInput_' + cellItem.cell._id).click()" @dragover.prevent="cellItem.cell._isDragging = true" @dragleave.prevent="cellItem.cell._isDragging = false" @drop.prevent="handleDocxTemplateDrop($event, ${e}, ${n})"><template x-if="!cellItem.cell.docxTemplateFileName"><div class="text-center p-1"><div class="text-4xl mb-0">📄</div><p class="m-0 text-base-content/60 text-sm">Glissez-déposez votre template Word (.docx)</p><p class="mt-0 mb-0 text-accent text-xs font-semibold">Template de publipostage</p></div></template><template x-if="cellItem.cell.docxTemplateFileName"><div class="flex flex-wrap items-center gap-3 px-4 py-3 w-full"><span class="text-xl">✅</span><span class="flex-1 text-success font-medium truncate" x-text="cellItem.cell.docxTemplateFileName"></span><button class="btn btn-ghost" @click.stop="downloadDocxTemplate(${e}, ${n})" title="Télécharger"><span class="iconify" data-icon="material-symbols:download" style="font-size: 1.25rem;"></span></button><button class="btn btn-ghost btn-error" @click.stop="removeDocxTemplate(${e}, ${n})" title="Supprimer"><span class="iconify" data-icon="material-symbols:close" style="font-size: 1.5rem;"></span></button></div></template><input type="file" hidden :id="'docxInput_' + cellItem.cell._id" accept=".docx" @change="handleDocxTemplateFileSelect($event, ${e}, ${n})"></div><div x-show="devMode"><div class="text-sm font-semibold text-primary mb-1">Requête de données</div><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${s}', true)"></div></div><div x-show="devMode"><div class="text-sm font-semibold text-primary mb-1 flex items-center gap-2"><span>Requête de nom de fichier</span><span class="badge badge-soft badge-info text-xs">🗄️ SQL</span></div><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${i}', false, 'query2')"></div></div><div class="flex justify-center" x-show="cellItem.cell.buttonLabel"><button class="btn btn-primary btn-sm" @click="runCellAt(${e}, ${n})" :disabled="isLoading || !cellItem.cell.docxTemplateFileName"><span x-text="cellItem.cell.buttonLabel || '📄 Générer les documents'"></span></button></div>${this.renderResultInfoBlock(!1)}</div>`;
+    const [s, a] = this._defaultSqls(r, ["SELECT * FROM source1 LIMIT 10", "SELECT 'document_' || STRFTIME(current_timestamp::TIMESTAMP, '%Y-%m-%d_%H-%M-%S') || '.docx' AS filename;"]);
+    return `<div class="flex flex-col gap-3"><div class="flex items-center justify-center rounded-lg transition-all duration-200 mt-1 mb-1" :class="cellItem.cell.docxTemplateFileName ? 'border-2 border-solid border-success bg-success/10 cursor-default' : (cellItem.cell._isDragging ? 'border-2 border-solid border-accent bg-accent/10 cursor-pointer' : 'border-2 border-dashed border-primary bg-primary/5 cursor-pointer hover:border-accent hover:bg-accent/10')" @click="!cellItem.cell.docxTemplateFileName && document.getElementById('docxInput_' + cellItem.cell._id).click()" @dragover.prevent="cellItem.cell._isDragging = true" @dragleave.prevent="cellItem.cell._isDragging = false" @drop.prevent="handleDocxTemplateDrop($event, ${e}, ${n})"><template x-if="!cellItem.cell.docxTemplateFileName"><div class="text-center p-1"><div class="mb-0"><span class="iconify" data-icon="material-symbols-light:description" style="font-size:4rem"></span></div><p class="m-0 text-base-content/60 text-sm">Glissez-déposez votre template Word (.docx)</p><p class="mt-0 mb-0 text-accent text-xs font-semibold">Template de publipostage</p></div></template><template x-if="cellItem.cell.docxTemplateFileName"><div class="flex flex-wrap items-center gap-3 px-4 py-3 w-full"><span class="iconify text-success" data-icon="material-symbols-light:check-circle" style="font-size:1.25rem"></span><span class="flex-1 text-success font-medium truncate" x-text="cellItem.cell.docxTemplateFileName"></span><button class="btn btn-ghost" @click.stop="downloadDocxTemplate(${e}, ${n})" title="Télécharger"><span class="iconify" data-icon="material-symbols-light:download" style="font-size: 1.25rem;"></span></button><button class="btn btn-ghost btn-error" @click.stop="removeDocxTemplate(${e}, ${n})" title="Supprimer"><span class="iconify" data-icon="material-symbols-light:close" style="font-size: 1.5rem;"></span></button></div></template><input type="file" hidden :id="'docxInput_' + cellItem.cell._id" accept=".docx" @change="handleDocxTemplateFileSelect($event, ${e}, ${n})"></div><div x-show="devMode"><div class="text-sm font-semibold text-primary mb-1">Requête de données</div><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${s}', true)"></div></div><div x-show="devMode"><div class="text-sm font-semibold text-primary mb-1 flex items-center gap-2"><span>Requête de nom de fichier</span><span class="badge badge-soft badge-info text-xs flex items-center gap-1"><span class="iconify" data-icon="material-symbols-light:storage" style="font-size:0.875rem"></span> SQL</span></div><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${a}', false, 'query2')"></div></div><div class="flex justify-center" x-show="cellItem.cell.buttonLabel"><button class="btn btn-primary btn-sm" @click="runCellAt(${e}, ${n})" :disabled="isLoading || !cellItem.cell.docxTemplateFileName"><span x-text="cellItem.cell.buttonLabel || '📄 Générer les documents'"></span></button></div>${this.renderResultInfoBlock(!1)}</div>`;
   }
   static renderPdfme(e, n, r) {
     r.bodyConfig;
-    const [s, i] = this._defaultSqls(r, [`with v_source as (select * from source1 limit 10)
+    const [s, a] = this._defaultSqls(r, [`with v_source as (select * from source1 limit 10)
 SELECT 'Titre' as header, 'Pied de page' as footer, json_group_array(json_array(col1, col2, col3)) as datatable
 FROM v_source LIMIT 10`, "SELECT '$loop' || '_2.pdf'"]);
-    return `<div class="flex flex-col gap-3"><div x-show="devMode"><div class="text-sm font-semibold text-primary mb-1">Requête de données</div><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${s}', true)"></div></div><div x-show="devMode"><div class="text-sm font-semibold text-primary mb-1 flex items-center gap-2"><span>Requête nom de fichier PDF</span><span class="badge badge-soft badge-info text-xs">🗄️ SQL</span></div><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${i}', false, 'query2')"></div></div><div x-show="devMode" class="form-control"><label class="label gap-2"><span class="label-text font-semibold">Template pdfme (JSON)</span><span class="badge badge-soft badge-primary text-xs">📐 Layout</span></label><textarea class="textarea textarea-bordered w-full font-mono text-xs" x-model="cellItem.cell.json" rows="10" style="min-height: 180px;" placeholder='{"basePdf": {...}, "schemas": [...]}'></textarea></div><div class="flex justify-center" x-show="cellItem.cell.buttonLabel"><button class="btn btn-primary btn-sm" @click="runCellAt(${e}, ${n})" :disabled="isLoading"><span x-text="cellItem.cell.buttonLabel || '📑 Générer le PDF'"></span></button></div>${this.renderResultInfoBlock(!1)}</div>`;
+    return `<div class="flex flex-col gap-3"><div x-show="devMode"><div class="text-sm font-semibold text-primary mb-1">Requête de données</div><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${s}', true)"></div></div><div x-show="devMode"><div class="text-sm font-semibold text-primary mb-1 flex items-center gap-2"><span>Requête nom de fichier PDF</span><span class="badge badge-soft badge-info text-xs flex items-center gap-1"><span class="iconify" data-icon="material-symbols-light:storage" style="font-size:0.875rem"></span> SQL</span></div><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${a}', false, 'query2')"></div></div><div x-show="devMode" class="form-control"><label class="label gap-2"><span class="label-text font-semibold">Template pdfme (JSON)</span><span class="badge badge-soft badge-primary text-xs">Layout</span></label><textarea class="textarea textarea-bordered w-full font-mono text-xs" x-model="cellItem.cell.json" rows="10" style="min-height: 180px;" placeholder='{"basePdf": {...}, "schemas": [...]}'></textarea></div><div class="flex justify-center" x-show="cellItem.cell.buttonLabel"><button class="btn btn-primary btn-sm" @click="runCellAt(${e}, ${n})" :disabled="isLoading"><span x-text="cellItem.cell.buttonLabel || '📑 Générer le PDF'"></span></button></div>${this.renderResultInfoBlock(!1)}</div>`;
   }
   static renderSqlWithPerspective(e, n, r) {
-    const s = r.bodyConfig || {}, i = this._defaultSql(r, 0, "SELECT * FROM source1"), a = s.minHeight || "400px", o = CellRenderer$1.renderTableSkeleton();
-    return `<div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 flex flex-col' : 'flex flex-col gap-2'"><template x-if="showSqlEditorVisible(cellItem.cell)"><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${i}', false, 'query', '_showParsedQuery', null, null, null, '${e}', '${n}')"></div></template><template x-if="cellItem.cell._status === 'running' && !cellItem.cell._perspectiveReady"><div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 rounded-lg bg-base-100 overflow-hidden' : 'rounded-lg bg-base-100 overflow-hidden'" :style="hasCellHeight(cellItem.cell) ? '' : 'min-height: ${a}'">${o}</div></template><template x-if="cellItem.cell._perspectiveReady"><div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 flex flex-col perspective-fill-height' : ''" :style="hasCellHeight(cellItem.cell) ? '' : 'min-height: ${a}'"><perspective-viewer :id="'perspective-' + cellItem.cell._id" theme="Pro Light" :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 w-full rounded-lg' : 'w-full rounded-lg'" :style="hasCellHeight(cellItem.cell) ? '' : 'min-height: ${a}'" x-init="$nextTick(() => { if (cellItem.cell._arrowTable && !cellItem.cell._perspectiveScheduled && !cellItem.cell._perspectiveRendering && !cellItem.cell._perspectiveTable) { renderPerspectiveInContainer(cellItem.cell).catch(e => { cellItem.cell._perspectiveReady = false; cellItem.cell._resultInfo = '❌ ' + e.message; }); } })"></perspective-viewer></div></template></div>`;
+    const s = r.bodyConfig || {}, a = this._defaultSql(r, 0, "SELECT * FROM source1"), i = s.minHeight || "400px", o = CellRenderer$1.renderTableSkeleton();
+    return `<div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 flex flex-col' : 'flex flex-col gap-2'"><template x-if="showSqlEditorVisible(cellItem.cell)"><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${a}', false, 'query', '_showParsedQuery', null, null, null, '${e}', '${n}')"></div></template><template x-if="cellItem.cell._status === 'running' && !cellItem.cell._perspectiveReady"><div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 rounded-lg bg-base-100 overflow-hidden' : 'rounded-lg bg-base-100 overflow-hidden'" :style="hasCellHeight(cellItem.cell) ? '' : 'min-height: ${i}'">${o}</div></template><template x-if="cellItem.cell._perspectiveReady"><div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 flex flex-col perspective-fill-height' : ''" :style="hasCellHeight(cellItem.cell) ? '' : 'min-height: ${i}'"><perspective-viewer :id="'perspective-' + cellItem.cell._id" theme="Pro Light" :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 w-full rounded-lg' : 'w-full rounded-lg'" :style="hasCellHeight(cellItem.cell) ? '' : 'min-height: ${i}'" x-init="$nextTick(() => { if (cellItem.cell._arrowTable && !cellItem.cell._perspectiveScheduled && !cellItem.cell._perspectiveRendering && !cellItem.cell._perspectiveTable) { renderPerspectiveInContainer(cellItem.cell).catch(e => { cellItem.cell._perspectiveReady = false; cellItem.cell._resultInfo = '❌ ' + e.message; }); } })"></perspective-viewer></div></template></div>`;
   }
 }
 const CELL_BODY_FAMILIES = {
@@ -6566,33 +6566,33 @@ const CELL_BODY_FAMILIES = {
   pdfme: { render: (t, e, n) => CellBodyRenderer.renderPdfme(t, e, n) },
   sqlWithPerspective: { render: (t, e, n) => CellBodyRenderer.renderSqlWithPerspective(t, e, n) }
 };
-let CellRenderer$1 = class j {
+let CellRenderer$1 = class G {
   // Génère le HTML du header d'une cellule (mode dev uniquement)
   static renderHeader(e, n, r) {
     return `
                     <div class="flex justify-between items-center py-2 px-4 bg-base-200 border-b border-base-300 cell-header-responsive" x-show="devMode">
                         <div class="flex items-center gap-2 text-sm text-base-content/60">
-                            <span class="text-base" x-text="getCellIcon(cellItem.cell.type)"></span>
+                            <span x-html="getCellIcon(cellItem.cell.type)"></span>
                             <span x-text="cellItem.cell.type"></span>
-                            <span x-show="cellItem.cell._status === 'running'" style="color: var(--warning);">⏳</span>
+                            <span x-show="cellItem.cell._status === 'running'" class="loading loading-spinner loading-xs" style="color:var(--warning)"></span>
                         </div>
                         <div class="flex gap-1 items-center">
                             <div class="join">
-                                <button class="btn btn-xs btn-success join-item" @click="runCellAt(${e}, ${n})" :disabled="isLoading" title="Exécuter">▶️</button>
-                                <button class="btn btn-xs join-item" @click="openCellConfig(${e}, ${n})" title="Configurer">⚙️</button>
-                                <button class="btn btn-xs join-item" @click="openChildGroupModal(${e}, ${n})" title="Groupe enfant"><span class="iconify" data-icon="material-symbols:add-notes-outline-sharp" style="font-size: 1.0rem;"></span></button>
-                                <button class="btn btn-xs join-item" @click="moveItemInGroup(${e}, 'cell', ${n}, -1)" :disabled="isFirstInGroup(${r}, 'cell', ${n})" title="Déplacer à gauche">⬅️</button>
-                                <button class="btn btn-xs join-item" @click="moveItemInGroup(${e}, 'cell', ${n}, 1)" :disabled="isLastInGroup(${r}, 'cell', ${n})" title="Déplacer à droite">➡️</button>
-                                <button class="btn btn-xs btn-error join-item" @click="deleteCellAt(${e}, ${n})" title="Supprimer">🗑️</button>
+                                <button class="btn btn-xs btn-success join-item" @click="runCellAt(${e}, ${n})" :disabled="isLoading" title="Exécuter"><span class="iconify" data-icon="material-symbols-light:play-arrow" style="font-size:1rem"></span></button>
+                                <button class="btn btn-xs join-item" @click="openCellConfig(${e}, ${n})" title="Configurer"><span class="iconify" data-icon="material-symbols-light:settings" style="font-size:1rem"></span></button>
+                                <button class="btn btn-xs join-item" @click="openChildGroupModal(${e}, ${n})" title="Groupe enfant"><span class="iconify" data-icon="material-symbols-light:note-add" style="font-size:1rem"></span></button>
+                                <button class="btn btn-xs join-item" @click="moveItemInGroup(${e}, 'cell', ${n}, -1)" :disabled="isFirstInGroup(${r}, 'cell', ${n})" title="Déplacer à gauche"><span class="iconify" data-icon="material-symbols-light:arrow-back" style="font-size:1rem"></span></button>
+                                <button class="btn btn-xs join-item" @click="moveItemInGroup(${e}, 'cell', ${n}, 1)" :disabled="isLastInGroup(${r}, 'cell', ${n})" title="Déplacer à droite"><span class="iconify" data-icon="material-symbols-light:arrow-forward" style="font-size:1rem"></span></button>
+                                <button class="btn btn-xs btn-error join-item" @click="deleteCellAt(${e}, ${n})" title="Supprimer"><span class="iconify" data-icon="material-symbols-light:delete" style="font-size:1rem"></span></button>
                             </div>
                             <div class="dropdown dropdown-end hidden">
-                                <div tabindex="0" role="button" class="btn btn-xs">⋮</div>
+                                <div tabindex="0" role="button" class="btn btn-xs"><span class="iconify" data-icon="material-symbols-light:more-vert" style="font-size:1rem"></span></div>
                                 <ul tabindex="-1" class="dropdown-content menu menu-xs bg-base-100 rounded-box z-[1] w-48 p-2 shadow-sm">
-                                    <li><button @click="runCellAt(${e}, ${n})" :disabled="isLoading">▶️ Exécuter</button></li>
-                                    <li><button @click="openCellConfig(${e}, ${n})">⚙️ Configurer</button></li>
-                                    <li><button @click="moveItemInGroup(${e}, 'cell', ${n}, -1)" :disabled="isFirstInGroup(${r}, 'cell', ${n})">⬅️ Déplacer à gauche</button></li>
-                                    <li><button @click="moveItemInGroup(${e}, 'cell', ${n}, 1)" :disabled="isLastInGroup(${r}, 'cell', ${n})">➡️ Déplacer à droite</button></li>
-                                    <li><button class="text-error" @click="deleteCellAt(${e}, ${n})">🗑️ Supprimer</button></li>
+                                    <li><button @click="runCellAt(${e}, ${n})" :disabled="isLoading"><span class="iconify" data-icon="material-symbols-light:play-arrow" style="font-size:1rem"></span> Exécuter</button></li>
+                                    <li><button @click="openCellConfig(${e}, ${n})"><span class="iconify" data-icon="material-symbols-light:settings" style="font-size:1rem"></span> Configurer</button></li>
+                                    <li><button @click="moveItemInGroup(${e}, 'cell', ${n}, -1)" :disabled="isFirstInGroup(${r}, 'cell', ${n})"><span class="iconify" data-icon="material-symbols-light:arrow-back" style="font-size:1rem"></span> Déplacer à gauche</button></li>
+                                    <li><button @click="moveItemInGroup(${e}, 'cell', ${n}, 1)" :disabled="isLastInGroup(${r}, 'cell', ${n})"><span class="iconify" data-icon="material-symbols-light:arrow-forward" style="font-size:1rem"></span> Déplacer à droite</button></li>
+                                    <li><button class="text-error" @click="deleteCellAt(${e}, ${n})"><span class="iconify" data-icon="material-symbols-light:delete" style="font-size:1rem"></span> Supprimer</button></li>
                                 </ul>
                             </div>
                         </div>
@@ -6617,10 +6617,10 @@ let CellRenderer$1 = class j {
   }
   // Génère le HTML du body d'une cellule (tous les types – registre bodyFamily)
   static renderBody(e, n) {
-    const r = this.renderCellBodySkeleton(), i = Object.entries(CELL_TYPE_SCHEMAS$1.types).filter(([, a]) => a.bodyFamily && CELL_BODY_FAMILIES[a.bodyFamily]).map(([a, o]) => {
+    const r = this.renderCellBodySkeleton(), a = Object.entries(CELL_TYPE_SCHEMAS$1.types).filter(([, i]) => i.bodyFamily && CELL_BODY_FAMILIES[i.bodyFamily]).map(([i, o]) => {
       const c = CELL_BODY_FAMILIES[o.bodyFamily].render(e, n, o);
-      return { type: a, html: c };
-    }).map(({ type: a, html: o }) => `<template x-if="cellItem.cell.type === '${a}'">${o}</template>`).join(`
+      return { type: i, html: c };
+    }).map(({ type: i, html: o }) => `<template x-if="cellItem.cell.type === '${i}'">${o}</template>`).join(`
                         `);
     return `
                     <div class="pt-1 pb-1 pl-2 pr-2 relative flex-1 flex flex-col min-h-0 cell-body"
@@ -6632,14 +6632,14 @@ let CellRenderer$1 = class j {
                         </div>
                         <!-- CONTENU: logique pilotée par bodyDisplay (schéma) -->
                         <div class="flex-1 flex flex-col min-h-0" x-show="bodyDisplayShouldShowContent(cellItem.cell)">
-                        ${i}
+                        ${a}
                         <!-- CLIENT MODE BUTTON: Open child group modal if cell has childGroupId -->
                         <template x-if="!devMode && cellItem.cell.childGroupId">
                             <div class="absolute top-2 right-2">
                                 <button class="btn btn-sm gap-0"
                                         @click="openChildGroupModal(${e}, ${n})"
                                         title="Ouvrir le groupe enfant">
-                                    <span class="iconify" data-icon="material-symbols:export-notes-outline-sharp" style="font-size: 1.0rem;"></span>
+                                    <span class="iconify" data-icon="material-symbols-light:upload-file" style="font-size:1rem"></span>
                                 </button>
                             </div>
                         </template>
@@ -6648,7 +6648,7 @@ let CellRenderer$1 = class j {
   }
   // Génère le HTML complet d'une cellule
   static renderCell(e, n, r) {
-    return j.renderHeader(e, n, r) + j.renderBody(e, n);
+    return G.renderHeader(e, n, r) + G.renderBody(e, n);
   }
 };
 function generateGistPassphraseModalHTML() {
@@ -6656,7 +6656,7 @@ function generateGistPassphraseModalHTML() {
     <div class="min-h-screen flex items-center justify-center p-4 bg-base-200" x-data="gistPassphraseModal()" x-init="init()">
 <div class="modal modal-open">
     <div class="modal-box max-w-md">
-        <h3 class="font-bold text-lg flex items-center gap-2">🔐 Configuration chiffrée</h3>
+        <h3 class="font-bold text-lg flex items-center gap-2"><span class="iconify" data-icon="material-symbols-light:lock" style="font-size:1.25rem"></span> Configuration chiffrée</h3>
         <p class="py-2 text-sm text-base-content/70">
             Cette configuration est protégée par un mot de passe. Entrez-le pour charger les données.
         </p>
@@ -6707,39 +6707,39 @@ function generateAppHTML() {
                            @keydown.enter="page.name = tempName; editing = false; saveToLocalStorage();"
                            @keydown.escape="editing = false"
                            @blur="page.name = tempName; editing = false; saveToLocalStorage();">
-                    <button x-show="devMode && pages.length > 1 && !editing" 
+                    <button x-show="devMode && pages.length > 1 && !editing"
                             @click.stop="deletePage(index)"
                             class="btn btn-ghost btn-xs"
                             title="Supprimer la page">
-                        ✕
+                        <span class="iconify" data-icon="material-symbols-light:close" style="font-size:1rem"></span>
                     </button>
                 </div>
             </li>
         </template>
         <li x-show="devMode">
             <button @click="addPage()" class="btn btn-ghost btn-sm">
-                ➕ Ajouter une page
+                <span class="iconify" data-icon="material-symbols-light:add" style="font-size:1rem"></span> Ajouter une page
             </button>
         </li>
         <li class="divider"></li>
         <li x-show="devMode">
-            <button class="btn btn-sm" @click="runAllGroups(); document.getElementById('mobile-drawer').checked = false;" :disabled="isLoading">▶️ Tout exécuter</button>
+            <button class="btn btn-sm" @click="runAllGroups(); document.getElementById('mobile-drawer').checked = false;" :disabled="isLoading"><span class="iconify" data-icon="material-symbols-light:play-arrow" style="font-size:1rem"></span> Tout exécuter</button>
         </li>
         <template x-if="devMode">
             <li>
-                <a>📤 Export</a>
+                <a><span class="iconify" data-icon="material-symbols-light:upload" style="font-size:1rem"></span> Export</a>
                 <ul class="p-2">
-                    <li><button @click="openExportModal('html'); document.getElementById('mobile-drawer').checked = false;" :disabled="isLoading">💾 HTML</button></li>
-                    <li><button @click="openExportModal('json'); document.getElementById('mobile-drawer').checked = false;">📦 JSON</button></li>
-                    <li><button @click="openExportModal('base64'); document.getElementById('mobile-drawer').checked = false;">🔐 Base64</button></li>
-                    <li><button @click="openExportModal('gist'); document.getElementById('mobile-drawer').checked = false;" :disabled="isLoading">🐙 Partager via Gist</button></li>
+                    <li><button @click="openExportModal('html'); document.getElementById('mobile-drawer').checked = false;" :disabled="isLoading"><span class="iconify" data-icon="material-symbols-light:save" style="font-size:1rem"></span> HTML</button></li>
+                    <li><button @click="openExportModal('json'); document.getElementById('mobile-drawer').checked = false;"><span class="iconify" data-icon="material-symbols-light:data-object" style="font-size:1rem"></span> JSON</button></li>
+                    <li><button @click="openExportModal('base64'); document.getElementById('mobile-drawer').checked = false;"><span class="iconify" data-icon="material-symbols-light:lock" style="font-size:1rem"></span> Base64</button></li>
+                    <li><button @click="openExportModal('gist'); document.getElementById('mobile-drawer').checked = false;" :disabled="isLoading"><span class="iconify" data-icon="material-symbols-light:share" style="font-size:1rem"></span> Partager via Gist</button></li>
                 </ul>
             </li>
         </template>
         <template x-if="devMode">
             <li>
                 <label class="cursor-pointer">
-                    📂 Import JSON
+                    <span class="iconify" data-icon="material-symbols-light:folder-open" style="font-size:1rem"></span> Import JSON
                     <input type="file" accept=".json" @change="loadConfig($event); document.getElementById('mobile-drawer').checked = false;" hidden>
                 </label>
             </li>
@@ -6788,19 +6788,19 @@ function generateAppHTML() {
                            @keydown.enter="page.name = tempName; editing = false; saveToLocalStorage();"
                            @keydown.escape="editing = false"
                            @blur="page.name = tempName; editing = false; saveToLocalStorage();">
-                    <button x-show="devMode && pages.length > 1" 
+                    <button x-show="devMode && pages.length > 1"
                             @click.stop="deletePage(index)"
                             class="btn btn-ghost btn-xs -ml-2"
                             title="Supprimer la page">
-                        ✕
+                        <span class="iconify" data-icon="material-symbols-light:close" style="font-size:1rem"></span>
                     </button>
                 </div>
             </template>
-            <button x-show="devMode" 
+            <button x-show="devMode"
                     @click="addPage()"
                     class="btn btn-ghost btn-sm self-center"
                     title="Ajouter une page">
-                ➕
+                <span class="iconify" data-icon="material-symbols-light:add" style="font-size:1rem"></span>
             </button>
         </div>
     </div>
@@ -6814,25 +6814,25 @@ function generateAppHTML() {
             </svg>
         </label>
         <button x-show="devMode" class="btn btn-sm btn-primary hidden lg:flex" @click="runAllGroups()" :disabled="isLoading">
-            ▶️ Tout exécuter
+            <span class="iconify" data-icon="material-symbols-light:play-arrow" style="font-size:1rem"></span> Tout exécuter
         </button>
         <template x-if="devMode">
             <div class="join hidden lg:flex">
                 <!-- Mode dev : menu export complet -->
                 <div class="join-item dropdown dropdown-end">
                     <div tabindex="0" role="button" class="btn btn-sm join-item">
-                        📤 Export
+                        <span class="iconify" data-icon="material-symbols-light:upload" style="font-size:1rem"></span> Export
                     </div>
                     <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
-                        <li><button @click="openExportModal('html')" :disabled="isLoading">💾 HTML</button></li>
-                        <li><button @click="openExportModal('json')">📦 JSON</button></li>
-                        <li><button @click="openExportModal('base64')">🔐 Base64</button></li>
-                        <li><button @click="openExportModal('gist')" :disabled="isLoading">🐙 Partager via Gist</button></li>
+                        <li><button @click="openExportModal('html')" :disabled="isLoading"><span class="iconify" data-icon="material-symbols-light:save" style="font-size:1rem"></span> HTML</button></li>
+                        <li><button @click="openExportModal('json')"><span class="iconify" data-icon="material-symbols-light:data-object" style="font-size:1rem"></span> JSON</button></li>
+                        <li><button @click="openExportModal('base64')"><span class="iconify" data-icon="material-symbols-light:lock" style="font-size:1rem"></span> Base64</button></li>
+                        <li><button @click="openExportModal('gist')" :disabled="isLoading"><span class="iconify" data-icon="material-symbols-light:share" style="font-size:1rem"></span> Partager via Gist</button></li>
                     </ul>
                 </div>
                 <!-- Import JSON : seulement en mode dev -->
                 <label class="btn join-item btn-sm cursor-pointer">
-                    📂 Import JSON
+                    <span class="iconify" data-icon="material-symbols-light:folder-open" style="font-size:1rem"></span> Import JSON
                     <input type="file" accept=".json" @change="loadConfig($event)" hidden>
                 </label>
             </div>
@@ -6886,27 +6886,27 @@ function generateAppHTML() {
                             <button class="btn btn-xs join-item" @click="toggleGroupDirection(item.path)" :title="item.group.direction === 'column' ? 'Passer en ligne' : 'Passer en colonne'">
                                 <span x-text="item.group.direction === 'column' ? '⇵' : '⇄'"></span>
                             </button>
-                            <button class="btn btn-xs join-item" :class="item.group.loop?.enabled ? 'btn-info' : ''" @click="openLoopConfigModal(item.path)" title="Configurer la boucle">🔁</button>
-                            <button class="btn btn-xs join-item" :class="item.group.accordion ? 'btn-accent' : ''" @click="openGroupSettingsModal(item.path)" title="Paramètres du groupe">⚙️</button>
-                            <button class="btn btn-xs btn-success join-item" @click="runGroupAtPath(item.path)" :disabled="isLoading" title="Exécuter">▶️</button>
-                            <button class="btn btn-xs join-item" @click="moveGroupAtPath(item.path, -1)" :disabled="item.isFirst" title="Monter">⬆️</button>
-                            <button class="btn btn-xs join-item" @click="moveGroupAtPath(item.path, 1)" :disabled="item.isLast" title="Descendre">⬇️</button>
-                            <button class="btn btn-xs join-item" @click="addNestedGroup(item.path)" title="Ajouter un sous-groupe">📁</button>
-                            <button class="btn btn-xs join-item" @click="openAddCellToGroupModal(item.path)" title="Ajouter une cellule">➕</button>
-                            <button class="btn btn-xs btn-error join-item" @click="deleteGroupAtPath(item.path)" title="Supprimer">🗑️</button>
+                            <button class="btn btn-xs join-item" :class="item.group.loop?.enabled ? 'btn-info' : ''" @click="openLoopConfigModal(item.path)" title="Configurer la boucle"><span class="iconify" data-icon="material-symbols-light:loop" style="font-size:1rem"></span></button>
+                            <button class="btn btn-xs join-item" :class="item.group.accordion ? 'btn-accent' : ''" @click="openGroupSettingsModal(item.path)" title="Paramètres du groupe"><span class="iconify" data-icon="material-symbols-light:settings" style="font-size:1rem"></span></button>
+                            <button class="btn btn-xs btn-success join-item" @click="runGroupAtPath(item.path)" :disabled="isLoading" title="Exécuter"><span class="iconify" data-icon="material-symbols-light:play-arrow" style="font-size:1rem"></span></button>
+                            <button class="btn btn-xs join-item" @click="moveGroupAtPath(item.path, -1)" :disabled="item.isFirst" title="Monter"><span class="iconify" data-icon="material-symbols-light:arrow-upward" style="font-size:1rem"></span></button>
+                            <button class="btn btn-xs join-item" @click="moveGroupAtPath(item.path, 1)" :disabled="item.isLast" title="Descendre"><span class="iconify" data-icon="material-symbols-light:arrow-downward" style="font-size:1rem"></span></button>
+                            <button class="btn btn-xs join-item" @click="addNestedGroup(item.path)" title="Ajouter un sous-groupe"><span class="iconify" data-icon="material-symbols-light:create-new-folder" style="font-size:1rem"></span></button>
+                            <button class="btn btn-xs join-item" @click="openAddCellToGroupModal(item.path)" title="Ajouter une cellule"><span class="iconify" data-icon="material-symbols-light:add" style="font-size:1rem"></span></button>
+                            <button class="btn btn-xs btn-error join-item" @click="deleteGroupAtPath(item.path)" title="Supprimer"><span class="iconify" data-icon="material-symbols-light:delete" style="font-size:1rem"></span></button>
                         </div>
                         <div class="dropdown hidden">
-                            <div tabindex="0" role="button" class="btn btn-xs">⋮</div>
+                            <div tabindex="0" role="button" class="btn btn-xs"><span class="iconify" data-icon="material-symbols-light:more-vert" style="font-size:1rem"></span></div>
                             <ul tabindex="-1" class="dropdown-content menu menu-xs bg-base-100 rounded-box z-[1] w-48 p-2 shadow-sm">
                                 <li><button @click="toggleGroupDirection(item.path)"><span x-text="item.group.direction === 'column' ? '⇵ Passer en ligne' : '⇄ Passer en colonne'"></span></button></li>
-                                <li><button @click="openLoopConfigModal(item.path)">🔁 Configurer la boucle</button></li>
-                                <li><button @click="openGroupSettingsModal(item.path)">⚙️ Paramètres du groupe</button></li>
-                                <li><button @click="runGroupAtPath(item.path)" :disabled="isLoading">▶️ Exécuter</button></li>
-                                <li><button @click="moveGroupAtPath(item.path, -1)" :disabled="item.isFirst">⬆️ Monter</button></li>
-                                <li><button @click="moveGroupAtPath(item.path, 1)" :disabled="item.isLast">⬇️ Descendre</button></li>
-                                <li><button @click="addNestedGroup(item.path)">📁 Ajouter un sous-groupe</button></li>
-                                <li><button @click="openAddCellToGroupModal(item.path)">➕ Ajouter une cellule</button></li>
-                                <li><button class="text-error" @click="deleteGroupAtPath(item.path)">🗑️ Supprimer</button></li>
+                                <li><button @click="openLoopConfigModal(item.path)"><span class="iconify" data-icon="material-symbols-light:loop" style="font-size:1rem"></span> Configurer la boucle</button></li>
+                                <li><button @click="openGroupSettingsModal(item.path)"><span class="iconify" data-icon="material-symbols-light:settings" style="font-size:1rem"></span> Paramètres du groupe</button></li>
+                                <li><button @click="runGroupAtPath(item.path)" :disabled="isLoading"><span class="iconify" data-icon="material-symbols-light:play-arrow" style="font-size:1rem"></span> Exécuter</button></li>
+                                <li><button @click="moveGroupAtPath(item.path, -1)" :disabled="item.isFirst"><span class="iconify" data-icon="material-symbols-light:arrow-upward" style="font-size:1rem"></span> Monter</button></li>
+                                <li><button @click="moveGroupAtPath(item.path, 1)" :disabled="item.isLast"><span class="iconify" data-icon="material-symbols-light:arrow-downward" style="font-size:1rem"></span> Descendre</button></li>
+                                <li><button @click="addNestedGroup(item.path)"><span class="iconify" data-icon="material-symbols-light:create-new-folder" style="font-size:1rem"></span> Ajouter un sous-groupe</button></li>
+                                <li><button @click="openAddCellToGroupModal(item.path)"><span class="iconify" data-icon="material-symbols-light:add" style="font-size:1rem"></span> Ajouter une cellule</button></li>
+                                <li><button class="text-error" @click="deleteGroupAtPath(item.path)"><span class="iconify" data-icon="material-symbols-light:delete" style="font-size:1rem"></span> Supprimer</button></li>
                             </ul>
                         </div>
                     </div>
@@ -6971,7 +6971,7 @@ function generateAppHTML() {
     
     <div x-show="devMode" class="flex justify-center p-4">
         <button class="btn btn-primary btn-sm" @click="openAddGroupModal()">
-            ➕ Ajouter un groupe
+            <span class="iconify" data-icon="material-symbols-light:add" style="font-size:1rem"></span> Ajouter un groupe
         </button>
     </div>
 </div>
@@ -6982,15 +6982,15 @@ function generateAppHTML() {
         <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-add-group-title"
              x-trap.noscroll="showAddGroupModal">
             <div class="flex items-center justify-between gap-2">
-                <h3 class="text-lg font-semibold" id="modal-add-group-title">➕ Ajouter un groupe</h3>
-                <button class="btn btn-sm btn-ghost" @click="showAddGroupModal = false" x-focus="showAddGroupModal">✕</button>
+                <h3 class="text-lg font-semibold flex items-center gap-2" id="modal-add-group-title"><span class="iconify" data-icon="material-symbols-light:add" style="font-size:1.25rem"></span> Ajouter un groupe</h3>
+                <button class="btn btn-sm btn-ghost" @click="showAddGroupModal = false" x-focus="showAddGroupModal"><span class="iconify" data-icon="material-symbols-light:close" style="font-size:1rem"></span></button>
             </div>
             <div class="mt-4">
                 <p class="text-sm text-base-content/60 mb-4">Choisissez le type de cellule pour le nouveau groupe :</p>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <template x-for="cellType in cellTypes" :key="cellType.type">
                         <button class="btn justify-start" @click="addGroup(cellType.type)">
-                            <span x-text="cellType.icon"></span>
+                            <span x-html="cellType.icon"></span>
                             <span x-text="cellType.label"></span>
                         </button>
                     </template>
@@ -7006,8 +7006,8 @@ function generateAppHTML() {
         <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-db-engine-title"
              x-trap.noscroll="showDbEngineModal">
             <div class="flex items-center justify-between gap-2">
-                <h3 class="text-lg font-semibold" id="modal-db-engine-title">⚙️ Configuration job générale</h3>
-                <button class="btn btn-sm btn-ghost" @click="showDbEngineModal = false">✕</button>
+                <h3 class="text-lg font-semibold flex items-center gap-2" id="modal-db-engine-title"><span class="iconify" data-icon="material-symbols-light:settings" style="font-size:1.25rem"></span> Configuration job générale</h3>
+                <button class="btn btn-sm btn-ghost" @click="showDbEngineModal = false"><span class="iconify" data-icon="material-symbols-light:close" style="font-size:1rem"></span></button>
             </div>
             <div class="mt-4 space-y-4">
                 <p class="text-sm text-base-content/60">Choisissez le moteur SQL pour ce notebook :</p>
@@ -7066,7 +7066,7 @@ function generateAppHTML() {
                 <div class="flex items-center justify-between gap-4 p-4 rounded-lg bg-base-200">
                     <div>
                         <h4 class="font-semibold flex items-center gap-2">
-                            <span class="iconify" data-icon="material-symbols:account-tree-outline" style="font-size: 1.25rem;"></span>
+                            <span class="iconify" data-icon="material-symbols-light:account-tree" style="font-size:1.25rem"></span>
                             DAG (graphe acyclique dirigé)
                         </h4>
                         <p class="text-sm text-base-content/60 mt-1">Les cellules dépendantes se rafraîchissent automatiquement.</p>
@@ -7092,15 +7092,15 @@ function generateAppHTML() {
         <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-add-cell-title"
              x-trap.noscroll="addCellToGroupModal.open">
             <div class="flex items-center justify-between gap-2">
-                <h3 class="text-lg font-semibold" id="modal-add-cell-title">➕ Ajouter une cellule au groupe</h3>
-                <button class="btn btn-sm btn-ghost" @click="addCellToGroupModal.open = false" x-focus="addCellToGroupModal.open">✕</button>
+                <h3 class="text-lg font-semibold flex items-center gap-2" id="modal-add-cell-title"><span class="iconify" data-icon="material-symbols-light:add" style="font-size:1.25rem"></span> Ajouter une cellule au groupe</h3>
+                <button class="btn btn-sm btn-ghost" @click="addCellToGroupModal.open = false" x-focus="addCellToGroupModal.open"><span class="iconify" data-icon="material-symbols-light:close" style="font-size:1rem"></span></button>
             </div>
             <div class="mt-4">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <template x-for="cellType in cellTypes" :key="cellType.type">
                         <button class="btn justify-start" 
                                 @click="addCellToGroup(addCellToGroupModal.path ?? addCellToGroupModal.groupIndex, cellType.type)">
-                            <span x-text="cellType.icon"></span>
+                            <span x-html="cellType.icon"></span>
                             <span x-text="cellType.label"></span>
                         </button>
                     </template>
@@ -7116,15 +7116,15 @@ function generateAppHTML() {
         <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-insert-group-title"
              x-trap.noscroll="insertGroupModal.open">
             <div class="flex items-center justify-between gap-2">
-                <h3 class="text-lg font-semibold" id="modal-insert-group-title">➕ Insérer un groupe à la position <span x-text="insertGroupModal.atIndex + 1"></span></h3>
-                <button class="btn btn-sm btn-ghost" @click="insertGroupModal.open = false" x-focus="insertGroupModal.open">✕</button>
+                <h3 class="text-lg font-semibold flex items-center gap-2" id="modal-insert-group-title"><span class="iconify" data-icon="material-symbols-light:add" style="font-size:1.25rem"></span> Insérer un groupe à la position <span x-text="insertGroupModal.atIndex + 1"></span></h3>
+                <button class="btn btn-sm btn-ghost" @click="insertGroupModal.open = false" x-focus="insertGroupModal.open"><span class="iconify" data-icon="material-symbols-light:close" style="font-size:1rem"></span></button>
             </div>
             <div class="mt-4">
                 <p class="text-sm text-base-content/60 mb-4">Choisissez le type de cellule pour le nouveau groupe :</p>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <template x-for="cellType in cellTypes" :key="cellType.type">
                         <button class="btn justify-start" @click="insertGroupAt(insertGroupModal.atIndex, cellType.type)">
-                            <span x-text="cellType.icon"></span>
+                            <span x-html="cellType.icon"></span>
                             <span x-text="cellType.label"></span>
                         </button>
                     </template>
@@ -7140,14 +7140,14 @@ function generateAppHTML() {
         <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-insert-cell-title"
              x-trap.noscroll="insertCellModal.open">
             <div class="flex items-center justify-between gap-2">
-                <h3 class="text-lg font-semibold" id="modal-insert-cell-title">➕ Insérer une cellule à la position <span x-text="insertCellModal.atCellIndex + 1"></span></h3>
-                <button class="btn btn-sm btn-ghost" @click="insertCellModal.open = false" x-focus="insertCellModal.open">✕</button>
+                <h3 class="text-lg font-semibold flex items-center gap-2" id="modal-insert-cell-title"><span class="iconify" data-icon="material-symbols-light:add" style="font-size:1.25rem"></span> Insérer une cellule à la position <span x-text="insertCellModal.atCellIndex + 1"></span></h3>
+                <button class="btn btn-sm btn-ghost" @click="insertCellModal.open = false" x-focus="insertCellModal.open"><span class="iconify" data-icon="material-symbols-light:close" style="font-size:1rem"></span></button>
             </div>
             <div class="mt-4">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <template x-for="cellType in cellTypes" :key="cellType.type">
                         <button class="btn justify-start" @click="insertCellAt(insertCellModal.groupIndex, insertCellModal.atCellIndex, cellType.type)">
-                            <span x-text="cellType.icon"></span>
+                            <span x-html="cellType.icon"></span>
                             <span x-text="cellType.label"></span>
                         </button>
                     </template>
@@ -7163,8 +7163,8 @@ function generateAppHTML() {
         <div class="modal-box max-w-2xl" role="dialog" aria-modal="true" aria-labelledby="modal-loop-config-title"
              x-trap.noscroll="true">
             <div class="flex items-center justify-between gap-2">
-                <h3 class="text-lg font-semibold" id="modal-loop-config-title">🔁 Configuration de la boucle</h3>
-                <button class="btn btn-sm btn-ghost" @click="loopConfigModal.open = false">✕</button>
+                <h3 class="text-lg font-semibold flex items-center gap-2" id="modal-loop-config-title"><span class="iconify" data-icon="material-symbols-light:loop" style="font-size:1.25rem"></span> Configuration de la boucle</h3>
+                <button class="btn btn-sm btn-ghost" @click="loopConfigModal.open = false"><span class="iconify" data-icon="material-symbols-light:close" style="font-size:1rem"></span></button>
             </div>
             <div class="mt-4">
                 <div class="form-control mb-4">
@@ -7194,7 +7194,7 @@ function generateAppHTML() {
                     
                     <div class="mt-2 mb-4">
                         <button class="btn btn-sm btn-outline" @click="getGroupAtPath(loopConfigModal.path).loop.query = getDefaultLoopQuery()">
-                            📝 Requête par défaut
+                            <span class="iconify" data-icon="material-symbols-light:article" style="font-size:1rem"></span> Requête par défaut
                         </button>
                     </div>
 
@@ -7204,7 +7204,7 @@ function generateAppHTML() {
                     <div class="form-control mb-4">
                         <label class="label cursor-pointer justify-start gap-3">
                             <input type="checkbox" class="toggle toggle-secondary" x-model="getGroupAtPath(loopConfigModal.path).loop.zip" />
-                            <span class="label-text">📦 Zipper les fichiers générés</span>
+                            <span class="label-text"><span class="iconify" data-icon="material-symbols-light:archive" style="font-size:1rem"></span> Zipper les fichiers générés</span>
                         </label>
                         <p class="text-xs text-base-content/60 ml-12">Les fichiers produits (SQL COPY, Publipostage Word, pdfme) seront regroupés dans un ZIP à la fin de la boucle.</p>
                     </div>
@@ -7222,7 +7222,7 @@ function generateAppHTML() {
                         
                         <div class="mt-2">
                             <button class="btn btn-sm btn-outline" @click="getGroupAtPath(loopConfigModal.path).loop.zipQuery = getDefaultZipQuery()">
-                                📝 Requête par défaut
+                                <span class="iconify" data-icon="material-symbols-light:article" style="font-size:1rem"></span> Requête par défaut
                             </button>
                         </div>
                     </div>
@@ -7241,8 +7241,8 @@ function generateAppHTML() {
         <div class="modal-box max-w-lg" role="dialog" aria-modal="true" aria-labelledby="modal-group-settings-title"
              x-trap.noscroll="groupSettingsModal.open">
             <div class="flex items-center justify-between gap-2">
-                <h3 class="text-lg font-semibold" id="modal-group-settings-title">⚙️ Paramètres du groupe</h3>
-                <button class="btn btn-sm btn-ghost" @click="groupSettingsModal.open = false">✕</button>
+                <h3 class="text-lg font-semibold flex items-center gap-2" id="modal-group-settings-title"><span class="iconify" data-icon="material-symbols-light:settings" style="font-size:1.25rem"></span> Paramètres du groupe</h3>
+                <button class="btn btn-sm btn-ghost" @click="groupSettingsModal.open = false"><span class="iconify" data-icon="material-symbols-light:close" style="font-size:1rem"></span></button>
             </div>
             <div class="mt-4">
                 <div class="form-control mb-4">
@@ -7312,8 +7312,8 @@ function generateAppHTML() {
                             <select class="select select-bordered select-sm w-full" 
                                     :value="(ConfigManager.getGroupIfQuery(getGroupAtPath(groupSettingsModal.path))?.engine || 'sql')"
                                     @change="(() => { const g = getGroupAtPath(groupSettingsModal.path); const q = ConfigManager.ensureGroupQueries(g); if (q) { g._cmEditor_ifQuery?.destroy(); g._cmEditor_ifQuery = null; q.engine = $event.target.value; } })()">
-                                <option value="sql">🗄️ SQL</option>
-                                <option value="js">⚡ JavaScript</option>
+                                <option value="sql">SQL</option>
+                                <option value="js">JavaScript</option>
                             </select>
                         </div>
                         <div class="form-control">
@@ -7324,7 +7324,7 @@ function generateAppHTML() {
                         </div>
                         <div class="mt-2 flex gap-2">
                             <button type="button" class="btn btn-sm btn-outline" @click="testGroupIfQuery(groupSettingsModal.path)" :disabled="!ConfigManager.getGroupIfQuery(getGroupAtPath(groupSettingsModal.path)) || isLoading">
-                                ▶️ Tester
+                                <span class="iconify" data-icon="material-symbols-light:play-arrow" style="font-size:1rem"></span> Tester
                             </button>
                         </div>
                     </div>
@@ -7343,9 +7343,9 @@ function generateAppHTML() {
         <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-cell-config-title"
              x-trap.noscroll="cellConfigModal.open">
             <form method="dialog">
-                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" @click="closeCellConfig()">✕</button>
+                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" @click="closeCellConfig()"><span class="iconify" data-icon="material-symbols-light:close" style="font-size:1rem"></span></button>
             </form>
-            <h3 class="text-lg font-bold" id="modal-cell-config-title">⚙️ Configuration de la cellule</h3>
+            <h3 class="text-lg font-bold flex items-center gap-2" id="modal-cell-config-title"><span class="iconify" data-icon="material-symbols-light:settings" style="font-size:1.25rem"></span> Configuration de la cellule</h3>
             <div class="mt-4 space-y-4" :key="'cellcfg-'+(cellConfigModal.path?.join?.('-')??'')+'-'+(cellConfigModal.cellIndex??'')"
                  x-init="(function(){ const c = getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex); if (c?.type) CellConfigService.ensureCellFromSchema(c, c.type, { baseName: c.name }); })()"
                  x-show="getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex)">
@@ -7354,17 +7354,17 @@ function generateAppHTML() {
                     <select class="select select-bordered select-sm w-full" x-ref="typeSelect"
                             x-effect="if (cellConfigModal.open && cellConfigModal.path !== null) $refs.typeSelect.value = getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex)?.type"
                             @change="(function(){ const c=getCellAtPath(cellConfigModal.path,cellConfigModal.cellIndex); const oldType=c?.type; c.type=$event.target.value; onCellTypeChange(cellConfigModal.path,cellConfigModal.cellIndex,oldType); })()">
-                        <option value="markdown">📝 Markdown</option>
-                        <option value="source">📄 Source</option>
-                        <option value="uiParameter">🎛️ Paramètre UI</option>
-                        <option value="buttonRunNextCells">🚀 Bouton Exécuter</option>
-                        <option value="sqlRecursiveParse">🗄️ SQL</option>
-                        <option value="table">📊 Tableau</option>
-                        <option value="iframe">🖼️ HTML/Iframe</option>
-                        <option value="sqlStat">💯 Stat SQL (daisyui)</option>
-                        <option value="publipostageWord">📄 Publipostage Word</option>
+                        <option value="markdown">Markdown</option>
+                        <option value="source">Source</option>
+                        <option value="uiParameter">Paramètre UI</option>
+                        <option value="buttonRunNextCells">Bouton Exécuter</option>
+                        <option value="sqlRecursiveParse">SQL</option>
+                        <option value="table">Tableau</option>
+                        <option value="iframe">HTML/Iframe</option>
+                        <option value="sqlStat">Stat SQL (daisyui)</option>
+                        <option value="publipostageWord">Publipostage Word</option>
                         <option value="pdfme">PDF (pdfme)</option>
-                        <option value="perspective">🔍 Perspective Viewer</option>
+                        <option value="perspective">Perspective Viewer</option>
                     </select>
                 </div>
 
@@ -7503,9 +7503,9 @@ function generateAppHTML() {
             <!-- Header sticky -->
             <div class="sticky top-0 z-10 flex items-center justify-between bg-primary text-primary-content px-6 py-4 shadow-md">
                 <h3 class="text-xl font-bold flex items-center gap-2" id="modal-child-group-title">
-                    <span class="iconify" data-icon="material-symbols:export-notes-outline-sharp" style="font-size: 1.5rem;"></span>
+                    <span class="iconify" data-icon="material-symbols-light:upload-file" style="font-size:1.5rem"></span>
                 </h3>
-                <button class="btn btn-sm btn-circle btn-ghost text-primary-content hover:bg-primary-focus" @click="closeChildGroupModal()">✕</button>
+                <button class="btn btn-sm btn-circle btn-ghost text-primary-content hover:bg-primary-focus" @click="closeChildGroupModal()"><span class="iconify" data-icon="material-symbols-light:close" style="font-size:1rem"></span></button>
             </div>
             
             <!-- Contenu scrollable -->
@@ -7522,10 +7522,10 @@ function generateAppHTML() {
                                             :title="childGroupModal.group.direction === 'column' ? 'Passer en ligne' : 'Passer en colonne'">
                                         <span x-text="childGroupModal.group.direction === 'column' ? '↕️' : '↔️'"></span>
                                     </button>
-                                    <button class="btn btn-xs btn-success join-item" @click="runGroupAtPath([-1])" :disabled="isLoading" title="Exécuter">▶️</button>
-                                    <button class="btn btn-xs join-item" @click="addNestedGroup([-1])" title="Ajouter un sous-groupe">📁</button>
-                                    <button class="btn btn-xs join-item" @click="openAddCellToGroupModal([-1])" title="Ajouter une cellule">➕</button>
-                                    <button class="btn btn-xs btn-error join-item" @click="deleteChildGroupModal()" title="Supprimer le groupe">🗑️</button>
+                                    <button class="btn btn-xs btn-success join-item" @click="runGroupAtPath([-1])" :disabled="isLoading" title="Exécuter"><span class="iconify" data-icon="material-symbols-light:play-arrow" style="font-size:1rem"></span></button>
+                                    <button class="btn btn-xs join-item" @click="addNestedGroup([-1])" title="Ajouter un sous-groupe"><span class="iconify" data-icon="material-symbols-light:create-new-folder" style="font-size:1rem"></span></button>
+                                    <button class="btn btn-xs join-item" @click="openAddCellToGroupModal([-1])" title="Ajouter une cellule"><span class="iconify" data-icon="material-symbols-light:add" style="font-size:1rem"></span></button>
+                                    <button class="btn btn-xs btn-error join-item" @click="deleteChildGroupModal()" title="Supprimer le groupe"><span class="iconify" data-icon="material-symbols-light:delete" style="font-size:1rem"></span></button>
                                 </div>
                             </div>
                             
@@ -7547,17 +7547,17 @@ function generateAppHTML() {
                                             <!-- Header de cellule -->
                                             <div class="flex justify-between items-center py-2 px-4 bg-base-200 border-b border-base-300" x-show="devMode">
                                                 <div class="flex items-center gap-2 text-sm text-base-content/60">
-                                                    <span class="text-base" x-text="getCellIcon(cellItem.cell.type)"></span>
+                                                    <span x-html="getCellIcon(cellItem.cell.type)"></span>
                                                     <span x-text="cellItem.cell.type"></span>
-                                                    <span x-show="cellItem.cell._status === 'running'" style="color: var(--warning);">⏳</span>
+                                                    <span x-show="cellItem.cell._status === 'running'" class="loading loading-spinner loading-xs" style="color:var(--warning)"></span>
                                                 </div>
                                                 <div class="flex gap-1 items-center">
                                                     <div class="join">
-                                                        <button class="btn btn-xs btn-success join-item" @click="runCellAt([-1], cellItem.originalIndex)" :disabled="isLoading" title="Exécuter">▶️</button>
-                                                        <button class="btn btn-xs join-item" @click="openCellConfig([-1], cellItem.originalIndex)" title="Configurer">⚙️</button>
-                                                        <button class="btn btn-xs join-item" @click="moveItemInGroup([-1], 'cell', cellItem.originalIndex, -1)" :disabled="isFirstInGroup(childGroupModal.group, 'cell', cellItem.originalIndex)" title="Déplacer à gauche">⬅️</button>
-                                                        <button class="btn btn-xs join-item" @click="moveItemInGroup([-1], 'cell', cellItem.originalIndex, 1)" :disabled="isLastInGroup(childGroupModal.group, 'cell', cellItem.originalIndex)" title="Déplacer à droite">➡️</button>
-                                                        <button class="btn btn-xs btn-error join-item" @click="deleteCellAt([-1], cellItem.originalIndex)" title="Supprimer">🗑️</button>
+                                                        <button class="btn btn-xs btn-success join-item" @click="runCellAt([-1], cellItem.originalIndex)" :disabled="isLoading" title="Exécuter"><span class="iconify" data-icon="material-symbols-light:play-arrow" style="font-size:1rem"></span></button>
+                                                        <button class="btn btn-xs join-item" @click="openCellConfig([-1], cellItem.originalIndex)" title="Configurer"><span class="iconify" data-icon="material-symbols-light:settings" style="font-size:1rem"></span></button>
+                                                        <button class="btn btn-xs join-item" @click="moveItemInGroup([-1], 'cell', cellItem.originalIndex, -1)" :disabled="isFirstInGroup(childGroupModal.group, 'cell', cellItem.originalIndex)" title="Déplacer à gauche"><span class="iconify" data-icon="material-symbols-light:arrow-back" style="font-size:1rem"></span></button>
+                                                        <button class="btn btn-xs join-item" @click="moveItemInGroup([-1], 'cell', cellItem.originalIndex, 1)" :disabled="isLastInGroup(childGroupModal.group, 'cell', cellItem.originalIndex)" title="Déplacer à droite"><span class="iconify" data-icon="material-symbols-light:arrow-forward" style="font-size:1rem"></span></button>
+                                                        <button class="btn btn-xs btn-error join-item" @click="deleteCellAt([-1], cellItem.originalIndex)" title="Supprimer"><span class="iconify" data-icon="material-symbols-light:delete" style="font-size:1rem"></span></button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -7594,7 +7594,7 @@ function generateAppHTML() {
     <!-- Sélecteur de thème (devMode uniquement) -->
         <div class="dropdown dropdown-top" x-show="devMode">
             <div tabindex="0"  class="btn btn-sm  btn-ghost">
-                <span class="iconify" data-icon="material-symbols:palette" style="font-size: 1.25rem;"></span>
+                <span class="iconify" data-icon="material-symbols-light:palette" style="font-size:1.25rem"></span>
             </div>
             <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-40 p-2 shadow max-h-60 overflow-y-auto">
                 <template x-for="themeName in availableThemes" :key="themeName">
@@ -7612,7 +7612,7 @@ function generateAppHTML() {
     </button>
     <!-- Bouton Dev/View -->
     <button class="btn btn-sm" :class="devMode ? 'btn-soft' : 'btn-ghost'" @click="devMode = !devMode">
-            <span class="iconify" :data-icon="devMode ? 'material-symbols:eye-tracking-outline-sharp' : 'material-symbols:settings-outline'" style="font-size: 1.25rem;"></span>
+            <span class="iconify" :data-icon="devMode ? 'material-symbols-light:visibility' : 'material-symbols-light:settings'" style="font-size:1.25rem"></span>
     </button>
 </div>
 
@@ -7642,7 +7642,7 @@ function generateAppHTML() {
         <!-- Header -->
         <div class="flex items-center justify-between p-4 border-b border-base-300">
             <h3 class="text-lg font-semibold" x-text="$store.templateModal.getModalTitle()"></h3>
-            <button @click="$store.templateModal.close()" class="btn btn-ghost btn-sm btn-circle">✕</button>
+            <button @click="$store.templateModal.close()" class="btn btn-ghost btn-sm btn-circle"><span class="iconify" data-icon="material-symbols-light:close" style="font-size:1rem"></span></button>
         </div>
         
         <!-- Recherche -->
@@ -7693,12 +7693,12 @@ function generateAppHTML() {
              x-trap.noscroll="exportModal.show">
             <div class="flex items-center justify-between gap-2">
                 <h3 class="text-lg font-semibold" id="modal-export-title">
-                    <span x-show="exportModal.type === 'gist'">🐙 Partager via GitHub Gist</span>
-                    <span x-show="exportModal.type === 'json'">📦 Export JSON</span>
-                    <span x-show="exportModal.type === 'base64'">🔐 Export Base64</span>
-                    <span x-show="exportModal.type === 'html'">💾 Export HTML</span>
+                    <span x-show="exportModal.type === 'gist'" class="flex items-center gap-2"><span class="iconify" data-icon="material-symbols-light:share" style="font-size:1.25rem"></span> Partager via GitHub Gist</span>
+                    <span x-show="exportModal.type === 'json'" class="flex items-center gap-2"><span class="iconify" data-icon="material-symbols-light:data-object" style="font-size:1.25rem"></span> Export JSON</span>
+                    <span x-show="exportModal.type === 'base64'" class="flex items-center gap-2"><span class="iconify" data-icon="material-symbols-light:lock" style="font-size:1.25rem"></span> Export Base64</span>
+                    <span x-show="exportModal.type === 'html'" class="flex items-center gap-2"><span class="iconify" data-icon="material-symbols-light:save" style="font-size:1.25rem"></span> Export HTML</span>
                 </h3>
-                <button class="btn btn-sm btn-ghost" @click="cancelExport()">✕</button>
+                <button class="btn btn-sm btn-ghost" @click="cancelExport()"><span class="iconify" data-icon="material-symbols-light:close" style="font-size:1rem"></span></button>
             </div>
             <div class="mt-4 space-y-4">
                 <!-- Description (seulement pour Gist) -->
@@ -7766,7 +7766,7 @@ function generateAppHTML() {
                         <input type="checkbox" class="toggle toggle-primary" x-model="exportModal.encryptGist"
                             @change="if (exportModal.encryptGist && !exportModal.gistPassphrase) exportModal.gistPassphrase = GistEncrypt.generatePassphrase()" />
                         <div>
-                            <span class="label-text font-semibold">🔐 Chiffrer la configuration</span>
+                            <span class="label-text font-semibold flex items-center gap-2"><span class="iconify" data-icon="material-symbols-light:lock" style="font-size:1rem"></span> Chiffrer la configuration</span>
                             <p class="text-xs text-base-content/60">Chiffre la config et les datachunks avec un mot de passe</p>
                         </div>
                     </label>
@@ -7809,8 +7809,8 @@ function generateAppHTML() {
         <div class="modal-box max-w-lg" role="dialog" aria-modal="true" aria-labelledby="modal-github-token-title"
              x-trap.noscroll="showGistTokenModal">
             <div class="flex items-center justify-between gap-2">
-                <h3 class="text-lg font-semibold" id="modal-github-token-title">🐙 Configuration GitHub</h3>
-                <button class="btn btn-sm btn-ghost" @click="cancelGithubToken()">✕</button>
+                <h3 class="text-lg font-semibold flex items-center gap-2" id="modal-github-token-title"><span class="iconify" data-icon="material-symbols-light:settings" style="font-size:1.25rem"></span> Configuration GitHub</h3>
+                <button class="btn btn-sm btn-ghost" @click="cancelGithubToken()"><span class="iconify" data-icon="material-symbols-light:close" style="font-size:1rem"></span></button>
             </div>
             <div class="mt-4 space-y-4">
                 <p class="text-sm text-base-content/60">
@@ -7852,8 +7852,8 @@ function generateAppHTML() {
         <div class="modal-box max-w-2xl" role="dialog" aria-modal="true" aria-labelledby="modal-gist-result-title"
              x-trap.noscroll="showGistModal">
             <div class="flex items-center justify-between gap-2">
-                <h3 class="text-lg font-semibold" id="modal-gist-result-title">✅ Gist créé avec succès</h3>
-                <button class="btn btn-sm btn-ghost" @click="closeGistModal()">✕</button>
+                <h3 class="text-lg font-semibold flex items-center gap-2" id="modal-gist-result-title"><span class="iconify text-success" data-icon="material-symbols-light:check-circle" style="font-size:1.25rem"></span> Gist créé avec succès</h3>
+                <button class="btn btn-sm btn-ghost" @click="closeGistModal()"><span class="iconify" data-icon="material-symbols-light:close" style="font-size:1rem"></span></button>
             </div>
             <div class="mt-4 space-y-4">
                 <p class="text-sm text-base-content/60">
@@ -7867,7 +7867,7 @@ function generateAppHTML() {
                             readonly 
                             class="input input-bordered join-item flex-1 font-mono text-sm"
                             @click="$event.target.select()">
-                        <button @click="copyGistUrl()" class="btn join-item btn-primary">📋 Copier</button>
+                        <button @click="copyGistUrl()" class="btn join-item btn-primary"><span class="iconify" data-icon="material-symbols-light:content-copy" style="font-size:1rem"></span> Copier</button>
                     </div>
                 </div>
                 <div class="alert alert-info">
@@ -7889,7 +7889,7 @@ function generateAppHTML() {
                         <input type="text" :value="gistPassphraseToShare" readonly
                             class="input input-bordered join-item flex-1 font-mono text-sm"
                             @click="$event.target.select()">
-                        <button @click="copyGistPassphrase()" class="btn join-item btn-primary">📋 Copier la mot de passe</button>
+                        <button @click="copyGistPassphrase()" class="btn join-item btn-primary"><span class="iconify" data-icon="material-symbols-light:content-copy" style="font-size:1rem"></span> Copier le mot de passe</button>
                     </div>
                 </div>
             </div>
@@ -7907,8 +7907,8 @@ function generateAppHTML() {
         <div class="modal-box max-w-md" role="dialog" aria-modal="true" aria-labelledby="modal-json-passphrase-title"
              x-trap.noscroll="showJsonPassphraseModal">
             <div class="flex items-center justify-between gap-2">
-                <h3 class="text-lg font-semibold" id="modal-json-passphrase-title">🔐 Fichier JSON chiffré</h3>
-                <button class="btn btn-sm btn-ghost" @click="cancelJsonPassphraseModal()">✕</button>
+                <h3 class="text-lg font-semibold flex items-center gap-2" id="modal-json-passphrase-title"><span class="iconify" data-icon="material-symbols-light:lock" style="font-size:1.25rem"></span> Fichier JSON chiffré</h3>
+                <button class="btn btn-sm btn-ghost" @click="cancelJsonPassphraseModal()"><span class="iconify" data-icon="material-symbols-light:close" style="font-size:1rem"></span></button>
             </div>
             <p class="py-2 text-sm text-base-content/70">
                 Ce fichier est protégé par un mot de passe. Entrez-la pour charger la configuration.
@@ -7976,16 +7976,16 @@ function gistPassphraseModal() {
         const e = await GistEncrypt.decrypt(window._pendingEncryptedGist, t), n = JSON.parse(e);
         let r;
         if (window._encryptedSource === "html" && n && typeof n.config == "object" && Array.isArray(n.sourceFiles) && Array.isArray(n.docxTemplates)) {
-          for (const a of n.sourceFiles) {
+          for (const i of n.sourceFiles) {
             const o = document.createElement("script");
-            o.type = "application/octet-stream", o.id = a.id, o.dataset.sourceName = a.sourceName, o.dataset.fileName = a.fileName, o.textContent = a.base64 || "", document.head.appendChild(o);
+            o.type = "application/octet-stream", o.id = i.id, o.dataset.sourceName = i.sourceName, o.dataset.fileName = i.fileName, o.textContent = i.base64 || "", document.head.appendChild(o);
           }
-          for (const a of n.docxTemplates) {
+          for (const i of n.docxTemplates) {
             const o = document.createElement("script");
-            o.type = "application/octet-stream", o.id = a.id, o.dataset.cellPath = a.cellPath, o.dataset.fileName = a.fileName, a.compressed && (o.dataset.compressed = "true"), o.textContent = a.base64 || "", document.head.appendChild(o);
+            o.type = "application/octet-stream", o.id = i.id, o.dataset.cellPath = i.cellPath, o.dataset.fileName = i.fileName, i.compressed && (o.dataset.compressed = "true"), o.textContent = i.base64 || "", document.head.appendChild(o);
           }
-          const i = document.getElementById("defaultConfigBase64");
-          i && (i.textContent = ConfigManager.encodeUTF8ToBase64(JSON.stringify(n.config, null, 2)), i.removeAttribute("data-encrypted")), r = n.config;
+          const a = document.getElementById("defaultConfigBase64");
+          a && (a.textContent = ConfigManager.encodeUTF8ToBase64(JSON.stringify(n.config, null, 2)), a.removeAttribute("data-encrypted")), r = n.config;
         } else
           r = ConfigManager.deepMerge(ConfigManager.getDefaultConfig(), n), await ConfigManager.prepareConfigForLoad(r);
         window._loadedConfig = ConfigManager.applyURLParamsToConfig(r), window._pendingEncryptedGist = null, window._encryptedSource = null;
@@ -8056,9 +8056,9 @@ function pagesMixin() {
       if (!e) return;
       const n = (r) => {
         (r || []).forEach((s) => {
-          (s.cells || []).forEach((i) => {
-            if (i.type === "markdown") {
-              const a = i._easyMDEcli, o = (a == null ? void 0 : a.codemirror) || (a == null ? void 0 : a.cm);
+          (s.cells || []).forEach((a) => {
+            if (a.type === "markdown") {
+              const i = a._easyMDEcli, o = (i == null ? void 0 : i.codemirror) || (i == null ? void 0 : i.cm);
               o != null && o.refresh && o.refresh();
             }
           }), s.children && n(s.children);
@@ -8145,8 +8145,8 @@ function helpersMixin() {
       const t = async (e, n = []) => {
         var r;
         for (let s = 0; s < (e || []).length; s++) {
-          const i = e[s], a = [...n, s];
-          ConfigManager.getGroupIfQuery(i) ? i._ifQueryResult = await this.evaluateGroupIfQuery(i) : i._ifQueryResult = !0, (r = i.children) != null && r.length && await t(i.children, a);
+          const a = e[s], i = [...n, s];
+          ConfigManager.getGroupIfQuery(a) ? a._ifQueryResult = await this.evaluateGroupIfQuery(a) : a._ifQueryResult = !0, (r = a.children) != null && r.length && await t(a.children, i);
         }
       };
       for (const e of this.pages || [])
@@ -8168,8 +8168,8 @@ function helpersMixin() {
       if (!n || !n._easyMDE) return;
       const r = ConfigManager.getCellEngine(n, "main");
       if (r === "sql" || r === "js") return;
-      const s = n._easyMDE.value(), i = ConfigManager.getCellEditableContent(n);
-      s !== i && n._easyMDE.value(i);
+      const s = n._easyMDE.value(), a = ConfigManager.getCellEditableContent(n);
+      s !== a && n._easyMDE.value(a);
     },
     // Toggle entre mode édition et vue parsée pour les cellules SQL
     toggleSqlView(t) {
@@ -8191,7 +8191,7 @@ function helpersMixin() {
     },
     getCellIcon(t) {
       const e = this.cellTypes.find((n) => n.type === t);
-      return e ? e.icon : "📄";
+      return e ? e.icon : '<span class="iconify" data-icon="material-symbols-light:description" style="font-size:1rem"></span>';
     },
     generateCellId() {
       return "cell_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9);
@@ -8205,19 +8205,19 @@ function helpersMixin() {
     // Vérifier si un nom de source/param existe déjà dans toutes les pages
     isNameUniqueAcrossPages(t, e, n = null, r = null, s = null) {
       if (!t || !t.trim()) return !0;
-      const i = t.trim();
+      const a = t.trim();
       if (e !== "source" && e !== "uiParameter")
         return !0;
-      for (let a = 0; a < this.pages.length; a++) {
-        const o = this.pages[a], l = (c, u = []) => {
+      for (let i = 0; i < this.pages.length; i++) {
+        const o = this.pages[i], l = (c, u = []) => {
           for (let d = 0; d < c.length; d++) {
-            const p = c[d], g = [...u, d];
+            const p = c[d], m = [...u, d];
             for (let h = 0; h < (p.cells || []).length; h++) {
               const f = p.cells[h];
-              if (!(n === a && r && JSON.stringify(r) === JSON.stringify(g) && s === h) && f.type === e && f.name && f.name.trim() === i)
+              if (!(n === i && r && JSON.stringify(r) === JSON.stringify(m) && s === h) && f.type === e && f.name && f.name.trim() === a)
                 return !1;
             }
-            if (p.children && p.children.length > 0 && !l(p.children, g))
+            if (p.children && p.children.length > 0 && !l(p.children, m))
               return !1;
           }
           return !0;
@@ -8233,11 +8233,11 @@ function helpersMixin() {
       if (t !== "source" && t !== "uiParameter")
         return e;
       for (let n = 0; n < this.pages.length; n++) {
-        const r = this.pages[n], s = (i) => {
-          for (const a of i) {
-            for (const o of a.cells || [])
+        const r = this.pages[n], s = (a) => {
+          for (const i of a) {
+            for (const o of i.cells || [])
               o.type === t && o.name && o.name.trim() && e.push(o.name.trim());
-            a.children && s(a.children);
+            i.children && s(i.children);
           }
         };
         s(r.groups), r.linkGroups && s(r.linkGroups);
@@ -8294,12 +8294,12 @@ function groupsMixin() {
       for (let e = 0; e < (this.pages || []).length; e++) {
         const n = this.pages[e], r = (n == null ? void 0 : n.groups) || [];
         for (let s = 0; s < r.length; s++) {
-          const i = r[s];
+          const a = r[s];
           t.push({
             pageIndex: e,
             pageId: n._id,
             uniqueKey: n._id + "_" + s,
-            group: i,
+            group: a,
             path: [s],
             depth: 0,
             pathKey: String(s),
@@ -8315,19 +8315,19 @@ function groupsMixin() {
     // Chaque item a un type ('cell' ou 'group'), un index local et les données
     getGroupItems(t) {
       const e = [], n = t.cells || [], r = t.children || [];
-      return n.forEach((s, i) => {
+      return n.forEach((s, a) => {
         e.push({
           type: "cell",
           data: s,
-          cellIndex: i,
+          cellIndex: a,
           itemKey: "cell-" + s._id
         });
-      }), r.forEach((s, i) => {
+      }), r.forEach((s, a) => {
         e.push({
           type: "group",
           data: s,
-          childIndex: i,
-          itemKey: "group-" + (s._id || i)
+          childIndex: a,
+          itemKey: "group-" + (s._id || a)
         });
       }), e;
     },
@@ -8495,10 +8495,10 @@ FROM source1 LIMIT 10;`;
         } else {
           const n = t.slice(0, -1), r = t[t.length - 1], s = this.getGroupAtPath(n);
           if (s && s.children) {
-            const i = r + e;
-            if (i >= 0 && i < s.children.length) {
-              const a = s.children[r];
-              s.children[r] = s.children[i], s.children[i] = a;
+            const a = r + e;
+            if (a >= 0 && a < s.children.length) {
+              const i = s.children[r];
+              s.children[r] = s.children[a], s.children[a] = i;
             }
           }
         }
@@ -8509,8 +8509,8 @@ FROM source1 LIMIT 10;`;
       if (!r || !r.cells) return;
       const s = e + n;
       if (s >= 0 && s < r.cells.length) {
-        const i = r.cells[e];
-        r.cells[e] = r.cells[s], r.cells[s] = i;
+        const a = r.cells[e];
+        r.cells[e] = r.cells[s], r.cells[s] = a;
       }
     },
     // Génère l'ID unique pour un groupe basé sur son path
@@ -8567,15 +8567,15 @@ FROM source1 LIMIT 10;`;
     moveItemInGroup(t, e, n, r) {
       const s = this.getGroupAtPath(t);
       if (!s) return;
-      const i = this.getAllItemsSorted(s);
-      if (i.length < 2) return;
-      const a = i.findIndex(
+      const a = this.getAllItemsSorted(s);
+      if (a.length < 2) return;
+      const i = a.findIndex(
         (d) => d.type === e && d.originalIndex === n
       );
-      if (a === -1) return;
-      const o = a + r;
-      if (o < 0 || o >= i.length) return;
-      const l = i[a], c = i[o], u = l.item._order;
+      if (i === -1) return;
+      const o = i + r;
+      if (o < 0 || o >= a.length) return;
+      const l = a[i], c = a[o], u = l.item._order;
       l.item._order = c.item._order, c.item._order = u;
     },
     // Vérifie si un item est le premier dans l'ordre unifié
@@ -8600,7 +8600,7 @@ FROM source1 LIMIT 10;`;
     },
     // Génère le HTML d'un sous-groupe (récursif, illimité)
     renderChildGroupHTML(t, e, n, r) {
-      const s = JSON.stringify(e), i = JSON.stringify(e.slice(0, -1)), a = `
+      const s = JSON.stringify(e), a = JSON.stringify(e.slice(0, -1)), i = `
                         <div class="flex items-center justify-between gap-2 py-2 px-4 bg-primary/10 border-b border-base-300" x-show="devMode">
                             <div class="join">
                                 <button class="btn btn-xs join-item" @click="toggleGroupDirection(${s})" :title="getGroupAtPath(${s})?.direction === 'column' ? 'Passer en ligne' : 'Passer en colonne'">
@@ -8609,8 +8609,8 @@ FROM source1 LIMIT 10;`;
                                 <button class="btn btn-xs join-item" :class="getGroupAtPath(${s})?.loop?.enabled ? 'btn-info' : ''" @click="openLoopConfigModal(${s})" title="Configurer la boucle">🔁</button>
                                 <button class="btn btn-xs join-item" :class="getGroupAtPath(${s})?.accordion ? 'btn-accent' : ''" @click="openGroupSettingsModal(${s})" title="Paramètres du groupe">⚙️</button>
                                 <button class="btn btn-xs btn-success join-item" @click="runGroupAtPath(${s})" :disabled="isLoading" title="Exécuter">▶️</button>
-                                <button class="btn btn-xs join-item" @click="moveItemInGroup(${i}, 'child', ${r}, -1)" :disabled="isFirstInGroup(getGroupAtPath(${i}), 'child', ${r})" title="Monter">⬆️</button>
-                                <button class="btn btn-xs join-item" @click="moveItemInGroup(${i}, 'child', ${r}, 1)" :disabled="isLastInGroup(getGroupAtPath(${i}), 'child', ${r})" title="Descendre">⬇️</button>
+                                <button class="btn btn-xs join-item" @click="moveItemInGroup(${a}, 'child', ${r}, -1)" :disabled="isFirstInGroup(getGroupAtPath(${a}), 'child', ${r})" title="Monter">⬆️</button>
+                                <button class="btn btn-xs join-item" @click="moveItemInGroup(${a}, 'child', ${r}, 1)" :disabled="isLastInGroup(getGroupAtPath(${a}), 'child', ${r})" title="Descendre">⬇️</button>
                                 <button class="btn btn-xs join-item" @click="addNestedGroup(${s})" title="Ajouter un sous-groupe">📁</button>
                                 <button class="btn btn-xs join-item" @click="openAddCellToGroupModal(${s})" title="Ajouter une cellule">➕</button>
                                 <button class="btn btn-xs btn-error join-item" @click="deleteGroupAtPath(${s})" title="Supprimer">🗑️</button>
@@ -8622,8 +8622,8 @@ FROM source1 LIMIT 10;`;
                                     <li><button @click="openLoopConfigModal(${s})">🔁 Configurer la boucle</button></li>
                                     <li><button @click="openGroupSettingsModal(${s})">⚙️ Paramètres du groupe</button></li>
                                     <li><button @click="runGroupAtPath(${s})" :disabled="isLoading">▶️ Exécuter</button></li>
-                                    <li><button @click="moveItemInGroup(${i}, 'child', ${r}, -1)" :disabled="isFirstInGroup(getGroupAtPath(${i}), 'child', ${r})">⬆️ Monter</button></li>
-                                    <li><button @click="moveItemInGroup(${i}, 'child', ${r}, 1)" :disabled="isLastInGroup(getGroupAtPath(${i}), 'child', ${r})">⬇️ Descendre</button></li>
+                                    <li><button @click="moveItemInGroup(${a}, 'child', ${r}, -1)" :disabled="isFirstInGroup(getGroupAtPath(${a}), 'child', ${r})">⬆️ Monter</button></li>
+                                    <li><button @click="moveItemInGroup(${a}, 'child', ${r}, 1)" :disabled="isLastInGroup(getGroupAtPath(${a}), 'child', ${r})">⬇️ Descendre</button></li>
                                     <li><button @click="addNestedGroup(${s})">📁 Ajouter un sous-groupe</button></li>
                                     <li><button @click="openAddCellToGroupModal(${s})">➕ Ajouter une cellule</button></li>
                                     <li><button class="text-error" @click="deleteGroupAtPath(${s})">🗑️ Supprimer</button></li>
@@ -8679,7 +8679,7 @@ FROM source1 LIMIT 10;`;
                                 </template>
                             </div>
                         </div>`;
-      return a + o + l;
+      return i + o + l;
     }
   };
 }
@@ -8707,8 +8707,8 @@ function executionMixin() {
       const n = this.getAllItemsSorted(e);
       for (const r of n) {
         if (r.type === "child") {
-          const i = await this.runGroupAtPath([...t, r.originalIndex]);
-          if (i != null && i.stopped) return i;
+          const a = await this.runGroupAtPath([...t, r.originalIndex]);
+          if (a != null && a.stopped) return a;
           continue;
         }
         const s = r.item;
@@ -8732,15 +8732,15 @@ function executionMixin() {
       let e = this.parseQueryWithParameters(t);
       const n = 10;
       let r = 0;
-      const s = async (i) => {
+      const s = async (a) => {
         if (r >= n)
           throw new Error("Nombre maximum de niveaux d'imbrication atteint (10)");
-        const a = i.indexOf("}}");
-        if (a === -1) return i;
-        const o = i.lastIndexOf("{{", a);
+        const i = a.indexOf("}}");
+        if (i === -1) return a;
+        const o = a.lastIndexOf("{{", i);
         if (o === -1)
-          return i;
-        const l = i.substring(o + 2, a).trim();
+          return a;
+        const l = a.substring(o + 2, i).trim();
         r++;
         const c = await s(l), u = await DuckDBManager.executeQuery(c);
         if (!u || u.length === 0)
@@ -8748,7 +8748,7 @@ function executionMixin() {
         const d = u[0], p = Object.values(d)[0];
         if (p == null)
           throw new Error(`Niveau ${r}: Le résultat est null ou undefined`);
-        const g = String(p).replace(/\$/g, "$$$$"), h = i.substring(0, o) + g + i.substring(a + 2);
+        const m = String(p).replace(/\$/g, "$$$$"), h = a.substring(0, o) + m + a.substring(i + 2);
         return await s(h);
       };
       return await s(e);
@@ -8761,8 +8761,8 @@ function executionMixin() {
     downloadOrZipFile(t, e, n = "application/octet-stream") {
       if (this._zipMode)
         return this._zipFiles.push({ filename: t, content: e, type: "blob" }), !0;
-      const r = e instanceof Blob ? e : new Blob([e], { type: n }), s = URL.createObjectURL(r), i = document.createElement("a");
-      return i.href = s, i.download = t, document.body.appendChild(i), i.click(), document.body.removeChild(i), URL.revokeObjectURL(s), !1;
+      const r = e instanceof Blob ? e : new Blob([e], { type: n }), s = URL.createObjectURL(r), a = document.createElement("a");
+      return a.href = s, a.download = t, document.body.appendChild(a), a.click(), document.body.removeChild(a), URL.revokeObjectURL(s), !1;
     },
     // Exécuter un groupe avec loop
     // Retourne { stopped: true } si arrêt (ex: source sans fichier chargé), sinon { stopped: false }
@@ -8777,10 +8777,10 @@ function executionMixin() {
       const n = e.loop.zip === !0;
       n && (this._zipMode = !0, this._zipFiles = []);
       try {
-        const r = e.loop.query, s = await this.parseLoopQuery(r), i = await DuckDBManager.executeQuery(s);
-        if (!i || i.length === 0)
+        const r = e.loop.query, s = await this.parseLoopQuery(r), a = await DuckDBManager.executeQuery(s);
+        if (!a || a.length === 0)
           return this.setStatus("Boucle: aucune valeur trouvée", "warning"), this._zipMode = !1, this._zipFiles = [], { stopped: !1 };
-        const a = Object.keys(i[0])[0], o = i.map((l) => l[a]);
+        const i = Object.keys(a[0])[0], o = a.map((l) => l[i]);
         this.setStatus(`Boucle: ${o.length} itérations`, "loading");
         for (let l = 0; l < o.length; l++) {
           const c = o[l];
@@ -8788,8 +8788,8 @@ function executionMixin() {
           const u = this.getAllItemsSorted(e);
           for (const d of u) {
             if (d.type === "child") {
-              const g = await this.runGroupAtPath([...t, d.originalIndex]);
-              if (g != null && g.stopped) return g;
+              const m = await this.runGroupAtPath([...t, d.originalIndex]);
+              if (m != null && m.stopped) return m;
               continue;
             }
             const p = d.item;
@@ -8820,7 +8820,7 @@ function executionMixin() {
       try {
         let e = "export.zip";
         if (t.loop.zipQuery) {
-          const a = await this.parseLoopQuery(t.loop.zipQuery), o = await DuckDBManager.executeQuery(a);
+          const i = await this.parseLoopQuery(t.loop.zipQuery), o = await DuckDBManager.executeQuery(i);
           if (o && o.length > 0) {
             const l = Object.values(o[0])[0];
             l && (e = String(l), e.toLowerCase().endsWith(".zip") || (e += ".zip"));
@@ -8828,13 +8828,13 @@ function executionMixin() {
         }
         await CDNManager.loadPizZip();
         const n = new PizZip();
-        for (const a of this._zipFiles)
-          if (a.content instanceof Blob) {
-            const o = await a.content.arrayBuffer();
-            n.file(a.filename, o);
-          } else a.content instanceof ArrayBuffer || a.content, n.file(a.filename, a.content);
-        const r = n.generate({ type: "blob" }), s = URL.createObjectURL(r), i = document.createElement("a");
-        i.href = s, i.download = e, document.body.appendChild(i), i.click(), document.body.removeChild(i), URL.revokeObjectURL(s), this.setStatus(`ZIP généré: ${e} (${this._zipFiles.length} fichiers)`, "success");
+        for (const i of this._zipFiles)
+          if (i.content instanceof Blob) {
+            const o = await i.content.arrayBuffer();
+            n.file(i.filename, o);
+          } else i.content instanceof ArrayBuffer || i.content, n.file(i.filename, i.content);
+        const r = n.generate({ type: "blob" }), s = URL.createObjectURL(r), a = document.createElement("a");
+        a.href = s, a.download = e, document.body.appendChild(a), a.click(), document.body.removeChild(a), URL.revokeObjectURL(s), this.setStatus(`ZIP généré: ${e} (${this._zipFiles.length} fichiers)`, "success");
       } catch (e) {
         throw console.error("Erreur lors de la génération du ZIP:", e), new Error("Erreur ZIP: " + e.message);
       }
@@ -8847,8 +8847,8 @@ function executionMixin() {
       }
       r._status = "running", this.isLoading = !0, this.setStatus(`Exécution de ${r.name || r.type}...`, "loading");
       try {
-        const s = CELL_TYPE_SCHEMAS == null ? void 0 : CELL_TYPE_SCHEMAS.types[r == null ? void 0 : r.type], i = s == null ? void 0 : s.executeHandler;
-        i && typeof this[i] == "function" ? await this[i](r) : i !== null && console.warn("⚠️ Unknown cell type or missing handler:", r.type), r._status = "success", this.setStatus(`${r.name || r.type} exécuté`, "success");
+        const s = CELL_TYPE_SCHEMAS == null ? void 0 : CELL_TYPE_SCHEMAS.types[r == null ? void 0 : r.type], a = s == null ? void 0 : s.executeHandler;
+        a && typeof this[a] == "function" ? await this[a](r) : a !== null && console.warn("⚠️ Unknown cell type or missing handler:", r.type), r._status = "success", this.setStatus(`${r.name || r.type} exécuté`, "success");
       } catch (s) {
         r._status = "error", r._resultInfo = "Erreur: " + s.message, this.setStatus("Erreur: " + s.message, "error");
       } finally {
@@ -8869,37 +8869,37 @@ function executionMixin() {
     async parseQueryRecursively(t, e = 0, n = !1) {
       const r = e === 1 ? "_parseLevels2" : "_parseLevels";
       t[r] = [];
-      let s = this.parseQueryWithParameters(ConfigManager.getCellQuery(t, e) || ""), i = 0;
-      const a = 10, o = async (c) => {
-        if (i >= a)
+      let s = this.parseQueryWithParameters(ConfigManager.getCellQuery(t, e) || ""), a = 0;
+      const i = 10, o = async (c) => {
+        if (a >= i)
           throw new Error("Nombre maximum de niveaux d'imbrication atteint (10)");
         const u = c.indexOf("}}");
         if (u === -1) return c;
         const d = c.lastIndexOf("{{", u);
         if (d === -1) return c;
         const p = c.substring(d + 2, u).trim();
-        i++;
-        const g = e === 1 ? " (query2)" : "";
-        this.setStatus(`Parsing niveau ${i}${g}...`, "loading");
+        a++;
+        const m = e === 1 ? " (query2)" : "";
+        this.setStatus(`Parsing niveau ${a}${m}...`, "loading");
         const h = await o(p), f = await DuckDBManager.executeQuery(h);
-        let m;
+        let g;
         if (n) {
           const w = f.length > 0 ? Object.values(f[0])[0] : null;
-          m = w != null ? String(w) : "";
+          g = w != null ? String(w) : "";
         } else {
           if (!f || f.length === 0)
-            throw new Error(`Niveau ${i}: La requête n'a retourné aucun résultat`);
+            throw new Error(`Niveau ${a}: La requête n'a retourné aucun résultat`);
           const w = Object.values(f[0])[0];
           if (w == null)
-            throw new Error(`Niveau ${i}: Le résultat est null ou undefined`);
-          m = String(w);
+            throw new Error(`Niveau ${a}: Le résultat est null ou undefined`);
+          g = String(w);
         }
         t[r].push({
-          level: i,
+          level: a,
           innerQuery: h,
-          replacement: m
+          replacement: g
         });
-        const y = String(m).replace(/\$/g, "$$$$"), v = c.substring(0, d) + y + c.substring(u + 2);
+        const y = String(g).replace(/\$/g, "$$$$"), v = c.substring(0, d) + y + c.substring(u + 2);
         return await o(v);
       }, l = await o(s);
       return t[r].push({ level: "final", innerQuery: l, replacement: null }), l;
@@ -8912,17 +8912,17 @@ function executionMixin() {
       }
       this.setStatus("Parsing récursif...", "loading");
       try {
-        const i = await this.parseQueryRecursively(t);
+        const a = await this.parseQueryRecursively(t);
         this.setStatus("Exécution de la requête finale...", "loading");
-        const a = /COPY\s+[\s\S]+\bTO\s+'([^']+)'/i, o = i.match(a);
+        const i = /COPY\s+[\s\S]+\bTO\s+'([^']+)'/i, o = a.match(i);
         if (o) {
           this.setStatus("Export du fichier...", "loading");
           const l = o[1];
           try {
-            await DuckDBManager.executeQuery(i);
-            const c = l.toLowerCase().split(".").pop(), u = ["xlsx", "xls", "parquet", "pq", "arrow", "ipc", "avro"].includes(c), d = u ? 15 : 10, p = u ? 300 : 200, g = await DuckDBManager.waitForFile(l, d, p);
-            if (((g == null ? void 0 : g.byteLength) ?? 0) > 0) {
-              const _ = g instanceof ArrayBuffer ? new Uint8Array(g) : new Uint8Array(g.buffer || g);
+            await DuckDBManager.executeQuery(a);
+            const c = l.toLowerCase().split(".").pop(), u = ["xlsx", "xls", "parquet", "pq", "arrow", "ipc", "avro"].includes(c), d = u ? 15 : 10, p = u ? 300 : 200, m = await DuckDBManager.waitForFile(l, d, p);
+            if (((m == null ? void 0 : m.byteLength) ?? 0) > 0) {
+              const _ = m instanceof ArrayBuffer ? new Uint8Array(m) : new Uint8Array(m.buffer || m);
               c === "xlsx" && (_[0] !== 80 || _[1] !== 75) && console.warn(`⚠️ [EXPORT] XLSX invalide: doit commencer par PK (0x50 0x4B), trouvé: 0x${(n = _[0]) == null ? void 0 : n.toString(16)} 0x${(r = _[1]) == null ? void 0 : r.toString(16)}`);
             }
             let f = "text/csv;charset=utf-8;";
@@ -8981,22 +8981,22 @@ function executionMixin() {
                 f = "application/octet-stream";
                 break;
             }
-            let m = g instanceof ArrayBuffer ? new Uint8Array(g) : new Uint8Array(g.buffer ?? g, g.byteOffset ?? 0, g.byteLength);
-            c === "xlsx" && m.length >= 3 && m[0] !== 80 && m[1] === 80 && m[2] === 75 && (m = m.slice(1));
-            const y = m.slice(0), v = new Blob([y], { type: f }), w = l.split("/").pop();
-            this.downloadOrZipFile(w, v, f), t._results = [], t._resultInfo = `✅ Fichier exporté: ${l} (${g.byteLength} octets) - ${t._parseLevels.length - 1} niveau(x) de parsing`;
+            let g = m instanceof ArrayBuffer ? new Uint8Array(m) : new Uint8Array(m.buffer ?? m, m.byteOffset ?? 0, m.byteLength);
+            c === "xlsx" && g.length >= 3 && g[0] !== 80 && g[1] === 80 && g[2] === 75 && (g = g.slice(1));
+            const y = g.slice(0), v = new Blob([y], { type: f }), w = l.split("/").pop();
+            this.downloadOrZipFile(w, v, f), t._results = [], t._resultInfo = `✅ Fichier exporté: ${l} (${m.byteLength} octets) - ${t._parseLevels.length - 1} niveau(x) de parsing`;
           } catch (c) {
             console.error("❌ Erreur lors de la récupération du fichier exporté:", c), this.setStatus("Récupération alternative des résultats...", "loading");
-            const u = i.match(/COPY\s+\(([\s\S]+)\)\s+TO\s+/i);
+            const u = a.match(/COPY\s+\(([\s\S]+)\)\s+TO\s+/i);
             if (u) {
               const d = u[1], p = await DuckDBManager.executeQuery(d);
               if (p.length > 0) {
-                const g = Object.keys(p[0]), h = [
-                  g.join("	"),
-                  ...p.map((y) => g.map((v) => y[v] ?? "").join("	"))
+                const m = Object.keys(p[0]), h = [
+                  m.join("	"),
+                  ...p.map((y) => m.map((v) => y[v] ?? "").join("	"))
                 ].join(`
-`), f = new Blob([h], { type: "text/plain;charset=utf-8;" }), m = l.split("/").pop();
-                this.downloadOrZipFile(m, f, "text/plain;charset=utf-8;"), t._results = [], t._resultInfo = `✅ Fichier exporté (mode alternatif): ${l} - ${p.length} ligne(s)`;
+`), f = new Blob([h], { type: "text/plain;charset=utf-8;" }), g = l.split("/").pop();
+                this.downloadOrZipFile(g, f, "text/plain;charset=utf-8;"), t._results = [], t._resultInfo = `✅ Fichier exporté (mode alternatif): ${l} - ${p.length} ligne(s)`;
               } else
                 throw new Error("Aucun résultat à exporter");
             } else
@@ -9005,15 +9005,15 @@ function executionMixin() {
             await DuckDBManager.dropFile(l);
           }
         } else {
-          const l = await DuckDBManager.executeQuery(i);
+          const l = await DuckDBManager.executeQuery(a);
           if (t._results = l, t._resultInfo = `✅ ${l.length} ligne(s) - ${t._parseLevels.length - 1} niveau(x) de parsing`, this.isSqlResultTabular(t)) {
             const c = t.maxRows || 1e5, u = l.length > c, d = l.slice(0, c);
             _rawTableDataStore.set(t._id, d), t._results = d, u && (t._resultInfo = `✅ ${l.length} ligne(s) (limité à ${c})` + (((s = t._parseLevels) == null ? void 0 : s.length) > 1 ? ` - ${t._parseLevels.length - 1} niveau(x) de parsing` : "")), await this.$nextTick(), await this.$nextTick(), await this.renderTableInContainer(t, !0);
           }
         }
         this.setStatus("SQL Recursive Parse exécuté", "success");
-      } catch (i) {
-        throw i;
+      } catch (a) {
+        throw a;
       }
     },
     async executeTableCell(t) {
@@ -9023,8 +9023,8 @@ function executionMixin() {
         try {
           const n = await this.parseQueryRecursively(t);
           this.setStatus("Exécution de la requête finale...", "loading");
-          const r = await DuckDBManager.executeQuery(n), s = t.maxRows || 1e5, i = r.length > s, a = r.slice(0, s);
-          _rawTableDataStore.set(t._id, a), t._results = a, t._resultInfo = `${r.length} ligne(s)` + (i ? ` (limité à ${s})` : "") + (t._parseLevels.length > 1 ? ` - ${t._parseLevels.length - 1} niveau(x) de parsing` : ""), await this.$nextTick(), await this.renderTableInContainer(t, !0), this.setStatus("Tableau chargé", "success");
+          const r = await DuckDBManager.executeQuery(n), s = t.maxRows || 1e5, a = r.length > s, i = r.slice(0, s);
+          _rawTableDataStore.set(t._id, i), t._results = i, t._resultInfo = `${r.length} ligne(s)` + (a ? ` (limité à ${s})` : "") + (t._parseLevels.length > 1 ? ` - ${t._parseLevels.length - 1} niveau(x) de parsing` : ""), await this.$nextTick(), await this.renderTableInContainer(t, !0), this.setStatus("Tableau chargé", "success");
         } catch (n) {
           throw n;
         }
@@ -9062,11 +9062,11 @@ function executionMixin() {
           title: o,
           field: o
         }));
-        const i = {
+        const a = {
           headings: Object.keys(s[0]),
           data: s.map((o) => Object.values(o))
-        }, a = new simpleDatatables.DataTable("#" + n, {
-          data: i,
+        }, i = new simpleDatatables.DataTable("#" + n, {
+          data: a,
           perPage: 10,
           perPageSelect: [5, 10, 25, 50],
           searchable: t.type === "table",
@@ -9087,16 +9087,16 @@ function executionMixin() {
               return l;
             l.attributes = l.attributes || {}, l.attributes.class = "table table-zebra table-pin-rows w-full";
             const u = l.childNodes[0], d = l.childNodes[1];
-            u && u.childNodes && u.childNodes.forEach((g, h) => {
-              g.attributes = g.attributes || {}, g.attributes.class = "bg-base-200", g.childNodes && g.childNodes.forEach((f, m) => {
+            u && u.childNodes && u.childNodes.forEach((m, h) => {
+              m.attributes = m.attributes || {}, m.attributes.class = "bg-base-200", m.childNodes && m.childNodes.forEach((f, g) => {
                 f.attributes = f.attributes || {};
-                const y = m === 0 ? " sticky left-0 z-10 bg-base-200" : "";
+                const y = g === 0 ? " sticky left-0 z-10 bg-base-200" : "";
                 f.attributes.class = "text-base-content font-semibold text-sm px-3 py-2" + y;
               });
-            }), d && d.childNodes && d.childNodes.forEach((g, h) => {
-              g.attributes = g.attributes || {};
-              const f = h % 2 === 0, m = f ? "bg-base-100" : "bg-base-200/50";
-              g.attributes.class = `${m} hover:bg-base-300/50 transition-colors`, g.childNodes && g.childNodes.forEach((y, v) => {
+            }), d && d.childNodes && d.childNodes.forEach((m, h) => {
+              m.attributes = m.attributes || {};
+              const f = h % 2 === 0, g = f ? "bg-base-100" : "bg-base-200/50";
+              m.attributes.class = `${g} hover:bg-base-300/50 transition-colors`, m.childNodes && m.childNodes.forEach((y, v) => {
                 y.attributes = y.attributes || {};
                 const w = v === 0 ? ` sticky left-0 z-10 ${f ? "bg-base-100" : "bg-base-200"}` : "";
                 y.attributes.class = "text-base-content text-sm px-3 py-2" + w;
@@ -9106,7 +9106,7 @@ function executionMixin() {
               nodeName: "TR",
               attributes: { class: "bg-base-100 filter-row" },
               childNodes: u.childNodes[0].childNodes.map(
-                (g, h) => ({
+                (m, h) => ({
                   nodeName: "TH",
                   attributes: {
                     class: "px-2 py-1" + (h === 0 ? " sticky left-0 z-10 bg-base-100" : "")
@@ -9128,17 +9128,17 @@ function executionMixin() {
             return u.childNodes.push(p), l;
           }
         });
-        this._tables[t._id] = a, a.on("datatable.init", () => {
+        this._tables[t._id] = i, i.on("datatable.init", () => {
           const o = r.querySelectorAll(".column-filter"), l = {};
           o.forEach((c) => {
             c.addEventListener("input", (u) => {
               const d = parseInt(u.target.dataset.columnIndex), p = u.target.value.trim();
               p ? l[d] = p : delete l[d];
-              const g = Object.entries(l).map(([h, f]) => ({
+              const m = Object.entries(l).map(([h, f]) => ({
                 terms: [f],
                 columns: [parseInt(h)]
               }));
-              a.multiSearch(g);
+              i.multiSearch(m);
             });
           });
         }), t._tableRenderGuard = !0;
@@ -9226,8 +9226,8 @@ function executionMixin() {
             t._results = [], t._statValue = "-", t._resultInfo = "Aucun résultat";
             return;
           }
-          const s = r[0], i = Object.values(s)[0];
-          t._results = r, t._statValue = i != null ? String(i) : "-", t._resultInfo = "✅ Stat calculée" + (t._parseLevels.length > 1 ? ` - ${t._parseLevels.length - 1} niveau(x) de parsing` : ""), this.setStatus("Stat SQL exécutée", "success");
+          const s = r[0], a = Object.values(s)[0];
+          t._results = r, t._statValue = a != null ? String(a) : "-", t._resultInfo = "✅ Stat calculée" + (t._parseLevels.length > 1 ? ` - ${t._parseLevels.length - 1} niveau(x) de parsing` : ""), this.setStatus("Stat SQL exécutée", "success");
         } catch (n) {
           throw n;
         }
@@ -9281,11 +9281,11 @@ function executionMixin() {
             return;
           }
           const e = Object.keys(results[0]), n = e[0], r = e.length > 1 ? e[1] : null;
-          cell._options = results.map((i) => {
-            const a = String(i[n]), o = r ? String(i[r]) : a;
-            return { value: a, label: o };
+          cell._options = results.map((a) => {
+            const i = String(a[n]), o = r ? String(a[r]) : i;
+            return { value: i, label: o };
           });
-          const s = cell._options.map((i) => i.value);
+          const s = cell._options.map((a) => a.value);
           (!cell._value || !s.includes(cell._value)) && (cell._value = ((t = cell._options[0]) == null ? void 0 : t.value) || ""), cell._initialized = !0, this.setStatus(`Options ${ConfigManager.getCellReferenceName(cell)} chargées`, "success");
         } else if (cell.paramType === "input") {
           if (results.length > 0) {
@@ -9295,8 +9295,8 @@ function executionMixin() {
           cell._initialized = !0, this.setStatus(`${ConfigManager.getCellReferenceName(cell)} initialisé`, "success");
         } else if (cell.paramType === "range") {
           if (results.length > 0) {
-            const e = Object.keys(results[0])[0], n = results[0][e], r = Number(n), s = cell.rangeMin ?? 0, i = cell.rangeMax ?? 100;
-            cell._value = Math.min(i, Math.max(s, isNaN(r) ? s : r));
+            const e = Object.keys(results[0])[0], n = results[0][e], r = Number(n), s = cell.rangeMin ?? 0, a = cell.rangeMax ?? 100;
+            cell._value = Math.min(a, Math.max(s, isNaN(r) ? s : r));
           } else (cell._value === "" || cell._value === void 0) && (cell._value = cell.rangeMin ?? 0);
           cell._initialized = !0, this.setStatus(`${ConfigManager.getCellReferenceName(cell)} initialisé`, "success");
         }
@@ -9322,35 +9322,35 @@ function executionMixin() {
           t._resultInfo = "Aucune donnée à traiter";
           return;
         }
-        const i = await this.parseQueryRecursively(t, 1, !0);
+        const a = await this.parseQueryRecursively(t, 1, !0);
         this.setStatus("Récupération des noms de fichiers...", "loading");
-        const a = await DuckDBManager.executeQuery(i);
-        if (!a || a.length === 0)
+        const i = await DuckDBManager.executeQuery(a);
+        if (!i || i.length === 0)
           throw new Error("La requête de nom de fichier n'a retourné aucun résultat");
-        if (s.length !== a.length)
-          throw new Error(`Nombre de lignes différent: ${s.length} données vs ${a.length} noms de fichiers`);
+        if (s.length !== i.length)
+          throw new Error(`Nombre de lignes différent: ${s.length} données vs ${i.length} noms de fichiers`);
         const o = FileHandler.base64ToUint8Array(t.docxTemplateBase64).buffer;
         this.setStatus("Génération des documents Word...", "loading");
         let l = 0;
         for (let c = 0; c < s.length; c++) {
-          const u = s[c], d = a[c], p = Object.values(d)[0] || `document_${c + 1}.docx`;
-          let g = u;
+          const u = s[c], d = i[c], p = Object.values(d)[0] || `document_${c + 1}.docx`;
+          let m = u;
           const h = Object.keys(u);
           if (h.length === 1) {
             const v = u[h[0]];
             if (typeof v == "string" && (v.startsWith("{") || v.startsWith("[")))
               try {
-                g = JSON.parse(v);
+                m = JSON.parse(v);
               } catch (w) {
                 console.warn("⚠️ Failed to parse JSON, using raw data:", w);
               }
           }
-          const f = new PizZip(o), m = new window.docxtemplater(f, {
+          const f = new PizZip(o), g = new window.docxtemplater(f, {
             paragraphLoop: !0,
             linebreaks: !0
           });
-          m.render(g);
-          const y = m.getZip().generate({
+          g.render(m);
+          const y = g.getZip().generate({
             type: "blob",
             mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
           });
@@ -9362,12 +9362,12 @@ function executionMixin() {
       }
     },
     async executePdfmeCell(t) {
-      var r, s, i;
+      var r, s, a;
       this.setStatus("Chargement de pdfme...", "loading");
       try {
         var e = await CDNManager.loadPdfme();
-      } catch (a) {
-        throw console.error("[pdfme] ERREUR chargement CDN:", a), a;
+      } catch (i) {
+        throw console.error("[pdfme] ERREUR chargement CDN:", i), i;
       }
       if (!((r = ConfigManager.getCellQuery(t, 0)) != null && r.trim()))
         throw console.error("[pdfme] Requête SQL manquante"), new Error("Requête SQL manquante");
@@ -9376,9 +9376,9 @@ function executionMixin() {
         throw console.error("[pdfme] Template pdfme manquant"), new Error("Template pdfme manquant");
       this.setStatus("Exécution de la requête SQL...", "loading");
       try {
-        const a = await this.parseQueryRecursively(t);
+        const i = await this.parseQueryRecursively(t);
         this.setStatus("Récupération des données...", "loading");
-        const o = await DuckDBManager.executeQuery(a);
+        const o = await DuckDBManager.executeQuery(i);
         if (!o || o.length === 0) {
           console.warn("[pdfme] Aucune donnée retournée par la requête"), t._resultInfo = "Aucune donnée à exporter";
           return;
@@ -9386,7 +9386,7 @@ function executionMixin() {
         let l = "export.pdf";
         if ((s = ConfigManager.getCellQuery(t, 1)) != null && s.trim()) {
           this.setStatus("Récupération du nom de fichier...", "loading");
-          const m = await this.parseQueryRecursively(t, 1, !0), y = await DuckDBManager.executeQuery(m);
+          const g = await this.parseQueryRecursively(t, 1, !0), y = await DuckDBManager.executeQuery(g);
           if (y && y.length > 0) {
             const v = Object.values(y[0])[0];
             v && (l = String(v));
@@ -9396,17 +9396,17 @@ function executionMixin() {
         let c;
         try {
           c = JSON.parse(n);
-        } catch (m) {
-          throw console.error("[pdfme] ERREUR parsing template JSON:", m), new Error("Template JSON invalide: " + m.message);
+        } catch (g) {
+          throw console.error("[pdfme] ERREUR parsing template JSON:", g), new Error("Template JSON invalide: " + g.message);
         }
         let u;
         try {
           u = JSON.parse('{"Text": "text", "Table": "table"}');
-        } catch (m) {
-          throw console.error("[pdfme] ERREUR parsing plugins JSON:", m), new Error("Plugins JSON invalide: " + m.message);
+        } catch (g) {
+          throw console.error("[pdfme] ERREUR parsing plugins JSON:", g), new Error("Plugins JSON invalide: " + g.message);
         }
         const d = {};
-        for (const [m, y] of Object.entries(u)) {
+        for (const [g, y] of Object.entries(u)) {
           const v = String(y).split(".");
           let w = e.schemas;
           for (const _ of v)
@@ -9414,15 +9414,15 @@ function executionMixin() {
               w = w[_];
             else
               throw console.error(`[pdfme] Plugin introuvable: "${y}" partie "${_}"`, "Clés disponibles:", w ? Object.keys(w) : "obj est null/undefined"), new Error(`Plugin introuvable: "${y}" (partie "${_}" non trouvée dans @pdfme/schemas). Clés disponibles: ${w ? Object.keys(w).join(", ") : "aucune"}`);
-          d[m] = w;
+          d[g] = w;
         }
         const p = /* @__PURE__ */ new Set();
-        c.schemas && Array.isArray(c.schemas) && c.schemas.forEach((m) => {
-          Array.isArray(m) && m.forEach((y) => {
+        c.schemas && Array.isArray(c.schemas) && c.schemas.forEach((g) => {
+          Array.isArray(g) && g.forEach((y) => {
             y.name && p.add(y.name);
           });
         });
-        const g = o.map((m, y) => {
+        const m = o.map((g, y) => {
           const v = {};
           c.schemas.forEach((w) => {
             w.forEach((_) => {
@@ -9437,7 +9437,7 @@ function executionMixin() {
               }
             });
           });
-          for (const [w, _] of Object.entries(m))
+          for (const [w, _] of Object.entries(g))
             if (typeof _ == "string")
               try {
                 const S = JSON.parse(_);
@@ -9449,26 +9449,26 @@ function executionMixin() {
               v[w] = String(_ ?? "");
           return v;
         });
-        if (!g || !Array.isArray(g) || g.length === 0) {
+        if (!m || !Array.isArray(m) || m.length === 0) {
           console.warn("[pdfme] Aucun input généré par le mapping"), t._resultInfo = "Aucun input généré par le mapping";
           return;
         }
         let h;
         try {
-          h = await e.generator.generate({ template: c, inputs: g, plugins: d });
-        } catch (m) {
-          throw console.error("[pdfme] ERREUR generate():", m), console.error("[pdfme] generate() stack:", m.stack), m;
+          h = await e.generator.generate({ template: c, inputs: m, plugins: d });
+        } catch (g) {
+          throw console.error("[pdfme] ERREUR generate():", g), console.error("[pdfme] generate() stack:", g.stack), g;
         }
         const f = new Blob([h], { type: "application/pdf" });
         if (this._zipMode)
           this.downloadOrZipFile(l, f, "application/pdf");
         else {
-          const m = URL.createObjectURL(f), y = document.createElement("a");
-          y.href = m, y.download = l, document.body.appendChild(y), y.click(), document.body.removeChild(y), URL.revokeObjectURL(m);
+          const g = URL.createObjectURL(f), y = document.createElement("a");
+          y.href = g, y.download = l, document.body.appendChild(y), y.click(), document.body.removeChild(y), URL.revokeObjectURL(g);
         }
-        t._resultInfo = `✅ PDF généré: ${l} (${g.length} page(s), ${o.length} ligne(s) SQL)` + (t._parseLevels.length > 1 ? ` - ${t._parseLevels.length - 1} niveau(x) de parsing` : "") + (((i = t._parseLevels2) == null ? void 0 : i.length) > 1 ? ` - ${t._parseLevels2.length - 1} niveau(x) de parsing (query2)` : ""), this.setStatus("PDF généré avec succès (pdfme)", "success");
-      } catch (a) {
-        throw console.error("[pdfme] === ERREUR executePdfmeCell ===", a), console.error("[pdfme] Stack:", a.stack), a;
+        t._resultInfo = `✅ PDF généré: ${l} (${m.length} page(s), ${o.length} ligne(s) SQL)` + (t._parseLevels.length > 1 ? ` - ${t._parseLevels.length - 1} niveau(x) de parsing` : "") + (((a = t._parseLevels2) == null ? void 0 : a.length) > 1 ? ` - ${t._parseLevels2.length - 1} niveau(x) de parsing (query2)` : ""), this.setStatus("PDF généré avec succès (pdfme)", "success");
+      } catch (i) {
+        throw console.error("[pdfme] === ERREUR executePdfmeCell ===", i), console.error("[pdfme] Stack:", i.stack), i;
       }
     },
     async executePerspectiveCell(t) {
@@ -9483,13 +9483,13 @@ function executionMixin() {
         t._arrowTable = r, t._perspectiveScheduled = !0, t._perspectiveReady = !0;
         try {
           await this.$nextTick();
-          const i = "perspective-" + t._id;
-          let a = 0;
-          for (; !document.getElementById(i) && a < 2e3; )
-            await new Promise((o) => setTimeout(o, 50)), a += 50;
+          const a = "perspective-" + t._id;
+          let i = 0;
+          for (; !document.getElementById(a) && i < 2e3; )
+            await new Promise((o) => setTimeout(o, 50)), i += 50;
           await this.renderPerspectiveInContainer(t);
-        } catch (i) {
-          throw t._perspectiveScheduled = !1, i;
+        } catch (a) {
+          throw t._perspectiveScheduled = !1, a;
         }
         const s = r.numRows;
         t._resultInfo = `✅ ${s} ligne(s)` + (t._parseLevels.length > 1 ? ` - ${t._parseLevels.length - 1} niveau(x) de parsing` : ""), this.setStatus("Perspective chargé", "success");
@@ -9498,7 +9498,7 @@ function executionMixin() {
       }
     },
     async renderPerspectiveInContainer(t) {
-      var r, s, i;
+      var r, s, a;
       const e = "perspective-" + t._id, n = document.getElementById(e);
       if (!n || !t._arrowTable) {
         console.warn("Perspective viewer ou données Arrow manquantes");
@@ -9512,7 +9512,7 @@ function executionMixin() {
       try {
         if (DuckDBManager.getEngine() !== "duckdb-wasm")
           throw new Error("Perspective nécessite le moteur DuckDB WASM. Veuillez changer de moteur dans les paramètres.");
-        const a = DuckDBManager.getConnection(), o = window.perspectiveClient;
+        const i = DuckDBManager.getConnection(), o = window.perspectiveClient;
         let l = { theme: "Pro Light" };
         const c = (r = t.json) == null ? void 0 : r.perspectiveConfig;
         if (c != null && c !== "")
@@ -9522,14 +9522,14 @@ function executionMixin() {
           } catch (h) {
             console.warn("Configuration Perspective invalide, utilisation des valeurs par défaut:", h);
           }
-        const u = ((i = (s = t._parseLevels) == null ? void 0 : s.find((h) => h.level === "final")) == null ? void 0 : i.innerQuery) || ConfigManager.getCellQuery(t, 0), d = await a.query(u), p = [];
+        const u = ((a = (s = t._parseLevels) == null ? void 0 : s.find((h) => h.level === "final")) == null ? void 0 : a.innerQuery) || ConfigManager.getCellQuery(t, 0), d = await i.query(u), p = [];
         for await (const h of d)
           p.push(h);
         t._perspectiveWorker || (t._perspectiveWorker = await o.worker());
-        const g = await t._perspectiveWorker.table(p);
-        await new Promise((h) => requestAnimationFrame(() => requestAnimationFrame(h))), typeof n.resetThemes == "function" && await n.resetThemes(["Pro Light", "Pro Dark"]), await n.load(g), await n.restore(l), t._perspectiveTable = g;
-      } catch (a) {
-        throw console.error("Erreur lors du rendu Perspective:", a), a;
+        const m = await t._perspectiveWorker.table(p);
+        await new Promise((h) => requestAnimationFrame(() => requestAnimationFrame(h))), typeof n.resetThemes == "function" && await n.resetThemes(["Pro Light", "Pro Dark"]), await n.load(m), await n.restore(l), t._perspectiveTable = m;
+      } catch (i) {
+        throw console.error("Erreur lors du rendu Perspective:", i), i;
       } finally {
         t._perspectiveRendering = !1;
       }
@@ -9561,8 +9561,8 @@ function executionMixin() {
       const n = this.getAllItemsSorted(e);
       for (const r of n) {
         if (r.type === "child") {
-          const i = await this.runGroupWithStopConditions([...t, r.originalIndex]);
-          if (i.stopped) return i;
+          const a = await this.runGroupWithStopConditions([...t, r.originalIndex]);
+          if (a.stopped) return a;
           continue;
         }
         const s = r.item;
@@ -9579,8 +9579,8 @@ function executionMixin() {
           try {
             if (s._status = "running", await this.runCellAt(t, r.originalIndex), s._status === "error")
               return this.setStatus("Arrêt : erreur lors de l'exécution d'une cellule", "error"), { stopped: !0, reason: "cell_error" };
-          } catch (i) {
-            return s._status = "error", this.setStatus(`Arrêt : erreur - ${i.message}`, "error"), { stopped: !0, reason: "execution_error", error: i.message };
+          } catch (a) {
+            return s._status = "error", this.setStatus(`Arrêt : erreur - ${a.message}`, "error"), { stopped: !0, reason: "execution_error", error: a.message };
           }
         }
       }
@@ -9590,14 +9590,14 @@ function executionMixin() {
     async runCellsAfterWithStopConditions(t, e, n = null) {
       const r = this.getGroupAtPath(t);
       if (!r) return { stopped: !1 };
-      const s = this.getAllItemsSorted(r), i = s.findIndex(
+      const s = this.getAllItemsSorted(r), a = s.findIndex(
         (o) => {
           var l;
           return o.type === "cell" && (n ? ((l = o.item) == null ? void 0 : l._id) === n : o.originalIndex === e);
         }
       );
-      if (i === -1) return { stopped: !1 };
-      for (let o = i + 1; o < s.length; o++) {
+      if (a === -1) return { stopped: !1 };
+      for (let o = a + 1; o < s.length; o++) {
         const l = s[o];
         if (l.type === "child") {
           const u = await this.runGroupWithStopConditions([...t, l.originalIndex]);
@@ -9623,11 +9623,11 @@ function executionMixin() {
           }
         }
       }
-      let a = [...t];
-      for (; a.length > 1; ) {
-        const o = a[a.length - 1];
-        a = a.slice(0, -1);
-        const l = this.getGroupAtPath(a);
+      let i = [...t];
+      for (; i.length > 1; ) {
+        const o = i[i.length - 1];
+        i = i.slice(0, -1);
+        const l = this.getGroupAtPath(i);
         if (!l) break;
         const c = this.getAllItemsSorted(l), u = c.findIndex(
           (d) => d.type === "child" && d.originalIndex === o
@@ -9636,32 +9636,32 @@ function executionMixin() {
         for (let d = u + 1; d < c.length; d++) {
           const p = c[d];
           if (p.type === "child") {
-            const h = await this.runGroupWithStopConditions([...a, p.originalIndex]);
+            const h = await this.runGroupWithStopConditions([...i, p.originalIndex]);
             if (h.stopped) return h;
             continue;
           }
-          const g = p.item;
-          if (g.type === "buttonRunNextCells")
+          const m = p.item;
+          if (m.type === "buttonRunNextCells")
             return this.setStatus('Arrêt : bouton "Exécuter les cellules suivantes" rencontré', "info"), { stopped: !0, reason: "buttonRunNextCells" };
-          if (!this.isCellSkippedInAutoFlow(g)) {
-            if (g.type === "source") {
-              if (!g._fileName || !g._currentFile || !g._loaded)
-                return this.setStatus(`Arrêt : la source "${g.name}" n'a pas de fichier chargé`, "info"), { stopped: !0, reason: "source_no_file", cellName: g.name };
-              if (g._status === "error")
-                return this.setStatus(`Arrêt : la source "${g.name}" a une erreur de chargement`, "info"), { stopped: !0, reason: "source_error", cellName: g.name };
+          if (!this.isCellSkippedInAutoFlow(m)) {
+            if (m.type === "source") {
+              if (!m._fileName || !m._currentFile || !m._loaded)
+                return this.setStatus(`Arrêt : la source "${m.name}" n'a pas de fichier chargé`, "info"), { stopped: !0, reason: "source_no_file", cellName: m.name };
+              if (m._status === "error")
+                return this.setStatus(`Arrêt : la source "${m.name}" a une erreur de chargement`, "info"), { stopped: !0, reason: "source_error", cellName: m.name };
               continue;
             }
             try {
-              if (g._status = "running", await this.runCellAt(a, p.originalIndex), g._status === "error")
+              if (m._status = "running", await this.runCellAt(i, p.originalIndex), m._status === "error")
                 return this.setStatus("Arrêt : erreur lors de l'exécution d'une cellule", "error"), { stopped: !0, reason: "cell_error" };
             } catch (h) {
-              return g._status = "error", this.setStatus(`Arrêt : erreur - ${h.message}`, "error"), { stopped: !0, reason: "execution_error", error: h.message };
+              return m._status = "error", this.setStatus(`Arrêt : erreur - ${h.message}`, "error"), { stopped: !0, reason: "execution_error", error: h.message };
             }
           }
         }
       }
-      if (a.length === 1) {
-        const o = a[0], l = await this.runGroupsFromIndexWithStopConditions(o + 1);
+      if (i.length === 1) {
+        const o = i[0], l = await this.runGroupsFromIndexWithStopConditions(o + 1);
         if (l.stopped) return l;
       }
       return { stopped: !1 };
@@ -9673,22 +9673,22 @@ function executionMixin() {
         const n = this.getGroupAtPath(t);
         if (!n) return;
         const r = this.getAllItemsSorted(n), s = r.findIndex(
-          (i) => i.type === "cell" && i.originalIndex === e
+          (a) => a.type === "cell" && a.originalIndex === e
         );
         if (s === -1) return;
-        for (let i = s + 1; i < r.length; i++) {
-          const a = r[i];
-          if (a.type === "child") {
-            await this.runGroupAtPath([...t, a.originalIndex]);
+        for (let a = s + 1; a < r.length; a++) {
+          const i = r[a];
+          if (i.type === "child") {
+            await this.runGroupAtPath([...t, i.originalIndex]);
             continue;
           }
-          const o = a.item;
+          const o = i.item;
           if ((o == null ? void 0 : o.type) === "buttonRunNextCells") break;
-          this.isCellSkippedInAutoFlow(o) || await this.runCellAt(t, a.originalIndex);
+          this.isCellSkippedInAutoFlow(o) || await this.runCellAt(t, i.originalIndex);
         }
         if (t.length === 1) {
-          const i = t[0];
-          await this.runGroupsFromIndex(i + 1);
+          const a = t[0];
+          await this.runGroupsFromIndex(a + 1);
         }
         this.setStatus("Exécution terminée", "success");
       } catch (n) {
@@ -9750,29 +9750,29 @@ function cellsMixin() {
         if (l == null || String(l).trim() === "") return "";
         const c = String(l).trim();
         return /^\d+(\.\d+)?$/.test(c) ? c + "%" : c;
-      }, r = [], s = e(t.minHeightPx), i = n(t.minHeightPercent);
-      s && r.push(`--cell-min-h-px:${s}`), i && r.push(`--cell-min-h-pct:${i}`);
-      const a = e(t.maxHeightPx), o = n(t.maxHeightPercent);
-      return a && r.push(`--cell-max-h-px:${a}`), o && r.push(`--cell-max-h-pct:${o}`), r.length ? r.join(";") : "";
+      }, r = [], s = e(t.minHeightPx), a = n(t.minHeightPercent);
+      s && r.push(`--cell-min-h-px:${s}`), a && r.push(`--cell-min-h-pct:${a}`);
+      const i = e(t.maxHeightPx), o = n(t.maxHeightPercent);
+      return i && r.push(`--cell-max-h-px:${i}`), o && r.push(`--cell-max-h-pct:${o}`), r.length ? r.join(";") : "";
     },
     getCellSizeOuterClass(t, e) {
       return e ? "flex-col w-full" : this.hasCellMinSize(t) ? "" : "min-w-[200px]";
     },
     // Style pour le wrapper (flex child) : order + min/max width/height. Combinaison px et % via max()/min() CSS.
     getCellWrapperStyle(t, e, n) {
-      const r = { order: n ?? 0 }, s = (a) => {
-        if (a == null) return null;
-        const o = String(a).trim();
+      const r = { order: n ?? 0 }, s = (i) => {
+        if (i == null) return null;
+        const o = String(i).trim();
         return o === "" ? null : /^\d+(\.\d+)?$/.test(o) ? o + "px" : o;
-      }, i = (a) => {
-        if (a == null) return null;
-        const o = String(a).trim();
+      }, a = (i) => {
+        if (i == null) return null;
+        const o = String(i).trim();
         return o === "" ? null : /^\d+(\.\d+)?$/.test(o) ? o + "%" : o;
       };
       if (!e) {
-        const a = s(t == null ? void 0 : t.minSizePx) ?? s(t == null ? void 0 : t.minSize), o = i(t == null ? void 0 : t.minSizePercent);
-        a && o ? r.minWidth = `max(${a}, ${o})` : a ? r.minWidth = a : o && (r.minWidth = o);
-        const l = s(t == null ? void 0 : t.maxSizePx) ?? s(t == null ? void 0 : t.maxSize), c = i(t == null ? void 0 : t.maxSizePercent);
+        const i = s(t == null ? void 0 : t.minSizePx) ?? s(t == null ? void 0 : t.minSize), o = a(t == null ? void 0 : t.minSizePercent);
+        i && o ? r.minWidth = `max(${i}, ${o})` : i ? r.minWidth = i : o && (r.minWidth = o);
+        const l = s(t == null ? void 0 : t.maxSizePx) ?? s(t == null ? void 0 : t.maxSize), c = a(t == null ? void 0 : t.maxSizePercent);
         l && c ? r.maxWidth = `min(${l}, ${c})` : l ? r.maxWidth = l : c && (r.maxWidth = c);
       }
       return r;
@@ -9838,8 +9838,8 @@ function cellsMixin() {
       const r = Array.isArray(t) ? t : [t], s = this.getGroupAtPath(r);
       if (s) {
         s.cells || (s.cells = []);
-        const i = this.createNewCell(n);
-        i._order = this.getNextOrder(s), s.cells.splice(e, 0, i);
+        const a = this.createNewCell(n);
+        a._order = this.getNextOrder(s), s.cells.splice(e, 0, a);
       }
       this.insertCellModal = { open: !1, path: null, atCellIndex: null };
     },
@@ -9861,8 +9861,8 @@ function cellsMixin() {
       if (r.cells.length === 1 && !s)
         await this.deleteGroupAtPath(n);
       else if (await Alpine.store("confirmModal").show("Supprimer cette cellule ?")) {
-        const i = r.cells[e];
-        _rawTableDataStore.delete(i._id), this._tables && this._tables[i._id] && (this._tables[i._id].destroy(), delete this._tables[i._id]), r.cells.splice(e, 1);
+        const a = r.cells[e];
+        _rawTableDataStore.delete(a._id), this._tables && this._tables[a._id] && (this._tables[a._id].destroy(), delete this._tables[a._id]), r.cells.splice(e, 1);
       }
     },
     // Déplacer une cellule dans un groupe (accepte path ou groupIndex)
@@ -9880,12 +9880,12 @@ function cellsMixin() {
     ensureAllCellsHaveNames() {
       const t = (e, n) => {
         for (let r = 0; r < (e || []).length; r++) {
-          const s = e[r], i = [...n, r];
-          for (let a = 0; a < (s.cells || []).length; a++) {
-            const o = s.cells[a];
+          const s = e[r], a = [...n, r];
+          for (let i = 0; i < (s.cells || []).length; i++) {
+            const o = s.cells[i];
             !o || !o.type || (o.type === "uiParameter" && o.referenceName && (!o.name || !String(o.name).trim()) && (o.name = String(o.referenceName).trim()), (!o.name || !String(o.name).trim()) && (o.name = this.generateUniqueCellName(o.type, o._id)));
           }
-          s.children && t(s.children, i);
+          s.children && t(s.children, a);
         }
       };
       for (let e = 0; e < this.pages.length; e++)
@@ -9897,10 +9897,10 @@ function cellsMixin() {
       this.ensureCellName(n, e), this.cellConfigModal = { open: !0, path: n, cellIndex: e }, setTimeout(() => {
         const r = document.querySelector('[aria-labelledby="modal-cell-config-title"]'), s = this.getCellAtPath(n, e);
         if (!r || !s) return;
-        const i = r.querySelectorAll("select");
-        if (i[0] && (i[0].value = s.type), ["markdown", "iframe", "uiParameter"].includes(s.type) && i[1]) {
-          const a = ConfigManager.getCellEngine(s, "main");
-          a && i[1].value !== a && (i[1].value = a);
+        const a = r.querySelectorAll("select");
+        if (a[0] && (a[0].value = s.type), ["markdown", "iframe", "uiParameter"].includes(s.type) && a[1]) {
+          const i = ConfigManager.getCellEngine(s, "main");
+          i && a[1].value !== i && (a[1].value = i);
         }
       }, 50);
     },
@@ -9923,9 +9923,9 @@ function cellsMixin() {
       return CellConfigService.isSpecificParamVisible(t, e);
     },
     getQueryLabelForType(t, e) {
-      var s, i, a, o;
+      var s, a, i, o;
       const n = CELL_TYPE_SCHEMAS.types[t], r = typeof e == "string" ? e : (s = n == null ? void 0 : n.queryNames) == null ? void 0 : s[e];
-      return ((i = n == null ? void 0 : n.queryLabels) == null ? void 0 : i[r]) || ((a = n == null ? void 0 : n.queryLabels) == null ? void 0 : a[e]) || ((o = CELL_TYPE_SCHEMAS.common.queries) == null ? void 0 : o.label) || "Requête SQL";
+      return ((a = n == null ? void 0 : n.queryLabels) == null ? void 0 : a[r]) || ((i = n == null ? void 0 : n.queryLabels) == null ? void 0 : i[e]) || ((o = CELL_TYPE_SCHEMAS.common.queries) == null ? void 0 : o.label) || "Requête SQL";
     },
     getQueryCountForType(t) {
       var e;
@@ -9938,16 +9938,16 @@ function cellsMixin() {
       CellConfigService.setCellValueByPath(t, e, n);
     },
     onCellTypeChange(t, e, n) {
-      var o, l, c, u, d, p, g, h, f, m;
+      var o, l, c, u, d, p, m, h, f, g;
       const r = Array.isArray(t) ? t : [t], s = this.getCellAtPath(r, e);
       if (!s) return;
       _rawTableDataStore.delete(s._id), s._results = null, s._resultInfo = null;
-      const i = s.type, a = s.name && String(s.name).trim() ? s.name : this.generateUniqueCellName(i);
-      (!s.name || !String(s.name).trim()) && (s.name = a), CellConfigService.applyDefaultsOnTypeChange(s, i, { oldType: n, baseName: a }), s.type === "source" && (s.name ? (o = ConfigManager.getCellQuery(s, "main")) != null && o.trim() || ConfigManager.setCellQuery(s, "main", `CREATE OR REPLACE TABLE ${s.name} AS SELECT * FROM '{fileNameUpload}'`) : s.name = this.generateUniqueSourceName(), (l = ConfigManager.getCellQuery(s, "fallback")) != null && l.trim() || ConfigManager.setCellQuery(s, "fallback", ((p = (d = (u = (c = CELL_TYPE_SCHEMAS.types.source) == null ? void 0 : c.defaults) == null ? void 0 : u.queries) == null ? void 0 : d.find((y) => y.name === "fallback")) == null ? void 0 : p.sql) || ((m = (f = (h = (g = CELL_TYPE_SCHEMAS.types.source) == null ? void 0 : g.defaults) == null ? void 0 : h.queries) == null ? void 0 : f[1]) == null ? void 0 : m.sql) || `CREATE OR REPLACE TABLE ${s.name} AS SELECT * FROM read_csv('{fileNameUpload}', HEADER=true, AUTO_DETECT=true, SAMPLE_SIZE=-1, IGNORE_ERRORS=true)`), s._fileName === void 0 && (s._fileName = ""), s._currentFile === void 0 && (s._currentFile = null), s._isDragging === void 0 && (s._isDragging = !1), s._loaded === void 0 && (s._loaded = !1), s._showParsedQuery2 === void 0 && (s._showParsedQuery2 = !1)), s.type === "uiParameter" && (s.referenceName && (!s.name || !String(s.name).trim()) && (s.name = String(s.referenceName).trim()), ConfigManager.getCellReferenceName(s) || (s.name = this.generateUniqueCellName("uiParameter", s._id)), s._value === void 0 && (s._value = ""), s._options || (s._options = []), s._initialized = !1, s._userModified = !1), s.type === "publipostageWord" && (s.docxTemplateBase64 === void 0 && (s.docxTemplateBase64 = null), s.docxTemplateFileName === void 0 && (s.docxTemplateFileName = ""), s._showParsedQuery === void 0 && (s._showParsedQuery = !1), s._showParsedQuery2 === void 0 && (s._showParsedQuery2 = !1), s._parseLevels || (s._parseLevels = []), s._parseLevels2 || (s._parseLevels2 = []), s._isDragging === void 0 && (s._isDragging = !1)), ["sqlRecursiveParse", "table", "iframe", "sqlStat", "perspective"].includes(s.type) && s._showParsedQuery === void 0 && (s._showParsedQuery = !1), s.type === "perspective" && (s._perspectiveReady = !1, s._perspectiveWorker = null, s._perspectiveTable = null);
+      const a = s.type, i = s.name && String(s.name).trim() ? s.name : this.generateUniqueCellName(a);
+      (!s.name || !String(s.name).trim()) && (s.name = i), CellConfigService.applyDefaultsOnTypeChange(s, a, { oldType: n, baseName: i }), s.type === "source" && (s.name ? (o = ConfigManager.getCellQuery(s, "main")) != null && o.trim() || ConfigManager.setCellQuery(s, "main", `CREATE OR REPLACE TABLE ${s.name} AS SELECT * FROM '{fileNameUpload}'`) : s.name = this.generateUniqueSourceName(), (l = ConfigManager.getCellQuery(s, "fallback")) != null && l.trim() || ConfigManager.setCellQuery(s, "fallback", ((p = (d = (u = (c = CELL_TYPE_SCHEMAS.types.source) == null ? void 0 : c.defaults) == null ? void 0 : u.queries) == null ? void 0 : d.find((y) => y.name === "fallback")) == null ? void 0 : p.sql) || ((g = (f = (h = (m = CELL_TYPE_SCHEMAS.types.source) == null ? void 0 : m.defaults) == null ? void 0 : h.queries) == null ? void 0 : f[1]) == null ? void 0 : g.sql) || `CREATE OR REPLACE TABLE ${s.name} AS SELECT * FROM read_csv('{fileNameUpload}', HEADER=true, AUTO_DETECT=true, SAMPLE_SIZE=-1, IGNORE_ERRORS=true)`), s._fileName === void 0 && (s._fileName = ""), s._currentFile === void 0 && (s._currentFile = null), s._isDragging === void 0 && (s._isDragging = !1), s._loaded === void 0 && (s._loaded = !1), s._showParsedQuery2 === void 0 && (s._showParsedQuery2 = !1)), s.type === "uiParameter" && (s.referenceName && (!s.name || !String(s.name).trim()) && (s.name = String(s.referenceName).trim()), ConfigManager.getCellReferenceName(s) || (s.name = this.generateUniqueCellName("uiParameter", s._id)), s._value === void 0 && (s._value = ""), s._options || (s._options = []), s._initialized = !1, s._userModified = !1), s.type === "publipostageWord" && (s.docxTemplateBase64 === void 0 && (s.docxTemplateBase64 = null), s.docxTemplateFileName === void 0 && (s.docxTemplateFileName = ""), s._showParsedQuery === void 0 && (s._showParsedQuery = !1), s._showParsedQuery2 === void 0 && (s._showParsedQuery2 = !1), s._parseLevels || (s._parseLevels = []), s._parseLevels2 || (s._parseLevels2 = []), s._isDragging === void 0 && (s._isDragging = !1)), ["sqlRecursiveParse", "table", "iframe", "sqlStat", "perspective"].includes(s.type) && s._showParsedQuery === void 0 && (s._showParsedQuery = !1), s.type === "perspective" && (s._perspectiveReady = !1, s._perspectiveWorker = null, s._perspectiveTable = null);
     },
     /** Génère un nom unique pour une cellule (tous types confondus). excludeId = _id de la cellule à exclure. */
     generateUniqueCellName(t, e = null) {
-      var a;
+      var i;
       const n = /* @__PURE__ */ new Set(), r = (o) => {
         for (const l of o) {
           for (const c of l.cells || [])
@@ -9957,20 +9957,20 @@ function cellsMixin() {
       };
       for (const o of this.pages)
         r(o.groups || []), o.linkGroups && r(o.linkGroups);
-      const s = ((a = CELL_TYPE_SCHEMAS == null ? void 0 : CELL_TYPE_SCHEMAS.types[t]) == null ? void 0 : a.defaultNamePrefix) ?? "cell";
-      let i = 1;
-      for (; n.has(s + i); ) i++;
-      return s + i;
+      const s = ((i = CELL_TYPE_SCHEMAS == null ? void 0 : CELL_TYPE_SCHEMAS.types[t]) == null ? void 0 : i.defaultNamePrefix) ?? "cell";
+      let a = 1;
+      for (; n.has(s + a); ) a++;
+      return s + a;
     },
     /** Vérifie si un nom est déjà utilisé par une autre cellule (tous types). */
     isCellNameUsed(t, e = null) {
       const n = t && String(t).trim();
       if (!n) return !1;
       const r = (s) => {
-        for (const i of s) {
-          for (const a of i.cells || [])
-            if (a._id !== e && a.name && String(a.name).trim() === n) return !0;
-          if (i.children && r(i.children)) return !0;
+        for (const a of s) {
+          for (const i of a.cells || [])
+            if (i._id !== e && i.name && String(i.name).trim() === n) return !0;
+          if (a.children && r(a.children)) return !0;
         }
         return !1;
       };
@@ -9998,10 +9998,10 @@ function cellsMixin() {
     },
     // Valider l'unicité du nom de source (accepte path ou groupIndex) - vérifie dans TOUTES les pages
     validateSingleSourceName(t, e) {
-      var i;
+      var a;
       const n = Array.isArray(t) ? t : [t], r = this.getCellAtPath(n, e);
       if (!r || r.type !== "source") return;
-      const s = (i = r.name) == null ? void 0 : i.trim();
+      const s = (a = r.name) == null ? void 0 : a.trim();
       if (!s) {
         this.setStatus("Le nom de la source ne peut pas être vide", "error"), r.name = this.generateUniqueSourceName();
         return;
@@ -10021,32 +10021,32 @@ function filesMixin() {
       if (t.length === 0 && e.length === 0)
         return;
       console.info("📂 " + (t.length + e.length) + " fichier(s) embarqué(s) trouvé(s)");
-      const n = (i) => {
-        for (let a = 0; a < this.pages.length; a++) {
-          const o = this.pages[a], l = r(o.groups, i, []);
+      const n = (a) => {
+        for (let i = 0; i < this.pages.length; i++) {
+          const o = this.pages[i], l = r(o.groups, a, []);
           if (l)
-            return { ...l, pageIndex: a };
+            return { ...l, pageIndex: i };
         }
         return null;
-      }, r = (i, a, o) => {
-        for (let l = 0; l < i.length; l++) {
-          const c = i[l], u = [...o, l];
+      }, r = (a, i, o) => {
+        for (let l = 0; l < a.length; l++) {
+          const c = a[l], u = [...o, l];
           for (let d = 0; d < (c.cells || []).length; d++) {
             const p = c.cells[d];
-            if (p.type === "source" && p.name === a)
+            if (p.type === "source" && p.name === i)
               return { path: u, cellIndex: d, source: p };
           }
           if (c.children && c.children.length > 0) {
-            const d = r(c.children, a, u);
+            const d = r(c.children, i, u);
             if (d) return d;
           }
         }
         return null;
-      }, s = (i, a) => {
+      }, s = (a, i) => {
         try {
-          let o = i, l = null;
-          for (let d = 0; d < a.length - 1; d++) {
-            const p = a[d];
+          let o = a, l = null;
+          for (let d = 0; d < i.length - 1; d++) {
+            const p = i[d];
             if (p === -1) {
               o = this.linkGroups;
               continue;
@@ -10054,7 +10054,7 @@ function filesMixin() {
             if (!o[p]) return null;
             d === 0 ? (l = o[p], o = l.children || []) : (l = o[p], o = l.children || []);
           }
-          const c = a[a.length - 1], u = a.length === 1 ? o[a[0]] : l;
+          const c = i[i.length - 1], u = i.length === 1 ? o[i[0]] : l;
           return !u || !u.cells || !u.cells[c] ? null : {
             cell: u.cells[c],
             cellIndex: c
@@ -10063,39 +10063,39 @@ function filesMixin() {
           return console.error("Error finding cell by path:", o), null;
         }
       };
-      for (const i of t) {
-        const a = i.dataset.sourceName, o = i.dataset.fileName, l = i.textContent.trim();
-        if (!a || !o || !l) {
-          console.warn("Script source incomplet:", i.id);
+      for (const a of t) {
+        const i = a.dataset.sourceName, o = a.dataset.fileName, l = a.textContent.trim();
+        if (!i || !o || !l) {
+          console.warn("Script source incomplet:", a.id);
           continue;
         }
-        const c = n(a);
+        const c = n(i);
         if (!c) {
-          console.warn(`Source "${a}" non trouvée dans les cellules`);
+          console.warn(`Source "${i}" non trouvée dans les cellules`);
           continue;
         }
         const u = this.activePageIndex;
         this.activePageIndex = c.pageIndex;
         try {
-          this.setStatus(`Chargement de ${a}...`, "loading");
-          const d = FileHandler.base64ToUint8Array(l), p = await FileHandler.decompressGzip(d), g = new Blob([p]), h = new File([g], o, {
+          this.setStatus(`Chargement de ${i}...`, "loading");
+          const d = FileHandler.base64ToUint8Array(l), p = await FileHandler.decompressGzip(d), m = new Blob([p]), h = new File([m], o, {
             type: FileHandler.getMimeTypeFromFileName(o)
           });
           await this.loadSingleSourceFile(h, c.path, c.cellIndex, { skipRunNextCells: !0 });
         } catch (d) {
-          console.error(`Erreur chargement fichier embarqué ${a}:`, d), this.setStatus(`Erreur: ${d.message}`, "error");
+          console.error(`Erreur chargement fichier embarqué ${i}:`, d), this.setStatus(`Erreur: ${d.message}`, "error");
         } finally {
           this.activePageIndex = u;
         }
       }
-      for (const i of e) {
-        const a = i.dataset.cellPath, o = i.dataset.fileName;
-        let l = i.textContent.trim();
-        if (!a || !o || !l) {
-          console.warn("Script docx template incomplet:", i.id);
+      for (const a of e) {
+        const i = a.dataset.cellPath, o = a.dataset.fileName;
+        let l = a.textContent.trim();
+        if (!i || !o || !l) {
+          console.warn("Script docx template incomplet:", a.id);
           continue;
         }
-        if (i.dataset.compressed === "true")
+        if (a.dataset.compressed === "true")
           try {
             const d = FileHandler.base64ToUint8Array(l), p = await FileHandler.decompressGzip(d);
             l = FileHandler.arrayBufferToBase64(p);
@@ -10103,19 +10103,19 @@ function filesMixin() {
             console.error("Décompression template docx échouée:", d);
             continue;
           }
-        const c = a.split("_").map((d) => parseInt(d, 10)), u = s(this.groups, c);
+        const c = i.split("_").map((d) => parseInt(d, 10)), u = s(this.groups, c);
         if (!u) {
-          console.warn(`Cellule publipostageWord au chemin "${a}" non trouvée`);
+          console.warn(`Cellule publipostageWord au chemin "${i}" non trouvée`);
           continue;
         }
         if (u.cell.type !== "publipostageWord") {
-          console.warn(`La cellule au chemin "${a}" n'est pas de type publipostageWord`);
+          console.warn(`La cellule au chemin "${i}" n'est pas de type publipostageWord`);
           continue;
         }
         try {
           ConfigManager.setCellFileData(u.cell, { base64: l, fileName: o });
         } catch (d) {
-          console.error(`Erreur chargement template docx ${a}:`, d);
+          console.error(`Erreur chargement template docx ${i}:`, d);
         }
       }
       this.setStatus("Fichiers embarqués chargés", "success");
@@ -10132,37 +10132,37 @@ function filesMixin() {
       r.length > 0 && this.loadSingleSourceFile(r[0], e, n);
     },
     async loadSingleSourceFile(t, e, n, r = {}) {
-      var a, o, l, c, u, d;
+      var i, o, l, c, u, d;
       const s = this.getCellAtPath(e, n);
       if (!s || s.type !== "source") return;
-      const i = r.skipRunNextCells === !0;
+      const a = r.skipRunNextCells === !0;
       s._fileName = t.name, s._currentFile = t, this.isLoading = !0, s._status = "running", this.setStatus(`Chargement de ${s.name}...`, "loading");
       try {
         const p = s.name || "source1";
-        let g, h = !1, f = t.name;
+        let m, h = !1, f = t.name;
         if (((v) => {
           const w = v.toLowerCase();
           return w.endsWith(".csv.gz") ? "csv.gz" : w.endsWith(".tsv.gz") ? "tsv.gz" : w.endsWith(".txt.gz") ? "txt.gz" : w.split(".").pop();
         })(f) === "xls") {
           this.setStatus("Conversion Excel (.xls) via SheetJS...", "loading");
-          const v = ((a = s.json) == null ? void 0 : a.xlsx) || {}, { csv: w, csvFileName: _ } = await FileHandler.processExcelFile(
+          const v = ((i = s.json) == null ? void 0 : i.xlsx) || {}, { csv: w, csvFileName: _ } = await FileHandler.processExcelFile(
             t,
             v.options,
             v.toCsvOptions,
             v.sheetSelection
           ), S = new Blob([w], { type: "text/csv" });
-          await DuckDBManager.registerFile(_, S), f = _, g = `CREATE OR REPLACE TABLE ${p} AS SELECT * FROM read_csv('${f}', HEADER = true, AUTO_DETECT = true, SAMPLE_SIZE = -1)`;
+          await DuckDBManager.registerFile(_, S), f = _, m = `CREATE OR REPLACE TABLE ${p} AS SELECT * FROM read_csv('${f}', HEADER = true, AUTO_DETECT = true, SAMPLE_SIZE = -1)`;
         } else {
           await DuckDBManager.registerFile(t.name, t);
           const v = (ConfigManager.getCellQuery(s, "main") || ((l = (o = s.queries) == null ? void 0 : o[0]) == null ? void 0 : l.sql) || "").trim();
           if (v) {
             const w = { name: p, fileNameUpload: f, fileName: f }, S = { queries: [{ name: "main", sql: this.replaceSourceContext(v, w), engine: "sql", clientVisible: !1 }], _parseLevels: [] };
-            g = await this.parseQueryRecursively(S), s._parseLevels = S._parseLevels || [];
+            m = await this.parseQueryRecursively(S), s._parseLevels = S._parseLevels || [];
           } else
-            g = `CREATE OR REPLACE TABLE ${p} AS SELECT * FROM '${f}'`;
+            m = `CREATE OR REPLACE TABLE ${p} AS SELECT * FROM '${f}'`;
         }
         try {
-          await DuckDBManager.executeQuery(g), h = !0;
+          await DuckDBManager.executeQuery(m), h = !0;
         } catch (v) {
           const w = (ConfigManager.getCellQuery(s, "fallback") || ((u = (c = s.queries) == null ? void 0 : c[1]) == null ? void 0 : u.sql) || "").trim();
           if (w) {
@@ -10170,15 +10170,15 @@ function filesMixin() {
             const _ = { name: p, fileNameUpload: f, fileName: f }, S = { type: "source", queries: [{ name: "main", sql: "" }, { name: "fallback", sql: this.replaceSourceContext(w, _), engine: "sql", clientVisible: !1 }], _parseLevels: [] };
             try {
               const b = await this.parseQueryRecursively(S, 1);
-              await DuckDBManager.executeQuery(b), h = !0, g = b, s._parseLevels = S._parseLevels || [], this.setStatus(`${s.name} chargé via requête de fallback`, "success");
+              await DuckDBManager.executeQuery(b), h = !0, m = b, s._parseLevels = S._parseLevels || [], this.setStatus(`${s.name} chargé via requête de fallback`, "success");
             } catch {
             }
           }
           if (!h) throw v;
         }
-        s._loaded = !0, s._status = "success", s._pendingFileLoad = !1, (d = s._parseLevels) != null && d.length || (s._parseLevels = [{ level: "final", innerQuery: g, replacement: null }]), this.setStatus(`${s.name} chargé!`, "success"), i || (await this.runCellsAfterWithStopConditions(e, n, s._id)).stopped || this.setStatus("Exécution terminée", "success");
+        s._loaded = !0, s._status = "success", s._pendingFileLoad = !1, (d = s._parseLevels) != null && d.length || (s._parseLevels = [{ level: "final", innerQuery: m, replacement: null }]), this.setStatus(`${s.name} chargé!`, "success"), a || (await this.runCellsAfterWithStopConditions(e, n, s._id)).stopped || this.setStatus("Exécution terminée", "success");
       } catch (p) {
-        s._status = "error", this.setStatus("Erreur: " + p.message, "error"), s._fileName = "", s._currentFile = null, Array.isArray(s.files) && (s.files = s.files.filter((g) => g.slot !== "source")), delete s.fileBase64, delete s.fileName;
+        s._status = "error", this.setStatus("Erreur: " + p.message, "error"), s._fileName = "", s._currentFile = null, Array.isArray(s.files) && (s.files = s.files.filter((m) => m.slot !== "source")), delete s.fileBase64, delete s.fileName;
       } finally {
         this.isLoading = !1;
       }
@@ -10192,9 +10192,9 @@ function filesMixin() {
         } catch {
         }
       const r = n.name.replace(/[^a-zA-Z0-9_]/g, "_");
-      document.querySelectorAll(`script[id^="sourceFile_${r}"]`).forEach((i) => i.remove());
+      document.querySelectorAll(`script[id^="sourceFile_${r}"]`).forEach((a) => a.remove());
       const s = document.getElementById("fileInput_" + n._id);
-      s && (s.value = ""), n._fileName = "", n._currentFile = null, n._loaded = !1, n._status = null, n._parseLevels = [], Array.isArray(n.files) && (n.files = n.files.filter((i) => i.slot !== "source")), delete n.fileBase64, delete n.fileName, this.setStatus(`Fichier supprimé de ${n.name}`, "success");
+      s && (s.value = ""), n._fileName = "", n._currentFile = null, n._loaded = !1, n._status = null, n._parseLevels = [], Array.isArray(n.files) && (n.files = n.files.filter((a) => a.slot !== "source")), delete n.fileBase64, delete n.fileName, this.setStatus(`Fichier supprimé de ${n.name}`, "success");
     },
     /** Valide le nom d'une cellule (unicité globale, format SQL pour source). */
     validateCellName(t, e) {
@@ -10234,8 +10234,8 @@ function filesMixin() {
         }
         try {
           this.setStatus("Chargement du template Word...", "loading");
-          const s = await t.arrayBuffer(), i = FileHandler.arrayBufferToBase64(s);
-          r.docxTemplateBase64 = i, r.docxTemplateFileName = t.name, ConfigManager.setCellFileData(r, { base64: i, fileName: t.name }), this.setStatus("Template Word chargé", "success");
+          const s = await t.arrayBuffer(), a = FileHandler.arrayBufferToBase64(s);
+          r.docxTemplateBase64 = a, r.docxTemplateFileName = t.name, ConfigManager.setCellFileData(r, { base64: a, fileName: t.name }), this.setStatus("Template Word chargé", "success");
         } catch (s) {
           this.setStatus("Erreur lors du chargement du template: " + s.message, "error");
         }
@@ -10267,12 +10267,12 @@ function filesMixin() {
     async loadPendingSourceFiles() {
       const t = async (n, r) => {
         for (let s = 0; s < (n.cells || []).length; s++) {
-          const i = n.cells[s];
-          if (i.type === "source" && i._pendingFileLoad && i._currentFile)
+          const a = n.cells[s];
+          if (a.type === "source" && a._pendingFileLoad && a._currentFile)
             try {
-              this.setStatus(`Chargement de ${i.name}...`, "loading"), await this.loadSingleSourceFile(i._currentFile, r, s, { skipRunNextCells: !0 }), i._pendingFileLoad = !1;
-            } catch (a) {
-              console.error(`Erreur chargement fichier source ${i.name}:`, a);
+              this.setStatus(`Chargement de ${a.name}...`, "loading"), await this.loadSingleSourceFile(a._currentFile, r, s, { skipRunNextCells: !0 }), a._pendingFileLoad = !1;
+            } catch (i) {
+              console.error(`Erreur chargement fichier source ${a.name}:`, i);
             }
         }
         if (n.children)
@@ -10314,8 +10314,8 @@ function parametersMixin() {
       const e = this.getParameters();
       let n = t;
       for (const [r, s] of Object.entries(e)) {
-        const i = r.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), a = new RegExp("\\$" + i + "(?![a-zA-Z0-9_])", "g"), o = String(s).replace(/'/g, "''");
-        n = n.replace(a, o);
+        const a = r.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), i = new RegExp("\\$" + a + "(?![a-zA-Z0-9_])", "g"), o = String(s).replace(/'/g, "''");
+        n = n.replace(i, o);
       }
       return n;
     },
@@ -10334,16 +10334,16 @@ function parametersMixin() {
     // Trouver toutes les cellules qui dépendent d'un paramètre donné
     // Retourne un tableau de {cell, path, cellIndex} pour les types DAG-compatibles
     findDependentCells(t) {
-      const e = [], n = ["uiParameter", "sqlRecursiveParse", "table", "perspective", "sqlStat"], r = (s, i) => {
-        for (let a = 0; a < (s.cells || []).length; a++) {
-          const o = s.cells[a];
+      const e = [], n = ["uiParameter", "sqlRecursiveParse", "table", "perspective", "sqlStat"], r = (s, a) => {
+        for (let i = 0; i < (s.cells || []).length; i++) {
+          const o = s.cells[i];
           if (!n.includes(o.type)) continue;
           const l = ConfigManager.getCellQuery(o, 0) || "";
-          this.findReferencedParams(l).includes(t) && e.push({ cell: o, path: [...i], cellIndex: a });
+          this.findReferencedParams(l).includes(t) && e.push({ cell: o, path: [...a], cellIndex: i });
         }
         if (s.children)
-          for (let a = 0; a < s.children.length; a++)
-            r(s.children[a], [...i, a]);
+          for (let i = 0; i < s.children.length; i++)
+            r(s.children[i], [...a, i]);
       };
       for (let s = 0; s < this.groups.length; s++)
         r(this.groups[s], [s]);
@@ -10353,10 +10353,10 @@ function parametersMixin() {
     // Retourne un tableau de {group, path}
     findDependentGroups(t) {
       const e = [], n = (r, s) => {
-        const i = ConfigManager.getGroupIfQuery(r);
-        if (i && i.sql && this.findReferencedParams(i.sql).includes(t) && e.push({ group: r, path: [...s] }), r.children)
-          for (let a = 0; a < r.children.length; a++)
-            n(r.children[a], [...s, a]);
+        const a = ConfigManager.getGroupIfQuery(r);
+        if (a && a.sql && this.findReferencedParams(a.sql).includes(t) && e.push({ group: r, path: [...s] }), r.children)
+          for (let i = 0; i < r.children.length; i++)
+            n(r.children[i], [...s, i]);
       };
       for (let r = 0; r < this.groups.length; r++)
         n(this.groups[r], [r]);
@@ -10365,8 +10365,8 @@ function parametersMixin() {
     // Détecter les cycles dans le DAG
     // Retourne true si un cycle est détecté
     detectCycleInDAG() {
-      const t = /* @__PURE__ */ new Map(), e = /* @__PURE__ */ new Set(), n = (a) => {
-        for (const o of a.cells || []) {
+      const t = /* @__PURE__ */ new Map(), e = /* @__PURE__ */ new Set(), n = (i) => {
+        for (const o of i.cells || []) {
           const l = ConfigManager.getCellReferenceName(o);
           if (o.type === "uiParameter" && l) {
             e.add(l);
@@ -10376,21 +10376,21 @@ function parametersMixin() {
               t.has(u) || t.set(u, []), t.get(u).push(l);
           }
         }
-        for (const o of a.children || [])
+        for (const o of i.children || [])
           n(o);
       };
-      for (const a of this.groups)
-        n(a);
-      const r = /* @__PURE__ */ new Set(), s = /* @__PURE__ */ new Set(), i = (a) => {
-        if (s.has(a)) return !0;
-        if (r.has(a)) return !1;
-        r.add(a), s.add(a);
-        for (const o of t.get(a) || [])
-          if (i(o)) return !0;
-        return s.delete(a), !1;
+      for (const i of this.groups)
+        n(i);
+      const r = /* @__PURE__ */ new Set(), s = /* @__PURE__ */ new Set(), a = (i) => {
+        if (s.has(i)) return !0;
+        if (r.has(i)) return !1;
+        r.add(i), s.add(i);
+        for (const o of t.get(i) || [])
+          if (a(o)) return !0;
+        return s.delete(i), !1;
       };
-      for (const a of e)
-        if (i(a))
+      for (const i of e)
+        if (a(i))
           return !0;
       return !1;
     },
@@ -10418,19 +10418,19 @@ function parametersMixin() {
       if (e.length + n.length !== 0) {
         this.setStatus(`🔄 Rafraîchissement de ${e.length} cellule(s) et ${n.length} groupe(s) dépendant(s) de $${t}...`, "loading");
         for (let s = 0; s < n.length; s++) {
-          const i = n[s];
+          const a = n[s];
           try {
-            const a = i.group._ifQueryResult, o = await this.evaluateGroupIfQuery(i.group);
-            i.group._ifQueryResult = o;
-          } catch (a) {
-            console.error(`  ❌ [DAG] Erreur évaluation groupe ${s + 1}:`, a);
+            const i = a.group._ifQueryResult, o = await this.evaluateGroupIfQuery(a.group);
+            a.group._ifQueryResult = o;
+          } catch (i) {
+            console.error(`  ❌ [DAG] Erreur évaluation groupe ${s + 1}:`, i);
           }
         }
         for (let s = 0; s < e.length; s++) {
-          const i = e[s], a = i.cell;
-          if (!(a.type === "uiParameter" && a.preserveUserValue && a._userModified))
+          const a = e[s], i = a.cell;
+          if (!(i.type === "uiParameter" && i.preserveUserValue && i._userModified))
             try {
-              await this.runCellAt(i.path, i.cellIndex);
+              await this.runCellAt(a.path, a.cellIndex);
             } catch (o) {
               console.error(`  ❌ [DAG] Erreur cellule ${s + 1}:`, o);
             }
@@ -10442,9 +10442,9 @@ function parametersMixin() {
     generateUniqueParamName() {
       const t = /* @__PURE__ */ new Set(), e = (r) => {
         for (const s of r) {
-          for (const i of s.cells || []) {
-            const a = ConfigManager.getCellReferenceName(i);
-            i.type === "uiParameter" && a && t.add(a);
+          for (const a of s.cells || []) {
+            const i = ConfigManager.getCellReferenceName(a);
+            a.type === "uiParameter" && i && t.add(i);
           }
           s.children && e(s.children);
         }
@@ -10460,13 +10460,13 @@ function parametersMixin() {
     isParamNameUsed(t, e) {
       let n = !1;
       const r = (s) => {
-        for (const i of s) {
-          for (const a of i.cells || [])
-            if (a.type === "uiParameter" && a._id !== e && ConfigManager.getCellReferenceName(a) === t) {
+        for (const a of s) {
+          for (const i of a.cells || [])
+            if (i.type === "uiParameter" && i._id !== e && ConfigManager.getCellReferenceName(i) === t) {
               n = !0;
               return;
             }
-          if (i.children && !n && r(i.children), n) return;
+          if (a.children && !n && r(a.children), n) return;
         }
       };
       for (const s of this.pages)
@@ -10485,21 +10485,21 @@ function editorsMixin() {
     // Générer le HTML de l'éditeur pour les cellules uiParameter (SQL, JS ou Texte)
     renderUiParameterEditor(t) {
       const e = ConfigManager.getCellEngine(t, 0), n = e === "js", r = e === "text", s = n ? `return ["Option 1", "Option 2"]; // Pour dropdown
-return "Valeur"; // Pour input` : r ? "Saisir le texte (une ligne par option pour dropdown)" : "SELECT * from source1", i = n ? "JavaScript" : r ? "Texte" : "SQL", a = n ? "⚡" : r ? "📝" : "🗄️", o = n ? "badge-warning" : r ? "badge-ghost" : "badge-info";
-      return this.renderSqlQueryEditor(t, s, !0, "query", "_showParsedQuery", i, a, o);
+return "Valeur"; // Pour input` : r ? "Saisir le texte (une ligne par option pour dropdown)" : "SELECT * from source1", a = n ? "JavaScript" : r ? "Texte" : "SQL", i = n ? '<span class="iconify" data-icon="material-symbols-light:bolt" style="font-size:0.875rem"></span>' : r ? '<span class="iconify" data-icon="material-symbols-light:article" style="font-size:0.875rem"></span>' : '<span class="iconify" data-icon="material-symbols-light:storage" style="font-size:0.875rem"></span>', o = n ? "badge-warning" : r ? "badge-ghost" : "badge-info";
+      return this.renderSqlQueryEditor(t, s, !0, "query", "_showParsedQuery", a, i, o);
     },
     // Générer l'éditeur condition d'affichage (queries.main) pour les groupes
     renderGroupIfQueryEditor(t) {
       if (!t) return '<textarea class="textarea textarea-bordered w-full font-mono min-h-20 text-sm" placeholder="SELECT true"></textarea>';
       const e = ConfigManager.ensureGroupQueries(t);
       if (!e) return '<textarea class="textarea textarea-bordered w-full font-mono min-h-20 text-sm" placeholder="SELECT true"></textarea>';
-      const n = "ifquery-" + (t.id || "g"), s = (e.engine || "sql") === "js", i = s ? "return true;  // ou return false; pour masquer le groupe" : "SELECT true  -- ou SELECT false pour masquer le groupe", a = s ? "badge-warning" : "badge-info", o = s ? "⚡" : "🗄️", l = s ? "JavaScript" : "SQL";
+      const n = "ifquery-" + (t.id || "g"), s = (e.engine || "sql") === "js", a = s ? "return true;  // ou return false; pour masquer le groupe" : "SELECT true  -- ou SELECT false pour masquer le groupe", i = s ? "badge-warning" : "badge-info", o = s ? '<span class="iconify" data-icon="material-symbols-light:bolt" style="font-size:0.875rem"></span>' : '<span class="iconify" data-icon="material-symbols-light:storage" style="font-size:0.875rem"></span>', l = s ? "JavaScript" : "SQL";
       return s ? `<div>
-                            <span class="badge badge-soft ${a} text-xs mb-2">${o} ${l}</span>
+                            <span class="badge badge-soft ${i} text-xs mb-2 flex items-center gap-1">${o} ${l}</span>
                             <textarea class="textarea textarea-bordered w-full font-mono min-h-20 p-3 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" 
-                                placeholder="${i}"></textarea>
+                                placeholder="${a}"></textarea>
                         </div>` : `<div>
-                        <span class="badge badge-soft ${a} text-xs mb-2">${o} ${l}</span>
+                        <span class="badge badge-soft ${i} text-xs mb-2 flex items-center gap-1">${o} ${l}</span>
                         <div class="codemirror-sql-container" x-ref="cm_${n}"
                             x-init="$nextTick(async () => {
                                 const container = $refs['cm_${n}'];
@@ -10519,7 +10519,7 @@ return "Valeur"; // Pour input` : r ? "Saisir le texte (une ligne par option pou
                                     group._cmEditor_ifQuery = CDNManager.createSqlEditor(container, q0.sql || '', (v) => { q0.sql = v; }, { schema, dialect: 'duckdb' });
                                 } catch (err) {
                                     console.error('Erreur CodeMirror condition groupe:', err);
-                                    container.innerHTML = '<textarea class=&quot;textarea textarea-bordered w-full font-mono min-h-20 p-3 text-sm&quot; placeholder=&quot;${i}&quot;></textarea>';
+                                    container.innerHTML = '<textarea class=&quot;textarea textarea-bordered w-full font-mono min-h-20 p-3 text-sm&quot; placeholder=&quot;${a}&quot;></textarea>';
                                     const ta = container.querySelector('textarea');
                                     if (ta) { ta.value = q0.sql || ''; ta.addEventListener('input', e => { q0.sql = e.target.value; }); }
                                 }
@@ -10531,12 +10531,12 @@ return "Valeur"; // Pour input` : r ? "Saisir le texte (une ligne par option pou
       if (!t || !e) return;
       const n = ConfigManager.ensureGroupQueries(t);
       if (!n) return;
-      const s = (n.engine || "sql") === "js", i = s ? "return true;  // ou return false; pour masquer le groupe" : "SELECT true  -- ou SELECT false pour masquer le groupe", a = s ? "badge-warning" : "badge-info", o = s ? "⚡" : "🗄️", l = s ? "JavaScript" : "SQL";
+      const s = (n.engine || "sql") === "js", a = s ? "return true;  // ou return false; pour masquer le groupe" : "SELECT true  -- ou SELECT false pour masquer le groupe", i = s ? "badge-warning" : "badge-info", o = s ? '<span class="iconify" data-icon="material-symbols-light:bolt" style="font-size:0.875rem"></span>' : '<span class="iconify" data-icon="material-symbols-light:storage" style="font-size:0.875rem"></span>', l = s ? "JavaScript" : "SQL";
       if (t._cmEditor_ifQuery && (t._cmEditor_ifQuery.destroy(), t._cmEditor_ifQuery = null), s) {
         e.innerHTML = `<div>
-                            <span class="badge badge-soft ${a} text-xs mb-2">${o} ${l}</span>
+                            <span class="badge badge-soft ${i} text-xs mb-2 flex items-center gap-1">${o} ${l}</span>
                             <textarea class="textarea textarea-bordered w-full font-mono min-h-20 p-3 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" 
-                                placeholder="${i}"></textarea>
+                                placeholder="${a}"></textarea>
                         </div>`;
         const c = e.querySelector("textarea");
         c && (c.value = n.sql || "", c.addEventListener("input", (u) => {
@@ -10544,7 +10544,7 @@ return "Valeur"; // Pour input` : r ? "Saisir le texte (une ligne par option pou
         }));
       } else {
         e.innerHTML = `<div>
-                            <span class="badge badge-soft ${a} text-xs mb-2">${o} ${l}</span>
+                            <span class="badge badge-soft ${i} text-xs mb-2 flex items-center gap-1">${o} ${l}</span>
                             <div class="codemirror-sql-container"></div>
                         </div>`;
         const c = e.querySelector(".codemirror-sql-container");
@@ -10557,7 +10557,7 @@ return "Valeur"; // Pour input` : r ? "Saisir le texte (une ligne par option pou
             n.sql = d;
           }, { schema: u, dialect: "duckdb" });
         }).catch((u) => {
-          console.error("Erreur CodeMirror condition groupe:", u), c.innerHTML = `<textarea class="textarea textarea-bordered w-full font-mono min-h-20 p-3 text-sm" placeholder="${i}"></textarea>`;
+          console.error("Erreur CodeMirror condition groupe:", u), c.innerHTML = `<textarea class="textarea textarea-bordered w-full font-mono min-h-20 p-3 text-sm" placeholder="${a}"></textarea>`;
           const d = c.querySelector("textarea");
           d && (d.value = n.sql || "", d.addEventListener("input", (p) => {
             n.sql = p.target.value;
@@ -10568,14 +10568,14 @@ return "Valeur"; // Pour input` : r ? "Saisir le texte (une ligne par option pou
     // Générer le HTML de l'éditeur SQL partagé (unifié pour tous les types de requêtes)
     // queryType: 'query'|'query2' -> queryName: 'main'|'fallback'|'filename' selon le type de cellule
     // applySourceDefaultIfEmpty: si true et cell.type==='source', charge la requête par défaut du schéma à l'init si vide (placeholder reste simple)
-    renderSqlQueryEditor(t, e, n, r = "query", s = "_showParsedQuery", i = null, a = null, o = null, l = null, c = null, u = !1) {
-      const d = t._id, p = r === "query2" ? ConfigManager.getQuery2Name(t) : "main", g = ConfigManager.getQueryIndexByName(t, p), h = t[s], f = r === "query2" ? "_parseLevels2" : "_parseLevels", m = ConfigManager.getCellEngine(t, p), y = m === "js", v = m === "text";
+    renderSqlQueryEditor(t, e, n, r = "query", s = "_showParsedQuery", a = null, i = null, o = null, l = null, c = null, u = !1) {
+      const d = t._id, p = r === "query2" ? ConfigManager.getQuery2Name(t) : "main", m = ConfigManager.getQueryIndexByName(t, p), h = t[s], f = r === "query2" ? "_parseLevels2" : "_parseLevels", g = ConfigManager.getCellEngine(t, p), y = g === "js", v = g === "text";
       return `
                         <div>
                             <div class="relative w-full">
                                 <div class="flex justify-between items-center mb-2">
                                     <span class="text-xs text-base-content/70 flex items-center gap-2">
-                                        <span class="badge badge-soft ${o || (y ? "badge-warning" : v ? "badge-ghost" : "badge-info")}">${a || (y ? "⚡" : v ? "📝" : "🗄️")} ${i || (y ? "JavaScript" : v ? "Texte" : "SQL")}</span>
+                                        <span class="badge badge-soft ${o || (y ? "badge-warning" : v ? "badge-ghost" : "badge-info")} flex items-center gap-1">${i || (y ? '<span class="iconify" data-icon="material-symbols-light:bolt" style="font-size:0.875rem"></span>' : v ? '<span class="iconify" data-icon="material-symbols-light:article" style="font-size:0.875rem"></span>' : '<span class="iconify" data-icon="material-symbols-light:storage" style="font-size:0.875rem"></span>')} ${a || (y ? "JavaScript" : v ? "Texte" : "SQL")}</span>
                                         ${this.devMode && !v ? `
                                             <label class="label cursor-pointer justify-start gap-2 py-0 min-h-0">
                                                 <input type="checkbox" class="toggle toggle-sm"
@@ -10587,7 +10587,7 @@ return "Valeur"; // Pour input` : r ? "Saisir le texte (une ligne par option pou
                                     <div class="flex gap-1 items-center">
                                         ${!h && this.devMode && !v ? `
                                             <button 
-                                                @click="$store.templateModal.open('${d}', '${r}', '${m}')"
+                                                @click="$store.templateModal.open('${d}', '${r}', '${g}')"
                                                 class="px-2 py-1 border border-base-300 bg-base-200 text-base-content/70 rounded cursor-pointer text-xs transition-all hover:border-primary hover:text-base-content" 
                                                 title="Insérer un template ${y ? "JavaScript" : "SQL"}">
                                                 📋 Templates
@@ -10657,14 +10657,14 @@ return "Valeur"; // Pour input` : r ? "Saisir le texte (une ligne par option pou
                                 ` : y || v ? `
                                     <textarea 
                                         class="textarea textarea-bordered w-full font-mono min-h-20 p-3 resize-y text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" 
-                                        x-model="cellItem.cell.queries[${g}].sql"
+                                        x-model="cellItem.cell.queries[${m}].sql"
                                         placeholder="${e}"></textarea>
                                 ` : `
                                     <div 
                                         class="codemirror-sql-container"
                                         id="cm-${d}-${r}"
                                         x-ref="cm_${d}_${r}"
-                                        x-init="$nextTick(() => initCodeMirrorForCell(cellItem, '${d}', '${r}', '${p}', ${g}, ${u}, '${String(e || "").replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/\r/g, "\\r").replace(/\n/g, "\\n")}', typeof $root !== 'undefined' ? $root : null))"
+                                        x-init="$nextTick(() => initCodeMirrorForCell(cellItem, '${d}', '${r}', '${p}', ${m}, ${u}, '${String(e || "").replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/\r/g, "\\r").replace(/\n/g, "\\n")}', typeof $root !== 'undefined' ? $root : null))"
                                         x-effect="(() => {
                                             const rawCell = (typeof Alpine !== 'undefined' && Alpine.raw) ? Alpine.raw(cellItem.cell) : cellItem.cell;
                                             const editor = rawCell._cmEditor_${r};
@@ -10689,33 +10689,33 @@ return "Valeur"; // Pour input` : r ? "Saisir le texte (une ligne par option pou
     },
     // Rendu sécurisé de l'éditeur SQL : ne re-render que si les propriétés pertinentes changent
     // Cela évite que x-for ou d'autres effets Alpine ne détruisent les instances CodeMirror
-    safeRenderSqlEditor(t, e, n, r, s = "query", i = "_showParsedQuery", a = null, o = null, l = null, c = null, u = null, d = !1) {
+    safeRenderSqlEditor(t, e, n, r, s = "query", a = "_showParsedQuery", i = null, o = null, l = null, c = null, u = null, d = !1) {
       const p = s === "query2" ? ConfigManager.getQuery2Name(e) : "main";
       ConfigManager.getQueryIndexByName(e, p), ConfigManager.ensureCellQueries(e, p);
-      const g = e[i], h = ConfigManager.getCellEngine(e, p), f = this.devMode, m = `${g ? "1" : "0"}_${h || "sql"}_${f ? "1" : "0"}`;
-      if (t._sqlEditorKey === m && t.children.length > 0)
+      const m = e[a], h = ConfigManager.getCellEngine(e, p), f = this.devMode, g = `${m ? "1" : "0"}_${h || "sql"}_${f ? "1" : "0"}`;
+      if (t._sqlEditorKey === g && t.children.length > 0)
         return;
-      t._sqlEditorKey = m;
-      const y = this.renderSqlQueryEditor(e, n, r, s, i, a, o, l, c, u, d);
+      t._sqlEditorKey = g;
+      const y = this.renderSqlQueryEditor(e, n, r, s, a, i, o, l, c, u, d);
       t.innerHTML = y, t._x_ignoreSelf = !0, Alpine.initTree(t), delete t._x_ignoreSelf;
     },
     // Version sécurisée pour l'éditeur uiParameter
     safeRenderUiParameterEditor(t, e) {
-      const n = e._showParsedQuery, r = ConfigManager.getCellEngine(e, 0), s = this.devMode, i = `${n ? "1" : "0"}_${r || "sql"}_${s ? "1" : "0"}`;
-      if (t._sqlEditorKey === i && t.children.length > 0)
+      const n = e._showParsedQuery, r = ConfigManager.getCellEngine(e, 0), s = this.devMode, a = `${n ? "1" : "0"}_${r || "sql"}_${s ? "1" : "0"}`;
+      if (t._sqlEditorKey === a && t.children.length > 0)
         return;
-      t._sqlEditorKey = i;
-      const a = this.renderUiParameterEditor(e);
-      t.innerHTML = a, t._x_ignoreSelf = !0, Alpine.initTree(t), delete t._x_ignoreSelf;
+      t._sqlEditorKey = a;
+      const i = this.renderUiParameterEditor(e);
+      t.innerHTML = i, t._x_ignoreSelf = !0, Alpine.initTree(t), delete t._x_ignoreSelf;
     },
     // Générer l'éditeur pour les cellules markdown (SQL ou JS — requête qui retourne du markdown)
     renderMarkdownQueryEditor(t, e, n) {
-      const s = ConfigManager.getCellEngine(t, "main") === "js", i = s ? "return '## Titre\\n\\nContenu markdown';" : "SELECT '## Titre' as markdown", a = s ? "JavaScript" : "SQL", o = s ? "⚡" : "🗄️", l = s ? "badge-warning" : "badge-info";
-      return this.renderSqlQueryEditor(t, i, !0, "query", "_showParsedQuery", a, o, l, e, n);
+      const s = ConfigManager.getCellEngine(t, "main") === "js", a = s ? "return '## Titre\\n\\nContenu markdown';" : "SELECT '## Titre' as markdown", i = s ? "JavaScript" : "SQL", o = s ? '<span class="iconify" data-icon="material-symbols-light:bolt" style="font-size:0.875rem"></span>' : '<span class="iconify" data-icon="material-symbols-light:storage" style="font-size:0.875rem"></span>', l = s ? "badge-warning" : "badge-info";
+      return this.renderSqlQueryEditor(t, a, !0, "query", "_showParsedQuery", i, o, l, e, n);
     },
     // Init CodeMirror pour une cellule (appelé depuis x-init pour éviter erreurs de parsing Alpine)
-    async initCodeMirrorForCell(t, e, n, r, s, i, a, o) {
-      var d, p, g, h, f, m, y, v, w, _;
+    async initCodeMirrorForCell(t, e, n, r, s, a, i, o) {
+      var d, p, m, h, f, g, y, v, w, _;
       const l = document.getElementById("cm-" + e + "-" + n);
       if (!l) return;
       const c = typeof Alpine < "u" && Alpine.raw ? Alpine.raw(t.cell) : t.cell, u = c["_cmEditor_" + n];
@@ -10726,8 +10726,8 @@ return "Valeur"; // Pour input` : r ? "Saisir le texte (une ligne par option pou
       try {
         await CDNManager.loadCodeMirrorSQL();
         let S = ConfigManager.getCellQuery(t.cell, r) || "";
-        if (i && !S.trim() && t.cell.type === "source") {
-          const E = ((f = (h = (g = (p = (d = CELL_TYPE_SCHEMAS == null ? void 0 : CELL_TYPE_SCHEMAS.types) == null ? void 0 : d.source) == null ? void 0 : p.defaults) == null ? void 0 : g.queries) == null ? void 0 : h.find((I) => I.name === r)) == null ? void 0 : f.sql) ?? ((_ = (w = (v = (y = (m = CELL_TYPE_SCHEMAS == null ? void 0 : CELL_TYPE_SCHEMAS.types) == null ? void 0 : m.source) == null ? void 0 : y.defaults) == null ? void 0 : v.queries) == null ? void 0 : w[s]) == null ? void 0 : _.sql);
+        if (a && !S.trim() && t.cell.type === "source") {
+          const E = ((f = (h = (m = (p = (d = CELL_TYPE_SCHEMAS == null ? void 0 : CELL_TYPE_SCHEMAS.types) == null ? void 0 : d.source) == null ? void 0 : p.defaults) == null ? void 0 : m.queries) == null ? void 0 : h.find((I) => I.name === r)) == null ? void 0 : f.sql) ?? ((_ = (w = (v = (y = (g = CELL_TYPE_SCHEMAS == null ? void 0 : CELL_TYPE_SCHEMAS.types) == null ? void 0 : g.source) == null ? void 0 : y.defaults) == null ? void 0 : v.queries) == null ? void 0 : w[s]) == null ? void 0 : _.sql);
           E && (S = E.replace(/\{name\}/g, t.cell.name || "source1"), ConfigManager.setCellQuery(t.cell, r, S));
         }
         const b = {}, x = (o && o._x_dataStack ? o._x_dataStack[0] : o) || null;
@@ -10742,13 +10742,13 @@ return "Valeur"; // Pour input` : r ? "Saisir le texte (une ligne par option pou
         );
       } catch (S) {
         console.error("Erreur init CodeMirror:", S);
-        const b = String(a || "").replace(/\\/g, "\\\\").replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/'/g, "\\'").replace(/"/g, "&quot;");
+        const b = String(i || "").replace(/\\/g, "\\\\").replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/'/g, "\\'").replace(/"/g, "&quot;");
         l.innerHTML = '<textarea class="textarea textarea-bordered w-full font-mono min-h-20 p-3 resize-y text-sm" x-model="cellItem.cell.queries[' + s + '].sql" placeholder="' + b + '"></textarea>';
       }
     },
     // Version sécurisée pour l'éditeur markdown (sql/js)
     safeRenderMarkdownQueryEditor(t, e, n, r) {
-      const s = e._showParsedQuery, i = ConfigManager.getCellEngine(e, "main"), a = this.devMode, o = `md_${s ? "1" : "0"}_${i || "sql"}_${a ? "1" : "0"}`;
+      const s = e._showParsedQuery, a = ConfigManager.getCellEngine(e, "main"), i = this.devMode, o = `md_${s ? "1" : "0"}_${a || "sql"}_${i ? "1" : "0"}`;
       if (t._sqlEditorKey === o && t.children.length > 0) return;
       t._sqlEditorKey = o;
       const l = this.renderMarkdownQueryEditor(e, n, r);
@@ -10756,12 +10756,12 @@ return "Valeur"; // Pour input` : r ? "Saisir le texte (une ligne par option pou
     },
     // Générer l'éditeur pour les cellules iframe (SQL, JS ou Texte)
     renderIframeEditor(t, e, n) {
-      const r = ConfigManager.getCellEngine(t, 0), s = r === "js", i = r === "text", a = s ? "return '<html><body><h1>Hello</h1></body></html>';" : i ? "<html><body><h1>Hello</h1></body></html>" : "SELECT '<html><body><h1>Hello</h1></body></html>' as html", o = s ? "JavaScript" : i ? "Texte" : "SQL", l = s ? "⚡" : i ? "📝" : "🗄️", c = s ? "badge-warning" : i ? "badge-ghost" : "badge-info";
-      return this.renderSqlQueryEditor(t, a, !0, "query", "_showParsedQuery", o, l, c, e, n);
+      const r = ConfigManager.getCellEngine(t, 0), s = r === "js", a = r === "text", i = s ? "return '<html><body><h1>Hello</h1></body></html>';" : a ? "<html><body><h1>Hello</h1></body></html>" : "SELECT '<html><body><h1>Hello</h1></body></html>' as html", o = s ? "JavaScript" : a ? "Texte" : "SQL", l = s ? '<span class="iconify" data-icon="material-symbols-light:bolt" style="font-size:0.875rem"></span>' : a ? '<span class="iconify" data-icon="material-symbols-light:article" style="font-size:0.875rem"></span>' : '<span class="iconify" data-icon="material-symbols-light:storage" style="font-size:0.875rem"></span>', c = s ? "badge-warning" : a ? "badge-ghost" : "badge-info";
+      return this.renderSqlQueryEditor(t, i, !0, "query", "_showParsedQuery", o, l, c, e, n);
     },
     // Version sécurisée pour l'éditeur iframe
     safeRenderIframeEditor(t, e, n, r) {
-      const s = e._showParsedQuery, i = ConfigManager.getCellEngine(e, 0), a = this.devMode, o = `iframe_${s ? "1" : "0"}_${i || "sql"}_${a ? "1" : "0"}`;
+      const s = e._showParsedQuery, a = ConfigManager.getCellEngine(e, 0), i = this.devMode, o = `iframe_${s ? "1" : "0"}_${a || "sql"}_${i ? "1" : "0"}`;
       if (t._sqlEditorKey === o && t.children.length > 0)
         return;
       t._sqlEditorKey = o;
@@ -10771,37 +10771,37 @@ return "Valeur"; // Pour input` : r ? "Saisir le texte (une ligne par option pou
     // Insérer un template (SQL ou JS) dans une cellule
     insertTemplate(t, e, n, r = "sql") {
       if (r === "text") return;
-      const s = typeof Alpine < "u" && Alpine.raw ? Alpine.raw(Alpine.store("templateModal")) : Alpine.store("templateModal"), i = r === "js" ? s.jsTemplates : s.sqlTemplates, a = (g) => {
-        for (const h of g) {
+      const s = typeof Alpine < "u" && Alpine.raw ? Alpine.raw(Alpine.store("templateModal")) : Alpine.store("templateModal"), a = r === "js" ? s.jsTemplates : s.sqlTemplates, i = (m) => {
+        for (const h of m) {
           for (const f of h.cells || [])
             if (f._id === t)
               return f;
           if (h.children) {
-            const f = a(h.children);
+            const f = i(h.children);
             if (f) return f;
           }
         }
         return null;
       };
       let o = null;
-      for (const g of this.pages)
-        if (o = a(g.groups), o || g.linkGroups && (o = a(g.linkGroups), o))
+      for (const m of this.pages)
+        if (o = i(m.groups), o || m.linkGroups && (o = i(m.linkGroups), o))
           break;
       if (!o) {
         console.error("Cellule non trouvée:", t);
         return;
       }
-      if (n < 0 || n >= i.length) {
+      if (n < 0 || n >= a.length) {
         console.error("Index de template invalide:", n);
         return;
       }
-      const l = i[n], c = String(l.code);
+      const l = a[n], c = String(l.code);
       ConfigManager.setCellQuery(o, e === "query2" ? 1 : 0, c);
       const u = typeof Alpine < "u" && Alpine.raw ? Alpine.raw(o) : o, d = "_cmEditor_" + e, p = u[d];
       if (p && p.state && p.dispatch) {
-        const g = p.state.doc.toString();
-        g !== c && p.dispatch({
-          changes: { from: 0, to: g.length, insert: c }
+        const m = p.state.doc.toString();
+        m !== c && p.dispatch({
+          changes: { from: 0, to: m.length, insert: c }
         });
       }
       this.setStatus(`✅ Template "${l.name}" inséré`, "success");
@@ -10831,11 +10831,11 @@ function exportImportMixin() {
       this.exportModal.show = !1;
       try {
         this.isLoading = !0;
-        const i = t === "gist" || t === "json" || t === "base64", a = await ConfigManager.buildConfigFromState(
+        const a = t === "gist" || t === "json" || t === "base64", i = await ConfigManager.buildConfigFromState(
           this.pages,
           r,
           s,
-          i,
+          a,
           this.currentTheme,
           this.dbEngine,
           this.directedAcyclicGraph
@@ -10845,7 +10845,7 @@ function exportImportMixin() {
             this.setStatus("Création du gist GitHub...", "loading");
             let o = null;
             this.exportModal.encryptGist && (o = (this.exportModal.gistPassphrase || "").trim(), o || (o = GistEncrypt.generatePassphrase()));
-            const l = await GitHubGistManager.createGist(a, n, e, o);
+            const l = await GitHubGistManager.createGist(i, n, e, o);
             this.gistShareUrl = GitHubGistManager.generateSqljobUrl(l), this.gistWasEncrypted = !!o, this.gistPassphraseToShare = o || "", this.showGistModal = !0, this.setStatus("Gist créé avec succès", "success");
             break;
           case "json":
@@ -10853,34 +10853,34 @@ function exportImportMixin() {
             let c;
             const u = this.exportModal.encryptGist ? (this.exportModal.gistPassphrase || "").trim() || GistEncrypt.generatePassphrase() : null;
             if (u) {
-              const w = JSON.stringify(a), _ = await GistEncrypt.encrypt(w, u);
+              const w = JSON.stringify(i), _ = await GistEncrypt.encrypt(w, u);
               c = JSON.stringify(_);
             } else
-              c = JSON.stringify(a);
+              c = JSON.stringify(i);
             const d = new Blob([c], { type: "application/json" }), p = e.endsWith(".json") ? e : e + ".json";
             FileHandler.downloadFile(d, p), this.setStatus("Configuration exportée", "success");
             break;
           case "base64":
             this.setStatus("Export Base64...", "loading");
-            const g = JSON.stringify(a), h = ConfigManager.encodeUTF8ToBase64(g), f = new Blob([h], { type: "text/plain" }), m = e.endsWith(".txt") ? e : e + ".txt";
-            FileHandler.downloadFile(f, m), this.setStatus("Configuration exportée en Base64", "success");
+            const m = JSON.stringify(i), h = ConfigManager.encodeUTF8ToBase64(m), f = new Blob([h], { type: "text/plain" }), g = e.endsWith(".txt") ? e : e + ".txt";
+            FileHandler.downloadFile(f, g), this.setStatus("Configuration exportée en Base64", "success");
             break;
           case "html":
             this.setStatus("Génération HTML...", "loading");
             const y = e.endsWith(".html") ? e : e + ".html", v = this.exportModal.encryptGist ? (this.exportModal.gistPassphrase || "").trim() || GistEncrypt.generatePassphrase() : null;
-            await this.exportHTMLWithConfig(a, y, v), this.setStatus("HTML exporté", "success");
+            await this.exportHTMLWithConfig(i, y, v), this.setStatus("HTML exporté", "success");
             break;
         }
-      } catch (i) {
-        console.error("Erreur export:", i), this.setStatus("Erreur: " + i.message, "error"), t === "gist" && (i.message.includes("authentifié") || i.message.includes("Unauthorized")) && (GitHubGistManager.clearAccessToken(), this.showGistTokenModal = !0);
+      } catch (a) {
+        console.error("Erreur export:", a), this.setStatus("Erreur: " + a.message, "error"), t === "gist" && (a.message.includes("authentifié") || a.message.includes("Unauthorized")) && (GitHubGistManager.clearAccessToken(), this.showGistTokenModal = !0);
       } finally {
         this.isLoading = !1;
       }
     },
     _buildExportHTMLEncrypted(t, e) {
       let n = t;
-      const i = '<script type="application/octet-stream" id="defaultConfigBase64" data-encrypted="true">' + e + "<\/script>";
-      return /<script[^>]*\sid="defaultConfigBase64"/i.test(n) ? n = n.replace(/<script[^>]*\sid="defaultConfigBase64"[^>]*>[\s\S]*?<\/script>/i, i) : n = n.replace(/<\/head>/i, i + "</head>"), n = n.replace(/<script[^>]*\sid="sourceFile_[^"]*"[^>]*>[\s\S]*?<\/script>/gi, ""), n = n.replace(/<script[^>]*\sid="docxTemplate_[^"]*"[^>]*>[\s\S]*?<\/script>/gi, ""), `<!DOCTYPE html>
+      const a = '<script type="application/octet-stream" id="defaultConfigBase64" data-encrypted="true">' + e + "<\/script>";
+      return /<script[^>]*\sid="defaultConfigBase64"/i.test(n) ? n = n.replace(/<script[^>]*\sid="defaultConfigBase64"[^>]*>[\s\S]*?<\/script>/i, a) : n = n.replace(/<\/head>/i, a + "</head>"), n = n.replace(/<script[^>]*\sid="sourceFile_[^"]*"[^>]*>[\s\S]*?<\/script>/gi, ""), n = n.replace(/<script[^>]*\sid="docxTemplate_[^"]*"[^>]*>[\s\S]*?<\/script>/gi, ""), `<!DOCTYPE html>
 ` + n;
     },
     async exportHTMLWithConfig(t, e = "index.sqljob.html", n = null) {
@@ -10888,7 +10888,7 @@ function exportImportMixin() {
       const r = [], s = [];
       if (document.querySelector("sqljob-app")) {
         let c = "";
-        const u = async (f, m = []) => {
+        const u = async (f, g = []) => {
           for (let y = 0; y < (f.cells || []).length; y++) {
             const v = f.cells[y];
             if (v.type === "source" && v._currentFile && v._fileName) {
@@ -10897,30 +10897,30 @@ function exportImportMixin() {
 `;
             }
             if (v.type === "publipostageWord" && v.docxTemplateBase64 && v.docxTemplateFileName) {
-              const w = [...m, y].join("_"), _ = `docxTemplate_${w}`, S = FileHandler.base64ToUint8Array(v.docxTemplateBase64), b = await FileHandler.compressGzip(S.buffer || S), x = FileHandler.arrayBufferToBase64(b);
+              const w = [...g, y].join("_"), _ = `docxTemplate_${w}`, S = FileHandler.base64ToUint8Array(v.docxTemplateBase64), b = await FileHandler.compressGzip(S.buffer || S), x = FileHandler.arrayBufferToBase64(b);
               n ? s.push({ id: _, cellPath: w, fileName: v.docxTemplateFileName, base64: x, compressed: !0 }) : c += `    <script type="application/octet-stream" id="${_}" data-cell-path="${w}" data-file-name="${v.docxTemplateFileName}" data-compressed="true">${x}<\/script>
 `;
             }
           }
           for (let y = 0; y < (f.children || []).length; y++)
-            await u(f.children[y], [...m, y]);
+            await u(f.children[y], [...g, y]);
         };
         for (let f = 0; f < this.pages.length; f++) {
-          for (let m = 0; m < this.pages[f].groups.length; m++)
-            await u(this.pages[f].groups[m], [m]);
-          for (let m = 0; m < (this.pages[f].linkGroups || []).length; m++)
-            await u(this.pages[f].linkGroups[m], [-1, m]);
+          for (let g = 0; g < this.pages[f].groups.length; g++)
+            await u(this.pages[f].groups[g], [g]);
+          for (let g = 0; g < (this.pages[f].linkGroups || []).length; g++)
+            await u(this.pages[f].linkGroups[g], [-1, g]);
         }
         let d;
         if (n) {
           const f = { config: t, sourceFiles: r, docxTemplates: s };
-          let m;
+          let g;
           try {
-            m = JSON.stringify(f);
+            g = JSON.stringify(f);
           } catch {
-            m = "[stringify error]";
+            g = "[stringify error]";
           }
-          const y = await GistEncrypt.encrypt(m, n);
+          const y = await GistEncrypt.encrypt(g, n);
           d = `    <script type="application/octet-stream" id="defaultConfigBase64" data-encrypted="true">${btoa(JSON.stringify(y))}<\/script>
 `;
         } else
@@ -10934,7 +10934,7 @@ function exportImportMixin() {
               break;
             }
         }
-        const g = `<!DOCTYPE html>
+        const m = `<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -10946,35 +10946,35 @@ ${d}${c}</head>
     <script src="${p}" type="module"><\/script>
     <sqljob-app></sqljob-app>
 </body>
-</html>`, h = new Blob([g], { type: "text/html;charset=utf-8" });
+</html>`, h = new Blob([m], { type: "text/html;charset=utf-8" });
         FileHandler.downloadFile(h, e);
         return;
       }
-      const i = async (c, u = []) => {
+      const a = async (c, u = []) => {
         for (let d = 0; d < (c.cells || []).length; d++) {
           const p = c.cells[d];
           if (p.type === "source" && p._currentFile && p._fileName) {
-            const g = p.name.replace(/[^a-zA-Z0-9_]/g, "_"), h = await p._currentFile.arrayBuffer(), f = await FileHandler.compressGzip(h), m = FileHandler.arrayBufferToBase64(f);
+            const m = p.name.replace(/[^a-zA-Z0-9_]/g, "_"), h = await p._currentFile.arrayBuffer(), f = await FileHandler.compressGzip(h), g = FileHandler.arrayBufferToBase64(f);
             if (n)
-              r.push({ id: `sourceFile_${g}`, sourceName: p.name, fileName: p._fileName, base64: m });
+              r.push({ id: `sourceFile_${m}`, sourceName: p.name, fileName: p._fileName, base64: g });
             else {
-              document.querySelectorAll(`script[id^="sourceFile_${g}"]`).forEach((v) => v.remove());
+              document.querySelectorAll(`script[id^="sourceFile_${m}"]`).forEach((v) => v.remove());
               const y = document.createElement("script");
-              y.type = "application/octet-stream", y.id = `sourceFile_${g}`, y.dataset.sourceName = p.name, y.dataset.fileName = p._fileName, y.textContent = m, document.head.appendChild(y);
+              y.type = "application/octet-stream", y.id = `sourceFile_${m}`, y.dataset.sourceName = p.name, y.dataset.fileName = p._fileName, y.textContent = g, document.head.appendChild(y);
             }
           } else if (p.type === "source" && !p._currentFile && !n) {
-            const g = p.name.replace(/[^a-zA-Z0-9_]/g, "_");
-            document.querySelectorAll(`script[id^="sourceFile_${g}"]`).forEach((h) => h.remove());
+            const m = p.name.replace(/[^a-zA-Z0-9_]/g, "_");
+            document.querySelectorAll(`script[id^="sourceFile_${m}"]`).forEach((h) => h.remove());
           }
           if (p.type === "publipostageWord" && p.docxTemplateBase64 && p.docxTemplateFileName) {
-            const g = [...u, d].join("_"), h = `docxTemplate_${g}`;
+            const m = [...u, d].join("_"), h = `docxTemplate_${m}`;
             if (n) {
-              const f = FileHandler.base64ToUint8Array(p.docxTemplateBase64), m = await FileHandler.compressGzip(f.buffer || f), y = FileHandler.arrayBufferToBase64(m);
-              s.push({ id: h, cellPath: g, fileName: p.docxTemplateFileName, base64: y, compressed: !0 });
+              const f = FileHandler.base64ToUint8Array(p.docxTemplateBase64), g = await FileHandler.compressGzip(f.buffer || f), y = FileHandler.arrayBufferToBase64(g);
+              s.push({ id: h, cellPath: m, fileName: p.docxTemplateFileName, base64: y, compressed: !0 });
             } else {
               document.querySelectorAll(`script[id="${h}"]`).forEach((w) => w.remove());
-              const f = FileHandler.base64ToUint8Array(p.docxTemplateBase64), m = await FileHandler.compressGzip(f.buffer || f), y = FileHandler.arrayBufferToBase64(m), v = document.createElement("script");
-              v.type = "application/octet-stream", v.id = h, v.dataset.cellPath = g, v.dataset.fileName = p.docxTemplateFileName, v.dataset.compressed = "true", v.textContent = y, document.head.appendChild(v);
+              const f = FileHandler.base64ToUint8Array(p.docxTemplateBase64), g = await FileHandler.compressGzip(f.buffer || f), y = FileHandler.arrayBufferToBase64(g), v = document.createElement("script");
+              v.type = "application/octet-stream", v.id = h, v.dataset.cellPath = m, v.dataset.fileName = p.docxTemplateFileName, v.dataset.compressed = "true", v.textContent = y, document.head.appendChild(v);
             }
           } else if (p.type === "publipostageWord" && !p.docxTemplateBase64 && !n) {
             const h = `docxTemplate_${[...u, d].join("_")}`;
@@ -10982,16 +10982,16 @@ ${d}${c}</head>
           }
         }
         for (let d = 0; d < (c.children || []).length; d++)
-          await i(c.children[d], [...u, d]);
+          await a(c.children[d], [...u, d]);
       };
       for (let c = 0; c < this.pages.length; c++) {
         const u = this.pages[c];
         for (let d = 0; d < u.groups.length; d++)
-          await i(u.groups[d], [d]);
+          await a(u.groups[d], [d]);
         for (let d = 0; d < (u.linkGroups || []).length; d++)
-          await i(u.linkGroups[d], [-1, d]);
+          await a(u.linkGroups[d], [-1, d]);
       }
-      let a;
+      let i;
       if (n) {
         const c = { config: t, sourceFiles: r, docxTemplates: s };
         let u;
@@ -11001,15 +11001,15 @@ ${d}${c}</head>
           u = "[stringify error]";
         }
         const d = await GistEncrypt.encrypt(u, n), p = btoa(JSON.stringify(d));
-        a = this._buildExportHTMLEncrypted(document.documentElement.outerHTML, p);
+        i = this._buildExportHTMLEncrypted(document.documentElement.outerHTML, p);
       } else {
         (l = document.getElementById("defaultConfigBase64")) == null || l.remove();
         const c = document.createElement("script");
-        c.type = "application/octet-stream", c.id = "defaultConfigBase64", c.textContent = ConfigManager.encodeUTF8ToBase64(JSON.stringify(t, null, 2)), document.head.appendChild(c), a = `<!DOCTYPE html>
+        c.type = "application/octet-stream", c.id = "defaultConfigBase64", c.textContent = ConfigManager.encodeUTF8ToBase64(JSON.stringify(t, null, 2)), document.head.appendChild(c), i = `<!DOCTYPE html>
 ` + document.documentElement.outerHTML;
       }
-      a = a.replace(/<html[^>]*>/i, '<html lang="fr">');
-      const o = new Blob([a], { type: "text/html;charset=utf-8" });
+      i = i.replace(/<html[^>]*>/i, '<html lang="fr">');
+      const o = new Blob([i], { type: "text/html;charset=utf-8" });
       FileHandler.downloadFile(o, e);
     },
     cancelExport() {
@@ -11084,15 +11084,15 @@ ${d}${c}</head>
       }
     },
     async applyImportedConfig(t) {
-      var a, o, l, c, u, d, p, g, h;
+      var i, o, l, c, u, d, p, m, h;
       await ConfigManager.prepareConfigForLoad(t);
-      const e = (f, m) => initializeCell(f, m, { generateId: () => this.generateCellId() }), n = (f, m) => {
+      const e = (f, g) => initializeCell(f, g, { generateId: () => this.generateCellId() }), n = (f, g) => {
         const y = {
           _id: f.id || this.generateGroupId(),
           _type: f.type || "core",
           direction: f.direction || "row",
           style: f.style || "",
-          _order: ConfigManager.normalizeOrder(f.order, m),
+          _order: ConfigManager.normalizeOrder(f.order, g),
           cells: (f.cells || []).map((v, w) => e(ConfigManager.normalizeCell({ ...v }), w)),
           accordion: f.accordion || !1,
           title: f.title || "",
@@ -11114,11 +11114,11 @@ ${d}${c}</head>
           return _._order = ConfigManager.normalizeOrder(v.order, w), _;
         })), y;
       };
-      let r = (((a = t.job) == null ? void 0 : a.pages) || []).map((f, m) => {
+      let r = (((i = t.job) == null ? void 0 : i.pages) || []).map((f, g) => {
         const y = (f.groups || []).map((_, S) => n(_, S)), v = y.filter((_) => _._type === "core"), w = y.filter((_) => _._type === "link");
         return {
           _id: f.id || this.generatePageId(),
-          name: f.name || `Feuille ${m + 1}`,
+          name: f.name || `Feuille ${g + 1}`,
           groups: v,
           linkGroups: w
         };
@@ -11130,14 +11130,14 @@ ${d}${c}</head>
         linkGroups: []
       }]), this.pages = r, this.activePageIndex = 0, this._pagesInitialized.clear(), this.ensureAllCellsHaveNames(), await this.loadPendingSourceFiles(), await this.evaluateAllGroupIfQueries(), await this.runAllGroups(), this.pages[0] && this._pagesInitialized.add(this.pages[0]._id), this.$nextTick(() => setTimeout(() => this.refreshMarkdownCellsForPage(0), 300));
       const s = (o = t.ui) == null ? void 0 : o.dbEngine;
-      s && s !== this.dbEngine && await this.switchDbEngine(s), ((l = t.ui) == null ? void 0 : l.directedAcyclicGraph) !== void 0 && (this.directedAcyclicGraph = t.ui.directedAcyclicGraph === !0), ((c = t.ui) == null ? void 0 : c.devMode) !== void 0 && (this.devMode = t.ui.devMode !== !1), (((u = t.ui) == null ? void 0 : u.showLayout) !== void 0 || ((d = t.ui) == null ? void 0 : d.displaySettings) !== void 0) && (this.showLayout = (((p = t.ui) == null ? void 0 : p.showLayout) ?? ((g = t.ui) == null ? void 0 : g.displaySettings)) !== !1);
-      const i = (h = t.ui) == null ? void 0 : h.theme;
-      i && this.availableThemes.includes(i) && this.setTheme(i), this.setStatus("Configuration chargée", "success");
+      s && s !== this.dbEngine && await this.switchDbEngine(s), ((l = t.ui) == null ? void 0 : l.directedAcyclicGraph) !== void 0 && (this.directedAcyclicGraph = t.ui.directedAcyclicGraph === !0), ((c = t.ui) == null ? void 0 : c.devMode) !== void 0 && (this.devMode = t.ui.devMode !== !1), (((u = t.ui) == null ? void 0 : u.showLayout) !== void 0 || ((d = t.ui) == null ? void 0 : d.displaySettings) !== void 0) && (this.showLayout = (((p = t.ui) == null ? void 0 : p.showLayout) ?? ((m = t.ui) == null ? void 0 : m.displaySettings)) !== !1);
+      const a = (h = t.ui) == null ? void 0 : h.theme;
+      a && this.availableThemes.includes(a) && this.setTheme(a), this.setStatus("Configuration chargée", "success");
     }
   };
 }
 function notebookApp$1() {
-  var h, f, m, y, v, w, _;
+  var h, f, g, y, v, w, _;
   const t = window._loadedConfig || ConfigManager.getDefaultConfig(), e = (S, b) => initializeCell(S, b), n = (S, b) => {
     const x = ConfigManager.normalizeGroup({ ...S }), E = {
       _id: x.id || ConfigManager.generateGroupId(),
@@ -11184,7 +11184,7 @@ function notebookApp$1() {
     groups: [],
     linkGroups: []
   }]);
-  const s = ((f = t.ui) == null ? void 0 : f.devMode) !== !1, i = (((m = t.ui) == null ? void 0 : m.showLayout) ?? ((y = t.ui) == null ? void 0 : y.displaySettings)) !== !1, a = [
+  const s = ((f = t.ui) == null ? void 0 : f.devMode) !== !1, a = (((g = t.ui) == null ? void 0 : g.showLayout) ?? ((y = t.ui) == null ? void 0 : y.displaySettings)) !== !1, i = [
     "light",
     "dark",
     "cupcake",
@@ -11221,7 +11221,7 @@ function notebookApp$1() {
   document.documentElement.setAttribute("data-theme", c);
   const u = localStorage.getItem("sqljob-dbEngine"), p = ((w = t.ui) == null ? void 0 : w.dbEngine) || u || "duckdb-wasm";
   DuckDBManager.setEngine(p);
-  const g = ((_ = t.ui) == null ? void 0 : _.directedAcyclicGraph) === !0;
+  const m = ((_ = t.ui) == null ? void 0 : _.directedAcyclicGraph) === !0;
   return {
     // ─── État principal ────────────────────────────────────────────────
     pages: r,
@@ -11230,12 +11230,12 @@ function notebookApp$1() {
     status: "",
     statusType: "",
     devMode: s,
-    showLayout: i,
-    availableThemes: a,
+    showLayout: a,
+    availableThemes: i,
     currentTheme: c,
     dbEngine: p,
     showDbEngineModal: !1,
-    directedAcyclicGraph: g,
+    directedAcyclicGraph: m,
     // GitHub Gist - variables d'état
     githubToken: "",
     gistShareUrl: "",
@@ -11300,17 +11300,17 @@ function notebookApp$1() {
     // groupIndex du groupe niveau 0 en cours de drag
     // ─── Types de cellules disponibles ────────────────────────────────
     cellTypes: [
-      { type: "markdown", label: "Markdown", icon: "📝" },
-      { type: "source", label: "Source", icon: "📄" },
-      { type: "uiParameter", label: "Paramètre UI", icon: "🎛️" },
-      { type: "buttonRunNextCells", label: "Bouton Exécuter", icon: "🚀" },
-      { type: "sqlRecursiveParse", label: "SQL", icon: "🗄️" },
-      { type: "table", label: "Tableau", icon: "📊" },
-      { type: "iframe", label: "HTML/Iframe", icon: "🖼️" },
-      { type: "sqlStat", label: "Stat SQL", icon: "📊" },
-      { type: "publipostageWord", label: "Publipostage Word", icon: "📄" },
-      { type: "pdfme", label: "PDF (pdfme)", icon: "📑" },
-      { type: "perspective", label: "Perspective Viewer", icon: "🔍" }
+      { type: "markdown", label: "Markdown", icon: '<span class="iconify" data-icon="material-symbols-light:edit-note" style="font-size:1.25rem"></span>' },
+      { type: "source", label: "Source", icon: '<span class="iconify" data-icon="material-symbols-light:folder-open" style="font-size:1.25rem"></span>' },
+      { type: "uiParameter", label: "Paramètre UI", icon: '<span class="iconify" data-icon="material-symbols-light:tune" style="font-size:1.25rem"></span>' },
+      { type: "buttonRunNextCells", label: "Bouton Exécuter", icon: '<span class="iconify" data-icon="material-symbols-light:smart-button" style="font-size:1.25rem"></span>' },
+      { type: "sqlRecursiveParse", label: "SQL", icon: '<span class="iconify" data-icon="material-symbols-light:storage" style="font-size:1.25rem"></span>' },
+      { type: "table", label: "Tableau", icon: '<span class="iconify" data-icon="material-symbols-light:table" style="font-size:1.25rem"></span>' },
+      { type: "iframe", label: "HTML/Iframe", icon: '<span class="iconify" data-icon="material-symbols-light:web" style="font-size:1.25rem"></span>' },
+      { type: "sqlStat", label: "Stat SQL", icon: '<span class="iconify" data-icon="material-symbols-light:monitoring" style="font-size:1.25rem"></span>' },
+      { type: "publipostageWord", label: "Publipostage Word", icon: '<span class="iconify" data-icon="material-symbols-light:description" style="font-size:1.25rem"></span>' },
+      { type: "pdfme", label: "PDF (pdfme)", icon: '<span class="iconify" data-icon="material-symbols-light:picture-as-pdf" style="font-size:1.25rem"></span>' },
+      { type: "perspective", label: "Perspective Viewer", icon: '<span class="iconify" data-icon="material-symbols-light:analytics" style="font-size:1.25rem"></span>' }
     ],
     // ─── Tables simple-datatables par cellule ─────────────────────────
     _tables: {},
