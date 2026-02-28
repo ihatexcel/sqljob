@@ -47,29 +47,29 @@ function overrideEffect(t) {
 function elementBoundEffect(t) {
   let e = () => {
   };
-  return [(r) => {
-    let s = effect(r);
+  return [(s) => {
+    let r = effect(s);
     return t._x_effects || (t._x_effects = /* @__PURE__ */ new Set(), t._x_runEffects = () => {
       t._x_effects.forEach((a) => a());
-    }), t._x_effects.add(s), e = () => {
-      s !== void 0 && (t._x_effects.delete(s), release(s));
-    }, s;
+    }), t._x_effects.add(r), e = () => {
+      r !== void 0 && (t._x_effects.delete(r), release(r));
+    }, r;
   }, () => {
     e();
   }];
 }
 function watch(t, e) {
-  let n = !0, r, s = effect(() => {
+  let n = !0, s, r = effect(() => {
     let a = t();
-    if (JSON.stringify(a), !n && (typeof a == "object" || a !== r)) {
-      let i = r;
+    if (JSON.stringify(a), !n && (typeof a == "object" || a !== s)) {
+      let i = s;
       queueMicrotask(() => {
         e(a, i);
       });
     }
-    r = a, n = !1;
+    s = a, n = !1;
   });
-  return () => release(s);
+  return () => release(r);
 }
 async function transaction(t) {
   startTransaction();
@@ -93,8 +93,8 @@ function onAttributeRemoved(t, e, n) {
   t._x_attributeCleanups || (t._x_attributeCleanups = {}), t._x_attributeCleanups[e] || (t._x_attributeCleanups[e] = []), t._x_attributeCleanups[e].push(n);
 }
 function cleanupAttributes(t, e) {
-  t._x_attributeCleanups && Object.entries(t._x_attributeCleanups).forEach(([n, r]) => {
-    (e === void 0 || e.includes(n)) && (r.forEach((s) => s()), delete t._x_attributeCleanups[n]);
+  t._x_attributeCleanups && Object.entries(t._x_attributeCleanups).forEach(([n, s]) => {
+    (e === void 0 || e.includes(n)) && (s.forEach((r) => r()), delete t._x_attributeCleanups[n]);
   });
 }
 function cleanupElement(t) {
@@ -139,7 +139,7 @@ function onMutate(t) {
     deferredMutations = deferredMutations.concat(t);
     return;
   }
-  let e = [], n = /* @__PURE__ */ new Set(), r = /* @__PURE__ */ new Map(), s = /* @__PURE__ */ new Map();
+  let e = [], n = /* @__PURE__ */ new Set(), s = /* @__PURE__ */ new Map(), r = /* @__PURE__ */ new Map();
   for (let a = 0; a < t.length; a++)
     if (!t[a].target._x_ignoreMutationObserver && (t[a].type === "childList" && (t[a].removedNodes.forEach((i) => {
       i.nodeType === 1 && i._x_marker && n.add(i);
@@ -153,29 +153,29 @@ function onMutate(t) {
       }
     })), t[a].type === "attributes")) {
       let i = t[a].target, o = t[a].attributeName, l = t[a].oldValue, c = () => {
-        r.has(i) || r.set(i, []), r.get(i).push({ name: o, value: i.getAttribute(o) });
+        s.has(i) || s.set(i, []), s.get(i).push({ name: o, value: i.getAttribute(o) });
       }, u = () => {
-        s.has(i) || s.set(i, []), s.get(i).push(o);
+        r.has(i) || r.set(i, []), r.get(i).push(o);
       };
       i.hasAttribute(o) && l === null ? c() : i.hasAttribute(o) ? (u(), c()) : u();
     }
-  s.forEach((a, i) => {
+  r.forEach((a, i) => {
     cleanupAttributes(i, a);
-  }), r.forEach((a, i) => {
+  }), s.forEach((a, i) => {
     onAttributeAddeds.forEach((o) => o(i, a));
   });
   for (let a of n)
     e.some((i) => i.contains(a)) || onElRemoveds.forEach((i) => i(a));
   for (let a of e)
     a.isConnected && onElAddeds.forEach((i) => i(a));
-  e = null, n = null, r = null, s = null;
+  e = null, n = null, s = null, r = null;
 }
 function scope(t) {
   return mergeProxies(closestDataStack(t));
 }
 function addScopeToNode(t, e, n) {
   return t._x_dataStack = [e, ...closestDataStack(n || t)], () => {
-    t._x_dataStack = t._x_dataStack.filter((r) => r !== e);
+    t._x_dataStack = t._x_dataStack.filter((s) => s !== e);
   };
 }
 function closestDataStack(t) {
@@ -198,29 +198,29 @@ var mergeProxyTrap = {
   get({ objects: t }, e, n) {
     return e == "toJSON" ? collapseProxies : Reflect.get(
       t.find(
-        (r) => Reflect.has(r, e)
+        (s) => Reflect.has(s, e)
       ) || {},
       e,
       n
     );
   },
-  set({ objects: t }, e, n, r) {
-    const s = t.find(
+  set({ objects: t }, e, n, s) {
+    const r = t.find(
       (i) => Object.prototype.hasOwnProperty.call(i, e)
-    ) || t[t.length - 1], a = Object.getOwnPropertyDescriptor(s, e);
-    return a != null && a.set && (a != null && a.get) ? a.set.call(r, n) || !0 : Reflect.set(s, e, n);
+    ) || t[t.length - 1], a = Object.getOwnPropertyDescriptor(r, e);
+    return a != null && a.set && (a != null && a.get) ? a.set.call(s, n) || !0 : Reflect.set(r, e, n);
   }
 };
 function collapseProxies() {
   return Reflect.ownKeys(this).reduce((e, n) => (e[n] = Reflect.get(this, n), e), {});
 }
 function initInterceptors(t) {
-  let e = (r) => typeof r == "object" && !Array.isArray(r) && r !== null, n = (r, s = "") => {
-    Object.entries(Object.getOwnPropertyDescriptors(r)).forEach(([a, { value: i, enumerable: o }]) => {
+  let e = (s) => typeof s == "object" && !Array.isArray(s) && s !== null, n = (s, r = "") => {
+    Object.entries(Object.getOwnPropertyDescriptors(s)).forEach(([a, { value: i, enumerable: o }]) => {
       if (o === !1 || i === void 0 || typeof i == "object" && i !== null && i.__v_skip)
         return;
-      let l = s === "" ? a : `${s}.${a}`;
-      typeof i == "object" && i !== null && i._x_interceptor ? r[a] = i.initialize(t, l, a) : e(i) && i !== r && !(i instanceof Element) && n(i, l);
+      let l = r === "" ? a : `${r}.${a}`;
+      typeof i == "object" && i !== null && i._x_interceptor ? s[a] = i.initialize(t, l, a) : e(i) && i !== s && !(i instanceof Element) && n(i, l);
     });
   };
   return n(t);
@@ -230,24 +230,24 @@ function interceptor(t, e = () => {
   let n = {
     initialValue: void 0,
     _x_interceptor: !0,
-    initialize(r, s, a) {
-      return t(this.initialValue, () => get(r, s), (i) => set(r, s, i), s, a);
+    initialize(s, r, a) {
+      return t(this.initialValue, () => get(s, r), (i) => set(s, r, i), r, a);
     }
   };
-  return e(n), (r) => {
-    if (typeof r == "object" && r !== null && r._x_interceptor) {
-      let s = n.initialize.bind(n);
+  return e(n), (s) => {
+    if (typeof s == "object" && s !== null && s._x_interceptor) {
+      let r = n.initialize.bind(n);
       n.initialize = (a, i, o) => {
-        let l = r.initialize(a, i, o);
-        return n.initialValue = l, s(a, i, o);
+        let l = s.initialize(a, i, o);
+        return n.initialValue = l, r(a, i, o);
       };
     } else
-      n.initialValue = r;
+      n.initialValue = s;
     return n;
   };
 }
 function get(t, e) {
-  return e.split(".").reduce((n, r) => n[r], t);
+  return e.split(".").reduce((n, s) => n[s], t);
 }
 function set(t, e, n) {
   if (typeof e == "string" && (e = e.split(".")), e.length === 1)
@@ -264,24 +264,24 @@ function magic(t, e) {
 }
 function injectMagics(t, e) {
   let n = getUtilities(e);
-  return Object.entries(magics).forEach(([r, s]) => {
-    Object.defineProperty(t, `$${r}`, {
+  return Object.entries(magics).forEach(([s, r]) => {
+    Object.defineProperty(t, `$${s}`, {
       get() {
-        return s(e, n);
+        return r(e, n);
       },
       enumerable: !1
     });
   }), t;
 }
 function getUtilities(t) {
-  let [e, n] = getElementBoundUtilities(t), r = { interceptor, ...e };
-  return onElRemoved(t, n), r;
+  let [e, n] = getElementBoundUtilities(t), s = { interceptor, ...e };
+  return onElRemoved(t, n), s;
 }
-function tryCatch(t, e, n, ...r) {
+function tryCatch(t, e, n, ...s) {
   try {
-    return n(...r);
-  } catch (s) {
-    handleError(s, t, e);
+    return n(...s);
+  } catch (r) {
+    handleError(r, t, e);
   }
 }
 function handleError(...t) {
@@ -311,8 +311,8 @@ function dontAutoEvaluateFunctions(t) {
   return shouldAutoEvaluateFunctions = e, n;
 }
 function evaluate(t, e, n = {}) {
-  let r;
-  return evaluateLater(t, e)((s) => r = s, n), r;
+  let s;
+  return evaluateLater(t, e)((r) => s = r, n), s;
 }
 function evaluateLater(...t) {
   return theEvaluatorFunction(...t);
@@ -328,17 +328,17 @@ function setRawEvaluator(t) {
 function normalEvaluator(t, e) {
   let n = {};
   injectMagics(n, t);
-  let r = [n, ...closestDataStack(t)], s = typeof e == "function" ? generateEvaluatorFromFunction(r, e) : generateEvaluatorFromString(r, e, t);
-  return tryCatch.bind(null, t, e, s);
+  let s = [n, ...closestDataStack(t)], r = typeof e == "function" ? generateEvaluatorFromFunction(s, e) : generateEvaluatorFromString(s, e, t);
+  return tryCatch.bind(null, t, e, r);
 }
 function generateEvaluatorFromFunction(t, e) {
   return (n = () => {
-  }, { scope: r = {}, params: s = [], context: a } = {}) => {
+  }, { scope: s = {}, params: r = [], context: a } = {}) => {
     if (!shouldAutoEvaluateFunctions) {
-      runIfTypeOfFunction(n, e, mergeProxies([r, ...t]), s);
+      runIfTypeOfFunction(n, e, mergeProxies([s, ...t]), r);
       return;
     }
-    let i = e.apply(mergeProxies([r, ...t]), s);
+    let i = e.apply(mergeProxies([s, ...t]), r);
     runIfTypeOfFunction(n, i);
   };
 }
@@ -347,11 +347,11 @@ function generateFunctionFromString(t, e) {
   if (evaluatorMemo[t])
     return evaluatorMemo[t];
   let n = Object.getPrototypeOf(async function() {
-  }).constructor, r = /^[\n\s]*if.*\(.*\)/.test(t.trim()) || /^(let|const)\s/.test(t.trim()) ? `(async()=>{ ${t} })()` : t, a = (() => {
+  }).constructor, s = /^[\n\s]*if.*\(.*\)/.test(t.trim()) || /^(let|const)\s/.test(t.trim()) ? `(async()=>{ ${t} })()` : t, a = (() => {
     try {
       let i = new n(
         ["__self", "scope"],
-        `with (scope) { __self.result = ${r} }; __self.finished = true; return __self.result;`
+        `with (scope) { __self.result = ${s} }; __self.finished = true; return __self.result;`
       );
       return Object.defineProperty(i, "name", {
         value: `[Alpine] ${t}`
@@ -363,32 +363,32 @@ function generateFunctionFromString(t, e) {
   return evaluatorMemo[t] = a, a;
 }
 function generateEvaluatorFromString(t, e, n) {
-  let r = generateFunctionFromString(e, n);
-  return (s = () => {
+  let s = generateFunctionFromString(e, n);
+  return (r = () => {
   }, { scope: a = {}, params: i = [], context: o } = {}) => {
-    r.result = void 0, r.finished = !1;
+    s.result = void 0, s.finished = !1;
     let l = mergeProxies([a, ...t]);
-    if (typeof r == "function") {
-      let c = r.call(o, r, l).catch((u) => handleError(u, n, e));
-      r.finished ? (runIfTypeOfFunction(s, r.result, l, i, n), r.result = void 0) : c.then((u) => {
-        runIfTypeOfFunction(s, u, l, i, n);
-      }).catch((u) => handleError(u, n, e)).finally(() => r.result = void 0);
+    if (typeof s == "function") {
+      let c = s.call(o, s, l).catch((u) => handleError(u, n, e));
+      s.finished ? (runIfTypeOfFunction(r, s.result, l, i, n), s.result = void 0) : c.then((u) => {
+        runIfTypeOfFunction(r, u, l, i, n);
+      }).catch((u) => handleError(u, n, e)).finally(() => s.result = void 0);
     }
   };
 }
-function runIfTypeOfFunction(t, e, n, r, s) {
+function runIfTypeOfFunction(t, e, n, s, r) {
   if (shouldAutoEvaluateFunctions && typeof e == "function") {
-    let a = e.apply(n, r);
-    a instanceof Promise ? a.then((i) => runIfTypeOfFunction(t, i, n, r)).catch((i) => handleError(i, s, e)) : t(a);
+    let a = e.apply(n, s);
+    a instanceof Promise ? a.then((i) => runIfTypeOfFunction(t, i, n, s)).catch((i) => handleError(i, r, e)) : t(a);
   } else typeof e == "object" && e instanceof Promise ? e.then((a) => t(a)) : t(e);
 }
 function evaluateRaw(...t) {
   return theRawEvaluatorFunction(...t);
 }
 function normalRawEvaluator(t, e, n = {}) {
-  let r = {};
-  injectMagics(r, t);
-  let s = [r, ...closestDataStack(t)], a = mergeProxies([n.scope ?? {}, ...s]), i = n.params ?? [];
+  let s = {};
+  injectMagics(s, t);
+  let r = [s, ...closestDataStack(t)], a = mergeProxies([n.scope ?? {}, ...r]), i = n.params ?? [];
   if (e.includes("await")) {
     let o = Object.getPrototypeOf(async function() {
     }).constructor, l = /^[\n\s]*if.*\(.*\)/.test(e.trim()) || /^(let|const)\s/.test(e.trim()) ? `(async()=>{ ${e} })()` : e;
@@ -419,8 +419,8 @@ function directive(t, e) {
         console.warn(String.raw`Cannot find directive \`${n}\`. \`${t}\` will use the default order of execution`);
         return;
       }
-      const r = directiveOrder.indexOf(n);
-      directiveOrder.splice(r >= 0 ? r : directiveOrder.indexOf("DEFAULT"), 0, t);
+      const s = directiveOrder.indexOf(n);
+      directiveOrder.splice(s >= 0 ? s : directiveOrder.indexOf("DEFAULT"), 0, t);
     }
   };
 }
@@ -435,8 +435,8 @@ function directives(t, e, n) {
       value: `"${o.value}"`
     } : o), e = e.concat(a);
   }
-  let r = {};
-  return e.map(toTransformedAttributes((a, i) => r[a] = i)).filter(outNonAlpineAttributes).map(toParsedDirectives(r, n)).sort(byPriority).map((a) => getDirectiveHandler(t, a));
+  let s = {};
+  return e.map(toTransformedAttributes((a, i) => s[a] = i)).filter(outNonAlpineAttributes).map(toParsedDirectives(s, n)).sort(byPriority).map((a) => getDirectiveHandler(t, a));
 }
 function attributesOnly(t) {
   return Array.from(t).map(toTransformedAttributes()).filter((e) => !outNonAlpineAttributes(e));
@@ -450,16 +450,16 @@ function deferHandlingDirectives(t) {
     for (; directiveHandlerStacks.get(e).length; )
       directiveHandlerStacks.get(e).shift()();
     directiveHandlerStacks.delete(e);
-  }, r = () => {
+  }, s = () => {
     isDeferringHandlers = !1, n();
   };
-  t(n), r();
+  t(n), s();
 }
 function getElementBoundUtilities(t) {
-  let e = [], n = (o) => e.push(o), [r, s] = elementBoundEffect(t);
-  return e.push(s), [{
+  let e = [], n = (o) => e.push(o), [s, r] = elementBoundEffect(t);
+  return e.push(r), [{
     Alpine: alpine_default,
-    effect: r,
+    effect: s,
     cleanup: n,
     evaluateLater: evaluateLater.bind(evaluateLater, t),
     evaluate: evaluate.bind(evaluate, t)
@@ -467,19 +467,19 @@ function getElementBoundUtilities(t) {
 }
 function getDirectiveHandler(t, e) {
   let n = () => {
-  }, r = directiveHandlers[e.type] || n, [s, a] = getElementBoundUtilities(t);
+  }, s = directiveHandlers[e.type] || n, [r, a] = getElementBoundUtilities(t);
   onAttributeRemoved(t, e.original, a);
   let i = () => {
-    t._x_ignore || t._x_ignoreSelf || (r.inline && r.inline(t, e, s), r = r.bind(r, t, e, s), isDeferringHandlers ? directiveHandlerStacks.get(currentHandlerStackKey).push(r) : r());
+    t._x_ignore || t._x_ignoreSelf || (s.inline && s.inline(t, e, r), s = s.bind(s, t, e, r), isDeferringHandlers ? directiveHandlerStacks.get(currentHandlerStackKey).push(s) : s());
   };
   return i.runCleanups = a, i;
 }
-var startingWith = (t, e) => ({ name: n, value: r }) => (n.startsWith(t) && (n = n.replace(t, e)), { name: n, value: r }), into = (t) => t;
+var startingWith = (t, e) => ({ name: n, value: s }) => (n.startsWith(t) && (n = n.replace(t, e)), { name: n, value: s }), into = (t) => t;
 function toTransformedAttributes(t = () => {
 }) {
   return ({ name: e, value: n }) => {
-    let { name: r, value: s } = attributeTransformers.reduce((a, i) => i(a), { name: e, value: n });
-    return r !== e && t(r, e), { name: r, value: s };
+    let { name: s, value: r } = attributeTransformers.reduce((a, i) => i(a), { name: e, value: n });
+    return s !== e && t(s, e), { name: s, value: r };
   };
 }
 var attributeTransformers = [];
@@ -491,14 +491,14 @@ function outNonAlpineAttributes({ name: t }) {
 }
 var alpineAttributeRegex = () => new RegExp(`^${prefixAsString}([^:^.]+)\\b`);
 function toParsedDirectives(t, e) {
-  return ({ name: n, value: r }) => {
-    n === r && (r = "");
-    let s = n.match(alpineAttributeRegex()), a = n.match(/:([a-zA-Z0-9\-_:]+)/), i = n.match(/\.[^.\]]+(?=[^\]]*$)/g) || [], o = e || t[n] || n;
+  return ({ name: n, value: s }) => {
+    n === s && (s = "");
+    let r = n.match(alpineAttributeRegex()), a = n.match(/:([a-zA-Z0-9\-_:]+)/), i = n.match(/\.[^.\]]+(?=[^\]]*$)/g) || [], o = e || t[n] || n;
     return {
-      type: s ? s[1] : null,
+      type: r ? r[1] : null,
       value: a ? a[1] : null,
       modifiers: i.map((l) => l.replace(".", "")),
-      expression: r,
+      expression: s,
       original: o
     };
   };
@@ -521,8 +521,8 @@ var DEFAULT = "DEFAULT", directiveOrder = [
   "teleport"
 ];
 function byPriority(t, e) {
-  let n = directiveOrder.indexOf(t.type) === -1 ? DEFAULT : t.type, r = directiveOrder.indexOf(e.type) === -1 ? DEFAULT : e.type;
-  return directiveOrder.indexOf(n) - directiveOrder.indexOf(r);
+  let n = directiveOrder.indexOf(t.type) === -1 ? DEFAULT : t.type, s = directiveOrder.indexOf(e.type) === -1 ? DEFAULT : e.type;
+  return directiveOrder.indexOf(n) - directiveOrder.indexOf(s);
 }
 function dispatch(t, e, n = {}) {
   t.dispatchEvent(
@@ -537,15 +537,15 @@ function dispatch(t, e, n = {}) {
 }
 function walk(t, e) {
   if (typeof ShadowRoot == "function" && t instanceof ShadowRoot) {
-    Array.from(t.children).forEach((s) => walk(s, e));
+    Array.from(t.children).forEach((r) => walk(r, e));
     return;
   }
   let n = !1;
   if (e(t, () => n = !0), n)
     return;
-  let r = t.firstElementChild;
-  for (; r; )
-    walk(r, e), r = r.nextElementSibling;
+  let s = t.firstElementChild;
+  for (; s; )
+    walk(s, e), s = s.nextElementSibling;
 }
 function warn(t, ...e) {
   console.warn(`Alpine Warning: ${t}`, ...e);
@@ -553,7 +553,7 @@ function warn(t, ...e) {
 var started = !1;
 function start() {
   started && warn("Alpine has already been initialized on this page. Calling Alpine.start() more than once can cause problems."), started = !0, document.body || warn("Unable to initialize. Trying to load Alpine before `<body>` is available. Did you forget to add `defer` in Alpine's `<script>` tag?"), dispatch(document, "alpine:init"), dispatch(document, "alpine:initializing"), startObservingMutations(), onElAdded((e) => initTree(e, walk)), onElRemoved((e) => destroyTree(e)), onAttributesAdded((e, n) => {
-    directives(e, n).forEach((r) => r());
+    directives(e, n).forEach((s) => s());
   });
   let t = (e) => !closestRoot(e.parentElement, !0);
   Array.from(document.querySelectorAll(allSelectors().join(","))).filter(t).forEach((e) => {
@@ -577,7 +577,7 @@ function addInitSelector(t) {
 }
 function closestRoot(t, e = !1) {
   return findClosest(t, (n) => {
-    if ((e ? allSelectors() : rootSelectors()).some((s) => n.matches(s)))
+    if ((e ? allSelectors() : rootSelectors()).some((r) => n.matches(r)))
       return !0;
   });
 }
@@ -601,9 +601,9 @@ function interceptInit(t) {
 var markerDispenser = 1;
 function initTree(t, e = walk, n = () => {
 }) {
-  findClosest(t, (r) => r._x_ignore) || deferHandlingDirectives(() => {
-    e(t, (r, s) => {
-      r._x_marker || (n(r, s), initInterceptors2.forEach((a) => a(r, s)), directives(r, r.attributes).forEach((a) => a()), r._x_ignore || (r._x_marker = markerDispenser++), r._x_ignore && s());
+  findClosest(t, (s) => s._x_ignore) || deferHandlingDirectives(() => {
+    e(t, (s, r) => {
+      s._x_marker || (n(s, r), initInterceptors2.forEach((a) => a(s, r)), directives(s, s.attributes).forEach((a) => a()), s._x_ignore || (s._x_marker = markerDispenser++), s._x_ignore && r());
     });
   });
 }
@@ -617,10 +617,10 @@ function warnAboutMissingPlugins() {
     ["ui", "dialog", ["[x-dialog], [x-popover]"]],
     ["anchor", "anchor", ["[x-anchor]"]],
     ["sort", "sort", ["[x-sort]"]]
-  ].forEach(([e, n, r]) => {
-    directiveExists(n) || r.some((s) => {
-      if (document.querySelector(s))
-        return warn(`found "${s}", but missing ${e} plugin`), !0;
+  ].forEach(([e, n, s]) => {
+    directiveExists(n) || s.some((r) => {
+      if (document.querySelector(r))
+        return warn(`found "${r}", but missing ${e} plugin`), !0;
     });
   });
 }
@@ -648,16 +648,16 @@ function setClasses(t, e) {
   return Array.isArray(e) ? setClassesFromString(t, e.join(" ")) : typeof e == "object" && e !== null ? setClassesFromObject(t, e) : typeof e == "function" ? setClasses(t, e()) : setClassesFromString(t, e);
 }
 function setClassesFromString(t, e) {
-  let n = (s) => s.split(" ").filter((a) => !t.classList.contains(a)).filter(Boolean), r = (s) => (t.classList.add(...s), () => {
-    t.classList.remove(...s);
+  let n = (r) => r.split(" ").filter((a) => !t.classList.contains(a)).filter(Boolean), s = (r) => (t.classList.add(...r), () => {
+    t.classList.remove(...r);
   });
-  return e = e === !0 ? e = "" : e || "", r(n(e));
+  return e = e === !0 ? e = "" : e || "", s(n(e));
 }
 function setClassesFromObject(t, e) {
-  let n = (o) => o.split(" ").filter(Boolean), r = Object.entries(e).flatMap(([o, l]) => l ? n(o) : !1).filter(Boolean), s = Object.entries(e).flatMap(([o, l]) => l ? !1 : n(o)).filter(Boolean), a = [], i = [];
-  return s.forEach((o) => {
+  let n = (o) => o.split(" ").filter(Boolean), s = Object.entries(e).flatMap(([o, l]) => l ? n(o) : !1).filter(Boolean), r = Object.entries(e).flatMap(([o, l]) => l ? !1 : n(o)).filter(Boolean), a = [], i = [];
+  return r.forEach((o) => {
     t.classList.contains(o) && (t.classList.remove(o), i.push(o));
-  }), r.forEach((o) => {
+  }), s.forEach((o) => {
     t.classList.contains(o) || (t.classList.add(o), a.push(o));
   }), () => {
     i.forEach((o) => t.classList.add(o)), a.forEach((o) => t.classList.remove(o));
@@ -668,8 +668,8 @@ function setStyles(t, e) {
 }
 function setStylesFromObject(t, e) {
   let n = {};
-  return Object.entries(e).forEach(([r, s]) => {
-    n[r] = t.style[r], r.startsWith("--") || (r = kebabCase(r)), t.style.setProperty(r, s);
+  return Object.entries(e).forEach(([s, r]) => {
+    n[s] = t.style[s], s.startsWith("--") || (s = kebabCase(s)), t.style.setProperty(s, r);
   }), setTimeout(() => {
     t.style.length === 0 && t.removeAttribute("style");
   }), () => {
@@ -692,37 +692,37 @@ function once(t, e = () => {
     n ? e.apply(this, arguments) : (n = !0, t.apply(this, arguments));
   };
 }
-directive("transition", (t, { value: e, modifiers: n, expression: r }, { evaluate: s }) => {
-  typeof r == "function" && (r = s(r)), r !== !1 && (!r || typeof r == "boolean" ? registerTransitionsFromHelper(t, n, e) : registerTransitionsFromClassString(t, r, e));
+directive("transition", (t, { value: e, modifiers: n, expression: s }, { evaluate: r }) => {
+  typeof s == "function" && (s = r(s)), s !== !1 && (!s || typeof s == "boolean" ? registerTransitionsFromHelper(t, n, e) : registerTransitionsFromClassString(t, s, e));
 });
 function registerTransitionsFromClassString(t, e, n) {
   registerTransitionObject(t, setClasses, ""), {
-    enter: (s) => {
-      t._x_transition.enter.during = s;
+    enter: (r) => {
+      t._x_transition.enter.during = r;
     },
-    "enter-start": (s) => {
-      t._x_transition.enter.start = s;
+    "enter-start": (r) => {
+      t._x_transition.enter.start = r;
     },
-    "enter-end": (s) => {
-      t._x_transition.enter.end = s;
+    "enter-end": (r) => {
+      t._x_transition.enter.end = r;
     },
-    leave: (s) => {
-      t._x_transition.leave.during = s;
+    leave: (r) => {
+      t._x_transition.leave.during = r;
     },
-    "leave-start": (s) => {
-      t._x_transition.leave.start = s;
+    "leave-start": (r) => {
+      t._x_transition.leave.start = r;
     },
-    "leave-end": (s) => {
-      t._x_transition.leave.end = s;
+    "leave-end": (r) => {
+      t._x_transition.leave.end = r;
     }
   }[n](e);
 }
 function registerTransitionsFromHelper(t, e, n) {
   registerTransitionObject(t, setStyles);
-  let r = !e.includes("in") && !e.includes("out") && !n, s = r || e.includes("in") || ["enter"].includes(n), a = r || e.includes("out") || ["leave"].includes(n);
-  e.includes("in") && !r && (e = e.filter((y, v) => v < e.indexOf("out"))), e.includes("out") && !r && (e = e.filter((y, v) => v > e.indexOf("out")));
+  let s = !e.includes("in") && !e.includes("out") && !n, r = s || e.includes("in") || ["enter"].includes(n), a = s || e.includes("out") || ["leave"].includes(n);
+  e.includes("in") && !s && (e = e.filter((y, v) => v < e.indexOf("out"))), e.includes("out") && !s && (e = e.filter((y, v) => v > e.indexOf("out")));
   let i = !e.includes("opacity") && !e.includes("scale"), o = i || e.includes("opacity"), l = i || e.includes("scale"), c = o ? 0 : 1, u = l ? modifierValue$1(e, "scale", 95) / 100 : 1, d = modifierValue$1(e, "delay", 0) / 1e3, p = modifierValue$1(e, "origin", "center"), m = "opacity, transform", h = modifierValue$1(e, "duration", 150) / 1e3, f = modifierValue$1(e, "duration", 75) / 1e3, g = "cubic-bezier(0.4, 0.0, 0.2, 1)";
-  s && (t._x_transition.enter.during = {
+  r && (t._x_transition.enter.during = {
     transformOrigin: p,
     transitionDelay: `${d}s`,
     transitionProperty: m,
@@ -752,39 +752,39 @@ function registerTransitionObject(t, e, n = {}) {
   t._x_transition || (t._x_transition = {
     enter: { during: n, start: n, end: n },
     leave: { during: n, start: n, end: n },
-    in(r = () => {
-    }, s = () => {
+    in(s = () => {
+    }, r = () => {
     }) {
       transition(t, e, {
         during: this.enter.during,
         start: this.enter.start,
         end: this.enter.end
-      }, r, s);
+      }, s, r);
     },
-    out(r = () => {
-    }, s = () => {
+    out(s = () => {
+    }, r = () => {
     }) {
       transition(t, e, {
         during: this.leave.during,
         start: this.leave.start,
         end: this.leave.end
-      }, r, s);
+      }, s, r);
     }
   });
 }
-window.Element.prototype._x_toggleAndCascadeWithTransitions = function(t, e, n, r) {
-  const s = document.visibilityState === "visible" ? requestAnimationFrame : setTimeout;
-  let a = () => s(n);
+window.Element.prototype._x_toggleAndCascadeWithTransitions = function(t, e, n, s) {
+  const r = document.visibilityState === "visible" ? requestAnimationFrame : setTimeout;
+  let a = () => r(n);
   if (e) {
     t._x_transition && (t._x_transition.enter || t._x_transition.leave) ? t._x_transition.enter && (Object.entries(t._x_transition.enter.during).length || Object.entries(t._x_transition.enter.start).length || Object.entries(t._x_transition.enter.end).length) ? t._x_transition.in(n) : a() : t._x_transition ? t._x_transition.in(n) : a();
     return;
   }
   t._x_hidePromise = t._x_transition ? new Promise((i, o) => {
     t._x_transition.out(() => {
-    }, () => i(r)), t._x_transitioning && t._x_transitioning.beforeCancel(() => o({ isFromCancelledTransition: !0 }));
-  }) : Promise.resolve(r), queueMicrotask(() => {
+    }, () => i(s)), t._x_transitioning && t._x_transitioning.beforeCancel(() => o({ isFromCancelledTransition: !0 }));
+  }) : Promise.resolve(s), queueMicrotask(() => {
     let i = closestHide(t);
-    i ? (i._x_hideChildren || (i._x_hideChildren = []), i._x_hideChildren.push(t)) : s(() => {
+    i ? (i._x_hideChildren || (i._x_hideChildren = []), i._x_hideChildren.push(t)) : r(() => {
       let o = (l) => {
         let c = Promise.all([
           l._x_hidePromise,
@@ -804,24 +804,24 @@ function closestHide(t) {
   if (e)
     return e._x_hidePromise ? e : closestHide(e);
 }
-function transition(t, e, { during: n, start: r, end: s } = {}, a = () => {
+function transition(t, e, { during: n, start: s, end: r } = {}, a = () => {
 }, i = () => {
 }) {
-  if (t._x_transitioning && t._x_transitioning.cancel(), Object.keys(n).length === 0 && Object.keys(r).length === 0 && Object.keys(s).length === 0) {
+  if (t._x_transitioning && t._x_transitioning.cancel(), Object.keys(n).length === 0 && Object.keys(s).length === 0 && Object.keys(r).length === 0) {
     a(), i();
     return;
   }
   let o, l, c;
   performTransition(t, {
     start() {
-      o = e(t, r);
+      o = e(t, s);
     },
     during() {
       l = e(t, n);
     },
     before: a,
     end() {
-      o(), c = e(t, s);
+      o(), c = e(t, r);
     },
     after: i,
     cleanup() {
@@ -830,9 +830,9 @@ function transition(t, e, { during: n, start: r, end: s } = {}, a = () => {
   });
 }
 function performTransition(t, e) {
-  let n, r, s, a = once(() => {
+  let n, s, r, a = once(() => {
     mutateDom(() => {
-      n = !0, r || e.before(), s || (e.end(), releaseNextTicks()), e.after(), t.isConnected && e.cleanup(), delete t._x_transitioning;
+      n = !0, s || e.before(), r || (e.end(), releaseNextTicks()), e.after(), t.isConnected && e.cleanup(), delete t._x_transitioning;
     });
   });
   t._x_transitioning = {
@@ -854,25 +854,25 @@ function performTransition(t, e) {
     let i = Number(getComputedStyle(t).transitionDuration.replace(/,.*/, "").replace("s", "")) * 1e3, o = Number(getComputedStyle(t).transitionDelay.replace(/,.*/, "").replace("s", "")) * 1e3;
     i === 0 && (i = Number(getComputedStyle(t).animationDuration.replace("s", "")) * 1e3), mutateDom(() => {
       e.before();
-    }), r = !0, requestAnimationFrame(() => {
+    }), s = !0, requestAnimationFrame(() => {
       n || (mutateDom(() => {
         e.end();
-      }), releaseNextTicks(), setTimeout(t._x_transitioning.finish, i + o), s = !0);
+      }), releaseNextTicks(), setTimeout(t._x_transitioning.finish, i + o), r = !0);
     });
   });
 }
 function modifierValue$1(t, e, n) {
   if (t.indexOf(e) === -1)
     return n;
-  const r = t[t.indexOf(e) + 1];
-  if (!r || e === "scale" && isNaN(r))
+  const s = t[t.indexOf(e) + 1];
+  if (!s || e === "scale" && isNaN(s))
     return n;
   if (e === "duration" || e === "delay") {
-    let s = r.match(/([0-9]+)ms/);
-    if (s)
-      return s[1];
+    let r = s.match(/([0-9]+)ms/);
+    if (r)
+      return r[1];
   }
-  return e === "origin" && ["top", "right", "left", "center", "bottom"].includes(t[t.indexOf(e) + 2]) ? [r, t[t.indexOf(e) + 2]].join(" ") : r;
+  return e === "origin" && ["top", "right", "left", "center", "bottom"].includes(t[t.indexOf(e) + 2]) ? [s, t[t.indexOf(e) + 2]].join(" ") : s;
 }
 var isCloning = !1;
 function skipDuringClone(t, e = () => {
@@ -888,8 +888,8 @@ function interceptClone(t) {
 }
 function cloneNode(t, e) {
   interceptors.forEach((n) => n(t, e)), isCloning = !0, dontRegisterReactiveSideEffects(() => {
-    initTree(e, (n, r) => {
-      r(n, () => {
+    initTree(e, (n, s) => {
+      s(n, () => {
       });
     });
   }), isCloning = !1;
@@ -902,24 +902,24 @@ function clone(t, e) {
 }
 function cloneTree(t) {
   let e = !1;
-  initTree(t, (r, s) => {
-    walk(r, (a, i) => {
+  initTree(t, (s, r) => {
+    walk(s, (a, i) => {
       if (e && isRoot(a))
         return i();
-      e = !0, s(a, i);
+      e = !0, r(a, i);
     });
   });
 }
 function dontRegisterReactiveSideEffects(t) {
   let e = effect;
-  overrideEffect((n, r) => {
-    let s = e(n);
-    return release(s), () => {
+  overrideEffect((n, s) => {
+    let r = e(n);
+    return release(r), () => {
     };
   }), t(), overrideEffect(e);
 }
-function bind(t, e, n, r = []) {
-  switch (t._x_bindings || (t._x_bindings = reactive({})), t._x_bindings[e] = n, e = r.includes("camel") ? camelCase(e) : e, e) {
+function bind(t, e, n, s = []) {
+  switch (t._x_bindings || (t._x_bindings = reactive({})), t._x_bindings[e] = n, e = s.includes("camel") ? camelCase(e) : e, e) {
     case "value":
       bindInputValue(t, n);
       break;
@@ -970,9 +970,9 @@ function setPropertyIfChanged(t, e, n) {
   t[e] !== n && (t[e] = n);
 }
 function updateSelect(t, e) {
-  const n = [].concat(e).map((r) => r + "");
-  Array.from(t.options).forEach((r) => {
-    r.selected = n.includes(r.value);
+  const n = [].concat(e).map((s) => s + "");
+  Array.from(t.options).forEach((s) => {
+    s.selected = n.includes(s.value);
   });
 }
 function camelCase(t) {
@@ -1022,18 +1022,18 @@ function attributeShouldntBePreservedIfFalsy(t) {
 function getBinding(t, e, n) {
   return t._x_bindings && t._x_bindings[e] !== void 0 ? t._x_bindings[e] : getAttributeBinding(t, e, n);
 }
-function extractProp(t, e, n, r = !0) {
+function extractProp(t, e, n, s = !0) {
   if (t._x_bindings && t._x_bindings[e] !== void 0)
     return t._x_bindings[e];
   if (t._x_inlineBindings && t._x_inlineBindings[e] !== void 0) {
-    let s = t._x_inlineBindings[e];
-    return s.extract = r, dontAutoEvaluateFunctions(() => evaluate(t, s.expression));
+    let r = t._x_inlineBindings[e];
+    return r.extract = s, dontAutoEvaluateFunctions(() => evaluate(t, r.expression));
   }
   return getAttributeBinding(t, e, n);
 }
 function getAttributeBinding(t, e, n) {
-  let r = t.getAttribute(e);
-  return r === null ? typeof n == "function" ? n() : n : r === "" ? !0 : isBooleanAttr(e) ? !![e, "true"].includes(r) : r;
+  let s = t.getAttribute(e);
+  return s === null ? typeof n == "function" ? n() : n : s === "" ? !0 : isBooleanAttr(e) ? !![e, "true"].includes(s) : s;
 }
 function isCheckbox(t) {
   return t.type === "checkbox" || t.localName === "ui-checkbox" || t.localName === "ui-switch";
@@ -1044,8 +1044,8 @@ function isRadio$1(t) {
 function debounce(t, e) {
   let n;
   return function() {
-    const r = this, s = arguments, a = function() {
-      n = null, t.apply(r, s);
+    const s = this, r = arguments, a = function() {
+      n = null, t.apply(s, r);
     };
     clearTimeout(n), n = setTimeout(a, e);
   };
@@ -1053,18 +1053,18 @@ function debounce(t, e) {
 function throttle(t, e) {
   let n;
   return function() {
-    let r = this, s = arguments;
-    n || (t.apply(r, s), n = !0, setTimeout(() => n = !1, e));
+    let s = this, r = arguments;
+    n || (t.apply(s, r), n = !0, setTimeout(() => n = !1, e));
   };
 }
-function entangle({ get: t, set: e }, { get: n, set: r }) {
-  let s = !0, a, i = effect(() => {
+function entangle({ get: t, set: e }, { get: n, set: s }) {
+  let r = !0, a, i = effect(() => {
     let o = t(), l = n();
-    if (s)
-      r(cloneIfObject(o)), s = !1;
+    if (r)
+      s(cloneIfObject(o)), r = !1;
     else {
       let c = JSON.stringify(o), u = JSON.stringify(l);
-      c !== a ? r(cloneIfObject(o)) : c !== u && e(cloneIfObject(l));
+      c !== a ? s(cloneIfObject(o)) : c !== u && e(cloneIfObject(l));
     }
     a = JSON.stringify(t()), JSON.stringify(n());
   });
@@ -1097,24 +1097,24 @@ function injectBindingProviders(t) {
   return Object.entries(binds).forEach(([e, n]) => {
     Object.defineProperty(t, e, {
       get() {
-        return (...r) => n(...r);
+        return (...s) => n(...s);
       }
     });
   }), t;
 }
 function applyBindingsObject(t, e, n) {
-  let r = [];
-  for (; r.length; )
-    r.pop()();
-  let s = Object.entries(e).map(([i, o]) => ({ name: i, value: o })), a = attributesOnly(s);
-  return s = s.map((i) => a.find((o) => o.name === i.name) ? {
+  let s = [];
+  for (; s.length; )
+    s.pop()();
+  let r = Object.entries(e).map(([i, o]) => ({ name: i, value: o })), a = attributesOnly(r);
+  return r = r.map((i) => a.find((o) => o.name === i.name) ? {
     name: `x-bind:${i.name}`,
     value: `"${i.value}"`
-  } : i), directives(t, s, n).map((i) => {
-    r.push(i.runCleanups), i();
+  } : i), directives(t, r, n).map((i) => {
+    s.push(i.runCleanups), i();
   }), () => {
-    for (; r.length; )
-      r.pop()();
+    for (; s.length; )
+      s.pop()();
   };
 }
 var datas = {};
@@ -1122,10 +1122,10 @@ function data(t, e) {
   datas[t] = e;
 }
 function injectDataProviders(t, e) {
-  return Object.entries(datas).forEach(([n, r]) => {
+  return Object.entries(datas).forEach(([n, s]) => {
     Object.defineProperty(t, n, {
       get() {
-        return (...s) => r.bind(e)(...s);
+        return (...r) => s.bind(e)(...r);
       },
       enumerable: !1
     });
@@ -1211,10 +1211,10 @@ var Alpine$1 = {
   bind: bind2
 }, alpine_default = Alpine$1;
 function makeMap(t, e) {
-  const n = /* @__PURE__ */ Object.create(null), r = t.split(",");
-  for (let s = 0; s < r.length; s++)
-    n[r[s]] = !0;
-  return (s) => !!n[s];
+  const n = /* @__PURE__ */ Object.create(null), s = t.split(",");
+  for (let r = 0; r < s.length; r++)
+    n[s[r]] = !0;
+  return (r) => !!n[r];
 }
 var EMPTY_OBJ = Object.freeze({}), hasOwnProperty = Object.prototype.hasOwnProperty, hasOwn = (t, e) => hasOwnProperty.call(t, e), isArray = Array.isArray, isMap = (t) => toTypeString(t) === "[object Map]", isString = (t) => typeof t == "string", isSymbol = (t) => typeof t == "symbol", isObject = (t) => t !== null && typeof t == "object", objectToString = Object.prototype.toString, toTypeString = (t) => objectToString.call(t), toRawType = (t) => toTypeString(t).slice(8, -1), isIntegerKey = (t) => isString(t) && t !== "NaN" && t[0] !== "-" && "" + parseInt(t, 10) === t, cacheStringFunction = (t) => {
   const e = /* @__PURE__ */ Object.create(null);
@@ -1269,17 +1269,17 @@ function resetTracking() {
 function track(t, e, n) {
   if (!shouldTrack || activeEffect === void 0)
     return;
-  let r = targetMap.get(t);
-  r || targetMap.set(t, r = /* @__PURE__ */ new Map());
-  let s = r.get(n);
-  s || r.set(n, s = /* @__PURE__ */ new Set()), s.has(activeEffect) || (s.add(activeEffect), activeEffect.deps.push(s), activeEffect.options.onTrack && activeEffect.options.onTrack({
+  let s = targetMap.get(t);
+  s || targetMap.set(t, s = /* @__PURE__ */ new Map());
+  let r = s.get(n);
+  r || s.set(n, r = /* @__PURE__ */ new Set()), r.has(activeEffect) || (r.add(activeEffect), activeEffect.deps.push(r), activeEffect.options.onTrack && activeEffect.options.onTrack({
     effect: activeEffect,
     target: t,
     type: e,
     key: n
   }));
 }
-function trigger(t, e, n, r, s, a) {
+function trigger(t, e, n, s, r, a) {
   const i = targetMap.get(t);
   if (!i)
     return;
@@ -1292,7 +1292,7 @@ function trigger(t, e, n, r, s, a) {
     i.forEach(l);
   else if (n === "length" && isArray(t))
     i.forEach((u, d) => {
-      (d === "length" || d >= r) && l(u);
+      (d === "length" || d >= s) && l(u);
     });
   else
     switch (n !== void 0 && l(i.get(n)), e) {
@@ -1312,8 +1312,8 @@ function trigger(t, e, n, r, s, a) {
       target: t,
       key: n,
       type: e,
-      newValue: r,
-      oldValue: s,
+      newValue: s,
+      oldValue: r,
       oldTarget: a
     }), u.options.scheduler ? u.options.scheduler(u) : u();
   };
@@ -1324,48 +1324,48 @@ function createArrayInstrumentations() {
   const t = {};
   return ["includes", "indexOf", "lastIndexOf"].forEach((e) => {
     t[e] = function(...n) {
-      const r = toRaw(this);
+      const s = toRaw(this);
       for (let a = 0, i = this.length; a < i; a++)
-        track(r, "get", a + "");
-      const s = r[e](...n);
-      return s === -1 || s === !1 ? r[e](...n.map(toRaw)) : s;
+        track(s, "get", a + "");
+      const r = s[e](...n);
+      return r === -1 || r === !1 ? s[e](...n.map(toRaw)) : r;
     };
   }), ["push", "pop", "shift", "unshift", "splice"].forEach((e) => {
     t[e] = function(...n) {
       pauseTracking();
-      const r = toRaw(this)[e].apply(this, n);
-      return resetTracking(), r;
+      const s = toRaw(this)[e].apply(this, n);
+      return resetTracking(), s;
     };
   }), t;
 }
 function createGetter(t = !1, e = !1) {
-  return function(r, s, a) {
-    if (s === "__v_isReactive")
+  return function(s, r, a) {
+    if (r === "__v_isReactive")
       return !t;
-    if (s === "__v_isReadonly")
+    if (r === "__v_isReadonly")
       return t;
-    if (s === "__v_raw" && a === (t ? e ? shallowReadonlyMap : readonlyMap : e ? shallowReactiveMap : reactiveMap).get(r))
-      return r;
-    const i = isArray(r);
-    if (!t && i && hasOwn(arrayInstrumentations, s))
-      return Reflect.get(arrayInstrumentations, s, a);
-    const o = Reflect.get(r, s, a);
-    return (isSymbol(s) ? builtInSymbols.has(s) : isNonTrackableKeys(s)) || (t || track(r, "get", s), e) ? o : isRef(o) ? !i || !isIntegerKey(s) ? o.value : o : isObject(o) ? t ? readonly(o) : reactive2(o) : o;
+    if (r === "__v_raw" && a === (t ? e ? shallowReadonlyMap : readonlyMap : e ? shallowReactiveMap : reactiveMap).get(s))
+      return s;
+    const i = isArray(s);
+    if (!t && i && hasOwn(arrayInstrumentations, r))
+      return Reflect.get(arrayInstrumentations, r, a);
+    const o = Reflect.get(s, r, a);
+    return (isSymbol(r) ? builtInSymbols.has(r) : isNonTrackableKeys(r)) || (t || track(s, "get", r), e) ? o : isRef(o) ? !i || !isIntegerKey(r) ? o.value : o : isObject(o) ? t ? readonly(o) : reactive2(o) : o;
   };
 }
 var set2 = /* @__PURE__ */ createSetter();
 function createSetter(t = !1) {
-  return function(n, r, s, a) {
-    let i = n[r];
-    if (!t && (s = toRaw(s), i = toRaw(i), !isArray(n) && isRef(i) && !isRef(s)))
-      return i.value = s, !0;
-    const o = isArray(n) && isIntegerKey(r) ? Number(r) < n.length : hasOwn(n, r), l = Reflect.set(n, r, s, a);
-    return n === toRaw(a) && (o ? hasChanged(s, i) && trigger(n, "set", r, s, i) : trigger(n, "add", r, s)), l;
+  return function(n, s, r, a) {
+    let i = n[s];
+    if (!t && (r = toRaw(r), i = toRaw(i), !isArray(n) && isRef(i) && !isRef(r)))
+      return i.value = r, !0;
+    const o = isArray(n) && isIntegerKey(s) ? Number(s) < n.length : hasOwn(n, s), l = Reflect.set(n, s, r, a);
+    return n === toRaw(a) && (o ? hasChanged(r, i) && trigger(n, "set", s, r, i) : trigger(n, "add", s, r)), l;
   };
 }
 function deleteProperty(t, e) {
-  const n = hasOwn(t, e), r = t[e], s = Reflect.deleteProperty(t, e);
-  return s && n && trigger(t, "delete", e, void 0, r), s;
+  const n = hasOwn(t, e), s = t[e], r = Reflect.deleteProperty(t, e);
+  return r && n && trigger(t, "delete", e, void 0, s), r;
 }
 function has(t, e) {
   const n = Reflect.has(t, e);
@@ -1389,20 +1389,20 @@ var mutableHandlers = {
     return console.warn(`Delete operation on key "${String(e)}" failed: target is readonly.`, t), !0;
   }
 }, toReactive = (t) => isObject(t) ? reactive2(t) : t, toReadonly = (t) => isObject(t) ? readonly(t) : t, toShallow = (t) => t, getProto = (t) => Reflect.getPrototypeOf(t);
-function get$1(t, e, n = !1, r = !1) {
+function get$1(t, e, n = !1, s = !1) {
   t = t.__v_raw;
-  const s = toRaw(t), a = toRaw(e);
-  e !== a && !n && track(s, "get", e), !n && track(s, "get", a);
-  const { has: i } = getProto(s), o = r ? toShallow : n ? toReadonly : toReactive;
-  if (i.call(s, e))
+  const r = toRaw(t), a = toRaw(e);
+  e !== a && !n && track(r, "get", e), !n && track(r, "get", a);
+  const { has: i } = getProto(r), o = s ? toShallow : n ? toReadonly : toReactive;
+  if (i.call(r, e))
     return o(t.get(e));
-  if (i.call(s, a))
+  if (i.call(r, a))
     return o(t.get(a));
-  t !== s && t.get(e);
+  t !== r && t.get(e);
 }
 function has$1(t, e = !1) {
-  const n = this.__v_raw, r = toRaw(n), s = toRaw(t);
-  return t !== s && !e && track(r, "has", t), !e && track(r, "has", s), t === s ? n.has(t) : n.has(t) || n.has(s);
+  const n = this.__v_raw, s = toRaw(n), r = toRaw(t);
+  return t !== r && !e && track(s, "has", t), !e && track(s, "has", r), t === r ? n.has(t) : n.has(t) || n.has(r);
 }
 function size(t, e = !1) {
   return t = t.__v_raw, !e && track(toRaw(t), "iterate", ITERATE_KEY), Reflect.get(t, "size", t);
@@ -1414,32 +1414,32 @@ function add(t) {
 }
 function set$1(t, e) {
   e = toRaw(e);
-  const n = toRaw(this), { has: r, get: s } = getProto(n);
-  let a = r.call(n, t);
-  a ? checkIdentityKeys(n, r, t) : (t = toRaw(t), a = r.call(n, t));
-  const i = s.call(n, t);
+  const n = toRaw(this), { has: s, get: r } = getProto(n);
+  let a = s.call(n, t);
+  a ? checkIdentityKeys(n, s, t) : (t = toRaw(t), a = s.call(n, t));
+  const i = r.call(n, t);
   return n.set(t, e), a ? hasChanged(e, i) && trigger(n, "set", t, e, i) : trigger(n, "add", t, e), this;
 }
 function deleteEntry(t) {
-  const e = toRaw(this), { has: n, get: r } = getProto(e);
-  let s = n.call(e, t);
-  s ? checkIdentityKeys(e, n, t) : (t = toRaw(t), s = n.call(e, t));
-  const a = r ? r.call(e, t) : void 0, i = e.delete(t);
-  return s && trigger(e, "delete", t, void 0, a), i;
+  const e = toRaw(this), { has: n, get: s } = getProto(e);
+  let r = n.call(e, t);
+  r ? checkIdentityKeys(e, n, t) : (t = toRaw(t), r = n.call(e, t));
+  const a = s ? s.call(e, t) : void 0, i = e.delete(t);
+  return r && trigger(e, "delete", t, void 0, a), i;
 }
 function clear() {
-  const t = toRaw(this), e = t.size !== 0, n = isMap(t) ? new Map(t) : new Set(t), r = t.clear();
-  return e && trigger(t, "clear", void 0, void 0, n), r;
+  const t = toRaw(this), e = t.size !== 0, n = isMap(t) ? new Map(t) : new Set(t), s = t.clear();
+  return e && trigger(t, "clear", void 0, void 0, n), s;
 }
 function createForEach(t, e) {
-  return function(r, s) {
+  return function(s, r) {
     const a = this, i = a.__v_raw, o = toRaw(i), l = e ? toShallow : t ? toReadonly : toReactive;
-    return !t && track(o, "iterate", ITERATE_KEY), i.forEach((c, u) => r.call(s, l(c), l(u), a));
+    return !t && track(o, "iterate", ITERATE_KEY), i.forEach((c, u) => s.call(r, l(c), l(u), a));
   };
 }
 function createIterableMethod(t, e, n) {
-  return function(...r) {
-    const s = this.__v_raw, a = toRaw(s), i = isMap(a), o = t === "entries" || t === Symbol.iterator && i, l = t === "keys" && i, c = s[t](...r), u = n ? toShallow : e ? toReadonly : toReactive;
+  return function(...s) {
+    const r = this.__v_raw, a = toRaw(r), i = isMap(a), o = t === "entries" || t === Symbol.iterator && i, l = t === "keys" && i, c = r[t](...s), u = n ? toShallow : e ? toReadonly : toReactive;
     return !e && track(a, "iterate", l ? MAP_KEY_ITERATE_KEY : ITERATE_KEY), {
       // iterator protocol
       next() {
@@ -1519,7 +1519,7 @@ function createInstrumentations() {
       /* CLEAR */
     ),
     forEach: createForEach(!0, !1)
-  }, r = {
+  }, s = {
     get(a) {
       return get$1(this, a, !0, !0);
     },
@@ -1548,18 +1548,18 @@ function createInstrumentations() {
     forEach: createForEach(!0, !0)
   };
   return ["keys", "values", "entries", Symbol.iterator].forEach((a) => {
-    t[a] = createIterableMethod(a, !1, !1), n[a] = createIterableMethod(a, !0, !1), e[a] = createIterableMethod(a, !1, !0), r[a] = createIterableMethod(a, !0, !0);
+    t[a] = createIterableMethod(a, !1, !1), n[a] = createIterableMethod(a, !0, !1), e[a] = createIterableMethod(a, !1, !0), s[a] = createIterableMethod(a, !0, !0);
   }), [
     t,
     n,
     e,
-    r
+    s
   ];
 }
 var [mutableInstrumentations, readonlyInstrumentations] = /* @__PURE__ */ createInstrumentations();
 function createInstrumentationGetter(t, e) {
   const n = t ? readonlyInstrumentations : mutableInstrumentations;
-  return (r, s, a) => s === "__v_isReactive" ? !t : s === "__v_isReadonly" ? t : s === "__v_raw" ? r : Reflect.get(hasOwn(n, s) && s in r ? n : r, s, a);
+  return (s, r, a) => r === "__v_isReactive" ? !t : r === "__v_isReadonly" ? t : r === "__v_raw" ? s : Reflect.get(hasOwn(n, r) && r in s ? n : s, r, a);
 }
 var mutableCollectionHandlers = {
   get: /* @__PURE__ */ createInstrumentationGetter(!1)
@@ -1567,10 +1567,10 @@ var mutableCollectionHandlers = {
   get: /* @__PURE__ */ createInstrumentationGetter(!0)
 };
 function checkIdentityKeys(t, e, n) {
-  const r = toRaw(n);
-  if (r !== n && e.call(t, r)) {
-    const s = toRawType(t);
-    console.warn(`Reactive ${s} contains both the raw and reactive versions of the same object${s === "Map" ? " as keys" : ""}, which can lead to inconsistencies. Avoid differentiating between the raw and reactive versions of an object and only use the reactive version if possible.`);
+  const s = toRaw(n);
+  if (s !== n && e.call(t, s)) {
+    const r = toRawType(t);
+    console.warn(`Reactive ${r} contains both the raw and reactive versions of the same object${r === "Map" ? " as keys" : ""}, which can lead to inconsistencies. Avoid differentiating between the raw and reactive versions of an object and only use the reactive version if possible.`);
   }
 }
 var reactiveMap = /* @__PURE__ */ new WeakMap(), shallowReactiveMap = /* @__PURE__ */ new WeakMap(), readonlyMap = /* @__PURE__ */ new WeakMap(), shallowReadonlyMap = /* @__PURE__ */ new WeakMap();
@@ -1597,19 +1597,19 @@ function reactive2(t) {
 function readonly(t) {
   return createReactiveObject(t, !0, readonlyHandlers, readonlyCollectionHandlers, readonlyMap);
 }
-function createReactiveObject(t, e, n, r, s) {
+function createReactiveObject(t, e, n, s, r) {
   if (!isObject(t))
     return console.warn(`value cannot be made reactive: ${String(t)}`), t;
   if (t.__v_raw && !(e && t.__v_isReactive))
     return t;
-  const a = s.get(t);
+  const a = r.get(t);
   if (a)
     return a;
   const i = getTargetType(t);
   if (i === 0)
     return t;
-  const o = new Proxy(t, i === 2 ? r : n);
-  return s.set(t, o), o;
+  const o = new Proxy(t, i === 2 ? s : n);
+  return r.set(t, o), o;
 }
 function toRaw(t) {
   return t && toRaw(t.__v_raw) || t;
@@ -1619,11 +1619,11 @@ function isRef(t) {
 }
 magic("nextTick", () => nextTick);
 magic("dispatch", (t) => dispatch.bind(dispatch, t));
-magic("watch", (t, { evaluateLater: e, cleanup: n }) => (r, s) => {
-  let a = e(r), o = watch(() => {
+magic("watch", (t, { evaluateLater: e, cleanup: n }) => (s, r) => {
+  let a = e(s), o = watch(() => {
     let l;
     return a((c) => l = c), l;
-  }, s);
+  }, r);
   n(o);
 });
 magic("store", getStores);
@@ -1649,35 +1649,35 @@ function closestIdRoot(t, e) {
 function setIdRoot(t, e) {
   t._x_ids || (t._x_ids = {}), t._x_ids[e] || (t._x_ids[e] = findAndIncrementId(e));
 }
-magic("id", (t, { cleanup: e }) => (n, r = null) => {
-  let s = `${n}${r ? `-${r}` : ""}`;
-  return cacheIdByNameOnElement(t, s, e, () => {
+magic("id", (t, { cleanup: e }) => (n, s = null) => {
+  let r = `${n}${s ? `-${s}` : ""}`;
+  return cacheIdByNameOnElement(t, r, e, () => {
     let a = closestIdRoot(t, n), i = a ? a._x_ids[n] : findAndIncrementId(n);
-    return r ? `${n}-${i}-${r}` : `${n}-${i}`;
+    return s ? `${n}-${i}-${s}` : `${n}-${i}`;
   });
 });
 interceptClone((t, e) => {
   t._x_id && (e._x_id = t._x_id);
 });
-function cacheIdByNameOnElement(t, e, n, r) {
+function cacheIdByNameOnElement(t, e, n, s) {
   if (t._x_id || (t._x_id = {}), t._x_id[e])
     return t._x_id[e];
-  let s = r();
-  return t._x_id[e] = s, n(() => {
+  let r = s();
+  return t._x_id[e] = r, n(() => {
     delete t._x_id[e];
-  }), s;
+  }), r;
 }
 magic("el", (t) => t);
 warnMissingPluginMagic("Focus", "focus", "focus");
 warnMissingPluginMagic("Persist", "persist", "persist");
 function warnMissingPluginMagic(t, e, n) {
-  magic(e, (r) => warn(`You can't use [$${e}] without first installing the "${t}" plugin here: https://alpinejs.dev/plugins/${n}`, r));
+  magic(e, (s) => warn(`You can't use [$${e}] without first installing the "${t}" plugin here: https://alpinejs.dev/plugins/${n}`, s));
 }
-directive("modelable", (t, { expression: e }, { effect: n, evaluateLater: r, cleanup: s }) => {
-  let a = r(e), i = () => {
+directive("modelable", (t, { expression: e }, { effect: n, evaluateLater: s, cleanup: r }) => {
+  let a = s(e), i = () => {
     let u;
     return a((d) => u = d), u;
-  }, o = r(`${e} = __placeholder`), l = (u) => o(() => {
+  }, o = s(`${e} = __placeholder`), l = (u) => o(() => {
   }, { scope: { __placeholder: u } }), c = i();
   l(c), queueMicrotask(() => {
     if (!t._x_model)
@@ -1701,12 +1701,12 @@ directive("modelable", (t, { expression: e }, { effect: n, evaluateLater: r, cle
         }
       }
     );
-    s(p);
+    r(p);
   });
 });
-directive("teleport", (t, { modifiers: e, expression: n }, { cleanup: r }) => {
+directive("teleport", (t, { modifiers: e, expression: n }, { cleanup: s }) => {
   t.tagName.toLowerCase() !== "template" && warn("x-teleport can only be used on a <template> tag", t);
-  let s = getTarget(n), a = t.content.cloneNode(!0).firstElementChild;
+  let r = getTarget(n), a = t.content.cloneNode(!0).firstElementChild;
   t._x_teleport = a, a._x_teleportBack = t, t.setAttribute("data-teleport-template", !0), a.setAttribute("data-teleport-target", !0), t._x_forwardEvents && t._x_forwardEvents.forEach((o) => {
     a.addEventListener(o, (l) => {
       l.stopPropagation(), t.dispatchEvent(new l.constructor(l.type, l));
@@ -1716,7 +1716,7 @@ directive("teleport", (t, { modifiers: e, expression: n }, { cleanup: r }) => {
     c.includes("prepend") ? l.parentNode.insertBefore(o, l) : c.includes("append") ? l.parentNode.insertBefore(o, l.nextSibling) : l.appendChild(o);
   };
   mutateDom(() => {
-    i(a, s, e), skipDuringClone(() => {
+    i(a, r, e), skipDuringClone(() => {
       initTree(a);
     })();
   }), t._x_teleportPutBack = () => {
@@ -1724,7 +1724,7 @@ directive("teleport", (t, { modifiers: e, expression: n }, { cleanup: r }) => {
     mutateDom(() => {
       i(t._x_teleport, o, e);
     });
-  }, r(
+  }, s(
     () => mutateDom(() => {
       a.remove(), destroyTree(a);
     })
@@ -1746,9 +1746,9 @@ directive("ignore", handler);
 directive("effect", skipDuringClone((t, { expression: e }, { effect: n }) => {
   n(evaluateLater(t, e));
 }));
-function on(t, e, n, r) {
-  let s = t, a = (l) => r(l), i = {}, o = (l, c) => (u) => c(l, u);
-  if (n.includes("dot") && (e = dotSyntax(e)), n.includes("camel") && (e = camelCase2(e)), n.includes("passive") && (i.passive = !0), n.includes("capture") && (i.capture = !0), n.includes("window") && (s = window), n.includes("document") && (s = document), n.includes("debounce")) {
+function on(t, e, n, s) {
+  let r = t, a = (l) => s(l), i = {}, o = (l, c) => (u) => c(l, u);
+  if (n.includes("dot") && (e = dotSyntax(e)), n.includes("camel") && (e = camelCase2(e)), n.includes("passive") && (i.passive = !0), n.includes("capture") && (i.capture = !0), n.includes("window") && (r = window), n.includes("document") && (r = document), n.includes("debounce")) {
     let l = n[n.indexOf("debounce") + 1] || "invalid-wait", c = isNumeric(l.split("ms")[0]) ? Number(l.split("ms")[0]) : 250;
     a = debounce(a, c);
   }
@@ -1761,8 +1761,8 @@ function on(t, e, n, r) {
   })), n.includes("stop") && (a = o(a, (l, c) => {
     c.stopPropagation(), l(c);
   })), n.includes("once") && (a = o(a, (l, c) => {
-    l(c), s.removeEventListener(e, a, i);
-  })), (n.includes("away") || n.includes("outside")) && (s = document, a = o(a, (l, c) => {
+    l(c), r.removeEventListener(e, a, i);
+  })), (n.includes("away") || n.includes("outside")) && (r = document, a = o(a, (l, c) => {
     t.contains(c.target) || c.target.isConnected !== !1 && (t.offsetWidth < 1 && t.offsetHeight < 1 || t._x_isShown !== !1 && l(c));
   })), n.includes("self") && (a = o(a, (l, c) => {
     c.target === t && l(c);
@@ -1770,8 +1770,8 @@ function on(t, e, n, r) {
     c.target._x_pendingModelUpdates && c.target._x_pendingModelUpdates.forEach((u) => u()), l(c);
   })), (isKeyEvent(e) || isClickEvent(e)) && (a = o(a, (l, c) => {
     isListeningForASpecificKeyThatHasntBeenPressed(c, n) || l(c);
-  })), s.addEventListener(e, a, i), () => {
-    s.removeEventListener(e, a, i);
+  })), r.addEventListener(e, a, i), () => {
+    r.removeEventListener(e, a, i);
   };
 }
 function dotSyntax(t) {
@@ -1806,8 +1806,8 @@ function isListeningForASpecificKeyThatHasntBeenPressed(t, e) {
   }
   if (n.length === 0 || n.length === 1 && keyToModifiers(t.key).includes(n[0]))
     return !1;
-  const s = ["ctrl", "shift", "alt", "meta", "cmd", "super"].filter((a) => n.includes(a));
-  return n = n.filter((a) => !s.includes(a)), !(s.length > 0 && s.filter((i) => ((i === "cmd" || i === "super") && (i = "meta"), t[`${i}Key`])).length === s.length && (isClickEvent(t.type) || keyToModifiers(t.key).includes(n[0])));
+  const r = ["ctrl", "shift", "alt", "meta", "cmd", "super"].filter((a) => n.includes(a));
+  return n = n.filter((a) => !r.includes(a)), !(r.length > 0 && r.filter((i) => ((i === "cmd" || i === "super") && (i = "meta"), t[`${i}Key`])).length === r.length && (isClickEvent(t.type) || keyToModifiers(t.key).includes(n[0])));
 }
 function keyToModifiers(t) {
   if (!t)
@@ -1835,7 +1835,7 @@ function keyToModifiers(t) {
       return n;
   }).filter((n) => n);
 }
-directive("model", (t, { modifiers: e, expression: n }, { effect: r, cleanup: s }) => {
+directive("model", (t, { modifiers: e, expression: n }, { effect: s, cleanup: r }) => {
   let a = t;
   e.includes("parent") && (a = t.parentNode);
   let i = evaluateLater(a, n), o;
@@ -1862,7 +1862,7 @@ directive("model", (t, { modifiers: e, expression: n }, { effect: r, cleanup: s 
     let f = [], g = (y) => c(getInputValue(t, e, y, l()));
     if (u && f.push(on(t, "change", e, g)), d && (f.push(on(t, "blur", e, g)), t.form)) {
       let y = () => g({ target: t });
-      t.form._x_pendingModelUpdates || (t.form._x_pendingModelUpdates = []), t.form._x_pendingModelUpdates.push(y), s(() => t.form._x_pendingModelUpdates.splice(t.form._x_pendingModelUpdates.indexOf(y), 1));
+      t.form._x_pendingModelUpdates || (t.form._x_pendingModelUpdates = []), t.form._x_pendingModelUpdates.push(y), r(() => t.form._x_pendingModelUpdates.splice(t.form._x_pendingModelUpdates.indexOf(y), 1));
     }
     p && f.push(on(t, "keydown", e, (y) => {
       y.key === "Enter" && g(y);
@@ -1875,11 +1875,11 @@ directive("model", (t, { modifiers: e, expression: n }, { effect: r, cleanup: s 
   }
   if (e.includes("fill") && ([void 0, null, ""].includes(l()) || isCheckbox(t) && Array.isArray(l()) || t.tagName.toLowerCase() === "select" && t.multiple) && c(
     getInputValue(t, e, { target: t }, l())
-  ), t._x_removeModelListeners || (t._x_removeModelListeners = {}), t._x_removeModelListeners.default = h, s(() => t._x_removeModelListeners.default()), t.form) {
+  ), t._x_removeModelListeners || (t._x_removeModelListeners = {}), t._x_removeModelListeners.default = h, r(() => t._x_removeModelListeners.default()), t.form) {
     let f = on(t.form, "reset", [], (g) => {
       nextTick(() => t._x_model && t._x_model.set(getInputValue(t, e, { target: t }, l())));
     });
-    s(() => f());
+    r(() => f());
   }
   t._x_model = {
     get() {
@@ -1890,33 +1890,33 @@ directive("model", (t, { modifiers: e, expression: n }, { effect: r, cleanup: s 
     }
   }, t._x_forceModelUpdate = (f) => {
     f === void 0 && typeof n == "string" && n.match(/\./) && (f = ""), window.fromModel = !0, mutateDom(() => bind(t, "value", f)), delete window.fromModel;
-  }, r(() => {
+  }, s(() => {
     let f = l();
     e.includes("unintrusive") && document.activeElement.isSameNode(t) || t._x_forceModelUpdate(f);
   });
 });
-function getInputValue(t, e, n, r) {
+function getInputValue(t, e, n, s) {
   return mutateDom(() => {
     if (n instanceof CustomEvent && n.detail !== void 0)
       return n.detail !== null && n.detail !== void 0 ? n.detail : n.target.value;
     if (isCheckbox(t))
-      if (Array.isArray(r)) {
-        let s = null;
-        return e.includes("number") ? s = safeParseNumber(n.target.value) : e.includes("boolean") ? s = safeParseBoolean(n.target.value) : s = n.target.value, n.target.checked ? r.includes(s) ? r : r.concat([s]) : r.filter((a) => !checkedAttrLooseCompare2(a, s));
+      if (Array.isArray(s)) {
+        let r = null;
+        return e.includes("number") ? r = safeParseNumber(n.target.value) : e.includes("boolean") ? r = safeParseBoolean(n.target.value) : r = n.target.value, n.target.checked ? s.includes(r) ? s : s.concat([r]) : s.filter((a) => !checkedAttrLooseCompare2(a, r));
       } else
         return n.target.checked;
     else {
       if (t.tagName.toLowerCase() === "select" && t.multiple)
-        return e.includes("number") ? Array.from(n.target.selectedOptions).map((s) => {
-          let a = s.value || s.text;
+        return e.includes("number") ? Array.from(n.target.selectedOptions).map((r) => {
+          let a = r.value || r.text;
           return safeParseNumber(a);
-        }) : e.includes("boolean") ? Array.from(n.target.selectedOptions).map((s) => {
-          let a = s.value || s.text;
+        }) : e.includes("boolean") ? Array.from(n.target.selectedOptions).map((r) => {
+          let a = r.value || r.text;
           return safeParseBoolean(a);
-        }) : Array.from(n.target.selectedOptions).map((s) => s.value || s.text);
+        }) : Array.from(n.target.selectedOptions).map((r) => r.value || r.text);
       {
-        let s;
-        return isRadio$1(t) ? n.target.checked ? s = n.target.value : s = r : s = n.target.value, e.includes("number") ? safeParseNumber(s) : e.includes("boolean") ? safeParseBoolean(s) : e.includes("trim") ? s.trim() : s;
+        let r;
+        return isRadio$1(t) ? n.target.checked ? r = n.target.value : r = s : r = n.target.value, e.includes("number") ? safeParseNumber(r) : e.includes("boolean") ? safeParseBoolean(r) : e.includes("trim") ? r.trim() : r;
       }
     }
   });
@@ -1937,20 +1937,20 @@ function isGetterSetter(t) {
 directive("cloak", (t) => queueMicrotask(() => mutateDom(() => t.removeAttribute(prefix("cloak")))));
 addInitSelector(() => `[${prefix("init")}]`);
 directive("init", skipDuringClone((t, { expression: e }, { evaluate: n }) => typeof e == "string" ? !!e.trim() && n(e, {}, !1) : n(e, {}, !1)));
-directive("text", (t, { expression: e }, { effect: n, evaluateLater: r }) => {
-  let s = r(e);
+directive("text", (t, { expression: e }, { effect: n, evaluateLater: s }) => {
+  let r = s(e);
   n(() => {
-    s((a) => {
+    r((a) => {
       mutateDom(() => {
         t.textContent = a;
       });
     });
   });
 });
-directive("html", (t, { expression: e }, { effect: n, evaluateLater: r }) => {
-  let s = r(e);
+directive("html", (t, { expression: e }, { effect: n, evaluateLater: s }) => {
+  let r = s(e);
   n(() => {
-    s((a) => {
+    r((a) => {
       mutateDom(() => {
         t.innerHTML = a, t._x_ignoreSelf = !0, initTree(t), delete t._x_ignoreSelf;
       });
@@ -1958,27 +1958,27 @@ directive("html", (t, { expression: e }, { effect: n, evaluateLater: r }) => {
   });
 });
 mapAttributes(startingWith(":", into(prefix("bind:"))));
-var handler2 = (t, { value: e, modifiers: n, expression: r, original: s }, { effect: a, cleanup: i }) => {
+var handler2 = (t, { value: e, modifiers: n, expression: s, original: r }, { effect: a, cleanup: i }) => {
   if (!e) {
     let l = {};
-    injectBindingProviders(l), evaluateLater(t, r)((u) => {
-      applyBindingsObject(t, u, s);
+    injectBindingProviders(l), evaluateLater(t, s)((u) => {
+      applyBindingsObject(t, u, r);
     }, { scope: l });
     return;
   }
   if (e === "key")
-    return storeKeyForXFor(t, r);
+    return storeKeyForXFor(t, s);
   if (t._x_inlineBindings && t._x_inlineBindings[e] && t._x_inlineBindings[e].extract)
     return;
-  let o = evaluateLater(t, r);
+  let o = evaluateLater(t, s);
   a(() => o((l) => {
-    l === void 0 && typeof r == "string" && r.match(/\./) && (l = ""), mutateDom(() => bind(t, e, l, n));
+    l === void 0 && typeof s == "string" && s.match(/\./) && (l = ""), mutateDom(() => bind(t, e, l, n));
   })), i(() => {
     t._x_undoAddedClasses && t._x_undoAddedClasses(), t._x_undoAddedStyles && t._x_undoAddedStyles();
   });
 };
-handler2.inline = (t, { value: e, modifiers: n, expression: r }) => {
-  e && (t._x_inlineBindings || (t._x_inlineBindings = {}), t._x_inlineBindings[e] = { expression: r, extract: !1 });
+handler2.inline = (t, { value: e, modifiers: n, expression: s }) => {
+  e && (t._x_inlineBindings || (t._x_inlineBindings = {}), t._x_inlineBindings[e] = { expression: s, extract: !1 });
 };
 directive("bind", handler2);
 function storeKeyForXFor(t, e) {
@@ -1989,11 +1989,11 @@ directive("data", (t, { expression: e }, { cleanup: n }) => {
   if (shouldSkipRegisteringDataDuringClone(t))
     return;
   e = e === "" ? "{}" : e;
-  let r = {};
-  injectMagics(r, t);
   let s = {};
-  injectDataProviders(s, r);
-  let a = evaluate(t, e, { scope: s });
+  injectMagics(s, t);
+  let r = {};
+  injectDataProviders(r, s);
+  let a = evaluate(t, e, { scope: r });
   (a === void 0 || a === !0) && (a = {}), injectMagics(a, t);
   let i = reactive(a);
   initInterceptors(i);
@@ -2008,8 +2008,8 @@ interceptClone((t, e) => {
 function shouldSkipRegisteringDataDuringClone(t) {
   return isCloning ? isCloningLegacy ? !0 : t.hasAttribute("data-has-alpine-state") : !1;
 }
-directive("show", (t, { modifiers: e, expression: n }, { effect: r }) => {
-  let s = evaluateLater(t, n);
+directive("show", (t, { modifiers: e, expression: n }, { effect: s }) => {
+  let r = evaluateLater(t, n);
   t._x_doHide || (t._x_doHide = () => {
     mutateDom(() => {
       t.style.setProperty("display", "none", e.includes("important") ? "important" : void 0);
@@ -2029,17 +2029,17 @@ directive("show", (t, { modifiers: e, expression: n }, { effect: r }) => {
       typeof t._x_toggleAndCascadeWithTransitions == "function" ? t._x_toggleAndCascadeWithTransitions(t, d, i, a) : d ? o() : a();
     }
   ), c, u = !0;
-  r(() => s((d) => {
+  s(() => r((d) => {
     !u && d === c || (e.includes("immediate") && (d ? o() : a()), l(d), c = d, u = !1);
   }));
 });
-directive("for", (t, { expression: e }, { effect: n, cleanup: r }) => {
-  let s = parseForExpression(e), a = evaluateLater(t, s.items), i = evaluateLater(
+directive("for", (t, { expression: e }, { effect: n, cleanup: s }) => {
+  let r = parseForExpression(e), a = evaluateLater(t, r.items), i = evaluateLater(
     t,
     // the x-bind:key expression is stored for our use instead of evaluated.
     t._x_keyExpression || "index"
   );
-  t._x_prevKeys = [], t._x_lookup = {}, n(() => loop(t, s, a, i)), r(() => {
+  t._x_prevKeys = [], t._x_lookup = {}, n(() => loop(t, r, a, i)), s(() => {
     Object.values(t._x_lookup).forEach((o) => mutateDom(
       () => {
         destroyTree(o), o.remove();
@@ -2047,22 +2047,22 @@ directive("for", (t, { expression: e }, { effect: n, cleanup: r }) => {
     )), delete t._x_prevKeys, delete t._x_lookup;
   });
 });
-function loop(t, e, n, r) {
-  let s = (i) => typeof i == "object" && !Array.isArray(i), a = t;
+function loop(t, e, n, s) {
+  let r = (i) => typeof i == "object" && !Array.isArray(i), a = t;
   n((i) => {
     isNumeric3(i) && i >= 0 && (i = Array.from(Array(i).keys(), (g) => g + 1)), i === void 0 && (i = []);
     let o = t._x_lookup, l = t._x_prevKeys, c = [], u = [];
-    if (s(i))
+    if (r(i))
       i = Object.entries(i).map(([g, y]) => {
         let v = getIterationScopeVariables(e, y, g, i);
-        r((w) => {
+        s((w) => {
           u.includes(w) && warn("Duplicate key on x-for", t), u.push(w);
         }, { scope: { index: g, ...v } }), c.push(v);
       });
     else
       for (let g = 0; g < i.length; g++) {
         let y = getIterationScopeVariables(e, i[g], g, i);
-        r((v) => {
+        s((v) => {
           u.includes(v) && warn("Duplicate key on x-for", t), u.push(v);
         }, { scope: { index: g, ...y } }), c.push(y);
       }
@@ -2114,21 +2114,21 @@ function loop(t, e, n, r) {
   });
 }
 function parseForExpression(t) {
-  let e = /,([^,\}\]]*)(?:,([^,\}\]]*))?$/, n = /^\s*\(|\)\s*$/g, r = /([\s\S]*?)\s+(?:in|of)\s+([\s\S]*)/, s = t.match(r);
-  if (!s)
+  let e = /,([^,\}\]]*)(?:,([^,\}\]]*))?$/, n = /^\s*\(|\)\s*$/g, s = /([\s\S]*?)\s+(?:in|of)\s+([\s\S]*)/, r = t.match(s);
+  if (!r)
     return;
   let a = {};
-  a.items = s[2].trim();
-  let i = s[1].replace(n, "").trim(), o = i.match(e);
+  a.items = r[2].trim();
+  let i = r[1].replace(n, "").trim(), o = i.match(e);
   return o ? (a.item = i.replace(e, "").trim(), a.index = o[1].trim(), o[2] && (a.collection = o[2].trim())) : a.item = i, a;
 }
-function getIterationScopeVariables(t, e, n, r) {
-  let s = {};
+function getIterationScopeVariables(t, e, n, s) {
+  let r = {};
   return /^\[.*\]$/.test(t.item) && Array.isArray(e) ? t.item.replace("[", "").replace("]", "").split(",").map((i) => i.trim()).forEach((i, o) => {
-    s[i] = e[o];
+    r[i] = e[o];
   }) : /^\{.*\}$/.test(t.item) && !Array.isArray(e) && typeof e == "object" ? t.item.replace("{", "").replace("}", "").split(",").map((i) => i.trim()).forEach((i) => {
-    s[i] = e[i];
-  }) : s[t.item] = e, t.index && (s[t.index] = n), t.collection && (s[t.collection] = r), s;
+    r[i] = e[i];
+  }) : r[t.item] = e, t.index && (r[t.index] = n), t.collection && (r[t.collection] = s), r;
 }
 function isNumeric3(t) {
   return !Array.isArray(t) && !isNaN(t);
@@ -2136,13 +2136,13 @@ function isNumeric3(t) {
 function handler3() {
 }
 handler3.inline = (t, { expression: e }, { cleanup: n }) => {
-  let r = closestRoot(t);
-  r._x_refs || (r._x_refs = {}), r._x_refs[e] = t, n(() => delete r._x_refs[e]);
+  let s = closestRoot(t);
+  s._x_refs || (s._x_refs = {}), s._x_refs[e] = t, n(() => delete s._x_refs[e]);
 };
 directive("ref", handler3);
-directive("if", (t, { expression: e }, { effect: n, cleanup: r }) => {
+directive("if", (t, { expression: e }, { effect: n, cleanup: s }) => {
   t.tagName.toLowerCase() !== "template" && warn("x-if can only be used on a <template> tag", t);
-  let s = evaluateLater(t, e), a = () => {
+  let r = evaluateLater(t, e), a = () => {
     if (t._x_currentIfEl)
       return t._x_currentIfEl;
     let o = t.content.cloneNode(!0).firstElementChild;
@@ -2156,33 +2156,33 @@ directive("if", (t, { expression: e }, { effect: n, cleanup: r }) => {
   }, i = () => {
     t._x_undoIf && (t._x_undoIf(), delete t._x_undoIf);
   };
-  n(() => s((o) => {
+  n(() => r((o) => {
     o ? a() : i();
-  })), r(() => t._x_undoIf && t._x_undoIf());
+  })), s(() => t._x_undoIf && t._x_undoIf());
 });
 directive("id", (t, { expression: e }, { evaluate: n }) => {
-  n(e).forEach((s) => setIdRoot(t, s));
+  n(e).forEach((r) => setIdRoot(t, r));
 });
 interceptClone((t, e) => {
   t._x_ids && (e._x_ids = t._x_ids);
 });
 mapAttributes(startingWith("@", into(prefix("on:"))));
-directive("on", skipDuringClone((t, { value: e, modifiers: n, expression: r }, { cleanup: s }) => {
-  let a = r ? evaluateLater(t, r) : () => {
+directive("on", skipDuringClone((t, { value: e, modifiers: n, expression: s }, { cleanup: r }) => {
+  let a = s ? evaluateLater(t, s) : () => {
   };
   t.tagName.toLowerCase() === "template" && (t._x_forwardEvents || (t._x_forwardEvents = []), t._x_forwardEvents.includes(e) || t._x_forwardEvents.push(e));
   let i = on(t, e, n, (o) => {
     a(() => {
     }, { scope: { $event: o }, params: [o] });
   });
-  s(() => i());
+  r(() => i());
 }));
 warnMissingPluginDirective("Collapse", "collapse", "collapse");
 warnMissingPluginDirective("Intersect", "intersect", "intersect");
 warnMissingPluginDirective("Focus", "trap", "focus");
 warnMissingPluginDirective("Mask", "mask", "mask");
 function warnMissingPluginDirective(t, e, n) {
-  directive(e, (r) => warn(`You can't use [x-${e}] without first installing the "${t}" plugin here: https://alpinejs.dev/plugins/${n}`, r));
+  directive(e, (s) => warn(`You can't use [x-${e}] without first installing the "${t}" plugin here: https://alpinejs.dev/plugins/${n}`, s));
 }
 alpine_default.setEvaluator(normalEvaluator);
 alpine_default.setRawEvaluator(normalRawEvaluator);
@@ -2192,26 +2192,26 @@ var src_default$2 = alpine_default, module_default$2 = src_default$2, candidateS
   return t.getRootNode();
 } : function(t) {
   return t.ownerDocument;
-}, getCandidates = function(e, n, r) {
-  var s = Array.prototype.slice.apply(e.querySelectorAll(candidateSelector));
-  return n && matches.call(e, candidateSelector) && s.unshift(e), s = s.filter(r), s;
-}, getCandidatesIteratively = function t(e, n, r) {
-  for (var s = [], a = Array.from(e); a.length; ) {
+}, getCandidates = function(e, n, s) {
+  var r = Array.prototype.slice.apply(e.querySelectorAll(candidateSelector));
+  return n && matches.call(e, candidateSelector) && r.unshift(e), r = r.filter(s), r;
+}, getCandidatesIteratively = function t(e, n, s) {
+  for (var r = [], a = Array.from(e); a.length; ) {
     var i = a.shift();
     if (i.tagName === "SLOT") {
-      var o = i.assignedElements(), l = o.length ? o : i.children, c = t(l, !0, r);
-      r.flatten ? s.push.apply(s, c) : s.push({
+      var o = i.assignedElements(), l = o.length ? o : i.children, c = t(l, !0, s);
+      s.flatten ? r.push.apply(r, c) : r.push({
         scope: i,
         candidates: c
       });
     } else {
       var u = matches.call(i, candidateSelector);
-      u && r.filter(i) && (n || !e.includes(i)) && s.push(i);
+      u && s.filter(i) && (n || !e.includes(i)) && r.push(i);
       var d = i.shadowRoot || // check for an undisclosed shadow
-      typeof r.getShadowRoot == "function" && r.getShadowRoot(i), p = !r.shadowRootFilter || r.shadowRootFilter(i);
+      typeof s.getShadowRoot == "function" && s.getShadowRoot(i), p = !s.shadowRootFilter || s.shadowRootFilter(i);
       if (d && p) {
-        var m = t(d === !0 ? i.children : d.children, !0, r);
-        r.flatten ? s.push.apply(s, m) : s.push({
+        var m = t(d === !0 ? i.children : d.children, !0, s);
+        s.flatten ? r.push.apply(r, m) : r.push({
           scope: i,
           candidates: m
         });
@@ -2219,7 +2219,7 @@ var src_default$2 = alpine_default, module_default$2 = src_default$2, candidateS
         a.unshift.apply(a, i.children);
     }
   }
-  return s;
+  return r;
 }, getTabindex = function(e, n) {
   return e.tabIndex < 0 && (n || /^(AUDIO|VIDEO|DETAILS)$/.test(e.tagName) || e.isContentEditable) && isNaN(parseInt(e.getAttribute("tabindex"), 10)) ? 0 : e.tabIndex;
 }, sortOrderedTabbables = function(e, n) {
@@ -2229,50 +2229,50 @@ var src_default$2 = alpine_default, module_default$2 = src_default$2, candidateS
 }, isHiddenInput = function(e) {
   return isInput(e) && e.type === "hidden";
 }, isDetailsWithSummary = function(e) {
-  var n = e.tagName === "DETAILS" && Array.prototype.slice.apply(e.children).some(function(r) {
-    return r.tagName === "SUMMARY";
+  var n = e.tagName === "DETAILS" && Array.prototype.slice.apply(e.children).some(function(s) {
+    return s.tagName === "SUMMARY";
   });
   return n;
 }, getCheckedRadio = function(e, n) {
-  for (var r = 0; r < e.length; r++)
-    if (e[r].checked && e[r].form === n)
-      return e[r];
+  for (var s = 0; s < e.length; s++)
+    if (e[s].checked && e[s].form === n)
+      return e[s];
 }, isTabbableRadio = function(e) {
   if (!e.name)
     return !0;
-  var n = e.form || getRootNode(e), r = function(o) {
+  var n = e.form || getRootNode(e), s = function(o) {
     return n.querySelectorAll('input[type="radio"][name="' + o + '"]');
-  }, s;
+  }, r;
   if (typeof window < "u" && typeof window.CSS < "u" && typeof window.CSS.escape == "function")
-    s = r(window.CSS.escape(e.name));
+    r = s(window.CSS.escape(e.name));
   else
     try {
-      s = r(e.name);
+      r = s(e.name);
     } catch (i) {
       return console.error("Looks like you have a radio button with a name attribute containing invalid CSS selector characters and need the CSS.escape polyfill: %s", i.message), !1;
     }
-  var a = getCheckedRadio(s, e.form);
+  var a = getCheckedRadio(r, e.form);
   return !a || a === e;
 }, isRadio = function(e) {
   return isInput(e) && e.type === "radio";
 }, isNonTabbableRadio = function(e) {
   return isRadio(e) && !isTabbableRadio(e);
 }, isZeroArea = function(e) {
-  var n = e.getBoundingClientRect(), r = n.width, s = n.height;
-  return r === 0 && s === 0;
+  var n = e.getBoundingClientRect(), s = n.width, r = n.height;
+  return s === 0 && r === 0;
 }, isHidden = function(e, n) {
-  var r = n.displayCheck, s = n.getShadowRoot;
+  var s = n.displayCheck, r = n.getShadowRoot;
   if (getComputedStyle(e).visibility === "hidden")
     return !0;
   var a = matches.call(e, "details>summary:first-of-type"), i = a ? e.parentElement : e;
   if (matches.call(i, "details:not([open]) *"))
     return !0;
   var o = getRootNode(e).host, l = (o == null ? void 0 : o.ownerDocument.contains(o)) || e.ownerDocument.contains(e);
-  if (!r || r === "full") {
-    if (typeof s == "function") {
+  if (!s || s === "full") {
+    if (typeof r == "function") {
       for (var c = e; e; ) {
         var u = e.parentElement, d = getRootNode(e);
-        if (u && !u.shadowRoot && s(u) === !0)
+        if (u && !u.shadowRoot && r(u) === !0)
           return isZeroArea(e);
         e.assignedSlot ? e = e.assignedSlot : !u && d !== e.ownerDocument ? e = d.host : e = u;
       }
@@ -2280,17 +2280,17 @@ var src_default$2 = alpine_default, module_default$2 = src_default$2, candidateS
     }
     if (l)
       return !e.getClientRects().length;
-  } else if (r === "non-zero-area")
+  } else if (s === "non-zero-area")
     return isZeroArea(e);
   return !1;
 }, isDisabledFromFieldset = function(e) {
   if (/^(INPUT|BUTTON|SELECT|TEXTAREA)$/.test(e.tagName))
     for (var n = e.parentElement; n; ) {
       if (n.tagName === "FIELDSET" && n.disabled) {
-        for (var r = 0; r < n.children.length; r++) {
-          var s = n.children.item(r);
-          if (s.tagName === "LEGEND")
-            return matches.call(n, "fieldset[disabled] *") ? !0 : !s.contains(e);
+        for (var s = 0; s < n.children.length; s++) {
+          var r = n.children.item(s);
+          if (r.tagName === "LEGEND")
+            return matches.call(n, "fieldset[disabled] *") ? !0 : !r.contains(e);
         }
         return !0;
       }
@@ -2306,36 +2306,36 @@ var src_default$2 = alpine_default, module_default$2 = src_default$2, candidateS
   var n = parseInt(e.getAttribute("tabindex"), 10);
   return !!(isNaN(n) || n >= 0);
 }, sortByOrder = function t(e) {
-  var n = [], r = [];
-  return e.forEach(function(s, a) {
-    var i = !!s.scope, o = i ? s.scope : s, l = getTabindex(o, i), c = i ? t(s.candidates) : o;
-    l === 0 ? i ? n.push.apply(n, c) : n.push(o) : r.push({
+  var n = [], s = [];
+  return e.forEach(function(r, a) {
+    var i = !!r.scope, o = i ? r.scope : r, l = getTabindex(o, i), c = i ? t(r.candidates) : o;
+    l === 0 ? i ? n.push.apply(n, c) : n.push(o) : s.push({
       documentOrder: a,
       tabIndex: l,
-      item: s,
+      item: r,
       isScope: i,
       content: c
     });
-  }), r.sort(sortOrderedTabbables).reduce(function(s, a) {
-    return a.isScope ? s.push.apply(s, a.content) : s.push(a.content), s;
+  }), s.sort(sortOrderedTabbables).reduce(function(r, a) {
+    return a.isScope ? r.push.apply(r, a.content) : r.push(a.content), r;
   }, []).concat(n);
 }, tabbable = function(e, n) {
   n = n || {};
-  var r;
-  return n.getShadowRoot ? r = getCandidatesIteratively([e], n.includeContainer, {
+  var s;
+  return n.getShadowRoot ? s = getCandidatesIteratively([e], n.includeContainer, {
     filter: isNodeMatchingSelectorTabbable.bind(null, n),
     flatten: !1,
     getShadowRoot: n.getShadowRoot,
     shadowRootFilter: isValidShadowRootTabbable
-  }) : r = getCandidates(e, n.includeContainer, isNodeMatchingSelectorTabbable.bind(null, n)), sortByOrder(r);
+  }) : s = getCandidates(e, n.includeContainer, isNodeMatchingSelectorTabbable.bind(null, n)), sortByOrder(s);
 }, focusable = function(e, n) {
   n = n || {};
-  var r;
-  return n.getShadowRoot ? r = getCandidatesIteratively([e], n.includeContainer, {
+  var s;
+  return n.getShadowRoot ? s = getCandidatesIteratively([e], n.includeContainer, {
     filter: isNodeMatchingSelectorFocusable.bind(null, n),
     flatten: !0,
     getShadowRoot: n.getShadowRoot
-  }) : r = getCandidates(e, n.includeContainer, isNodeMatchingSelectorFocusable.bind(null, n)), r;
+  }) : s = getCandidates(e, n.includeContainer, isNodeMatchingSelectorFocusable.bind(null, n)), s;
 }, isTabbable = function(e, n) {
   if (n = n || {}, !e)
     throw new Error("No node provided");
@@ -2348,20 +2348,20 @@ var src_default$2 = alpine_default, module_default$2 = src_default$2, candidateS
 function ownKeys(t, e) {
   var n = Object.keys(t);
   if (Object.getOwnPropertySymbols) {
-    var r = Object.getOwnPropertySymbols(t);
-    e && (r = r.filter(function(s) {
-      return Object.getOwnPropertyDescriptor(t, s).enumerable;
-    })), n.push.apply(n, r);
+    var s = Object.getOwnPropertySymbols(t);
+    e && (s = s.filter(function(r) {
+      return Object.getOwnPropertyDescriptor(t, r).enumerable;
+    })), n.push.apply(n, s);
   }
   return n;
 }
 function _objectSpread2(t) {
   for (var e = 1; e < arguments.length; e++) {
     var n = arguments[e] != null ? arguments[e] : {};
-    e % 2 ? ownKeys(Object(n), !0).forEach(function(r) {
-      _defineProperty(t, r, n[r]);
-    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(t, Object.getOwnPropertyDescriptors(n)) : ownKeys(Object(n)).forEach(function(r) {
-      Object.defineProperty(t, r, Object.getOwnPropertyDescriptor(n, r));
+    e % 2 ? ownKeys(Object(n), !0).forEach(function(s) {
+      _defineProperty(t, s, n[s]);
+    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(t, Object.getOwnPropertyDescriptors(n)) : ownKeys(Object(n)).forEach(function(s) {
+      Object.defineProperty(t, s, Object.getOwnPropertyDescriptor(n, s));
     });
   }
   return t;
@@ -2379,15 +2379,15 @@ var activeFocusTraps = /* @__PURE__ */ function() {
   return {
     activateTrap: function(n) {
       if (t.length > 0) {
-        var r = t[t.length - 1];
-        r !== n && r.pause();
+        var s = t[t.length - 1];
+        s !== n && s.pause();
       }
-      var s = t.indexOf(n);
-      s === -1 || t.splice(s, 1), t.push(n);
+      var r = t.indexOf(n);
+      r === -1 || t.splice(r, 1), t.push(n);
     },
     deactivateTrap: function(n) {
-      var r = t.indexOf(n);
-      r !== -1 && t.splice(r, 1), t.length > 0 && t[t.length - 1].unpause();
+      var s = t.indexOf(n);
+      s !== -1 && t.splice(s, 1), t.length > 0 && t[t.length - 1].unpause();
     }
   };
 }(), isSelectableInput = function(e) {
@@ -2399,18 +2399,18 @@ var activeFocusTraps = /* @__PURE__ */ function() {
 }, delay = function(e) {
   return setTimeout(e, 0);
 }, findIndex = function(e, n) {
-  var r = -1;
-  return e.every(function(s, a) {
-    return n(s) ? (r = a, !1) : !0;
-  }), r;
+  var s = -1;
+  return e.every(function(r, a) {
+    return n(r) ? (s = a, !1) : !0;
+  }), s;
 }, valueOrHandler = function(e) {
-  for (var n = arguments.length, r = new Array(n > 1 ? n - 1 : 0), s = 1; s < n; s++)
-    r[s - 1] = arguments[s];
-  return typeof e == "function" ? e.apply(void 0, r) : e;
+  for (var n = arguments.length, s = new Array(n > 1 ? n - 1 : 0), r = 1; r < n; r++)
+    s[r - 1] = arguments[r];
+  return typeof e == "function" ? e.apply(void 0, s) : e;
 }, getActualTarget = function(e) {
   return e.target.shadowRoot && typeof e.composedPath == "function" ? e.composedPath()[0] : e.target;
 }, createFocusTrap = function(e, n) {
-  var r = (n == null ? void 0 : n.document) || document, s = _objectSpread2({
+  var s = (n == null ? void 0 : n.document) || document, r = _objectSpread2({
     returnFocusOnDeactivate: !0,
     escapeDeactivates: !0,
     delayInitialFocus: !0
@@ -2446,7 +2446,7 @@ var activeFocusTraps = /* @__PURE__ */ function() {
     //  has been delayed during activation
     delayInitialFocusTimer: void 0
   }, i, o = function(b, x, E) {
-    return b && b[x] !== void 0 ? b[x] : s[E || x];
+    return b && b[x] !== void 0 ? b[x] : r[E || x];
   }, l = function(b) {
     return a.containerGroups.findIndex(function(x) {
       var E = x.container, I = x.tabbableNodes;
@@ -2459,7 +2459,7 @@ var activeFocusTraps = /* @__PURE__ */ function() {
       });
     });
   }, c = function(b) {
-    var x = s[b];
+    var x = r[b];
     if (typeof x == "function") {
       for (var E = arguments.length, I = new Array(E > 1 ? E - 1 : 0), T = 1; T < E; T++)
         I[T - 1] = arguments[T];
@@ -2471,7 +2471,7 @@ var activeFocusTraps = /* @__PURE__ */ function() {
       throw new Error("`".concat(b, "` was specified but was not a node, or did not return a node"));
     }
     var P = x;
-    if (typeof x == "string" && (P = r.querySelector(x), !P))
+    if (typeof x == "string" && (P = s.querySelector(x), !P))
       throw new Error("`".concat(b, "` as selector refers to no known node"));
     return P;
   }, u = function() {
@@ -2479,8 +2479,8 @@ var activeFocusTraps = /* @__PURE__ */ function() {
     if (b === !1)
       return !1;
     if (b === void 0)
-      if (l(r.activeElement) >= 0)
-        b = r.activeElement;
+      if (l(s.activeElement) >= 0)
+        b = s.activeElement;
       else {
         var x = a.tabbableGroups[0], E = x && x.firstTabbableNode;
         b = E || c("fallbackFocus");
@@ -2490,7 +2490,7 @@ var activeFocusTraps = /* @__PURE__ */ function() {
     return b;
   }, d = function() {
     if (a.containerGroups = a.containers.map(function(b) {
-      var x = tabbable(b, s.tabbableOptions), E = focusable(b, s.tabbableOptions);
+      var x = tabbable(b, r.tabbableOptions), E = focusable(b, r.tabbableOptions);
       return {
         container: b,
         tabbableNodes: x,
@@ -2511,9 +2511,9 @@ var activeFocusTraps = /* @__PURE__ */ function() {
           });
           if (!(L < 0))
             return P ? E.slice(L + 1).find(function(N) {
-              return isTabbable(N, s.tabbableOptions);
+              return isTabbable(N, r.tabbableOptions);
             }) : E.slice(0, L).reverse().find(function(N) {
-              return isTabbable(N, s.tabbableOptions);
+              return isTabbable(N, r.tabbableOptions);
             });
         }
       };
@@ -2522,13 +2522,13 @@ var activeFocusTraps = /* @__PURE__ */ function() {
     }), a.tabbableGroups.length <= 0 && !c("fallbackFocus"))
       throw new Error("Your focus-trap must have at least one container with at least one tabbable node in it at all times");
   }, p = function S(b) {
-    if (b !== !1 && b !== r.activeElement) {
+    if (b !== !1 && b !== s.activeElement) {
       if (!b || !b.focus) {
         S(u());
         return;
       }
       b.focus({
-        preventScroll: !!s.preventScroll
+        preventScroll: !!r.preventScroll
       }), a.mostRecentlyFocusedNode = b, isSelectableInput(b) && b.select();
     }
   }, m = function(b) {
@@ -2537,7 +2537,7 @@ var activeFocusTraps = /* @__PURE__ */ function() {
   }, h = function(b) {
     var x = getActualTarget(b);
     if (!(l(x) >= 0)) {
-      if (valueOrHandler(s.clickOutsideDeactivates, b)) {
+      if (valueOrHandler(r.clickOutsideDeactivates, b)) {
         i.deactivate({
           // if, on deactivation, we should return focus to the node originally-focused
           //  when the trap was activated (or the configured `setReturnFocus` node),
@@ -2550,11 +2550,11 @@ var activeFocusTraps = /* @__PURE__ */ function() {
           //  that was clicked, whether it's focusable or not; by setting
           //  `returnFocus: true`, we'll attempt to re-focus the node originally-focused
           //  on activation (or the configured `setReturnFocus` node)
-          returnFocus: s.returnFocusOnDeactivate && !isFocusable(x, s.tabbableOptions)
+          returnFocus: r.returnFocusOnDeactivate && !isFocusable(x, r.tabbableOptions)
         });
         return;
       }
-      valueOrHandler(s.allowOutsideClick, b) || b.preventDefault();
+      valueOrHandler(r.allowOutsideClick, b) || b.preventDefault();
     }
   }, f = function(b) {
     var x = getActualTarget(b), E = l(x) >= 0;
@@ -2572,7 +2572,7 @@ var activeFocusTraps = /* @__PURE__ */ function() {
           var j = F.firstTabbableNode;
           return x === j;
         });
-        if (P < 0 && (T.container === x || isFocusable(x, s.tabbableOptions) && !isTabbable(x, s.tabbableOptions) && !T.nextTabbableNode(x, !1)) && (P = I), P >= 0) {
+        if (P < 0 && (T.container === x || isFocusable(x, r.tabbableOptions) && !isTabbable(x, r.tabbableOptions) && !T.nextTabbableNode(x, !1)) && (P = I), P >= 0) {
           var L = P === 0 ? a.tabbableGroups.length - 1 : P - 1, N = a.tabbableGroups[L];
           E = N.lastTabbableNode;
         }
@@ -2581,7 +2581,7 @@ var activeFocusTraps = /* @__PURE__ */ function() {
           var j = F.lastTabbableNode;
           return x === j;
         });
-        if (R < 0 && (T.container === x || isFocusable(x, s.tabbableOptions) && !isTabbable(x, s.tabbableOptions) && !T.nextTabbableNode(x)) && (R = I), R >= 0) {
+        if (R < 0 && (T.container === x || isFocusable(x, r.tabbableOptions) && !isTabbable(x, r.tabbableOptions) && !T.nextTabbableNode(x)) && (R = I), R >= 0) {
           var O = R === a.tabbableGroups.length - 1 ? 0 : R + 1, B = a.tabbableGroups[O];
           E = B.firstTabbableNode;
         }
@@ -2590,7 +2590,7 @@ var activeFocusTraps = /* @__PURE__ */ function() {
       E = c("fallbackFocus");
     E && (b.preventDefault(), p(E));
   }, y = function(b) {
-    if (isEscapeEvent(b) && valueOrHandler(s.escapeDeactivates, b) !== !1) {
+    if (isEscapeEvent(b) && valueOrHandler(r.escapeDeactivates, b) !== !1) {
       b.preventDefault(), i.deactivate();
       return;
     }
@@ -2600,27 +2600,27 @@ var activeFocusTraps = /* @__PURE__ */ function() {
     }
   }, v = function(b) {
     var x = getActualTarget(b);
-    l(x) >= 0 || valueOrHandler(s.clickOutsideDeactivates, b) || valueOrHandler(s.allowOutsideClick, b) || (b.preventDefault(), b.stopImmediatePropagation());
+    l(x) >= 0 || valueOrHandler(r.clickOutsideDeactivates, b) || valueOrHandler(r.allowOutsideClick, b) || (b.preventDefault(), b.stopImmediatePropagation());
   }, w = function() {
     if (a.active)
-      return activeFocusTraps.activateTrap(i), a.delayInitialFocusTimer = s.delayInitialFocus ? delay(function() {
+      return activeFocusTraps.activateTrap(i), a.delayInitialFocusTimer = r.delayInitialFocus ? delay(function() {
         p(u());
-      }) : p(u()), r.addEventListener("focusin", f, !0), r.addEventListener("mousedown", h, {
+      }) : p(u()), s.addEventListener("focusin", f, !0), s.addEventListener("mousedown", h, {
         capture: !0,
         passive: !1
-      }), r.addEventListener("touchstart", h, {
+      }), s.addEventListener("touchstart", h, {
         capture: !0,
         passive: !1
-      }), r.addEventListener("click", v, {
+      }), s.addEventListener("click", v, {
         capture: !0,
         passive: !1
-      }), r.addEventListener("keydown", y, {
+      }), s.addEventListener("keydown", y, {
         capture: !0,
         passive: !1
       }), i;
   }, _ = function() {
     if (a.active)
-      return r.removeEventListener("focusin", f, !0), r.removeEventListener("mousedown", h, !0), r.removeEventListener("touchstart", h, !0), r.removeEventListener("click", v, !0), r.removeEventListener("keydown", y, !0), i;
+      return s.removeEventListener("focusin", f, !0), s.removeEventListener("mousedown", h, !0), s.removeEventListener("touchstart", h, !0), s.removeEventListener("click", v, !0), s.removeEventListener("keydown", y, !0), i;
   };
   return i = {
     get active() {
@@ -2633,7 +2633,7 @@ var activeFocusTraps = /* @__PURE__ */ function() {
       if (a.active)
         return this;
       var x = o(b, "onActivate"), E = o(b, "onPostActivate"), I = o(b, "checkCanFocusTrap");
-      I || d(), a.active = !0, a.paused = !1, a.nodeFocusedBeforeActivation = r.activeElement, x && x();
+      I || d(), a.active = !0, a.paused = !1, a.nodeFocusedBeforeActivation = s.activeElement, x && x();
       var T = function() {
         I && d(), w(), E && E();
       };
@@ -2643,9 +2643,9 @@ var activeFocusTraps = /* @__PURE__ */ function() {
       if (!a.active)
         return this;
       var x = _objectSpread2({
-        onDeactivate: s.onDeactivate,
-        onPostDeactivate: s.onPostDeactivate,
-        checkCanReturnFocus: s.checkCanReturnFocus
+        onDeactivate: r.onDeactivate,
+        onPostDeactivate: r.onPostDeactivate,
+        checkCanReturnFocus: r.checkCanReturnFocus
       }, b);
       clearTimeout(a.delayInitialFocusTimer), a.delayInitialFocusTimer = void 0, _(), a.active = !1, a.paused = !1, activeFocusTraps.deactivateTrap(i);
       var E = o(x, "onDeactivate"), I = o(x, "onPostDeactivate"), T = o(x, "checkCanReturnFocus"), P = o(x, "returnFocus", "returnFocusOnDeactivate");
@@ -2666,7 +2666,7 @@ var activeFocusTraps = /* @__PURE__ */ function() {
     updateContainerElements: function(b) {
       var x = [].concat(b).filter(Boolean);
       return a.containers = x.map(function(E) {
-        return typeof E == "string" ? r.querySelector(E) : E;
+        return typeof E == "string" ? s.querySelector(E) : E;
       }), a.active && d(), this;
     }
   }, i.updateContainerElements(e), i;
@@ -2675,13 +2675,13 @@ function src_default$1(t) {
   let e, n;
   window.addEventListener("focusin", () => {
     e = n, n = document.activeElement;
-  }), t.magic("focus", (r) => {
-    let s = r;
+  }), t.magic("focus", (s) => {
+    let r = s;
     return {
       __noscroll: !1,
       __wrapAround: !1,
       within(a) {
-        return s = a, this;
+        return r = a, this;
       },
       withoutScrolling() {
         return this.__noscroll = !0, this;
@@ -2708,7 +2708,7 @@ function src_default$1(t) {
         return n;
       },
       focusables() {
-        return Array.isArray(s) ? s : focusable(s, { displayCheck: "none" });
+        return Array.isArray(r) ? r : focusable(r, { displayCheck: "none" });
       },
       all() {
         return this.focusables();
@@ -2759,25 +2759,25 @@ function src_default$1(t) {
       }
     };
   }), t.directive("trap", t.skipDuringClone(
-    (r, { expression: s, modifiers: a }, { effect: i, evaluateLater: o, cleanup: l }) => {
-      let c = o(s), u = !1, d = {
+    (s, { expression: r, modifiers: a }, { effect: i, evaluateLater: o, cleanup: l }) => {
+      let c = o(r), u = !1, d = {
         escapeDeactivates: !1,
         allowOutsideClick: !0,
-        fallbackFocus: () => r
+        fallbackFocus: () => s
       }, p = () => {
       };
       if (a.includes("noautofocus"))
         d.initialFocus = !1;
       else {
-        let g = r.querySelector("[autofocus]");
+        let g = s.querySelector("[autofocus]");
         g && (d.initialFocus = g);
       }
       a.includes("inert") && (d.onPostActivate = () => {
         t.nextTick(() => {
-          p = setInert(r);
+          p = setInert(s);
         });
       });
-      let m = createFocusTrap(r, d), h = () => {
+      let m = createFocusTrap(s, d), h = () => {
       };
       const f = () => {
         p(), p = () => {
@@ -2795,16 +2795,16 @@ function src_default$1(t) {
     // When cloning, we only want to add aria-hidden attributes to the
     // DOM and not try to actually trap, as trapping can mess with the
     // live DOM and isn't just isolated to the cloned DOM.
-    (r, { expression: s, modifiers: a }, { evaluate: i }) => {
-      a.includes("inert") && i(s) && setInert(r);
+    (s, { expression: r, modifiers: a }, { evaluate: i }) => {
+      a.includes("inert") && i(r) && setInert(s);
     }
   ));
 }
 function setInert(t) {
   let e = [];
   return crawlSiblingsUp(t, (n) => {
-    let r = n.hasAttribute("aria-hidden");
-    n.setAttribute("aria-hidden", "true"), e.push(() => r || n.removeAttribute("aria-hidden"));
+    let s = n.hasAttribute("aria-hidden");
+    n.setAttribute("aria-hidden", "true"), e.push(() => s || n.removeAttribute("aria-hidden"));
   }), () => {
     for (; e.length; )
       e.pop()();
@@ -2837,13 +2837,13 @@ focus-trap/dist/focus-trap.esm.js:
   *)
 */
 function src_default(t) {
-  t.directive("collapse", e), e.inline = (n, { modifiers: r }) => {
-    r.includes("min") && (n._x_doShow = () => {
+  t.directive("collapse", e), e.inline = (n, { modifiers: s }) => {
+    s.includes("min") && (n._x_doShow = () => {
     }, n._x_doHide = () => {
     });
   };
-  function e(n, { modifiers: r }) {
-    let s = modifierValue(r, "duration", 250) / 1e3, a = modifierValue(r, "min", 0), i = !r.includes("min");
+  function e(n, { modifiers: s }) {
+    let r = modifierValue(s, "duration", 250) / 1e3, a = modifierValue(s, "min", 0), i = !s.includes("min");
     n._x_isShown || (n.style.height = `${a}px`), !n._x_isShown && i && (n.hidden = !0), n._x_isShown || (n.style.overflow = "hidden");
     let o = (c, u) => {
       let d = t.setStyles(c, u);
@@ -2851,7 +2851,7 @@ function src_default(t) {
       } : d;
     }, l = {
       transitionProperty: "height",
-      transitionDuration: `${s}s`,
+      transitionDuration: `${r}s`,
       transitionTimingFunction: "cubic-bezier(0.4, 0.0, 0.2, 1)"
     };
     n._x_transition = {
@@ -2888,20 +2888,20 @@ function src_default(t) {
 function modifierValue(t, e, n) {
   if (t.indexOf(e) === -1)
     return n;
-  const r = t[t.indexOf(e) + 1];
-  if (!r)
+  const s = t[t.indexOf(e) + 1];
+  if (!s)
     return n;
   if (e === "duration") {
-    let s = r.match(/([0-9]+)ms/);
-    if (s)
-      return s[1];
+    let r = s.match(/([0-9]+)ms/);
+    if (r)
+      return r[1];
   }
   if (e === "min") {
-    let s = r.match(/([0-9]+)px/);
-    if (s)
-      return s[1];
+    let r = s.match(/([0-9]+)px/);
+    if (r)
+      return r[1];
   }
-  return r;
+  return s;
 }
 var module_default = src_default;
 function registerAlpineStores() {
@@ -3038,13 +3038,13 @@ if ($param1 === "Type A") {
       filterTemplates() {
         const t = this.searchQuery.toLowerCase().trim(), e = this.getCurrentTemplates();
         if (!t) {
-          this.filteredTemplates = e.map((n, r) => ({
+          this.filteredTemplates = e.map((n, s) => ({
             ...n,
-            originalIndex: r
+            originalIndex: s
           }));
           return;
         }
-        this.filteredTemplates = e.map((n, r) => ({ ...n, originalIndex: r })).filter((n) => `${n.name} ${n.description} ${n.code}`.toLowerCase().includes(t));
+        this.filteredTemplates = e.map((n, s) => ({ ...n, originalIndex: s })).filter((n) => `${n.name} ${n.description} ${n.code}`.toLowerCase().includes(t));
       },
       selectTemplate(t) {
         if (this.currentCellId && this.currentQueryType && this.currentLanguageType) {
@@ -3109,35 +3109,35 @@ const defaultIconDimensions = Object.freeze(
 function mergeIconTransformations(t, e) {
   const n = {};
   !t.hFlip != !e.hFlip && (n.hFlip = !0), !t.vFlip != !e.vFlip && (n.vFlip = !0);
-  const r = ((t.rotate || 0) + (e.rotate || 0)) % 4;
-  return r && (n.rotate = r), n;
+  const s = ((t.rotate || 0) + (e.rotate || 0)) % 4;
+  return s && (n.rotate = s), n;
 }
 function mergeIconData(t, e) {
   const n = mergeIconTransformations(t, e);
-  for (const r in defaultExtendedIconProps)
-    r in defaultIconTransformations ? r in t && !(r in n) && (n[r] = defaultIconTransformations[r]) : r in e ? n[r] = e[r] : r in t && (n[r] = t[r]);
+  for (const s in defaultExtendedIconProps)
+    s in defaultIconTransformations ? s in t && !(s in n) && (n[s] = defaultIconTransformations[s]) : s in e ? n[s] = e[s] : s in t && (n[s] = t[s]);
   return n;
 }
 function getIconsTree(t, e) {
-  const n = t.icons, r = t.aliases || /* @__PURE__ */ Object.create(null), s = /* @__PURE__ */ Object.create(null);
+  const n = t.icons, s = t.aliases || /* @__PURE__ */ Object.create(null), r = /* @__PURE__ */ Object.create(null);
   function a(i) {
     if (n[i])
-      return s[i] = [];
-    if (!(i in s)) {
-      s[i] = null;
-      const o = r[i] && r[i].parent, l = o && a(o);
-      l && (s[i] = [o].concat(l));
+      return r[i] = [];
+    if (!(i in r)) {
+      r[i] = null;
+      const o = s[i] && s[i].parent, l = o && a(o);
+      l && (r[i] = [o].concat(l));
     }
-    return s[i];
+    return r[i];
   }
-  return Object.keys(n).concat(Object.keys(r)).forEach(a), s;
+  return Object.keys(n).concat(Object.keys(s)).forEach(a), r;
 }
 function internalGetIconData(t, e, n) {
-  const r = t.icons, s = t.aliases || /* @__PURE__ */ Object.create(null);
+  const s = t.icons, r = t.aliases || /* @__PURE__ */ Object.create(null);
   let a = {};
   function i(o) {
     a = mergeIconData(
-      r[o] || s[o],
+      s[o] || r[o],
       a
     );
   }
@@ -3147,46 +3147,46 @@ function parseIconSet(t, e) {
   const n = [];
   if (typeof t != "object" || typeof t.icons != "object")
     return n;
-  t.not_found instanceof Array && t.not_found.forEach((s) => {
-    e(s, null), n.push(s);
+  t.not_found instanceof Array && t.not_found.forEach((r) => {
+    e(r, null), n.push(r);
   });
-  const r = getIconsTree(t);
-  for (const s in r) {
-    const a = r[s];
-    a && (e(s, internalGetIconData(t, s, a)), n.push(s));
+  const s = getIconsTree(t);
+  for (const r in s) {
+    const a = s[r];
+    a && (e(r, internalGetIconData(t, r, a)), n.push(r));
   }
   return n;
 }
-const matchIconName = /^[a-z0-9]+(-[a-z0-9]+)*$/, stringToIcon = (t, e, n, r = "") => {
-  const s = t.split(":");
+const matchIconName = /^[a-z0-9]+(-[a-z0-9]+)*$/, stringToIcon = (t, e, n, s = "") => {
+  const r = t.split(":");
   if (t.slice(0, 1) === "@") {
-    if (s.length < 2 || s.length > 3)
+    if (r.length < 2 || r.length > 3)
       return null;
-    r = s.shift().slice(1);
+    s = r.shift().slice(1);
   }
-  if (s.length > 3 || !s.length)
+  if (r.length > 3 || !r.length)
     return null;
-  if (s.length > 1) {
-    const o = s.pop(), l = s.pop(), c = {
+  if (r.length > 1) {
+    const o = r.pop(), l = r.pop(), c = {
       // Allow provider without '@': "provider:prefix:name"
-      provider: s.length > 0 ? s[0] : r,
+      provider: r.length > 0 ? r[0] : s,
       prefix: l,
       name: o
     };
     return e && !validateIconName(c) ? null : c;
   }
-  const a = s[0], i = a.split("-");
+  const a = r[0], i = a.split("-");
   if (i.length > 1) {
     const o = {
-      provider: r,
+      provider: s,
       prefix: i.shift(),
       name: i.join("-")
     };
     return e && !validateIconName(o) ? null : o;
   }
-  if (n && r === "") {
+  if (n && s === "") {
     const o = {
-      provider: r,
+      provider: s,
       prefix: "",
       name: a
     };
@@ -3212,18 +3212,18 @@ function quicklyValidateIconSet(t) {
   if (typeof e.prefix != "string" || !t.icons || typeof t.icons != "object" || !checkOptionalProps(t, optionalPropertyDefaults))
     return null;
   const n = e.icons;
-  for (const s in n) {
-    const a = n[s];
-    if (!s.match(matchIconName) || typeof a.body != "string" || !checkOptionalProps(
+  for (const r in n) {
+    const a = n[r];
+    if (!r.match(matchIconName) || typeof a.body != "string" || !checkOptionalProps(
       a,
       defaultExtendedIconProps
     ))
       return null;
   }
-  const r = e.aliases || /* @__PURE__ */ Object.create(null);
-  for (const s in r) {
-    const a = r[s], i = a.parent;
-    if (!s.match(matchIconName) || typeof i != "string" || !n[i] && !r[i] || !checkOptionalProps(
+  const s = e.aliases || /* @__PURE__ */ Object.create(null);
+  for (const r in s) {
+    const a = s[r], i = a.parent;
+    if (!r.match(matchIconName) || typeof i != "string" || !n[i] && !s[i] || !checkOptionalProps(
       a,
       defaultExtendedIconProps
     ))
@@ -3245,8 +3245,8 @@ function getStorage(t, e) {
   return n[e] || (n[e] = newStorage(t, e));
 }
 function addIconSet(t, e) {
-  return quicklyValidateIconSet(e) ? parseIconSet(e, (n, r) => {
-    r ? t.icons[n] = r : t.missing.add(n);
+  return quicklyValidateIconSet(e) ? parseIconSet(e, (n, s) => {
+    s ? t.icons[n] = s : t.missing.add(n);
   }) : [];
 }
 function addIconToStorage(t, e, n) {
@@ -3259,12 +3259,12 @@ function addIconToStorage(t, e, n) {
 }
 function listIcons(t, e) {
   let n = [];
-  return (typeof t == "string" ? [t] : Object.keys(dataStorage)).forEach((s) => {
-    (typeof s == "string" && typeof e == "string" ? [e] : Object.keys(dataStorage[s] || {})).forEach((i) => {
-      const o = getStorage(s, i);
+  return (typeof t == "string" ? [t] : Object.keys(dataStorage)).forEach((r) => {
+    (typeof r == "string" && typeof e == "string" ? [e] : Object.keys(dataStorage[r] || {})).forEach((i) => {
+      const o = getStorage(r, i);
       n = n.concat(
         Object.keys(o.icons).map(
-          (l) => (s !== "" ? "@" + s + ":" : "") + i + ":" + l
+          (l) => (r !== "" ? "@" + r + ":" : "") + i + ":" + l
         )
       );
     });
@@ -3277,16 +3277,16 @@ function allowSimpleNames(t) {
 function getIconData(t) {
   const e = typeof t == "string" ? stringToIcon(t, !0, simpleNames) : t;
   if (e) {
-    const n = getStorage(e.provider, e.prefix), r = e.name;
-    return n.icons[r] || (n.missing.has(r) ? null : void 0);
+    const n = getStorage(e.provider, e.prefix), s = e.name;
+    return n.icons[s] || (n.missing.has(s) ? null : void 0);
   }
 }
 function addIcon(t, e) {
   const n = stringToIcon(t, !0, simpleNames);
   if (!n)
     return !1;
-  const r = getStorage(n.provider, n.prefix);
-  return addIconToStorage(r, n.name, e);
+  const s = getStorage(n.provider, n.prefix);
+  return addIconToStorage(s, n.name, e);
 }
 function addCollection(t, e) {
   if (typeof t != "object")
@@ -3299,8 +3299,8 @@ function addCollection(t, e) {
     name: "a"
   }))
     return !1;
-  const r = getStorage(e, n);
-  return !!addIconSet(r, t);
+  const s = getStorage(e, n);
+  return !!addIconSet(s, t);
 }
 function iconExists(t) {
   return !!getIconData(t);
@@ -3328,19 +3328,19 @@ function calculateSize(t, e, n) {
     return Math.ceil(t * e * n) / n;
   if (typeof t != "string")
     return t;
-  const r = t.split(unitsSplit);
-  if (r === null || !r.length)
+  const s = t.split(unitsSplit);
+  if (s === null || !s.length)
     return t;
-  const s = [];
-  let a = r.shift(), i = unitsTest.test(a);
+  const r = [];
+  let a = s.shift(), i = unitsTest.test(a);
   for (; ; ) {
     if (i) {
       const o = parseFloat(a);
-      isNaN(o) ? s.push(a) : s.push(Math.ceil(o * e * n) / n);
+      isNaN(o) ? r.push(a) : r.push(Math.ceil(o * e * n) / n);
     } else
-      s.push(a);
-    if (a = r.shift(), a === void 0)
-      return s.join("");
+      r.push(a);
+    if (a = s.shift(), a === void 0)
+      return r.join("");
     i = !i;
   }
 }
@@ -3349,51 +3349,51 @@ function iconToSVG(t, e) {
   const n = {
     ...defaultIconProps,
     ...t
-  }, r = {
+  }, s = {
     ...defaultIconCustomisations,
     ...e
-  }, s = {
+  }, r = {
     left: n.left,
     top: n.top,
     width: n.width,
     height: n.height
   };
   let a = n.body;
-  [n, r].forEach((h) => {
+  [n, s].forEach((h) => {
     const f = [], g = h.hFlip, y = h.vFlip;
     let v = h.rotate;
     g ? y ? v += 2 : (f.push(
-      "translate(" + (s.width + s.left).toString() + " " + (0 - s.top).toString() + ")"
-    ), f.push("scale(-1 1)"), s.top = s.left = 0) : y && (f.push(
-      "translate(" + (0 - s.left).toString() + " " + (s.height + s.top).toString() + ")"
-    ), f.push("scale(1 -1)"), s.top = s.left = 0);
+      "translate(" + (r.width + r.left).toString() + " " + (0 - r.top).toString() + ")"
+    ), f.push("scale(-1 1)"), r.top = r.left = 0) : y && (f.push(
+      "translate(" + (0 - r.left).toString() + " " + (r.height + r.top).toString() + ")"
+    ), f.push("scale(1 -1)"), r.top = r.left = 0);
     let w;
     switch (v < 0 && (v -= Math.floor(v / 4) * 4), v = v % 4, v) {
       case 1:
-        w = s.height / 2 + s.top, f.unshift(
+        w = r.height / 2 + r.top, f.unshift(
           "rotate(90 " + w.toString() + " " + w.toString() + ")"
         );
         break;
       case 2:
         f.unshift(
-          "rotate(180 " + (s.width / 2 + s.left).toString() + " " + (s.height / 2 + s.top).toString() + ")"
+          "rotate(180 " + (r.width / 2 + r.left).toString() + " " + (r.height / 2 + r.top).toString() + ")"
         );
         break;
       case 3:
-        w = s.width / 2 + s.left, f.unshift(
+        w = r.width / 2 + r.left, f.unshift(
           "rotate(-90 " + w.toString() + " " + w.toString() + ")"
         );
         break;
     }
-    v % 2 === 1 && (s.left !== s.top && (w = s.left, s.left = s.top, s.top = w), s.width !== s.height && (w = s.width, s.width = s.height, s.height = w)), f.length && (a = '<g transform="' + f.join(" ") + '">' + a + "</g>");
+    v % 2 === 1 && (r.left !== r.top && (w = r.left, r.left = r.top, r.top = w), r.width !== r.height && (w = r.width, r.width = r.height, r.height = w)), f.length && (a = '<g transform="' + f.join(" ") + '">' + a + "</g>");
   });
-  const i = r.width, o = r.height, l = s.width, c = s.height;
+  const i = s.width, o = s.height, l = r.width, c = r.height;
   let u, d;
   i === null ? (d = o === null ? "1em" : o === "auto" ? c : o, u = calculateSize(d, l / c)) : (u = i === "auto" ? l : i, d = o === null ? calculateSize(u, c / l) : o === "auto" ? c : o);
   const p = {}, m = (h, f) => {
     isUnsetKeyword(f) || (p[h] = f.toString());
   };
-  return m("width", u), m("height", d), p.viewBox = s.left.toString() + " " + s.top.toString() + " " + l.toString() + " " + c.toString(), {
+  return m("width", u), m("height", d), p.viewBox = r.left.toString() + " " + r.top.toString() + " " + l.toString() + " " + c.toString(), {
     attributes: p,
     body: a
   };
@@ -3402,21 +3402,21 @@ const regex = /\sid="(\S+)"/g, randomPrefix = "IconifyId" + Date.now().toString(
 let counter = 0;
 function replaceIDs(t, e = randomPrefix) {
   const n = [];
-  let r;
-  for (; r = regex.exec(t); )
-    n.push(r[1]);
+  let s;
+  for (; s = regex.exec(t); )
+    n.push(s[1]);
   if (!n.length)
     return t;
-  const s = "suffix" + (Math.random() * 16777216 | Date.now()).toString(16);
+  const r = "suffix" + (Math.random() * 16777216 | Date.now()).toString(16);
   return n.forEach((a) => {
     const i = typeof e == "function" ? e(a) : e + (counter++).toString(), o = a.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     t = t.replace(
       // Allowed characters before id: [#;"]
       // Allowed characters after id: [)"], .[a-z]
       new RegExp('([#;"])(' + o + ')([")]|\\.[a-z])', "g"),
-      "$1" + i + s + "$3"
+      "$1" + i + r + "$3"
     );
-  }), t = t.replace(new RegExp(s, "g"), ""), t;
+  }), t = t.replace(new RegExp(r, "g"), ""), t;
 }
 const browserStorageConfig = {
   local: !0,
@@ -3468,9 +3468,9 @@ function iterateBrowserStorage(t, e) {
   const n = getBrowserStorage(t);
   if (!n)
     return;
-  const r = getStoredItem(n, browserCacheVersionKey);
-  if (r !== browserCacheVersion) {
-    if (r) {
+  const s = getStoredItem(n, browserCacheVersionKey);
+  if (s !== browserCacheVersion) {
+    if (s) {
       const o = getBrowserStorageItemsCount(n);
       for (let l = 0; l < o; l++)
         removeStoredItem(n, browserCachePrefix + l.toString());
@@ -3478,12 +3478,12 @@ function iterateBrowserStorage(t, e) {
     setStoredItem(n, browserCacheVersionKey, browserCacheVersion), setBrowserStorageItemsCount(n, 0);
     return;
   }
-  const s = Math.floor(Date.now() / browserStorageHour) - browserStorageCacheExpiration, a = (o) => {
+  const r = Math.floor(Date.now() / browserStorageHour) - browserStorageCacheExpiration, a = (o) => {
     const l = browserCachePrefix + o.toString(), c = getStoredItem(n, l);
     if (typeof c == "string") {
       try {
         const u = JSON.parse(c);
-        if (typeof u == "object" && typeof u.cached == "number" && u.cached > s && typeof u.provider == "string" && typeof u.data == "object" && typeof u.data.prefix == "string" && // Valid item: run callback
+        if (typeof u == "object" && typeof u.cached == "number" && u.cached > r && typeof u.provider == "string" && typeof u.data == "object" && typeof u.data.prefix == "string" && // Valid item: run callback
         e(u, o))
           return !0;
       } catch {
@@ -3500,9 +3500,9 @@ function initBrowserStorage() {
     setBrowserStorageStatus(!0);
     for (const t in browserStorageConfig)
       iterateBrowserStorage(t, (e) => {
-        const n = e.data, r = e.provider, s = n.prefix, a = getStorage(
-          r,
-          s
+        const n = e.data, s = e.provider, r = n.prefix, a = getStorage(
+          s,
+          r
         );
         if (!addIconSet(a, n).length)
           return !1;
@@ -3593,24 +3593,24 @@ function calculateMaxLength(t, e) {
   const n = getAPIConfig(t);
   if (!n)
     return 0;
-  let r;
+  let s;
   if (!n.maxURL)
-    r = 0;
+    s = 0;
   else {
-    let s = 0;
+    let r = 0;
     n.resources.forEach((i) => {
-      s = Math.max(s, i.length);
+      r = Math.max(r, i.length);
     });
     const a = e + ".json?icons=";
-    r = n.maxURL - s - n.path.length - a.length;
+    s = n.maxURL - r - n.path.length - a.length;
   }
-  return r;
+  return s;
 }
 function shouldAbort(t) {
   return t === 404;
 }
 const prepare = (t, e, n) => {
-  const r = [], s = calculateMaxLength(t, e), a = "icons";
+  const s = [], r = calculateMaxLength(t, e), a = "icons";
   let i = {
     type: a,
     provider: t,
@@ -3618,13 +3618,13 @@ const prepare = (t, e, n) => {
     icons: []
   }, o = 0;
   return n.forEach((l, c) => {
-    o += l.length + 1, o >= s && c > 0 && (r.push(i), i = {
+    o += l.length + 1, o >= r && c > 0 && (s.push(i), i = {
       type: a,
       provider: t,
       prefix: e,
       icons: []
     }, o = l.length), i.icons.push(l);
-  }), r.push(i), r;
+  }), s.push(i), s;
 };
 function getPath(t) {
   if (typeof t == "string") {
@@ -3639,26 +3639,26 @@ const send = (t, e, n) => {
     n("abort", 424);
     return;
   }
-  let r = getPath(e.provider);
+  let s = getPath(e.provider);
   switch (e.type) {
     case "icons": {
       const a = e.prefix, o = e.icons.join(","), l = new URLSearchParams({
         icons: o
       });
-      r += a + ".json?" + l.toString();
+      s += a + ".json?" + l.toString();
       break;
     }
     case "custom": {
       const a = e.uri;
-      r += a.slice(0, 1) === "/" ? a.slice(1) : a;
+      s += a.slice(0, 1) === "/" ? a.slice(1) : a;
       break;
     }
     default:
       n("abort", 400);
       return;
   }
-  let s = 503;
-  fetchModule(t + r).then((a) => {
+  let r = 503;
+  fetchModule(t + s).then((a) => {
     const i = a.status;
     if (i !== 200) {
       setTimeout(() => {
@@ -3666,11 +3666,11 @@ const send = (t, e, n) => {
       });
       return;
     }
-    return s = 501, a.json();
+    return r = 501, a.json();
   }).then((a) => {
     if (typeof a != "object" || a === null) {
       setTimeout(() => {
-        a === 404 ? n("abort", a) : n("next", s);
+        a === 404 ? n("abort", a) : n("next", r);
       });
       return;
     }
@@ -3678,7 +3678,7 @@ const send = (t, e, n) => {
       n("success", a);
     });
   }).catch(() => {
-    n("next", s);
+    n("next", r);
   });
 }, fetchAPIModule = {
   prepare,
@@ -3690,17 +3690,17 @@ function sortIcons(t) {
     missing: [],
     pending: []
   }, n = /* @__PURE__ */ Object.create(null);
-  t.sort((s, a) => s.provider !== a.provider ? s.provider.localeCompare(a.provider) : s.prefix !== a.prefix ? s.prefix.localeCompare(a.prefix) : s.name.localeCompare(a.name));
-  let r = {
+  t.sort((r, a) => r.provider !== a.provider ? r.provider.localeCompare(a.provider) : r.prefix !== a.prefix ? r.prefix.localeCompare(a.prefix) : r.name.localeCompare(a.name));
+  let s = {
     provider: "",
     prefix: "",
     name: ""
   };
-  return t.forEach((s) => {
-    if (r.name === s.name && r.prefix === s.prefix && r.provider === s.provider)
+  return t.forEach((r) => {
+    if (s.name === r.name && s.prefix === r.prefix && s.provider === r.provider)
       return;
-    r = s;
-    const a = s.provider, i = s.prefix, o = s.name, l = n[a] || (n[a] = /* @__PURE__ */ Object.create(null)), c = l[i] || (l[i] = getStorage(a, i));
+    s = r;
+    const a = r.provider, i = r.prefix, o = r.name, l = n[a] || (n[a] = /* @__PURE__ */ Object.create(null)), c = l[i] || (l[i] = getStorage(a, i));
     let u;
     o in c.icons ? u = e.loaded : i === "" || c.missing.has(o) ? u = e.missing : u = e.pending;
     const d = {
@@ -3713,8 +3713,8 @@ function sortIcons(t) {
 }
 function removeCallback(t, e) {
   t.forEach((n) => {
-    const r = n.loaderCallbacks;
-    r && (n.loaderCallbacks = r.filter((s) => s.id !== e));
+    const s = n.loaderCallbacks;
+    s && (n.loaderCallbacks = s.filter((r) => r.id !== e));
   });
 }
 function updateCallbacks(t) {
@@ -3724,23 +3724,23 @@ function updateCallbacks(t) {
     if (!e.length)
       return;
     let n = !1;
-    const r = t.provider, s = t.prefix;
+    const s = t.provider, r = t.prefix;
     e.forEach((a) => {
       const i = a.icons, o = i.pending.length;
       i.pending = i.pending.filter((l) => {
-        if (l.prefix !== s)
+        if (l.prefix !== r)
           return !0;
         const c = l.name;
         if (t.icons[c])
           i.loaded.push({
-            provider: r,
-            prefix: s,
+            provider: s,
+            prefix: r,
             name: c
           });
         else if (t.missing.has(c))
           i.missing.push({
-            provider: r,
-            prefix: s,
+            provider: s,
+            prefix: r,
             name: c
           });
         else
@@ -3757,25 +3757,25 @@ function updateCallbacks(t) {
 }
 let idCounter = 0;
 function storeCallback(t, e, n) {
-  const r = idCounter++, s = removeCallback.bind(null, n, r);
+  const s = idCounter++, r = removeCallback.bind(null, n, s);
   if (!e.pending.length)
-    return s;
+    return r;
   const a = {
-    id: r,
+    id: s,
     icons: e,
     callback: t,
-    abort: s
+    abort: r
   };
   return n.forEach((i) => {
     (i.loaderCallbacks || (i.loaderCallbacks = [])).push(a);
-  }), s;
+  }), r;
 }
 function listToIcons(t, e = !0, n = !1) {
-  const r = [];
-  return t.forEach((s) => {
-    const a = typeof s == "string" ? stringToIcon(s, e, n) : s;
-    a && r.push(a);
-  }), r;
+  const s = [];
+  return t.forEach((r) => {
+    const a = typeof r == "string" ? stringToIcon(r, e, n) : r;
+    a && s.push(a);
+  }), s;
 }
 var defaultConfig = {
   resources: [],
@@ -3785,8 +3785,8 @@ var defaultConfig = {
   random: !1,
   dataAfterTimeout: !1
 };
-function sendQuery(t, e, n, r) {
-  const s = t.resources.length, a = t.random ? Math.floor(Math.random() * s) : t.index;
+function sendQuery(t, e, n, s) {
+  const r = t.resources.length, a = t.random ? Math.floor(Math.random() * r) : t.index;
   let i;
   if (t.random) {
     let b = t.resources.slice(0);
@@ -3799,7 +3799,7 @@ function sendQuery(t, e, n, r) {
     i = t.resources.slice(a).concat(t.resources.slice(0, a));
   const o = Date.now();
   let l = "pending", c = 0, u, d = null, p = [], m = [];
-  typeof r == "function" && m.push(r);
+  typeof s == "function" && m.push(s);
   function h() {
     d && (clearTimeout(d), d = null);
   }
@@ -3892,16 +3892,16 @@ function initRedundancy(t) {
     ...t
   };
   let n = [];
-  function r() {
+  function s() {
     n = n.filter((o) => o().status === "pending");
   }
-  function s(o, l, c) {
+  function r(o, l, c) {
     const u = sendQuery(
       e,
       o,
       l,
       (d, p) => {
-        r(), c && c(d, p);
+        s(), c && c(d, p);
       }
     );
     return n.push(u), u;
@@ -3910,13 +3910,13 @@ function initRedundancy(t) {
     return n.find((l) => o(l)) || null;
   }
   return {
-    query: s,
+    query: r,
     find: a,
     setIndex: (o) => {
       e.index = o;
     },
     getIndex: () => e.index,
-    cleanup: r
+    cleanup: s
   };
 }
 function emptyCallback$1() {
@@ -3927,32 +3927,32 @@ function getRedundancyCache(t) {
     const e = getAPIConfig(t);
     if (!e)
       return;
-    const n = initRedundancy(e), r = {
+    const n = initRedundancy(e), s = {
       config: e,
       redundancy: n
     };
-    redundancyCache[t] = r;
+    redundancyCache[t] = s;
   }
   return redundancyCache[t];
 }
 function sendAPIQuery(t, e, n) {
-  let r, s;
+  let s, r;
   if (typeof t == "string") {
     const a = getAPIModule(t);
     if (!a)
       return n(void 0, 424), emptyCallback$1;
-    s = a.send;
+    r = a.send;
     const i = getRedundancyCache(t);
-    i && (r = i.redundancy);
+    i && (s = i.redundancy);
   } else {
     const a = createAPIConfig(t);
     if (a) {
-      r = initRedundancy(a);
+      s = initRedundancy(a);
       const i = t.resources ? t.resources[0] : "", o = getAPIModule(i);
-      o && (s = o.send);
+      o && (r = o.send);
     }
   }
-  return !r || !s ? (n(void 0, 424), emptyCallback$1) : r.query(e, s, n)().abort;
+  return !s || !r ? (n(void 0, 424), emptyCallback$1) : s.query(e, r, n)().abort;
 }
 function updateLastModified(t, e) {
   const n = t.lastModifiedCached;
@@ -3962,24 +3962,24 @@ function updateLastModified(t, e) {
   )
     return n === e;
   if (t.lastModifiedCached = e, n)
-    for (const r in browserStorageConfig)
-      iterateBrowserStorage(r, (s) => {
-        const a = s.data;
-        return s.provider !== t.provider || a.prefix !== t.prefix || a.lastModified === e;
+    for (const s in browserStorageConfig)
+      iterateBrowserStorage(s, (r) => {
+        const a = r.data;
+        return r.provider !== t.provider || a.prefix !== t.prefix || a.lastModified === e;
       });
   return !0;
 }
 function storeInBrowserStorage(t, e) {
   browserStorageStatus || initBrowserStorage();
-  function n(r) {
-    let s;
-    if (!browserStorageConfig[r] || !(s = getBrowserStorage(r)))
+  function n(s) {
+    let r;
+    if (!browserStorageConfig[s] || !(r = getBrowserStorage(s)))
       return;
-    const a = browserStorageEmptyItems[r];
+    const a = browserStorageEmptyItems[s];
     let i;
     if (a.size)
       a.delete(i = Array.from(a).shift());
-    else if (i = getBrowserStorageItemsCount(s), !setBrowserStorageItemsCount(s, i + 1))
+    else if (i = getBrowserStorageItemsCount(r), !setBrowserStorageItemsCount(r, i + 1))
       return;
     const o = {
       cached: Math.floor(Date.now() / browserStorageHour),
@@ -3987,7 +3987,7 @@ function storeInBrowserStorage(t, e) {
       data: e
     };
     return setStoredItem(
-      s,
+      r,
       browserCachePrefix + i.toString(),
       JSON.stringify(o)
     );
@@ -4004,12 +4004,12 @@ function loadedNewIcons(t) {
 function loadNewIcons(t, e) {
   t.iconsToLoad ? t.iconsToLoad = t.iconsToLoad.concat(e).sort() : t.iconsToLoad = e, t.iconsQueueFlag || (t.iconsQueueFlag = !0, setTimeout(() => {
     t.iconsQueueFlag = !1;
-    const { provider: n, prefix: r } = t, s = t.iconsToLoad;
+    const { provider: n, prefix: s } = t, r = t.iconsToLoad;
     delete t.iconsToLoad;
     let a;
-    if (!s || !(a = getAPIModule(n)))
+    if (!r || !(a = getAPIModule(n)))
       return;
-    a.prepare(n, r, s).forEach((o) => {
+    a.prepare(n, s, r).forEach((o) => {
       sendAPIQuery(n, o, (l) => {
         if (typeof l != "object")
           o.icons.forEach((c) => {
@@ -4042,45 +4042,45 @@ const isPending = (t) => {
   ).pendingIcons;
   return !!(n && n.has(t.name));
 }, loadIcons = (t, e) => {
-  const n = listToIcons(t, !0, allowSimpleNames()), r = sortIcons(n);
-  if (!r.pending.length) {
+  const n = listToIcons(t, !0, allowSimpleNames()), s = sortIcons(n);
+  if (!s.pending.length) {
     let l = !0;
     return e && setTimeout(() => {
       l && e(
-        r.loaded,
-        r.missing,
-        r.pending,
+        s.loaded,
+        s.missing,
+        s.pending,
         emptyCallback
       );
     }), () => {
       l = !1;
     };
   }
-  const s = /* @__PURE__ */ Object.create(null), a = [];
+  const r = /* @__PURE__ */ Object.create(null), a = [];
   let i, o;
-  return r.pending.forEach((l) => {
+  return s.pending.forEach((l) => {
     const { provider: c, prefix: u } = l;
     if (u === o && c === i)
       return;
     i = c, o = u, a.push(getStorage(c, u));
-    const d = s[c] || (s[c] = /* @__PURE__ */ Object.create(null));
+    const d = r[c] || (r[c] = /* @__PURE__ */ Object.create(null));
     d[u] || (d[u] = []);
-  }), r.pending.forEach((l) => {
+  }), s.pending.forEach((l) => {
     const { provider: c, prefix: u, name: d } = l, p = getStorage(c, u), m = p.pendingIcons || (p.pendingIcons = /* @__PURE__ */ new Set());
-    m.has(d) || (m.add(d), s[c][u].push(d));
+    m.has(d) || (m.add(d), r[c][u].push(d));
   }), a.forEach((l) => {
     const { provider: c, prefix: u } = l;
-    s[c][u].length && loadNewIcons(l, s[c][u]);
-  }), e ? storeCallback(e, r, a) : emptyCallback;
+    r[c][u].length && loadNewIcons(l, r[c][u]);
+  }), e ? storeCallback(e, s, a) : emptyCallback;
 }, loadIcon = (t) => new Promise((e, n) => {
-  const r = typeof t == "string" ? stringToIcon(t, !0) : t;
-  if (!r) {
+  const s = typeof t == "string" ? stringToIcon(t, !0) : t;
+  if (!s) {
     n(t);
     return;
   }
-  loadIcons([r || t], (s) => {
-    if (s.length && r) {
-      const a = getIconData(r);
+  loadIcons([s || t], (r) => {
+    if (r.length && s) {
+      const a = getIconData(s);
       if (a) {
         e({
           ...defaultIconProps,
@@ -4096,9 +4096,9 @@ function mergeCustomisations(t, e) {
   const n = {
     ...t
   };
-  for (const r in e) {
-    const s = e[r], a = typeof s;
-    r in defaultIconSizeCustomisations ? (s === null || s && (a === "string" || a === "number")) && (n[r] = s) : a === typeof n[r] && (n[r] = r === "rotate" ? s % 4 : s);
+  for (const s in e) {
+    const r = e[s], a = typeof r;
+    s in defaultIconSizeCustomisations ? (r === null || r && (a === "string" || a === "number")) && (n[s] = r) : a === typeof n[s] && (n[s] = s === "rotate" ? r % 4 : r);
   }
   return n;
 }
@@ -4157,12 +4157,12 @@ function checkMutations(t, e) {
     return;
   const n = t.observer;
   if (!n.pendingScan)
-    for (let r = 0; r < e.length; r++) {
-      const s = e[r];
+    for (let s = 0; s < e.length; s++) {
+      const r = e[s];
       if (
         // Check for added nodes
-        s.addedNodes && s.addedNodes.length > 0 || // Check for icon or placeholder with modified attributes
-        s.type === "attributes" && s.target[elementDataProperty] !== void 0
+        r.addedNodes && r.addedNodes.length > 0 || // Check for icon or placeholder with modified attributes
+        r.type === "attributes" && r.target[elementDataProperty] !== void 0
       ) {
         n.paused || queueScan(t);
         return;
@@ -4227,9 +4227,9 @@ function resumeObservingNode(t) {
     }
     const n = e.observer;
     if (n.paused && (n.paused--, !n.paused)) {
-      const r = typeof e.node == "function" ? e.node() : e.node;
-      if (r)
-        n.instance ? continueObserving(e, r) : startObserver(e);
+      const s = typeof e.node == "function" ? e.node() : e.node;
+      if (s)
+        n.instance ? continueObserving(e, s) : startObserver(e);
       else return;
     }
   });
@@ -4252,34 +4252,34 @@ function stopObserving(t) {
 function propsChanged(t, e) {
   if (t.name !== e.name || t.mode !== e.mode)
     return !0;
-  const n = t.customisations, r = e.customisations;
-  for (const s in defaultExtendedIconCustomisations)
-    if (n[s] !== r[s])
+  const n = t.customisations, s = e.customisations;
+  for (const r in defaultExtendedIconCustomisations)
+    if (n[r] !== s[r])
       return !0;
   return !1;
 }
 function rotateFromString(t, e = 0) {
   const n = t.replace(/^-?[0-9.]*/, "");
-  function r(s) {
-    for (; s < 0; )
-      s += 4;
-    return s % 4;
+  function s(r) {
+    for (; r < 0; )
+      r += 4;
+    return r % 4;
   }
   if (n === "") {
-    const s = parseInt(t);
-    return isNaN(s) ? 0 : r(s);
+    const r = parseInt(t);
+    return isNaN(r) ? 0 : s(r);
   } else if (n !== t) {
-    let s = 0;
+    let r = 0;
     switch (n) {
       case "%":
-        s = 25;
+        r = 25;
         break;
       case "deg":
-        s = 90;
+        r = 90;
     }
-    if (s) {
+    if (r) {
       let a = parseFloat(t.slice(0, t.length - n.length));
-      return isNaN(a) ? 0 : (a = a / s, a % 1 === 0 ? r(a) : 0);
+      return isNaN(a) ? 0 : (a = a / r, a % 1 === 0 ? s(a) : 0);
     }
   }
   return e;
@@ -4309,26 +4309,26 @@ function getElementProps(t) {
   const e = t.getAttribute("data-icon"), n = typeof e == "string" && stringToIcon(e, !0);
   if (!n)
     return null;
-  const r = {
+  const s = {
     ...defaultExtendedIconCustomisations,
     inline: t.classList && t.classList.contains(inlineClass)
   };
   sizeAttributes.forEach((o) => {
     const l = t.getAttribute("data-" + o);
-    l && (r[o] = l);
+    l && (s[o] = l);
   });
-  const s = t.getAttribute("data-rotate");
-  typeof s == "string" && (r.rotate = rotateFromString(s));
+  const r = t.getAttribute("data-rotate");
+  typeof r == "string" && (s.rotate = rotateFromString(r));
   const a = t.getAttribute("data-flip");
-  typeof a == "string" && flipFromString(r, a), booleanAttributes.forEach((o) => {
+  typeof a == "string" && flipFromString(s, a), booleanAttributes.forEach((o) => {
     const l = "data-" + o, c = getBooleanAttribute(t.getAttribute(l), l);
-    typeof c == "boolean" && (r[o] = c);
+    typeof c == "boolean" && (s[o] = c);
   });
   const i = t.getAttribute("data-mode");
   return {
     name: e,
     icon: n,
-    customisations: r,
+    customisations: s,
     mode: i
   };
 }
@@ -4336,17 +4336,17 @@ const selector = "svg." + blockClass + ", i." + blockClass + ", span." + blockCl
 function scanRootNode(t) {
   const e = [];
   return t.querySelectorAll(selector).forEach((n) => {
-    const r = n[elementDataProperty] || n.tagName.toLowerCase() !== "svg" ? getElementProps(n) : null;
-    r && e.push({
+    const s = n[elementDataProperty] || n.tagName.toLowerCase() !== "svg" ? getElementProps(n) : null;
+    s && e.push({
       node: n,
-      props: r
+      props: s
     });
   }), e;
 }
 function iconToHTML(t, e) {
   let n = t.indexOf("xlink:") === -1 ? "" : ' xmlns:xlink="http://www.w3.org/1999/xlink"';
-  for (const r in e)
-    n += " " + r + '="' + e[r] + '"';
+  for (const s in e)
+    n += " " + s + '="' + e[s] + '"';
   return '<svg xmlns="http://www.w3.org/2000/svg"' + n + ">" + t + "</svg>";
 }
 let policy;
@@ -4369,50 +4369,50 @@ function iconClasses(t) {
     t[n] && e.add("iconify--" + t[n]);
   }), e;
 }
-function applyClasses(t, e, n, r) {
-  const s = t.classList;
-  if (r) {
-    const i = r.classList;
+function applyClasses(t, e, n, s) {
+  const r = t.classList;
+  if (s) {
+    const i = s.classList;
     Array.from(i).forEach((o) => {
-      s.add(o);
+      r.add(o);
     });
   }
   const a = [];
   return e.forEach((i) => {
-    s.contains(i) ? n.has(i) && a.push(i) : (s.add(i), a.push(i));
+    r.contains(i) ? n.has(i) && a.push(i) : (r.add(i), a.push(i));
   }), n.forEach((i) => {
-    e.has(i) || s.remove(i);
+    e.has(i) || r.remove(i);
   }), a;
 }
 function applyStyle(t, e, n) {
-  const r = t.style;
+  const s = t.style;
   (n || []).forEach((a) => {
-    r.removeProperty(a);
+    s.removeProperty(a);
   });
-  const s = [];
+  const r = [];
   for (const a in e)
-    r.getPropertyValue(a) || (s.push(a), r.setProperty(a, e[a]));
-  return s;
+    s.getPropertyValue(a) || (r.push(a), s.setProperty(a, e[a]));
+  return r;
 }
 function renderInlineSVG(t, e, n) {
-  let r;
+  let s;
   try {
-    r = document.createElement("span");
+    s = document.createElement("span");
   } catch {
     return t;
   }
-  const s = e.customisations, a = iconToSVG(n, s), i = t[elementDataProperty], o = iconToHTML(replaceIDs(a.body), {
+  const r = e.customisations, a = iconToSVG(n, r), i = t[elementDataProperty], o = iconToHTML(replaceIDs(a.body), {
     "aria-hidden": "true",
     role: "img",
     ...a.attributes
   });
-  r.innerHTML = cleanUpInnerHTML(o);
-  const l = r.childNodes[0], c = t.attributes;
+  s.innerHTML = cleanUpInnerHTML(o);
+  const l = s.childNodes[0], c = t.attributes;
   for (let h = 0; h < c.length; h++) {
     const f = c.item(h), g = f.name;
     g !== "class" && !l.hasAttribute(g) && l.setAttribute(g, f.value);
   }
-  const u = iconClasses(e.icon), d = applyClasses(l, u, new Set(i && i.addedClasses), t), p = applyStyle(l, s.inline ? {
+  const u = iconClasses(e.icon), d = applyClasses(l, u, new Set(i && i.addedClasses), t), p = applyStyle(l, r.inline ? {
     "vertical-align": "-0.125em"
   } : {}, i && i.addedStyles), m = {
     ...e,
@@ -4454,8 +4454,8 @@ for (const t in propsToAddTo) {
 function fixSize(t) {
   return t + (t.match(/^[-0-9.]+$/) ? "px" : "");
 }
-function renderBackground(t, e, n, r) {
-  const s = e.customisations, a = iconToSVG(n, s), i = a.attributes, o = t[elementDataProperty], l = iconToHTML(a.body, {
+function renderBackground(t, e, n, s) {
+  const r = e.customisations, a = iconToSVG(n, r), i = a.attributes, o = t[elementDataProperty], l = iconToHTML(a.body, {
     ...i,
     width: n.width + "",
     height: n.height + ""
@@ -4464,9 +4464,9 @@ function renderBackground(t, e, n, r) {
     width: fixSize(i.width),
     height: fixSize(i.height),
     ...commonProps,
-    ...r ? monotoneProps : coloredProps
+    ...s ? monotoneProps : coloredProps
   };
-  s.inline && (p["vertical-align"] = "-0.125em");
+  r.inline && (p["vertical-align"] = "-0.125em");
   const m = applyStyle(t, p, o && o.addedStyles), h = {
     ...e,
     status: "loaded",
@@ -4483,8 +4483,8 @@ function checkPendingIcons() {
 }
 function scanDOM(t, e = !1) {
   const n = /* @__PURE__ */ Object.create(null);
-  function r(s, a) {
-    const { provider: i, prefix: o, name: l } = s, c = getStorage(i, o), u = c.icons[l];
+  function s(r, a) {
+    const { provider: i, prefix: o, name: l } = r, c = getStorage(i, o), u = c.icons[l];
     if (u)
       return {
         status: "loaded",
@@ -4494,7 +4494,7 @@ function scanDOM(t, e = !1) {
       return {
         status: "missing"
       };
-    if (a && !isPending(s)) {
+    if (a && !isPending(r)) {
       const d = n[i] || (n[i] = /* @__PURE__ */ Object.create(null));
       (d[o] || (d[o] = /* @__PURE__ */ new Set())).add(l);
     }
@@ -4502,13 +4502,13 @@ function scanDOM(t, e = !1) {
       status: "loading"
     };
   }
-  (t ? [t] : listRootNodes()).forEach((s) => {
-    const a = typeof s.node == "function" ? s.node() : s.node;
+  (t ? [t] : listRootNodes()).forEach((r) => {
+    const a = typeof r.node == "function" ? r.node() : r.node;
     if (!a || !a.querySelectorAll)
       return;
     let i = !1, o = !1;
     function l(c, u, d) {
-      if (o || (o = !0, pauseObservingNode(s)), c.tagName.toUpperCase() !== "SVG") {
+      if (o || (o = !0, pauseObservingNode(r)), c.tagName.toUpperCase() !== "SVG") {
         const p = u.mode, m = p === "mask" || (p === "bg" ? !1 : p === "style" ? d.body.indexOf("currentColor") !== -1 : null);
         if (typeof m == "boolean") {
           renderBackground(c, u, {
@@ -4523,7 +4523,7 @@ function scanDOM(t, e = !1) {
     scanRootNode(a).forEach(({ node: c, props: u }) => {
       const d = c[elementDataProperty];
       if (!d) {
-        const { status: m, icon: h } = r(u.icon, !0);
+        const { status: m, icon: h } = s(u.icon, !0);
         if (h) {
           l(c, u, h);
           return;
@@ -4536,7 +4536,7 @@ function scanDOM(t, e = !1) {
       }
       let p;
       if (propsChanged(d, u)) {
-        if (p = r(u.icon, d.name !== u.name), !p.icon) {
+        if (p = s(u.icon, d.name !== u.name), !p.icon) {
           i = i || p.status === "loading", Object.assign(d, {
             ...u,
             status: p.status
@@ -4546,20 +4546,20 @@ function scanDOM(t, e = !1) {
       } else {
         if (d.status !== "loading")
           return;
-        if (p = r(u.icon, !1), !p.icon) {
+        if (p = s(u.icon, !1), !p.icon) {
           d.status = p.status;
           return;
         }
       }
       l(c, u, p.icon);
-    }), s.temporary && !i ? stopObserving(a) : e && i ? observe(a, !0) : o && s.observer && resumeObservingNode(s);
+    }), r.temporary && !i ? stopObserving(a) : e && i ? observe(a, !0) : o && r.observer && resumeObservingNode(r);
   });
-  for (const s in n) {
-    const a = n[s];
+  for (const r in n) {
+    const a = n[r];
     for (const i in a) {
       const o = a[i];
       loadIcons(Array.from(o).map((l) => ({
-        provider: s,
+        provider: r,
         prefix: i,
         name: l
       })), checkPendingIcons);
@@ -4574,14 +4574,14 @@ function scanElement(t) {
   }, !0);
 }
 function generateIcon(t, e, n = !1) {
-  const r = getIconData(t);
-  if (!r)
+  const s = getIconData(t);
+  if (!s)
     return null;
-  const s = stringToIcon(t), a = mergeCustomisations(defaultExtendedIconCustomisations, e || {}), i = renderInlineSVG(document.createElement("span"), {
+  const r = stringToIcon(t), a = mergeCustomisations(defaultExtendedIconCustomisations, e || {}), i = renderInlineSVG(document.createElement("span"), {
     name: t,
-    icon: s,
+    icon: r,
     customisations: a
-  }, r);
+  }, s);
   return n ? i.outerHTML : i;
 }
 function getVersion() {
@@ -4597,8 +4597,8 @@ function renderIcon(t, e) {
   const n = getIconData(t);
   if (!n)
     return null;
-  const r = mergeCustomisations(defaultExtendedIconCustomisations, e || {});
-  return iconToSVG(n, r);
+  const s = mergeCustomisations(defaultExtendedIconCustomisations, e || {});
+  return iconToSVG(n, s);
 }
 function scan(t) {
   t ? scanElement(t) : scanDOM();
@@ -4608,12 +4608,12 @@ if (typeof document < "u" && typeof window < "u") {
   const t = window;
   if (t.IconifyPreload !== void 0) {
     const e = t.IconifyPreload, n = "Invalid IconifyPreload syntax.";
-    typeof e == "object" && e !== null && (e instanceof Array ? e : [e]).forEach((r) => {
+    typeof e == "object" && e !== null && (e instanceof Array ? e : [e]).forEach((s) => {
       try {
         // Check if item is an object and not null/array
-        (typeof r != "object" || r === null || r instanceof Array || // Check for 'icons' and 'prefix'
-        typeof r.icons != "object" || typeof r.prefix != "string" || // Add icon set
-        !addCollection(r)) && console.error(n);
+        (typeof s != "object" || s === null || s instanceof Array || // Check for 'icons' and 'prefix'
+        typeof s.icons != "object" || typeof s.prefix != "string" || // Add icon set
+        !addCollection(s)) && console.error(n);
       } catch {
         console.error(n);
       }
@@ -4637,14 +4637,14 @@ if (typeof document < "u" && typeof window < "u") {
     const e = t.IconifyProviders;
     if (typeof e == "object" && e !== null)
       for (const n in e) {
-        const r = "IconifyProviders[" + n + "] is invalid.";
+        const s = "IconifyProviders[" + n + "] is invalid.";
         try {
-          const s = e[n];
-          if (typeof s != "object" || !s || s.resources === void 0)
+          const r = e[n];
+          if (typeof r != "object" || !r || r.resources === void 0)
             continue;
-          addAPIProvider(n, s) || console.error(r);
+          addAPIProvider(n, r) || console.error(s);
         } catch {
-          console.error(r);
+          console.error(s);
         }
       }
   }
@@ -4699,44 +4699,44 @@ function formatValueForInputType$1(t, e) {
   else if (typeof t == "number")
     n = new Date(t);
   else if (typeof t == "string") {
-    const r = new Date(t);
-    isNaN(r.getTime()) || (n = r);
+    const s = new Date(t);
+    isNaN(s.getTime()) || (n = s);
   }
   switch (e) {
     case "date":
       if (n) {
-        const r = n.getFullYear(), s = String(n.getMonth() + 1).padStart(2, "0"), a = String(n.getDate()).padStart(2, "0");
-        return `${r}-${s}-${a}`;
+        const s = n.getFullYear(), r = String(n.getMonth() + 1).padStart(2, "0"), a = String(n.getDate()).padStart(2, "0");
+        return `${s}-${r}-${a}`;
       }
       break;
     case "datetime-local":
       if (n) {
-        const r = n.getFullYear(), s = String(n.getMonth() + 1).padStart(2, "0"), a = String(n.getDate()).padStart(2, "0"), i = String(n.getHours()).padStart(2, "0"), o = String(n.getMinutes()).padStart(2, "0");
-        return `${r}-${s}-${a}T${i}:${o}`;
+        const s = n.getFullYear(), r = String(n.getMonth() + 1).padStart(2, "0"), a = String(n.getDate()).padStart(2, "0"), i = String(n.getHours()).padStart(2, "0"), o = String(n.getMinutes()).padStart(2, "0");
+        return `${s}-${r}-${a}T${i}:${o}`;
       }
       break;
     case "time":
       if (n) {
-        const r = String(n.getHours()).padStart(2, "0"), s = String(n.getMinutes()).padStart(2, "0");
-        return `${r}:${s}`;
+        const s = String(n.getHours()).padStart(2, "0"), r = String(n.getMinutes()).padStart(2, "0");
+        return `${s}:${r}`;
       }
       if (typeof t == "string" && /^\d{1,2}:\d{2}(:\d{2})?$/.test(t)) {
-        const r = t.split(":");
-        return `${r[0].padStart(2, "0")}:${r[1].padStart(2, "0")}`;
+        const s = t.split(":");
+        return `${s[0].padStart(2, "0")}:${s[1].padStart(2, "0")}`;
       }
       break;
     case "month":
       if (n) {
-        const r = n.getFullYear(), s = String(n.getMonth() + 1).padStart(2, "0");
-        return `${r}-${s}`;
+        const s = n.getFullYear(), r = String(n.getMonth() + 1).padStart(2, "0");
+        return `${s}-${r}`;
       }
       break;
     case "week":
       if (n) {
-        const r = new Date(n.getTime());
-        r.setHours(0, 0, 0, 0), r.setDate(r.getDate() + 3 - (r.getDay() + 6) % 7);
-        const s = new Date(r.getFullYear(), 0, 4), a = 1 + Math.round(((r.getTime() - s.getTime()) / 864e5 - 3 + (s.getDay() + 6) % 7) / 7);
-        return `${r.getFullYear()}-W${String(a).padStart(2, "0")}`;
+        const s = new Date(n.getTime());
+        s.setHours(0, 0, 0, 0), s.setDate(s.getDate() + 3 - (s.getDay() + 6) % 7);
+        const r = new Date(s.getFullYear(), 0, 4), a = 1 + Math.round(((s.getTime() - r.getTime()) / 864e5 - 3 + (r.getDay() + 6) % 7) / 7);
+        return `${s.getFullYear()}-W${String(a).padStart(2, "0")}`;
       }
       break;
   }
@@ -4749,12 +4749,12 @@ let CDNManager$1 = (A = class {
       return Promise.resolve();
     if (this.loadingPromises.has(e))
       return this.loadingPromises.get(e);
-    const n = new Promise((r, s) => {
+    const n = new Promise((s, r) => {
       const a = document.createElement("script");
       a.src = e, a.onload = () => {
-        this.loadedScripts.add(e), this.loadingPromises.delete(e), r();
+        this.loadedScripts.add(e), this.loadingPromises.delete(e), s();
       }, a.onerror = () => {
-        this.loadingPromises.delete(e), s(new Error(`Échec du chargement: ${e}`));
+        this.loadingPromises.delete(e), r(new Error(`Échec du chargement: ${e}`));
       }, document.head.appendChild(a);
     });
     return this.loadingPromises.set(e, n), n;
@@ -4770,8 +4770,8 @@ let CDNManager$1 = (A = class {
   static async loadSimpleDatatables() {
     const e = "https://cdn.jsdelivr.net/npm/simple-datatables@10.2.0/dist/umd/simple-datatables.min.js", n = "https://cdn.jsdelivr.net/npm/simple-datatables@10.2.0/dist/style.min.css";
     if (!document.querySelector(`link[href="${n}"]`)) {
-      const r = document.createElement("link");
-      r.rel = "stylesheet", r.href = n, document.head.appendChild(r);
+      const s = document.createElement("link");
+      s.rel = "stylesheet", s.href = n, document.head.appendChild(s);
     }
     if (typeof simpleDatatables < "u") {
       this.loadedScripts.add(e);
@@ -4783,8 +4783,8 @@ let CDNManager$1 = (A = class {
     if (window._pdfmeModules)
       return window._pdfmeModules;
     try {
-      const e = import("https://cdn.jsdelivr.net/npm/@pdfme/common@5.5.8/+esm"), n = import("https://cdn.jsdelivr.net/npm/@pdfme/generator@5.5.8/+esm"), r = import("https://cdn.jsdelivr.net/npm/@pdfme/schemas@5.5.8/+esm"), [s, a, i] = await Promise.all([e, n, r]);
-      return window._pdfmeModules = { common: s, generator: a, schemas: i }, window._pdfmeModules;
+      const e = import("https://cdn.jsdelivr.net/npm/@pdfme/common@5.5.8/+esm"), n = import("https://cdn.jsdelivr.net/npm/@pdfme/generator@5.5.8/+esm"), s = import("https://cdn.jsdelivr.net/npm/@pdfme/schemas@5.5.8/+esm"), [r, a, i] = await Promise.all([e, n, s]);
+      return window._pdfmeModules = { common: r, generator: a, schemas: i }, window._pdfmeModules;
     } catch (e) {
       throw console.error("[pdfme CDN] ERREUR chargement:", e), console.error("[pdfme CDN] Stack:", e.stack), e;
     }
@@ -4832,18 +4832,18 @@ let CDNManager$1 = (A = class {
             }
           }), document.head.insertBefore(u, document.head.firstChild), await new Promise((d) => setTimeout(d, 0));
         }
-        const e = await import("https://esm.sh/@codemirror/state@6.4.1"), n = await import("https://esm.sh/@codemirror/view@6.26.3?deps=@codemirror/state@6.4.1"), r = await import("https://esm.sh/@codemirror/language@6.10.1?deps=@codemirror/state@6.4.1,@codemirror/view@6.26.3"), s = await import("https://esm.sh/@codemirror/commands@6.5.0?deps=@codemirror/state@6.4.1,@codemirror/view@6.26.3,@codemirror/language@6.10.1"), a = await import("https://esm.sh/@codemirror/search@6.5.6?deps=@codemirror/state@6.4.1,@codemirror/view@6.26.3"), i = await import("https://esm.sh/@codemirror/autocomplete@6.16.0?deps=@codemirror/state@6.4.1,@codemirror/view@6.26.3,@codemirror/language@6.10.1,@codemirror/commands@6.5.0"), o = await import("https://esm.sh/@codemirror/lang-sql@6.6.4?deps=@codemirror/state@6.4.1,@codemirror/view@6.26.3,@codemirror/language@6.10.1,@codemirror/autocomplete@6.16.0"), l = await import("https://esm.sh/@codemirror/theme-one-dark@6.1.2?deps=@codemirror/state@6.4.1,@codemirror/view@6.26.3"), c = [
+        const e = await import("https://esm.sh/@codemirror/state@6.4.1"), n = await import("https://esm.sh/@codemirror/view@6.26.3?deps=@codemirror/state@6.4.1"), s = await import("https://esm.sh/@codemirror/language@6.10.1?deps=@codemirror/state@6.4.1,@codemirror/view@6.26.3"), r = await import("https://esm.sh/@codemirror/commands@6.5.0?deps=@codemirror/state@6.4.1,@codemirror/view@6.26.3,@codemirror/language@6.10.1"), a = await import("https://esm.sh/@codemirror/search@6.5.6?deps=@codemirror/state@6.4.1,@codemirror/view@6.26.3"), i = await import("https://esm.sh/@codemirror/autocomplete@6.16.0?deps=@codemirror/state@6.4.1,@codemirror/view@6.26.3,@codemirror/language@6.10.1,@codemirror/commands@6.5.0"), o = await import("https://esm.sh/@codemirror/lang-sql@6.6.4?deps=@codemirror/state@6.4.1,@codemirror/view@6.26.3,@codemirror/language@6.10.1,@codemirror/autocomplete@6.16.0"), l = await import("https://esm.sh/@codemirror/theme-one-dark@6.1.2?deps=@codemirror/state@6.4.1,@codemirror/view@6.26.3"), c = [
           n.lineNumbers(),
           n.highlightActiveLineGutter(),
           n.highlightSpecialChars(),
-          s.history(),
-          r.foldGutter(),
+          r.history(),
+          s.foldGutter(),
           n.drawSelection(),
           n.dropCursor(),
           e.EditorState.allowMultipleSelections.of(!0),
-          r.indentOnInput(),
-          r.syntaxHighlighting(r.defaultHighlightStyle, { fallback: !0 }),
-          r.bracketMatching(),
+          s.indentOnInput(),
+          s.syntaxHighlighting(s.defaultHighlightStyle, { fallback: !0 }),
+          s.bracketMatching(),
           i.closeBrackets(),
           i.autocompletion(),
           n.rectangularSelection(),
@@ -4852,10 +4852,10 @@ let CDNManager$1 = (A = class {
           a.highlightSelectionMatches(),
           n.keymap.of([
             ...i.closeBracketsKeymap,
-            ...s.defaultKeymap,
+            ...r.defaultKeymap,
             ...a.searchKeymap,
-            ...s.historyKeymap,
-            ...r.foldKeymap,
+            ...r.historyKeymap,
+            ...s.foldKeymap,
             ...i.completionKeymap
           ])
         ];
@@ -4876,7 +4876,7 @@ let CDNManager$1 = (A = class {
     })(), this.codeMirrorSQLLoadingPromise);
   }
   // Créer une instance d'éditeur CodeMirror SQL
-  static createSqlEditor(e, n, r, s = {}) {
+  static createSqlEditor(e, n, s, r = {}) {
     var v;
     if (!this.codeMirrorSQLModules)
       throw new Error("CodeMirror SQL non chargé. Appelez loadCodeMirrorSQL() d'abord.");
@@ -4889,7 +4889,7 @@ let CDNManager$1 = (A = class {
       sqlExtension: u,
       cteCompletionSource: d,
       oneDark: p
-    } = this.codeMirrorSQLModules, m = ((v = document.documentElement.getAttribute("data-theme")) == null ? void 0 : v.includes("dark")) || window.matchMedia("(prefers-color-scheme: dark)").matches, h = s.schema || {}, f = s.dialect === "duckdb" ? c : l, g = [
+    } = this.codeMirrorSQLModules, m = ((v = document.documentElement.getAttribute("data-theme")) == null ? void 0 : v.includes("dark")) || window.matchMedia("(prefers-color-scheme: dark)").matches, h = r.schema || {}, f = r.dialect === "duckdb" ? c : l, g = [
       i,
       o({
         dialect: f,
@@ -4897,7 +4897,7 @@ let CDNManager$1 = (A = class {
         upperCaseKeywords: !0
       }),
       a.updateListener.of((w) => {
-        w.docChanged && r && r(w.state.doc.toString());
+        w.docChanged && s && s(w.state.doc.toString());
       }),
       a.theme({
         "&": {
@@ -4952,9 +4952,9 @@ let CDNManager$1 = (A = class {
       return this.perspectiveLoadingPromise ? this.perspectiveLoadingPromise : (this.perspectiveLoadingPromise = (async () => {
         const e = "https://cdn.jsdelivr.net/npm/@perspective-dev/viewer/dist/css/themes.css";
         if (!document.querySelector(`link[href="${e}"]`)) {
-          const r = document.createElement("link");
-          r.rel = "stylesheet", r.crossOrigin = "anonymous", r.href = e, await new Promise((s, a) => {
-            r.onload = s, r.onerror = a, document.head.appendChild(r);
+          const s = document.createElement("link");
+          s.rel = "stylesheet", s.crossOrigin = "anonymous", s.href = e, await new Promise((r, a) => {
+            s.onload = r, s.onerror = a, document.head.appendChild(s);
           });
         }
         await import("https://cdn.jsdelivr.net/npm/@perspective-dev/viewer@4.1.0/dist/cdn/perspective-viewer.js"), await import("https://cdn.jsdelivr.net/npm/@perspective-dev/viewer-datagrid@4.1.0/dist/cdn/perspective-viewer-datagrid.js"), await import("https://cdn.jsdelivr.net/npm/@perspective-dev/viewer-d3fc@4.1.0/dist/cdn/perspective-viewer-d3fc.js"), await import("https://cdn.jsdelivr.net/npm/@perspective-dev/viewer-openlayers@4.1.0/dist/cdn/perspective-viewer-openlayers.js");
@@ -5313,9 +5313,9 @@ FROM v_source LIMIT 10`, engine: "sql", clientVisible: !1 },
   }
 };
 function initializeCell$1(t, e, n = {}) {
-  const r = n.generateId || (() => "cell_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9)), s = {
+  const s = n.generateId || (() => "cell_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9)), r = {
     ...t,
-    _id: r(),
+    _id: s(),
     _status: null,
     _results: null,
     _resultInfo: null,
@@ -5323,52 +5323,52 @@ function initializeCell$1(t, e, n = {}) {
   }, a = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[t == null ? void 0 : t.type];
   if (a != null && a.initProps)
     for (const [o, l] of Object.entries(a.initProps))
-      s[o] = Array.isArray(l) ? [] : l;
+      r[o] = Array.isArray(l) ? [] : l;
   if (a != null && a.initFileSlot) {
     const { slot: o, asBlob: l } = a.initFileSlot;
-    ConfigManager.ensureCellFiles(t), s.files = t.files;
+    ConfigManager.ensureCellFiles(t), r.files = t.files;
     const c = ConfigManager.getCellFileData(t);
     if (l)
       if (c) {
-        s._fileName = c.fileName;
+        r._fileName = c.fileName;
         const u = FileHandler.base64ToUint8Array(c.base64), d = new Blob([u], { type: FileHandler.getMimeTypeFromFileName(c.fileName) });
-        s._currentFile = new File([d], c.fileName, { type: d.type }), s._pendingFileLoad = !0;
+        r._currentFile = new File([d], c.fileName, { type: d.type }), r._pendingFileLoad = !0;
       } else
-        s._fileName = "", s._currentFile = null;
-    else c && (s.docxTemplateBase64 = c.base64, s.docxTemplateFileName = c.fileName);
+        r._fileName = "", r._currentFile = null;
+    else c && (r.docxTemplateBase64 = c.base64, r.docxTemplateFileName = c.fileName);
   }
   const i = CELL_TYPE_HANDLERS[t == null ? void 0 : t.type];
-  return i != null && i.onInit && i.onInit(t, s), s;
+  return i != null && i.onInit && i.onInit(t, r), r;
 }
 let CellConfigService$1 = class {
   static getSchemaForType(e) {
     return CELL_TYPE_SCHEMAS$1.types[e] || null;
   }
   static getCommonParamDef(e, n) {
-    const r = CELL_TYPE_SCHEMAS$1.common[e];
-    if (!r) return null;
-    const s = CELL_TYPE_SCHEMAS$1.types[n];
-    if (!s) return r;
-    s[e + "Label"] || s[e + "Tooltip"] || s[e + "Placeholder"];
-    const a = s[e + "Label"] ?? r.label, i = s[e + "Tooltip"] ?? r.tooltip, o = s[e + "Placeholder"] ?? r.placeholder;
-    return { ...r, label: a, tooltip: i, placeholder: o };
+    const s = CELL_TYPE_SCHEMAS$1.common[e];
+    if (!s) return null;
+    const r = CELL_TYPE_SCHEMAS$1.types[n];
+    if (!r) return s;
+    r[e + "Label"] || r[e + "Tooltip"] || r[e + "Placeholder"];
+    const a = r[e + "Label"] ?? s.label, i = r[e + "Tooltip"] ?? s.tooltip, o = r[e + "Placeholder"] ?? s.placeholder;
+    return { ...s, label: a, tooltip: i, placeholder: o };
   }
   static getCommonParamsForType(e) {
     const n = CELL_TYPE_SCHEMAS$1.types[e];
-    return ((n == null ? void 0 : n.commonParams) || ["name"]).filter((r) => CELL_TYPE_SCHEMAS$1.common[r]);
+    return ((n == null ? void 0 : n.commonParams) || ["name"]).filter((s) => CELL_TYPE_SCHEMAS$1.common[s]);
   }
   static getSpecificParamsForType(e) {
     var n;
     return e == null ? [] : ((n = CELL_TYPE_SCHEMAS$1.types[e]) == null ? void 0 : n.specificParams) || [];
   }
-  static ensureCellFromSchema(e, n, r = {}) {
+  static ensureCellFromSchema(e, n, s = {}) {
     var l;
-    const s = CELL_TYPE_SCHEMAS$1.types[n];
-    if (!s || !e) return;
-    const { baseName: a } = r, i = s.defaults || {};
+    const r = CELL_TYPE_SCHEMAS$1.types[n];
+    if (!r || !e) return;
+    const { baseName: a } = s, i = r.defaults || {};
     for (const [c, u] of Object.entries(i))
       if (c === "queries") {
-        const d = s.queryNames ?? (s.queryCount ? Array.from({ length: s.queryCount }, (p, m) => m === 0 ? "main" : m === 1 ? "filename" : "query" + m) : ["main"]);
+        const d = r.queryNames ?? (r.queryCount ? Array.from({ length: r.queryCount }, (p, m) => m === 0 ? "main" : m === 1 ? "filename" : "query" + m) : ["main"]);
         for (let p = 0; p < d.length; p++) {
           const m = d[p];
           ConfigManager.ensureCellQueries(e, m);
@@ -5386,25 +5386,25 @@ let CellConfigService$1 = class {
       else if (c === "json" && typeof u == "object" && e.json && typeof e.json == "object")
         for (const [d, p] of Object.entries(u))
           e.json[d] === void 0 && (e.json[d] = p);
-    const o = s.queryNames ?? (s.queryCount ? Array.from({ length: s.queryCount }, (c, u) => u === 0 ? "main" : u === 1 ? "filename" : "query" + u) : ["main"]);
+    const o = r.queryNames ?? (r.queryCount ? Array.from({ length: r.queryCount }, (c, u) => u === 0 ? "main" : u === 1 ? "filename" : "query" + u) : ["main"]);
     for (const c of o) ConfigManager.ensureCellQueries(e, c);
-    ((l = s.defaults) == null ? void 0 : l.json) !== void 0 && !e.json && (e.json = {}), n === "pdfme" && typeof e.json == "object" && e.json !== null && (e.json = JSON.stringify(e.json, null, 2));
+    ((l = r.defaults) == null ? void 0 : l.json) !== void 0 && !e.json && (e.json = {}), n === "pdfme" && typeof e.json == "object" && e.json !== null && (e.json = JSON.stringify(e.json, null, 2));
   }
-  static applyDefaultsOnTypeChange(e, n, r = {}) {
+  static applyDefaultsOnTypeChange(e, n, s = {}) {
     if (!e) return;
-    const s = CELL_TYPE_SCHEMAS$1.types[n];
-    if (!s) return;
-    const a = r.oldType || e.type;
+    const r = CELL_TYPE_SCHEMAS$1.types[n];
+    if (!r) return;
+    const a = s.oldType || e.type;
     CELL_TYPE_SCHEMAS$1.types[a];
-    const i = /* @__PURE__ */ new Set([...s.commonParams || [], ...(s.specificParams || []).map((l) => (typeof l == "object" ? l.key : l).split(".")[0].split("[")[0])]), o = ["content", "paramType", "inputType", "rangeMin", "rangeMax", "rangeStep", "userVisible", "userEditable", "preserveUserValue", "maxRows", "perspectiveCdns"];
+    const i = /* @__PURE__ */ new Set([...r.commonParams || [], ...(r.specificParams || []).map((l) => (typeof l == "object" ? l.key : l).split(".")[0].split("[")[0])]), o = ["content", "paramType", "inputType", "rangeMin", "rangeMax", "rangeStep", "userVisible", "userEditable", "preserveUserValue", "maxRows", "perspectiveCdns"];
     for (const l of o)
       i.has(l) || delete e[l];
-    delete e.json, e.type = n, this.ensureCellFromSchema(e, n, r);
+    delete e.json, e.type = n, this.ensureCellFromSchema(e, n, s);
   }
   static isSpecificParamVisible(e, n) {
     if (!e.when || !n) return !0;
-    for (const [r, s] of Object.entries(e.when))
-      if (n[r] !== s) return !1;
+    for (const [s, r] of Object.entries(e.when))
+      if (n[s] !== r) return !1;
     return !0;
   }
   /** Lit une valeur via un chemin (ex: 'queries.main.sql', 'queries[0].sql' rétrocompat, 'json.xlsx'). Pour json.xlsx retourne JSON.stringify. */
@@ -5427,9 +5427,9 @@ let CellConfigService$1 = class {
       const d = e.json;
       return typeof d == "object" && d !== null ? JSON.stringify(d, null, 2) : d ?? "";
     }
-    const r = n.match(/^queries\[(\d+)\]\.(.*)$/);
-    if (r) {
-      const d = parseInt(r[1], 10), p = r[2], m = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[e == null ? void 0 : e.type], h = ((l = m == null ? void 0 : m.queryNames) == null ? void 0 : l[d]) ?? (d === 0 ? "main" : d === 1 ? "filename" : "");
+    const s = n.match(/^queries\[(\d+)\]\.(.*)$/);
+    if (s) {
+      const d = parseInt(s[1], 10), p = s[2], m = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[e == null ? void 0 : e.type], h = ((l = m == null ? void 0 : m.queryNames) == null ? void 0 : l[d]) ?? (d === 0 ? "main" : d === 1 ? "filename" : "");
       h && (n = `queries.${h}.${p}`);
     }
     if (n.startsWith("queries.")) {
@@ -5447,42 +5447,42 @@ let CellConfigService$1 = class {
         }
       }
     }
-    const s = n.replace(/\]/g, "").split(/\.|\[/).filter(Boolean);
+    const r = n.replace(/\]/g, "").split(/\.|\[/).filter(Boolean);
     let a = e;
-    for (const d of s) a = a == null ? void 0 : a[isNaN(d) ? d : parseInt(d, 10)];
+    for (const d of r) a = a == null ? void 0 : a[isNaN(d) ? d : parseInt(d, 10)];
     return a;
   }
   /** Écrit une valeur via un chemin. Pour json.xlsx : value est une chaîne JSON. Supporte queries.main.xxx et queries[0].xxx (rétrocompat). */
-  static setCellValueByPath(e, n, r) {
+  static setCellValueByPath(e, n, s) {
     var l;
     if (!e || !n) return;
     if (n === "content") {
       const c = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[e == null ? void 0 : e.type];
       if (c != null && c.contentKey) {
-        ConfigManager.setCellEditableContent(e, r);
+        ConfigManager.setCellEditableContent(e, s);
         return;
       }
     }
     if (n === "json.xlsx") {
       e.json || (e.json = {});
       try {
-        e.json.xlsx = JSON.parse(r);
+        e.json.xlsx = JSON.parse(s);
       } catch {
       }
       return;
     }
     if (n === "json.perspectiveConfig") {
-      e.json || (e.json = {}), e.json.perspectiveConfig = typeof r == "string" ? r : r ?? "";
+      e.json || (e.json = {}), e.json.perspectiveConfig = typeof s == "string" ? s : s ?? "";
       return;
     }
     if (n === "json") {
-      e.json = typeof r == "string" ? r : r != null ? JSON.stringify(r) : "";
+      e.json = typeof s == "string" ? s : s != null ? JSON.stringify(s) : "";
       return;
     }
     n.startsWith("json.") && !e.json && (e.json = {});
-    const s = n.match(/^queries\[(\d+)\]\.(.*)$/);
-    if (s) {
-      const c = parseInt(s[1], 10), u = s[2], d = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[e == null ? void 0 : e.type], p = ((l = d == null ? void 0 : d.queryNames) == null ? void 0 : l[c]) ?? (c === 0 ? "main" : c === 1 ? "filename" : "");
+    const r = n.match(/^queries\[(\d+)\]\.(.*)$/);
+    if (r) {
+      const c = parseInt(r[1], 10), u = r[2], d = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[e == null ? void 0 : e.type], p = ((l = d == null ? void 0 : d.queryNames) == null ? void 0 : l[c]) ?? (c === 0 ? "main" : c === 1 ? "filename" : "");
       p && (n = `queries.${p}.${u}`);
     }
     if (n.startsWith("queries.")) {
@@ -5495,7 +5495,7 @@ let CellConfigService$1 = class {
           const m = ConfigManager.getDefaultEngineForType(e == null ? void 0 : e.type, u);
           p = { name: u, sql: "", engine: m, clientVisible: !1 }, e.queries.push(p);
         }
-        p && d && (p[d] = r);
+        p && d && (p[d] = s);
         return;
       }
     }
@@ -5505,23 +5505,23 @@ let CellConfigService$1 = class {
       const u = a[c], d = isNaN(u) ? u : parseInt(u, 10), p = a[c + 1];
       o[d] === void 0 && (o[d] = p !== void 0 && !isNaN(p) ? [] : {}), o = o[d];
     }
-    o && (o[i] = r);
+    o && (o[i] = s);
   }
 };
 var $;
 let GistEncrypt$1 = ($ = class {
   static _uint8ArrayToBase64(e) {
-    let r = "";
-    for (let s = 0; s < e.length; s += 32768) {
-      const a = e.subarray(s, Math.min(s + 32768, e.length));
-      r += String.fromCharCode.apply(null, a);
+    let s = "";
+    for (let r = 0; r < e.length; r += 32768) {
+      const a = e.subarray(r, Math.min(r + 32768, e.length));
+      s += String.fromCharCode.apply(null, a);
     }
-    return btoa(r);
+    return btoa(s);
   }
   static _base64ToUint8Array(e) {
-    const n = atob(e), r = new Uint8Array(n.length);
-    for (let s = 0; s < n.length; s++) r[s] = n.charCodeAt(s);
-    return r;
+    const n = atob(e), s = new Uint8Array(n.length);
+    for (let r = 0; r < n.length; r++) s[r] = n.charCodeAt(r);
+    return s;
   }
   /** Génère une passphrase aléatoire (32 caractères hex, type 68cd597ba5da05ceba24fb975c05384f) */
   static generatePassphrase() {
@@ -5529,10 +5529,10 @@ let GistEncrypt$1 = ($ = class {
     return crypto.getRandomValues(e), Array.from(e).map((n) => n.toString(16).padStart(2, "0")).join("");
   }
   /** Dérive une clé AES depuis la passphrase */
-  static async deriveKey(e, n, r = this.DEFAULT_ITERATIONS) {
-    const s = new TextEncoder(), a = await crypto.subtle.importKey("raw", s.encode(e), "PBKDF2", !1, ["deriveBits", "deriveKey"]);
+  static async deriveKey(e, n, s = this.DEFAULT_ITERATIONS) {
+    const r = new TextEncoder(), a = await crypto.subtle.importKey("raw", r.encode(e), "PBKDF2", !1, ["deriveBits", "deriveKey"]);
     return crypto.subtle.deriveKey(
-      { name: "PBKDF2", salt: n, iterations: r, hash: "SHA-256" },
+      { name: "PBKDF2", salt: n, iterations: s, hash: "SHA-256" },
       a,
       { name: "AES-GCM", length: 256 },
       !1,
@@ -5544,8 +5544,8 @@ let GistEncrypt$1 = ($ = class {
    * { _encrypted, kdf, iterations, salt, iv, ciphertext }
    */
   static async encrypt(e, n) {
-    const r = crypto.getRandomValues(new Uint8Array(16)), s = crypto.getRandomValues(new Uint8Array(12)), a = await this.deriveKey(n, r), i = new TextEncoder(), o = await crypto.subtle.encrypt(
-      { name: "AES-GCM", iv: s },
+    const s = crypto.getRandomValues(new Uint8Array(16)), r = crypto.getRandomValues(new Uint8Array(12)), a = await this.deriveKey(n, s), i = new TextEncoder(), o = await crypto.subtle.encrypt(
+      { name: "AES-GCM", iv: r },
       a,
       i.encode(e)
     );
@@ -5553,8 +5553,8 @@ let GistEncrypt$1 = ($ = class {
       [this.ENCRYPTED_MARKER]: !0,
       kdf: "PBKDF2",
       iterations: this.DEFAULT_ITERATIONS,
-      salt: this._uint8ArrayToBase64(r),
-      iv: this._uint8ArrayToBase64(s),
+      salt: this._uint8ArrayToBase64(s),
+      iv: this._uint8ArrayToBase64(r),
       ciphertext: this._uint8ArrayToBase64(new Uint8Array(o))
     };
   }
@@ -5564,8 +5564,8 @@ let GistEncrypt$1 = ($ = class {
   static async decrypt(e, n) {
     if (!e || !e[this.ENCRYPTED_MARKER] || !e.ciphertext || !e.salt || e.iv === void 0)
       throw new Error("Contenu non chiffré ou format invalide");
-    const r = this._base64ToUint8Array(e.salt), s = this._base64ToUint8Array(e.iv), a = this._base64ToUint8Array(e.ciphertext), i = e.iterations || this.DEFAULT_ITERATIONS, o = await this.deriveKey(n, r, i), l = await crypto.subtle.decrypt(
-      { name: "AES-GCM", iv: s },
+    const s = this._base64ToUint8Array(e.salt), r = this._base64ToUint8Array(e.iv), a = this._base64ToUint8Array(e.ciphertext), i = e.iterations || this.DEFAULT_ITERATIONS, o = await this.deriveKey(n, s, i), l = await crypto.subtle.decrypt(
+      { name: "AES-GCM", iv: r },
       o,
       a
     );
@@ -5587,57 +5587,57 @@ let GistEncrypt$1 = ($ = class {
   static async compressGzip(e) {
     if (typeof CompressionStream > "u")
       throw new Error("CompressionStream non supporté");
-    const n = new CompressionStream("gzip"), r = n.readable.getReader(), s = [], a = (async () => {
+    const n = new CompressionStream("gzip"), s = n.readable.getReader(), r = [], a = (async () => {
       let o = !1;
       for (; !o; ) {
-        const { value: l, done: c } = await r.read();
-        o = c, l && s.push(l);
+        const { value: l, done: c } = await s.read();
+        o = c, l && r.push(l);
       }
     })(), i = n.writable.getWriter();
-    return await i.write(new Uint8Array(e)), await i.close(), await a, await new Blob(s).arrayBuffer();
+    return await i.write(new Uint8Array(e)), await i.close(), await a, await new Blob(r).arrayBuffer();
   }
   static async decompressGzip(e) {
     if (typeof DecompressionStream > "u")
       throw new Error("DecompressionStream non supporté");
-    const n = new DecompressionStream("gzip"), r = n.readable.getReader(), s = [], a = (async () => {
+    const n = new DecompressionStream("gzip"), s = n.readable.getReader(), r = [], a = (async () => {
       let o = !1;
       for (; !o; ) {
-        const { value: l, done: c } = await r.read();
-        o = c, l && s.push(l);
+        const { value: l, done: c } = await s.read();
+        o = c, l && r.push(l);
       }
     })(), i = n.writable.getWriter();
-    return await i.write(e), await i.close(), await a, await new Blob(s).arrayBuffer();
+    return await i.write(e), await i.close(), await a, await new Blob(r).arrayBuffer();
   }
   static arrayBufferToBase64(e) {
     const n = new Uint8Array(e);
-    let r = "";
-    for (let s = 0; s < n.length; s++)
-      r += String.fromCharCode(n[s]);
-    return btoa(r);
+    let s = "";
+    for (let r = 0; r < n.length; r++)
+      s += String.fromCharCode(n[r]);
+    return btoa(s);
   }
   static base64ToUint8Array(e) {
-    const n = atob(e), r = new Uint8Array(n.length);
-    for (let s = 0; s < n.length; s++)
-      r[s] = n.charCodeAt(s);
-    return r;
+    const n = atob(e), s = new Uint8Array(n.length);
+    for (let r = 0; r < n.length; r++)
+      s[r] = n.charCodeAt(r);
+    return s;
   }
-  static async processExcelFile(e, n, r, s) {
+  static async processExcelFile(e, n, s, r) {
     var u, d;
     await CDNManager$1.loadXlsx();
     const a = XLSX.read(await e.arrayBuffer(), { type: "array", ...n });
     let i = a.SheetNames[0];
-    const o = s || { type: {} };
+    const o = r || { type: {} };
     (u = o.type) != null && u.name && o.name ? a.SheetNames.includes(o.name) && (i = o.name) : (d = o.type) != null && d.index && o.index > 0 && o.index < a.SheetNames.length && (i = a.SheetNames[o.index]);
     const l = a.Sheets[i];
     return {
-      csv: XLSX.utils.sheet_to_csv(l, r || {}),
+      csv: XLSX.utils.sheet_to_csv(l, s || {}),
       csvFileName: e.name.replace(/\.(xlsx|xls)$/i, ".csv"),
       sheetName: i
     };
   }
   static downloadFile(e, n) {
-    const r = URL.createObjectURL(e), s = document.createElement("a");
-    s.href = r, s.download = n, document.body.appendChild(s), s.click(), document.body.removeChild(s), URL.revokeObjectURL(r);
+    const s = URL.createObjectURL(e), r = document.createElement("a");
+    r.href = s, r.download = n, document.body.appendChild(r), r.click(), document.body.removeChild(r), URL.revokeObjectURL(s);
   }
 };
 var M;
@@ -5645,13 +5645,13 @@ let ConfigManager$1 = (M = class {
   static getDefaultConfig() {
     var e;
     try {
-      const n = document.getElementById("defaultConfigBase64"), r = (e = n == null ? void 0 : n.textContent) == null ? void 0 : e.trim();
-      if (!r) return { job: { cells: [] } };
+      const n = document.getElementById("defaultConfigBase64"), s = (e = n == null ? void 0 : n.textContent) == null ? void 0 : e.trim();
+      if (!s) return { job: { cells: [] } };
       try {
-        const s = atob(r), a = decodeURIComponent(escape(s));
+        const r = atob(s), a = decodeURIComponent(escape(r));
         return JSON.parse(a);
       } catch {
-        return JSON.parse(atob(r));
+        return JSON.parse(atob(s));
       }
     } catch (n) {
       return console.error("Erreur de décodage config:", n), { job: { cells: [] } };
@@ -5662,16 +5662,16 @@ let ConfigManager$1 = (M = class {
    * @returns {{ config } | { needsPassphrase: true, encryptedContent, source: 'html' }}
    */
   static loadDefaultConfigOrEncrypted() {
-    var r;
-    const e = document.getElementById("defaultConfigBase64"), n = (r = e == null ? void 0 : e.textContent) == null ? void 0 : r.trim();
+    var s;
+    const e = document.getElementById("defaultConfigBase64"), n = (s = e == null ? void 0 : e.textContent) == null ? void 0 : s.trim();
     if (!n) return { config: { job: { cells: [] } } };
     try {
-      const s = atob(n);
+      const r = atob(n);
       let a;
       try {
-        a = decodeURIComponent(escape(s));
+        a = decodeURIComponent(escape(r));
       } catch {
-        a = s;
+        a = r;
       }
       const i = JSON.parse(a);
       return GistEncrypt$1.isEncrypted(i) ? { needsPassphrase: !0, encryptedContent: i, source: "html" } : { config: i };
@@ -5686,8 +5686,8 @@ let ConfigManager$1 = (M = class {
   }
   static normalizeOrder(e, n) {
     if (e == null || typeof e == "string" && e.trim() === "") return n;
-    const r = Number(e);
-    return Number.isFinite(r) ? r : n;
+    const s = Number(e);
+    return Number.isFinite(s) ? s : n;
   }
   /**
    * Normalise une cellule (schéma unifié refacto.md). Migre les queries sans name.
@@ -5697,14 +5697,14 @@ let ConfigManager$1 = (M = class {
     const n = { ...e };
     if (n.type === "markdown" && n.content && !M.getCellQuery(n, "main")) {
       M.ensureCellQueries(n, "main");
-      const r = M.getQueryByName(n, "main");
-      r && (r.sql = n.content);
+      const s = M.getQueryByName(n, "main");
+      s && (s.sql = n.content);
     }
     if (Array.isArray(n.queries) && n.queries.length > 0) {
-      const r = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[n.type], s = (r == null ? void 0 : r.queryNames) ?? ["main"];
+      const s = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[n.type], r = (s == null ? void 0 : s.queryNames) ?? ["main"];
       n.queries = n.queries.map((a, i) => ({
         ...a,
-        name: a.name || s[i] || (i === 0 ? "main" : i === 1 ? "filename" : "query" + i)
+        name: a.name || r[i] || (i === 0 ? "main" : i === 1 ? "filename" : "query" + i)
       }));
     }
     return n.type === "pdfme" && typeof n.json == "object" && n.json !== null && (n.json = JSON.stringify(n.json, null, 2)), n;
@@ -5713,63 +5713,63 @@ let ConfigManager$1 = (M = class {
    * Normalise un groupe (schéma unifié). Migre les queries de condition d'affichage sans name.
    */
   static normalizeGroup(e) {
-    return !e || !Array.isArray(e.queries) || (e.queries = e.queries.map((n, r) => ({
+    return !e || !Array.isArray(e.queries) || (e.queries = e.queries.map((n, s) => ({
       ...n,
-      name: n.name || (r === 0 ? "main" : "query" + r)
+      name: n.name || (s === 0 ? "main" : "query" + s)
     }))), e;
   }
   /** Retourne la requête par nom (ex: 'main', 'fallback', 'filename'). Rétrocompat: index 0->main, 1->fallback/filename. */
   static getCellQuery(e, n = "main") {
     if (!e) return "";
-    const r = typeof n == "number" ? M.getQueryNameForIndex(e, n) || "main" : n, s = M.getQueryByName(e, r);
-    return s && s.sql || "";
+    const s = typeof n == "number" ? M.getQueryNameForIndex(e, n) || "main" : n, r = M.getQueryByName(e, s);
+    return r && r.sql || "";
   }
   /**
    * Indique si l'éditeur SQL est visible pour cette requête (clientVisible).
    */
   static getCellQueryClientVisible(e, n = "main") {
     if (!e) return !1;
-    const r = typeof n == "number" ? M.getQueryNameForIndex(e, n) || "main" : n, s = M.getQueryByName(e, r);
-    return s ? s.clientVisible === !0 : !1;
+    const s = typeof n == "number" ? M.getQueryNameForIndex(e, n) || "main" : n, r = M.getQueryByName(e, s);
+    return r ? r.clientVisible === !0 : !1;
   }
   /** Trouve une requête par nom dans cell.queries. Rétrocompat: si pas de name sur les queries, utilise l'index du schéma. */
   static getQueryByName(e, n) {
-    var s;
+    var r;
     if (!e || !Array.isArray(e.queries)) return null;
-    let r = e.queries.find((a) => a.name === n);
-    if (!r) {
-      const a = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[e == null ? void 0 : e.type], i = (s = a == null ? void 0 : a.queryNames) == null ? void 0 : s.indexOf(n);
-      i >= 0 && e.queries[i] && (r = e.queries[i]);
+    let s = e.queries.find((a) => a.name === n);
+    if (!s) {
+      const a = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[e == null ? void 0 : e.type], i = (r = a == null ? void 0 : a.queryNames) == null ? void 0 : r.indexOf(n);
+      i >= 0 && e.queries[i] && (s = e.queries[i]);
     }
-    return r || null;
+    return s || null;
   }
   /** Retourne l'index d'une requête par nom (pour x-model). Rétrocompat: si pas de name, utilise ordre schema. */
   static getQueryIndexByName(e, n) {
     var i;
     if (!(e != null && e.queries)) return 0;
-    const r = e.queries.findIndex((o) => o.name === n);
-    if (r >= 0) return r;
-    const s = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[e == null ? void 0 : e.type], a = (i = s == null ? void 0 : s.queryNames) == null ? void 0 : i.indexOf(n);
+    const s = e.queries.findIndex((o) => o.name === n);
+    if (s >= 0) return s;
+    const r = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[e == null ? void 0 : e.type], a = (i = r == null ? void 0 : r.queryNames) == null ? void 0 : i.indexOf(n);
     return a >= 0 ? a : 0;
   }
   /** Retourne le nom de la requête pour un index (rétrocompat). */
   static getQueryNameForIndex(e, n) {
-    var s;
-    const r = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[e == null ? void 0 : e.type];
-    return ((s = r == null ? void 0 : r.queryNames) == null ? void 0 : s[n]) ?? (n === 0 ? "main" : n === 1 ? "filename" : null);
+    var r;
+    const s = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[e == null ? void 0 : e.type];
+    return ((r = s == null ? void 0 : s.queryNames) == null ? void 0 : r[n]) ?? (n === 0 ? "main" : n === 1 ? "filename" : null);
   }
   /** Retourne le nom de la requête secondaire (query2) : fallback pour source, filename pour les autres. */
   static getQuery2Name(e) {
-    var r;
+    var s;
     const n = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[e == null ? void 0 : e.type];
-    return (n == null ? void 0 : n.secondQueryName) ?? ((r = n == null ? void 0 : n.queryNames) == null ? void 0 : r[1]) ?? "filename";
+    return (n == null ? void 0 : n.secondQueryName) ?? ((s = n == null ? void 0 : n.queryNames) == null ? void 0 : s[1]) ?? "filename";
   }
   /** Retourne le moteur par défaut selon le type (depuis defaults.queries[].engine du schéma). */
   static getDefaultEngineForType(e, n = "main") {
     var o, l;
-    const r = typeof e == "object" ? e == null ? void 0 : e.type : e, s = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[r];
-    if (!((o = s == null ? void 0 : s.defaults) != null && o.queries)) return "sql";
-    const a = typeof n == "number" ? n : ((l = s == null ? void 0 : s.queryNames) == null ? void 0 : l.indexOf(n)) ?? 0, i = s.defaults.queries[a];
+    const s = typeof e == "object" ? e == null ? void 0 : e.type : e, r = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[s];
+    if (!((o = r == null ? void 0 : r.defaults) != null && o.queries)) return "sql";
+    const a = typeof n == "number" ? n : ((l = r == null ? void 0 : r.queryNames) == null ? void 0 : l.indexOf(n)) ?? 0, i = r.defaults.queries[a];
     return (i == null ? void 0 : i.engine) ?? "sql";
   }
   /** Contenu éditable (depuis contentKey du schéma). Ex: queries.main.sql pour markdown. */
@@ -5777,25 +5777,25 @@ let ConfigManager$1 = (M = class {
     if (!e) return "";
     const n = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[e == null ? void 0 : e.type];
     if (!(n != null && n.contentKey)) return "";
-    const r = M.getQueryByName(e, "main");
-    return ((r == null ? void 0 : r.sql) ?? "") || (e.content ?? "");
+    const s = M.getQueryByName(e, "main");
+    return ((s == null ? void 0 : s.sql) ?? "") || (e.content ?? "");
   }
   /** Définit le contenu éditable (queries.main.sql + content rétrocompat). */
   static setCellEditableContent(e, n) {
     if (!e) return;
-    const r = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[e == null ? void 0 : e.type];
-    if (!(r != null && r.contentKey)) return;
+    const s = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[e == null ? void 0 : e.type];
+    if (!(s != null && s.contentKey)) return;
     M.ensureCellQueries(e, "main");
-    const s = M.getQueryByName(e, "main");
-    s && (s.sql = n), e.content = n;
+    const r = M.getQueryByName(e, "main");
+    r && (r.sql = n), e.content = n;
   }
   /** Contenu à afficher : si engine sql/js = contenu calculé (contentResultKey) ; sinon contenu éditable. */
   static getCellContentDisplay(e) {
     if (!e) return "";
     const n = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[e == null ? void 0 : e.type];
     if (!(n != null && n.contentKey)) return "";
-    const r = M.getCellEngine(e, "main");
-    return r === "sql" || r === "js" ? (e[n.contentResultKey] ?? "") || "" : M.getCellEditableContent(e);
+    const s = M.getCellEngine(e, "main");
+    return s === "sql" || s === "js" ? (e[n.contentResultKey] ?? "") || "" : M.getCellEditableContent(e);
   }
   /** Contenu markdown à afficher : si engine text = contenu éditable ; si sql/js = _markdownContent (résultat d'exécution). @deprecated Utiliser getCellContentDisplay */
   static getMarkdownDisplayContent(e) {
@@ -5816,8 +5816,8 @@ let ConfigManager$1 = (M = class {
   }
   /** Vérifie si un nom est valide pour le type de cellule (depuis namePattern du schéma). */
   static isCellNameValid(e, n) {
-    const r = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[e == null ? void 0 : e.type], s = r == null ? void 0 : r.namePattern;
-    return !s || !n ? !0 : typeof s == "object" && s.test ? s.test(String(n)) : !0;
+    const s = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[e == null ? void 0 : e.type], r = s == null ? void 0 : s.namePattern;
+    return !r || !n ? !0 : typeof r == "object" && r.test ? r.test(String(n)) : !0;
   }
   static cellBlocksAutoFlow(e) {
     var n;
@@ -5856,24 +5856,24 @@ let ConfigManager$1 = (M = class {
     return !!((n = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[e == null ? void 0 : e.type]) != null && n.exportTemplateBase64);
   }
   static hasCellsWithExportSlot(e, n) {
-    const r = (s) => {
+    const s = (r) => {
       var a;
-      for (const i of s || []) {
+      for (const i of r || []) {
         for (const o of i.cells || [])
           if (((a = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[o == null ? void 0 : o.type]) == null ? void 0 : a.exportFileSlot) === n) return !0;
-        if (r(i.children)) return !0;
+        if (s(i.children)) return !0;
       }
       return !1;
     };
-    return (e || []).some((s) => r(s.groups || []) || r(s.linkGroups || []));
+    return (e || []).some((r) => s(r.groups || []) || s(r.linkGroups || []));
   }
   /**
    * Slot fichier unifié selon le type de cellule (depuis bodyConfig.fileSlot du schéma).
    */
   static getCellFileSlot(e) {
-    var r;
+    var s;
     const n = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[e == null ? void 0 : e.type];
-    return ((r = n == null ? void 0 : n.bodyConfig) == null ? void 0 : r.fileSlot) ?? null;
+    return ((s = n == null ? void 0 : n.bodyConfig) == null ? void 0 : s.fileSlot) ?? null;
   }
   /**
    * Lit les données fichier d'une cellule (structure unifiée files[] ou legacy depuis schéma).
@@ -5888,36 +5888,36 @@ let ConfigManager$1 = (M = class {
       const c = e.files.find((u) => u.slot === n) || e.files[0];
       if (c != null && c.base64 && (c != null && c.fileName)) return { base64: c.base64, fileName: c.fileName, compressed: c.compressed === !0 };
     }
-    const r = (i = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[e == null ? void 0 : e.type]) == null ? void 0 : i.bodyConfig, s = r == null ? void 0 : r.fileBase64Key, a = (r == null ? void 0 : r.fileFileNameKey) ?? (r == null ? void 0 : r.fileKey);
-    return s && a && e[s] && e[a] ? { base64: e[s], fileName: e[a], compressed: ((l = (o = e.files) == null ? void 0 : o[0]) == null ? void 0 : l.compressed) === !0 } : null;
+    const s = (i = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[e == null ? void 0 : e.type]) == null ? void 0 : i.bodyConfig, r = s == null ? void 0 : s.fileBase64Key, a = (s == null ? void 0 : s.fileFileNameKey) ?? (s == null ? void 0 : s.fileKey);
+    return r && a && e[r] && e[a] ? { base64: e[r], fileName: e[a], compressed: ((l = (o = e.files) == null ? void 0 : o[0]) == null ? void 0 : l.compressed) === !0 } : null;
   }
   /**
    * Écrit les données fichier (structure unifiée files[]) et met à jour les champs legacy depuis le schéma.
    */
-  static setCellFileData(e, { base64: n, fileName: r }) {
+  static setCellFileData(e, { base64: n, fileName: s }) {
     var u;
-    if (!e || !n || !r) return;
-    const s = M.getCellFileSlot(e);
-    if (!s) return;
+    if (!e || !n || !s) return;
+    const r = M.getCellFileSlot(e);
+    if (!r) return;
     M.ensureCellFiles(e);
-    const a = e.files.findIndex((d) => d.slot === s), i = { slot: s, base64: n, fileName: r };
+    const a = e.files.findIndex((d) => d.slot === r), i = { slot: r, base64: n, fileName: s };
     a >= 0 ? e.files[a] = i : e.files.push(i);
     const o = (u = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[e == null ? void 0 : e.type]) == null ? void 0 : u.bodyConfig, l = o == null ? void 0 : o.fileBase64Key, c = (o == null ? void 0 : o.fileFileNameKey) ?? (o == null ? void 0 : o.fileKey);
-    l && (e[l] = n), c && (e[c] = r);
+    l && (e[l] = n), c && (e[c] = s);
   }
   /** S'assure que cell.files existe. Migre legacy → files[0] si pertinent. */
   static ensureCellFiles(e) {
     if (!e) return;
     Array.isArray(e.files) || (e.files = []);
     const n = M.getCellFileSlot(e);
-    if (!n || e.files.some((s) => s.slot === n)) return;
-    const r = M.getCellFileData(e);
-    r && e.files.push({ slot: n, base64: r.base64, fileName: r.fileName });
+    if (!n || e.files.some((r) => r.slot === n)) return;
+    const s = M.getCellFileData(e);
+    s && e.files.push({ slot: n, base64: s.base64, fileName: s.fileName });
   }
   /** Retourne le moteur de la requête (queries[].engine). Valeurs: sql, js, text. Défaut depuis schéma. */
   static getCellEngine(e, n = "main") {
     if (!e) return "sql";
-    const r = typeof n == "number" ? M.getQueryNameForIndex(e, n) || "main" : n, s = M.getQueryByName(e, r), a = M.getDefaultEngineForType(e, r), i = s != null && s.engine ? s.engine : a;
+    const s = typeof n == "number" ? M.getQueryNameForIndex(e, n) || "main" : n, r = M.getQueryByName(e, s), a = M.getDefaultEngineForType(e, s), i = r != null && r.engine ? r.engine : a;
     return i === "duckdb-wasm" ? "sql" : i;
   }
   /** S'assure que cell.queries existe et que la requête avec ce nom existe. Retourne la ref. Migre les queries sans name. */
@@ -5925,16 +5925,16 @@ let ConfigManager$1 = (M = class {
     var i, o, l;
     if (!e) return null;
     Array.isArray(e.queries) || (e.queries = []);
-    const r = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[e == null ? void 0 : e.type], s = typeof n == "number" ? ((i = r == null ? void 0 : r.queryNames) == null ? void 0 : i[n]) ?? (n === 0 ? "main" : "filename") : n;
-    let a = e.queries.find((c) => c.name === s);
+    const s = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[e == null ? void 0 : e.type], r = typeof n == "number" ? ((i = s == null ? void 0 : s.queryNames) == null ? void 0 : i[n]) ?? (n === 0 ? "main" : "filename") : n;
+    let a = e.queries.find((c) => c.name === r);
     if (!a) {
-      const c = (o = r == null ? void 0 : r.queryNames) == null ? void 0 : o.indexOf(s);
+      const c = (o = s == null ? void 0 : s.queryNames) == null ? void 0 : o.indexOf(r);
       if (c >= 0 && e.queries[c] && !e.queries[c].name)
-        e.queries[c].name = s, a = e.queries[c];
+        e.queries[c].name = r, a = e.queries[c];
       else {
-        const u = M.getDefaultEngineForType(e, s);
-        a = { name: s, sql: "", engine: u, clientVisible: !1 };
-        const d = ((l = r == null ? void 0 : r.queryNames) == null ? void 0 : l.indexOf(s)) ?? e.queries.length;
+        const u = M.getDefaultEngineForType(e, r);
+        a = { name: r, sql: "", engine: u, clientVisible: !1 };
+        const d = ((l = s == null ? void 0 : s.queryNames) == null ? void 0 : l.indexOf(r)) ?? e.queries.length;
         d < e.queries.length ? e.queries.splice(d, 0, a) : e.queries.push(a);
       }
     }
@@ -5944,19 +5944,19 @@ let ConfigManager$1 = (M = class {
   static ensureGroupQueries(e) {
     if (!e) return null;
     Array.isArray(e.queries) || (e.queries = []);
-    let n = e.queries.find((r) => r.name === "main");
+    let n = e.queries.find((s) => s.name === "main");
     return n || (e.queries[0] && !e.queries[0].name ? (e.queries[0].name = "main", n = e.queries[0]) : (n = { name: "main", sql: "", engine: "sql", clientVisible: !1 }, e.queries.unshift(n))), n;
   }
   /** Retourne la requête conditionnelle du groupe (name: 'main') ou null. */
   static getGroupIfQuery(e) {
     if (!e || !Array.isArray(e.queries) || e.queries.length === 0) return null;
-    const n = e.queries.find((s) => s.name === "main") || e.queries[0];
+    const n = e.queries.find((r) => r.name === "main") || e.queries[0];
     return n && (n.sql || "").trim() ? n : null;
   }
   /** Définit la requête par nom (ex: 'main', 'fallback', 'filename'). */
-  static setCellQuery(e, n, r) {
-    const s = M.ensureCellQueries(e, n);
-    s && (s.sql = r);
+  static setCellQuery(e, n, s) {
+    const r = M.ensureCellQueries(e, n);
+    r && (r.sql = s);
   }
   static encodeUTF8ToBase64(e) {
     return btoa(unescape(encodeURIComponent(e)));
@@ -5974,10 +5974,10 @@ let ConfigManager$1 = (M = class {
     return "page_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9);
   }
   static deepMerge(e, n) {
-    const r = { ...e };
-    return e && typeof e == "object" && n && typeof n == "object" && Object.keys(n).forEach((s) => {
-      n[s] && typeof n[s] == "object" && !Array.isArray(n[s]) ? r[s] = M.deepMerge(e[s] || {}, n[s]) : r[s] = n[s];
-    }), r;
+    const s = { ...e };
+    return e && typeof e == "object" && n && typeof n == "object" && Object.keys(n).forEach((r) => {
+      n[r] && typeof n[r] == "object" && !Array.isArray(n[r]) ? s[r] = M.deepMerge(e[r] || {}, n[r]) : s[r] = n[r];
+    }), s;
   }
   /**
    * Parse les paramètres UI depuis l'URL
@@ -5987,15 +5987,15 @@ let ConfigManager$1 = (M = class {
   static getUIParamsFromURL() {
     const e = new URLSearchParams(window.location.search), n = {};
     if (e.has("devMode")) {
-      const r = e.get("devMode").toLowerCase();
-      n.devMode = r !== "false" && r !== "0";
+      const s = e.get("devMode").toLowerCase();
+      n.devMode = s !== "false" && s !== "0";
     }
     if (e.has("showLayout")) {
-      const r = e.get("showLayout").toLowerCase();
-      n.showLayout = r !== "false" && r !== "0";
+      const s = e.get("showLayout").toLowerCase();
+      n.showLayout = s !== "false" && s !== "0";
     } else if (e.has("displaySettings")) {
-      const r = e.get("displaySettings").toLowerCase();
-      n.showLayout = r !== "false" && r !== "0";
+      const s = e.get("displaySettings").toLowerCase();
+      n.showLayout = s !== "false" && s !== "0";
     }
     return e.has("theme") && (n.theme = e.get("theme")), e.has("dbEngine") && (n.dbEngine = e.get("dbEngine")), n;
   }
@@ -6007,21 +6007,21 @@ let ConfigManager$1 = (M = class {
     const n = M.getUIParamsFromURL();
     if (Object.keys(n).length === 0)
       return e;
-    const r = { ...e };
-    return r.ui = { ...e.ui || {}, ...n }, r;
+    const s = { ...e };
+    return s.ui = { ...e.ui || {}, ...n }, s;
   }
   /**
    * Décompresse les fichiers marqués compressed dans la config (JSON/Gist).
    * Modifie la config en place. Appelé avant d'utiliser la config.
    */
   static async prepareConfigForLoad(e) {
-    var r;
-    if (!((r = e == null ? void 0 : e.job) != null && r.pages)) return e;
-    const n = async (s) => {
+    var s;
+    if (!((s = e == null ? void 0 : e.job) != null && s.pages)) return e;
+    const n = async (r) => {
       var a, i, o;
-      if ((a = s.children) != null && a.length)
-        for (const l of s.children) await n(l);
-      for (const l of s.cells || [])
+      if ((a = r.children) != null && a.length)
+        for (const l of r.children) await n(l);
+      for (const l of r.cells || [])
         if (Array.isArray(l.files)) {
           for (const c of l.files)
             if (c.compressed && c.base64 && c.fileName)
@@ -6040,8 +6040,8 @@ let ConfigManager$1 = (M = class {
             }
         }
     };
-    for (const s of e.job.pages)
-      for (const a of s.groups || []) await n(a);
+    for (const r of e.job.pages)
+      for (const a of r.groups || []) await n(a);
     return e;
   }
   /**
@@ -6049,13 +6049,13 @@ let ConfigManager$1 = (M = class {
    */
   static async loadConfigFromGist() {
     const e = (() => {
-      const r = new URLSearchParams(window.location.search), s = r.get("gist");
-      if (s && /^[a-f0-9]{32}$/i.test(s)) return s;
-      if (s) {
-        const o = s.match(/gist\.github\.com\/[^\/]+\/([a-f0-9]{32})/i);
+      const s = new URLSearchParams(window.location.search), r = s.get("gist");
+      if (r && /^[a-f0-9]{32}$/i.test(r)) return r;
+      if (r) {
+        const o = r.match(/gist\.github\.com\/[^\/]+\/([a-f0-9]{32})/i);
         if (o) return o[1];
       }
-      const a = r.get("config");
+      const a = s.get("config");
       if (a) {
         const o = a.match(/gist\.github\.com\/[^\/]+\/([a-f0-9]{32})/i);
         if (o) return o[1];
@@ -6066,9 +6066,9 @@ let ConfigManager$1 = (M = class {
     let n = null;
     if (e)
       try {
-        const r = `https://api.github.com/gists/${e}`, s = await fetch(r);
-        if (s.ok) {
-          const a = await s.json(), o = Object.values(a.files || {}).find(
+        const s = `https://api.github.com/gists/${e}`, r = await fetch(s);
+        if (r.ok) {
+          const a = await r.json(), o = Object.values(a.files || {}).find(
             (l) => l.filename.toLowerCase().endsWith(".json") || l.type === "application/json"
           );
           if (o)
@@ -6084,15 +6084,15 @@ let ConfigManager$1 = (M = class {
           else
             console.warn("⚠️ Aucun fichier JSON trouvé dans le Gist");
         } else
-          console.error("❌ Erreur HTTP lors du chargement du Gist:", s.status, s.statusText);
-      } catch (r) {
-        console.error("❌ Erreur lors du chargement du Gist:", r);
+          console.error("❌ Erreur HTTP lors du chargement du Gist:", r.status, r.statusText);
+      } catch (s) {
+        console.error("❌ Erreur lors du chargement du Gist:", s);
       }
     if (!n) {
-      const r = M.loadDefaultConfigOrEncrypted();
-      if (r.needsPassphrase && r.encryptedContent)
-        return { needsPassphrase: !0, encryptedContent: r.encryptedContent, source: r.source || "html" };
-      n = r.config, await M.prepareConfigForLoad(n);
+      const s = M.loadDefaultConfigOrEncrypted();
+      if (s.needsPassphrase && s.encryptedContent)
+        return { needsPassphrase: !0, encryptedContent: s.encryptedContent, source: s.source || "html" };
+      n = s.config, await M.prepareConfigForLoad(n);
     }
     return M.applyURLParamsToConfig(n);
   }
@@ -6110,36 +6110,36 @@ let ConfigManager$1 = (M = class {
         };
       });
     }
-    const n = [], r = M.getCellQuery(e, "main");
-    r && n.push({ name: "main", sql: r, engine: M.getCellEngine(e, "main"), clientVisible: M.getCellQueryClientVisible(e, "main") });
-    const s = M.getCellQuery(e, "fallback") || M.getCellQuery(e, "filename");
-    return s && n.push({ name: M.getQuery2Name(e), sql: s, engine: "sql", clientVisible: !1 }), n;
+    const n = [], s = M.getCellQuery(e, "main");
+    s && n.push({ name: "main", sql: s, engine: M.getCellEngine(e, "main"), clientVisible: M.getCellQueryClientVisible(e, "main") });
+    const r = M.getCellQuery(e, "fallback") || M.getCellQuery(e, "filename");
+    return r && n.push({ name: M.getQuery2Name(e), sql: r, engine: "sql", clientVisible: !1 }), n;
   }
   static async cleanCell(e, n = !1) {
     var l, c;
-    const r = { type: e.type }, s = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[e == null ? void 0 : e.type], a = (s == null ? void 0 : s.exportFields) ?? ["queries"];
+    const s = { type: e.type }, r = CELL_TYPE_SCHEMAS$1 == null ? void 0 : CELL_TYPE_SCHEMAS$1.types[e == null ? void 0 : e.type], a = (r == null ? void 0 : r.exportFields) ?? ["queries"];
     for (const u of a)
       if (u === "queries")
-        r.queries = M._buildQueriesForClean(e), e.type === "markdown" && (!Array.isArray(r.queries) || r.queries.length === 0) && (r.queries = [{ name: "main", sql: M.getCellEditableContent(e), engine: M.getCellEngine(e, "main"), clientVisible: M.getCellQueryClientVisible(e, "main") }]);
+        s.queries = M._buildQueriesForClean(e), e.type === "markdown" && (!Array.isArray(s.queries) || s.queries.length === 0) && (s.queries = [{ name: "main", sql: M.getCellEditableContent(e), engine: M.getCellEngine(e, "main"), clientVisible: M.getCellQueryClientVisible(e, "main") }]);
       else if (u === "name") {
         const d = CELL_TYPE_HANDLERS[e == null ? void 0 : e.type], p = d != null && d.getExportValue ? d.getExportValue(e, "name") : e.name;
-        p !== void 0 && (r.name = p);
+        p !== void 0 && (s.name = p);
       } else if (u === "json") {
-        if ((s == null ? void 0 : s.exportJsonMode) === "string")
-          r.json = typeof e.json == "string" ? e.json : e.json ? JSON.stringify(e.json) : "";
-        else if (r.json = e.json || {}, (l = e.json) != null && l.xlsx && (r.json.xlsx = e.json.xlsx), ((c = e.json) == null ? void 0 : c.perspectiveConfig) !== void 0) {
+        if ((r == null ? void 0 : r.exportJsonMode) === "string")
+          s.json = typeof e.json == "string" ? e.json : e.json ? JSON.stringify(e.json) : "";
+        else if (s.json = e.json || {}, (l = e.json) != null && l.xlsx && (s.json.xlsx = e.json.xlsx), ((c = e.json) == null ? void 0 : c.perspectiveConfig) !== void 0) {
           let d = e.json.perspectiveConfig;
-          r.json.perspectiveConfig = typeof d == "string" ? d.replace(/\r\n/g, `
+          s.json.perspectiveConfig = typeof d == "string" ? d.replace(/\r\n/g, `
 `).replace(/\r/g, `
 `) : d != null ? JSON.stringify(d, null, 2) : "";
         }
-      } else e[u] !== void 0 && (r[u] = e[u]);
-    if (n && (s != null && s.exportFileSlot)) {
-      const u = s.exportFileSlot;
+      } else e[u] !== void 0 && (s[u] = e[u]);
+    if (n && (r != null && r.exportFileSlot)) {
+      const u = r.exportFileSlot;
       if (u === "source" && e._currentFile && e._fileName)
         try {
           const d = await e._currentFile.arrayBuffer(), p = await FileHandler$1.compressGzip(d), m = FileHandler$1.arrayBufferToBase64(p);
-          r.files = [{ slot: u, base64: m, fileName: e._fileName, compressed: !0 }];
+          s.files = [{ slot: u, base64: m, fileName: e._fileName, compressed: !0 }];
         } catch (d) {
           console.warn("Impossible de lire le fichier source:", d);
         }
@@ -6154,48 +6154,48 @@ let ConfigManager$1 = (M = class {
             } catch (h) {
               console.warn("Compression fichier échouée:", h);
             }
-          r.files = [{ slot: u, base64: p, fileName: d.fileName, compressed: m }];
+          s.files = [{ slot: u, base64: p, fileName: d.fileName, compressed: m }];
         }
       }
     }
     const i = M.normalizeOrder(e._order, void 0);
-    i !== void 0 && (r.order = i), e.childGroupId && (r.childGroupId = e.childGroupId), e.name !== void 0 && e.name !== "" && (r.name = e.name);
+    i !== void 0 && (s.order = i), e.childGroupId && (s.childGroupId = e.childGroupId), e.name !== void 0 && e.name !== "" && (s.name = e.name);
     const o = (u, d) => {
-      d != null && String(d).trim() !== "" && (r[u] = d);
+      d != null && String(d).trim() !== "" && (s[u] = d);
     };
-    return o("minSizePx", e.minSizePx), o("minSizePercent", e.minSizePercent), o("maxSizePx", e.maxSizePx), o("maxSizePercent", e.maxSizePercent), o("minHeightPx", e.minHeightPx), o("minHeightPercent", e.minHeightPercent), o("maxHeightPx", e.maxHeightPx), o("maxHeightPercent", e.maxHeightPercent), e.border === !1 && (r.border = !1), r;
+    return o("minSizePx", e.minSizePx), o("minSizePercent", e.minSizePercent), o("maxSizePx", e.maxSizePx), o("maxSizePercent", e.maxSizePercent), o("minHeightPx", e.minHeightPx), o("minHeightPercent", e.minHeightPercent), o("maxHeightPx", e.maxHeightPx), o("maxHeightPercent", e.maxHeightPercent), e.border === !1 && (s.border = !1), s;
   }
   static async cleanGroup(e, n = !1) {
-    const r = {
+    const s = {
       direction: e.direction || "row",
       style: e.style || "",
       cells: await Promise.all((e.cells || []).map((a) => M.cleanCell(a, n)))
     };
-    if (e.accordion && (r.accordion = !0, r.title = e.title || "", r.accordionOpen = e.accordionOpen !== !1), e.tabsChild && (r.tabsChild = !0), e.name !== void 0 && e.name !== "" && (r.name = e.name), Array.isArray(e.queries) && e.queries.length > 0) {
+    if (e.accordion && (s.accordion = !0, s.title = e.title || "", s.accordionOpen = e.accordionOpen !== !1), e.tabsChild && (s.tabsChild = !0), e.name !== void 0 && e.name !== "" && (s.name = e.name), Array.isArray(e.queries) && e.queries.length > 0) {
       const a = M.getGroupIfQuery(e) || e.queries[0];
-      a && (a.sql || "").trim() && (r.queries = [{
+      a && (a.sql || "").trim() && (s.queries = [{
         name: "main",
         sql: a.sql.trim(),
         engine: a.engine || "sql",
         clientVisible: a.clientVisible === !0
       }]);
     }
-    e.loop && e.loop.enabled && (r.loop = {
+    e.loop && e.loop.enabled && (s.loop = {
       enabled: !0,
       query: e.loop.query || "",
       zip: e.loop.zip || !1,
       zipQuery: e.loop.zipQuery || ""
     });
-    const s = e.type ?? e._type ?? "core";
-    if (r.type = s, r.id = e.id ?? e._id ?? M.generateGroupId(), s === "core") {
+    const r = e.type ?? e._type ?? "core";
+    if (s.type = r, s.id = e.id ?? e._id ?? M.generateGroupId(), r === "core") {
       const a = M.normalizeOrder(e.order ?? e._order, void 0);
-      a !== void 0 && (r.order = a);
+      a !== void 0 && (s.order = a);
     }
-    return e.children && e.children.length > 0 && (r.children = await Promise.all(e.children.map((a) => M.cleanGroup(a, n)))), r;
+    return e.children && e.children.length > 0 && (s.children = await Promise.all(e.children.map((a) => M.cleanGroup(a, n)))), s;
   }
-  static async buildConfigFromState(e, n = !0, r = !0, s = !1, a = "light", i = "duckdb-wasm", o = !1) {
+  static async buildConfigFromState(e, n = !0, s = !0, r = !1, a = "light", i = "duckdb-wasm", o = !1) {
     const l = await Promise.all(e.map(async (c) => {
-      const u = await Promise.all(c.groups.map((m) => M.cleanGroup(m, s))), d = await Promise.all((c.linkGroups || []).map((m) => M.cleanGroup(m, s))), p = [...u, ...d];
+      const u = await Promise.all(c.groups.map((m) => M.cleanGroup(m, r))), d = await Promise.all((c.linkGroups || []).map((m) => M.cleanGroup(m, r))), p = [...u, ...d];
       return {
         name: c.name,
         groups: p
@@ -6206,7 +6206,7 @@ let ConfigManager$1 = (M = class {
       createdAt: (/* @__PURE__ */ new Date()).toISOString(),
       ui: {
         devMode: n,
-        showLayout: r,
+        showLayout: s,
         theme: a,
         dbEngine: i,
         directedAcyclicGraph: o
@@ -6248,8 +6248,8 @@ let GitHubGistManager$1 = (D = class {
    * et extrait le code d'autorisation
    */
   static checkAuthCallback() {
-    const e = new URLSearchParams(window.location.search), n = e.get("code"), r = e.get("state");
-    return n && r === "github_gist_auth" ? (window.history.replaceState({}, document.title, window.location.pathname), n) : null;
+    const e = new URLSearchParams(window.location.search), n = e.get("code"), s = e.get("state");
+    return n && s === "github_gist_auth" ? (window.history.replaceState({}, document.title, window.location.pathname), n) : null;
   }
   /**
    * Redirige vers GitHub pour l'authentification OAuth
@@ -6277,17 +6277,17 @@ let GitHubGistManager$1 = (D = class {
    * @param {string} [passphrase] - Passphrase pour chiffrer (optionnel). Si fourni, la config et datachunks sont chiffrés.
    * @returns {Promise<string>} URL du gist créé
    */
-  static async createGist(e, n = "sqljob Notebook Configuration", r = "gistconfig.sqljob.json", s = null) {
+  static async createGist(e, n = "sqljob Notebook Configuration", s = "gistconfig.sqljob.json", r = null) {
     const a = this.getAccessToken();
     if (!a)
       throw new Error("Non authentifié. Veuillez configurer un Personal Access Token.");
     let i;
-    if (s && s.trim()) {
-      const c = JSON.stringify(e), u = await GistEncrypt$1.encrypt(c, s.trim());
+    if (r && r.trim()) {
+      const c = JSON.stringify(e), u = await GistEncrypt$1.encrypt(c, r.trim());
       u.createdAt = e.createdAt || (/* @__PURE__ */ new Date()).toISOString(), i = JSON.stringify(u);
     } else
       i = JSON.stringify(e);
-    const o = r.endsWith(".json") ? r : `${r}.json`, l = {
+    const o = s.endsWith(".json") ? s : `${s}.json`, l = {
       description: n,
       public: !1,
       files: {
@@ -6322,8 +6322,8 @@ let GitHubGistManager$1 = (D = class {
    * @returns {string} URL sqljob avec le paramètre gist
    */
   static generateSqljobUrl(e) {
-    var s;
-    const n = (s = e.match(/gist\.github\.com\/[^\/]+\/([a-f0-9]{32})/i)) == null ? void 0 : s[1];
+    var r;
+    const n = (r = e.match(/gist\.github\.com\/[^\/]+\/([a-f0-9]{32})/i)) == null ? void 0 : r[1];
     if (!n)
       throw new Error("URL de gist invalide");
     return `https://ihatexcel.github.io/sqljob/?gist=${n}`;
@@ -6347,10 +6347,10 @@ let DuckDBManager$1 = (C = class {
     C.currentEngine = e;
   }
   static async destroy(e) {
-    var n, r, s, a, i, o, l, c;
+    var n, s, r, a, i, o, l, c;
     e == null || e("Destruction de la base de données...", "loading");
     try {
-      C.connInstance && (C.currentEngine === "ducklings" && await ((r = (n = C.connInstance).close) == null ? void 0 : r.call(n)), C.connInstance = null), C.dbInstance && (C.currentEngine === "ducklings" ? await ((a = (s = C.dbInstance).close) == null ? void 0 : a.call(s)) : await ((o = (i = C.dbInstance).terminate) == null ? void 0 : o.call(i)), C.dbInstance = null), C.workerRef && ((c = (l = C.workerRef).terminate) == null || c.call(l), C.workerRef = null), C.duckdbModuleRef = null, window.duckdbModule = null, window.ducklingsModule = null, e == null || e("Base de données détruite", "success");
+      C.connInstance && (C.currentEngine === "ducklings" && await ((s = (n = C.connInstance).close) == null ? void 0 : s.call(n)), C.connInstance = null), C.dbInstance && (C.currentEngine === "ducklings" ? await ((a = (r = C.dbInstance).close) == null ? void 0 : a.call(r)) : await ((o = (i = C.dbInstance).terminate) == null ? void 0 : o.call(i)), C.dbInstance = null), C.workerRef && ((c = (l = C.workerRef).terminate) == null || c.call(l), C.workerRef = null), C.duckdbModuleRef = null, window.duckdbModule = null, window.ducklingsModule = null, e == null || e("Base de données détruite", "success");
     } catch (u) {
       console.error("Erreur destruction DB:", u), e == null || e("Erreur destruction: " + u.message, "error");
     }
@@ -6374,15 +6374,15 @@ let DuckDBManager$1 = (C = class {
       C.getDuckDBWasmUrl()
     );
     window.duckdbModule = n, C.duckdbModuleRef = n;
-    const r = n.getJsDelivrBundles(), s = await n.selectBundle(r), a = URL.createObjectURL(
-      new Blob([`importScripts("${s.mainWorker}");`], { type: "text/javascript" })
+    const s = n.getJsDelivrBundles(), r = await n.selectBundle(s), a = URL.createObjectURL(
+      new Blob([`importScripts("${r.mainWorker}");`], { type: "text/javascript" })
     ), i = new Worker(a);
     C.workerRef = i;
     const o = {
       log(l) {
       }
     };
-    return C.dbInstance = new n.AsyncDuckDB(o, i), URL.revokeObjectURL(a), await C.dbInstance.instantiate(s.mainModule, s.pthreadWorker), C.connInstance = await C.dbInstance.connect(), e == null || e("Chargement extension Excel...", "loading"), await C.connInstance.query("INSTALL excel;"), await C.connInstance.query("LOAD excel;"), e == null || e("DuckDB WASM prêt", "success"), { db: C.dbInstance, conn: C.connInstance };
+    return C.dbInstance = new n.AsyncDuckDB(o, i), URL.revokeObjectURL(a), await C.dbInstance.instantiate(r.mainModule, r.pthreadWorker), C.connInstance = await C.dbInstance.connect(), e == null || e("Chargement extension Excel...", "loading"), await C.connInstance.query("INSTALL excel;"), await C.connInstance.query("LOAD excel;"), e == null || e("DuckDB WASM prêt", "success"), { db: C.dbInstance, conn: C.connInstance };
   }
   static async _initDucklings(e) {
     if (e == null || e("Initialisation de Ducklings...", "loading"), location.protocol === "file:")
@@ -6392,17 +6392,17 @@ let DuckDBManager$1 = (C = class {
       C.getDucklingsUrl()
     );
     window.ducklingsModule = n, C.duckdbModuleRef = n;
-    const r = n.getJsDelivrBundle(), s = await n.createWorker(r.mainWorker);
-    return C.workerRef = s, await n.init({
-      worker: s,
-      wasmUrl: r.wasmModule,
-      wasmJsUrl: r.wasmJs
+    const s = n.getJsDelivrBundle(), r = await n.createWorker(s.mainWorker);
+    return C.workerRef = r, await n.init({
+      worker: r,
+      wasmUrl: s.wasmModule,
+      wasmJsUrl: s.wasmJs
     }), C.dbInstance = new n.DuckDB(), C.connInstance = await C.dbInstance.connect(), e == null || e("Ducklings prêt", "success"), { db: C.dbInstance, conn: C.connInstance };
   }
   static async executeQuery(e) {
     if (typeof e == "string" && e.length > 200 && e.slice(0, 200) + "", !C.connInstance)
       throw new Error("DuckDB non initialisé");
-    return C.currentEngine === "ducklings" ? await C.connInstance.query(e) : (await C.connInstance.query(e)).toArray().map((r) => Object.fromEntries(r));
+    return C.currentEngine === "ducklings" ? await C.connInstance.query(e) : (await C.connInstance.query(e)).toArray().map((s) => Object.fromEntries(s));
   }
   static async registerFile(e, n) {
     if (C.currentEngine === "ducklings")
@@ -6422,15 +6422,15 @@ let DuckDBManager$1 = (C = class {
     return await C.dbInstance.copyFileToBuffer(e);
   }
   /** Attend que le fichier soit disponible dans le système de fichiers virtuel avec retry */
-  static async waitForFile(e, n = 10, r = 200) {
-    for (let s = 0; s < n; s++) {
+  static async waitForFile(e, n = 10, s = 200) {
+    for (let r = 0; r < n; r++) {
       try {
         const a = await C.dbInstance.copyFileToBuffer(e);
         if (a && a.byteLength > 0)
           return a;
       } catch {
       }
-      await new Promise((a) => setTimeout(a, r));
+      await new Promise((a) => setTimeout(a, s));
     }
     throw new Error(`Le fichier ${e} n'est pas disponible après ${n} tentatives`);
   }
@@ -6440,8 +6440,8 @@ let DuckDBManager$1 = (C = class {
     if (!(C.currentEngine === "ducklings" || !((n = C.dbInstance) != null && n.dropFile)))
       try {
         await C.dbInstance.dropFile(e);
-      } catch (r) {
-        console.warn("dropFile ignoré:", r);
+      } catch (s) {
+        console.warn("dropFile ignoré:", s);
       }
   }
   static async executeQueryArrow(e) {
@@ -6464,23 +6464,23 @@ class CellBodyRenderer {
   static _sqlPlaceholder(e) {
     return (e ?? "").replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/\n/g, "\\n");
   }
-  static _defaultSql(e, n = 0, r = "SELECT 1") {
-    var s, a, i;
-    return this._sqlPlaceholder(((i = (a = (s = e == null ? void 0 : e.defaults) == null ? void 0 : s.queries) == null ? void 0 : a[n]) == null ? void 0 : i.sql) ?? r);
+  static _defaultSql(e, n = 0, s = "SELECT 1") {
+    var r, a, i;
+    return this._sqlPlaceholder(((i = (a = (r = e == null ? void 0 : e.defaults) == null ? void 0 : r.queries) == null ? void 0 : a[n]) == null ? void 0 : i.sql) ?? s);
   }
   static _defaultSqls(e, n = ["SELECT 1"]) {
-    var s;
-    const r = ((s = e == null ? void 0 : e.defaults) == null ? void 0 : s.queries) ?? [];
+    var r;
+    const s = ((r = e == null ? void 0 : e.defaults) == null ? void 0 : r.queries) ?? [];
     return n.map((a, i) => {
       var o;
-      return this._sqlPlaceholder(((o = r[i]) == null ? void 0 : o.sql) ?? a);
+      return this._sqlPlaceholder(((o = s[i]) == null ? void 0 : o.sql) ?? a);
     });
   }
   static renderResultInfoBlock(e = !1) {
     return `<template x-if="cellItem.cell._resultInfo"><div class="mt-2 p-2 bg-base-200 rounded text-sm text-base-content/70" ${e ? 'x-show="devMode" ' : ""}x-text="cellItem.cell._resultInfo"></div></template>`;
   }
-  static renderMarkdown(e, n, r) {
-    return r.bodyConfig, `<div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 flex flex-col' : ''">${this.renderResultInfoBlock(!0)}
+  static renderMarkdown(e, n, s) {
+    return s.bodyConfig, `<div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 flex flex-col' : ''">${this.renderResultInfoBlock(!0)}
                     <template x-if="devMode && ConfigManager.getCellEngine(cellItem.cell,'main') === 'text'"><div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 flex flex-col' : ''">
                     <textarea :key="'md_dev_'+cellItem.cell._id" :id="'markdown_dev_'+cellItem.cell._id" x-text="ConfigManager.getCellContentDisplay(cellItem.cell) || ''"
                         x-init="$nextTick(async () => {
@@ -6512,45 +6512,45 @@ class CellBodyRenderer {
                         x-effect="(() => { const c = cellItem.cell; if (!c._easyMDEcli) return; const isRo = ConfigManager.getCellEngine(c, 'main') !== 'text'; const cm = c._easyMDEcli.codemirror || c._easyMDEcli.cm; if (cm && cm.getOption('readOnly') !== isRo) { cm.setOption('readOnly', isRo); if (!isRo) c._easyMDEcli.value(ConfigManager.getCellEditableContent(c)); } if (isRo && c._markdownContent && c._easyMDEcli.value() !== c._markdownContent) { c._easyMDEcli.value(c._markdownContent); if (cm?.refresh) cm.refresh(); } })()"></textarea></div></template>
                 </div>`;
   }
-  static renderFileDropZone(e, n, r) {
-    const s = r.bodyConfig || {}, a = s.fileKey || "_fileName", i = s.accept || ".csv,.parquet,.xlsx,.xls", o = s.inputId || "fileInput_", l = s.emptyIcon || "material-symbols-light:create-new-folder", c = s.emptyTitleKey || "title", u = "'→ ' + cellItem.cell.name", [d, p] = this._defaultSqls(r, ["CREATE OR REPLACE TABLE {name} AS SELECT * FROM '{fileNameUpload}'", "SELECT 1"]), m = s.showQueryInDevMode ? `<div x-show="devMode" class="mt-3 flex flex-col gap-3"><div><div class="text-sm font-semibold text-primary mb-1">Requête d'import</div><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${d}', false, 'query', '_showParsedQuery', null, null, null, '${e}', '${n}', true)"></div></div><div><div class="text-sm font-semibold text-primary mb-1">Requête de fallback (si erreur)</div><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${p}', false, 'query2', '_showParsedQuery2', null, null, null, '${e}', '${n}', true)"></div></div></div>` : "";
-    return `<div class="flex flex-col gap-2"><div class="flex items-center justify-center rounded-lg transition-all duration-200 mt-1 mb-1 min-h-[${s.minHeight || "20"}px]" :class="[cellItem.cell.${a} ? 'border-2 border-solid border-success bg-success/10 cursor-default' : (cellItem.cell._isDragging ? 'border-2 border-solid border-accent bg-accent/10 cursor-pointer' : 'border-2 border-dashed border-primary bg-primary/5 cursor-pointer hover:border-accent hover:bg-accent/10'), hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0' : '']" @click="!cellItem.cell.${a} && document.getElementById('${o}' + cellItem.cell._id).click()" @dragover.prevent="cellItem.cell._isDragging = true" @dragleave.prevent="cellItem.cell._isDragging = false" @drop.prevent="handleSingleSourceDrop($event, ${e}, ${n})">
+  static renderFileDropZone(e, n, s) {
+    const r = s.bodyConfig || {}, a = r.fileKey || "_fileName", i = r.accept || ".csv,.parquet,.xlsx,.xls", o = r.inputId || "fileInput_", l = r.emptyIcon || "material-symbols-light:create-new-folder", c = r.emptyTitleKey || "title", u = "'→ ' + cellItem.cell.name", [d, p] = this._defaultSqls(s, ["CREATE OR REPLACE TABLE {name} AS SELECT * FROM '{fileNameUpload}'", "SELECT 1"]), m = r.showQueryInDevMode ? `<div x-show="devMode" class="mt-3 flex flex-col gap-3"><div><div class="text-sm font-semibold text-primary mb-1">Requête d'import</div><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${d}', false, 'query', '_showParsedQuery', null, null, null, '${e}', '${n}', true)"></div></div><div><div class="text-sm font-semibold text-primary mb-1">Requête de fallback (si erreur)</div><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${p}', false, 'query2', '_showParsedQuery2', null, null, null, '${e}', '${n}', true)"></div></div></div>` : "";
+    return `<div class="flex flex-col gap-2"><div class="flex items-center justify-center rounded-lg transition-all duration-200 mt-1 mb-1 min-h-[${r.minHeight || "20"}px]" :class="[cellItem.cell.${a} ? 'border-2 border-solid border-success bg-success/10 cursor-default' : (cellItem.cell._isDragging ? 'border-2 border-solid border-accent bg-accent/10 cursor-pointer' : 'border-2 border-dashed border-primary bg-primary/5 cursor-pointer hover:border-accent hover:bg-accent/10'), hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0' : '']" @click="!cellItem.cell.${a} && document.getElementById('${o}' + cellItem.cell._id).click()" @dragover.prevent="cellItem.cell._isDragging = true" @dragleave.prevent="cellItem.cell._isDragging = false" @drop.prevent="handleSingleSourceDrop($event, ${e}, ${n})">
                     <template x-if="!cellItem.cell.${a}"><div class="text-center p-1"><div class="mb-0"><span class="iconify" data-icon="${l}" style="font-size:3rem"></span></div><p class="m-0 text-base-content/60 text-sm" x-text="cellItem.cell.${c} || 'Glissez-déposez ici'"></p><p class="mt-0 mb-0 text-accent text-xs font-semibold" x-text="${u}"></p></div></template>
                     <template x-if="cellItem.cell.${a}"><div class="flex flex-wrap items-center gap-3 px-4 py-3 w-full"><span class="iconify text-success" data-icon="material-symbols-light:check-circle" style="font-size:1.25rem"></span><span class="flex-1 text-success font-medium truncate" x-text="cellItem.cell.${a}"></span><span class="text-base-content/60 text-xs" x-text="'→ ' + cellItem.cell.name"></span><button class="btn btn-ghost" @click.stop="downloadSourceFile(${e}, ${n})" title="Télécharger"><span class="iconify" data-icon="material-symbols-light:download" style="font-size: 1.25rem;"></span></button><button class="btn btn-ghost btn-error" @click.stop="removeSingleSourceFile(${e}, ${n})" title="Supprimer"><span class="iconify" data-icon="material-symbols-light:close" style="font-size: 1.5rem;"></span></button></div></template>
                     <input type="file" hidden :id="'${o}' + cellItem.cell._id" accept="${i}" @change="handleSingleSourceFileSelect($event, ${e}, ${n})"></div>${m}</div>`;
   }
-  static renderButtonRun(e, n, r) {
-    const a = ((r.bodyConfig || {}).defaultLabel || "Exécuter").replace(/'/g, "\\'");
+  static renderButtonRun(e, n, s) {
+    const a = ((s.bodyConfig || {}).defaultLabel || "Exécuter").replace(/'/g, "\\'");
     return `<div class="flex justify-center p-0"><button class="btn btn-primary btn-sm" @click="runCellsAfter(${e}, ${n})" :disabled="isLoading"><span x-text="cellItem.cell.buttonLabel || '${a}'"></span></button></div>`;
   }
-  static renderSqlWithTable(e, n, r) {
-    const s = r.bodyConfig || {}, a = this._defaultSql(r, 0, "SELECT * FROM source1 LIMIT 100"), i = CellRenderer$1.renderTableSkeleton(), o = s.showTextResult === !0;
+  static renderSqlWithTable(e, n, s) {
+    const r = s.bodyConfig || {}, a = this._defaultSql(s, 0, "SELECT * FROM source1 LIMIT 100"), i = CellRenderer$1.renderTableSkeleton(), o = r.showTextResult === !0;
     let l = `<div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 flex flex-col' : ''">`;
     return l += `<div x-show="showSqlEditorVisible(cellItem.cell)" x-effect="safeRenderSqlEditor($el, cellItem.cell, '${a}', false, 'query', '_showParsedQuery', null, null, null, '${e}', '${n}')"></div>`, o ? (l += `<template x-if="(showSqlEditorVisible(cellItem.cell)) && isSqlResultTabular(cellItem.cell)"><div class="relative rounded-lg mt-2" :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 overflow-auto' : ''"><div x-show="cellItem.cell._status === 'running'" class="bg-base-100 rounded-lg overflow-x-auto">${i}</div><div x-show="cellItem.cell._status !== 'running'" class="bg-base-100 rounded-lg overflow-x-auto" :id="'table-' + cellItem.cell._id" x-init="$nextTick(async () => { if (cellItem.cell._results && cellItem.cell._results.length > 0) { await renderTableInContainer(cellItem.cell); } })"></div></div></template>`, l += '<template x-if="(showSqlEditorVisible(cellItem.cell)) && isSqlResultText(cellItem.cell)"><textarea class="textarea textarea-bordered w-full mt-2 min-h-[120px] font-mono text-sm" placeholder="Résultat texte/JSON" readonly :value="getSqlResultAsText(cellItem.cell)"></textarea></template>') : l += `<div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 overflow-auto' : ''"><div x-show="cellItem.cell._status === 'running'" class="bg-base-100 rounded-lg overflow-x-auto">${i}</div><div x-show="cellItem.cell._status !== 'running'" class="bg-base-100 rounded-lg overflow-x-auto" :id="'table-' + cellItem.cell._id" x-init="$nextTick(async () => { if (cellItem.cell._results && cellItem.cell._results.length > 0) { await renderTableInContainer(cellItem.cell); } })"></div></div>`, l += this.renderResultInfoBlock(!1) + "</div>", l;
   }
-  static renderSqlWithIframe(e, n, r) {
-    return r.bodyConfig, `<div class="flex flex-col flex-1 min-h-0 overflow-hidden"><div x-show="showSqlEditorVisible(cellItem.cell)" x-effect="safeRenderIframeEditor($el, cellItem.cell, ${e}, ${n})"></div><iframe class="flex-1 min-h-0 w-full border-none rounded-lg bg-white" :id="'iframe-' + cellItem.cell._id" x-init="$nextTick(() => { if (cellItem.cell._htmlContent) { renderIframeInContainer(cellItem.cell); } })"></iframe></div>`;
+  static renderSqlWithIframe(e, n, s) {
+    return s.bodyConfig, `<div class="flex flex-col flex-1 min-h-0 overflow-hidden"><div x-show="showSqlEditorVisible(cellItem.cell)" x-effect="safeRenderIframeEditor($el, cellItem.cell, ${e}, ${n})"></div><iframe class="flex-1 min-h-0 w-full border-none rounded-lg bg-white" :id="'iframe-' + cellItem.cell._id" x-init="$nextTick(() => { if (cellItem.cell._htmlContent) { renderIframeInContainer(cellItem.cell); } })"></iframe></div>`;
   }
-  static renderSqlStat(e, n, r) {
-    return r.bodyConfig, `<div><div x-show="showSqlEditorVisible(cellItem.cell)" x-effect="safeRenderSqlEditor($el, cellItem.cell, '${this._defaultSql(r, 0, "SELECT COUNT(*) FROM source1")}', false, 'query', '_showParsedQuery', null, null, null, '${e}', '${n}')"></div><div class="stat place-items-center py-1" x-show="cellItem.cell._results"><template x-if="cellItem.cell.icon"><div class="stat-figure text-secondary"><span class="iconify inline-block h-8 w-8" :data-icon="cellItem.cell.icon"></span></div></template><div class="stat-title" x-text="cellItem.cell.title || 'Stat'"></div><div class="stat-value" x-text="cellItem.cell._statValue || '-'"></div><div class="stat-desc" x-text="cellItem.cell.subtitle || ''"></div></div>${this.renderResultInfoBlock(!0)}</div>`;
+  static renderSqlStat(e, n, s) {
+    return s.bodyConfig, `<div><div x-show="showSqlEditorVisible(cellItem.cell)" x-effect="safeRenderSqlEditor($el, cellItem.cell, '${this._defaultSql(s, 0, "SELECT COUNT(*) FROM source1")}', false, 'query', '_showParsedQuery', null, null, null, '${e}', '${n}')"></div><div class="stat place-items-center py-1" x-show="cellItem.cell._results"><template x-if="cellItem.cell.icon"><div class="stat-figure text-secondary"><span class="iconify inline-block h-8 w-8" :data-icon="cellItem.cell.icon"></span></div></template><div class="stat-title" x-text="cellItem.cell.title || 'Stat'"></div><div class="stat-value" x-text="cellItem.cell._statValue || '-'"></div><div class="stat-desc" x-text="cellItem.cell.subtitle || ''"></div></div>${this.renderResultInfoBlock(!0)}</div>`;
   }
-  static renderUiParameter(e, n, r) {
+  static renderUiParameter(e, n, s) {
     return `<div class="flex flex-col gap-0" x-show="devMode || cellItem.cell.userVisible !== false"><div x-show="devMode" class="text-sm font-semibold text-primary mb-1" x-text="'$' + (ConfigManager.getCellReferenceName(cellItem.cell) || '')"></div><div x-show="devMode" x-effect="safeRenderUiParameterEditor($el, cellItem.cell)"></div><template x-if="cellItem.cell.paramType === 'input'"><fieldset class="fieldset"><legend class="fieldset-legend" x-text="cellItem.cell.title"></legend><input :type="cellItem.cell.inputType || 'text'" class="input input-bordered input-sm w-full" x-model="cellItem.cell._value" @change="cellItem.cell._userModified = true; onParameterValueChange(cellItem.cell)" :disabled="cellItem.cell.userEditable === false" :placeholder="'Valeur de ' + (ConfigManager.getCellReferenceName(cellItem.cell) || '')"></fieldset></template><template x-if="cellItem.cell.paramType === 'dropdown'"><div><template x-if="cellItem.cell._options && cellItem.cell._options.length > 0"><fieldset class="fieldset"><legend class="fieldset-legend" x-text="cellItem.cell.title"></legend><select class="select select-bordered select-sm w-full" x-model="cellItem.cell._value" @change="cellItem.cell._userModified = true; onParameterValueChange(cellItem.cell)" :disabled="cellItem.cell.userEditable === false"><template x-for="opt in cellItem.cell._options" :key="opt.value"><option :value="opt.value" x-text="opt.label"></option></template></select></fieldset></template></div></template><template x-if="cellItem.cell.paramType === 'range'"><fieldset class="fieldset"><legend class="fieldset-legend" x-text="cellItem.cell.title"></legend><div class="flex items-center gap-3 w-full"><span class="text-xs text-base-content/60 min-w-[2rem] text-right" x-text="cellItem.cell.rangeMin ?? 0"></span><input type="range" class="range range-sm range-primary flex-1" x-model.number="cellItem.cell._value" :min="cellItem.cell.rangeMin ?? 0" :max="cellItem.cell.rangeMax ?? 100" :step="cellItem.cell.rangeStep ?? 1" @input="cellItem.cell._userModified = true; onParameterValueChange(cellItem.cell)" :disabled="cellItem.cell.userEditable === false"><span class="text-xs text-base-content/60 min-w-[2rem]" x-text="cellItem.cell.rangeMax ?? 100"></span><span class="badge badge-primary badge-sm font-mono min-w-[3rem] text-center" x-text="cellItem.cell._value"></span></div></fieldset></template><template x-if="cellItem.cell._paramError"><div class="p-2 text-error text-sm bg-error/10 rounded" x-text="cellItem.cell._paramError"></div></template></div>`;
   }
-  static renderPublipostageWord(e, n, r) {
-    r.bodyConfig;
-    const [s, a] = this._defaultSqls(r, ["SELECT * FROM source1 LIMIT 10", "SELECT 'document_' || STRFTIME(current_timestamp::TIMESTAMP, '%Y-%m-%d_%H-%M-%S') || '.docx' AS filename;"]);
-    return `<div class="flex flex-col gap-3"><div class="flex items-center justify-center rounded-lg transition-all duration-200 mt-1 mb-1" :class="cellItem.cell.docxTemplateFileName ? 'border-2 border-solid border-success bg-success/10 cursor-default' : (cellItem.cell._isDragging ? 'border-2 border-solid border-accent bg-accent/10 cursor-pointer' : 'border-2 border-dashed border-primary bg-primary/5 cursor-pointer hover:border-accent hover:bg-accent/10')" @click="!cellItem.cell.docxTemplateFileName && document.getElementById('docxInput_' + cellItem.cell._id).click()" @dragover.prevent="cellItem.cell._isDragging = true" @dragleave.prevent="cellItem.cell._isDragging = false" @drop.prevent="handleDocxTemplateDrop($event, ${e}, ${n})"><template x-if="!cellItem.cell.docxTemplateFileName"><div class="text-center p-1"><div class="mb-0"><span class="iconify" data-icon="material-symbols-light:description" style="font-size:4rem"></span></div><p class="m-0 text-base-content/60 text-sm">Glissez-déposez votre template Word (.docx)</p><p class="mt-0 mb-0 text-accent text-xs font-semibold">Template de publipostage</p></div></template><template x-if="cellItem.cell.docxTemplateFileName"><div class="flex flex-wrap items-center gap-3 px-4 py-3 w-full"><span class="iconify text-success" data-icon="material-symbols-light:check-circle" style="font-size:1.25rem"></span><span class="flex-1 text-success font-medium truncate" x-text="cellItem.cell.docxTemplateFileName"></span><button class="btn btn-ghost" @click.stop="downloadDocxTemplate(${e}, ${n})" title="Télécharger"><span class="iconify" data-icon="material-symbols-light:download" style="font-size: 1.25rem;"></span></button><button class="btn btn-ghost btn-error" @click.stop="removeDocxTemplate(${e}, ${n})" title="Supprimer"><span class="iconify" data-icon="material-symbols-light:close" style="font-size: 1.5rem;"></span></button></div></template><input type="file" hidden :id="'docxInput_' + cellItem.cell._id" accept=".docx" @change="handleDocxTemplateFileSelect($event, ${e}, ${n})"></div><div x-show="devMode"><div class="text-sm font-semibold text-primary mb-1">Requête de données</div><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${s}', true)"></div></div><div x-show="devMode"><div class="text-sm font-semibold text-primary mb-1 flex items-center gap-2"><span>Requête de nom de fichier</span><span class="badge badge-soft badge-info text-xs flex items-center gap-1"><span class="iconify" data-icon="material-symbols-light:storage" style="font-size:0.875rem"></span> SQL</span></div><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${a}', false, 'query2')"></div></div><div class="flex justify-center" x-show="cellItem.cell.buttonLabel"><button class="btn btn-primary btn-sm" @click="runCellAt(${e}, ${n})" :disabled="isLoading || !cellItem.cell.docxTemplateFileName"><span x-text="cellItem.cell.buttonLabel || '📄 Générer les documents'"></span></button></div>${this.renderResultInfoBlock(!1)}</div>`;
+  static renderPublipostageWord(e, n, s) {
+    s.bodyConfig;
+    const [r, a] = this._defaultSqls(s, ["SELECT * FROM source1 LIMIT 10", "SELECT 'document_' || STRFTIME(current_timestamp::TIMESTAMP, '%Y-%m-%d_%H-%M-%S') || '.docx' AS filename;"]);
+    return `<div class="flex flex-col gap-3"><div class="flex items-center justify-center rounded-lg transition-all duration-200 mt-1 mb-1" :class="cellItem.cell.docxTemplateFileName ? 'border-2 border-solid border-success bg-success/10 cursor-default' : (cellItem.cell._isDragging ? 'border-2 border-solid border-accent bg-accent/10 cursor-pointer' : 'border-2 border-dashed border-primary bg-primary/5 cursor-pointer hover:border-accent hover:bg-accent/10')" @click="!cellItem.cell.docxTemplateFileName && document.getElementById('docxInput_' + cellItem.cell._id).click()" @dragover.prevent="cellItem.cell._isDragging = true" @dragleave.prevent="cellItem.cell._isDragging = false" @drop.prevent="handleDocxTemplateDrop($event, ${e}, ${n})"><template x-if="!cellItem.cell.docxTemplateFileName"><div class="text-center p-1"><div class="mb-0"><span class="iconify" data-icon="material-symbols-light:description" style="font-size:4rem"></span></div><p class="m-0 text-base-content/60 text-sm">Glissez-déposez votre template Word (.docx)</p><p class="mt-0 mb-0 text-accent text-xs font-semibold">Template de publipostage</p></div></template><template x-if="cellItem.cell.docxTemplateFileName"><div class="flex flex-wrap items-center gap-3 px-4 py-3 w-full"><span class="iconify text-success" data-icon="material-symbols-light:check-circle" style="font-size:1.25rem"></span><span class="flex-1 text-success font-medium truncate" x-text="cellItem.cell.docxTemplateFileName"></span><button class="btn btn-ghost" @click.stop="downloadDocxTemplate(${e}, ${n})" title="Télécharger"><span class="iconify" data-icon="material-symbols-light:download" style="font-size: 1.25rem;"></span></button><button class="btn btn-ghost btn-error" @click.stop="removeDocxTemplate(${e}, ${n})" title="Supprimer"><span class="iconify" data-icon="material-symbols-light:close" style="font-size: 1.5rem;"></span></button></div></template><input type="file" hidden :id="'docxInput_' + cellItem.cell._id" accept=".docx" @change="handleDocxTemplateFileSelect($event, ${e}, ${n})"></div><div x-show="devMode"><div class="text-sm font-semibold text-primary mb-1">Requête de données</div><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${r}', true)"></div></div><div x-show="devMode"><div class="text-sm font-semibold text-primary mb-1 flex items-center gap-2"><span>Requête de nom de fichier</span><span class="badge badge-soft badge-info text-xs flex items-center gap-1"><span class="iconify" data-icon="material-symbols-light:storage" style="font-size:0.875rem"></span> SQL</span></div><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${a}', false, 'query2')"></div></div><div class="flex justify-center" x-show="cellItem.cell.buttonLabel"><button class="btn btn-primary btn-sm" @click="runCellAt(${e}, ${n})" :disabled="isLoading || !cellItem.cell.docxTemplateFileName"><span x-text="cellItem.cell.buttonLabel || '📄 Générer les documents'"></span></button></div>${this.renderResultInfoBlock(!1)}</div>`;
   }
-  static renderPdfme(e, n, r) {
-    r.bodyConfig;
-    const [s, a] = this._defaultSqls(r, [`with v_source as (select * from source1 limit 10)
+  static renderPdfme(e, n, s) {
+    s.bodyConfig;
+    const [r, a] = this._defaultSqls(s, [`with v_source as (select * from source1 limit 10)
 SELECT 'Titre' as header, 'Pied de page' as footer, json_group_array(json_array(col1, col2, col3)) as datatable
 FROM v_source LIMIT 10`, "SELECT '$loop' || '_2.pdf'"]);
-    return `<div class="flex flex-col gap-3"><div x-show="devMode"><div class="text-sm font-semibold text-primary mb-1">Requête de données</div><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${s}', true)"></div></div><div x-show="devMode"><div class="text-sm font-semibold text-primary mb-1 flex items-center gap-2"><span>Requête nom de fichier PDF</span><span class="badge badge-soft badge-info text-xs flex items-center gap-1"><span class="iconify" data-icon="material-symbols-light:storage" style="font-size:0.875rem"></span> SQL</span></div><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${a}', false, 'query2')"></div></div><div x-show="devMode" class="form-control"><label class="label gap-2"><span class="label-text font-semibold">Template pdfme (JSON)</span><span class="badge badge-soft badge-primary text-xs">Layout</span></label><textarea class="textarea textarea-bordered w-full font-mono text-xs" x-model="cellItem.cell.json" rows="10" style="min-height: 180px;" placeholder='{"basePdf": {...}, "schemas": [...]}'></textarea></div><div class="flex justify-center" x-show="cellItem.cell.buttonLabel"><button class="btn btn-primary btn-sm" @click="runCellAt(${e}, ${n})" :disabled="isLoading"><span x-text="cellItem.cell.buttonLabel || '📑 Générer le PDF'"></span></button></div>${this.renderResultInfoBlock(!1)}</div>`;
+    return `<div class="flex flex-col gap-3"><div x-show="devMode"><div class="text-sm font-semibold text-primary mb-1">Requête de données</div><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${r}', true)"></div></div><div x-show="devMode"><div class="text-sm font-semibold text-primary mb-1 flex items-center gap-2"><span>Requête nom de fichier PDF</span><span class="badge badge-soft badge-info text-xs flex items-center gap-1"><span class="iconify" data-icon="material-symbols-light:storage" style="font-size:0.875rem"></span> SQL</span></div><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${a}', false, 'query2')"></div></div><div x-show="devMode" class="form-control"><label class="label gap-2"><span class="label-text font-semibold">Template pdfme (JSON)</span><span class="badge badge-soft badge-primary text-xs">Layout</span></label><textarea class="textarea textarea-bordered w-full font-mono text-xs" x-model="cellItem.cell.json" rows="10" style="min-height: 180px;" placeholder='{"basePdf": {...}, "schemas": [...]}'></textarea></div><div class="flex justify-center" x-show="cellItem.cell.buttonLabel"><button class="btn btn-primary btn-sm" @click="runCellAt(${e}, ${n})" :disabled="isLoading"><span x-text="cellItem.cell.buttonLabel || '📑 Générer le PDF'"></span></button></div>${this.renderResultInfoBlock(!1)}</div>`;
   }
-  static renderSqlWithPerspective(e, n, r) {
-    const s = r.bodyConfig || {}, a = this._defaultSql(r, 0, "SELECT * FROM source1"), i = s.minHeight || "400px", o = CellRenderer$1.renderTableSkeleton();
+  static renderSqlWithPerspective(e, n, s) {
+    const r = s.bodyConfig || {}, a = this._defaultSql(s, 0, "SELECT * FROM source1"), i = r.minHeight || "400px", o = CellRenderer$1.renderTableSkeleton();
     return `<div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 flex flex-col' : 'flex flex-col gap-2'"><template x-if="showSqlEditorVisible(cellItem.cell)"><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${a}', false, 'query', '_showParsedQuery', null, null, null, '${e}', '${n}')"></div></template><template x-if="cellItem.cell._status === 'running' && !cellItem.cell._perspectiveReady"><div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 rounded-lg bg-base-100 overflow-hidden' : 'rounded-lg bg-base-100 overflow-hidden'" :style="hasCellHeight(cellItem.cell) ? '' : 'min-height: ${i}'">${o}</div></template><template x-if="cellItem.cell._perspectiveReady"><div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 flex flex-col perspective-fill-height' : ''" :style="hasCellHeight(cellItem.cell) ? '' : 'min-height: ${i}'"><perspective-viewer :id="'perspective-' + cellItem.cell._id" theme="Pro Light" :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 w-full rounded-lg' : 'w-full rounded-lg'" :style="hasCellHeight(cellItem.cell) ? '' : 'min-height: ${i}'" x-init="$nextTick(() => { if (cellItem.cell._arrowTable && !cellItem.cell._perspectiveScheduled && !cellItem.cell._perspectiveRendering && !cellItem.cell._perspectiveTable) { renderPerspectiveInContainer(cellItem.cell).catch(e => { cellItem.cell._perspectiveReady = false; cellItem.cell._resultInfo = '❌ ' + e.message; }); } })"></perspective-viewer></div></template></div>`;
   }
 }
@@ -6568,7 +6568,7 @@ const CELL_BODY_FAMILIES = {
 };
 let CellRenderer$1 = class G {
   // Génère le HTML du header d'une cellule (mode dev uniquement)
-  static renderHeader(e, n, r) {
+  static renderHeader(e, n, s) {
     return `
                     <div class="flex justify-between items-center py-2 px-4 bg-base-200 border-b border-base-300 cell-header-responsive" x-show="devMode">
                         <div class="flex items-center gap-2 text-sm text-base-content/60">
@@ -6581,8 +6581,8 @@ let CellRenderer$1 = class G {
                                 <button class="btn btn-xs btn-success join-item" @click="runCellAt(${e}, ${n})" :disabled="isLoading" title="Exécuter"><span class="iconify" data-icon="material-symbols-light:play-arrow" style="font-size:1rem"></span></button>
                                 <button class="btn btn-xs join-item" @click="openCellConfig(${e}, ${n})" title="Configurer"><span class="iconify" data-icon="material-symbols-light:settings" style="font-size:1rem"></span></button>
                                 <button class="btn btn-xs join-item" @click="openChildGroupModal(${e}, ${n})" title="Groupe enfant"><span class="iconify" data-icon="material-symbols-light:note-add" style="font-size:1rem"></span></button>
-                                <button class="btn btn-xs join-item" @click="moveItemInGroup(${e}, 'cell', ${n}, -1)" :disabled="isFirstInGroup(${r}, 'cell', ${n})" title="Déplacer à gauche"><span class="iconify" data-icon="material-symbols-light:arrow-back" style="font-size:1rem"></span></button>
-                                <button class="btn btn-xs join-item" @click="moveItemInGroup(${e}, 'cell', ${n}, 1)" :disabled="isLastInGroup(${r}, 'cell', ${n})" title="Déplacer à droite"><span class="iconify" data-icon="material-symbols-light:arrow-forward" style="font-size:1rem"></span></button>
+                                <button class="btn btn-xs join-item" @click="moveItemInGroup(${e}, 'cell', ${n}, -1)" :disabled="isFirstInGroup(${s}, 'cell', ${n})" title="Déplacer à gauche"><span class="iconify" data-icon="material-symbols-light:arrow-back" style="font-size:1rem"></span></button>
+                                <button class="btn btn-xs join-item" @click="moveItemInGroup(${e}, 'cell', ${n}, 1)" :disabled="isLastInGroup(${s}, 'cell', ${n})" title="Déplacer à droite"><span class="iconify" data-icon="material-symbols-light:arrow-forward" style="font-size:1rem"></span></button>
                                 <button class="btn btn-xs btn-error join-item" @click="deleteCellAt(${e}, ${n})" title="Supprimer"><span class="iconify" data-icon="material-symbols-light:delete" style="font-size:1rem"></span></button>
                             </div>
                             <div class="dropdown dropdown-end hidden">
@@ -6590,8 +6590,8 @@ let CellRenderer$1 = class G {
                                 <ul tabindex="-1" class="dropdown-content menu menu-xs bg-base-100 rounded-box z-[1] w-48 p-2 shadow-sm">
                                     <li><button @click="runCellAt(${e}, ${n})" :disabled="isLoading"><span class="iconify" data-icon="material-symbols-light:play-arrow" style="font-size:1rem"></span> Exécuter</button></li>
                                     <li><button @click="openCellConfig(${e}, ${n})"><span class="iconify" data-icon="material-symbols-light:settings" style="font-size:1rem"></span> Configurer</button></li>
-                                    <li><button @click="moveItemInGroup(${e}, 'cell', ${n}, -1)" :disabled="isFirstInGroup(${r}, 'cell', ${n})"><span class="iconify" data-icon="material-symbols-light:arrow-back" style="font-size:1rem"></span> Déplacer à gauche</button></li>
-                                    <li><button @click="moveItemInGroup(${e}, 'cell', ${n}, 1)" :disabled="isLastInGroup(${r}, 'cell', ${n})"><span class="iconify" data-icon="material-symbols-light:arrow-forward" style="font-size:1rem"></span> Déplacer à droite</button></li>
+                                    <li><button @click="moveItemInGroup(${e}, 'cell', ${n}, -1)" :disabled="isFirstInGroup(${s}, 'cell', ${n})"><span class="iconify" data-icon="material-symbols-light:arrow-back" style="font-size:1rem"></span> Déplacer à gauche</button></li>
+                                    <li><button @click="moveItemInGroup(${e}, 'cell', ${n}, 1)" :disabled="isLastInGroup(${s}, 'cell', ${n})"><span class="iconify" data-icon="material-symbols-light:arrow-forward" style="font-size:1rem"></span> Déplacer à droite</button></li>
                                     <li><button class="text-error" @click="deleteCellAt(${e}, ${n})"><span class="iconify" data-icon="material-symbols-light:delete" style="font-size:1rem"></span> Supprimer</button></li>
                                 </ul>
                             </div>
@@ -6617,7 +6617,7 @@ let CellRenderer$1 = class G {
   }
   // Génère le HTML du body d'une cellule (tous les types – registre bodyFamily)
   static renderBody(e, n) {
-    const r = this.renderCellBodySkeleton(), a = Object.entries(CELL_TYPE_SCHEMAS$1.types).filter(([, i]) => i.bodyFamily && CELL_BODY_FAMILIES[i.bodyFamily]).map(([i, o]) => {
+    const s = this.renderCellBodySkeleton(), a = Object.entries(CELL_TYPE_SCHEMAS$1.types).filter(([, i]) => i.bodyFamily && CELL_BODY_FAMILIES[i.bodyFamily]).map(([i, o]) => {
       const c = CELL_BODY_FAMILIES[o.bodyFamily].render(e, n, o);
       return { type: i, html: c };
     }).map(({ type: i, html: o }) => `<template x-if="cellItem.cell.type === '${i}'">${o}</template>`).join(`
@@ -6628,7 +6628,7 @@ let CellRenderer$1 = class G {
                          :style="getCellHeightVars(cellItem.cell)">
                         <!-- SKELETON: logique pilotée par bodyDisplay (schéma) -->
                         <div x-show="bodyDisplayShouldShowSkeleton(cellItem.cell)">
-                            ${r}
+                            ${s}
                         </div>
                         <!-- CONTENU: logique pilotée par bodyDisplay (schéma) -->
                         <div class="flex-1 flex flex-col min-h-0" x-show="bodyDisplayShouldShowContent(cellItem.cell)">
@@ -6647,8 +6647,8 @@ let CellRenderer$1 = class G {
                     </div>`;
   }
   // Génère le HTML complet d'une cellule
-  static renderCell(e, n, r) {
-    return G.renderHeader(e, n, r) + G.renderBody(e, n);
+  static renderCell(e, n, s) {
+    return G.renderHeader(e, n, s) + G.renderBody(e, n);
   }
 };
 function generateGistPassphraseModalHTML() {
@@ -7974,7 +7974,7 @@ function gistPassphraseModal() {
       this.error = "", this.loading = !0;
       try {
         const e = await GistEncrypt.decrypt(window._pendingEncryptedGist, t), n = JSON.parse(e);
-        let r;
+        let s;
         if (window._encryptedSource === "html" && n && typeof n.config == "object" && Array.isArray(n.sourceFiles) && Array.isArray(n.docxTemplates)) {
           for (const i of n.sourceFiles) {
             const o = document.createElement("script");
@@ -7985,12 +7985,12 @@ function gistPassphraseModal() {
             o.type = "application/octet-stream", o.id = i.id, o.dataset.cellPath = i.cellPath, o.dataset.fileName = i.fileName, i.compressed && (o.dataset.compressed = "true"), o.textContent = i.base64 || "", document.head.appendChild(o);
           }
           const a = document.getElementById("defaultConfigBase64");
-          a && (a.textContent = ConfigManager.encodeUTF8ToBase64(JSON.stringify(n.config, null, 2)), a.removeAttribute("data-encrypted")), r = n.config;
+          a && (a.textContent = ConfigManager.encodeUTF8ToBase64(JSON.stringify(n.config, null, 2)), a.removeAttribute("data-encrypted")), s = n.config;
         } else
-          r = ConfigManager.deepMerge(ConfigManager.getDefaultConfig(), n), await ConfigManager.prepareConfigForLoad(r);
-        window._loadedConfig = ConfigManager.applyURLParamsToConfig(r), window._pendingEncryptedGist = null, window._encryptedSource = null;
-        const s = window._appContainer || document.getElementById("app-container");
-        s && (s.innerHTML = window.generateAppHTML(), window.Alpine && Alpine.initTree(s)), window.notebookApp = window.notebookApp;
+          s = ConfigManager.deepMerge(ConfigManager.getDefaultConfig(), n), await ConfigManager.prepareConfigForLoad(s);
+        window._loadedConfig = ConfigManager.applyURLParamsToConfig(s), window._pendingEncryptedGist = null, window._encryptedSource = null;
+        const r = window._appContainer || document.getElementById("app-container");
+        r && (r.innerHTML = window.generateAppHTML(), window.Alpine && Alpine.initTree(r)), window.notebookApp = window.notebookApp;
       } catch (e) {
         this.error = e.message || "Passphrase incorrecte";
       } finally {
@@ -8054,14 +8054,14 @@ function pagesMixin() {
     refreshMarkdownCellsForPage(t) {
       const e = this.pages[t];
       if (!e) return;
-      const n = (r) => {
-        (r || []).forEach((s) => {
-          (s.cells || []).forEach((a) => {
+      const n = (s) => {
+        (s || []).forEach((r) => {
+          (r.cells || []).forEach((a) => {
             if (a.type === "markdown") {
               const i = a._easyMDEcli, o = (i == null ? void 0 : i.codemirror) || (i == null ? void 0 : i.cm);
               o != null && o.refresh && o.refresh();
             }
-          }), s.children && n(s.children);
+          }), r.children && n(r.children);
         });
       };
       n(e.groups || []), n(e.linkGroups || []);
@@ -8081,8 +8081,8 @@ function helpersMixin() {
     hasSourceCells() {
       const t = (e) => {
         var n;
-        for (const r of e)
-          if ((n = r.cells) != null && n.some((s) => s.type === "source") || r.children && t(r.children)) return !0;
+        for (const s of e)
+          if ((n = s.cells) != null && n.some((r) => r.type === "source") || s.children && t(s.children)) return !0;
         return !1;
       };
       return this.pages.some(
@@ -8133,8 +8133,8 @@ function helpersMixin() {
           const t = { queries: [{ name: "main", sql, engine: langType, clientVisible: !1 }], _parseLevels: [] }, e = await this.parseQueryRecursively(t), n = await DuckDBManager.executeQuery(e);
           if (!n || n.length === 0)
             return !1;
-          const r = Object.values(n[0])[0];
-          return r === !0 || r !== null && r !== !1 && r !== void 0;
+          const s = Object.values(n[0])[0];
+          return s === !0 || s !== null && s !== !1 && s !== void 0;
         }
       } catch (t) {
         return console.error("  ❌ [evaluateGroupIfQuery] Erreur:", t), !1;
@@ -8143,10 +8143,10 @@ function helpersMixin() {
     // Évaluer toutes les requêtes conditionnelles des groupes (récursif) et mettre à jour _ifQueryResult
     async evaluateAllGroupIfQueries() {
       const t = async (e, n = []) => {
-        var r;
-        for (let s = 0; s < (e || []).length; s++) {
-          const a = e[s], i = [...n, s];
-          ConfigManager.getGroupIfQuery(a) ? a._ifQueryResult = await this.evaluateGroupIfQuery(a) : a._ifQueryResult = !0, (r = a.children) != null && r.length && await t(a.children, i);
+        var s;
+        for (let r = 0; r < (e || []).length; r++) {
+          const a = e[r], i = [...n, r];
+          ConfigManager.getGroupIfQuery(a) ? a._ifQueryResult = await this.evaluateGroupIfQuery(a) : a._ifQueryResult = !0, (s = a.children) != null && s.length && await t(a.children, i);
         }
       };
       for (const e of this.pages || [])
@@ -8166,10 +8166,10 @@ function helpersMixin() {
     syncMarkdownToEditor(t, e) {
       const n = this.getCellAtPath(t, e);
       if (!n || !n._easyMDE) return;
-      const r = ConfigManager.getCellEngine(n, "main");
-      if (r === "sql" || r === "js") return;
-      const s = n._easyMDE.value(), a = ConfigManager.getCellEditableContent(n);
-      s !== a && n._easyMDE.value(a);
+      const s = ConfigManager.getCellEngine(n, "main");
+      if (s === "sql" || s === "js") return;
+      const r = n._easyMDE.value(), a = ConfigManager.getCellEditableContent(n);
+      r !== a && n._easyMDE.value(a);
     },
     // Toggle entre mode édition et vue parsée pour les cellules SQL
     toggleSqlView(t) {
@@ -8203,7 +8203,7 @@ function helpersMixin() {
       return "page_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9);
     },
     // Vérifier si un nom de source/param existe déjà dans toutes les pages
-    isNameUniqueAcrossPages(t, e, n = null, r = null, s = null) {
+    isNameUniqueAcrossPages(t, e, n = null, s = null, r = null) {
       if (!t || !t.trim()) return !0;
       const a = t.trim();
       if (e !== "source" && e !== "uiParameter")
@@ -8214,7 +8214,7 @@ function helpersMixin() {
             const p = c[d], m = [...u, d];
             for (let h = 0; h < (p.cells || []).length; h++) {
               const f = p.cells[h];
-              if (!(n === i && r && JSON.stringify(r) === JSON.stringify(m) && s === h) && f.type === e && f.name && f.name.trim() === a)
+              if (!(n === i && s && JSON.stringify(s) === JSON.stringify(m) && r === h) && f.type === e && f.name && f.name.trim() === a)
                 return !1;
             }
             if (p.children && p.children.length > 0 && !l(p.children, m))
@@ -8233,14 +8233,14 @@ function helpersMixin() {
       if (t !== "source" && t !== "uiParameter")
         return e;
       for (let n = 0; n < this.pages.length; n++) {
-        const r = this.pages[n], s = (a) => {
+        const s = this.pages[n], r = (a) => {
           for (const i of a) {
             for (const o of i.cells || [])
               o.type === t && o.name && o.name.trim() && e.push(o.name.trim());
-            i.children && s(i.children);
+            i.children && r(i.children);
           }
         };
-        s(r.groups), r.linkGroups && s(r.linkGroups);
+        r(s.groups), s.linkGroups && r(s.linkGroups);
       }
       return e;
     },
@@ -8251,19 +8251,19 @@ function helpersMixin() {
     },
     // Télécharger le fichier source d'une cellule
     downloadSourceFile(t, e) {
-      const n = Array.isArray(t) ? t : [t], r = this.getCellAtPath(n, e);
-      if (!r || r.type !== "source") {
+      const n = Array.isArray(t) ? t : [t], s = this.getCellAtPath(n, e);
+      if (!s || s.type !== "source") {
         this.setStatus("Cellule source introuvable", "error");
         return;
       }
-      if (!r._currentFile || !r._fileName) {
+      if (!s._currentFile || !s._fileName) {
         this.setStatus("Aucun fichier à télécharger", "error");
         return;
       }
       try {
-        FileHandler.downloadFile(r._currentFile, r._fileName), this.setStatus("Fichier téléchargé", "success");
-      } catch (s) {
-        this.setStatus("Erreur lors du téléchargement: " + s.message, "error");
+        FileHandler.downloadFile(s._currentFile, s._fileName), this.setStatus("Fichier téléchargé", "success");
+      } catch (r) {
+        this.setStatus("Erreur lors du téléchargement: " + r.message, "error");
       }
     }
   };
@@ -8292,20 +8292,20 @@ function groupsMixin() {
     getFlattenedGroupsForAllPages() {
       const t = [];
       for (let e = 0; e < (this.pages || []).length; e++) {
-        const n = this.pages[e], r = (n == null ? void 0 : n.groups) || [];
-        for (let s = 0; s < r.length; s++) {
-          const a = r[s];
+        const n = this.pages[e], s = (n == null ? void 0 : n.groups) || [];
+        for (let r = 0; r < s.length; r++) {
+          const a = s[r];
           t.push({
             pageIndex: e,
             pageId: n._id,
-            uniqueKey: n._id + "_" + s,
+            uniqueKey: n._id + "_" + r,
             group: a,
-            path: [s],
+            path: [r],
             depth: 0,
-            pathKey: String(s),
-            isFirst: s === 0,
-            isLast: s === r.length - 1,
-            siblingCount: r.length
+            pathKey: String(r),
+            isFirst: r === 0,
+            isLast: r === s.length - 1,
+            siblingCount: s.length
           });
         }
       }
@@ -8314,20 +8314,20 @@ function groupsMixin() {
     // Retourne les items (cellules + sous-groupes) d'un groupe, combinés dans l'ordre
     // Chaque item a un type ('cell' ou 'group'), un index local et les données
     getGroupItems(t) {
-      const e = [], n = t.cells || [], r = t.children || [];
-      return n.forEach((s, a) => {
+      const e = [], n = t.cells || [], s = t.children || [];
+      return n.forEach((r, a) => {
         e.push({
           type: "cell",
-          data: s,
+          data: r,
           cellIndex: a,
-          itemKey: "cell-" + s._id
+          itemKey: "cell-" + r._id
         });
-      }), r.forEach((s, a) => {
+      }), s.forEach((r, a) => {
         e.push({
           type: "group",
-          data: s,
+          data: r,
           childIndex: a,
-          itemKey: "group-" + (s._id || a)
+          itemKey: "group-" + (r._id || a)
         });
       }), e;
     },
@@ -8339,9 +8339,9 @@ function groupsMixin() {
           return this.childGroupModal.group;
         {
           let n = this.childGroupModal.group;
-          for (let r = 1; r < t.length; r++) {
+          for (let s = 1; s < t.length; s++) {
             if (!n || !n.children) return null;
-            n = n.children[t[r]];
+            n = n.children[t[s]];
           }
           return n;
         }
@@ -8359,12 +8359,12 @@ function groupsMixin() {
     },
     // Récupérer une cellule par chemin de groupe + index de cellule
     getCellAtPath(t, e) {
-      var r, s;
+      var s, r;
       if (!t || !Array.isArray(t)) return null;
       if (t.length === 1 && t[0] === -1)
-        return (r = this.childGroupModal.group) != null && r.cells ? this.childGroupModal.group.cells[e] : null;
+        return (s = this.childGroupModal.group) != null && s.cells ? this.childGroupModal.group.cells[e] : null;
       const n = this.getGroupAtPath(t);
-      return (s = n == null ? void 0 : n.cells) == null ? void 0 : s[e];
+      return (r = n == null ? void 0 : n.cells) == null ? void 0 : r[e];
     },
     // Créer un nouveau groupe (pour imbrication)
     createNewGroup(t = "row") {
@@ -8389,8 +8389,8 @@ function groupsMixin() {
       e.children || (e.children = []);
       const n = this.createNewGroup("row");
       n._order = this.getNextOrder(e);
-      const r = this.createNewCell("markdown");
-      r._order = 0, n.cells = [r], e.children.push(n), this.setStatus("Sous-groupe ajouté", "success");
+      const s = this.createNewCell("markdown");
+      s._order = 0, n.cells = [s], e.children.push(n), this.setStatus("Sous-groupe ajouté", "success");
     },
     // Changer la direction d'un groupe par chemin
     toggleGroupDirection(t) {
@@ -8442,8 +8442,8 @@ FROM source1 LIMIT 10;`;
         if (t.length === 1)
           this.groups.splice(t[0], 1);
         else {
-          const e = t.slice(0, -1), n = t[t.length - 1], r = this.getGroupAtPath(e);
-          r && r.children && r.children.splice(n, 1);
+          const e = t.slice(0, -1), n = t[t.length - 1], s = this.getGroupAtPath(e);
+          s && s.children && s.children.splice(n, 1);
         }
         this.setStatus("Groupe supprimé", "success");
       }
@@ -8456,17 +8456,17 @@ FROM source1 LIMIT 10;`;
     async openChildGroupModal(t, e) {
       const n = this.getCellAtPath(t, e);
       if (!n) return;
-      let r = null;
-      if (n.childGroupId && (r = this.getLinkGroupById(n.childGroupId)), !r) {
-        r = this.createNewGroup("row"), r._type = "link";
-        const s = this.createNewCell("markdown");
-        s._order = 0, r.cells = [s], this.linkGroups.push(r), n.childGroupId = r._id;
+      let s = null;
+      if (n.childGroupId && (s = this.getLinkGroupById(n.childGroupId)), !s) {
+        s = this.createNewGroup("row"), s._type = "link";
+        const r = this.createNewCell("markdown");
+        r._order = 0, s.cells = [r], this.linkGroups.push(s), n.childGroupId = s._id;
       }
       this.childGroupModal = {
         open: !0,
         path: t,
         cellIndex: e,
-        group: r
+        group: s
       }, await this.runGroupAtPath([-1]);
     },
     // Fermer la modale du groupe enfant
@@ -8487,30 +8487,30 @@ FROM source1 LIMIT 10;`;
     moveGroupAtPath(t, e) {
       if (!(!t || t.length === 0))
         if (t.length === 1) {
-          const n = t[0], r = n + e;
-          if (r >= 0 && r < this.groups.length) {
-            const s = this.groups[n];
-            this.groups[n] = this.groups[r], this.groups[r] = s;
+          const n = t[0], s = n + e;
+          if (s >= 0 && s < this.groups.length) {
+            const r = this.groups[n];
+            this.groups[n] = this.groups[s], this.groups[s] = r;
           }
         } else {
-          const n = t.slice(0, -1), r = t[t.length - 1], s = this.getGroupAtPath(n);
-          if (s && s.children) {
-            const a = r + e;
-            if (a >= 0 && a < s.children.length) {
-              const i = s.children[r];
-              s.children[r] = s.children[a], s.children[a] = i;
+          const n = t.slice(0, -1), s = t[t.length - 1], r = this.getGroupAtPath(n);
+          if (r && r.children) {
+            const a = s + e;
+            if (a >= 0 && a < r.children.length) {
+              const i = r.children[s];
+              r.children[s] = r.children[a], r.children[a] = i;
             }
           }
         }
     },
     // Déplacer une cellule dans un groupe par chemin
     moveCellInGroupAtPath(t, e, n) {
-      const r = this.getGroupAtPath(t);
-      if (!r || !r.cells) return;
-      const s = e + n;
-      if (s >= 0 && s < r.cells.length) {
-        const a = r.cells[e];
-        r.cells[e] = r.cells[s], r.cells[s] = a;
+      const s = this.getGroupAtPath(t);
+      if (!s || !s.cells) return;
+      const r = e + n;
+      if (r >= 0 && r < s.cells.length) {
+        const a = s.cells[e];
+        s.cells[e] = s.cells[r], s.cells[r] = a;
       }
     },
     // Génère l'ID unique pour un groupe basé sur son path
@@ -8523,11 +8523,11 @@ FROM source1 LIMIT 10;`;
     // Obtient le prochain _order disponible dans un groupe (cellules + children)
     getNextOrder(t) {
       if (!t) return 0;
-      const e = t.cells || [], n = t.children || [], r = [
-        ...e.map((s) => s._order ?? 0),
-        ...n.map((s) => s._order ?? 0)
+      const e = t.cells || [], n = t.children || [], s = [
+        ...e.map((r) => r._order ?? 0),
+        ...n.map((r) => r._order ?? 0)
       ];
-      return r.length > 0 ? Math.max(...r) + 1 : 0;
+      return s.length > 0 ? Math.max(...s) + 1 : 0;
     },
     // Retourne les cellules triées par _order avec leur index original
     getSortedCells(t) {
@@ -8540,18 +8540,18 @@ FROM source1 LIMIT 10;`;
     // Retourne tous les items (cellules + children) triés par _order avec leur type
     getAllItemsSorted(t) {
       if (!t) return [];
-      const e = (t.cells || []).map((r, s) => ({
+      const e = (t.cells || []).map((s, r) => ({
         type: "cell",
-        item: r,
-        originalIndex: s,
-        order: r._order ?? 0
-      })), n = (t.children || []).map((r, s) => ({
+        item: s,
+        originalIndex: r,
+        order: s._order ?? 0
+      })), n = (t.children || []).map((s, r) => ({
         type: "child",
-        item: r,
-        originalIndex: s,
-        order: r._order ?? 0
+        item: s,
+        originalIndex: r,
+        order: s._order ?? 0
       }));
-      return [...e, ...n].sort((r, s) => r.order - s.order);
+      return [...e, ...n].sort((s, r) => s.order - r.order);
     },
     // Retourne le nom d'onglet pour un item (cellule ou groupe enfant)
     getTabName(t, e) {
@@ -8564,116 +8564,116 @@ FROM source1 LIMIT 10;`;
       }
     },
     // Déplace un item (cellule ou child) dans un groupe de façon unifiée
-    moveItemInGroup(t, e, n, r) {
-      const s = this.getGroupAtPath(t);
-      if (!s) return;
-      const a = this.getAllItemsSorted(s);
+    moveItemInGroup(t, e, n, s) {
+      const r = this.getGroupAtPath(t);
+      if (!r) return;
+      const a = this.getAllItemsSorted(r);
       if (a.length < 2) return;
       const i = a.findIndex(
         (d) => d.type === e && d.originalIndex === n
       );
       if (i === -1) return;
-      const o = i + r;
+      const o = i + s;
       if (o < 0 || o >= a.length) return;
       const l = a[i], c = a[o], u = l.item._order;
       l.item._order = c.item._order, c.item._order = u;
     },
     // Vérifie si un item est le premier dans l'ordre unifié
     isFirstInGroup(t, e, n) {
-      const r = this.getAllItemsSorted(t);
-      if (r.length === 0) return !0;
-      const s = r[0];
-      return s.type === e && s.originalIndex === n;
+      const s = this.getAllItemsSorted(t);
+      if (s.length === 0) return !0;
+      const r = s[0];
+      return r.type === e && r.originalIndex === n;
     },
     // Vérifie si un item est le dernier dans l'ordre unifié
     isLastInGroup(t, e, n) {
-      const r = this.getAllItemsSorted(t);
-      if (r.length === 0) return !0;
-      const s = r[r.length - 1];
-      return s.type === e && s.originalIndex === n;
+      const s = this.getAllItemsSorted(t);
+      if (s.length === 0) return !0;
+      const r = s[s.length - 1];
+      return r.type === e && r.originalIndex === n;
     },
     // Trouve l'index de l'item dans la liste triée
     getSortedIndex(t, e, n) {
       return this.getAllItemsSorted(t).findIndex(
-        (s) => s.type === e && s.originalIndex === n
+        (r) => r.type === e && r.originalIndex === n
       );
     },
     // Génère le HTML d'un sous-groupe (récursif, illimité)
-    renderChildGroupHTML(t, e, n, r) {
-      const s = JSON.stringify(e), a = JSON.stringify(e.slice(0, -1)), i = `
+    renderChildGroupHTML(t, e, n, s) {
+      const r = JSON.stringify(e), a = JSON.stringify(e.slice(0, -1)), i = `
                         <div class="flex items-center justify-between gap-2 py-2 px-4 bg-primary/10 border-b border-base-300" x-show="devMode">
                             <div class="join">
-                                <button class="btn btn-xs join-item" @click="toggleGroupDirection(${s})" :title="getGroupAtPath(${s})?.direction === 'column' ? 'Passer en ligne' : 'Passer en colonne'">
-                                    <span x-text="getGroupAtPath(${s})?.direction === 'column' ? '⇵' : '⇄'"></span>
+                                <button class="btn btn-xs join-item" @click="toggleGroupDirection(${r})" :title="getGroupAtPath(${r})?.direction === 'column' ? 'Passer en ligne' : 'Passer en colonne'">
+                                    <span x-text="getGroupAtPath(${r})?.direction === 'column' ? '⇵' : '⇄'"></span>
                                 </button>
-                                <button class="btn btn-xs join-item" :class="getGroupAtPath(${s})?.loop?.enabled ? 'btn-info' : ''" @click="openLoopConfigModal(${s})" title="Configurer la boucle">🔁</button>
-                                <button class="btn btn-xs join-item" :class="getGroupAtPath(${s})?.accordion ? 'btn-accent' : ''" @click="openGroupSettingsModal(${s})" title="Paramètres du groupe">⚙️</button>
-                                <button class="btn btn-xs btn-success join-item" @click="runGroupAtPath(${s})" :disabled="isLoading" title="Exécuter">▶️</button>
-                                <button class="btn btn-xs join-item" @click="moveItemInGroup(${a}, 'child', ${r}, -1)" :disabled="isFirstInGroup(getGroupAtPath(${a}), 'child', ${r})" title="Monter">⬆️</button>
-                                <button class="btn btn-xs join-item" @click="moveItemInGroup(${a}, 'child', ${r}, 1)" :disabled="isLastInGroup(getGroupAtPath(${a}), 'child', ${r})" title="Descendre">⬇️</button>
-                                <button class="btn btn-xs join-item" @click="addNestedGroup(${s})" title="Ajouter un sous-groupe">📁</button>
-                                <button class="btn btn-xs join-item" @click="openAddCellToGroupModal(${s})" title="Ajouter une cellule">➕</button>
-                                <button class="btn btn-xs btn-error join-item" @click="deleteGroupAtPath(${s})" title="Supprimer">🗑️</button>
+                                <button class="btn btn-xs join-item" :class="getGroupAtPath(${r})?.loop?.enabled ? 'btn-info' : ''" @click="openLoopConfigModal(${r})" title="Configurer la boucle"><span class="iconify" data-icon="material-symbols-light:loop" style="font-size:1rem"></span></button>
+                                <button class="btn btn-xs join-item" :class="getGroupAtPath(${r})?.accordion ? 'btn-accent' : ''" @click="openGroupSettingsModal(${r})" title="Paramètres du groupe"><span class="iconify" data-icon="material-symbols-light:settings" style="font-size:1rem"></span></button>
+                                <button class="btn btn-xs btn-success join-item" @click="runGroupAtPath(${r})" :disabled="isLoading" title="Exécuter"><span class="iconify" data-icon="material-symbols-light:play-arrow" style="font-size:1rem"></span></button>
+                                <button class="btn btn-xs join-item" @click="moveItemInGroup(${a}, 'child', ${s}, -1)" :disabled="isFirstInGroup(getGroupAtPath(${a}), 'child', ${s})" title="Monter"><span class="iconify" data-icon="material-symbols-light:arrow-upward" style="font-size:1rem"></span></button>
+                                <button class="btn btn-xs join-item" @click="moveItemInGroup(${a}, 'child', ${s}, 1)" :disabled="isLastInGroup(getGroupAtPath(${a}), 'child', ${s})" title="Descendre"><span class="iconify" data-icon="material-symbols-light:arrow-downward" style="font-size:1rem"></span></button>
+                                <button class="btn btn-xs join-item" @click="addNestedGroup(${r})" title="Ajouter un sous-groupe"><span class="iconify" data-icon="material-symbols-light:create-new-folder" style="font-size:1rem"></span></button>
+                                <button class="btn btn-xs join-item" @click="openAddCellToGroupModal(${r})" title="Ajouter une cellule"><span class="iconify" data-icon="material-symbols-light:add" style="font-size:1rem"></span></button>
+                                <button class="btn btn-xs btn-error join-item" @click="deleteGroupAtPath(${r})" title="Supprimer"><span class="iconify" data-icon="material-symbols-light:delete" style="font-size:1rem"></span></button>
                             </div>
                             <div class="dropdown dropdown hidden">
-                                <div tabindex="0" role="button" class="btn btn-xs">⋮</div>
+                                <div tabindex="0" role="button" class="btn btn-xs"><span class="iconify" data-icon="material-symbols-light:more-vert" style="font-size:1rem"></span></div>
                                 <ul tabindex="-1" class="dropdown-content menu menu-xs bg-base-100 rounded-box z-[1] w-48 p-2 shadow-sm">
-                                    <li><button @click="toggleGroupDirection(${s})"><span x-text="getGroupAtPath(${s})?.direction === 'column' ? '⇵ Passer en ligne' : '⇄ Passer en colonne'"></span></button></li>
-                                    <li><button @click="openLoopConfigModal(${s})">🔁 Configurer la boucle</button></li>
-                                    <li><button @click="openGroupSettingsModal(${s})">⚙️ Paramètres du groupe</button></li>
-                                    <li><button @click="runGroupAtPath(${s})" :disabled="isLoading">▶️ Exécuter</button></li>
-                                    <li><button @click="moveItemInGroup(${a}, 'child', ${r}, -1)" :disabled="isFirstInGroup(getGroupAtPath(${a}), 'child', ${r})">⬆️ Monter</button></li>
-                                    <li><button @click="moveItemInGroup(${a}, 'child', ${r}, 1)" :disabled="isLastInGroup(getGroupAtPath(${a}), 'child', ${r})">⬇️ Descendre</button></li>
-                                    <li><button @click="addNestedGroup(${s})">📁 Ajouter un sous-groupe</button></li>
-                                    <li><button @click="openAddCellToGroupModal(${s})">➕ Ajouter une cellule</button></li>
-                                    <li><button class="text-error" @click="deleteGroupAtPath(${s})">🗑️ Supprimer</button></li>
+                                    <li><button @click="toggleGroupDirection(${r})"><span x-text="getGroupAtPath(${r})?.direction === 'column' ? '⇵ Passer en ligne' : '⇄ Passer en colonne'"></span></button></li>
+                                    <li><button @click="openLoopConfigModal(${r})"><span class="iconify" data-icon="material-symbols-light:loop" style="font-size:1rem"></span> Configurer la boucle</button></li>
+                                    <li><button @click="openGroupSettingsModal(${r})"><span class="iconify" data-icon="material-symbols-light:settings" style="font-size:1rem"></span> Paramètres du groupe</button></li>
+                                    <li><button @click="runGroupAtPath(${r})" :disabled="isLoading"><span class="iconify" data-icon="material-symbols-light:play-arrow" style="font-size:1rem"></span> Exécuter</button></li>
+                                    <li><button @click="moveItemInGroup(${a}, 'child', ${s}, -1)" :disabled="isFirstInGroup(getGroupAtPath(${a}), 'child', ${s})"><span class="iconify" data-icon="material-symbols-light:arrow-upward" style="font-size:1rem"></span> Monter</button></li>
+                                    <li><button @click="moveItemInGroup(${a}, 'child', ${s}, 1)" :disabled="isLastInGroup(getGroupAtPath(${a}), 'child', ${s})"><span class="iconify" data-icon="material-symbols-light:arrow-downward" style="font-size:1rem"></span> Descendre</button></li>
+                                    <li><button @click="addNestedGroup(${r})"><span class="iconify" data-icon="material-symbols-light:create-new-folder" style="font-size:1rem"></span> Ajouter un sous-groupe</button></li>
+                                    <li><button @click="openAddCellToGroupModal(${r})"><span class="iconify" data-icon="material-symbols-light:add" style="font-size:1rem"></span> Ajouter une cellule</button></li>
+                                    <li><button class="text-error" @click="deleteGroupAtPath(${r})"><span class="iconify" data-icon="material-symbols-light:delete" style="font-size:1rem"></span> Supprimer</button></li>
                                 </ul>
                             </div>
                         </div>`, o = `
-                        <div x-show="getGroupAtPath(${s})?.accordion" 
-                             @click="toggleAccordion(${s})"
+                        <div x-show="getGroupAtPath(${r})?.accordion" 
+                             @click="toggleAccordion(${r})"
                              class="flex items-center gap-2 py-2 px-4 bg-base-200 border-b border-base-300 cursor-pointer select-none hover:bg-base-300 transition-colors duration-200">
-                            <span class="text-sm transition-transform duration-200" :class="getGroupAtPath(${s})?.accordionOpen ? 'rotate-90' : ''">▶</span>
-                            <span class="font-semibold text-sm" x-text="getGroupAtPath(${s})?.title || ''"></span>
+                            <span class="text-sm transition-transform duration-200" :class="getGroupAtPath(${r})?.accordionOpen ? 'rotate-90' : ''">▶</span>
+                            <span class="font-semibold text-sm" x-text="getGroupAtPath(${r})?.title || ''"></span>
                         </div>`, l = `
-                        <div class="p-2" x-show="!getGroupAtPath(${s})?.accordion || getGroupAtPath(${s})?.accordionOpen" x-collapse
+                        <div class="p-2" x-show="!getGroupAtPath(${r})?.accordion || getGroupAtPath(${r})?.accordionOpen" x-collapse
                              x-data="{ _activeTabKey: null }"
-                             x-init="if (getGroupAtPath(${s})?.tabsChild) { const items = getAllItemsSorted(getGroupAtPath(${s})); if (items.length > 0) _activeTabKey = (items[0].type === 'cell' ? 'c-' : 'g-') + items[0].originalIndex; }">
+                             x-init="if (getGroupAtPath(${r})?.tabsChild) { const items = getAllItemsSorted(getGroupAtPath(${r})); if (items.length > 0) _activeTabKey = (items[0].type === 'cell' ? 'c-' : 'g-') + items[0].originalIndex; }">
                             <!-- Barre d'onglets (mode client + tabsChild) -->
-                            <div x-show="!devMode && getGroupAtPath(${s})?.tabsChild" role="tablist" class="tabs tabs-box mb-2">
-                                <template x-for="(tabItem, tabIdx) in getAllItemsSorted(getGroupAtPath(${s}))" :key="'tab-' + (tabItem.type === 'cell' ? 'c-' : 'g-') + tabItem.originalIndex">
+                            <div x-show="!devMode && getGroupAtPath(${r})?.tabsChild" role="tablist" class="tabs tabs-box mb-2">
+                                <template x-for="(tabItem, tabIdx) in getAllItemsSorted(getGroupAtPath(${r}))" :key="'tab-' + (tabItem.type === 'cell' ? 'c-' : 'g-') + tabItem.originalIndex">
                                     <a role="tab" class="tab"
                                        :class="{ 'tab-active': _activeTabKey === ((tabItem.type === 'cell' ? 'c-' : 'g-') + tabItem.originalIndex) }"
                                        @click="_activeTabKey = (tabItem.type === 'cell' ? 'c-' : 'g-') + tabItem.originalIndex"
                                        x-text="getTabName(tabItem, tabIdx)"></a>
                                 </template>
                             </div>
-                            <div class="flex gap-2" :class="(!devMode && getGroupAtPath(${s})?.tabsChild) ? 'flex-col' : ((getGroupAtPath(${s})?.direction || 'row') === 'row' ? 'flex-row flex-wrap' : 'flex-col')">
+                            <div class="flex gap-2" :class="(!devMode && getGroupAtPath(${r})?.tabsChild) ? 'flex-col' : ((getGroupAtPath(${r})?.direction || 'row') === 'row' ? 'flex-row flex-wrap' : 'flex-col')">
                                 <!-- Cellules du groupe -->
-                                <template x-for="cellItem in getSortedCells(getGroupAtPath(${s}))" :key="cellItem.cell._id">
+                                <template x-for="cellItem in getSortedCells(getGroupAtPath(${r}))" :key="cellItem.cell._id">
                                     <div class="flex flex-1 min-w-0" 
-                                        :class="(getGroupAtPath(${s})?.direction || 'row') === 'column' ? 'flex-col w-full' : ''"
+                                        :class="(getGroupAtPath(${r})?.direction || 'row') === 'column' ? 'flex-col w-full' : ''"
                                         style="display: contents;">
                                         <div class="bg-base-100 rounded-lg overflow-hidden transition-[border-color,box-shadow] duration-200 flex-1 cell-container"
-                                             x-show="shouldShowCell(cellItem.cell) && (devMode || !getGroupAtPath(${s})?.tabsChild || _activeTabKey === ('c-' + cellItem.originalIndex))"
+                                             x-show="shouldShowCell(cellItem.cell) && (devMode || !getGroupAtPath(${r})?.tabsChild || _activeTabKey === ('c-' + cellItem.originalIndex))"
                                              :class="[getCellSizeInnerClass(), cellItem.cell.border !== false ? 'border border-base-300 shadow-sm hover:border-primary hover:shadow-lg' : 'border-0 shadow-none', {
                                                  'border-warning shadow-[0_0_10px_rgba(251,191,36,0.3)]': cellItem.cell.border !== false && cellItem.cell._status === 'running',
                                                  'border-success': cellItem.cell.border !== false && cellItem.cell._status === 'success',
                                                  'border-error': cellItem.cell.border !== false && cellItem.cell._status === 'error'
                                              }]"
-                                             :style="getCellWrapperStyle(cellItem.cell, (getGroupAtPath(${s})?.direction || 'row') === 'column', cellItem.cell._order ?? 0)">
-                                            ${CellRenderer.renderCell(s, "cellItem.originalIndex", `getGroupAtPath(${s})`)}
+                                             :style="getCellWrapperStyle(cellItem.cell, (getGroupAtPath(${r})?.direction || 'row') === 'column', cellItem.cell._order ?? 0)">
+                                            ${CellRenderer.renderCell(r, "cellItem.originalIndex", `getGroupAtPath(${r})`)}
                                         </div>
                                     </div>
                                 </template>
                                 
                                 <!-- Sous-groupes récursifs -->
-                                <template x-for="subChild in getSortedChildren(getGroupAtPath(${s}))" :key="subChild.child._id || ('child-' + subChild.originalIndex)">
+                                <template x-for="subChild in getSortedChildren(getGroupAtPath(${r}))" :key="subChild.child._id || ('child-' + subChild.originalIndex)">
                                     <div class="flex-1 bg-base-100 border border-base-300 rounded-lg overflow-hidden transition-all duration-200 shadow-sm hover:border-primary hover:shadow-md"
-                                         x-show="shouldShowGroup(subChild.child) && (devMode || !getGroupAtPath(${s})?.tabsChild || _activeTabKey === ('g-' + subChild.originalIndex))"
+                                         x-show="shouldShowGroup(subChild.child) && (devMode || !getGroupAtPath(${r})?.tabsChild || _activeTabKey === ('g-' + subChild.originalIndex))"
                                          :style="'order: ' + (subChild.child._order ?? 0)"
-                                         x-data="{ _subPath: [...${s}, subChild.originalIndex] }"
-                                         x-html="renderChildGroupHTML(subChild.child, _subPath, getGroupAtPath(${s}), subChild.originalIndex)"
+                                         x-data="{ _subPath: [...${r}, subChild.originalIndex] }"
+                                         x-html="renderChildGroupHTML(subChild.child, _subPath, getGroupAtPath(${r}), subChild.originalIndex)"
                                          x-effect="$nextTick(() => Alpine.initTree($el))">
                                     </div>
                                 </template>
@@ -8699,30 +8699,30 @@ function executionMixin() {
     async runGroupOnce(t, e) {
       if (ConfigManager.getGroupIfQuery(e)) {
         this.setStatus("Évaluation de la condition ifQuery...", "loading");
-        const r = await this.evaluateGroupIfQuery(e);
-        if (e._ifQueryResult = r, !r)
+        const s = await this.evaluateGroupIfQuery(e);
+        if (e._ifQueryResult = s, !s)
           return this.setStatus("Groupe ignoré (ifQuery = false)", "info"), { stopped: !1 };
       }
       this.setStatus("Exécution du groupe...", "loading");
       const n = this.getAllItemsSorted(e);
-      for (const r of n) {
-        if (r.type === "child") {
-          const a = await this.runGroupAtPath([...t, r.originalIndex]);
+      for (const s of n) {
+        if (s.type === "child") {
+          const a = await this.runGroupAtPath([...t, s.originalIndex]);
           if (a != null && a.stopped) return a;
           continue;
         }
-        const s = r.item;
-        if (s.type === "buttonRunNextCells")
+        const r = s.item;
+        if (r.type === "buttonRunNextCells")
           return this.setStatus('Arrêt : bouton "Exécuter les cellules suivantes" rencontré', "info"), { stopped: !0, reason: "buttonRunNextCells" };
-        if (!this.isCellSkippedInAutoFlow(s)) {
-          if (s.type === "source") {
-            if (!s._fileName || !s._currentFile || !s._loaded)
-              return { stopped: !0, reason: "source_no_file", cellName: s.name };
-            if (s._status === "error")
-              return { stopped: !0, reason: "source_error", cellName: s.name };
+        if (!this.isCellSkippedInAutoFlow(r)) {
+          if (r.type === "source") {
+            if (!r._fileName || !r._currentFile || !r._loaded)
+              return { stopped: !0, reason: "source_no_file", cellName: r.name };
+            if (r._status === "error")
+              return { stopped: !0, reason: "source_error", cellName: r.name };
             continue;
           }
-          await this.runCellAt(t, r.originalIndex);
+          await this.runCellAt(t, s.originalIndex);
         }
       }
       return this.setStatus("Groupe exécuté", "success"), { stopped: !1 };
@@ -8731,9 +8731,9 @@ function executionMixin() {
     async parseLoopQuery(t) {
       let e = this.parseQueryWithParameters(t);
       const n = 10;
-      let r = 0;
-      const s = async (a) => {
-        if (r >= n)
+      let s = 0;
+      const r = async (a) => {
+        if (s >= n)
           throw new Error("Nombre maximum de niveaux d'imbrication atteint (10)");
         const i = a.indexOf("}}");
         if (i === -1) return a;
@@ -8741,17 +8741,17 @@ function executionMixin() {
         if (o === -1)
           return a;
         const l = a.substring(o + 2, i).trim();
-        r++;
-        const c = await s(l), u = await DuckDBManager.executeQuery(c);
+        s++;
+        const c = await r(l), u = await DuckDBManager.executeQuery(c);
         if (!u || u.length === 0)
-          throw new Error(`Niveau ${r}: La requête n'a retourné aucun résultat`);
+          throw new Error(`Niveau ${s}: La requête n'a retourné aucun résultat`);
         const d = u[0], p = Object.values(d)[0];
         if (p == null)
-          throw new Error(`Niveau ${r}: Le résultat est null ou undefined`);
+          throw new Error(`Niveau ${s}: Le résultat est null ou undefined`);
         const m = String(p).replace(/\$/g, "$$$$"), h = a.substring(0, o) + m + a.substring(i + 2);
-        return await s(h);
+        return await r(h);
       };
-      return await s(e);
+      return await r(e);
     },
     // Ajouter un fichier à la collection zip (utilisé par les cellules de génération de fichiers)
     addFileToZip(t, e, n = "blob") {
@@ -8761,23 +8761,23 @@ function executionMixin() {
     downloadOrZipFile(t, e, n = "application/octet-stream") {
       if (this._zipMode)
         return this._zipFiles.push({ filename: t, content: e, type: "blob" }), !0;
-      const r = e instanceof Blob ? e : new Blob([e], { type: n }), s = URL.createObjectURL(r), a = document.createElement("a");
-      return a.href = s, a.download = t, document.body.appendChild(a), a.click(), document.body.removeChild(a), URL.revokeObjectURL(s), !1;
+      const s = e instanceof Blob ? e : new Blob([e], { type: n }), r = URL.createObjectURL(s), a = document.createElement("a");
+      return a.href = r, a.download = t, document.body.appendChild(a), a.click(), document.body.removeChild(a), URL.revokeObjectURL(r), !1;
     },
     // Exécuter un groupe avec loop
     // Retourne { stopped: true } si arrêt (ex: source sans fichier chargé), sinon { stopped: false }
     async runGroupWithLoop(t, e) {
       if (ConfigManager.getGroupIfQuery(e)) {
         this.setStatus("Évaluation de la condition ifQuery...", "loading");
-        const r = await this.evaluateGroupIfQuery(e);
-        if (e._ifQueryResult = r, !r)
+        const s = await this.evaluateGroupIfQuery(e);
+        if (e._ifQueryResult = s, !s)
           return this.setStatus("Groupe ignoré (ifQuery = false)", "info"), { stopped: !1 };
       }
       this.setStatus("Initialisation de la boucle...", "loading");
       const n = e.loop.zip === !0;
       n && (this._zipMode = !0, this._zipFiles = []);
       try {
-        const r = e.loop.query, s = await this.parseLoopQuery(r), a = await DuckDBManager.executeQuery(s);
+        const s = e.loop.query, r = await this.parseLoopQuery(s), a = await DuckDBManager.executeQuery(r);
         if (!a || a.length === 0)
           return this.setStatus("Boucle: aucune valeur trouvée", "warning"), this._zipMode = !1, this._zipFiles = [], { stopped: !1 };
         const i = Object.keys(a[0])[0], o = a.map((l) => l[i]);
@@ -8808,8 +8808,8 @@ function executionMixin() {
           }
         }
         return this._currentLoopValue = null, n && this._zipFiles.length > 0 && await this.generateAndDownloadZip(e), this.setStatus(`Boucle terminée: ${o.length} itérations` + (n ? ` - ${this._zipFiles.length} fichier(s) zippé(s)` : ""), "success"), { stopped: !1 };
-      } catch (r) {
-        return this._currentLoopValue = null, this.setStatus("Erreur boucle: " + r.message, "error"), { stopped: !0 };
+      } catch (s) {
+        return this._currentLoopValue = null, this.setStatus("Erreur boucle: " + s.message, "error"), { stopped: !0 };
       } finally {
         this._zipMode = !1, this._zipFiles = [];
       }
@@ -8833,24 +8833,24 @@ function executionMixin() {
             const o = await i.content.arrayBuffer();
             n.file(i.filename, o);
           } else i.content instanceof ArrayBuffer || i.content, n.file(i.filename, i.content);
-        const r = n.generate({ type: "blob" }), s = URL.createObjectURL(r), a = document.createElement("a");
-        a.href = s, a.download = e, document.body.appendChild(a), a.click(), document.body.removeChild(a), URL.revokeObjectURL(s), this.setStatus(`ZIP généré: ${e} (${this._zipFiles.length} fichiers)`, "success");
+        const s = n.generate({ type: "blob" }), r = URL.createObjectURL(s), a = document.createElement("a");
+        a.href = r, a.download = e, document.body.appendChild(a), a.click(), document.body.removeChild(a), URL.revokeObjectURL(r), this.setStatus(`ZIP généré: ${e} (${this._zipFiles.length} fichiers)`, "success");
       } catch (e) {
         throw console.error("Erreur lors de la génération du ZIP:", e), new Error("Erreur ZIP: " + e.message);
       }
     },
     async runCellAt(t, e) {
-      const n = Array.isArray(t) ? t : [t], r = this.getCellAtPath(n, e);
-      if (!r) {
+      const n = Array.isArray(t) ? t : [t], s = this.getCellAtPath(n, e);
+      if (!s) {
         console.error("❌ Cell not found!");
         return;
       }
-      r._status = "running", this.isLoading = !0, this.setStatus(`Exécution de ${r.name || r.type}...`, "loading");
+      s._status = "running", this.isLoading = !0, this.setStatus(`Exécution de ${s.name || s.type}...`, "loading");
       try {
-        const s = CELL_TYPE_SCHEMAS == null ? void 0 : CELL_TYPE_SCHEMAS.types[r == null ? void 0 : r.type], a = s == null ? void 0 : s.executeHandler;
-        a && typeof this[a] == "function" ? await this[a](r) : a !== null && console.warn("⚠️ Unknown cell type or missing handler:", r.type), r._status = "success", this.setStatus(`${r.name || r.type} exécuté`, "success");
-      } catch (s) {
-        r._status = "error", r._resultInfo = "Erreur: " + s.message, this.setStatus("Erreur: " + s.message, "error");
+        const r = CELL_TYPE_SCHEMAS == null ? void 0 : CELL_TYPE_SCHEMAS.types[s == null ? void 0 : s.type], a = r == null ? void 0 : r.executeHandler;
+        a && typeof this[a] == "function" ? await this[a](s) : a !== null && console.warn("⚠️ Unknown cell type or missing handler:", s.type), s._status = "success", this.setStatus(`${s.name || s.type} exécuté`, "success");
+      } catch (r) {
+        s._status = "error", s._resultInfo = "Erreur: " + r.message, this.setStatus("Erreur: " + r.message, "error");
       } finally {
         this.isLoading = !1;
       }
@@ -8867,9 +8867,9 @@ function executionMixin() {
     // queryIndex: 0 = query principale, 1 = query2 (ex: noms de fichiers publipostage)
     // allowEmpty: si true, les résultats vides sont remplacés par '' au lieu de lever une erreur
     async parseQueryRecursively(t, e = 0, n = !1) {
-      const r = e === 1 ? "_parseLevels2" : "_parseLevels";
-      t[r] = [];
-      let s = this.parseQueryWithParameters(ConfigManager.getCellQuery(t, e) || ""), a = 0;
+      const s = e === 1 ? "_parseLevels2" : "_parseLevels";
+      t[s] = [];
+      let r = this.parseQueryWithParameters(ConfigManager.getCellQuery(t, e) || ""), a = 0;
       const i = 10, o = async (c) => {
         if (a >= i)
           throw new Error("Nombre maximum de niveaux d'imbrication atteint (10)");
@@ -8894,18 +8894,18 @@ function executionMixin() {
             throw new Error(`Niveau ${a}: Le résultat est null ou undefined`);
           g = String(w);
         }
-        t[r].push({
+        t[s].push({
           level: a,
           innerQuery: h,
           replacement: g
         });
         const y = String(g).replace(/\$/g, "$$$$"), v = c.substring(0, d) + y + c.substring(u + 2);
         return await o(v);
-      }, l = await o(s);
-      return t[r].push({ level: "final", innerQuery: l, replacement: null }), l;
+      }, l = await o(r);
+      return t[s].push({ level: "final", innerQuery: l, replacement: null }), l;
     },
     async executeSqlRecursiveParseCell(t) {
-      var e, n, r, s;
+      var e, n, s, r;
       if (!((e = ConfigManager.getCellQuery(t, 0)) != null && e.trim())) {
         console.warn("❌ cell.query est vide ou undefined!");
         return;
@@ -8923,7 +8923,7 @@ function executionMixin() {
             const c = l.toLowerCase().split(".").pop(), u = ["xlsx", "xls", "parquet", "pq", "arrow", "ipc", "avro"].includes(c), d = u ? 15 : 10, p = u ? 300 : 200, m = await DuckDBManager.waitForFile(l, d, p);
             if (((m == null ? void 0 : m.byteLength) ?? 0) > 0) {
               const _ = m instanceof ArrayBuffer ? new Uint8Array(m) : new Uint8Array(m.buffer || m);
-              c === "xlsx" && (_[0] !== 80 || _[1] !== 75) && console.warn(`⚠️ [EXPORT] XLSX invalide: doit commencer par PK (0x50 0x4B), trouvé: 0x${(n = _[0]) == null ? void 0 : n.toString(16)} 0x${(r = _[1]) == null ? void 0 : r.toString(16)}`);
+              c === "xlsx" && (_[0] !== 80 || _[1] !== 75) && console.warn(`⚠️ [EXPORT] XLSX invalide: doit commencer par PK (0x50 0x4B), trouvé: 0x${(n = _[0]) == null ? void 0 : n.toString(16)} 0x${(s = _[1]) == null ? void 0 : s.toString(16)}`);
             }
             let f = "text/csv;charset=utf-8;";
             switch (c) {
@@ -9008,7 +9008,7 @@ function executionMixin() {
           const l = await DuckDBManager.executeQuery(a);
           if (t._results = l, t._resultInfo = `✅ ${l.length} ligne(s) - ${t._parseLevels.length - 1} niveau(x) de parsing`, this.isSqlResultTabular(t)) {
             const c = t.maxRows || 1e5, u = l.length > c, d = l.slice(0, c);
-            _rawTableDataStore.set(t._id, d), t._results = d, u && (t._resultInfo = `✅ ${l.length} ligne(s) (limité à ${c})` + (((s = t._parseLevels) == null ? void 0 : s.length) > 1 ? ` - ${t._parseLevels.length - 1} niveau(x) de parsing` : "")), await this.$nextTick(), await this.$nextTick(), await this.renderTableInContainer(t, !0);
+            _rawTableDataStore.set(t._id, d), t._results = d, u && (t._resultInfo = `✅ ${l.length} ligne(s) (limité à ${c})` + (((r = t._parseLevels) == null ? void 0 : r.length) > 1 ? ` - ${t._parseLevels.length - 1} niveau(x) de parsing` : "")), await this.$nextTick(), await this.$nextTick(), await this.renderTableInContainer(t, !0);
           }
         }
         this.setStatus("SQL Recursive Parse exécuté", "success");
@@ -9023,8 +9023,8 @@ function executionMixin() {
         try {
           const n = await this.parseQueryRecursively(t);
           this.setStatus("Exécution de la requête finale...", "loading");
-          const r = await DuckDBManager.executeQuery(n), s = t.maxRows || 1e5, a = r.length > s, i = r.slice(0, s);
-          _rawTableDataStore.set(t._id, i), t._results = i, t._resultInfo = `${r.length} ligne(s)` + (a ? ` (limité à ${s})` : "") + (t._parseLevels.length > 1 ? ` - ${t._parseLevels.length - 1} niveau(x) de parsing` : ""), await this.$nextTick(), await this.renderTableInContainer(t, !0), this.setStatus("Tableau chargé", "success");
+          const s = await DuckDBManager.executeQuery(n), r = t.maxRows || 1e5, a = s.length > r, i = s.slice(0, r);
+          _rawTableDataStore.set(t._id, i), t._results = i, t._resultInfo = `${s.length} ligne(s)` + (a ? ` (limité à ${r})` : "") + (t._parseLevels.length > 1 ? ` - ${t._parseLevels.length - 1} niveau(x) de parsing` : ""), await this.$nextTick(), await this.renderTableInContainer(t, !0), this.setStatus("Tableau chargé", "success");
         } catch (n) {
           throw n;
         }
@@ -9038,8 +9038,8 @@ function executionMixin() {
     isSqlResultTabular(t) {
       const e = t == null ? void 0 : t._results;
       if (!e || !Array.isArray(e) || e.length === 0) return !1;
-      const n = e[0], r = Object.keys(n);
-      return r.length > 1 || e.length > 1 ? !0 : typeof n[r[0]] != "string";
+      const n = e[0], s = Object.keys(n);
+      return s.length > 1 || e.length > 1 ? !0 : typeof n[s[0]] != "string";
     },
     isSqlResultText(t) {
       const e = t == null ? void 0 : t._results;
@@ -9054,17 +9054,17 @@ function executionMixin() {
     },
     // Fonction pour rendre un tableau dans son conteneur (appelée aussi par x-init)
     async renderTableInContainer(t, e = !1) {
-      const n = "table-" + t._id, r = document.getElementById(n);
-      if (r && !r.querySelector(".datatable-wrapper") && (t._tableRenderGuard = !1), t._tableRenderGuard && !e) return;
-      const s = _rawTableDataStore.get(t._id) || t._results;
-      if (r && s && s.length > 0) {
-        await CDNManager.loadSimpleDatatables(), this._tables[t._id] && this._tables[t._id].destroy(), Object.keys(s[0]).map((o) => ({
+      const n = "table-" + t._id, s = document.getElementById(n);
+      if (s && !s.querySelector(".datatable-wrapper") && (t._tableRenderGuard = !1), t._tableRenderGuard && !e) return;
+      const r = _rawTableDataStore.get(t._id) || t._results;
+      if (s && r && r.length > 0) {
+        await CDNManager.loadSimpleDatatables(), this._tables[t._id] && this._tables[t._id].destroy(), Object.keys(r[0]).map((o) => ({
           title: o,
           field: o
         }));
         const a = {
-          headings: Object.keys(s[0]),
-          data: s.map((o) => Object.values(o))
+          headings: Object.keys(r[0]),
+          data: r.map((o) => Object.values(o))
         }, i = new simpleDatatables.DataTable("#" + n, {
           data: a,
           perPage: 10,
@@ -9129,7 +9129,7 @@ function executionMixin() {
           }
         });
         this._tables[t._id] = i, i.on("datatable.init", () => {
-          const o = r.querySelectorAll(".column-filter"), l = {};
+          const o = s.querySelectorAll(".column-filter"), l = {};
           o.forEach((c) => {
             c.addEventListener("input", (u) => {
               const d = parseInt(u.target.dataset.columnIndex), p = u.target.value.trim();
@@ -9167,7 +9167,7 @@ function executionMixin() {
             }
           } else {
             const t = { queries: [{ name: "main", sql: cellQuery, engine: "sql", clientVisible: !1 }], _parseLevels: [] }, e = await this.parseQueryRecursively(t);
-            cell._parseLevels = t._parseLevels || [], this.setStatus("Exécution de la requête...", "loading"), mdContent = (await DuckDBManager.executeQuery(e)).map((r) => Object.values(r).join("")).join(`
+            cell._parseLevels = t._parseLevels || [], this.setStatus("Exécution de la requête...", "loading"), mdContent = (await DuckDBManager.executeQuery(e)).map((s) => Object.values(s).join("")).join(`
 `);
           }
           cell._markdownContent = mdContent, this.setStatus("Markdown chargé", "success");
@@ -9221,13 +9221,13 @@ function executionMixin() {
         try {
           const n = await this.parseQueryRecursively(t);
           this.setStatus("Exécution de la requête finale...", "loading");
-          const r = await DuckDBManager.executeQuery(n);
-          if (!r || r.length === 0) {
+          const s = await DuckDBManager.executeQuery(n);
+          if (!s || s.length === 0) {
             t._results = [], t._statValue = "-", t._resultInfo = "Aucun résultat";
             return;
           }
-          const s = r[0], a = Object.values(s)[0];
-          t._results = r, t._statValue = a != null ? String(a) : "-", t._resultInfo = "✅ Stat calculée" + (t._parseLevels.length > 1 ? ` - ${t._parseLevels.length - 1} niveau(x) de parsing` : ""), this.setStatus("Stat SQL exécutée", "success");
+          const r = s[0], a = Object.values(r)[0];
+          t._results = s, t._statValue = a != null ? String(a) : "-", t._resultInfo = "✅ Stat calculée" + (t._parseLevels.length > 1 ? ` - ${t._parseLevels.length - 1} niveau(x) de parsing` : ""), this.setStatus("Stat SQL exécutée", "success");
         } catch (n) {
           throw n;
         }
@@ -9246,7 +9246,7 @@ function executionMixin() {
           this.setStatus(`${ConfigManager.getCellReferenceName(cell)} : texte utilisé tel quel`, "success");
           const e = (ConfigManager.getCellQuery(cell, 0) || "").trim();
           cell.paramType === "dropdown" ? results = e.split(`
-`).filter(Boolean).map((r) => ({ col1: r, col2: r })) : results = [{ value: e }];
+`).filter(Boolean).map((s) => ({ col1: s, col2: s })) : results = [{ value: e }];
         } else if (languageType === "js") {
           this.setStatus("Exécution du code JavaScript...", "loading"), cell._parseLevels = [];
           let jsCode = ConfigManager.getCellQuery(cell, 0) || "";
@@ -9280,13 +9280,13 @@ function executionMixin() {
             cell._options = [], cell._value = "", cell._paramError = "La requête n'a retourné aucun résultat";
             return;
           }
-          const e = Object.keys(results[0]), n = e[0], r = e.length > 1 ? e[1] : null;
+          const e = Object.keys(results[0]), n = e[0], s = e.length > 1 ? e[1] : null;
           cell._options = results.map((a) => {
-            const i = String(a[n]), o = r ? String(a[r]) : i;
+            const i = String(a[n]), o = s ? String(a[s]) : i;
             return { value: i, label: o };
           });
-          const s = cell._options.map((a) => a.value);
-          (!cell._value || !s.includes(cell._value)) && (cell._value = ((t = cell._options[0]) == null ? void 0 : t.value) || ""), cell._initialized = !0, this.setStatus(`Options ${ConfigManager.getCellReferenceName(cell)} chargées`, "success");
+          const r = cell._options.map((a) => a.value);
+          (!cell._value || !r.includes(cell._value)) && (cell._value = ((t = cell._options[0]) == null ? void 0 : t.value) || ""), cell._initialized = !0, this.setStatus(`Options ${ConfigManager.getCellReferenceName(cell)} chargées`, "success");
         } else if (cell.paramType === "input") {
           if (results.length > 0) {
             const e = Object.keys(results[0])[0], n = results[0][e];
@@ -9295,8 +9295,8 @@ function executionMixin() {
           cell._initialized = !0, this.setStatus(`${ConfigManager.getCellReferenceName(cell)} initialisé`, "success");
         } else if (cell.paramType === "range") {
           if (results.length > 0) {
-            const e = Object.keys(results[0])[0], n = results[0][e], r = Number(n), s = cell.rangeMin ?? 0, a = cell.rangeMax ?? 100;
-            cell._value = Math.min(a, Math.max(s, isNaN(r) ? s : r));
+            const e = Object.keys(results[0])[0], n = results[0][e], s = Number(n), r = cell.rangeMin ?? 0, a = cell.rangeMax ?? 100;
+            cell._value = Math.min(a, Math.max(r, isNaN(s) ? r : s));
           } else (cell._value === "" || cell._value === void 0) && (cell._value = cell.rangeMin ?? 0);
           cell._initialized = !0, this.setStatus(`${ConfigManager.getCellReferenceName(cell)} initialisé`, "success");
         }
@@ -9315,10 +9315,10 @@ function executionMixin() {
         throw console.error("❌ No filename query"), new Error("Requête de nom de fichier manquante");
       this.setStatus("Exécution du publipostage Word...", "loading");
       try {
-        const r = await this.parseQueryRecursively(t);
+        const s = await this.parseQueryRecursively(t);
         this.setStatus("Récupération des données...", "loading");
-        const s = await DuckDBManager.executeQuery(r);
-        if (!s || s.length === 0) {
+        const r = await DuckDBManager.executeQuery(s);
+        if (!r || r.length === 0) {
           t._resultInfo = "Aucune donnée à traiter";
           return;
         }
@@ -9327,13 +9327,13 @@ function executionMixin() {
         const i = await DuckDBManager.executeQuery(a);
         if (!i || i.length === 0)
           throw new Error("La requête de nom de fichier n'a retourné aucun résultat");
-        if (s.length !== i.length)
-          throw new Error(`Nombre de lignes différent: ${s.length} données vs ${i.length} noms de fichiers`);
+        if (r.length !== i.length)
+          throw new Error(`Nombre de lignes différent: ${r.length} données vs ${i.length} noms de fichiers`);
         const o = FileHandler.base64ToUint8Array(t.docxTemplateBase64).buffer;
         this.setStatus("Génération des documents Word...", "loading");
         let l = 0;
-        for (let c = 0; c < s.length; c++) {
-          const u = s[c], d = i[c], p = Object.values(d)[0] || `document_${c + 1}.docx`;
+        for (let c = 0; c < r.length; c++) {
+          const u = r[c], d = i[c], p = Object.values(d)[0] || `document_${c + 1}.docx`;
           let m = u;
           const h = Object.keys(u);
           if (h.length === 1) {
@@ -9354,22 +9354,22 @@ function executionMixin() {
             type: "blob",
             mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
           });
-          this.downloadOrZipFile(p, y, "application/vnd.openxmlformats-officedocument.wordprocessingml.document"), l++, this.setStatus(`Génération ${l}/${s.length}...`, "loading");
+          this.downloadOrZipFile(p, y, "application/vnd.openxmlformats-officedocument.wordprocessingml.document"), l++, this.setStatus(`Génération ${l}/${r.length}...`, "loading");
         }
         t._resultInfo = `✅ ${l} document(s) généré(s)` + (t._parseLevels.length > 1 ? ` - ${t._parseLevels.length - 1} niveau(x) de parsing (query)` : "") + (t._parseLevels2.length > 1 ? ` - ${t._parseLevels2.length - 1} niveau(x) de parsing (query2)` : ""), this.setStatus(`${l} documents générés`, "success");
-      } catch (r) {
-        throw r;
+      } catch (s) {
+        throw s;
       }
     },
     async executePdfmeCell(t) {
-      var r, s, a;
+      var s, r, a;
       this.setStatus("Chargement de pdfme...", "loading");
       try {
         var e = await CDNManager.loadPdfme();
       } catch (i) {
         throw console.error("[pdfme] ERREUR chargement CDN:", i), i;
       }
-      if (!((r = ConfigManager.getCellQuery(t, 0)) != null && r.trim()))
+      if (!((s = ConfigManager.getCellQuery(t, 0)) != null && s.trim()))
         throw console.error("[pdfme] Requête SQL manquante"), new Error("Requête SQL manquante");
       const n = typeof t.json == "string" ? t.json : t.json ? JSON.stringify(t.json) : null;
       if (!(n != null && n.trim()))
@@ -9384,7 +9384,7 @@ function executionMixin() {
           return;
         }
         let l = "export.pdf";
-        if ((s = ConfigManager.getCellQuery(t, 1)) != null && s.trim()) {
+        if ((r = ConfigManager.getCellQuery(t, 1)) != null && r.trim()) {
           this.setStatus("Récupération du nom de fichier...", "loading");
           const g = await this.parseQueryRecursively(t, 1, !0), y = await DuckDBManager.executeQuery(g);
           if (y && y.length > 0) {
@@ -9479,8 +9479,8 @@ function executionMixin() {
       try {
         const n = await this.parseQueryRecursively(t);
         this.setStatus("Exécution de la requête...", "loading");
-        const r = await DuckDBManager.executeQueryArrow(n);
-        t._arrowTable = r, t._perspectiveScheduled = !0, t._perspectiveReady = !0;
+        const s = await DuckDBManager.executeQueryArrow(n);
+        t._arrowTable = s, t._perspectiveScheduled = !0, t._perspectiveReady = !0;
         try {
           await this.$nextTick();
           const a = "perspective-" + t._id;
@@ -9491,14 +9491,14 @@ function executionMixin() {
         } catch (a) {
           throw t._perspectiveScheduled = !1, a;
         }
-        const s = r.numRows;
-        t._resultInfo = `✅ ${s} ligne(s)` + (t._parseLevels.length > 1 ? ` - ${t._parseLevels.length - 1} niveau(x) de parsing` : ""), this.setStatus("Perspective chargé", "success");
+        const r = s.numRows;
+        t._resultInfo = `✅ ${r} ligne(s)` + (t._parseLevels.length > 1 ? ` - ${t._parseLevels.length - 1} niveau(x) de parsing` : ""), this.setStatus("Perspective chargé", "success");
       } catch (n) {
         throw t._perspectiveReady = !1, n;
       }
     },
     async renderPerspectiveInContainer(t) {
-      var r, s, a;
+      var s, r, a;
       const e = "perspective-" + t._id, n = document.getElementById(e);
       if (!n || !t._arrowTable) {
         console.warn("Perspective viewer ou données Arrow manquantes");
@@ -9514,7 +9514,7 @@ function executionMixin() {
           throw new Error("Perspective nécessite le moteur DuckDB WASM. Veuillez changer de moteur dans les paramètres.");
         const i = DuckDBManager.getConnection(), o = window.perspectiveClient;
         let l = { theme: "Pro Light" };
-        const c = (r = t.json) == null ? void 0 : r.perspectiveConfig;
+        const c = (s = t.json) == null ? void 0 : s.perspectiveConfig;
         if (c != null && c !== "")
           try {
             const h = typeof c == "string" ? JSON.parse(c.trim()) : c;
@@ -9522,7 +9522,7 @@ function executionMixin() {
           } catch (h) {
             console.warn("Configuration Perspective invalide, utilisation des valeurs par défaut:", h);
           }
-        const u = ((a = (s = t._parseLevels) == null ? void 0 : s.find((h) => h.level === "final")) == null ? void 0 : a.innerQuery) || ConfigManager.getCellQuery(t, 0), d = await i.query(u), p = [];
+        const u = ((a = (r = t._parseLevels) == null ? void 0 : r.find((h) => h.level === "final")) == null ? void 0 : a.innerQuery) || ConfigManager.getCellQuery(t, 0), d = await i.query(u), p = [];
         for await (const h of d)
           p.push(h);
         t._perspectiveWorker || (t._perspectiveWorker = await o.worker());
@@ -9554,33 +9554,33 @@ function executionMixin() {
       if (!e) return { stopped: !1 };
       if (ConfigManager.getGroupIfQuery(e)) {
         this.setStatus("Évaluation de la condition ifQuery...", "loading");
-        const r = await this.evaluateGroupIfQuery(e);
-        if (e._ifQueryResult = r, !r)
+        const s = await this.evaluateGroupIfQuery(e);
+        if (e._ifQueryResult = s, !s)
           return this.setStatus("Groupe ignoré (ifQuery = false)", "info"), { stopped: !1 };
       }
       const n = this.getAllItemsSorted(e);
-      for (const r of n) {
-        if (r.type === "child") {
-          const a = await this.runGroupWithStopConditions([...t, r.originalIndex]);
+      for (const s of n) {
+        if (s.type === "child") {
+          const a = await this.runGroupWithStopConditions([...t, s.originalIndex]);
           if (a.stopped) return a;
           continue;
         }
-        const s = r.item;
-        if (s.type === "buttonRunNextCells")
+        const r = s.item;
+        if (r.type === "buttonRunNextCells")
           return { stopped: !0, reason: "buttonRunNextCells" };
-        if (!this.isCellSkippedInAutoFlow(s)) {
-          if (s.type === "source") {
-            if (!s._fileName || !s._currentFile || !s._loaded)
-              return { stopped: !0, reason: "source_no_file", cellName: s.name };
-            if (s._status === "error")
-              return this.setStatus(`Arrêt : la source "${s.name}" a une erreur de chargement`, "info"), { stopped: !0, reason: "source_error", cellName: s.name };
+        if (!this.isCellSkippedInAutoFlow(r)) {
+          if (r.type === "source") {
+            if (!r._fileName || !r._currentFile || !r._loaded)
+              return { stopped: !0, reason: "source_no_file", cellName: r.name };
+            if (r._status === "error")
+              return this.setStatus(`Arrêt : la source "${r.name}" a une erreur de chargement`, "info"), { stopped: !0, reason: "source_error", cellName: r.name };
             continue;
           }
           try {
-            if (s._status = "running", await this.runCellAt(t, r.originalIndex), s._status === "error")
+            if (r._status = "running", await this.runCellAt(t, s.originalIndex), r._status === "error")
               return this.setStatus("Arrêt : erreur lors de l'exécution d'une cellule", "error"), { stopped: !0, reason: "cell_error" };
           } catch (a) {
-            return s._status = "error", this.setStatus(`Arrêt : erreur - ${a.message}`, "error"), { stopped: !0, reason: "execution_error", error: a.message };
+            return r._status = "error", this.setStatus(`Arrêt : erreur - ${a.message}`, "error"), { stopped: !0, reason: "execution_error", error: a.message };
           }
         }
       }
@@ -9588,17 +9588,17 @@ function executionMixin() {
     },
     // Exécuter les cellules après une cellule donnée avec conditions d'arrêt (pour autoRunNextCells)
     async runCellsAfterWithStopConditions(t, e, n = null) {
-      const r = this.getGroupAtPath(t);
-      if (!r) return { stopped: !1 };
-      const s = this.getAllItemsSorted(r), a = s.findIndex(
+      const s = this.getGroupAtPath(t);
+      if (!s) return { stopped: !1 };
+      const r = this.getAllItemsSorted(s), a = r.findIndex(
         (o) => {
           var l;
           return o.type === "cell" && (n ? ((l = o.item) == null ? void 0 : l._id) === n : o.originalIndex === e);
         }
       );
       if (a === -1) return { stopped: !1 };
-      for (let o = a + 1; o < s.length; o++) {
-        const l = s[o];
+      for (let o = a + 1; o < r.length; o++) {
+        const l = r[o];
         if (l.type === "child") {
           const u = await this.runGroupWithStopConditions([...t, l.originalIndex]);
           if (u.stopped) return u;
@@ -9672,12 +9672,12 @@ function executionMixin() {
       try {
         const n = this.getGroupAtPath(t);
         if (!n) return;
-        const r = this.getAllItemsSorted(n), s = r.findIndex(
+        const s = this.getAllItemsSorted(n), r = s.findIndex(
           (a) => a.type === "cell" && a.originalIndex === e
         );
-        if (s === -1) return;
-        for (let a = s + 1; a < r.length; a++) {
-          const i = r[a];
+        if (r === -1) return;
+        for (let a = r + 1; a < s.length; a++) {
+          const i = s[a];
           if (i.type === "child") {
             await this.runGroupAtPath([...t, i.originalIndex]);
             continue;
@@ -9731,10 +9731,10 @@ function cellsMixin() {
     },
     /** Logique d'affichage pilotée par le schéma (bodyDisplay) */
     bodyDisplayShouldShowSkeleton(t) {
-      var r, s;
+      var s, r;
       if (!t || t.type === "markdown" && ConfigManager.getCellEngine(t, "main") === "text") return !1;
-      const e = CELL_TYPE_SCHEMAS.types[t.type], n = ((r = e == null ? void 0 : e.bodyDisplay) == null ? void 0 : r.showSkeleton) ?? { when: "running", excludeTypes: ["uiParameter"] };
-      return n.when === "never" || (s = n.excludeTypes) != null && s.includes(t.type) || n.excludeWhenSqlEditor && this.isSqlCellWithEditor(t.type) && this.showSqlEditorVisible(t) ? !1 : !!(t._status === "running" || n.sourceLoading && t.type === "source" && t._fileName && !t._loaded);
+      const e = CELL_TYPE_SCHEMAS.types[t.type], n = ((s = e == null ? void 0 : e.bodyDisplay) == null ? void 0 : s.showSkeleton) ?? { when: "running", excludeTypes: ["uiParameter"] };
+      return n.when === "never" || (r = n.excludeTypes) != null && r.includes(t.type) || n.excludeWhenSqlEditor && this.isSqlCellWithEditor(t.type) && this.showSqlEditorVisible(t) ? !1 : !!(t._status === "running" || n.sourceLoading && t.type === "source" && t._fileName && !t._loaded);
     },
     bodyDisplayShouldShowContent(t) {
       return t ? !this.bodyDisplayShouldShowSkeleton(t) : !1;
@@ -9750,17 +9750,17 @@ function cellsMixin() {
         if (l == null || String(l).trim() === "") return "";
         const c = String(l).trim();
         return /^\d+(\.\d+)?$/.test(c) ? c + "%" : c;
-      }, r = [], s = e(t.minHeightPx), a = n(t.minHeightPercent);
-      s && r.push(`--cell-min-h-px:${s}`), a && r.push(`--cell-min-h-pct:${a}`);
+      }, s = [], r = e(t.minHeightPx), a = n(t.minHeightPercent);
+      r && s.push(`--cell-min-h-px:${r}`), a && s.push(`--cell-min-h-pct:${a}`);
       const i = e(t.maxHeightPx), o = n(t.maxHeightPercent);
-      return i && r.push(`--cell-max-h-px:${i}`), o && r.push(`--cell-max-h-pct:${o}`), r.length ? r.join(";") : "";
+      return i && s.push(`--cell-max-h-px:${i}`), o && s.push(`--cell-max-h-pct:${o}`), s.length ? s.join(";") : "";
     },
     getCellSizeOuterClass(t, e) {
       return e ? "flex-col w-full" : this.hasCellMinSize(t) ? "" : "min-w-[200px]";
     },
     // Style pour le wrapper (flex child) : order + min/max width/height. Combinaison px et % via max()/min() CSS.
     getCellWrapperStyle(t, e, n) {
-      const r = { order: n ?? 0 }, s = (i) => {
+      const s = { order: n ?? 0 }, r = (i) => {
         if (i == null) return null;
         const o = String(i).trim();
         return o === "" ? null : /^\d+(\.\d+)?$/.test(o) ? o + "px" : o;
@@ -9770,12 +9770,12 @@ function cellsMixin() {
         return o === "" ? null : /^\d+(\.\d+)?$/.test(o) ? o + "%" : o;
       };
       if (!e) {
-        const i = s(t == null ? void 0 : t.minSizePx) ?? s(t == null ? void 0 : t.minSize), o = a(t == null ? void 0 : t.minSizePercent);
-        i && o ? r.minWidth = `max(${i}, ${o})` : i ? r.minWidth = i : o && (r.minWidth = o);
-        const l = s(t == null ? void 0 : t.maxSizePx) ?? s(t == null ? void 0 : t.maxSize), c = a(t == null ? void 0 : t.maxSizePercent);
-        l && c ? r.maxWidth = `min(${l}, ${c})` : l ? r.maxWidth = l : c && (r.maxWidth = c);
+        const i = r(t == null ? void 0 : t.minSizePx) ?? r(t == null ? void 0 : t.minSize), o = a(t == null ? void 0 : t.minSizePercent);
+        i && o ? s.minWidth = `max(${i}, ${o})` : i ? s.minWidth = i : o && (s.minWidth = o);
+        const l = r(t == null ? void 0 : t.maxSizePx) ?? r(t == null ? void 0 : t.maxSize), c = a(t == null ? void 0 : t.maxSizePercent);
+        l && c ? s.maxWidth = `min(${l}, ${c})` : l ? s.maxWidth = l : c && (s.maxWidth = c);
       }
-      return r;
+      return s;
     },
     getCellSizeInnerClass() {
       return "w-full";
@@ -9806,11 +9806,11 @@ function cellsMixin() {
     },
     // Ajouter une cellule à un groupe (accepte path ou groupIndex)
     addCellToGroup(t, e) {
-      const n = Array.isArray(t) ? t : [t], r = this.getGroupAtPath(n);
-      if (r) {
-        r.cells || (r.cells = []);
-        const s = this.createNewCell(e);
-        s._order = this.getNextOrder(r), r.cells.push(s);
+      const n = Array.isArray(t) ? t : [t], s = this.getGroupAtPath(n);
+      if (s) {
+        s.cells || (s.cells = []);
+        const r = this.createNewCell(e);
+        r._order = this.getNextOrder(s), s.cells.push(r);
       }
       this.addCellToGroupModal = { open: !1, path: null };
     },
@@ -9835,11 +9835,11 @@ function cellsMixin() {
     },
     // Insérer une cellule à une position spécifique (accepte path ou groupIndex)
     insertCellAt(t, e, n) {
-      const r = Array.isArray(t) ? t : [t], s = this.getGroupAtPath(r);
-      if (s) {
-        s.cells || (s.cells = []);
+      const s = Array.isArray(t) ? t : [t], r = this.getGroupAtPath(s);
+      if (r) {
+        r.cells || (r.cells = []);
         const a = this.createNewCell(n);
-        a._order = this.getNextOrder(s), s.cells.splice(e, 0, a);
+        a._order = this.getNextOrder(r), r.cells.splice(e, 0, a);
       }
       this.insertCellModal = { open: !1, path: null, atCellIndex: null };
     },
@@ -9855,37 +9855,37 @@ function cellsMixin() {
     },
     // Supprimer une cellule (accepte path ou groupIndex)
     async deleteCellAt(t, e) {
-      const n = Array.isArray(t) ? t : [t], r = this.getGroupAtPath(n);
-      if (!r || !r.cells) return;
-      const s = r.children && r.children.length > 0;
-      if (r.cells.length === 1 && !s)
+      const n = Array.isArray(t) ? t : [t], s = this.getGroupAtPath(n);
+      if (!s || !s.cells) return;
+      const r = s.children && s.children.length > 0;
+      if (s.cells.length === 1 && !r)
         await this.deleteGroupAtPath(n);
       else if (await Alpine.store("confirmModal").show("Supprimer cette cellule ?")) {
-        const a = r.cells[e];
-        _rawTableDataStore.delete(a._id), this._tables && this._tables[a._id] && (this._tables[a._id].destroy(), delete this._tables[a._id]), r.cells.splice(e, 1);
+        const a = s.cells[e];
+        _rawTableDataStore.delete(a._id), this._tables && this._tables[a._id] && (this._tables[a._id].destroy(), delete this._tables[a._id]), s.cells.splice(e, 1);
       }
     },
     // Déplacer une cellule dans un groupe (accepte path ou groupIndex)
     moveCellInGroup(t, e, n) {
-      const r = Array.isArray(t) ? t : [t];
-      this.moveCellInGroupAtPath(r, e, n);
+      const s = Array.isArray(t) ? t : [t];
+      this.moveCellInGroupAtPath(s, e, n);
     },
     /** S'assure qu'une cellule a un nom unique (génération auto si absent). Rétrocompat : uiParameter referenceName → name. */
     ensureCellName(t, e) {
-      const n = Array.isArray(t) ? t : [t], r = this.getCellAtPath(n, e);
-      if (!r || !r.type) return;
-      r.type === "uiParameter" && r.referenceName && (!r.name || !String(r.name).trim()) && (r.name = String(r.referenceName).trim()), (r.name != null ? String(r.name).trim() : "") || (r.name = this.generateUniqueCellName(r.type, r._id));
+      const n = Array.isArray(t) ? t : [t], s = this.getCellAtPath(n, e);
+      if (!s || !s.type) return;
+      s.type === "uiParameter" && s.referenceName && (!s.name || !String(s.name).trim()) && (s.name = String(s.referenceName).trim()), (s.name != null ? String(s.name).trim() : "") || (s.name = this.generateUniqueCellName(s.type, s._id));
     },
     /** Parcourt toutes les cellules et assigne un nom unique à celles qui n'en ont pas. Rétrocompat : uiParameter referenceName → name. */
     ensureAllCellsHaveNames() {
       const t = (e, n) => {
-        for (let r = 0; r < (e || []).length; r++) {
-          const s = e[r], a = [...n, r];
-          for (let i = 0; i < (s.cells || []).length; i++) {
-            const o = s.cells[i];
+        for (let s = 0; s < (e || []).length; s++) {
+          const r = e[s], a = [...n, s];
+          for (let i = 0; i < (r.cells || []).length; i++) {
+            const o = r.cells[i];
             !o || !o.type || (o.type === "uiParameter" && o.referenceName && (!o.name || !String(o.name).trim()) && (o.name = String(o.referenceName).trim()), (!o.name || !String(o.name).trim()) && (o.name = this.generateUniqueCellName(o.type, o._id)));
           }
-          s.children && t(s.children, a);
+          r.children && t(r.children, a);
         }
       };
       for (let e = 0; e < this.pages.length; e++)
@@ -9895,11 +9895,11 @@ function cellsMixin() {
     openCellConfig(t, e) {
       const n = Array.isArray(t) ? t : [t];
       this.ensureCellName(n, e), this.cellConfigModal = { open: !0, path: n, cellIndex: e }, setTimeout(() => {
-        const r = document.querySelector('[aria-labelledby="modal-cell-config-title"]'), s = this.getCellAtPath(n, e);
-        if (!r || !s) return;
-        const a = r.querySelectorAll("select");
-        if (a[0] && (a[0].value = s.type), ["markdown", "iframe", "uiParameter"].includes(s.type) && a[1]) {
-          const i = ConfigManager.getCellEngine(s, "main");
+        const s = document.querySelector('[aria-labelledby="modal-cell-config-title"]'), r = this.getCellAtPath(n, e);
+        if (!s || !r) return;
+        const a = s.querySelectorAll("select");
+        if (a[0] && (a[0].value = r.type), ["markdown", "iframe", "uiParameter"].includes(r.type) && a[1]) {
+          const i = ConfigManager.getCellEngine(r, "main");
           i && a[1].value !== i && (a[1].value = i);
         }
       }, 50);
@@ -9923,9 +9923,9 @@ function cellsMixin() {
       return CellConfigService.isSpecificParamVisible(t, e);
     },
     getQueryLabelForType(t, e) {
-      var s, a, i, o;
-      const n = CELL_TYPE_SCHEMAS.types[t], r = typeof e == "string" ? e : (s = n == null ? void 0 : n.queryNames) == null ? void 0 : s[e];
-      return ((a = n == null ? void 0 : n.queryLabels) == null ? void 0 : a[r]) || ((i = n == null ? void 0 : n.queryLabels) == null ? void 0 : i[e]) || ((o = CELL_TYPE_SCHEMAS.common.queries) == null ? void 0 : o.label) || "Requête SQL";
+      var r, a, i, o;
+      const n = CELL_TYPE_SCHEMAS.types[t], s = typeof e == "string" ? e : (r = n == null ? void 0 : n.queryNames) == null ? void 0 : r[e];
+      return ((a = n == null ? void 0 : n.queryLabels) == null ? void 0 : a[s]) || ((i = n == null ? void 0 : n.queryLabels) == null ? void 0 : i[e]) || ((o = CELL_TYPE_SCHEMAS.common.queries) == null ? void 0 : o.label) || "Requête SQL";
     },
     getQueryCountForType(t) {
       var e;
@@ -9939,43 +9939,43 @@ function cellsMixin() {
     },
     onCellTypeChange(t, e, n) {
       var o, l, c, u, d, p, m, h, f, g;
-      const r = Array.isArray(t) ? t : [t], s = this.getCellAtPath(r, e);
-      if (!s) return;
-      _rawTableDataStore.delete(s._id), s._results = null, s._resultInfo = null;
-      const a = s.type, i = s.name && String(s.name).trim() ? s.name : this.generateUniqueCellName(a);
-      (!s.name || !String(s.name).trim()) && (s.name = i), CellConfigService.applyDefaultsOnTypeChange(s, a, { oldType: n, baseName: i }), s.type === "source" && (s.name ? (o = ConfigManager.getCellQuery(s, "main")) != null && o.trim() || ConfigManager.setCellQuery(s, "main", `CREATE OR REPLACE TABLE ${s.name} AS SELECT * FROM '{fileNameUpload}'`) : s.name = this.generateUniqueSourceName(), (l = ConfigManager.getCellQuery(s, "fallback")) != null && l.trim() || ConfigManager.setCellQuery(s, "fallback", ((p = (d = (u = (c = CELL_TYPE_SCHEMAS.types.source) == null ? void 0 : c.defaults) == null ? void 0 : u.queries) == null ? void 0 : d.find((y) => y.name === "fallback")) == null ? void 0 : p.sql) || ((g = (f = (h = (m = CELL_TYPE_SCHEMAS.types.source) == null ? void 0 : m.defaults) == null ? void 0 : h.queries) == null ? void 0 : f[1]) == null ? void 0 : g.sql) || `CREATE OR REPLACE TABLE ${s.name} AS SELECT * FROM read_csv('{fileNameUpload}', HEADER=true, AUTO_DETECT=true, SAMPLE_SIZE=-1, IGNORE_ERRORS=true)`), s._fileName === void 0 && (s._fileName = ""), s._currentFile === void 0 && (s._currentFile = null), s._isDragging === void 0 && (s._isDragging = !1), s._loaded === void 0 && (s._loaded = !1), s._showParsedQuery2 === void 0 && (s._showParsedQuery2 = !1)), s.type === "uiParameter" && (s.referenceName && (!s.name || !String(s.name).trim()) && (s.name = String(s.referenceName).trim()), ConfigManager.getCellReferenceName(s) || (s.name = this.generateUniqueCellName("uiParameter", s._id)), s._value === void 0 && (s._value = ""), s._options || (s._options = []), s._initialized = !1, s._userModified = !1), s.type === "publipostageWord" && (s.docxTemplateBase64 === void 0 && (s.docxTemplateBase64 = null), s.docxTemplateFileName === void 0 && (s.docxTemplateFileName = ""), s._showParsedQuery === void 0 && (s._showParsedQuery = !1), s._showParsedQuery2 === void 0 && (s._showParsedQuery2 = !1), s._parseLevels || (s._parseLevels = []), s._parseLevels2 || (s._parseLevels2 = []), s._isDragging === void 0 && (s._isDragging = !1)), ["sqlRecursiveParse", "table", "iframe", "sqlStat", "perspective"].includes(s.type) && s._showParsedQuery === void 0 && (s._showParsedQuery = !1), s.type === "perspective" && (s._perspectiveReady = !1, s._perspectiveWorker = null, s._perspectiveTable = null);
+      const s = Array.isArray(t) ? t : [t], r = this.getCellAtPath(s, e);
+      if (!r) return;
+      _rawTableDataStore.delete(r._id), r._results = null, r._resultInfo = null;
+      const a = r.type, i = r.name && String(r.name).trim() ? r.name : this.generateUniqueCellName(a);
+      (!r.name || !String(r.name).trim()) && (r.name = i), CellConfigService.applyDefaultsOnTypeChange(r, a, { oldType: n, baseName: i }), r.type === "source" && (r.name ? (o = ConfigManager.getCellQuery(r, "main")) != null && o.trim() || ConfigManager.setCellQuery(r, "main", `CREATE OR REPLACE TABLE ${r.name} AS SELECT * FROM '{fileNameUpload}'`) : r.name = this.generateUniqueSourceName(), (l = ConfigManager.getCellQuery(r, "fallback")) != null && l.trim() || ConfigManager.setCellQuery(r, "fallback", ((p = (d = (u = (c = CELL_TYPE_SCHEMAS.types.source) == null ? void 0 : c.defaults) == null ? void 0 : u.queries) == null ? void 0 : d.find((y) => y.name === "fallback")) == null ? void 0 : p.sql) || ((g = (f = (h = (m = CELL_TYPE_SCHEMAS.types.source) == null ? void 0 : m.defaults) == null ? void 0 : h.queries) == null ? void 0 : f[1]) == null ? void 0 : g.sql) || `CREATE OR REPLACE TABLE ${r.name} AS SELECT * FROM read_csv('{fileNameUpload}', HEADER=true, AUTO_DETECT=true, SAMPLE_SIZE=-1, IGNORE_ERRORS=true)`), r._fileName === void 0 && (r._fileName = ""), r._currentFile === void 0 && (r._currentFile = null), r._isDragging === void 0 && (r._isDragging = !1), r._loaded === void 0 && (r._loaded = !1), r._showParsedQuery2 === void 0 && (r._showParsedQuery2 = !1)), r.type === "uiParameter" && (r.referenceName && (!r.name || !String(r.name).trim()) && (r.name = String(r.referenceName).trim()), ConfigManager.getCellReferenceName(r) || (r.name = this.generateUniqueCellName("uiParameter", r._id)), r._value === void 0 && (r._value = ""), r._options || (r._options = []), r._initialized = !1, r._userModified = !1), r.type === "publipostageWord" && (r.docxTemplateBase64 === void 0 && (r.docxTemplateBase64 = null), r.docxTemplateFileName === void 0 && (r.docxTemplateFileName = ""), r._showParsedQuery === void 0 && (r._showParsedQuery = !1), r._showParsedQuery2 === void 0 && (r._showParsedQuery2 = !1), r._parseLevels || (r._parseLevels = []), r._parseLevels2 || (r._parseLevels2 = []), r._isDragging === void 0 && (r._isDragging = !1)), ["sqlRecursiveParse", "table", "iframe", "sqlStat", "perspective"].includes(r.type) && r._showParsedQuery === void 0 && (r._showParsedQuery = !1), r.type === "perspective" && (r._perspectiveReady = !1, r._perspectiveWorker = null, r._perspectiveTable = null);
     },
     /** Génère un nom unique pour une cellule (tous types confondus). excludeId = _id de la cellule à exclure. */
     generateUniqueCellName(t, e = null) {
       var i;
-      const n = /* @__PURE__ */ new Set(), r = (o) => {
+      const n = /* @__PURE__ */ new Set(), s = (o) => {
         for (const l of o) {
           for (const c of l.cells || [])
             c.name && String(c.name).trim() && c._id !== e && n.add(String(c.name).trim());
-          l.children && r(l.children);
+          l.children && s(l.children);
         }
       };
       for (const o of this.pages)
-        r(o.groups || []), o.linkGroups && r(o.linkGroups);
-      const s = ((i = CELL_TYPE_SCHEMAS == null ? void 0 : CELL_TYPE_SCHEMAS.types[t]) == null ? void 0 : i.defaultNamePrefix) ?? "cell";
+        s(o.groups || []), o.linkGroups && s(o.linkGroups);
+      const r = ((i = CELL_TYPE_SCHEMAS == null ? void 0 : CELL_TYPE_SCHEMAS.types[t]) == null ? void 0 : i.defaultNamePrefix) ?? "cell";
       let a = 1;
-      for (; n.has(s + a); ) a++;
-      return s + a;
+      for (; n.has(r + a); ) a++;
+      return r + a;
     },
     /** Vérifie si un nom est déjà utilisé par une autre cellule (tous types). */
     isCellNameUsed(t, e = null) {
       const n = t && String(t).trim();
       if (!n) return !1;
-      const r = (s) => {
-        for (const a of s) {
+      const s = (r) => {
+        for (const a of r) {
           for (const i of a.cells || [])
             if (i._id !== e && i.name && String(i.name).trim() === n) return !0;
-          if (a.children && r(a.children)) return !0;
+          if (a.children && s(a.children)) return !0;
         }
         return !1;
       };
-      for (const s of this.pages)
-        if (r(s.groups || []) || s.linkGroups && r(s.linkGroups)) return !0;
+      for (const r of this.pages)
+        if (s(r.groups || []) || r.linkGroups && s(r.linkGroups)) return !0;
       return !1;
     },
     generateUniqueSourceName() {
@@ -9985,32 +9985,32 @@ function cellsMixin() {
     validateCellName(t, e) {
       const n = this.getCellAtPath(t, e);
       if (!n) return;
-      let r = n.name != null ? String(n.name).trim() : "";
-      if (!r) {
+      let s = n.name != null ? String(n.name).trim() : "";
+      if (!s) {
         this.setStatus("Le nom ne peut pas être vide", "error"), n.name = this.generateUniqueCellName(n.type, n._id);
         return;
       }
-      if (!ConfigManager.isCellNameValid(n, r)) {
-        this.setStatus("Le nom doit commencer par une lettre ou _ et ne contenir que des lettres, chiffres et _", "error"), n.name = r.replace(/[^a-zA-Z0-9_]/g, "_").replace(/^([0-9])/, "_$1");
+      if (!ConfigManager.isCellNameValid(n, s)) {
+        this.setStatus("Le nom doit commencer par une lettre ou _ et ne contenir que des lettres, chiffres et _", "error"), n.name = s.replace(/[^a-zA-Z0-9_]/g, "_").replace(/^([0-9])/, "_$1");
         return;
       }
-      this.isCellNameUsed(r, n._id) && (this.setStatus(`Le nom "${r}" est déjà utilisé par une autre cellule`, "error"), n.name = this.generateUniqueCellName(n.type, n._id));
+      this.isCellNameUsed(s, n._id) && (this.setStatus(`Le nom "${s}" est déjà utilisé par une autre cellule`, "error"), n.name = this.generateUniqueCellName(n.type, n._id));
     },
     // Valider l'unicité du nom de source (accepte path ou groupIndex) - vérifie dans TOUTES les pages
     validateSingleSourceName(t, e) {
       var a;
-      const n = Array.isArray(t) ? t : [t], r = this.getCellAtPath(n, e);
-      if (!r || r.type !== "source") return;
-      const s = (a = r.name) == null ? void 0 : a.trim();
-      if (!s) {
-        this.setStatus("Le nom de la source ne peut pas être vide", "error"), r.name = this.generateUniqueSourceName();
+      const n = Array.isArray(t) ? t : [t], s = this.getCellAtPath(n, e);
+      if (!s || s.type !== "source") return;
+      const r = (a = s.name) == null ? void 0 : a.trim();
+      if (!r) {
+        this.setStatus("Le nom de la source ne peut pas être vide", "error"), s.name = this.generateUniqueSourceName();
         return;
       }
-      if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(s)) {
-        this.setStatus("Le nom doit commencer par une lettre ou _ et ne contenir que des lettres, chiffres et _", "error"), r.name = s.replace(/[^a-zA-Z0-9_]/g, "_").replace(/^([0-9])/, "_$1");
+      if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(r)) {
+        this.setStatus("Le nom doit commencer par une lettre ou _ et ne contenir que des lettres, chiffres et _", "error"), s.name = r.replace(/[^a-zA-Z0-9_]/g, "_").replace(/^([0-9])/, "_$1");
         return;
       }
-      this.isNameUniqueAcrossPages(s, "source", this.activePageIndex, n, e) || (this.setStatus(`Le nom de source "${s}" est déjà utilisé dans une autre page`, "error"), r.name = this.generateUniqueSourceName());
+      this.isNameUniqueAcrossPages(r, "source", this.activePageIndex, n, e) || (this.setStatus(`Le nom de source "${r}" est déjà utilisé dans une autre page`, "error"), s.name = this.generateUniqueSourceName());
     }
   };
 }
@@ -10023,12 +10023,12 @@ function filesMixin() {
       console.info("📂 " + (t.length + e.length) + " fichier(s) embarqué(s) trouvé(s)");
       const n = (a) => {
         for (let i = 0; i < this.pages.length; i++) {
-          const o = this.pages[i], l = r(o.groups, a, []);
+          const o = this.pages[i], l = s(o.groups, a, []);
           if (l)
             return { ...l, pageIndex: i };
         }
         return null;
-      }, r = (a, i, o) => {
+      }, s = (a, i, o) => {
         for (let l = 0; l < a.length; l++) {
           const c = a[l], u = [...o, l];
           for (let d = 0; d < (c.cells || []).length; d++) {
@@ -10037,12 +10037,12 @@ function filesMixin() {
               return { path: u, cellIndex: d, source: p };
           }
           if (c.children && c.children.length > 0) {
-            const d = r(c.children, i, u);
+            const d = s(c.children, i, u);
             if (d) return d;
           }
         }
         return null;
-      }, s = (a, i) => {
+      }, r = (a, i) => {
         try {
           let o = a, l = null;
           for (let d = 0; d < i.length - 1; d++) {
@@ -10103,7 +10103,7 @@ function filesMixin() {
             console.error("Décompression template docx échouée:", d);
             continue;
           }
-        const c = i.split("_").map((d) => parseInt(d, 10)), u = s(this.groups, c);
+        const c = i.split("_").map((d) => parseInt(d, 10)), u = r(this.groups, c);
         if (!u) {
           console.warn(`Cellule publipostageWord au chemin "${i}" non trouvée`);
           continue;
@@ -10121,31 +10121,31 @@ function filesMixin() {
       this.setStatus("Fichiers embarqués chargés", "success");
     },
     handleSingleSourceDrop(t, e, n) {
-      const r = this.getCellAtPath(e, n);
-      if (!r || r.type !== "source") return;
-      r._isDragging = !1;
-      const s = t.dataTransfer.files;
-      s.length > 0 && this.loadSingleSourceFile(s[0], e, n);
-    },
-    handleSingleSourceFileSelect(t, e, n) {
-      const r = t.target.files;
-      r.length > 0 && this.loadSingleSourceFile(r[0], e, n);
-    },
-    async loadSingleSourceFile(t, e, n, r = {}) {
-      var i, o, l, c, u, d;
       const s = this.getCellAtPath(e, n);
       if (!s || s.type !== "source") return;
-      const a = r.skipRunNextCells === !0;
-      s._fileName = t.name, s._currentFile = t, this.isLoading = !0, s._status = "running", this.setStatus(`Chargement de ${s.name}...`, "loading");
+      s._isDragging = !1;
+      const r = t.dataTransfer.files;
+      r.length > 0 && this.loadSingleSourceFile(r[0], e, n);
+    },
+    handleSingleSourceFileSelect(t, e, n) {
+      const s = t.target.files;
+      s.length > 0 && this.loadSingleSourceFile(s[0], e, n);
+    },
+    async loadSingleSourceFile(t, e, n, s = {}) {
+      var i, o, l, c, u, d;
+      const r = this.getCellAtPath(e, n);
+      if (!r || r.type !== "source") return;
+      const a = s.skipRunNextCells === !0;
+      r._fileName = t.name, r._currentFile = t, this.isLoading = !0, r._status = "running", this.setStatus(`Chargement de ${r.name}...`, "loading");
       try {
-        const p = s.name || "source1";
+        const p = r.name || "source1";
         let m, h = !1, f = t.name;
         if (((v) => {
           const w = v.toLowerCase();
           return w.endsWith(".csv.gz") ? "csv.gz" : w.endsWith(".tsv.gz") ? "tsv.gz" : w.endsWith(".txt.gz") ? "txt.gz" : w.split(".").pop();
         })(f) === "xls") {
           this.setStatus("Conversion Excel (.xls) via SheetJS...", "loading");
-          const v = ((i = s.json) == null ? void 0 : i.xlsx) || {}, { csv: w, csvFileName: _ } = await FileHandler.processExcelFile(
+          const v = ((i = r.json) == null ? void 0 : i.xlsx) || {}, { csv: w, csvFileName: _ } = await FileHandler.processExcelFile(
             t,
             v.options,
             v.toCsvOptions,
@@ -10154,31 +10154,31 @@ function filesMixin() {
           await DuckDBManager.registerFile(_, S), f = _, m = `CREATE OR REPLACE TABLE ${p} AS SELECT * FROM read_csv('${f}', HEADER = true, AUTO_DETECT = true, SAMPLE_SIZE = -1)`;
         } else {
           await DuckDBManager.registerFile(t.name, t);
-          const v = (ConfigManager.getCellQuery(s, "main") || ((l = (o = s.queries) == null ? void 0 : o[0]) == null ? void 0 : l.sql) || "").trim();
+          const v = (ConfigManager.getCellQuery(r, "main") || ((l = (o = r.queries) == null ? void 0 : o[0]) == null ? void 0 : l.sql) || "").trim();
           if (v) {
             const w = { name: p, fileNameUpload: f, fileName: f }, S = { queries: [{ name: "main", sql: this.replaceSourceContext(v, w), engine: "sql", clientVisible: !1 }], _parseLevels: [] };
-            m = await this.parseQueryRecursively(S), s._parseLevels = S._parseLevels || [];
+            m = await this.parseQueryRecursively(S), r._parseLevels = S._parseLevels || [];
           } else
             m = `CREATE OR REPLACE TABLE ${p} AS SELECT * FROM '${f}'`;
         }
         try {
           await DuckDBManager.executeQuery(m), h = !0;
         } catch (v) {
-          const w = (ConfigManager.getCellQuery(s, "fallback") || ((u = (c = s.queries) == null ? void 0 : c[1]) == null ? void 0 : u.sql) || "").trim();
+          const w = (ConfigManager.getCellQuery(r, "fallback") || ((u = (c = r.queries) == null ? void 0 : c[1]) == null ? void 0 : u.sql) || "").trim();
           if (w) {
             this.setStatus("Requête initiale échouée, tentative fallback...", "loading");
             const _ = { name: p, fileNameUpload: f, fileName: f }, S = { type: "source", queries: [{ name: "main", sql: "" }, { name: "fallback", sql: this.replaceSourceContext(w, _), engine: "sql", clientVisible: !1 }], _parseLevels: [] };
             try {
               const b = await this.parseQueryRecursively(S, 1);
-              await DuckDBManager.executeQuery(b), h = !0, m = b, s._parseLevels = S._parseLevels || [], this.setStatus(`${s.name} chargé via requête de fallback`, "success");
+              await DuckDBManager.executeQuery(b), h = !0, m = b, r._parseLevels = S._parseLevels || [], this.setStatus(`${r.name} chargé via requête de fallback`, "success");
             } catch {
             }
           }
           if (!h) throw v;
         }
-        s._loaded = !0, s._status = "success", s._pendingFileLoad = !1, (d = s._parseLevels) != null && d.length || (s._parseLevels = [{ level: "final", innerQuery: m, replacement: null }]), this.setStatus(`${s.name} chargé!`, "success"), a || (await this.runCellsAfterWithStopConditions(e, n, s._id)).stopped || this.setStatus("Exécution terminée", "success");
+        r._loaded = !0, r._status = "success", r._pendingFileLoad = !1, (d = r._parseLevels) != null && d.length || (r._parseLevels = [{ level: "final", innerQuery: m, replacement: null }]), this.setStatus(`${r.name} chargé!`, "success"), a || (await this.runCellsAfterWithStopConditions(e, n, r._id)).stopped || this.setStatus("Exécution terminée", "success");
       } catch (p) {
-        s._status = "error", this.setStatus("Erreur: " + p.message, "error"), s._fileName = "", s._currentFile = null, Array.isArray(s.files) && (s.files = s.files.filter((m) => m.slot !== "source")), delete s.fileBase64, delete s.fileName;
+        r._status = "error", this.setStatus("Erreur: " + p.message, "error"), r._fileName = "", r._currentFile = null, Array.isArray(r.files) && (r.files = r.files.filter((m) => m.slot !== "source")), delete r.fileBase64, delete r.fileName;
       } finally {
         this.isLoading = !1;
       }
@@ -10191,53 +10191,53 @@ function filesMixin() {
           await DuckDBManager.executeQuery(`DROP TABLE IF EXISTS "${n.name}"`);
         } catch {
         }
-      const r = n.name.replace(/[^a-zA-Z0-9_]/g, "_");
-      document.querySelectorAll(`script[id^="sourceFile_${r}"]`).forEach((a) => a.remove());
-      const s = document.getElementById("fileInput_" + n._id);
-      s && (s.value = ""), n._fileName = "", n._currentFile = null, n._loaded = !1, n._status = null, n._parseLevels = [], Array.isArray(n.files) && (n.files = n.files.filter((a) => a.slot !== "source")), delete n.fileBase64, delete n.fileName, this.setStatus(`Fichier supprimé de ${n.name}`, "success");
+      const s = n.name.replace(/[^a-zA-Z0-9_]/g, "_");
+      document.querySelectorAll(`script[id^="sourceFile_${s}"]`).forEach((a) => a.remove());
+      const r = document.getElementById("fileInput_" + n._id);
+      r && (r.value = ""), n._fileName = "", n._currentFile = null, n._loaded = !1, n._status = null, n._parseLevels = [], Array.isArray(n.files) && (n.files = n.files.filter((a) => a.slot !== "source")), delete n.fileBase64, delete n.fileName, this.setStatus(`Fichier supprimé de ${n.name}`, "success");
     },
     /** Valide le nom d'une cellule (unicité globale, format SQL pour source). */
     validateCellName(t, e) {
       const n = this.getCellAtPath(t, e);
       if (!n) return;
-      let r = n.name != null ? String(n.name).trim() : "";
-      if (!r) {
+      let s = n.name != null ? String(n.name).trim() : "";
+      if (!s) {
         this.setStatus("Le nom ne peut pas être vide", "error"), n.name = this.generateUniqueCellName(n.type, n._id);
         return;
       }
-      if (!ConfigManager.isCellNameValid(n, r)) {
-        this.setStatus("Le nom doit commencer par une lettre ou _ et ne contenir que des lettres, chiffres et _", "error"), n.name = r.replace(/[^a-zA-Z0-9_]/g, "_").replace(/^([0-9])/, "_$1");
+      if (!ConfigManager.isCellNameValid(n, s)) {
+        this.setStatus("Le nom doit commencer par une lettre ou _ et ne contenir que des lettres, chiffres et _", "error"), n.name = s.replace(/[^a-zA-Z0-9_]/g, "_").replace(/^([0-9])/, "_$1");
         return;
       }
-      this.isCellNameUsed(r, n._id) && (this.setStatus(`Le nom "${r}" est déjà utilisé par une autre cellule`, "error"), n.name = this.generateUniqueCellName(n.type, n._id));
+      this.isCellNameUsed(s, n._id) && (this.setStatus(`Le nom "${s}" est déjà utilisé par une autre cellule`, "error"), n.name = this.generateUniqueCellName(n.type, n._id));
     },
     // ─────────────────────────────────────────────────────────────────
     // GESTION DU TEMPLATE DOCX (publipostageWord)
     // ─────────────────────────────────────────────────────────────────
     handleDocxTemplateDrop(t, e, n) {
-      const r = this.getCellAtPath(e, n);
-      if (!r || r.type !== "publipostageWord") return;
-      r._isDragging = !1;
-      const s = t.dataTransfer.files;
-      s.length > 0 && this.loadDocxTemplate(s[0], e, n);
-    },
-    handleDocxTemplateFileSelect(t, e, n) {
-      const r = t.target.files;
+      const s = this.getCellAtPath(e, n);
+      if (!s || s.type !== "publipostageWord") return;
+      s._isDragging = !1;
+      const r = t.dataTransfer.files;
       r.length > 0 && this.loadDocxTemplate(r[0], e, n);
     },
+    handleDocxTemplateFileSelect(t, e, n) {
+      const s = t.target.files;
+      s.length > 0 && this.loadDocxTemplate(s[0], e, n);
+    },
     async loadDocxTemplate(t, e, n) {
-      const r = this.getCellAtPath(e, n);
-      if (!(!r || r.type !== "publipostageWord")) {
+      const s = this.getCellAtPath(e, n);
+      if (!(!s || s.type !== "publipostageWord")) {
         if (!t.name.endsWith(".docx")) {
           this.setStatus("Seuls les fichiers .docx sont acceptés", "error");
           return;
         }
         try {
           this.setStatus("Chargement du template Word...", "loading");
-          const s = await t.arrayBuffer(), a = FileHandler.arrayBufferToBase64(s);
-          r.docxTemplateBase64 = a, r.docxTemplateFileName = t.name, ConfigManager.setCellFileData(r, { base64: a, fileName: t.name }), this.setStatus("Template Word chargé", "success");
-        } catch (s) {
-          this.setStatus("Erreur lors du chargement du template: " + s.message, "error");
+          const r = await t.arrayBuffer(), a = FileHandler.arrayBufferToBase64(r);
+          s.docxTemplateBase64 = a, s.docxTemplateFileName = t.name, ConfigManager.setCellFileData(s, { base64: a, fileName: t.name }), this.setStatus("Template Word chargé", "success");
+        } catch (r) {
+          this.setStatus("Erreur lors du chargement du template: " + r.message, "error");
         }
       }
     },
@@ -10249,42 +10249,42 @@ function filesMixin() {
           return;
         }
         try {
-          const r = FileHandler.base64ToUint8Array(n.docxTemplateBase64), s = new Blob([r], {
+          const s = FileHandler.base64ToUint8Array(n.docxTemplateBase64), r = new Blob([s], {
             type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
           });
-          FileHandler.downloadFile(s, n.docxTemplateFileName), this.setStatus("Template Word téléchargé", "success");
-        } catch (r) {
-          this.setStatus("Erreur lors du téléchargement: " + r.message, "error");
+          FileHandler.downloadFile(r, n.docxTemplateFileName), this.setStatus("Template Word téléchargé", "success");
+        } catch (s) {
+          this.setStatus("Erreur lors du téléchargement: " + s.message, "error");
         }
       }
     },
     removeDocxTemplate(t, e) {
       const n = this.getCellAtPath(t, e);
       if (!n || n.type !== "publipostageWord") return;
-      const r = document.getElementById("docxInput_" + n._id);
-      r && (r.value = ""), n.docxTemplateBase64 = null, n.docxTemplateFileName = "", Array.isArray(n.files) && (n.files = n.files.filter((s) => s.slot !== "docxTemplate")), delete n.fileBase64, delete n.fileName, this.setStatus("Template Word supprimé", "success");
+      const s = document.getElementById("docxInput_" + n._id);
+      s && (s.value = ""), n.docxTemplateBase64 = null, n.docxTemplateFileName = "", Array.isArray(n.files) && (n.files = n.files.filter((r) => r.slot !== "docxTemplate")), delete n.fileBase64, delete n.fileName, this.setStatus("Template Word supprimé", "success");
     },
     async loadPendingSourceFiles() {
-      const t = async (n, r) => {
-        for (let s = 0; s < (n.cells || []).length; s++) {
-          const a = n.cells[s];
+      const t = async (n, s) => {
+        for (let r = 0; r < (n.cells || []).length; r++) {
+          const a = n.cells[r];
           if (a.type === "source" && a._pendingFileLoad && a._currentFile)
             try {
-              this.setStatus(`Chargement de ${a.name}...`, "loading"), await this.loadSingleSourceFile(a._currentFile, r, s, { skipRunNextCells: !0 }), a._pendingFileLoad = !1;
+              this.setStatus(`Chargement de ${a.name}...`, "loading"), await this.loadSingleSourceFile(a._currentFile, s, r, { skipRunNextCells: !0 }), a._pendingFileLoad = !1;
             } catch (i) {
               console.error(`Erreur chargement fichier source ${a.name}:`, i);
             }
         }
         if (n.children)
-          for (let s = 0; s < n.children.length; s++)
-            await t(n.children[s], [...r, s]);
+          for (let r = 0; r < n.children.length; r++)
+            await t(n.children[r], [...s, r]);
       }, e = this.activePageIndex;
       try {
         for (let n = 0; n < this.pages.length; n++) {
           this.activePageIndex = n;
-          const r = this.pages[n];
-          for (let s = 0; s < r.groups.length; s++)
-            await t(r.groups[s], [s]);
+          const s = this.pages[n];
+          for (let r = 0; r < s.groups.length; r++)
+            await t(s.groups[r], [r]);
         }
       } finally {
         this.activePageIndex = e;
@@ -10297,12 +10297,12 @@ function parametersMixin() {
     // Collecter tous les paramètres définis dans les cellules uiParameter
     getParameters() {
       const t = {}, e = (n) => {
-        for (const r of (n == null ? void 0 : n.cells) || []) {
-          const s = ConfigManager.getCellReferenceName(r);
-          r.type === "uiParameter" && s && (t[s] = r._value || "");
+        for (const s of (n == null ? void 0 : n.cells) || []) {
+          const r = ConfigManager.getCellReferenceName(s);
+          s.type === "uiParameter" && r && (t[r] = s._value || "");
         }
-        for (const r of (n == null ? void 0 : n.children) || [])
-          e(r);
+        for (const s of (n == null ? void 0 : n.children) || [])
+          e(s);
       };
       for (const n of this.groups || [])
         e(n);
@@ -10313,8 +10313,8 @@ function parametersMixin() {
       if (!t) return t;
       const e = this.getParameters();
       let n = t;
-      for (const [r, s] of Object.entries(e)) {
-        const a = r.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), i = new RegExp("\\$" + a + "(?![a-zA-Z0-9_])", "g"), o = String(s).replace(/'/g, "''");
+      for (const [s, r] of Object.entries(e)) {
+        const a = s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), i = new RegExp("\\$" + a + "(?![a-zA-Z0-9_])", "g"), o = String(r).replace(/'/g, "''");
         n = n.replace(i, o);
       }
       return n;
@@ -10326,40 +10326,40 @@ function parametersMixin() {
     findReferencedParams(t) {
       if (!t) return [];
       const e = [], n = /\$([a-zA-Z_][a-zA-Z0-9_]*)/g;
-      let r;
-      for (; (r = n.exec(t)) !== null; )
-        e.includes(r[1]) || e.push(r[1]);
+      let s;
+      for (; (s = n.exec(t)) !== null; )
+        e.includes(s[1]) || e.push(s[1]);
       return e;
     },
     // Trouver toutes les cellules qui dépendent d'un paramètre donné
     // Retourne un tableau de {cell, path, cellIndex} pour les types DAG-compatibles
     findDependentCells(t) {
-      const e = [], n = ["uiParameter", "sqlRecursiveParse", "table", "perspective", "sqlStat"], r = (s, a) => {
-        for (let i = 0; i < (s.cells || []).length; i++) {
-          const o = s.cells[i];
+      const e = [], n = ["uiParameter", "sqlRecursiveParse", "table", "perspective", "sqlStat"], s = (r, a) => {
+        for (let i = 0; i < (r.cells || []).length; i++) {
+          const o = r.cells[i];
           if (!n.includes(o.type)) continue;
           const l = ConfigManager.getCellQuery(o, 0) || "";
           this.findReferencedParams(l).includes(t) && e.push({ cell: o, path: [...a], cellIndex: i });
         }
-        if (s.children)
-          for (let i = 0; i < s.children.length; i++)
-            r(s.children[i], [...a, i]);
+        if (r.children)
+          for (let i = 0; i < r.children.length; i++)
+            s(r.children[i], [...a, i]);
       };
-      for (let s = 0; s < this.groups.length; s++)
-        r(this.groups[s], [s]);
+      for (let r = 0; r < this.groups.length; r++)
+        s(this.groups[r], [r]);
       return e;
     },
     // Trouver tous les groupes qui dépendent d'un paramètre donné (via ifQuery)
     // Retourne un tableau de {group, path}
     findDependentGroups(t) {
-      const e = [], n = (r, s) => {
-        const a = ConfigManager.getGroupIfQuery(r);
-        if (a && a.sql && this.findReferencedParams(a.sql).includes(t) && e.push({ group: r, path: [...s] }), r.children)
-          for (let i = 0; i < r.children.length; i++)
-            n(r.children[i], [...s, i]);
+      const e = [], n = (s, r) => {
+        const a = ConfigManager.getGroupIfQuery(s);
+        if (a && a.sql && this.findReferencedParams(a.sql).includes(t) && e.push({ group: s, path: [...r] }), s.children)
+          for (let i = 0; i < s.children.length; i++)
+            n(s.children[i], [...r, i]);
       };
-      for (let r = 0; r < this.groups.length; r++)
-        n(this.groups[r], [r]);
+      for (let s = 0; s < this.groups.length; s++)
+        n(this.groups[s], [s]);
       return e;
     },
     // Détecter les cycles dans le DAG
@@ -10381,13 +10381,13 @@ function parametersMixin() {
       };
       for (const i of this.groups)
         n(i);
-      const r = /* @__PURE__ */ new Set(), s = /* @__PURE__ */ new Set(), a = (i) => {
-        if (s.has(i)) return !0;
-        if (r.has(i)) return !1;
-        r.add(i), s.add(i);
+      const s = /* @__PURE__ */ new Set(), r = /* @__PURE__ */ new Set(), a = (i) => {
+        if (r.has(i)) return !0;
+        if (s.has(i)) return !1;
+        s.add(i), r.add(i);
         for (const o of t.get(i) || [])
           if (a(o)) return !0;
-        return s.delete(i), !1;
+        return r.delete(i), !1;
       };
       for (const i of e)
         if (a(i))
@@ -10417,22 +10417,22 @@ function parametersMixin() {
       const e = this.findDependentCells(t), n = this.findDependentGroups(t);
       if (e.length + n.length !== 0) {
         this.setStatus(`🔄 Rafraîchissement de ${e.length} cellule(s) et ${n.length} groupe(s) dépendant(s) de $${t}...`, "loading");
-        for (let s = 0; s < n.length; s++) {
-          const a = n[s];
+        for (let r = 0; r < n.length; r++) {
+          const a = n[r];
           try {
             const i = a.group._ifQueryResult, o = await this.evaluateGroupIfQuery(a.group);
             a.group._ifQueryResult = o;
           } catch (i) {
-            console.error(`  ❌ [DAG] Erreur évaluation groupe ${s + 1}:`, i);
+            console.error(`  ❌ [DAG] Erreur évaluation groupe ${r + 1}:`, i);
           }
         }
-        for (let s = 0; s < e.length; s++) {
-          const a = e[s], i = a.cell;
+        for (let r = 0; r < e.length; r++) {
+          const a = e[r], i = a.cell;
           if (!(i.type === "uiParameter" && i.preserveUserValue && i._userModified))
             try {
               await this.runCellAt(a.path, a.cellIndex);
             } catch (o) {
-              console.error(`  ❌ [DAG] Erreur cellule ${s + 1}:`, o);
+              console.error(`  ❌ [DAG] Erreur cellule ${r + 1}:`, o);
             }
         }
         this.setStatus(`✅ ${e.length} cellule(s) et ${n.length} groupe(s) rafraîchi(s)`, "success");
@@ -10440,17 +10440,17 @@ function parametersMixin() {
     },
     // Générer un nom de paramètre unique (param1, param2, param3...) - vérifie dans TOUTES les pages
     generateUniqueParamName() {
-      const t = /* @__PURE__ */ new Set(), e = (r) => {
-        for (const s of r) {
-          for (const a of s.cells || []) {
+      const t = /* @__PURE__ */ new Set(), e = (s) => {
+        for (const r of s) {
+          for (const a of r.cells || []) {
             const i = ConfigManager.getCellReferenceName(a);
             a.type === "uiParameter" && i && t.add(i);
           }
-          s.children && e(s.children);
+          r.children && e(r.children);
         }
       };
-      for (const r of this.pages)
-        e(r.groups), r.linkGroups && e(r.linkGroups);
+      for (const s of this.pages)
+        e(s.groups), s.linkGroups && e(s.linkGroups);
       let n = 1;
       for (; t.has("param" + n); )
         n++;
@@ -10459,18 +10459,18 @@ function parametersMixin() {
     // Vérifie si un nom de paramètre est déjà utilisé (récursif) - vérifie dans TOUTES les pages
     isParamNameUsed(t, e) {
       let n = !1;
-      const r = (s) => {
-        for (const a of s) {
+      const s = (r) => {
+        for (const a of r) {
           for (const i of a.cells || [])
             if (i.type === "uiParameter" && i._id !== e && ConfigManager.getCellReferenceName(i) === t) {
               n = !0;
               return;
             }
-          if (a.children && !n && r(a.children), n) return;
+          if (a.children && !n && s(a.children), n) return;
         }
       };
-      for (const s of this.pages)
-        if (r(s.groups), n || s.linkGroups && (r(s.linkGroups), n))
+      for (const r of this.pages)
+        if (s(r.groups), n || r.linkGroups && (s(r.linkGroups), n))
           return !0;
       return n;
     },
@@ -10484,17 +10484,17 @@ function editorsMixin() {
   return {
     // Générer le HTML de l'éditeur pour les cellules uiParameter (SQL, JS ou Texte)
     renderUiParameterEditor(t) {
-      const e = ConfigManager.getCellEngine(t, 0), n = e === "js", r = e === "text", s = n ? `return ["Option 1", "Option 2"]; // Pour dropdown
-return "Valeur"; // Pour input` : r ? "Saisir le texte (une ligne par option pour dropdown)" : "SELECT * from source1", a = n ? "JavaScript" : r ? "Texte" : "SQL", i = n ? '<span class="iconify" data-icon="material-symbols-light:bolt" style="font-size:0.875rem"></span>' : r ? '<span class="iconify" data-icon="material-symbols-light:article" style="font-size:0.875rem"></span>' : '<span class="iconify" data-icon="material-symbols-light:storage" style="font-size:0.875rem"></span>', o = n ? "badge-warning" : r ? "badge-ghost" : "badge-info";
-      return this.renderSqlQueryEditor(t, s, !0, "query", "_showParsedQuery", a, i, o);
+      const e = ConfigManager.getCellEngine(t, 0), n = e === "js", s = e === "text", r = n ? `return ["Option 1", "Option 2"]; // Pour dropdown
+return "Valeur"; // Pour input` : s ? "Saisir le texte (une ligne par option pour dropdown)" : "SELECT * from source1", a = n ? "JavaScript" : s ? "Texte" : "SQL", i = n ? '<span class="iconify" data-icon="material-symbols-light:bolt" style="font-size:0.875rem"></span>' : s ? '<span class="iconify" data-icon="material-symbols-light:article" style="font-size:0.875rem"></span>' : '<span class="iconify" data-icon="material-symbols-light:storage" style="font-size:0.875rem"></span>', o = n ? "badge-warning" : s ? "badge-ghost" : "badge-info";
+      return this.renderSqlQueryEditor(t, r, !0, "query", "_showParsedQuery", a, i, o);
     },
     // Générer l'éditeur condition d'affichage (queries.main) pour les groupes
     renderGroupIfQueryEditor(t) {
       if (!t) return '<textarea class="textarea textarea-bordered w-full font-mono min-h-20 text-sm" placeholder="SELECT true"></textarea>';
       const e = ConfigManager.ensureGroupQueries(t);
       if (!e) return '<textarea class="textarea textarea-bordered w-full font-mono min-h-20 text-sm" placeholder="SELECT true"></textarea>';
-      const n = "ifquery-" + (t.id || "g"), s = (e.engine || "sql") === "js", a = s ? "return true;  // ou return false; pour masquer le groupe" : "SELECT true  -- ou SELECT false pour masquer le groupe", i = s ? "badge-warning" : "badge-info", o = s ? '<span class="iconify" data-icon="material-symbols-light:bolt" style="font-size:0.875rem"></span>' : '<span class="iconify" data-icon="material-symbols-light:storage" style="font-size:0.875rem"></span>', l = s ? "JavaScript" : "SQL";
-      return s ? `<div>
+      const n = "ifquery-" + (t.id || "g"), r = (e.engine || "sql") === "js", a = r ? "return true;  // ou return false; pour masquer le groupe" : "SELECT true  -- ou SELECT false pour masquer le groupe", i = r ? "badge-warning" : "badge-info", o = r ? '<span class="iconify" data-icon="material-symbols-light:bolt" style="font-size:0.875rem"></span>' : '<span class="iconify" data-icon="material-symbols-light:storage" style="font-size:0.875rem"></span>', l = r ? "JavaScript" : "SQL";
+      return r ? `<div>
                             <span class="badge badge-soft ${i} text-xs mb-2 flex items-center gap-1">${o} ${l}</span>
                             <textarea class="textarea textarea-bordered w-full font-mono min-h-20 p-3 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" 
                                 placeholder="${a}"></textarea>
@@ -10531,8 +10531,8 @@ return "Valeur"; // Pour input` : r ? "Saisir le texte (une ligne par option pou
       if (!t || !e) return;
       const n = ConfigManager.ensureGroupQueries(t);
       if (!n) return;
-      const s = (n.engine || "sql") === "js", a = s ? "return true;  // ou return false; pour masquer le groupe" : "SELECT true  -- ou SELECT false pour masquer le groupe", i = s ? "badge-warning" : "badge-info", o = s ? '<span class="iconify" data-icon="material-symbols-light:bolt" style="font-size:0.875rem"></span>' : '<span class="iconify" data-icon="material-symbols-light:storage" style="font-size:0.875rem"></span>', l = s ? "JavaScript" : "SQL";
-      if (t._cmEditor_ifQuery && (t._cmEditor_ifQuery.destroy(), t._cmEditor_ifQuery = null), s) {
+      const r = (n.engine || "sql") === "js", a = r ? "return true;  // ou return false; pour masquer le groupe" : "SELECT true  -- ou SELECT false pour masquer le groupe", i = r ? "badge-warning" : "badge-info", o = r ? '<span class="iconify" data-icon="material-symbols-light:bolt" style="font-size:0.875rem"></span>' : '<span class="iconify" data-icon="material-symbols-light:storage" style="font-size:0.875rem"></span>', l = r ? "JavaScript" : "SQL";
+      if (t._cmEditor_ifQuery && (t._cmEditor_ifQuery.destroy(), t._cmEditor_ifQuery = null), r) {
         e.innerHTML = `<div>
                             <span class="badge badge-soft ${i} text-xs mb-2 flex items-center gap-1">${o} ${l}</span>
                             <textarea class="textarea textarea-bordered w-full font-mono min-h-20 p-3 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" 
@@ -10568,8 +10568,8 @@ return "Valeur"; // Pour input` : r ? "Saisir le texte (une ligne par option pou
     // Générer le HTML de l'éditeur SQL partagé (unifié pour tous les types de requêtes)
     // queryType: 'query'|'query2' -> queryName: 'main'|'fallback'|'filename' selon le type de cellule
     // applySourceDefaultIfEmpty: si true et cell.type==='source', charge la requête par défaut du schéma à l'init si vide (placeholder reste simple)
-    renderSqlQueryEditor(t, e, n, r = "query", s = "_showParsedQuery", a = null, i = null, o = null, l = null, c = null, u = !1) {
-      const d = t._id, p = r === "query2" ? ConfigManager.getQuery2Name(t) : "main", m = ConfigManager.getQueryIndexByName(t, p), h = t[s], f = r === "query2" ? "_parseLevels2" : "_parseLevels", g = ConfigManager.getCellEngine(t, p), y = g === "js", v = g === "text";
+    renderSqlQueryEditor(t, e, n, s = "query", r = "_showParsedQuery", a = null, i = null, o = null, l = null, c = null, u = !1) {
+      const d = t._id, p = s === "query2" ? ConfigManager.getQuery2Name(t) : "main", m = ConfigManager.getQueryIndexByName(t, p), h = t[r], f = s === "query2" ? "_parseLevels2" : "_parseLevels", g = ConfigManager.getCellEngine(t, p), y = g === "js", v = g === "text";
       return `
                         <div>
                             <div class="relative w-full">
@@ -10579,7 +10579,7 @@ return "Valeur"; // Pour input` : r ? "Saisir le texte (une ligne par option pou
                                         ${this.devMode && !v ? `
                                             <label class="label cursor-pointer justify-start gap-2 py-0 min-h-0">
                                                 <input type="checkbox" class="toggle toggle-sm"
-                                                       x-model="cellItem.cell.${s}" />
+                                                       x-model="cellItem.cell.${r}" />
                                                 <span class="label-text text-xs">Parsé</span>
                                             </label>
                                         ` : ""}
@@ -10587,7 +10587,7 @@ return "Valeur"; // Pour input` : r ? "Saisir le texte (une ligne par option pou
                                     <div class="flex gap-1 items-center">
                                         ${!h && this.devMode && !v ? `
                                             <button 
-                                                @click="$store.templateModal.open('${d}', '${r}', '${g}')"
+                                                @click="$store.templateModal.open('${d}', '${s}', '${g}')"
                                                 class="px-2 py-1 border border-base-300 bg-base-200 text-base-content/70 rounded cursor-pointer text-xs transition-all hover:border-primary hover:text-base-content" 
                                                 title="Insérer un template ${y ? "JavaScript" : "SQL"}">
                                                 📋 Templates
@@ -10605,10 +10605,10 @@ return "Valeur"; // Pour input` : r ? "Saisir le texte (une ligne par option pou
                                         ` : ""}
                                         ${h ? "" : `
                                             <button 
-                                                x-ref="copyBtn_${d}_${r}"
+                                                x-ref="copyBtn_${d}_${s}"
                                                 @click="(() => {
                                                     const text = ConfigManager.getCellQuery(cellItem.cell, '${p}') || '';
-                                                    const btn = $refs['copyBtn_${d}_${r}'];
+                                                    const btn = $refs['copyBtn_${d}_${s}'];
                                                     if (!btn) return;
                                                     navigator.clipboard.writeText(text).then(() => {
                                                         const originalHTML = btn.innerHTML;
@@ -10662,12 +10662,12 @@ return "Valeur"; // Pour input` : r ? "Saisir le texte (une ligne par option pou
                                 ` : `
                                     <div 
                                         class="codemirror-sql-container"
-                                        id="cm-${d}-${r}"
-                                        x-ref="cm_${d}_${r}"
-                                        x-init="$nextTick(() => initCodeMirrorForCell(cellItem, '${d}', '${r}', '${p}', ${m}, ${u}, '${String(e || "").replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/\r/g, "\\r").replace(/\n/g, "\\n")}', typeof $root !== 'undefined' ? $root : null))"
+                                        id="cm-${d}-${s}"
+                                        x-ref="cm_${d}_${s}"
+                                        x-init="$nextTick(() => initCodeMirrorForCell(cellItem, '${d}', '${s}', '${p}', ${m}, ${u}, '${String(e || "").replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/\r/g, "\\r").replace(/\n/g, "\\n")}', typeof $root !== 'undefined' ? $root : null))"
                                         x-effect="(() => {
                                             const rawCell = (typeof Alpine !== 'undefined' && Alpine.raw) ? Alpine.raw(cellItem.cell) : cellItem.cell;
-                                            const editor = rawCell._cmEditor_${r};
+                                            const editor = rawCell._cmEditor_${s};
                                             if (editor && editor.state && document.body.contains(editor.dom)) {
                                                 const currentDoc = editor.state.doc.toString();
                                                 const cellValue = ConfigManager.getCellQuery(cellItem.cell, '${p}') || '';
@@ -10689,19 +10689,19 @@ return "Valeur"; // Pour input` : r ? "Saisir le texte (une ligne par option pou
     },
     // Rendu sécurisé de l'éditeur SQL : ne re-render que si les propriétés pertinentes changent
     // Cela évite que x-for ou d'autres effets Alpine ne détruisent les instances CodeMirror
-    safeRenderSqlEditor(t, e, n, r, s = "query", a = "_showParsedQuery", i = null, o = null, l = null, c = null, u = null, d = !1) {
-      const p = s === "query2" ? ConfigManager.getQuery2Name(e) : "main";
+    safeRenderSqlEditor(t, e, n, s, r = "query", a = "_showParsedQuery", i = null, o = null, l = null, c = null, u = null, d = !1) {
+      const p = r === "query2" ? ConfigManager.getQuery2Name(e) : "main";
       ConfigManager.getQueryIndexByName(e, p), ConfigManager.ensureCellQueries(e, p);
       const m = e[a], h = ConfigManager.getCellEngine(e, p), f = this.devMode, g = `${m ? "1" : "0"}_${h || "sql"}_${f ? "1" : "0"}`;
       if (t._sqlEditorKey === g && t.children.length > 0)
         return;
       t._sqlEditorKey = g;
-      const y = this.renderSqlQueryEditor(e, n, r, s, a, i, o, l, c, u, d);
+      const y = this.renderSqlQueryEditor(e, n, s, r, a, i, o, l, c, u, d);
       t.innerHTML = y, t._x_ignoreSelf = !0, Alpine.initTree(t), delete t._x_ignoreSelf;
     },
     // Version sécurisée pour l'éditeur uiParameter
     safeRenderUiParameterEditor(t, e) {
-      const n = e._showParsedQuery, r = ConfigManager.getCellEngine(e, 0), s = this.devMode, a = `${n ? "1" : "0"}_${r || "sql"}_${s ? "1" : "0"}`;
+      const n = e._showParsedQuery, s = ConfigManager.getCellEngine(e, 0), r = this.devMode, a = `${n ? "1" : "0"}_${s || "sql"}_${r ? "1" : "0"}`;
       if (t._sqlEditorKey === a && t.children.length > 0)
         return;
       t._sqlEditorKey = a;
@@ -10710,11 +10710,11 @@ return "Valeur"; // Pour input` : r ? "Saisir le texte (une ligne par option pou
     },
     // Générer l'éditeur pour les cellules markdown (SQL ou JS — requête qui retourne du markdown)
     renderMarkdownQueryEditor(t, e, n) {
-      const s = ConfigManager.getCellEngine(t, "main") === "js", a = s ? "return '## Titre\\n\\nContenu markdown';" : "SELECT '## Titre' as markdown", i = s ? "JavaScript" : "SQL", o = s ? '<span class="iconify" data-icon="material-symbols-light:bolt" style="font-size:0.875rem"></span>' : '<span class="iconify" data-icon="material-symbols-light:storage" style="font-size:0.875rem"></span>', l = s ? "badge-warning" : "badge-info";
+      const r = ConfigManager.getCellEngine(t, "main") === "js", a = r ? "return '## Titre\\n\\nContenu markdown';" : "SELECT '## Titre' as markdown", i = r ? "JavaScript" : "SQL", o = r ? '<span class="iconify" data-icon="material-symbols-light:bolt" style="font-size:0.875rem"></span>' : '<span class="iconify" data-icon="material-symbols-light:storage" style="font-size:0.875rem"></span>', l = r ? "badge-warning" : "badge-info";
       return this.renderSqlQueryEditor(t, a, !0, "query", "_showParsedQuery", i, o, l, e, n);
     },
     // Init CodeMirror pour une cellule (appelé depuis x-init pour éviter erreurs de parsing Alpine)
-    async initCodeMirrorForCell(t, e, n, r, s, a, i, o) {
+    async initCodeMirrorForCell(t, e, n, s, r, a, i, o) {
       var d, p, m, h, f, g, y, v, w, _;
       const l = document.getElementById("cm-" + e + "-" + n);
       if (!l) return;
@@ -10725,10 +10725,10 @@ return "Valeur"; // Pour input` : r ? "Saisir le texte (une ligne par option pou
         else return;
       try {
         await CDNManager.loadCodeMirrorSQL();
-        let S = ConfigManager.getCellQuery(t.cell, r) || "";
+        let S = ConfigManager.getCellQuery(t.cell, s) || "";
         if (a && !S.trim() && t.cell.type === "source") {
-          const E = ((f = (h = (m = (p = (d = CELL_TYPE_SCHEMAS == null ? void 0 : CELL_TYPE_SCHEMAS.types) == null ? void 0 : d.source) == null ? void 0 : p.defaults) == null ? void 0 : m.queries) == null ? void 0 : h.find((I) => I.name === r)) == null ? void 0 : f.sql) ?? ((_ = (w = (v = (y = (g = CELL_TYPE_SCHEMAS == null ? void 0 : CELL_TYPE_SCHEMAS.types) == null ? void 0 : g.source) == null ? void 0 : y.defaults) == null ? void 0 : v.queries) == null ? void 0 : w[s]) == null ? void 0 : _.sql);
-          E && (S = E.replace(/\{name\}/g, t.cell.name || "source1"), ConfigManager.setCellQuery(t.cell, r, S));
+          const E = ((f = (h = (m = (p = (d = CELL_TYPE_SCHEMAS == null ? void 0 : CELL_TYPE_SCHEMAS.types) == null ? void 0 : d.source) == null ? void 0 : p.defaults) == null ? void 0 : m.queries) == null ? void 0 : h.find((I) => I.name === s)) == null ? void 0 : f.sql) ?? ((_ = (w = (v = (y = (g = CELL_TYPE_SCHEMAS == null ? void 0 : CELL_TYPE_SCHEMAS.types) == null ? void 0 : g.source) == null ? void 0 : y.defaults) == null ? void 0 : v.queries) == null ? void 0 : w[r]) == null ? void 0 : _.sql);
+          E && (S = E.replace(/\{name\}/g, t.cell.name || "source1"), ConfigManager.setCellQuery(t.cell, s, S));
         }
         const b = {}, x = (o && o._x_dataStack ? o._x_dataStack[0] : o) || null;
         if (x && x.tablesData)
@@ -10737,41 +10737,41 @@ return "Valeur"; // Pour input` : r ? "Saisir le texte (une ligne par option pou
         c["_cmEditor_" + n] = CDNManager.createSqlEditor(
           l,
           S,
-          (E) => ConfigManager.setCellQuery(t.cell, r, E),
+          (E) => ConfigManager.setCellQuery(t.cell, s, E),
           { schema: b, dialect: "duckdb" }
         );
       } catch (S) {
         console.error("Erreur init CodeMirror:", S);
         const b = String(i || "").replace(/\\/g, "\\\\").replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/'/g, "\\'").replace(/"/g, "&quot;");
-        l.innerHTML = '<textarea class="textarea textarea-bordered w-full font-mono min-h-20 p-3 resize-y text-sm" x-model="cellItem.cell.queries[' + s + '].sql" placeholder="' + b + '"></textarea>';
+        l.innerHTML = '<textarea class="textarea textarea-bordered w-full font-mono min-h-20 p-3 resize-y text-sm" x-model="cellItem.cell.queries[' + r + '].sql" placeholder="' + b + '"></textarea>';
       }
     },
     // Version sécurisée pour l'éditeur markdown (sql/js)
-    safeRenderMarkdownQueryEditor(t, e, n, r) {
-      const s = e._showParsedQuery, a = ConfigManager.getCellEngine(e, "main"), i = this.devMode, o = `md_${s ? "1" : "0"}_${a || "sql"}_${i ? "1" : "0"}`;
+    safeRenderMarkdownQueryEditor(t, e, n, s) {
+      const r = e._showParsedQuery, a = ConfigManager.getCellEngine(e, "main"), i = this.devMode, o = `md_${r ? "1" : "0"}_${a || "sql"}_${i ? "1" : "0"}`;
       if (t._sqlEditorKey === o && t.children.length > 0) return;
       t._sqlEditorKey = o;
-      const l = this.renderMarkdownQueryEditor(e, n, r);
+      const l = this.renderMarkdownQueryEditor(e, n, s);
       t.innerHTML = l, t._x_ignoreSelf = !0, Alpine.initTree(t), delete t._x_ignoreSelf;
     },
     // Générer l'éditeur pour les cellules iframe (SQL, JS ou Texte)
     renderIframeEditor(t, e, n) {
-      const r = ConfigManager.getCellEngine(t, 0), s = r === "js", a = r === "text", i = s ? "return '<html><body><h1>Hello</h1></body></html>';" : a ? "<html><body><h1>Hello</h1></body></html>" : "SELECT '<html><body><h1>Hello</h1></body></html>' as html", o = s ? "JavaScript" : a ? "Texte" : "SQL", l = s ? '<span class="iconify" data-icon="material-symbols-light:bolt" style="font-size:0.875rem"></span>' : a ? '<span class="iconify" data-icon="material-symbols-light:article" style="font-size:0.875rem"></span>' : '<span class="iconify" data-icon="material-symbols-light:storage" style="font-size:0.875rem"></span>', c = s ? "badge-warning" : a ? "badge-ghost" : "badge-info";
+      const s = ConfigManager.getCellEngine(t, 0), r = s === "js", a = s === "text", i = r ? "return '<html><body><h1>Hello</h1></body></html>';" : a ? "<html><body><h1>Hello</h1></body></html>" : "SELECT '<html><body><h1>Hello</h1></body></html>' as html", o = r ? "JavaScript" : a ? "Texte" : "SQL", l = r ? '<span class="iconify" data-icon="material-symbols-light:bolt" style="font-size:0.875rem"></span>' : a ? '<span class="iconify" data-icon="material-symbols-light:article" style="font-size:0.875rem"></span>' : '<span class="iconify" data-icon="material-symbols-light:storage" style="font-size:0.875rem"></span>', c = r ? "badge-warning" : a ? "badge-ghost" : "badge-info";
       return this.renderSqlQueryEditor(t, i, !0, "query", "_showParsedQuery", o, l, c, e, n);
     },
     // Version sécurisée pour l'éditeur iframe
-    safeRenderIframeEditor(t, e, n, r) {
-      const s = e._showParsedQuery, a = ConfigManager.getCellEngine(e, 0), i = this.devMode, o = `iframe_${s ? "1" : "0"}_${a || "sql"}_${i ? "1" : "0"}`;
+    safeRenderIframeEditor(t, e, n, s) {
+      const r = e._showParsedQuery, a = ConfigManager.getCellEngine(e, 0), i = this.devMode, o = `iframe_${r ? "1" : "0"}_${a || "sql"}_${i ? "1" : "0"}`;
       if (t._sqlEditorKey === o && t.children.length > 0)
         return;
       t._sqlEditorKey = o;
-      const l = this.renderIframeEditor(e, n, r);
+      const l = this.renderIframeEditor(e, n, s);
       t.innerHTML = l, t._x_ignoreSelf = !0, Alpine.initTree(t), delete t._x_ignoreSelf;
     },
     // Insérer un template (SQL ou JS) dans une cellule
-    insertTemplate(t, e, n, r = "sql") {
-      if (r === "text") return;
-      const s = typeof Alpine < "u" && Alpine.raw ? Alpine.raw(Alpine.store("templateModal")) : Alpine.store("templateModal"), a = r === "js" ? s.jsTemplates : s.sqlTemplates, i = (m) => {
+    insertTemplate(t, e, n, s = "sql") {
+      if (s === "text") return;
+      const r = typeof Alpine < "u" && Alpine.raw ? Alpine.raw(Alpine.store("templateModal")) : Alpine.store("templateModal"), a = s === "js" ? r.jsTemplates : r.sqlTemplates, i = (m) => {
         for (const h of m) {
           for (const f of h.cells || [])
             if (f._id === t)
@@ -10821,20 +10821,20 @@ function exportImportMixin() {
         this.showGistTokenModal = !0;
         return;
       }
-      const e = /* @__PURE__ */ new Date(), n = e.toISOString().slice(0, 10).replace(/-/g, ""), r = e.toTimeString().slice(0, 8).replace(/:/g, ""), s = `sqljob_${n}_${r}`;
+      const e = /* @__PURE__ */ new Date(), n = e.toISOString().slice(0, 10).replace(/-/g, ""), s = e.toTimeString().slice(0, 8).replace(/:/g, ""), r = `sqljob_${n}_${s}`;
       this.exportModal.show = !1, this.$nextTick(() => {
-        this.exportModal.type = t, this.exportModal.fileName = s, this.exportModal.description = "sqljob Notebook Configuration", this.exportModal.devMode = !1, this.exportModal.showLayout = this.showLayout, this.exportModal.encryptGist = !1, this.exportModal.gistPassphrase = "", this.exportModal.show = !0;
+        this.exportModal.type = t, this.exportModal.fileName = r, this.exportModal.description = "sqljob Notebook Configuration", this.exportModal.devMode = !1, this.exportModal.showLayout = this.showLayout, this.exportModal.encryptGist = !1, this.exportModal.gistPassphrase = "", this.exportModal.show = !0;
       });
     },
     async executeExport() {
-      const t = this.exportModal.type, e = this.exportModal.fileName || "notebook-config.json", n = this.exportModal.description || "sqljob Notebook Configuration", r = this.exportModal.devMode, s = this.exportModal.showLayout;
+      const t = this.exportModal.type, e = this.exportModal.fileName || "notebook-config.json", n = this.exportModal.description || "sqljob Notebook Configuration", s = this.exportModal.devMode, r = this.exportModal.showLayout;
       this.exportModal.show = !1;
       try {
         this.isLoading = !0;
         const a = t === "gist" || t === "json" || t === "base64", i = await ConfigManager.buildConfigFromState(
           this.pages,
-          r,
           s,
+          r,
           a,
           this.currentTheme,
           this.dbEngine,
@@ -10885,7 +10885,7 @@ function exportImportMixin() {
     },
     async exportHTMLWithConfig(t, e = "index.sqljob.html", n = null) {
       var l;
-      const r = [], s = [];
+      const s = [], r = [];
       if (document.querySelector("sqljob-app")) {
         let c = "";
         const u = async (f, g = []) => {
@@ -10893,12 +10893,12 @@ function exportImportMixin() {
             const v = f.cells[y];
             if (v.type === "source" && v._currentFile && v._fileName) {
               const w = v.name.replace(/[^a-zA-Z0-9_]/g, "_"), _ = await v._currentFile.arrayBuffer(), S = await FileHandler.compressGzip(_), b = FileHandler.arrayBufferToBase64(S);
-              n ? r.push({ id: `sourceFile_${w}`, sourceName: v.name, fileName: v._fileName, base64: b }) : c += `    <script type="application/octet-stream" id="sourceFile_${w}" data-source-name="${v.name}" data-file-name="${v._fileName}">${b}<\/script>
+              n ? s.push({ id: `sourceFile_${w}`, sourceName: v.name, fileName: v._fileName, base64: b }) : c += `    <script type="application/octet-stream" id="sourceFile_${w}" data-source-name="${v.name}" data-file-name="${v._fileName}">${b}<\/script>
 `;
             }
             if (v.type === "publipostageWord" && v.docxTemplateBase64 && v.docxTemplateFileName) {
               const w = [...g, y].join("_"), _ = `docxTemplate_${w}`, S = FileHandler.base64ToUint8Array(v.docxTemplateBase64), b = await FileHandler.compressGzip(S.buffer || S), x = FileHandler.arrayBufferToBase64(b);
-              n ? s.push({ id: _, cellPath: w, fileName: v.docxTemplateFileName, base64: x, compressed: !0 }) : c += `    <script type="application/octet-stream" id="${_}" data-cell-path="${w}" data-file-name="${v.docxTemplateFileName}" data-compressed="true">${x}<\/script>
+              n ? r.push({ id: _, cellPath: w, fileName: v.docxTemplateFileName, base64: x, compressed: !0 }) : c += `    <script type="application/octet-stream" id="${_}" data-cell-path="${w}" data-file-name="${v.docxTemplateFileName}" data-compressed="true">${x}<\/script>
 `;
             }
           }
@@ -10913,7 +10913,7 @@ function exportImportMixin() {
         }
         let d;
         if (n) {
-          const f = { config: t, sourceFiles: r, docxTemplates: s };
+          const f = { config: t, sourceFiles: s, docxTemplates: r };
           let g;
           try {
             g = JSON.stringify(f);
@@ -10956,7 +10956,7 @@ ${d}${c}</head>
           if (p.type === "source" && p._currentFile && p._fileName) {
             const m = p.name.replace(/[^a-zA-Z0-9_]/g, "_"), h = await p._currentFile.arrayBuffer(), f = await FileHandler.compressGzip(h), g = FileHandler.arrayBufferToBase64(f);
             if (n)
-              r.push({ id: `sourceFile_${m}`, sourceName: p.name, fileName: p._fileName, base64: g });
+              s.push({ id: `sourceFile_${m}`, sourceName: p.name, fileName: p._fileName, base64: g });
             else {
               document.querySelectorAll(`script[id^="sourceFile_${m}"]`).forEach((v) => v.remove());
               const y = document.createElement("script");
@@ -10970,7 +10970,7 @@ ${d}${c}</head>
             const m = [...u, d].join("_"), h = `docxTemplate_${m}`;
             if (n) {
               const f = FileHandler.base64ToUint8Array(p.docxTemplateBase64), g = await FileHandler.compressGzip(f.buffer || f), y = FileHandler.arrayBufferToBase64(g);
-              s.push({ id: h, cellPath: m, fileName: p.docxTemplateFileName, base64: y, compressed: !0 });
+              r.push({ id: h, cellPath: m, fileName: p.docxTemplateFileName, base64: y, compressed: !0 });
             } else {
               document.querySelectorAll(`script[id="${h}"]`).forEach((w) => w.remove());
               const f = FileHandler.base64ToUint8Array(p.docxTemplateBase64), g = await FileHandler.compressGzip(f.buffer || f), y = FileHandler.arrayBufferToBase64(g), v = document.createElement("script");
@@ -10993,7 +10993,7 @@ ${d}${c}</head>
       }
       let i;
       if (n) {
-        const c = { config: t, sourceFiles: r, docxTemplates: s };
+        const c = { config: t, sourceFiles: s, docxTemplates: r };
         let u;
         try {
           u = JSON.stringify(c);
@@ -11054,12 +11054,12 @@ ${d}${c}</head>
       const e = t.target.files[0];
       if (e)
         try {
-          const n = await e.text(), r = JSON.parse(n);
-          if (t.target.value = "", GistEncrypt.isEncrypted(r)) {
-            this._pendingEncryptedJson = r, this.showJsonPassphraseModal = !0, this.jsonPassphrase = "", this.jsonPassphraseError = "";
+          const n = await e.text(), s = JSON.parse(n);
+          if (t.target.value = "", GistEncrypt.isEncrypted(s)) {
+            this._pendingEncryptedJson = s, this.showJsonPassphraseModal = !0, this.jsonPassphrase = "", this.jsonPassphraseError = "";
             return;
           }
-          await this.applyImportedConfig(r);
+          await this.applyImportedConfig(s);
         } catch (n) {
           this.setStatus("Erreur import: " + n.message, "error");
         }
@@ -11114,7 +11114,7 @@ ${d}${c}</head>
           return _._order = ConfigManager.normalizeOrder(v.order, w), _;
         })), y;
       };
-      let r = (((i = t.job) == null ? void 0 : i.pages) || []).map((f, g) => {
+      let s = (((i = t.job) == null ? void 0 : i.pages) || []).map((f, g) => {
         const y = (f.groups || []).map((_, S) => n(_, S)), v = y.filter((_) => _._type === "core"), w = y.filter((_) => _._type === "link");
         return {
           _id: f.id || this.generatePageId(),
@@ -11123,14 +11123,14 @@ ${d}${c}</head>
           linkGroups: w
         };
       });
-      r.length === 0 && (r = [{
+      s.length === 0 && (s = [{
         _id: this.generatePageId(),
         name: "Feuille 1",
         groups: [],
         linkGroups: []
-      }]), this.pages = r, this.activePageIndex = 0, this._pagesInitialized.clear(), this.ensureAllCellsHaveNames(), await this.loadPendingSourceFiles(), await this.evaluateAllGroupIfQueries(), await this.runAllGroups(), this.pages[0] && this._pagesInitialized.add(this.pages[0]._id), this.$nextTick(() => setTimeout(() => this.refreshMarkdownCellsForPage(0), 300));
-      const s = (o = t.ui) == null ? void 0 : o.dbEngine;
-      s && s !== this.dbEngine && await this.switchDbEngine(s), ((l = t.ui) == null ? void 0 : l.directedAcyclicGraph) !== void 0 && (this.directedAcyclicGraph = t.ui.directedAcyclicGraph === !0), ((c = t.ui) == null ? void 0 : c.devMode) !== void 0 && (this.devMode = t.ui.devMode !== !1), (((u = t.ui) == null ? void 0 : u.showLayout) !== void 0 || ((d = t.ui) == null ? void 0 : d.displaySettings) !== void 0) && (this.showLayout = (((p = t.ui) == null ? void 0 : p.showLayout) ?? ((m = t.ui) == null ? void 0 : m.displaySettings)) !== !1);
+      }]), this.pages = s, this.activePageIndex = 0, this._pagesInitialized.clear(), this.ensureAllCellsHaveNames(), await this.loadPendingSourceFiles(), await this.evaluateAllGroupIfQueries(), await this.runAllGroups(), this.pages[0] && this._pagesInitialized.add(this.pages[0]._id), this.$nextTick(() => setTimeout(() => this.refreshMarkdownCellsForPage(0), 300));
+      const r = (o = t.ui) == null ? void 0 : o.dbEngine;
+      r && r !== this.dbEngine && await this.switchDbEngine(r), ((l = t.ui) == null ? void 0 : l.directedAcyclicGraph) !== void 0 && (this.directedAcyclicGraph = t.ui.directedAcyclicGraph === !0), ((c = t.ui) == null ? void 0 : c.devMode) !== void 0 && (this.devMode = t.ui.devMode !== !1), (((u = t.ui) == null ? void 0 : u.showLayout) !== void 0 || ((d = t.ui) == null ? void 0 : d.displaySettings) !== void 0) && (this.showLayout = (((p = t.ui) == null ? void 0 : p.showLayout) ?? ((m = t.ui) == null ? void 0 : m.displaySettings)) !== !1);
       const a = (h = t.ui) == null ? void 0 : h.theme;
       a && this.availableThemes.includes(a) && this.setTheme(a), this.setStatus("Configuration chargée", "success");
     }
@@ -11169,8 +11169,8 @@ function notebookApp$1() {
       return P._order = ConfigManager.normalizeOrder(I.order, T), P;
     })), E;
   };
-  let r = [];
-  r = (((h = t.job) == null ? void 0 : h.pages) || []).map((S, b) => {
+  let s = [];
+  s = (((h = t.job) == null ? void 0 : h.pages) || []).map((S, b) => {
     const x = (S.groups || []).map((T, P) => n(T, P)), E = x.filter((T) => T._type === "core"), I = x.filter((T) => T._type === "link");
     return {
       _id: S.id || ConfigManager.generatePageId(),
@@ -11178,13 +11178,13 @@ function notebookApp$1() {
       groups: E,
       linkGroups: I
     };
-  }), r.length === 0 && (r = [{
+  }), s.length === 0 && (s = [{
     _id: ConfigManager.generatePageId(),
     name: "Feuille 1",
     groups: [],
     linkGroups: []
   }]);
-  const s = ((f = t.ui) == null ? void 0 : f.devMode) !== !1, a = (((g = t.ui) == null ? void 0 : g.showLayout) ?? ((y = t.ui) == null ? void 0 : y.displaySettings)) !== !1, i = [
+  const r = ((f = t.ui) == null ? void 0 : f.devMode) !== !1, a = (((g = t.ui) == null ? void 0 : g.showLayout) ?? ((y = t.ui) == null ? void 0 : y.displaySettings)) !== !1, i = [
     "light",
     "dark",
     "cupcake",
@@ -11224,12 +11224,12 @@ function notebookApp$1() {
   const m = ((_ = t.ui) == null ? void 0 : _.directedAcyclicGraph) === !0;
   return {
     // ─── État principal ────────────────────────────────────────────────
-    pages: r,
+    pages: s,
     activePageIndex: 0,
     isLoading: !1,
     status: "",
     statusType: "",
-    devMode: s,
+    devMode: r,
     showLayout: a,
     availableThemes: i,
     currentTheme: c,

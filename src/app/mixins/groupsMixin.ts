@@ -496,27 +496,27 @@ FROM source1 LIMIT 10;`;
                                 <button class="btn btn-xs join-item" @click="toggleGroupDirection(${pathJSON})" :title="getGroupAtPath(${pathJSON})?.direction === 'column' ? 'Passer en ligne' : 'Passer en colonne'">
                                     <span x-text="getGroupAtPath(${pathJSON})?.direction === 'column' ? '⇵' : '⇄'"></span>
                                 </button>
-                                <button class="btn btn-xs join-item" :class="getGroupAtPath(${pathJSON})?.loop?.enabled ? 'btn-info' : ''" @click="openLoopConfigModal(${pathJSON})" title="Configurer la boucle">🔁</button>
-                                <button class="btn btn-xs join-item" :class="getGroupAtPath(${pathJSON})?.accordion ? 'btn-accent' : ''" @click="openGroupSettingsModal(${pathJSON})" title="Paramètres du groupe">⚙️</button>
-                                <button class="btn btn-xs btn-success join-item" @click="runGroupAtPath(${pathJSON})" :disabled="isLoading" title="Exécuter">▶️</button>
-                                <button class="btn btn-xs join-item" @click="moveItemInGroup(${parentPathJSON}, 'child', ${originalIndex}, -1)" :disabled="isFirstInGroup(getGroupAtPath(${parentPathJSON}), 'child', ${originalIndex})" title="Monter">⬆️</button>
-                                <button class="btn btn-xs join-item" @click="moveItemInGroup(${parentPathJSON}, 'child', ${originalIndex}, 1)" :disabled="isLastInGroup(getGroupAtPath(${parentPathJSON}), 'child', ${originalIndex})" title="Descendre">⬇️</button>
-                                <button class="btn btn-xs join-item" @click="addNestedGroup(${pathJSON})" title="Ajouter un sous-groupe">📁</button>
-                                <button class="btn btn-xs join-item" @click="openAddCellToGroupModal(${pathJSON})" title="Ajouter une cellule">➕</button>
-                                <button class="btn btn-xs btn-error join-item" @click="deleteGroupAtPath(${pathJSON})" title="Supprimer">🗑️</button>
+                                <button class="btn btn-xs join-item" :class="getGroupAtPath(${pathJSON})?.loop?.enabled ? 'btn-info' : ''" @click="openLoopConfigModal(${pathJSON})" title="Configurer la boucle"><span class="iconify" data-icon="material-symbols-light:loop" style="font-size:1rem"></span></button>
+                                <button class="btn btn-xs join-item" :class="getGroupAtPath(${pathJSON})?.accordion ? 'btn-accent' : ''" @click="openGroupSettingsModal(${pathJSON})" title="Paramètres du groupe"><span class="iconify" data-icon="material-symbols-light:settings" style="font-size:1rem"></span></button>
+                                <button class="btn btn-xs btn-success join-item" @click="runGroupAtPath(${pathJSON})" :disabled="isLoading" title="Exécuter"><span class="iconify" data-icon="material-symbols-light:play-arrow" style="font-size:1rem"></span></button>
+                                <button class="btn btn-xs join-item" @click="moveItemInGroup(${parentPathJSON}, 'child', ${originalIndex}, -1)" :disabled="isFirstInGroup(getGroupAtPath(${parentPathJSON}), 'child', ${originalIndex})" title="Monter"><span class="iconify" data-icon="material-symbols-light:arrow-upward" style="font-size:1rem"></span></button>
+                                <button class="btn btn-xs join-item" @click="moveItemInGroup(${parentPathJSON}, 'child', ${originalIndex}, 1)" :disabled="isLastInGroup(getGroupAtPath(${parentPathJSON}), 'child', ${originalIndex})" title="Descendre"><span class="iconify" data-icon="material-symbols-light:arrow-downward" style="font-size:1rem"></span></button>
+                                <button class="btn btn-xs join-item" @click="addNestedGroup(${pathJSON})" title="Ajouter un sous-groupe"><span class="iconify" data-icon="material-symbols-light:create-new-folder" style="font-size:1rem"></span></button>
+                                <button class="btn btn-xs join-item" @click="openAddCellToGroupModal(${pathJSON})" title="Ajouter une cellule"><span class="iconify" data-icon="material-symbols-light:add" style="font-size:1rem"></span></button>
+                                <button class="btn btn-xs btn-error join-item" @click="deleteGroupAtPath(${pathJSON})" title="Supprimer"><span class="iconify" data-icon="material-symbols-light:delete" style="font-size:1rem"></span></button>
                             </div>
                             <div class="dropdown dropdown hidden">
-                                <div tabindex="0" role="button" class="btn btn-xs">⋮</div>
+                                <div tabindex="0" role="button" class="btn btn-xs"><span class="iconify" data-icon="material-symbols-light:more-vert" style="font-size:1rem"></span></div>
                                 <ul tabindex="-1" class="dropdown-content menu menu-xs bg-base-100 rounded-box z-[1] w-48 p-2 shadow-sm">
                                     <li><button @click="toggleGroupDirection(${pathJSON})"><span x-text="getGroupAtPath(${pathJSON})?.direction === 'column' ? '⇵ Passer en ligne' : '⇄ Passer en colonne'"></span></button></li>
-                                    <li><button @click="openLoopConfigModal(${pathJSON})">🔁 Configurer la boucle</button></li>
-                                    <li><button @click="openGroupSettingsModal(${pathJSON})">⚙️ Paramètres du groupe</button></li>
-                                    <li><button @click="runGroupAtPath(${pathJSON})" :disabled="isLoading">▶️ Exécuter</button></li>
-                                    <li><button @click="moveItemInGroup(${parentPathJSON}, 'child', ${originalIndex}, -1)" :disabled="isFirstInGroup(getGroupAtPath(${parentPathJSON}), 'child', ${originalIndex})">⬆️ Monter</button></li>
-                                    <li><button @click="moveItemInGroup(${parentPathJSON}, 'child', ${originalIndex}, 1)" :disabled="isLastInGroup(getGroupAtPath(${parentPathJSON}), 'child', ${originalIndex})">⬇️ Descendre</button></li>
-                                    <li><button @click="addNestedGroup(${pathJSON})">📁 Ajouter un sous-groupe</button></li>
-                                    <li><button @click="openAddCellToGroupModal(${pathJSON})">➕ Ajouter une cellule</button></li>
-                                    <li><button class="text-error" @click="deleteGroupAtPath(${pathJSON})">🗑️ Supprimer</button></li>
+                                    <li><button @click="openLoopConfigModal(${pathJSON})"><span class="iconify" data-icon="material-symbols-light:loop" style="font-size:1rem"></span> Configurer la boucle</button></li>
+                                    <li><button @click="openGroupSettingsModal(${pathJSON})"><span class="iconify" data-icon="material-symbols-light:settings" style="font-size:1rem"></span> Paramètres du groupe</button></li>
+                                    <li><button @click="runGroupAtPath(${pathJSON})" :disabled="isLoading"><span class="iconify" data-icon="material-symbols-light:play-arrow" style="font-size:1rem"></span> Exécuter</button></li>
+                                    <li><button @click="moveItemInGroup(${parentPathJSON}, 'child', ${originalIndex}, -1)" :disabled="isFirstInGroup(getGroupAtPath(${parentPathJSON}), 'child', ${originalIndex})"><span class="iconify" data-icon="material-symbols-light:arrow-upward" style="font-size:1rem"></span> Monter</button></li>
+                                    <li><button @click="moveItemInGroup(${parentPathJSON}, 'child', ${originalIndex}, 1)" :disabled="isLastInGroup(getGroupAtPath(${parentPathJSON}), 'child', ${originalIndex})"><span class="iconify" data-icon="material-symbols-light:arrow-downward" style="font-size:1rem"></span> Descendre</button></li>
+                                    <li><button @click="addNestedGroup(${pathJSON})"><span class="iconify" data-icon="material-symbols-light:create-new-folder" style="font-size:1rem"></span> Ajouter un sous-groupe</button></li>
+                                    <li><button @click="openAddCellToGroupModal(${pathJSON})"><span class="iconify" data-icon="material-symbols-light:add" style="font-size:1rem"></span> Ajouter une cellule</button></li>
+                                    <li><button class="text-error" @click="deleteGroupAtPath(${pathJSON})"><span class="iconify" data-icon="material-symbols-light:delete" style="font-size:1rem"></span> Supprimer</button></li>
                                 </ul>
                             </div>
                         </div>`;
