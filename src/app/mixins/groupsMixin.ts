@@ -494,7 +494,7 @@ FROM source1 LIMIT 10;`;
                         <div class="flex items-center justify-between gap-2 py-2 px-4 bg-primary/10 border-b border-base-300" x-show="devMode">
                             <div class="join">
                                 <button class="btn btn-xs join-item" @click="toggleGroupDirection(${pathJSON})" :title="getGroupAtPath(${pathJSON})?.direction === 'column' ? 'Passer en ligne' : 'Passer en colonne'">
-                                    <span x-text="getGroupAtPath(${pathJSON})?.direction === 'column' ? '⇵' : '⇄'"></span>
+                                    <span class="iconify" :data-icon="getGroupAtPath(${pathJSON})?.direction === 'column' ? 'material-symbols-light:swap-vert' : 'material-symbols-light:swap-horiz'" style="font-size:1rem"></span>
                                 </button>
                                 <button class="btn btn-xs join-item" :class="getGroupAtPath(${pathJSON})?.loop?.enabled ? 'btn-info' : ''" @click="openLoopConfigModal(${pathJSON})" title="Configurer la boucle"><span class="iconify" data-icon="material-symbols-light:autorenew" style="font-size:1rem"></span></button>
                                 <button class="btn btn-xs join-item" :class="getGroupAtPath(${pathJSON})?.accordion ? 'btn-accent' : ''" @click="openGroupSettingsModal(${pathJSON})" title="Paramètres du groupe"><span class="iconify" data-icon="material-symbols-light:settings" style="font-size:1rem"></span></button>
@@ -508,7 +508,7 @@ FROM source1 LIMIT 10;`;
                             <div class="dropdown dropdown hidden">
                                 <div tabindex="0" role="button" class="btn btn-xs"><span class="iconify" data-icon="material-symbols-light:more-vert" style="font-size:1rem"></span></div>
                                 <ul tabindex="-1" class="dropdown-content menu menu-xs bg-base-100 rounded-box z-[1] w-48 p-2 shadow-sm">
-                                    <li><button @click="toggleGroupDirection(${pathJSON})"><span x-text="getGroupAtPath(${pathJSON})?.direction === 'column' ? '⇵ Passer en ligne' : '⇄ Passer en colonne'"></span></button></li>
+                                    <li><button @click="toggleGroupDirection(${pathJSON})"><span class="iconify" :data-icon="getGroupAtPath(${pathJSON})?.direction === 'column' ? 'material-symbols-light:swap-vert' : 'material-symbols-light:swap-horiz'" style="font-size:1rem"></span> <span x-text="getGroupAtPath(${pathJSON})?.direction === 'column' ? 'Passer en ligne' : 'Passer en colonne'"></span></button></li>
                                     <li><button @click="openLoopConfigModal(${pathJSON})"><span class="iconify" data-icon="material-symbols-light:autorenew" style="font-size:1rem"></span> Configurer la boucle</button></li>
                                     <li><button @click="openGroupSettingsModal(${pathJSON})"><span class="iconify" data-icon="material-symbols-light:settings" style="font-size:1rem"></span> Paramètres du groupe</button></li>
                                     <li><button @click="runGroupAtPath(${pathJSON})" :disabled="isLoading"><span class="iconify" data-icon="material-symbols-light:play-arrow" style="font-size:1rem"></span> Exécuter</button></li>

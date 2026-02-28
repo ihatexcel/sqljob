@@ -234,7 +234,7 @@ export function generateAppHTML() {
                     <div class="flex items-center justify-between gap-2 py-2 px-4 bg-primary/10 border-b border-base-300" x-show="devMode">
                         <div class="join">
                             <button class="btn btn-xs join-item" @click="toggleGroupDirection(item.path)" :title="item.group.direction === 'column' ? 'Passer en ligne' : 'Passer en colonne'">
-                                <span x-text="item.group.direction === 'column' ? '⇵' : '⇄'"></span>
+                                <span class="iconify" :data-icon="item.group.direction === 'column' ? 'material-symbols-light:swap-vert' : 'material-symbols-light:swap-horiz'" style="font-size:1rem"></span>
                             </button>
                             <button class="btn btn-xs join-item" :class="item.group.loop?.enabled ? 'btn-info' : ''" @click="openLoopConfigModal(item.path)" title="Configurer la boucle"><span class="iconify" data-icon="material-symbols-light:autorenew" style="font-size:1rem"></span></button>
                             <button class="btn btn-xs join-item" :class="item.group.accordion ? 'btn-accent' : ''" @click="openGroupSettingsModal(item.path)" title="Paramètres du groupe"><span class="iconify" data-icon="material-symbols-light:settings" style="font-size:1rem"></span></button>
@@ -248,7 +248,7 @@ export function generateAppHTML() {
                         <div class="dropdown hidden">
                             <div tabindex="0" role="button" class="btn btn-xs"><span class="iconify" data-icon="material-symbols-light:more-vert" style="font-size:1rem"></span></div>
                             <ul tabindex="-1" class="dropdown-content menu menu-xs bg-base-100 rounded-box z-[1] w-48 p-2 shadow-sm">
-                                <li><button @click="toggleGroupDirection(item.path)"><span x-text="item.group.direction === 'column' ? '⇵ Passer en ligne' : '⇄ Passer en colonne'"></span></button></li>
+                                <li><button @click="toggleGroupDirection(item.path)"><span class="iconify" :data-icon="item.group.direction === 'column' ? 'material-symbols-light:swap-vert' : 'material-symbols-light:swap-horiz'" style="font-size:1rem"></span> <span x-text="item.group.direction === 'column' ? 'Passer en ligne' : 'Passer en colonne'"></span></button></li>
                                 <li><button @click="openLoopConfigModal(item.path)"><span class="iconify" data-icon="material-symbols-light:autorenew" style="font-size:1rem"></span> Configurer la boucle</button></li>
                                 <li><button @click="openGroupSettingsModal(item.path)"><span class="iconify" data-icon="material-symbols-light:settings" style="font-size:1rem"></span> Paramètres du groupe</button></li>
                                 <li><button @click="runGroupAtPath(item.path)" :disabled="isLoading"><span class="iconify" data-icon="material-symbols-light:play-arrow" style="font-size:1rem"></span> Exécuter</button></li>
@@ -870,7 +870,7 @@ export function generateAppHTML() {
                                 <div class="join">
                                     <button class="btn btn-xs join-item" @click="childGroupModal.group.direction = childGroupModal.group.direction === 'column' ? 'row' : 'column'" 
                                             :title="childGroupModal.group.direction === 'column' ? 'Passer en ligne' : 'Passer en colonne'">
-                                        <span x-text="childGroupModal.group.direction === 'column' ? '↕️' : '↔️'"></span>
+                                        <span class="iconify" :data-icon="childGroupModal.group.direction === 'column' ? 'material-symbols-light:swap-vert' : 'material-symbols-light:swap-horiz'" style="font-size:1rem"></span>
                                     </button>
                                     <button class="btn btn-xs btn-success join-item" @click="runGroupAtPath([-1])" :disabled="isLoading" title="Exécuter"><span class="iconify" data-icon="material-symbols-light:play-arrow" style="font-size:1rem"></span></button>
                                     <button class="btn btn-xs join-item" @click="addNestedGroup([-1])" title="Ajouter un sous-groupe"><span class="iconify" data-icon="material-symbols-light:create-new-folder" style="font-size:1rem"></span></button>
