@@ -1513,19 +1513,9 @@ export function executionMixin() {
                             cell._perspectiveWorker = await perspective.worker();
                         }
 
-                        // Utiliser cell._arrowTable (déjà chargé dans executePerspectiveCell) plutôt
-                        // que de re-exécuter la requête SQL. Sérialiser en IPC Arrow binaire si
-                        // tableToIPC est disponible via le module DuckDB : l'ArrayBuffer est
-                        // transférable (zero-copy postMessage) au lieu d'un structured clone de batches.
-                        let tableData;
-                        const duckdbMod = DuckDBManager.duckdbModuleRef;
-                        if (duckdbMod?.tableToIPC) {
-                            const ipcBytes = duckdbMod.tableToIPC(cell._arrowTable);
-                            tableData = ipcBytes.buffer;
-                        } else {
-                            tableData = cell._arrowTable.batches;
-                        }
-                        const table = await cell._perspectiveWorker.table(tableData);
+                        // Utiliser cell._arrowTable (déjà chargé dans executePerspectiveCell)
+                        // plutôt que de re-exécuter la requête SQL.
+                        const table = await cell._perspectiveWorker.table(cell._arrowTable.batches);
 
                         // Laisser le custom element perspective-viewer (WASM) s'initialiser complètement
                         await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));

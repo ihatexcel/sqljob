@@ -5508,8 +5508,8 @@ let CellConfigService$1 = class {
     o && (o[a] = r);
   }
 };
-var $;
-let GistEncrypt$1 = ($ = class {
+var D;
+let GistEncrypt$1 = (D = class {
   static _uint8ArrayToBase64(e) {
     let r = "";
     for (let s = 0; s < e.length; s += 32768) {
@@ -5574,7 +5574,7 @@ let GistEncrypt$1 = ($ = class {
   static isEncrypted(e) {
     return e && e[this.ENCRYPTED_MARKER] === !0 && !!e.ciphertext && !!e.salt && e.iv !== void 0;
   }
-}, k($, "ENCRYPTED_MARKER", "_encrypted"), k($, "DEFAULT_ITERATIONS", 6e5), $), FileHandler$1 = class {
+}, k(D, "ENCRYPTED_MARKER", "_encrypted"), k(D, "DEFAULT_ITERATIONS", 6e5), D), FileHandler$1 = class {
   static getMimeTypeFromFileName(e) {
     const n = e.split(".").pop().toLowerCase();
     return {
@@ -6217,8 +6217,8 @@ let ConfigManager$1 = (M = class {
     };
   }
 }, k(M, "SQLJOB_VERSION", "0.1"), M);
-var D;
-let GitHubGistManager$1 = (D = class {
+var $;
+let GitHubGistManager$1 = ($ = class {
   /**
    * Vérifie si un token d'accès est stocké
    */
@@ -6328,8 +6328,8 @@ let GitHubGistManager$1 = (D = class {
       throw new Error("URL de gist invalide");
     return `https://ihatexcel.github.io/sqljob/?gist=${n}`;
   }
-}, k(D, "CLIENT_ID", ""), // À configurer par l'utilisateur
-k(D, "REDIRECT_URI", window.location.origin + window.location.pathname), k(D, "ACCESS_TOKEN_KEY", "github_access_token"), D);
+}, k($, "CLIENT_ID", ""), // À configurer par l'utilisateur
+k($, "REDIRECT_URI", window.location.origin + window.location.pathname), k($, "ACCESS_TOKEN_KEY", "github_access_token"), $);
 var C;
 let DuckDBManager$1 = (C = class {
   static getDuckDBWasmUrl() {
@@ -9517,17 +9517,14 @@ function executionMixin() {
         const a = (r = t.json) == null ? void 0 : r.perspectiveConfig;
         if (a != null && a !== "")
           try {
-            const u = typeof a == "string" ? JSON.parse(a.trim()) : a;
-            i = { ...i, ...u };
-          } catch (u) {
-            console.warn("Configuration Perspective invalide, utilisation des valeurs par défaut:", u);
+            const l = typeof a == "string" ? JSON.parse(a.trim()) : a;
+            i = { ...i, ...l };
+          } catch (l) {
+            console.warn("Configuration Perspective invalide, utilisation des valeurs par défaut:", l);
           }
         t._perspectiveWorker || (t._perspectiveWorker = await s.worker());
-        let o;
-        const l = DuckDBManager.duckdbModuleRef;
-        l != null && l.tableToIPC ? o = l.tableToIPC(t._arrowTable).buffer : o = t._arrowTable.batches;
-        const c = await t._perspectiveWorker.table(o);
-        await new Promise((u) => requestAnimationFrame(() => requestAnimationFrame(u))), typeof n.resetThemes == "function" && await n.resetThemes(["Pro Light", "Pro Dark"]), await n.load(c), await n.restore(i), t._perspectiveTable = c;
+        const o = await t._perspectiveWorker.table(t._arrowTable.batches);
+        await new Promise((l) => requestAnimationFrame(() => requestAnimationFrame(l))), typeof n.resetThemes == "function" && await n.resetThemes(["Pro Light", "Pro Dark"]), await n.load(o), await n.restore(i), t._perspectiveTable = o;
       } catch (s) {
         throw console.error("Erreur lors du rendu Perspective:", s), s;
       } finally {
