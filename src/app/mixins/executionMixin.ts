@@ -1563,22 +1563,28 @@ export function executionMixin() {
                     this.setStatus('Chargement ECharts...', 'loading');
                     await CDNManager.loadECharts();
 
+                    // Créer les types DuckDB taleshape (XAXIS, BARCHART, etc.) si pas déjà fait
+                    await DuckDBManager.initChartTypes();
+
                     this.setStatus('Parsing de la requête SQL...', 'loading');
 
                     try {
                         const finalQuery = await this.parseQueryRecursively(cell);
 
                         this.setStatus('Exécution de la requête...', 'loading');
-                        const results = await DuckDBManager.executeQuery(finalQuery);
+                        // executeQueryWithSchema retourne les lignes + les types DuckDB des colonnes
+                        // (ex: { 'Time of Day': 'TIME', 'Total Sessions': 'BARCHART' })
+                        const { rows, columnTypes } = await DuckDBManager.executeQueryWithSchema(finalQuery);
 
-                        cell._results = results;
+                        cell._results = rows;
+                        cell._columnTypes = columnTypes; // stocker pour re-render (resize etc.)
                         cell._echartReady = true;
 
                         await this.$nextTick();
 
                         await this.renderEchartInContainer(cell, true);
 
-                        cell._resultInfo = `✅ ${results.length} ligne(s)` +
+                        cell._resultInfo = `✅ ${rows.length} ligne(s)` +
                             (cell._parseLevels.length > 1
                                 ? ` - ${cell._parseLevels.length - 1} niveau(x) de parsing`
                                 : '');
@@ -1612,7 +1618,9 @@ export function executionMixin() {
                             cell._echartResizeObserver = null;
                         }
 
-                        const parsed = EChartSqlParser.parseColumnRoles(cell._results);
+                        // Utiliser les types DuckDB stockés pour la détection des rôles
+                        // (ex: { 'Time of Day': 'XAXIS', 'Total Sessions': 'BARCHART' })
+                        const parsed = EChartSqlParser.parseColumnRoles(cell._results, cell._columnTypes);
                         const { chartType } = parsed;
 
                         // KPI: render as HTML, no ECharts instance

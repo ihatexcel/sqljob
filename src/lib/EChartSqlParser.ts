@@ -81,7 +81,10 @@ function _isDark(): boolean {
 
 // ─── Column role parsing ─────────────────────────────────────────────────────
 
-export function parseColumnRoles(results: any[]): ParsedColumnRoles {
+// columnTypes: { colName -> DuckDB type string } obtenu via DESCRIBE (ex: 'XAXIS', 'BARCHART')
+// Quand fourni, le TYPE DuckDB de la colonne est prioritaire sur le nom de colonne.
+// Permet la syntaxe taleshape native : SELECT val::BARCHART AS "Mon Label"
+export function parseColumnRoles(results: any[], columnTypes?: Record<string, string>): ParsedColumnRoles {
     if (!results || results.length === 0) {
         return { roles: [], roleMap: {}, chartType: 'unknown' };
     }
@@ -91,14 +94,21 @@ export function parseColumnRoles(results: any[]): ParsedColumnRoles {
 
     for (const colName of columnNames) {
         const upper = colName.toUpperCase();
+        const colType = columnTypes?.[colName]?.toUpperCase();
 
-        // 1. Exact match
+        // 0. Priorité : type DuckDB (ex: ::XAXIS AS "Mon Label" → type=XAXIS, display="Mon Label")
+        if (colType && KNOWN_ROLES_SET.has(colType)) {
+            roles.push({ originalName: colName, role: colType, displayName: colName });
+            continue;
+        }
+
+        // 1. Exact match sur le nom de colonne (rétrocompatibilité)
         if (KNOWN_ROLES_SET.has(upper)) {
             roles.push({ originalName: colName, role: upper, displayName: colName });
             continue;
         }
 
-        // 2. Suffix match: find the longest known role suffix
+        // 2. Suffix match: "Label_XAXIS" → role=XAXIS, displayName="Label"
         let matched = false;
         for (const role of KNOWN_ROLES) {
             const suffix = '_' + role;
@@ -109,9 +119,8 @@ export function parseColumnRoles(results: any[]): ParsedColumnRoles {
                 break;
             }
         }
-        // Unknown columns are silently ignored (no chart role)
         if (!matched) {
-            // Still include it as-is for potential future use or debug
+            // Colonne sans rôle chart : ignorée pour les graphiques
         }
     }
 

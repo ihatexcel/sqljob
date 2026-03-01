@@ -189,6 +189,79 @@
                 }
             }
 
+            // Tous les types taleshape à créer dans DuckDB pour que ::XAXIS etc. fonctionne
+            static readonly CHART_TYPE_NAMES = [
+                // Chart roles
+                'XAXIS', 'YAXIS',
+                'BARCHART', 'BARCHART_STACKED', 'BARCHART_PERCENT', 'BARCHART_STACKED_PERCENT',
+                'LINECHART', 'LINECHART_PERCENT',
+                'PIECHART', 'PIECHART_PERCENT',
+                'DONUTCHART', 'DONUTCHART_PERCENT',
+                'BOXPLOT',
+                'GAUGE', 'GAUGE_PERCENT',
+                'CATEGORY', 'COLOR', 'COLORS', 'RANGE', 'LABELS',
+                'XLINE', 'YLINE', 'LABEL',
+                // KPI roles
+                'PERCENT', 'COMPARE', 'TREND',
+                // Layout/filter roles (hors scope rendu mais on les crée pour la syntaxe)
+                'SECTION', 'HEADER_IMAGE', 'FOOTER_LINK',
+                'DOWNLOAD_CSV', 'DOWNLOAD_PDF', 'DOWNLOAD_XLSX',
+                'DROPDOWN', 'DROPDOWN_MULTI',
+                'DATEPICKER', 'DATEPICKER_FROM', 'DATEPICKER_TO',
+                'INPUT',
+            ];
+
+            static _chartTypesInitialized = false;
+
+            /** Crée tous les types taleshape dans DuckDB (VARCHAR alias).
+             *  Idempotent : utilise IF NOT EXISTS, peut être appelé plusieurs fois. */
+            static async initChartTypes() {
+                if (DuckDBManager._chartTypesInitialized) return;
+                if (DuckDBManager.currentEngine === 'ducklings') {
+                    // Ducklings ne supporte pas CREATE TYPE - on skip silencieusement
+                    DuckDBManager._chartTypesInitialized = true;
+                    return;
+                }
+                if (!DuckDBManager.connInstance) return;
+                const sql = DuckDBManager.CHART_TYPE_NAMES
+                    .map(t => `CREATE TYPE IF NOT EXISTS ${t} AS VARCHAR;`)
+                    .join('\n');
+                await DuckDBManager.connInstance.query(sql);
+                DuckDBManager._chartTypesInitialized = true;
+            }
+
+            /** Exécute une requête et retourne les lignes + les types DuckDB de chaque colonne.
+             *  Utilise DESCRIBE pour lire les types (ex: 'XAXIS', 'BARCHART').
+             *  columnTypes: { colAlias -> 'XAXIS' | 'BARCHART' | ... } */
+            static async executeQueryWithSchema(query) {
+                if (!DuckDBManager.connInstance) {
+                    throw new Error('DuckDB non initialisé');
+                }
+                if (DuckDBManager.currentEngine === 'ducklings') {
+                    // Ducklings ne supporte pas DESCRIBE : retourne les lignes sans types
+                    const rows = await DuckDBManager.connInstance.query(query);
+                    return { rows, columnTypes: {} };
+                }
+
+                // 1. Lire les types via DESCRIBE
+                const columnTypes = {};
+                try {
+                    const desc = await DuckDBManager.connInstance.query(`DESCRIBE (${query})`);
+                    for (const row of desc.toArray()) {
+                        const r = Object.fromEntries(row);
+                        columnTypes[r['column_name']] = r['column_type'];
+                    }
+                } catch (e) {
+                    // DESCRIBE peut échouer sur des requêtes sans SELECT (ex: CREATE TABLE)
+                    // On continue sans types
+                }
+
+                // 2. Exécuter la requête
+                const result = await DuckDBManager.connInstance.query(query);
+                const rows = result.toArray().map(row => Object.fromEntries(row));
+                return { rows, columnTypes };
+            }
+
             static async registerFile(fileName, file) {
                 if (DuckDBManager.currentEngine === 'ducklings') {
                     throw new Error('Ducklings ne supporte pas l\'enregistrement de fichiers. Utilisez DuckDB WASM pour les notebooks avec fichiers.');
