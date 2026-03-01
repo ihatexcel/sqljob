@@ -15,21 +15,11 @@
     <!-- iconify chargé localement via npm (évite le blocage COEP) -->
 
     <!--
-        Ordre d'exécution (tous différés après parsing DOM) :
-        1. Notre bundle Vite  → injecte le HTML + window.notebookApp
-        2. Alpine focus/collapse plugins
-        3. Alpine core         → initialise le DOM injecté
     -->
-    <script type="module" src="/src/main.ts"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/focus@3.x.x/dist/cdn.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script type="module" src="/src/main.tsx"></script>
 
     <style>
-        /* Alpine.js x-cloak pour cacher les éléments non initialisés */
-        [x-cloak] {
-            display: none !important;
-        }
+
 
         /* Simple-datatables dark mode fix */
         .datatable-wrapper,

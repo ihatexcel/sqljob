@@ -6,17 +6,16 @@
  *   <script src="sqljob.js" type="module"></script>
  *   <sqljob-app></sqljob-app>
  *
- * Alpine.js est bundlé dans ce fichier — aucune dépendance externe requise.
+ * React est bundlé dans ce fichier — aucune dépendance externe requise.
  * Le CSS (DaisyUI + Tailwind + styles custom) est injecté automatiquement
  * dans <head> par Vite au build.
+ *
+ * Utilise le light DOM (pas de Shadow DOM) pour que Tailwind / DaisyUI
+ * s'appliquent normalement.
  */
-import Alpine from 'alpinejs'
-import AlpineFocus from '@alpinejs/focus'
-import AlpineCollapse from '@alpinejs/collapse'
-
-import { registerAlpineStores } from '../app/alpineStores'
-import { mountApp } from '../app/mount'
-
+import React from 'react'
+import { createRoot } from 'react-dom/client'
+import { App } from '../app/App'
 import './styles.css'
 
 // URL absolue de ce fichier (import.meta.url) — utilisée par l'export HTML
@@ -34,38 +33,28 @@ if (window.location.protocol === 'file:') {
     )
 }
 
-// ─── Initialisation Alpine (une seule fois, même si plusieurs <sqljob-app>) ──
-
-let alpineStarted = false
-
-function ensureAlpine() {
-    if (alpineStarted) return
-    alpineStarted = true
-
-    // Si le host a déjà chargé Alpine, on l'utilise ; sinon on utilise le nôtre.
-    if (!window.Alpine) {
-        Alpine.plugin(AlpineFocus)
-        Alpine.plugin(AlpineCollapse)
-        registerAlpineStores()
-        window.Alpine = Alpine
-        Alpine.start()
-    } else {
-        // Alpine du host déjà présent : on enregistre quand même nos stores
-        registerAlpineStores()
-    }
-}
-
 // ─── Custom Element ────────────────────────────────────────────────────────────
 
 class SQLJobApp extends HTMLElement {
-    async connectedCallback() {
-        // Appliquer data-theme et les classes body au document si pas déjà fait
+    private _root: ReturnType<typeof createRoot> | null = null
+
+    connectedCallback() {
+        // Appliquer les classes body si pas déjà fait
         if (!document.body.classList.contains('font-sans')) {
-            document.body.classList.add('min-h-screen', 'font-sans', 'bg-base-100', 'text-base-content', 'transition-colors', 'duration-200')
+            document.body.classList.add(
+                'min-h-screen', 'font-sans', 'bg-base-100',
+                'text-base-content', 'transition-colors', 'duration-200'
+            )
         }
 
-        ensureAlpine()
-        await mountApp(this)
+        // Rendu React en light DOM : DaisyUI/Tailwind fonctionnent nativement
+        this._root = createRoot(this)
+        this._root.render(React.createElement(App))
+    }
+
+    disconnectedCallback() {
+        this._root?.unmount()
+        this._root = null
     }
 }
 
