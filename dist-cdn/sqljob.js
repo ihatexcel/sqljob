@@ -29162,6 +29162,9 @@ const at = MS((l, i) => {
   return {
     ...o,
     ...f,
+    // Overrides de méthodes mixin qui font des mutations profondes (this.X.Y = val)
+    // que le proxy ne peut pas intercepter — on remplace par des set() Zustand directs.
+    closeCellConfig: () => l((h) => ({ cellConfigModal: { ...h.cellConfigModal, open: !1 } })),
     // Déclenche un re-render React (utile après mutations profondes)
     forceUpdate() {
       l((h) => ({ _rev: h._rev + 1 }));
@@ -30547,7 +30550,7 @@ function JE(l, i) {
 function vA(l) {
   var o;
   const i = (o = ce == null ? void 0 : ce.types) == null ? void 0 : o[l];
-  return i != null && i.commonParams ? i.commonParams.map((c) => c.key).filter((c) => c !== "name") : [];
+  return i != null && i.commonParams ? i.commonParams.filter((c) => c !== "name") : [];
 }
 function gA(l) {
   var o;

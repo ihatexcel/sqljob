@@ -320,6 +320,10 @@ export const useNotebookStore = create<any>((set, get) => {
         ...initialState,
         ...wrappedActions,
 
+        // Overrides de méthodes mixin qui font des mutations profondes (this.X.Y = val)
+        // que le proxy ne peut pas intercepter — on remplace par des set() Zustand directs.
+        closeCellConfig: () => set((s: any) => ({ cellConfigModal: { ...s.cellConfigModal, open: false } })),
+
         // Déclenche un re-render React (utile après mutations profondes)
         forceUpdate() {
             set((s: any) => ({ _rev: s._rev + 1 }))
