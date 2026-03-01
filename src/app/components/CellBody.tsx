@@ -8,6 +8,7 @@ import { useShallow } from 'zustand/react/shallow'
 import { useNotebookStore } from '../store/notebookStore'
 import { ConfigManager } from '../../lib/ConfigManager'
 import { CDNManager } from '../../lib/CDNManager'
+import { SqlEditorWidget } from './SqlEditorWidget'
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 function CellBodySkeleton() {
@@ -172,7 +173,7 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
     const {
         devMode, isLoading, hasCellHeight,
         showSqlEditorVisible, isSqlResultTabular, isSqlResultText,
-        getSqlResultAsText, renderTableInContainer, safeRenderSqlEditor
+        getSqlResultAsText, renderTableInContainer,
     } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         isLoading: s.isLoading,
@@ -182,17 +183,9 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
         isSqlResultText: s.isSqlResultText,
         getSqlResultAsText: s.getSqlResultAsText,
         renderTableInContainer: s.renderTableInContainer,
-        safeRenderSqlEditor: s.safeRenderSqlEditor
     })))
 
     const tableRef = useRef<HTMLDivElement>(null)
-    const editorRef = useRef<HTMLDivElement>(null)
-
-    useEffect(() => {
-        if (editorRef.current && devMode && showSqlEditorVisible?.(cell)) {
-            safeRenderSqlEditor?.(editorRef.current, cell, 'SELECT * FROM source1 LIMIT 100', false, 'query', '_showParsedQuery', null, null, null, path, cellIndex)
-        }
-    }, [cell._id, devMode])
 
     useEffect(() => {
         if (tableRef.current && cell._results?.length > 0 && cell._status !== 'running') {
@@ -204,8 +197,9 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
 
     return (
         <div className={hasHeight ? 'flex-1 min-h-0 flex flex-col' : ''}>
-            {showSqlEditorVisible?.(cell) && (
-                <div ref={editorRef}></div>
+            {devMode && showSqlEditorVisible?.(cell) && (
+                <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
+                    placeholder="SELECT * FROM source1 LIMIT 100" />
             )}
             {showTextResult ? (
                 <>
@@ -236,21 +230,13 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
 
 // ─── IframeBody ───────────────────────────────────────────────────────────────
 function IframeBody({ cell, path, cellIndex }: any) {
-    const { devMode, hasCellHeight, safeRenderSqlEditor, showSqlEditorVisible } = useNotebookStore(useShallow(s => ({
+    const { devMode, hasCellHeight, showSqlEditorVisible } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         hasCellHeight: s.hasCellHeight,
-        safeRenderSqlEditor: s.safeRenderSqlEditor,
         showSqlEditorVisible: s.showSqlEditorVisible
     })))
 
-    const editorRef = useRef<HTMLDivElement>(null)
     const iframeRef = useRef<HTMLIFrameElement>(null)
-
-    useEffect(() => {
-        if (editorRef.current && devMode) {
-            safeRenderSqlEditor?.(editorRef.current, cell, "SELECT '<h1>Hello</h1>'", false, 'query', '_showParsedQuery', null, null, null, path, cellIndex)
-        }
-    }, [cell._id, devMode])
 
     useEffect(() => {
         if (iframeRef.current && cell._iframeContent) {
@@ -267,7 +253,10 @@ function IframeBody({ cell, path, cellIndex }: any) {
 
     return (
         <div className={hasHeight ? 'flex-1 min-h-0 flex flex-col' : ''}>
-            {devMode && showSqlEditorVisible?.(cell) && <div ref={editorRef}></div>}
+            {devMode && showSqlEditorVisible?.(cell) && (
+                <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
+                    placeholder="SELECT '<h1>Hello</h1>'" />
+            )}
             <iframe
                 ref={iframeRef}
                 sandbox="allow-scripts allow-same-origin"
@@ -280,22 +269,17 @@ function IframeBody({ cell, path, cellIndex }: any) {
 
 // ─── SqlStatBody ──────────────────────────────────────────────────────────────
 function SqlStatBody({ cell, path, cellIndex }: any) {
-    const { devMode, safeRenderSqlEditor, showSqlEditorVisible } = useNotebookStore(useShallow(s => ({
+    const { devMode, showSqlEditorVisible } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
-        safeRenderSqlEditor: s.safeRenderSqlEditor,
         showSqlEditorVisible: s.showSqlEditorVisible
     })))
-    const editorRef = useRef<HTMLDivElement>(null)
-
-    useEffect(() => {
-        if (editorRef.current && devMode) {
-            safeRenderSqlEditor?.(editorRef.current, cell, "SELECT 42 AS value, 'Titre' AS title, 'info' AS type", false, 'query', '_showParsedQuery', null, null, null, path, cellIndex)
-        }
-    }, [cell._id, devMode])
 
     return (
         <div>
-            {devMode && showSqlEditorVisible?.(cell) && <div ref={editorRef}></div>}
+            {devMode && showSqlEditorVisible?.(cell) && (
+                <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
+                    placeholder="SELECT 42 AS value, 'Titre' AS title, 'info' AS type" />
+            )}
             {cell._statContent && (
                 <div dangerouslySetInnerHTML={{ __html: cell._statContent }} />
             )}
@@ -306,21 +290,13 @@ function SqlStatBody({ cell, path, cellIndex }: any) {
 
 // ─── EChartBody ───────────────────────────────────────────────────────────────
 function EChartBody({ cell, path, cellIndex }: any) {
-    const { devMode, safeRenderSqlEditor, showSqlEditorVisible, hasCellHeight } = useNotebookStore(useShallow(s => ({
+    const { devMode, showSqlEditorVisible, hasCellHeight } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
-        safeRenderSqlEditor: s.safeRenderSqlEditor,
         showSqlEditorVisible: s.showSqlEditorVisible,
         hasCellHeight: s.hasCellHeight
     })))
 
-    const editorRef = useRef<HTMLDivElement>(null)
     const chartRef = useRef<HTMLDivElement>(null)
-
-    useEffect(() => {
-        if (editorRef.current && devMode) {
-            safeRenderSqlEditor?.(editorRef.current, cell, 'SELECT 1 AS value', false, 'query', '_showParsedQuery', null, null, null, path, cellIndex)
-        }
-    }, [cell._id, devMode])
 
     useEffect(() => {
         if (!chartRef.current || !cell._echartsOption) return
@@ -336,7 +312,10 @@ function EChartBody({ cell, path, cellIndex }: any) {
 
     return (
         <div className={hasHeight ? 'flex-1 min-h-0 flex flex-col' : ''}>
-            {devMode && showSqlEditorVisible?.(cell) && <div ref={editorRef}></div>}
+            {devMode && showSqlEditorVisible?.(cell) && (
+                <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
+                    placeholder="SELECT 1 AS value" />
+            )}
             <div ref={chartRef} className={hasHeight ? 'flex-1 min-h-0' : 'min-h-[300px]'} />
             <ResultInfo cell={cell} />
         </div>
@@ -345,28 +324,23 @@ function EChartBody({ cell, path, cellIndex }: any) {
 
 // ─── UiParameterBody ──────────────────────────────────────────────────────────
 function UiParameterBody({ cell, path, cellIndex }: any) {
-    const { devMode, renderUiParameterEditor, forceUpdate } = useNotebookStore(useShallow(s => ({
-        devMode: s.devMode,
-        renderUiParameterEditor: s.renderUiParameterEditor,
-        forceUpdate: s.forceUpdate
-    })))
-    const editorRef = useRef<HTMLDivElement>(null)
-
-    useEffect(() => {
-        if (editorRef.current && devMode) {
-            const html = renderUiParameterEditor?.(cell)
-            if (html) editorRef.current.innerHTML = html
-        }
-    }, [cell._id, devMode, cell.queries])
+    const devMode = useNotebookStore(s => s.devMode)
+    const languageType = ConfigManager.getCellEngine(cell, 'main')
+    const isJs = languageType === 'js'
+    const isText = languageType === 'text'
+    const languageLabel = isJs ? 'JavaScript' : isText ? 'Texte' : 'SQL'
+    const badgeClass = isJs ? 'badge-warning' : isText ? 'badge-ghost' : 'badge-info'
 
     return (
         <div>
             {devMode && (
-                <div>
-                    <div ref={editorRef}></div>
-                </div>
+                <SqlEditorWidget
+                    cell={cell} path={path} cellIndex={cellIndex}
+                    placeholder={isJs ? 'return ["Option 1", "Option 2"];' : isText ? 'Saisir le texte' : 'SELECT * from source1'}
+                    languageLabel={languageLabel}
+                    badgeClass={badgeClass}
+                />
             )}
-            {/* Rendu du paramètre en mode client (input/select/etc.) */}
             {cell._uiHtml ? (
                 <div dangerouslySetInnerHTML={{ __html: cell._uiHtml }} />
             ) : null}
@@ -377,19 +351,11 @@ function UiParameterBody({ cell, path, cellIndex }: any) {
 
 // ─── GenericHtmlBody (perspective, pdfme, publipostageWord) ──────────────────
 function GenericHtmlBody({ cell, path, cellIndex }: any) {
-    const { devMode, safeRenderSqlEditor, showSqlEditorVisible } = useNotebookStore(useShallow(s => ({
+    const { devMode, showSqlEditorVisible } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
-        safeRenderSqlEditor: s.safeRenderSqlEditor,
         showSqlEditorVisible: s.showSqlEditorVisible
     })))
-    const editorRef = useRef<HTMLDivElement>(null)
     const contentRef = useRef<HTMLDivElement>(null)
-
-    useEffect(() => {
-        if (editorRef.current && devMode) {
-            safeRenderSqlEditor?.(editorRef.current, cell, 'SELECT 1', false, 'query', '_showParsedQuery', null, null, null, path, cellIndex)
-        }
-    }, [cell._id, devMode])
 
     useEffect(() => {
         if (contentRef.current && cell._renderedHtml) {
@@ -399,7 +365,10 @@ function GenericHtmlBody({ cell, path, cellIndex }: any) {
 
     return (
         <div>
-            {devMode && showSqlEditorVisible?.(cell) && <div ref={editorRef}></div>}
+            {devMode && showSqlEditorVisible?.(cell) && (
+                <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
+                    placeholder="SELECT 1" />
+            )}
             <div ref={contentRef}></div>
             <ResultInfo cell={cell} />
         </div>

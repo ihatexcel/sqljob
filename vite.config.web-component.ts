@@ -24,6 +24,8 @@ export default defineConfig({
             output: {
                 // CSS exportée en sqljob.css (fichier distinct du JS)
                 assetFileNames: 'sqljob[extname]',
+                // Force un seul fichier JS (pas de code splitting)
+                inlineDynamicImports: true,
             },
             onwarn(warning, warn) {
                 // safeEvalJs utilise new Function() intentionnellement dans un sandbox restreint

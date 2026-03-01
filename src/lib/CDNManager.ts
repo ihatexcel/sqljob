@@ -1,4 +1,11 @@
 // @ts-nocheck
+import { EditorView } from '@codemirror/view'
+import { EditorState } from '@codemirror/state'
+import { basicSetup } from 'codemirror'
+import { sql } from '@codemirror/lang-sql'
+import { DuckDBDialect } from '@marimo-team/codemirror-sql/dialects'
+import { sqlExtension, cteCompletionSource } from '@marimo-team/codemirror-sql'
+import { oneDark } from '@codemirror/theme-one-dark'
 
 export class CDNManager {
             static loadedScripts = new Set();
@@ -129,204 +136,54 @@ export class CDNManager {
                 await this.loadScript(xlsxUrl);
             }
 
-            // CodeMirror SQL avec marimo-team/codemirror-sql
-            static codeMirrorSQLLoaded = false;
-            static codeMirrorSQLModules = null;
+            // CodeMirror SQL — bundlé via npm (@marimo-team/codemirror-sql + @codemirror/*)
+            // loadCodeMirrorSQL() résout immédiatement (modules déjà importés statiquement)
+            static codeMirrorSQLLoaded = true;
+            static codeMirrorSQLModules = {
+                EditorView, EditorState, basicSetup,
+                sql, DuckDBSQL: DuckDBDialect,
+                sqlExtension, cteCompletionSource, oneDark,
+            };
             static codeMirrorSQLLoadingPromise = null;
 
             static async loadCodeMirrorSQL() {
-                if (this.codeMirrorSQLLoaded && this.codeMirrorSQLModules) {
-                    return this.codeMirrorSQLModules;
-                }
-
-                if (this.codeMirrorSQLLoadingPromise) {
-                    return this.codeMirrorSQLLoadingPromise;
-                }
-
-                this.codeMirrorSQLLoadingPromise = (async () => {
-                    try {
-
-                        // Créer un import map pour forcer le partage des dépendances
-                        if (!document.querySelector('script[type="importmap"]')) {
-                            const importMap = document.createElement('script');
-                            importMap.type = 'importmap';
-                            importMap.textContent = JSON.stringify({
-                                imports: {
-                                    "@codemirror/state": "https://esm.sh/@codemirror/state@6.4.1",
-                                    "@codemirror/view": "https://esm.sh/@codemirror/view@6.26.3",
-                                    "@codemirror/language": "https://esm.sh/@codemirror/language@6.10.1",
-                                    "@codemirror/commands": "https://esm.sh/@codemirror/commands@6.5.0",
-                                    "@codemirror/search": "https://esm.sh/@codemirror/search@6.5.6",
-                                    "@codemirror/autocomplete": "https://esm.sh/@codemirror/autocomplete@6.16.0",
-                                    "@codemirror/lint": "https://esm.sh/@codemirror/lint@6.8.0",
-                                    "@lezer/common": "https://esm.sh/@lezer/common@1.2.1",
-                                    "@lezer/highlight": "https://esm.sh/@lezer/highlight@1.2.0",
-                                    "@lezer/lr": "https://esm.sh/@lezer/lr@1.4.0",
-                                    "style-mod": "https://esm.sh/style-mod@4.1.2",
-                                    "w3c-keyname": "https://esm.sh/w3c-keyname@2.2.8"
-                                }
-                            });
-                            document.head.insertBefore(importMap, document.head.firstChild);
-
-                            // Attendre un tick pour que l'import map soit pris en compte
-                            await new Promise(r => setTimeout(r, 0));
-                        }
-
-                        // Import séquentiel pour éviter les conflits
-                        const stateModule = await import('https://esm.sh/@codemirror/state@6.4.1');
-                        const viewModule = await import('https://esm.sh/@codemirror/view@6.26.3?deps=@codemirror/state@6.4.1');
-                        const languageModule = await import('https://esm.sh/@codemirror/language@6.10.1?deps=@codemirror/state@6.4.1,@codemirror/view@6.26.3');
-                        const commandsModule = await import('https://esm.sh/@codemirror/commands@6.5.0?deps=@codemirror/state@6.4.1,@codemirror/view@6.26.3,@codemirror/language@6.10.1');
-                        const searchModule = await import('https://esm.sh/@codemirror/search@6.5.6?deps=@codemirror/state@6.4.1,@codemirror/view@6.26.3');
-                        const autocompleteModule = await import('https://esm.sh/@codemirror/autocomplete@6.16.0?deps=@codemirror/state@6.4.1,@codemirror/view@6.26.3,@codemirror/language@6.10.1,@codemirror/commands@6.5.0');
-                        const langSqlModule = await import('https://esm.sh/@codemirror/lang-sql@6.6.4?deps=@codemirror/state@6.4.1,@codemirror/view@6.26.3,@codemirror/language@6.10.1,@codemirror/autocomplete@6.16.0');
-                        const themeOneDarkModule = await import('https://esm.sh/@codemirror/theme-one-dark@6.1.2?deps=@codemirror/state@6.4.1,@codemirror/view@6.26.3');
-
-                        // Créer basicSetup manuellement
-                        const basicSetup = [
-                            viewModule.lineNumbers(),
-                            viewModule.highlightActiveLineGutter(),
-                            viewModule.highlightSpecialChars(),
-                            commandsModule.history(),
-                            languageModule.foldGutter(),
-                            viewModule.drawSelection(),
-                            viewModule.dropCursor(),
-                            stateModule.EditorState.allowMultipleSelections.of(true),
-                            languageModule.indentOnInput(),
-                            languageModule.syntaxHighlighting(languageModule.defaultHighlightStyle, { fallback: true }),
-                            languageModule.bracketMatching(),
-                            autocompleteModule.closeBrackets(),
-                            autocompleteModule.autocompletion(),
-                            viewModule.rectangularSelection(),
-                            viewModule.crosshairCursor(),
-                            viewModule.highlightActiveLine(),
-                            searchModule.highlightSelectionMatches(),
-                            viewModule.keymap.of([
-                                ...autocompleteModule.closeBracketsKeymap,
-                                ...commandsModule.defaultKeymap,
-                                ...searchModule.searchKeymap,
-                                ...commandsModule.historyKeymap,
-                                ...languageModule.foldKeymap,
-                                ...autocompleteModule.completionKeymap
-                            ])
-                        ];
-
-                        this.codeMirrorSQLModules = {
-                            EditorView: viewModule.EditorView,
-                            EditorState: stateModule.EditorState,
-                            basicSetup: basicSetup,
-                            sql: langSqlModule.sql,
-                            StandardSQL: langSqlModule.StandardSQL,
-                            DuckDBSQL: langSqlModule.DuckDBSQL || langSqlModule.StandardSQL,
-                            oneDark: themeOneDarkModule.oneDark,
-                            sqlExtension: null,
-                            cteCompletionSource: null
-                        };
-
-                        this.codeMirrorSQLLoaded = true;
-                        return this.codeMirrorSQLModules;
-                    } catch (error) {
-                        console.error('❌ Erreur chargement CodeMirror SQL:', error);
-                        this.codeMirrorSQLLoadingPromise = null;
-                        throw error;
-                    }
-                })();
-
-                return this.codeMirrorSQLLoadingPromise;
+                return this.codeMirrorSQLModules;
             }
 
-            // Créer une instance d'éditeur CodeMirror SQL
+            // Créer une instance d'éditeur CodeMirror SQL (utilisé par editorsMixin pour les modales de groupe)
             static createSqlEditor(container, initialValue, onChange, options = {}) {
-                if (!this.codeMirrorSQLModules) {
-                    throw new Error('CodeMirror SQL non chargé. Appelez loadCodeMirrorSQL() d\'abord.');
-                }
-
-                const {
-                    EditorView, basicSetup, sql, StandardSQL, DuckDBSQL,
-                    sqlExtension, cteCompletionSource, oneDark
-                } = this.codeMirrorSQLModules;
-
                 const isDarkTheme = document.documentElement.getAttribute('data-theme')?.includes('dark') ||
                     window.matchMedia('(prefers-color-scheme: dark)').matches;
 
                 const schema = options.schema || {};
-                const dialect = options.dialect === 'duckdb' ? DuckDBSQL : StandardSQL;
 
                 const extensions = [
                     basicSetup,
-                    sql({
-                        dialect: dialect,
-                        schema: schema,
-                        upperCaseKeywords: true,
-                    }),
+                    sql({ dialect: DuckDBDialect, schema, upperCaseKeywords: true }),
                     EditorView.updateListener.of((update) => {
-                        if (update.docChanged && onChange) {
-                            onChange(update.state.doc.toString());
-                        }
+                        if (update.docChanged && onChange) onChange(update.state.doc.toString());
                     }),
                     EditorView.theme({
-                        '&': {
-                            fontSize: '14px',
-                            minHeight: '20px',
-                            border: '1px solid oklch(var(--b3))',
-                            borderRadius: '0.5rem',
-                        },
-                        '.cm-scroller': {
-                            fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
-                            minHeight: '20px',
-                            maxHeight: '250px',
-                            overflow: 'auto',
-                        },
-                        '.cm-content': {
-                            padding: '0.5rem 0',
-                        },
-                        '.cm-gutters': {
-                            borderRadius: '0.5rem 0 0 0.5rem',
-                        },
-                        '&.cm-focused': {
-                            outline: '2px solid oklch(var(--p))',
-                            outlineOffset: '-1px',
-                        },
+                        '&': { fontSize: '14px', minHeight: '20px', border: '1px solid oklch(var(--b3, #d1d5db))', borderRadius: '0.5rem' },
+                        '.cm-scroller': { fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace', minHeight: '20px', maxHeight: '250px', overflow: 'auto' },
+                        '.cm-content': { padding: '0.5rem 0' },
+                        '.cm-gutters': { borderRadius: '0.5rem 0 0 0.5rem' },
+                        '&.cm-focused': { outline: '2px solid oklch(var(--p, #570df8))', outlineOffset: '-1px' },
+                    }),
+                    DuckDBDialect.language.data.of({ autocomplete: cteCompletionSource }),
+                    sqlExtension({
+                        linterConfig: { delay: 300 },
+                        gutterConfig: { backgroundColor: '#3b82f6', errorBackgroundColor: '#ef4444', hideWhenNotFocused: true },
+                        enableHover: true,
+                        hoverConfig: { schema, hoverTime: 300, enableKeywords: true, enableTables: true, enableColumns: true },
                     }),
                 ];
+                if (isDarkTheme) extensions.push(oneDark);
 
-                // Ajouter marimo-sql si disponible
-                if (cteCompletionSource) {
-                    extensions.push(dialect.language.data.of({
-                        autocomplete: cteCompletionSource,
-                    }));
-                }
-
-                if (sqlExtension) {
-                    extensions.push(sqlExtension({
-                        linterConfig: { delay: 300 },
-                        gutterConfig: {
-                            backgroundColor: '#3b82f6',
-                            errorBackgroundColor: '#ef4444',
-                            hideWhenNotFocused: true,
-                        },
-                        enableHover: true,
-                        hoverConfig: {
-                            schema: schema,
-                            hoverTime: 300,
-                            enableKeywords: true,
-                            enableTables: true,
-                            enableColumns: true,
-                        },
-                    }));
-                }
-
-                if (isDarkTheme) {
-                    extensions.push(oneDark);
-                }
-
-                const editor = new EditorView({
-                    doc: initialValue || '',
-                    extensions: extensions,
+                return new EditorView({
+                    state: EditorState.create({ doc: initialValue || '', extensions }),
                     parent: container,
                 });
-
-                return editor;
             }
 
             static echartsLoaded = false;
