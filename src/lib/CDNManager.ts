@@ -329,6 +329,27 @@ export class CDNManager {
                 return editor;
             }
 
+            static echartsLoaded = false;
+            static echartsLoadingPromise = null;
+
+            static async loadECharts() {
+                if (this.echartsLoaded) return;
+                if (this.echartsLoadingPromise) return this.echartsLoadingPromise;
+
+                this.echartsLoadingPromise = (async () => {
+                    const url = 'https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js';
+                    if (typeof window.echarts === 'undefined') {
+                        await this.loadScript(url);
+                    } else {
+                        this.loadedScripts.add(url);
+                    }
+                    this.echartsLoaded = true;
+                    this.echartsLoadingPromise = null;
+                })();
+
+                return this.echartsLoadingPromise;
+            }
+
             static perspectiveLoaded = false;
             static perspectiveLoadingPromise = null;
 

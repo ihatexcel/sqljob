@@ -207,6 +207,7 @@ export function notebookApp() {
                     { type: 'sqlStat', label: 'Stat SQL', icon: '<span class="iconify" data-icon="material-symbols-light:monitoring" style="font-size:1.25rem"></span>' },
                     { type: 'publipostageWord', label: 'Publipostage Word', icon: '<span class="iconify" data-icon="material-symbols-light:description" style="font-size:1.25rem"></span>' },
                     { type: 'pdfme', label: 'PDF (pdfme)', icon: '<span class="iconify" data-icon="material-symbols-light:picture-as-pdf" style="font-size:1.25rem"></span>' },
+                    { type: 'echart', label: 'EChart (Apache ECharts)', icon: '<span class="iconify" data-icon="material-symbols-light:bar-chart" style="font-size:1.25rem"></span>' },
                     { type: 'perspective', label: 'Perspective Viewer', icon: '<span class="iconify" data-icon="material-symbols-light:analytics" style="font-size:1.25rem"></span>' }
                 ],
 

@@ -17,7 +17,7 @@ export function cellsMixin() {
                     return cell && (v(cell.minHeightPx) || v(cell.minHeightPercent) || v(cell.maxHeightPx) || v(cell.maxHeightPercent));
                 },
                 isSqlCellWithEditor(type) {
-                    return ['sqlRecursiveParse', 'table', 'iframe', 'sqlStat', 'perspective', 'pdfme', 'publipostageWord'].includes(type);
+                    return ['sqlRecursiveParse', 'table', 'iframe', 'sqlStat', 'perspective', 'pdfme', 'publipostageWord', 'echart'].includes(type);
                 },
                 /** Logique d'affichage pilotée par le schéma (bodyDisplay) */
                 bodyDisplayShouldShowSkeleton(cell) {

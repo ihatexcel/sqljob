@@ -21,6 +21,7 @@ import { FileHandler } from '../lib/FileHandler'
 import { DuckDBManager } from '../lib/DuckDBManager'
 import { CellRenderer } from '../lib/CellRenderer'
 import { CellBodyRenderer, CELL_BODY_FAMILIES } from '../lib/CellBodyRenderer'
+import { EChartSqlParser } from '../lib/EChartSqlParser'
 
 import { generateAppHTML, generateGistPassphraseModalHTML } from './htmlTemplates'
 import { gistPassphraseModal } from './gistModal'
@@ -34,6 +35,7 @@ export function exposeGlobals() {
         CellRenderer,
         CellBodyRenderer,
         CELL_BODY_FAMILIES,
+        EChartSqlParser,
         GistEncrypt,
         GitHubGistManager,
         FileHandler,

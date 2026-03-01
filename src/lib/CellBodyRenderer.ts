@@ -101,6 +101,24 @@ import { CellRenderer } from './CellRenderer'
                 const [defaultSql1, defaultSql2] = this._defaultSqls(schema, ["with v_source as (select * from source1 limit 10)\nSELECT 'Titre' as header, 'Pied de page' as footer, json_group_array(json_array(col1, col2, col3)) as datatable\nFROM v_source LIMIT 10", "SELECT '$loop' || '_2.pdf'"]);
                 return `<div class="flex flex-col gap-3"><div x-show="devMode"><div class="text-sm font-semibold text-primary mb-1">Requête de données</div><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${defaultSql1}', true)"></div></div><div x-show="devMode"><div class="text-sm font-semibold text-primary mb-1 flex items-center gap-2"><span>Requête nom de fichier PDF</span><span class="badge badge-soft badge-info text-xs flex items-center gap-1"><span class="iconify" data-icon="material-symbols-light:storage" style="font-size:0.875rem"></span> SQL</span></div><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${defaultSql2}', false, 'query2')"></div></div><div x-show="devMode" class="form-control"><label class="label gap-2"><span class="label-text font-semibold">Template pdfme (JSON)</span><span class="badge badge-soft badge-primary text-xs">Layout</span></label><textarea class="textarea textarea-bordered w-full font-mono text-xs" x-model="cellItem.cell.json" rows="10" style="min-height: 180px;" placeholder='{"basePdf": {...}, "schemas": [...]}'></textarea></div><div class="flex justify-center" x-show="cellItem.cell.buttonLabel"><button class="btn btn-primary btn-sm" @click="runCellAt(${pathExpr}, ${cellIdxExpr})" :disabled="isLoading"><span x-text="cellItem.cell.buttonLabel || '📑 Générer le PDF'"></span></button></div>${this.renderResultInfoBlock(false)}</div>`;
             }
+            static renderSqlWithEchart(pathExpr, cellIdxExpr, schema) {
+                const c = schema.bodyConfig || {};
+                const defaultSql = this._defaultSql(schema, 0,
+                    "SELECT month AS XAXIS, revenue AS BARCHART FROM source1 LIMIT 100");
+                const mh = c.minHeight || '350px';
+                const ts = CellRenderer.renderTableSkeleton();
+                return `<div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 flex flex-col' : 'flex flex-col gap-2'">
+                    <template x-if="showSqlEditorVisible(cellItem.cell)"><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${defaultSql}', false, 'query', '_showParsedQuery', null, null, null, '${pathExpr}', '${cellIdxExpr}')"></div></template>
+                    <template x-if="cellItem.cell._status === 'running' && !cellItem.cell._echartReady"><div :class="(hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 ' : '') + 'rounded-lg bg-base-100 overflow-hidden'" style="min-height: ${mh}">${ts}</div></template>
+                    <div :id="'echart-' + cellItem.cell._id"
+                         :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 w-full rounded-lg' : 'w-full rounded-lg'"
+                         :style="hasCellHeight(cellItem.cell) ? '' : 'min-height: ${mh}'"
+                         x-show="cellItem.cell._echartReady"
+                         x-init="$nextTick(() => { if (cellItem.cell._results && cellItem.cell._results.length > 0) { renderEchartInContainer(cellItem.cell); } })">
+                    </div>
+                    ${this.renderResultInfoBlock(true)}
+                </div>`;
+            }
             static renderSqlWithPerspective(pathExpr, cellIdxExpr, schema) {
                 const c = schema.bodyConfig || {};
                 const defaultSql = this._defaultSql(schema, 0, 'SELECT * FROM source1');
@@ -120,5 +138,6 @@ import { CellRenderer } from './CellRenderer'
             uiParameter: { render: (p, i, s) => CellBodyRenderer.renderUiParameter(p, i, s) },
             publipostageWord: { render: (p, i, s) => CellBodyRenderer.renderPublipostageWord(p, i, s) },
             pdfme: { render: (p, i, s) => CellBodyRenderer.renderPdfme(p, i, s) },
+            sqlWithEchart: { render: (p, i, s) => CellBodyRenderer.renderSqlWithEchart(p, i, s) },
             sqlWithPerspective: { render: (p, i, s) => CellBodyRenderer.renderSqlWithPerspective(p, i, s) }
         };

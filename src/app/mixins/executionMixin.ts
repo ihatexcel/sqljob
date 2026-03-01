@@ -1550,6 +1550,103 @@ export function executionMixin() {
                 },
 
 
+                async executeEchartCell(cell) {
+                    if (!ConfigManager.getCellQuery(cell, 0)?.trim()) {
+                        throw new Error('Requête SQL manquante');
+                    }
+
+                    this.setStatus('Chargement ECharts...', 'loading');
+                    await CDNManager.loadECharts();
+
+                    this.setStatus('Parsing de la requête SQL...', 'loading');
+
+                    try {
+                        const finalQuery = await this.parseQueryRecursively(cell);
+
+                        this.setStatus('Exécution de la requête...', 'loading');
+                        const results = await DuckDBManager.executeQuery(finalQuery);
+
+                        cell._results = results;
+                        cell._echartReady = true;
+
+                        await this.$nextTick();
+
+                        await this.renderEchartInContainer(cell, true);
+
+                        cell._resultInfo = `✅ ${results.length} ligne(s)` +
+                            (cell._parseLevels.length > 1
+                                ? ` - ${cell._parseLevels.length - 1} niveau(x) de parsing`
+                                : '');
+                        this.setStatus('EChart chargé', 'success');
+                    } catch (error) {
+                        cell._echartReady = false;
+                        throw error;
+                    }
+                },
+
+                async renderEchartInContainer(cell, fromExecute = false) {
+                    const containerId = 'echart-' + cell._id;
+                    const container = document.getElementById(containerId);
+
+                    if (!container || !cell._results || cell._results.length === 0) {
+                        return;
+                    }
+
+                    if (cell._echartRendering) return;
+                    cell._echartRendering = true;
+
+                    try {
+                        // Dispose previous instance
+                        if (cell._echartInstance) {
+                            cell._echartInstance.dispose();
+                            cell._echartInstance = null;
+                        }
+                        // Disconnect previous resize observer
+                        if (cell._echartResizeObserver) {
+                            cell._echartResizeObserver.disconnect();
+                            cell._echartResizeObserver = null;
+                        }
+
+                        const parsed = EChartSqlParser.parseColumnRoles(cell._results);
+                        const { chartType } = parsed;
+
+                        // KPI: render as HTML, no ECharts instance
+                        if (chartType === 'kpi') {
+                            container.innerHTML = EChartSqlParser.buildKpiHtml(cell._results, parsed);
+                            return;
+                        }
+
+                        // Unknown type: show guidance message
+                        const option = EChartSqlParser.buildEChartsOption(cell._results, parsed);
+                        if (!option) {
+                            container.innerHTML = `<div class="flex items-center justify-center h-full text-base-content/50 text-sm p-6 text-center">
+                                Aucun type de graphique reconnu.<br>
+                                Utilisez des alias comme <strong>XAXIS</strong>, <strong>BARCHART</strong>, <strong>LINECHART</strong>, <strong>PIECHART</strong>, <strong>GAUGE</strong>…</div>`;
+                            return;
+                        }
+
+                        // Initialize ECharts and render
+                        const instance = window.echarts.init(container, null, { renderer: 'canvas' });
+                        instance.setOption(option);
+                        cell._echartInstance = instance;
+
+                        // Responsive resize
+                        const ro = new ResizeObserver(() => {
+                            if (cell._echartInstance && !cell._echartInstance.isDisposed()) {
+                                cell._echartInstance.resize();
+                            }
+                        });
+                        ro.observe(container);
+                        cell._echartResizeObserver = ro;
+
+                    } catch (error) {
+                        console.error('[EChart] Erreur de rendu:', error);
+                        throw error;
+                    } finally {
+                        cell._echartRendering = false;
+                    }
+                },
+
                 async runGroupsFromIndex(startGroupIndex) {
                     for (let groupIndex = startGroupIndex; groupIndex < this.groups.length; groupIndex++) {
                         await this.runGroup(groupIndex);

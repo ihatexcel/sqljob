@@ -714,6 +714,7 @@ export function generateAppHTML() {
                         <option value="sqlStat">Stat SQL (daisyui)</option>
                         <option value="publipostageWord">Publipostage Word</option>
                         <option value="pdfme">PDF (pdfme)</option>
+                        <option value="echart">EChart (Apache ECharts)</option>
                         <option value="perspective">Perspective Viewer</option>
                     </select>
                 </div>
