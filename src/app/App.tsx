@@ -48,6 +48,15 @@ export function App() {
         })
     }, [])
 
+    // Remplace le hook init() d'Alpine (appelé automatiquement au montage du composant Alpine).
+    // On l'appelle dès que l'app passe en état 'ready' : initialise DuckDB, charge les fichiers,
+    // évalue les ifQuery et auto-exécute les groupes.
+    useEffect(() => {
+        if (appState === 'ready') {
+            useNotebookStore.getState().init?.()
+        }
+    }, [appState])
+
     if (appState === 'loading') {
         return (
             <div className="min-h-screen flex items-center justify-center bg-base-100">
