@@ -26,7 +26,7 @@ export function CellConfigModal() {
     const {
         cellConfigModal, closeCellConfig, getCellAtPath,
         onCellTypeChange, validateCellName, syncMarkdownToEditor,
-        getCellValueByPath, setCellValueByPath, isLoading, forceUpdate
+        getCellValueByPath, setCellValueByPath, isLoading, forceUpdate, _rev
     } = useNotebookStore(useShallow(s => ({
         cellConfigModal: s.cellConfigModal,
         closeCellConfig: s.closeCellConfig,
@@ -37,7 +37,8 @@ export function CellConfigModal() {
         getCellValueByPath: s.getCellValueByPath,
         setCellValueByPath: s.setCellValueByPath,
         isLoading: s.isLoading,
-        forceUpdate: s.forceUpdate
+        forceUpdate: s.forceUpdate,
+        _rev: s._rev
     })))
 
     if (!cellConfigModal.open) return null

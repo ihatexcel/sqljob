@@ -10,12 +10,13 @@ import { GroupContainer } from '../GroupContainer'
 
 // ─── LoopConfigModal ──────────────────────────────────────────────────────────
 export function LoopConfigModal() {
-    const { loopConfigModal, getGroupAtPath, getDefaultLoopQuery, getDefaultZipQuery, forceUpdate } = useNotebookStore(useShallow(s => ({
+    const { loopConfigModal, getGroupAtPath, getDefaultLoopQuery, getDefaultZipQuery, forceUpdate, _rev } = useNotebookStore(useShallow(s => ({
         loopConfigModal: s.loopConfigModal,
         getGroupAtPath: s.getGroupAtPath,
         getDefaultLoopQuery: s.getDefaultLoopQuery,
         getDefaultZipQuery: s.getDefaultZipQuery,
-        forceUpdate: s.forceUpdate
+        forceUpdate: s.forceUpdate,
+        _rev: s._rev
     })))
     const set = useNotebookStore.setState
 
@@ -102,10 +103,11 @@ export function LoopConfigModal() {
 
 // ─── GroupSettingsModal ───────────────────────────────────────────────────────
 export function GroupSettingsModal() {
-    const { groupSettingsModal, getGroupAtPath, forceUpdate } = useNotebookStore(useShallow(s => ({
+    const { groupSettingsModal, getGroupAtPath, forceUpdate, _rev } = useNotebookStore(useShallow(s => ({
         groupSettingsModal: s.groupSettingsModal,
         getGroupAtPath: s.getGroupAtPath,
-        forceUpdate: s.forceUpdate
+        forceUpdate: s.forceUpdate,
+        _rev: s._rev
     })))
     const set = useNotebookStore.setState
 
