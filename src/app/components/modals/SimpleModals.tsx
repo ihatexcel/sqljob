@@ -2,6 +2,7 @@
 /**
  * Modals simples : AddGroup, InsertGroup, InsertCell, AddCellToGroup
  */
+import { useShallow } from 'zustand/react/shallow'
 import { useNotebookStore } from '../../store/notebookStore'
 
 // ─── Icônes cellules ──────────────────────────────────────────────────────────
@@ -26,10 +27,10 @@ function CellTypeGrid({ onSelect }: { onSelect: (type: string) => void }) {
 
 // ─── AddGroupModal ────────────────────────────────────────────────────────────
 export function AddGroupModal() {
-    const { showAddGroupModal, addGroup } = useNotebookStore(s => ({
+    const { showAddGroupModal, addGroup } = useNotebookStore(useShallow(s => ({
         showAddGroupModal: s.showAddGroupModal,
         addGroup: s.addGroup
-    }))
+    })))
     const set = useNotebookStore.setState
 
     if (!showAddGroupModal) return null
@@ -56,10 +57,10 @@ export function AddGroupModal() {
 
 // ─── InsertGroupModal ─────────────────────────────────────────────────────────
 export function InsertGroupModal() {
-    const { insertGroupModal, insertGroupAt } = useNotebookStore(s => ({
+    const { insertGroupModal, insertGroupAt } = useNotebookStore(useShallow(s => ({
         insertGroupModal: s.insertGroupModal,
         insertGroupAt: s.insertGroupAt
-    }))
+    })))
     const set = useNotebookStore.setState
 
     if (!insertGroupModal.open) return null
@@ -89,10 +90,10 @@ export function InsertGroupModal() {
 
 // ─── InsertCellModal ──────────────────────────────────────────────────────────
 export function InsertCellModal() {
-    const { insertCellModal, insertCellAt } = useNotebookStore(s => ({
+    const { insertCellModal, insertCellAt } = useNotebookStore(useShallow(s => ({
         insertCellModal: s.insertCellModal,
         insertCellAt: s.insertCellAt
-    }))
+    })))
     const set = useNotebookStore.setState
 
     if (!insertCellModal.open) return null
@@ -121,10 +122,10 @@ export function InsertCellModal() {
 
 // ─── AddCellToGroupModal ──────────────────────────────────────────────────────
 export function AddCellToGroupModal() {
-    const { addCellToGroupModal, addCellToGroup } = useNotebookStore(s => ({
+    const { addCellToGroupModal, addCellToGroup } = useNotebookStore(useShallow(s => ({
         addCellToGroupModal: s.addCellToGroupModal,
         addCellToGroup: s.addCellToGroup
-    }))
+    })))
     const set = useNotebookStore.setState
 
     if (!addCellToGroupModal.open) return null

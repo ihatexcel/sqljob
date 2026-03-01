@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { useShallow } from 'zustand/react/shallow'
 import { useNotebookStore } from '../store/notebookStore'
 
 interface Props {
@@ -14,7 +15,7 @@ export function CellHeader({ cell, path, cellIndex, group }: Props) {
         runCellAt, openCellConfig, openChildGroupModal,
         moveItemInGroup, deleteCellAt,
         isFirstInGroup, isLastInGroup, getCellIcon
-    } = useNotebookStore(s => ({
+    } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         isLoading: s.isLoading,
         runCellAt: s.runCellAt,
@@ -25,7 +26,7 @@ export function CellHeader({ cell, path, cellIndex, group }: Props) {
         isFirstInGroup: s.isFirstInGroup,
         isLastInGroup: s.isLastInGroup,
         getCellIcon: s.getCellIcon
-    }))
+    })))
 
     if (!devMode) return null
 

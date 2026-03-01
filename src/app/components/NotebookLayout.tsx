@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { useShallow } from 'zustand/react/shallow'
 import { useNotebookStore } from '../store/notebookStore'
 import { PageContent } from './PageContent'
 import { ConfirmModal } from './modals/ConfirmModal'
@@ -16,7 +17,7 @@ function TabBar() {
         activatePage, addPage, deletePage,
         draggedPageIndex, dragOverPageIndex,
         startPageDrag, onPageDragOver, onPageDragLeave, onPageDrop, endPageDrag
-    } = useNotebookStore(s => ({
+    } = useNotebookStore(useShallow(s => ({
         pages: s.pages,
         activePageIndex: s.activePageIndex,
         devMode: s.devMode,
@@ -30,7 +31,7 @@ function TabBar() {
         onPageDragLeave: s.onPageDragLeave,
         onPageDrop: s.onPageDrop,
         endPageDrag: s.endPageDrag
-    }))
+    })))
 
     return (
         <div role="tablist" className="tabs tabs-border flex-nowrap overflow-x-auto">
@@ -95,13 +96,13 @@ function NavBar() {
     const {
         devMode, isLoading, showLayout,
         openExportModal, runAllGroups
-    } = useNotebookStore(s => ({
+    } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         isLoading: s.isLoading,
         showLayout: s.showLayout,
         openExportModal: s.openExportModal,
         runAllGroups: s.runAllGroups
-    }))
+    })))
 
     if (!showLayout) return null
 
@@ -148,7 +149,7 @@ function NavBar() {
 
 // ─── Status bar ───────────────────────────────────────────────────────────────
 function StatusBar() {
-    const { status, statusType } = useNotebookStore(s => ({ status: s.status, statusType: s.statusType }))
+    const { status, statusType } = useNotebookStore(useShallow(s => ({ status: s.status, statusType: s.statusType })))
     if (!status) return null
     return (
         <div className="toast toast-end toast-bottom z-[1500]">
@@ -162,14 +163,14 @@ function StatusBar() {
 
 // ─── Floating controls (bottom left) ─────────────────────────────────────────
 function FloatingControls() {
-    const { devMode, showLayout, availableThemes, currentTheme, dbEngine, setTheme } = useNotebookStore(s => ({
+    const { devMode, showLayout, availableThemes, currentTheme, dbEngine, setTheme } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         showLayout: s.showLayout,
         availableThemes: s.availableThemes,
         currentTheme: s.currentTheme,
         dbEngine: s.dbEngine,
         setTheme: s.setTheme
-    }))
+    })))
     const set = useNotebookStore.setState
 
     if (!showLayout) return null

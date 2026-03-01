@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { useState } from 'react'
+import { useShallow } from 'zustand/react/shallow'
 import { useNotebookStore } from '../store/notebookStore'
 import { CellHeader } from './CellHeader'
 import { CellBody } from './CellBody'
@@ -9,13 +10,13 @@ function CellItem({ cell, cellIndex, path, group }: { cell: any, cellIndex: numb
     const {
         devMode, getCellSizeOuterClass, getCellWrapperStyle,
         getCellSizeInnerClass, shouldShowCell
-    } = useNotebookStore(s => ({
+    } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         getCellSizeOuterClass: s.getCellSizeOuterClass,
         getCellWrapperStyle: s.getCellWrapperStyle,
         getCellSizeInnerClass: s.getCellSizeInnerClass,
         shouldShowCell: s.shouldShowCell
-    }))
+    })))
 
     const isColumn = group.direction === 'column'
     if (!devMode && !shouldShowCell(cell)) return null
@@ -108,7 +109,7 @@ export function GroupContainer({
         moveItemInGroup, deleteGroupAtPath, insertGroupBelow,
         openInsertGroupModal, openLoopConfigModal, openGroupSettingsModal,
         isFirstInGroup, isLastInGroup, forceUpdate
-    } = useNotebookStore(s => ({
+    } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         isLoading: s.isLoading,
         getSortedCells: s.getSortedCells,
@@ -128,7 +129,7 @@ export function GroupContainer({
         isFirstInGroup: s.isFirstInGroup,
         isLastInGroup: s.isLastInGroup,
         forceUpdate: s.forceUpdate
-    }))
+    })))
 
     const [accordionOpen, setAccordionOpen] = useState(group.accordionOpen !== false)
 
@@ -217,7 +218,7 @@ function GroupContent({ group, path, depth }: { group: any, path: number[], dept
     const {
         getSortedCells, getSortedChildren, getAllItemsSorted,
         shouldShowGroup, shouldShowCell, devMode, forceUpdate
-    } = useNotebookStore(s => ({
+    } = useNotebookStore(useShallow(s => ({
         getSortedCells: s.getSortedCells,
         getSortedChildren: s.getSortedChildren,
         getAllItemsSorted: s.getAllItemsSorted,
@@ -225,7 +226,7 @@ function GroupContent({ group, path, depth }: { group: any, path: number[], dept
         shouldShowCell: s.shouldShowCell,
         devMode: s.devMode,
         forceUpdate: s.forceUpdate
-    }))
+    })))
 
     const isColumn = group.direction === 'column'
     const cells = getSortedCells?.(group) || []

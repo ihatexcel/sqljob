@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { useEffect, useRef } from 'react'
+import { useShallow } from 'zustand/react/shallow'
 import { useNotebookStore } from '../../store/notebookStore'
 import { ConfigManager } from '../../../lib/ConfigManager'
 import { CellConfigService } from '../../../lib/CellConfigService'
@@ -26,7 +27,7 @@ export function CellConfigModal() {
         cellConfigModal, closeCellConfig, getCellAtPath,
         onCellTypeChange, validateCellName, syncMarkdownToEditor,
         getCellValueByPath, setCellValueByPath, isLoading, forceUpdate
-    } = useNotebookStore(s => ({
+    } = useNotebookStore(useShallow(s => ({
         cellConfigModal: s.cellConfigModal,
         closeCellConfig: s.closeCellConfig,
         getCellAtPath: s.getCellAtPath,
@@ -37,7 +38,7 @@ export function CellConfigModal() {
         setCellValueByPath: s.setCellValueByPath,
         isLoading: s.isLoading,
         forceUpdate: s.forceUpdate
-    }))
+    })))
 
     if (!cellConfigModal.open) return null
 

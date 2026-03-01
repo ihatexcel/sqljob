@@ -2,6 +2,7 @@
 /**
  * Modals d'export : ExportModal, GistTokenModal, GistResultModal, JsonPassphraseModal
  */
+import { useShallow } from 'zustand/react/shallow'
 import { useNotebookStore } from '../../store/notebookStore'
 
 // ─── ExportModal ──────────────────────────────────────────────────────────────
@@ -9,12 +10,12 @@ export function ExportModal() {
     const {
         exportModal, isLoading,
         cancelExport, executeExport
-    } = useNotebookStore(s => ({
+    } = useNotebookStore(useShallow(s => ({
         exportModal: s.exportModal,
         isLoading: s.isLoading,
         cancelExport: s.cancelExport,
         executeExport: s.executeExport
-    }))
+    })))
     const set = useNotebookStore.setState
 
     if (!exportModal.show) return null
@@ -148,12 +149,12 @@ export function ExportModal() {
 
 // ─── GistTokenModal ───────────────────────────────────────────────────────────
 export function GistTokenModal() {
-    const { showGistTokenModal, githubToken, saveGithubToken, cancelGithubToken } = useNotebookStore(s => ({
+    const { showGistTokenModal, githubToken, saveGithubToken, cancelGithubToken } = useNotebookStore(useShallow(s => ({
         showGistTokenModal: s.showGistTokenModal,
         githubToken: s.githubToken,
         saveGithubToken: s.saveGithubToken,
         cancelGithubToken: s.cancelGithubToken
-    }))
+    })))
     const set = useNotebookStore.setState
 
     if (!showGistTokenModal) return null
@@ -206,7 +207,7 @@ export function GistResultModal() {
     const {
         showGistModal, gistShareUrl, gistWasEncrypted, gistPassphraseToShare,
         closeGistModal, copyGistUrl, copyGistPassphrase, openGistUrl
-    } = useNotebookStore(s => ({
+    } = useNotebookStore(useShallow(s => ({
         showGistModal: s.showGistModal,
         gistShareUrl: s.gistShareUrl,
         gistWasEncrypted: s.gistWasEncrypted,
@@ -215,7 +216,7 @@ export function GistResultModal() {
         copyGistUrl: s.copyGistUrl,
         copyGistPassphrase: s.copyGistPassphrase,
         openGistUrl: s.openGistUrl
-    }))
+    })))
 
     if (!showGistModal) return null
     return (
@@ -277,14 +278,14 @@ export function JsonPassphraseModal() {
     const {
         showJsonPassphraseModal, jsonPassphrase, jsonPassphraseError, jsonPassphraseLoading,
         unlockJsonConfig, cancelJsonPassphraseModal
-    } = useNotebookStore(s => ({
+    } = useNotebookStore(useShallow(s => ({
         showJsonPassphraseModal: s.showJsonPassphraseModal,
         jsonPassphrase: s.jsonPassphrase,
         jsonPassphraseError: s.jsonPassphraseError,
         jsonPassphraseLoading: s.jsonPassphraseLoading,
         unlockJsonConfig: s.unlockJsonConfig,
         cancelJsonPassphraseModal: s.cancelJsonPassphraseModal
-    }))
+    })))
     const set = useNotebookStore.setState
 
     if (!showJsonPassphraseModal) return null

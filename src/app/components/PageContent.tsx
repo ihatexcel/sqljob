@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { useShallow } from 'zustand/react/shallow'
 import { useNotebookStore } from '../store/notebookStore'
 import { GroupContainer } from './GroupContainer'
 
@@ -7,7 +8,7 @@ export function PageContent() {
         devMode, isLoading, showAddGroupModal,
         getActivePage, getGroups, getLinkGroups,
         getFlattenedGroups, addGroup, openInsertGroupModal, runAllGroups
-    } = useNotebookStore(s => ({
+    } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         isLoading: s.isLoading,
         showAddGroupModal: s.showAddGroupModal,
@@ -18,7 +19,7 @@ export function PageContent() {
         addGroup: s.addGroup,
         openInsertGroupModal: s.openInsertGroupModal,
         runAllGroups: s.runAllGroups
-    }))
+    })))
     const set = useNotebookStore.setState
 
     const groups = getGroups()

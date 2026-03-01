@@ -1,17 +1,18 @@
 // @ts-nocheck
+import { useShallow } from 'zustand/react/shallow'
 import { useNotebookStore } from '../../store/notebookStore'
 
 export function DbEngineModal() {
     const {
         showDbEngineModal, dbEngine, directedAcyclicGraph,
         switchDbEngine, canUseDucklings
-    } = useNotebookStore(s => ({
+    } = useNotebookStore(useShallow(s => ({
         showDbEngineModal: s.showDbEngineModal,
         dbEngine: s.dbEngine,
         directedAcyclicGraph: s.directedAcyclicGraph,
         switchDbEngine: s.switchDbEngine,
         canUseDucklings: s.canUseDucklings
-    }))
+    })))
     const set = useNotebookStore.setState
 
     if (!showDbEngineModal) return null

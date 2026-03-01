@@ -3,19 +3,20 @@
  * LoopConfigModal + GroupSettingsModal + ChildGroupModal
  */
 import { useEffect, useRef } from 'react'
+import { useShallow } from 'zustand/react/shallow'
 import { useNotebookStore } from '../../store/notebookStore'
 import { ConfigManager } from '../../../lib/ConfigManager'
 import { GroupContainer } from '../GroupContainer'
 
 // ─── LoopConfigModal ──────────────────────────────────────────────────────────
 export function LoopConfigModal() {
-    const { loopConfigModal, getGroupAtPath, getDefaultLoopQuery, getDefaultZipQuery, forceUpdate } = useNotebookStore(s => ({
+    const { loopConfigModal, getGroupAtPath, getDefaultLoopQuery, getDefaultZipQuery, forceUpdate } = useNotebookStore(useShallow(s => ({
         loopConfigModal: s.loopConfigModal,
         getGroupAtPath: s.getGroupAtPath,
         getDefaultLoopQuery: s.getDefaultLoopQuery,
         getDefaultZipQuery: s.getDefaultZipQuery,
         forceUpdate: s.forceUpdate
-    }))
+    })))
     const set = useNotebookStore.setState
 
     if (!loopConfigModal.open) return null
@@ -101,11 +102,11 @@ export function LoopConfigModal() {
 
 // ─── GroupSettingsModal ───────────────────────────────────────────────────────
 export function GroupSettingsModal() {
-    const { groupSettingsModal, getGroupAtPath, forceUpdate } = useNotebookStore(s => ({
+    const { groupSettingsModal, getGroupAtPath, forceUpdate } = useNotebookStore(useShallow(s => ({
         groupSettingsModal: s.groupSettingsModal,
         getGroupAtPath: s.getGroupAtPath,
         forceUpdate: s.forceUpdate
-    }))
+    })))
     const set = useNotebookStore.setState
 
     if (!groupSettingsModal.open) return null
@@ -217,7 +218,7 @@ export function ChildGroupModal() {
         childGroupModal, devMode, isLoading,
         closeChildGroupModal, deleteChildGroupModal,
         addNestedGroup, openAddCellToGroupModal, runGroupAtPath
-    } = useNotebookStore(s => ({
+    } = useNotebookStore(useShallow(s => ({
         childGroupModal: s.childGroupModal,
         devMode: s.devMode,
         isLoading: s.isLoading,
@@ -226,7 +227,7 @@ export function ChildGroupModal() {
         addNestedGroup: s.addNestedGroup,
         openAddCellToGroupModal: s.openAddCellToGroupModal,
         runGroupAtPath: s.runGroupAtPath
-    }))
+    })))
 
     if (!childGroupModal.open || !childGroupModal.group) return null
 

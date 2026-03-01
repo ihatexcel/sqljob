@@ -4,6 +4,7 @@
  * Remplace les templates Alpine générés par CellBodyRenderer.
  */
 import { useEffect, useRef, useState } from 'react'
+import { useShallow } from 'zustand/react/shallow'
 import { useNotebookStore } from '../store/notebookStore'
 import { ConfigManager } from '../../lib/ConfigManager'
 import { CDNManager } from '../../lib/CDNManager'
@@ -102,14 +103,14 @@ function SourceBody({ cell, path, cellIndex }: any) {
     const {
         handleSingleSourceDrop, handleSingleSourceFileSelect,
         downloadSourceFile, removeSingleSourceFile, devMode, forceUpdate
-    } = useNotebookStore(s => ({
+    } = useNotebookStore(useShallow(s => ({
         handleSingleSourceDrop: s.handleSingleSourceDrop,
         handleSingleSourceFileSelect: s.handleSingleSourceFileSelect,
         downloadSourceFile: s.downloadSourceFile,
         removeSingleSourceFile: s.removeSingleSourceFile,
         devMode: s.devMode,
         forceUpdate: s.forceUpdate
-    }))
+    })))
 
     const inputRef = useRef<HTMLInputElement>(null)
     const [isDragging, setIsDragging] = useState(false)
@@ -156,7 +157,7 @@ function SourceBody({ cell, path, cellIndex }: any) {
 
 // ─── ButtonRunBody ────────────────────────────────────────────────────────────
 function ButtonRunBody({ cell, path, cellIndex }: any) {
-    const { runCellsAfter, isLoading } = useNotebookStore(s => ({ runCellsAfter: s.runCellsAfter, isLoading: s.isLoading }))
+    const { runCellsAfter, isLoading } = useNotebookStore(useShallow(s => ({ runCellsAfter: s.runCellsAfter, isLoading: s.isLoading })))
     return (
         <div className="flex justify-center p-0">
             <button className="btn btn-primary btn-sm" onClick={() => runCellsAfter(path, cellIndex)} disabled={isLoading}>
@@ -172,7 +173,7 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
         devMode, isLoading, hasCellHeight,
         showSqlEditorVisible, isSqlResultTabular, isSqlResultText,
         getSqlResultAsText, renderTableInContainer, safeRenderSqlEditor
-    } = useNotebookStore(s => ({
+    } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         isLoading: s.isLoading,
         hasCellHeight: s.hasCellHeight,
@@ -182,7 +183,7 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
         getSqlResultAsText: s.getSqlResultAsText,
         renderTableInContainer: s.renderTableInContainer,
         safeRenderSqlEditor: s.safeRenderSqlEditor
-    }))
+    })))
 
     const tableRef = useRef<HTMLDivElement>(null)
     const editorRef = useRef<HTMLDivElement>(null)
@@ -235,12 +236,12 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
 
 // ─── IframeBody ───────────────────────────────────────────────────────────────
 function IframeBody({ cell, path, cellIndex }: any) {
-    const { devMode, hasCellHeight, safeRenderSqlEditor, showSqlEditorVisible } = useNotebookStore(s => ({
+    const { devMode, hasCellHeight, safeRenderSqlEditor, showSqlEditorVisible } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         hasCellHeight: s.hasCellHeight,
         safeRenderSqlEditor: s.safeRenderSqlEditor,
         showSqlEditorVisible: s.showSqlEditorVisible
-    }))
+    })))
 
     const editorRef = useRef<HTMLDivElement>(null)
     const iframeRef = useRef<HTMLIFrameElement>(null)
@@ -279,11 +280,11 @@ function IframeBody({ cell, path, cellIndex }: any) {
 
 // ─── SqlStatBody ──────────────────────────────────────────────────────────────
 function SqlStatBody({ cell, path, cellIndex }: any) {
-    const { devMode, safeRenderSqlEditor, showSqlEditorVisible } = useNotebookStore(s => ({
+    const { devMode, safeRenderSqlEditor, showSqlEditorVisible } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         safeRenderSqlEditor: s.safeRenderSqlEditor,
         showSqlEditorVisible: s.showSqlEditorVisible
-    }))
+    })))
     const editorRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
@@ -305,12 +306,12 @@ function SqlStatBody({ cell, path, cellIndex }: any) {
 
 // ─── EChartBody ───────────────────────────────────────────────────────────────
 function EChartBody({ cell, path, cellIndex }: any) {
-    const { devMode, safeRenderSqlEditor, showSqlEditorVisible, hasCellHeight } = useNotebookStore(s => ({
+    const { devMode, safeRenderSqlEditor, showSqlEditorVisible, hasCellHeight } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         safeRenderSqlEditor: s.safeRenderSqlEditor,
         showSqlEditorVisible: s.showSqlEditorVisible,
         hasCellHeight: s.hasCellHeight
-    }))
+    })))
 
     const editorRef = useRef<HTMLDivElement>(null)
     const chartRef = useRef<HTMLDivElement>(null)
@@ -344,11 +345,11 @@ function EChartBody({ cell, path, cellIndex }: any) {
 
 // ─── UiParameterBody ──────────────────────────────────────────────────────────
 function UiParameterBody({ cell, path, cellIndex }: any) {
-    const { devMode, renderUiParameterEditor, forceUpdate } = useNotebookStore(s => ({
+    const { devMode, renderUiParameterEditor, forceUpdate } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         renderUiParameterEditor: s.renderUiParameterEditor,
         forceUpdate: s.forceUpdate
-    }))
+    })))
     const editorRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
@@ -376,11 +377,11 @@ function UiParameterBody({ cell, path, cellIndex }: any) {
 
 // ─── GenericHtmlBody (perspective, pdfme, publipostageWord) ──────────────────
 function GenericHtmlBody({ cell, path, cellIndex }: any) {
-    const { devMode, safeRenderSqlEditor, showSqlEditorVisible } = useNotebookStore(s => ({
+    const { devMode, safeRenderSqlEditor, showSqlEditorVisible } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         safeRenderSqlEditor: s.safeRenderSqlEditor,
         showSqlEditorVisible: s.showSqlEditorVisible
-    }))
+    })))
     const editorRef = useRef<HTMLDivElement>(null)
     const contentRef = useRef<HTMLDivElement>(null)
 
@@ -412,7 +413,7 @@ export function CellBody({ cell, path, cellIndex, group }: { cell: any, path: nu
         hasCellHeight, getCellHeightVars,
         bodyDisplayShouldShowSkeleton, bodyDisplayShouldShowContent,
         openChildGroupModal
-    } = useNotebookStore(s => ({
+    } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         isLoading: s.isLoading,
         hasCellHeight: s.hasCellHeight,
@@ -420,7 +421,7 @@ export function CellBody({ cell, path, cellIndex, group }: { cell: any, path: nu
         bodyDisplayShouldShowSkeleton: s.bodyDisplayShouldShowSkeleton,
         bodyDisplayShouldShowContent: s.bodyDisplayShouldShowContent,
         openChildGroupModal: s.openChildGroupModal
-    }))
+    })))
 
     const hasHeight = hasCellHeight(cell)
     const heightVars = getCellHeightVars(cell)
