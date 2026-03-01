@@ -618,14 +618,18 @@ export function executionMixin() {
 
                     this.setStatus('Chargement tableau...', 'loading');
 
+                    // Créer les types DuckDB taleshape pour le type-casting (::PERCENT, ::TREND, etc.)
+                    await DuckDBManager.initChartTypes();
+
                     try {
                         // Utiliser la fonction partagée pour le parsing récursif
                         const finalQuery = await this.parseQueryRecursively(cell);
 
                         this.setStatus('Exécution de la requête finale...', 'loading');
 
-                        // Exécuter la requête finale
-                        const results = await DuckDBManager.executeQuery(finalQuery);
+                        // Exécuter la requête avec schema pour récupérer les types DuckDB
+                        const { rows: results, columnTypes } = await DuckDBManager.executeQueryWithSchema(finalQuery);
+                        cell._columnTypes = columnTypes;
 
                         const maxRows = cell.maxRows || 100000;
                         const truncated = results.length > maxRows;
@@ -703,8 +707,9 @@ export function executionMixin() {
                         }
 
                         // Parse column roles for PERCENT/TREND rendering and display names
-                        const _parsedRoles = EChartSqlParser.parseColumnRoles(rawResults);
-                        const _colRenderers = EChartSqlParser.buildTableColumnRenderers(_parsedRoles);
+                        // Utiliser les types DuckDB si disponibles (taleshape type-casting)
+                        const _parsedRoles = EChartSqlParser.parseColumnRoles(rawResults, cell._columnTypes);
+                        const _colRenderers = EChartSqlParser.buildTableColumnRenderers(_parsedRoles, rawResults);
                         const _displayNames = EChartSqlParser.getTableColumnDisplayNames(_parsedRoles);
                         const _colKeys = Object.keys(rawResults[0]);
                         const _hasSpecialCols = Object.keys(_colRenderers).length > 0;
@@ -947,12 +952,16 @@ export function executionMixin() {
 
                     this.setStatus('Exécution de la stat SQL...', 'loading');
 
+                    // Créer les types DuckDB taleshape pour le type-casting
+                    await DuckDBManager.initChartTypes();
+
                     try {
                         // Utiliser la fonction partagée pour le parsing récursif
                         const finalQuery = await this.parseQueryRecursively(cell);
 
                         this.setStatus('Exécution de la requête finale...', 'loading');
-                        const results = await DuckDBManager.executeQuery(finalQuery);
+                        const { rows: results, columnTypes } = await DuckDBManager.executeQueryWithSchema(finalQuery);
+                        cell._columnTypes = columnTypes;
 
                         if (!results || results.length === 0) {
                             cell._results = [];
@@ -1658,6 +1667,15 @@ export function executionMixin() {
                     } finally {
                         cell._echartRendering = false;
                     }
+                },
+
+                downloadEchartPNG(cell) {
+                    if (!cell._echartInstance || cell._echartInstance.isDisposed()) return;
+                    const url = cell._echartInstance.getDataURL({ type: 'png', pixelRatio: 2, backgroundColor: '#fff' });
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = (cell.name || 'echart') + '.png';
+                    a.click();
                 },
 
                 async runGroupsFromIndex(startGroupIndex) {

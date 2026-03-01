@@ -110,11 +110,17 @@ import { CellRenderer } from './CellRenderer'
                 return `<div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 flex flex-col' : 'flex flex-col gap-2'">
                     <template x-if="showSqlEditorVisible(cellItem.cell)"><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${defaultSql}', false, 'query', '_showParsedQuery', null, null, null, '${pathExpr}', '${cellIdxExpr}')"></div></template>
                     <template x-if="cellItem.cell._status === 'running' && !cellItem.cell._echartReady"><div :class="(hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 ' : '') + 'rounded-lg bg-base-100 overflow-hidden'" style="min-height: ${mh}">${ts}</div></template>
-                    <div :id="'echart-' + cellItem.cell._id"
-                         :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 w-full rounded-lg' : 'w-full rounded-lg'"
-                         :style="hasCellHeight(cellItem.cell) ? '' : 'min-height: ${mh}'"
-                         x-show="cellItem.cell._echartReady"
-                         x-init="$nextTick(() => { if (cellItem.cell._results && cellItem.cell._results.length > 0) { renderEchartInContainer(cellItem.cell); } })">
+                    <div class="relative" :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0' : ''" x-show="cellItem.cell._echartReady">
+                        <button class="btn btn-ghost btn-xs absolute top-1 right-1 z-10 opacity-40 hover:opacity-100"
+                                @click="downloadEchartPNG(cellItem.cell)"
+                                title="Télécharger PNG">
+                            <span class="iconify" data-icon="material-symbols-light:download" style="font-size:1.1rem"></span>
+                        </button>
+                        <div :id="'echart-' + cellItem.cell._id"
+                             :class="hasCellHeight(cellItem.cell) ? 'h-full w-full rounded-lg' : 'w-full rounded-lg'"
+                             :style="hasCellHeight(cellItem.cell) ? '' : 'min-height: ${mh}'"
+                             x-init="$nextTick(() => { if (cellItem.cell._results && cellItem.cell._results.length > 0) { renderEchartInContainer(cellItem.cell); } })">
+                        </div>
                     </div>
                     ${this.renderResultInfoBlock(true)}
                 </div>`;

@@ -120,7 +120,11 @@ export function parseColumnRoles(results: any[], columnTypes?: Record<string, st
             }
         }
         if (!matched) {
-            // Colonne sans rôle chart : ignorée pour les graphiques
+            // 3. Prefix match pour BOXPLOT() macro : "BOXPLOT(col1)" → role=BOXPLOT
+            if (upper.startsWith('BOXPLOT(')) {
+                roles.push({ originalName: colName, role: 'BOXPLOT', displayName: colName });
+            }
+            // Sinon : colonne sans rôle chart, ignorée pour les graphiques
         }
     }
 
@@ -140,6 +144,7 @@ function _detectChartType(roleMap: Record<string, ColumnRole[]>): string {
     if (has('BARCHART_STACKED_PERCENT')) return 'bar_stacked_percent';
     if (has('BARCHART_PERCENT'))         return 'bar_percent';
     if (has('BARCHART_STACKED'))         return 'bar_stacked';
+    if (has('BARCHART') && has('LINECHART')) return 'mixed_bar_line'; // mixed before pure bar
     if (has('BARCHART')) {
         // Horizontal bar when YAXIS instead of XAXIS
         if (has('YAXIS') && !has('XAXIS')) return 'bar_horizontal';
@@ -202,6 +207,8 @@ export function buildEChartsOption(results: any[], parsed: ParsedColumnRoles): o
             return _buildGaugeOption(results, roleMap, chartType, base, textColor);
         case 'boxplot':
             return _buildBoxplotOption(results, roleMap, base, textColor);
+        case 'mixed_bar_line':
+            return _buildMixedBarLineOption(results, roleMap, base, textColor);
         case 'kpi':
             // KPI is handled separately (rendered as HTML, not ECharts)
             return null;
@@ -232,6 +239,77 @@ function _str(v: any): string {
 function _num(v: any): number {
     const n = Number(v);
     return isNaN(n) ? 0 : n;
+}
+
+/** Convertit une fraction 0-1 en pourcentage 0-100 (convention TaleShape) */
+function _pct(v: any): number { return _num(v) * 100; }
+
+/** Détecte si les valeurs TREND sont des ratios (n/lag(n)) : toutes > 0 */
+function _isTrendRatio(results: any[], colName: string): boolean {
+    for (const row of results) {
+        const v = _num(row[colName]);
+        if (v === 0) continue; // skip nulls/zeros
+        if (v <= 0) return false;
+    }
+    return true;
+}
+
+/** Retourne arrow/couleur/display pour une valeur TREND selon le mode (ratio vs delta) */
+function _trendInfo(val: number, isRatio: boolean): { arrow: string; color: string; display: string } {
+    if (isRatio) {
+        const isUp = val > 1;
+        const isNeutral = Math.abs(val - 1) < 0.001;
+        const pct = (val - 1) * 100;
+        const arrow = isNeutral ? '→' : isUp ? '↑' : '↓';
+        const color = isNeutral ? 'text-warning' : isUp ? 'text-success' : 'text-error';
+        return { arrow, color, display: `${pct >= 0 ? '+' : ''}${pct.toFixed(1)}%` };
+    }
+    const isUp = val > 0;
+    const isNeutral = val === 0;
+    const arrow = isNeutral ? '→' : isUp ? '↑' : '↓';
+    const color = isNeutral ? 'text-warning' : isUp ? 'text-success' : 'text-error';
+    return { arrow, color, display: `${isUp ? '+' : ''}${val}` };
+}
+
+/** Variante CSS inline pour buildTableColumnRenderers */
+function _trendInfoInline(val: number, isRatio: boolean): { arrow: string; color: string; display: string } {
+    if (isRatio) {
+        const isUp = val > 1;
+        const isNeutral = Math.abs(val - 1) < 0.001;
+        const pct = (val - 1) * 100;
+        return {
+            arrow: isNeutral ? '→' : isUp ? '↑' : '↓',
+            color: isNeutral ? '#f59e0b' : isUp ? '#22c55e' : '#ef4444',
+            display: `${pct >= 0 ? '+' : ''}${pct.toFixed(1)}%`,
+        };
+    }
+    const isUp = val > 0;
+    const isNeutral = val === 0;
+    return {
+        arrow: isNeutral ? '→' : isUp ? '↑' : '↓',
+        color: isNeutral ? '#f59e0b' : isUp ? '#22c55e' : '#ef4444',
+        display: `${isUp ? '+' : ''}${val}`,
+    };
+}
+
+/** Calcule les statistiques boxplot (whiskers + outliers Tukey) sur un tableau de nombres triés */
+function _computeBoxStats(values: number[]): { box: number[]; outliers: number[] } {
+    if (values.length === 0) return { box: [0, 0, 0, 0, 0], outliers: [] };
+    const sorted = [...values].sort((a, b) => a - b);
+    const q = (p: number) => {
+        const idx = p * (sorted.length - 1);
+        const lo = Math.floor(idx), hi = Math.ceil(idx);
+        return sorted[lo] + (sorted[hi] - sorted[lo]) * (idx - lo);
+    };
+    const q1 = q(0.25), median = q(0.5), q3 = q(0.75);
+    const iqr = q3 - q1;
+    const lowerFence = q1 - 1.5 * iqr;
+    const upperFence = q3 + 1.5 * iqr;
+    const lowerWhisker = sorted.find(v => v >= lowerFence) ?? sorted[0];
+    let upperWhisker = sorted[0];
+    for (const v of sorted) { if (v <= upperFence) upperWhisker = v; }
+    const outliers = sorted.filter(v => v < lowerFence || v > upperFence);
+    return { box: [lowerWhisker, q1, median, q3, upperWhisker], outliers };
 }
 
 /** Build a pivot: category → axisValue → numeric value */
@@ -341,7 +419,7 @@ function _buildBarOption(results, roleMap, chartType, base, textColor, horizonta
         }
 
         for (const cat of categories) {
-            const data = axisData.map(ax => pivotData[cat]?.[ax] ?? 0);
+            const data = axisData.map(ax => isPercent ? _pct(pivotData[cat]?.[ax] ?? 0) : (pivotData[cat]?.[ax] ?? 0));
             const s: any = {
                 name: cat,
                 type: 'bar',
@@ -369,7 +447,7 @@ function _buildBarOption(results, roleMap, chartType, base, textColor, horizonta
                 barMaxWidth: 60,
                 emphasis: { focus: 'series' },
                 data: results.map(r => {
-                    const val = _num(r[vc.originalName]);
+                    const val = isPercent ? _pct(r[vc.originalName]) : _num(r[vc.originalName]);
                     if (colorCol && r[colorCol]) {
                         return { value: val, itemStyle: { color: _str(r[colorCol]) } };
                     }
@@ -432,6 +510,70 @@ function _buildBarOption(results, roleMap, chartType, base, textColor, horizonta
     };
 }
 
+// ─── Mixed Bar + Line chart ───────────────────────────────────────────────────
+
+function _buildMixedBarLineOption(results, roleMap, base, textColor) {
+    const barCols: ColumnRole[] = roleMap['BARCHART'] || [];
+    const lineCols: ColumnRole[] = roleMap['LINECHART'] || [];
+    const axisCols = roleMap['XAXIS'] || [];
+    const colorCols = roleMap['COLOR'] || [];
+    const axisCol = axisCols[0]?.originalName;
+    const colorCol = colorCols[0]?.originalName;
+
+    const axisData = axisCol ? results.map(r => _str(r[axisCol])) : [];
+    const series: any[] = [];
+
+    for (const vc of barCols) {
+        const s: any = {
+            name: vc.displayName,
+            type: 'bar',
+            barMaxWidth: 60,
+            emphasis: { focus: 'series' },
+            data: results.map(r => {
+                const val = _num(r[vc.originalName]);
+                if (colorCol && r[colorCol]) {
+                    return { value: val, itemStyle: { color: _str(r[colorCol]) } };
+                }
+                return val;
+            }),
+        };
+        series.push(s);
+    }
+
+    for (const vc of lineCols) {
+        const s: any = {
+            name: vc.displayName,
+            type: 'line',
+            smooth: true,
+            emphasis: { focus: 'series' },
+            data: results.map(r => _num(r[vc.originalName])),
+        };
+        if (colorCol) {
+            const color = _str(results[0]?.[colorCol]);
+            if (color) s.lineStyle = { color };
+        }
+        series.push(s);
+    }
+
+    // Attach markLines and markPoints to first series
+    const markLineData = _buildMarkLines(results, roleMap);
+    if (markLineData.length > 0 && series.length > 0) {
+        series[0].markLine = { symbol: ['none', 'none'], data: markLineData, label: { show: true } };
+    }
+    const markPointData = _buildMarkPoints(results, roleMap);
+    if (markPointData.length > 0 && series.length > 0) {
+        series[0].markPoint = { symbol: 'pin', symbolSize: 28, data: markPointData, label: { color: '#fff', fontSize: 9 } };
+    }
+
+    return {
+        ...base,
+        tooltip: { trigger: 'axis', confine: true, axisPointer: { type: 'cross' } },
+        xAxis: { type: 'category', data: axisData, axisLabel: { color: textColor } },
+        yAxis: { type: 'value', axisLabel: { color: textColor } },
+        series,
+    };
+}
+
 // ─── Line chart ──────────────────────────────────────────────────────────────
 
 function _buildLineOption(results, roleMap, chartType, base, textColor) {
@@ -465,7 +607,7 @@ function _buildLineOption(results, roleMap, chartType, base, textColor) {
         }
 
         for (const cat of categories) {
-            const data = axisData.map(ax => pivotData[cat]?.[ax] ?? 0);
+            const data = axisData.map(ax => isPercent ? _pct(pivotData[cat]?.[ax] ?? 0) : (pivotData[cat]?.[ax] ?? 0));
             const s: any = {
                 name: cat,
                 type: 'line',
@@ -491,7 +633,7 @@ function _buildLineOption(results, roleMap, chartType, base, textColor) {
                 stack,
                 areaStyle: isPercent ? {} : undefined,
                 emphasis: { focus: 'series' },
-                data: results.map(r => _num(r[vc.originalName])),
+                data: results.map(r => isPercent ? _pct(r[vc.originalName]) : _num(r[vc.originalName])),
             };
             if (customColor) s.lineStyle = { color: customColor };
             series.push(s);
@@ -564,7 +706,7 @@ function _buildPieOption(results, roleMap, chartType, base, textColor, isDonut) 
     const data = results.map(row => {
         const entry: any = {
             name: catCol ? _str(row[catCol]) : _str(row[valueCol]),
-            value: _num(row[valueCol]),
+            value: isPercent ? _pct(row[valueCol]) : _num(row[valueCol]),
         };
         if (colorCol && row[colorCol]) {
             entry.itemStyle = { color: _str(row[colorCol]) };
@@ -610,7 +752,7 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
     const isPercent = chartType === 'gauge_percent';
     const valueCols: ColumnRole[] = roleMap['GAUGE_PERCENT'] || roleMap['GAUGE'] || [];
     const valueCol = valueCols[0]?.originalName;
-    const value = _num(results[0]?.[valueCol]);
+    const value = isPercent ? _pct(results[0]?.[valueCol]) : _num(results[0]?.[valueCol]);
     const label = valueCols[0]?.displayName || '';
 
     // RANGE column: [min, max] from first row
@@ -724,7 +866,7 @@ function _buildBoxplotOption(results, roleMap, base, textColor) {
     let boxData: number[][] = [];
     let outlierData: Array<[number, number]> = []; // [catIndex, value]
 
-    // If 5+ BOXPLOT columns, treat as direct [min, q1, median, q3, max] — no outlier detection
+    // Mode 1: 5+ BOXPLOT columns → direct [min, q1, median, q3, max]
     if (valueCols.length >= 5) {
         for (const row of results) {
             categories.push(axisCol ? _str(row[axisCol]) : '');
@@ -737,47 +879,42 @@ function _buildBoxplotOption(results, roleMap, base, textColor) {
             ]);
         }
     } else {
-        // Group raw values by XAXIS category, compute quantiles + Tukey outliers
-        const valueCol = valueCols[0]?.originalName;
-        const groups: Record<string, number[]> = {};
-        const catOrder: string[] = [];
-        for (const row of results) {
-            const cat = axisCol ? _str(row[axisCol]) : '_';
-            if (!groups[cat]) { groups[cat] = []; catOrder.push(cat); }
-            groups[cat].push(_num(row[valueCol]));
-        }
+        const valueColName = valueCols[0]?.originalName;
+        const firstVal = valueColName != null ? results[0]?.[valueColName] : null;
+        const isListMode = firstVal != null && (
+            Array.isArray(firstVal) ||
+            (typeof firstVal === 'string' && firstVal.startsWith('['))
+        );
 
-        const q = (sorted: number[], p: number) => {
-            const idx = p * (sorted.length - 1);
-            const lo = Math.floor(idx), hi = Math.ceil(idx);
-            return sorted[lo] + (sorted[hi] - sorted[lo]) * (idx - lo);
-        };
-
-        for (let catIdx = 0; catIdx < catOrder.length; catIdx++) {
-            const cat = catOrder[catIdx];
-            const sorted = [...groups[cat]].sort((a, b) => a - b);
-            const q1 = q(sorted, 0.25);
-            const median = q(sorted, 0.5);
-            const q3 = q(sorted, 0.75);
-            const iqr = q3 - q1;
-
-            // Tukey fences
-            const lowerFence = q1 - 1.5 * iqr;
-            const upperFence = q3 + 1.5 * iqr;
-
-            // Whiskers: nearest actual data point within the fences
-            const lowerWhisker = sorted.find(v => v >= lowerFence) ?? sorted[0];
-            let upperWhisker = sorted[0];
-            for (const v of sorted) { if (v <= upperFence) upperWhisker = v; }
-
-            categories.push(cat);
-            boxData.push([lowerWhisker, q1, median, q3, upperWhisker]);
-
-            // Collect outliers (values beyond the fences)
-            for (const v of sorted) {
-                if (v < lowerFence || v > upperFence) {
-                    outlierData.push([catIdx, v]);
+        if (isListMode && valueColName) {
+            // Mode 2: liste/array (résultat de BOXPLOT() macro → list aggregate)
+            for (let i = 0; i < results.length; i++) {
+                const row = results[i];
+                categories.push(axisCol ? _str(row[axisCol]) : '');
+                let arr = row[valueColName];
+                if (typeof arr === 'string') {
+                    try { arr = JSON.parse(arr); } catch (_) { arr = []; }
                 }
+                if (!Array.isArray(arr)) arr = [];
+                const stats = _computeBoxStats(arr.map(_num));
+                boxData.push(stats.box);
+                stats.outliers.forEach(v => outlierData.push([i, v]));
+            }
+        } else {
+            // Mode 3: valeurs brutes groupées par XAXIS, quantiles calculés en JS
+            const groups: Record<string, number[]> = {};
+            const catOrder: string[] = [];
+            for (const row of results) {
+                const cat = axisCol ? _str(row[axisCol]) : '_';
+                if (!groups[cat]) { groups[cat] = []; catOrder.push(cat); }
+                groups[cat].push(_num(row[valueColName]));
+            }
+            for (let catIdx = 0; catIdx < catOrder.length; catIdx++) {
+                const cat = catOrder[catIdx];
+                const stats = _computeBoxStats(groups[cat]);
+                categories.push(cat);
+                boxData.push(stats.box);
+                stats.outliers.forEach(v => outlierData.push([catIdx, v]));
             }
         }
     }
@@ -850,7 +987,7 @@ export function buildKpiHtml(results: any[], parsed: ParsedColumnRoles): string 
         </div>`);
     }
     for (const col of (roleMap['PERCENT'] || [])) {
-        const val = _num(row[col.originalName]);
+        const val = _pct(row[col.originalName]); // TaleShape: fractions 0-1 → x100
         const color = val >= 75 ? 'text-success' : val >= 40 ? 'text-warning' : 'text-error';
         parts.push(`<div class="stat">
             <div class="stat-title">${col.displayName !== 'PERCENT' ? col.displayName : ''}</div>
@@ -870,15 +1007,12 @@ export function buildKpiHtml(results: any[], parsed: ParsedColumnRoles): string 
         </div>`);
     }
     for (const col of (roleMap['TREND'] || [])) {
+        const isRatio = _isTrendRatio(results, col.originalName);
         const val = _num(row[col.originalName]);
-        const isUp = val > 0;
-        const isNeutral = val === 0;
-        const arrow = isNeutral ? '→' : isUp ? '↑' : '↓';
-        const color = isNeutral ? 'text-warning' : isUp ? 'text-success' : 'text-error';
-        const sign = isUp ? '+' : '';
+        const { arrow, color, display } = _trendInfo(val, isRatio);
         parts.push(`<div class="stat">
             <div class="stat-title">${col.displayName !== 'TREND' ? col.displayName : 'Tendance'}</div>
-            <div class="stat-value ${color}">${arrow} ${sign}${val}</div>
+            <div class="stat-value ${color}">${arrow} ${display}</div>
         </div>`);
     }
 
@@ -893,13 +1027,13 @@ export function buildKpiHtml(results: any[], parsed: ParsedColumnRoles): string 
  * Returns an object mapping column originalName → HTML renderer function.
  * Used by renderTableInContainer to apply special formatting for PERCENT and TREND columns.
  */
-export function buildTableColumnRenderers(parsed: ParsedColumnRoles): Record<string, (val: any) => string> {
+export function buildTableColumnRenderers(parsed: ParsedColumnRoles, results?: any[]): Record<string, (val: any) => string> {
     const { roleMap } = parsed;
     const renderers: Record<string, (val: any) => string> = {};
 
     for (const col of (roleMap['PERCENT'] || [])) {
         renderers[col.originalName] = (val) => {
-            const n = _num(val);
+            const n = _pct(val); // TaleShape: fractions 0-1 → x100
             const color = n >= 75 ? '#22c55e' : n >= 40 ? '#f59e0b' : '#ef4444';
             const barWidth = Math.min(100, Math.max(0, n));
             return `<div style="display:flex;align-items:center;gap:6px;min-width:80px">
@@ -912,14 +1046,11 @@ export function buildTableColumnRenderers(parsed: ParsedColumnRoles): Record<str
     }
 
     for (const col of (roleMap['TREND'] || [])) {
+        const isRatio = results ? _isTrendRatio(results, col.originalName) : false;
         renderers[col.originalName] = (val) => {
             const n = _num(val);
-            const isUp = n > 0;
-            const isNeutral = n === 0;
-            const arrow = isNeutral ? '→' : isUp ? '↑' : '↓';
-            const color = isNeutral ? '#f59e0b' : isUp ? '#22c55e' : '#ef4444';
-            const sign = isUp ? '+' : '';
-            return `<span style="color:${color};font-weight:600">${arrow} ${sign}${n}</span>`;
+            const { arrow, color, display } = _trendInfoInline(n, isRatio);
+            return `<span style="color:${color};font-weight:600">${arrow} ${display}</span>`;
         };
     }
 
