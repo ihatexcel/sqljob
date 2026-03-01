@@ -14,7 +14,7 @@ function getCommonParamDef(paramKey: string, cellType: string) {
 function getCommonParamsExcludingName(cellType: string): string[] {
     const schema = CELL_TYPE_SCHEMAS?.types?.[cellType]
     if (!schema?.commonParams) return []
-    return schema.commonParams.map((p: any) => p.key).filter((k: string) => k !== 'name')
+    return (schema.commonParams as string[]).filter((k: string) => k !== 'name')
 }
 
 function getSpecificParamsForType(cellType: string) {
