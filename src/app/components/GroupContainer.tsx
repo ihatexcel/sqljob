@@ -108,7 +108,7 @@ export function GroupContainer({
         runGroupAtPath, addNestedGroup, openAddCellToGroupModal,
         moveItemInGroup, deleteGroupAtPath, insertGroupBelow,
         openInsertGroupModal, openLoopConfigModal, openGroupSettingsModal,
-        isFirstInGroup, isLastInGroup, forceUpdate
+        isFirstInGroup, isLastInGroup, forceUpdate, _rev
     } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         isLoading: s.isLoading,
@@ -128,7 +128,8 @@ export function GroupContainer({
         openGroupSettingsModal: s.openGroupSettingsModal,
         isFirstInGroup: s.isFirstInGroup,
         isLastInGroup: s.isLastInGroup,
-        forceUpdate: s.forceUpdate
+        forceUpdate: s.forceUpdate,
+        _rev: s._rev
     })))
 
     const [accordionOpen, setAccordionOpen] = useState(group.accordionOpen !== false)
@@ -217,7 +218,7 @@ export function GroupContainer({
 function GroupContent({ group, path, depth }: { group: any, path: number[], depth: number }) {
     const {
         getSortedCells, getSortedChildren, getAllItemsSorted,
-        shouldShowGroup, shouldShowCell, devMode, forceUpdate
+        shouldShowGroup, shouldShowCell, devMode, forceUpdate, _rev
     } = useNotebookStore(useShallow(s => ({
         getSortedCells: s.getSortedCells,
         getSortedChildren: s.getSortedChildren,
@@ -225,7 +226,8 @@ function GroupContent({ group, path, depth }: { group: any, path: number[], dept
         shouldShowGroup: s.shouldShowGroup,
         shouldShowCell: s.shouldShowCell,
         devMode: s.devMode,
-        forceUpdate: s.forceUpdate
+        forceUpdate: s.forceUpdate,
+        _rev: s._rev
     })))
 
     const isColumn = group.direction === 'column'

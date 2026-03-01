@@ -7,7 +7,7 @@ export function PageContent() {
     const {
         devMode, isLoading, showAddGroupModal,
         getActivePage, getGroups, getLinkGroups,
-        getFlattenedGroups, addGroup, openInsertGroupModal, runAllGroups
+        getFlattenedGroups, addGroup, openInsertGroupModal, runAllGroups, _rev
     } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         isLoading: s.isLoading,
@@ -18,7 +18,8 @@ export function PageContent() {
         getFlattenedGroups: s.getFlattenedGroups,
         addGroup: s.addGroup,
         openInsertGroupModal: s.openInsertGroupModal,
-        runAllGroups: s.runAllGroups
+        runAllGroups: s.runAllGroups,
+        _rev: s._rev
     })))
     const set = useNotebookStore.setState
 
