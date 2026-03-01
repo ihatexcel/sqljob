@@ -174,6 +174,7 @@ export function cellsMixin() {
                         group.cells.push(newCell);
                     }
                     this.addCellToGroupModal = { open: false, path: null };
+                    this.forceUpdate();
                 },
 
                 // Ouvrir le modal pour ajouter une cellule à un groupe (accepte path ou groupIndex)
@@ -193,6 +194,7 @@ export function cellsMixin() {
                     newGroup.cells = [this.createNewCell(cellType)];
                     this.groups.splice(atIndex, 0, newGroup);
                     this.insertGroupModal = { open: false, atIndex: null };
+                    this.forceUpdate();
                 },
 
                 // Ouvrir le modal pour insérer une cellule à une position (accepte path ou groupIndex)
@@ -212,6 +214,7 @@ export function cellsMixin() {
                         group.cells.splice(atCellIndex, 0, newCell);
                     }
                     this.insertCellModal = { open: false, path: null, atCellIndex: null };
+                    this.forceUpdate();
                 },
 
                 // Supprimer un groupe (wrapper pour deleteGroupAtPath)
@@ -246,6 +249,7 @@ export function cellsMixin() {
                                 delete this._tables[cell._id];
                             }
                             group.cells.splice(cellIndex, 1);
+                            this.forceUpdate();
                         }
                     }
                 },

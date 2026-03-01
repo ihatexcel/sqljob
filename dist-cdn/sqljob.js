@@ -45680,7 +45680,7 @@ function Uz() {
         const h = this.createNewCell(r);
         h._order = this.getNextOrder(a), a.cells.push(h);
       }
-      this.addCellToGroupModal = { open: !1, path: null };
+      this.addCellToGroupModal = { open: !1, path: null }, this.forceUpdate();
     },
     // Ouvrir le modal pour ajouter une cellule à un groupe (accepte path ou groupIndex)
     openAddCellToGroupModal(i) {
@@ -45694,7 +45694,7 @@ function Uz() {
     // Insérer un groupe à une position spécifique
     insertGroupAt(i, r) {
       const n = this.createNewGroup("row");
-      n.cells = [this.createNewCell(r)], this.groups.splice(i, 0, n), this.insertGroupModal = { open: !1, atIndex: null };
+      n.cells = [this.createNewCell(r)], this.groups.splice(i, 0, n), this.insertGroupModal = { open: !1, atIndex: null }, this.forceUpdate();
     },
     // Ouvrir le modal pour insérer une cellule à une position (accepte path ou groupIndex)
     openInsertCellModal(i, r) {
@@ -45709,7 +45709,7 @@ function Uz() {
         const E = this.createNewCell(n);
         E._order = this.getNextOrder(h), h.cells.splice(r, 0, E);
       }
-      this.insertCellModal = { open: !1, path: null, atCellIndex: null };
+      this.insertCellModal = { open: !1, path: null, atCellIndex: null }, this.forceUpdate();
     },
     // Supprimer un groupe (wrapper pour deleteGroupAtPath)
     deleteGroup(i) {
@@ -45730,7 +45730,7 @@ function Uz() {
         await this.deleteGroupAtPath(n);
       else if (await Alpine.store("confirmModal").show("Supprimer cette cellule ?")) {
         const E = a.cells[r];
-        KL.delete(E._id), this._tables && this._tables[E._id] && (this._tables[E._id].destroy(), delete this._tables[E._id]), a.cells.splice(r, 1);
+        KL.delete(E._id), this._tables && this._tables[E._id] && (this._tables[E._id].destroy(), delete this._tables[E._id]), a.cells.splice(r, 1), this.forceUpdate();
       }
     },
     // Déplacer une cellule dans un groupe (accepte path ou groupIndex)
