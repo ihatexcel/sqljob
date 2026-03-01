@@ -157,6 +157,7 @@ export function groupsMixin() {
                     group.children.push(newChild);
 
                     this.setStatus('Sous-groupe ajouté', 'success');
+                    this.forceUpdate();
                 },
 
                 // Changer la direction d'un groupe par chemin
@@ -245,6 +246,7 @@ FROM source1 LIMIT 10;`;
                         }
                     }
                     this.setStatus('Groupe supprimé', 'success');
+                    this.forceUpdate();
                 },
 
                 // Récupérer un groupe link par son ID

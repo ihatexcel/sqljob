@@ -44213,7 +44213,7 @@ function Mz() {
       const n = this.createNewGroup("row");
       n._order = this.getNextOrder(r);
       const a = this.createNewCell("markdown");
-      a._order = 0, n.cells = [a], r.children.push(n), this.setStatus("Sous-groupe ajouté", "success");
+      a._order = 0, n.cells = [a], r.children.push(n), this.setStatus("Sous-groupe ajouté", "success"), this.forceUpdate();
     },
     // Changer la direction d'un groupe par chemin
     toggleGroupDirection(i) {
@@ -44268,7 +44268,7 @@ FROM source1 LIMIT 10;`;
           const r = i.slice(0, -1), n = i[i.length - 1], a = this.getGroupAtPath(r);
           a && a.children && a.children.splice(n, 1);
         }
-        this.setStatus("Groupe supprimé", "success");
+        this.setStatus("Groupe supprimé", "success"), this.forceUpdate();
       }
     },
     // Récupérer un groupe link par son ID
