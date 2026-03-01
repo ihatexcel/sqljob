@@ -696,18 +696,23 @@ export function executionMixin() {
                             this._tables[cell._id].destroy();
                         }
 
-                        const columns = Object.keys(rawResults[0]).map(key => ({
-                            title: key,
-                            field: key
-                        }));
+                        // Parse column roles for PERCENT/TREND rendering and display names
+                        const _parsedRoles = EChartSqlParser.parseColumnRoles(rawResults);
+                        const _colRenderers = EChartSqlParser.buildTableColumnRenderers(_parsedRoles);
+                        const _displayNames = EChartSqlParser.getTableColumnDisplayNames(_parsedRoles);
+                        const _colKeys = Object.keys(rawResults[0]);
+                        const _hasSpecialCols = Object.keys(_colRenderers).length > 0;
 
                         const tableData = {
-                            headings: Object.keys(rawResults[0]),
-                            data: rawResults.map(row => Object.values(row))
+                            headings: _colKeys.map(k => _displayNames[k] || k),
+                            data: rawResults.map(row => _colKeys.map(k =>
+                                _colRenderers[k] ? _colRenderers[k](row[k]) : (row[k] ?? '')
+                            ))
                         };
 
                         const dataTable = new simpleDatatables.DataTable('#' + containerId, {
                             data: tableData,
+                            html: _hasSpecialCols,
                             perPage: 10,
                             perPageSelect: [5, 10, 25, 50],
                             searchable: cell.type === 'table',

@@ -30,6 +30,9 @@ const KNOWN_ROLES = [
     'YAXIS',
     'CATEGORY',
     'COLOR',
+    'COLORS',
+    'LABELS',
+    'RANGE',
     'LABEL',
     'PERCENT',
     'COMPARE',
@@ -125,7 +128,7 @@ export function parseColumnRoles(results: any[]): ParsedColumnRoles {
 function _detectChartType(roleMap: Record<string, ColumnRole[]>): string {
     const has = (r: string) => !!(roleMap[r]?.length);
 
-    if (has('BARCHART_STACKED_PERCENT')) return 'bar_percent';
+    if (has('BARCHART_STACKED_PERCENT')) return 'bar_stacked_percent';
     if (has('BARCHART_PERCENT'))         return 'bar_percent';
     if (has('BARCHART_STACKED'))         return 'bar_stacked';
     if (has('BARCHART')) {
@@ -142,7 +145,7 @@ function _detectChartType(roleMap: Record<string, ColumnRole[]>): string {
     if (has('GAUGE_PERCENT'))      return 'gauge_percent';
     if (has('GAUGE'))              return 'gauge';
     if (has('BOXPLOT'))            return 'boxplot';
-    if (has('LABEL') || has('PERCENT') || has('COMPARE')) return 'kpi';
+    if (has('LABEL') || has('PERCENT') || has('COMPARE') || has('TREND')) return 'kpi';
     return 'unknown';
 }
 
@@ -171,6 +174,8 @@ export function buildEChartsOption(results: any[], parsed: ParsedColumnRoles): o
             return _buildBarOption(results, roleMap, 'bar_stacked', base, textColor, false);
         case 'bar_percent':
             return _buildBarOption(results, roleMap, 'bar_percent', base, textColor, false);
+        case 'bar_stacked_percent':
+            return _buildBarOption(results, roleMap, 'bar_stacked_percent', base, textColor, false);
         case 'bar_horizontal':
             return _buildBarOption(results, roleMap, 'bar', base, textColor, true);
         case 'line':
@@ -255,11 +260,41 @@ function _buildMarkLines(results: any[], roleMap: Record<string, ColumnRole[]>):
     return data;
 }
 
+/** Collect LABEL markPoint data from results (text annotations at XAXIS/YAXIS position) */
+function _buildMarkPoints(results: any[], roleMap: Record<string, ColumnRole[]>, axisData: string[]): any[] {
+    const labelCols = roleMap['LABEL'] || [];
+    if (labelCols.length === 0) return [];
+
+    const axisCols = roleMap['XAXIS'] || roleMap['YAXIS'] || [];
+    const axisCol = axisCols[0]?.originalName;
+    const data: any[] = [];
+
+    for (const col of labelCols) {
+        for (const row of results) {
+            const labelVal = row[col.originalName];
+            if (labelVal === null || labelVal === undefined || _str(labelVal) === '') continue;
+            const point: any = {
+                name: _str(labelVal),
+                value: _str(labelVal),
+                symbol: 'pin',
+                symbolSize: 28,
+                label: { formatter: '{b}', position: 'top', fontSize: 10 },
+            };
+            if (axisCol) {
+                point.xAxis = _str(row[axisCol]);
+                // use coord-based approach: we'll use named coord
+            }
+            data.push(point);
+        }
+    }
+    return data;
+}
+
 // ─── Bar chart ───────────────────────────────────────────────────────────────
 
 function _buildBarOption(results, roleMap, chartType, base, textColor, horizontal) {
-    const isStacked = chartType === 'bar_stacked' || chartType === 'bar_percent';
-    const isPercent = chartType === 'bar_percent';
+    const isStacked = chartType === 'bar_stacked' || chartType === 'bar_percent' || chartType === 'bar_stacked_percent';
+    const isPercent = chartType === 'bar_percent' || chartType === 'bar_stacked_percent';
     const stack = isStacked ? 'total' : undefined;
 
     // Determine value columns (prefer most-specific role)
@@ -307,6 +342,9 @@ function _buildBarOption(results, roleMap, chartType, base, textColor, horizonta
                 barMaxWidth: 60,
                 emphasis: { focus: 'series' },
             };
+            if (isPercent) {
+                s.label = { show: true, formatter: (p) => p.value > 0 ? p.value.toFixed(1) + '%' : '', position: 'inside', fontSize: 10 };
+            }
             if (customColors[cat]) s.itemStyle = { color: customColors[cat] };
             series.push(s);
         }
@@ -330,6 +368,9 @@ function _buildBarOption(results, roleMap, chartType, base, textColor, horizonta
                     return val;
                 }),
             };
+            if (isPercent) {
+                s.label = { show: true, formatter: (p) => p.value > 0 ? p.value.toFixed(1) + '%' : '', position: 'inside', fontSize: 10 };
+            }
             series.push(s);
         }
     }
@@ -341,6 +382,17 @@ function _buildBarOption(results, roleMap, chartType, base, textColor, horizonta
             symbol: ['none', 'none'],
             data: markLineData,
             label: { show: true },
+        };
+    }
+
+    // Attach markPoints (LABEL annotations) to first series
+    const markPointData = _buildMarkPoints(results, roleMap, axisData);
+    if (markPointData.length > 0 && series.length > 0) {
+        series[0].markPoint = {
+            symbol: 'pin',
+            symbolSize: 28,
+            data: markPointData,
+            label: { color: '#fff', fontSize: 9 },
         };
     }
 
@@ -360,6 +412,11 @@ function _buildBarOption(results, roleMap, chartType, base, textColor, horizonta
             trigger: 'axis',
             confine: true,
             axisPointer: { type: 'shadow' },
+            ...(isPercent ? { formatter: (params) => {
+                const name = params[0]?.axisValue || '';
+                const lines = params.map(p => `${p.marker}${p.seriesName}: ${_num(p.value).toFixed(1)}%`);
+                return [name, ...lines].join('<br/>');
+            }} : {}),
         },
         xAxis: horizontal ? valueAxis : categoryAxis,
         yAxis: horizontal ? categoryAxis : valueAxis,
@@ -373,7 +430,7 @@ function _buildLineOption(results, roleMap, chartType, base, textColor) {
     const isPercent = chartType === 'line_percent';
     const stack = isPercent ? 'total' : undefined;
 
-    const valueCols: ColumnRole[] = roleMap['LINECHART'] || roleMap['LINECHART_PERCENT'] || [];
+    const valueCols: ColumnRole[] = roleMap['LINECHART_PERCENT'] || roleMap['LINECHART'] || [];
     const axisCols = roleMap['XAXIS'] || [];
     const categoryCols = roleMap['CATEGORY'] || [];
     const colorCols = roleMap['COLOR'] || [];
@@ -443,9 +500,28 @@ function _buildLineOption(results, roleMap, chartType, base, textColor) {
         };
     }
 
+    // Attach markPoints (LABEL annotations)
+    const markPointData = _buildMarkPoints(results, roleMap, axisData);
+    if (markPointData.length > 0 && series.length > 0) {
+        series[0].markPoint = {
+            symbol: 'pin',
+            symbolSize: 28,
+            data: markPointData,
+            label: { color: '#fff', fontSize: 9 },
+        };
+    }
+
     return {
         ...base,
-        tooltip: { trigger: 'axis', confine: true },
+        tooltip: {
+            trigger: 'axis',
+            confine: true,
+            ...(isPercent ? { formatter: (params) => {
+                const name = params[0]?.axisValue || '';
+                const lines = params.map(p => `${p.marker}${p.seriesName}: ${_num(p.value).toFixed(1)}%`);
+                return [name, ...lines].join('<br/>');
+            }} : {}),
+        },
         xAxis: { type: 'category', data: axisData, axisLabel: { color: textColor } },
         yAxis: {
             type: 'value',
@@ -524,19 +600,75 @@ function _buildPieOption(results, roleMap, chartType, base, textColor, isDonut) 
 
 function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
     const isPercent = chartType === 'gauge_percent';
-    const valueCols: ColumnRole[] = roleMap['GAUGE'] || roleMap['GAUGE_PERCENT'] || [];
+    const valueCols: ColumnRole[] = roleMap['GAUGE_PERCENT'] || roleMap['GAUGE'] || [];
     const valueCol = valueCols[0]?.originalName;
     const value = _num(results[0]?.[valueCol]);
     const label = valueCols[0]?.displayName || '';
 
-    // Optional RANGE column: array [min, max] from first row
+    // RANGE column: [min, max] from first row
     const rangeCols = roleMap['RANGE'] || [];
     const rangeCol = rangeCols[0]?.originalName;
-    let min = 0, max = 100;
+    let min = 0, max = isPercent ? 100 : 100;
     if (rangeCol && results[0]?.[rangeCol] != null) {
         const r = results[0][rangeCol];
         if (Array.isArray(r) && r.length >= 2) { min = _num(r[0]); max = _num(r[1]); }
-        else { max = _num(r); }
+        else if (typeof r === 'string') {
+            try {
+                const parsed = JSON.parse(r);
+                if (Array.isArray(parsed) && parsed.length >= 2) { min = _num(parsed[0]); max = _num(parsed[1]); }
+            } catch (_) { max = _num(r); }
+        } else { max = _num(r); }
+    }
+
+    // COLORS column: ECharts color array [[fraction, color], ...] from first row
+    // e.g. '[[0.3,"#91cc75"],[0.7,"#fac858"],[1,"#ee6666"]]'
+    const colorsCols = roleMap['COLORS'] || [];
+    const colorsCol = colorsCols[0]?.originalName;
+    let gaugeColors: any[] | undefined;
+    if (colorsCol && results[0]?.[colorsCol] != null) {
+        const raw = results[0][colorsCol];
+        try {
+            const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+            if (Array.isArray(parsed)) gaugeColors = parsed;
+        } catch (_) {}
+    }
+
+    // LABELS column: custom axis labels JSON [{value: number, label: string}, ...]
+    const labelsCols = roleMap['LABELS'] || [];
+    const labelsCol = labelsCols[0]?.originalName;
+    let gaugeAxisLabels: any[] | undefined;
+    if (labelsCol && results[0]?.[labelsCol] != null) {
+        const raw = results[0][labelsCol];
+        try {
+            const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+            if (Array.isArray(parsed)) gaugeAxisLabels = parsed;
+        } catch (_) {}
+    }
+
+    // Build axisLine color config
+    const axisLineStyle: any = { width: 6 };
+    if (gaugeColors) {
+        axisLineStyle.color = gaugeColors;
+    } else {
+        // Default: green → yellow → red gradient
+        axisLineStyle.color = [
+            [0.3, '#91cc75'],
+            [0.7, '#fac858'],
+            [1, '#ee6666'],
+        ];
+    }
+
+    // Build axisLabel formatter
+    let axisLabelFormatter = isPercent ? '{value}%' : '{value}';
+    if (gaugeAxisLabels) {
+        // Map values to custom labels
+        const labelMap: Record<string, string> = {};
+        for (const item of gaugeAxisLabels) {
+            if (item && item.value !== undefined && item.label !== undefined) {
+                labelMap[String(item.value)] = String(item.label);
+            }
+        }
+        axisLabelFormatter = (val: number) => labelMap[String(val)] ?? (isPercent ? val + '%' : String(val));
     }
 
     return {
@@ -550,10 +682,13 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
             endAngle: -20,
             splitNumber: 5,
             pointer: { show: true, length: '60%' },
+            axisLine: {
+                lineStyle: axisLineStyle,
+            },
             axisLabel: {
                 color: textColor,
                 fontSize: 11,
-                formatter: isPercent ? '{value}%' : '{value}',
+                formatter: axisLabelFormatter,
             },
             axisTick: { distance: -20, length: 8 },
             splitLine: { distance: -25, length: 20 },
@@ -574,12 +709,15 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
 function _buildBoxplotOption(results, roleMap, base, textColor) {
     const axisCols = roleMap['XAXIS'] || [];
     const valueCols = roleMap['BOXPLOT'] || [];
+    const colorCols = roleMap['COLOR'] || [];
     const axisCol = axisCols[0]?.originalName;
+    const colorCol = colorCols[0]?.originalName;
 
     let categories: string[] = [];
     let boxData: number[][] = [];
+    let outlierData: Array<[number, number]> = []; // [catIndex, value]
 
-    // If 5+ BOXPLOT columns, treat as direct [min, q1, median, q3, max]
+    // If 5+ BOXPLOT columns, treat as direct [min, q1, median, q3, max] — no outlier detection
     if (valueCols.length >= 5) {
         for (const row of results) {
             categories.push(axisCol ? _str(row[axisCol]) : '');
@@ -592,7 +730,7 @@ function _buildBoxplotOption(results, roleMap, base, textColor) {
             ]);
         }
     } else {
-        // Group raw values by XAXIS category, compute quantiles
+        // Group raw values by XAXIS category, compute quantiles + Tukey outliers
         const valueCol = valueCols[0]?.originalName;
         const groups: Record<string, number[]> = {};
         const catOrder: string[] = [];
@@ -601,16 +739,80 @@ function _buildBoxplotOption(results, roleMap, base, textColor) {
             if (!groups[cat]) { groups[cat] = []; catOrder.push(cat); }
             groups[cat].push(_num(row[valueCol]));
         }
+
         const q = (sorted: number[], p: number) => {
             const idx = p * (sorted.length - 1);
             const lo = Math.floor(idx), hi = Math.ceil(idx);
             return sorted[lo] + (sorted[hi] - sorted[lo]) * (idx - lo);
         };
-        for (const cat of catOrder) {
+
+        for (let catIdx = 0; catIdx < catOrder.length; catIdx++) {
+            const cat = catOrder[catIdx];
             const sorted = [...groups[cat]].sort((a, b) => a - b);
+            const q1 = q(sorted, 0.25);
+            const median = q(sorted, 0.5);
+            const q3 = q(sorted, 0.75);
+            const iqr = q3 - q1;
+
+            // Tukey fences
+            const lowerFence = q1 - 1.5 * iqr;
+            const upperFence = q3 + 1.5 * iqr;
+
+            // Whiskers: nearest actual data point within the fences
+            const lowerWhisker = sorted.find(v => v >= lowerFence) ?? sorted[0];
+            let upperWhisker = sorted[0];
+            for (const v of sorted) { if (v <= upperFence) upperWhisker = v; }
+
             categories.push(cat);
-            boxData.push([sorted[0], q(sorted, 0.25), q(sorted, 0.5), q(sorted, 0.75), sorted[sorted.length - 1]]);
+            boxData.push([lowerWhisker, q1, median, q3, upperWhisker]);
+
+            // Collect outliers (values beyond the fences)
+            for (const v of sorted) {
+                if (v < lowerFence || v > upperFence) {
+                    outlierData.push([catIdx, v]);
+                }
+            }
         }
+    }
+
+    // Build custom item styles per category if COLOR column is present
+    const itemStyles = boxData.map((_, idx) => {
+        if (!colorCol) return undefined;
+        const row = results.find(r => axisCol ? _str(r[axisCol]) === categories[idx] : true);
+        if (row && row[colorCol]) return { color: _str(row[colorCol]) };
+        return undefined;
+    });
+
+    const boxSeries: any[] = [{
+        type: 'boxplot',
+        data: boxData.map((d, i) => itemStyles[i] ? { value: d, itemStyle: itemStyles[i] } : d),
+        emphasis: { focus: 'series' },
+        tooltip: {
+            formatter: (param) => {
+                const v = param.data?.value || param.data;
+                if (!Array.isArray(v)) return '';
+                return `${param.name}<br/>
+                    Max: ${v[4]}<br/>
+                    Q3: ${v[3]}<br/>
+                    Médiane: ${v[2]}<br/>
+                    Q1: ${v[1]}<br/>
+                    Min: ${v[0]}`;
+            },
+        },
+    }];
+
+    // Add outlier scatter series if there are outliers
+    if (outlierData.length > 0) {
+        boxSeries.push({
+            name: 'Valeurs aberrantes',
+            type: 'scatter',
+            data: outlierData,
+            tooltip: {
+                formatter: (param) => `${categories[param.data[0]]}: ${param.data[1]}`,
+            },
+            symbolSize: 6,
+            itemStyle: { color: '#ee6666', opacity: 0.7 },
+        });
     }
 
     return {
@@ -618,7 +820,7 @@ function _buildBoxplotOption(results, roleMap, base, textColor) {
         tooltip: { trigger: 'item', confine: true },
         xAxis: { type: 'category', data: categories, axisLabel: { color: textColor } },
         yAxis: { type: 'value', axisLabel: { color: textColor } },
-        series: [{ type: 'boxplot', data: boxData, emphasis: { focus: 'series' } }],
+        series: boxSeries,
     };
 }
 
@@ -642,18 +844,34 @@ export function buildKpiHtml(results: any[], parsed: ParsedColumnRoles): string 
     }
     for (const col of (roleMap['PERCENT'] || [])) {
         const val = _num(row[col.originalName]);
+        const color = val >= 75 ? 'text-success' : val >= 40 ? 'text-warning' : 'text-error';
         parts.push(`<div class="stat">
             <div class="stat-title">${col.displayName !== 'PERCENT' ? col.displayName : ''}</div>
-            <div class="stat-value">${val.toFixed(1)}%</div>
+            <div class="stat-value ${color}">${val.toFixed(1)}%</div>
         </div>`);
     }
     for (const col of (roleMap['COMPARE'] || [])) {
         const val = _num(row[col.originalName]);
         const sign = val >= 0 ? '+' : '';
         const color = val >= 0 ? 'text-success' : 'text-error';
+        const icon = val >= 0
+            ? `<span style="font-size:0.6em">▲</span>`
+            : `<span style="font-size:0.6em">▼</span>`;
         parts.push(`<div class="stat">
             <div class="stat-title">${col.displayName !== 'COMPARE' ? col.displayName : 'Comparaison'}</div>
-            <div class="stat-value ${color}">${sign}${val}</div>
+            <div class="stat-value ${color}">${icon} ${sign}${val}</div>
+        </div>`);
+    }
+    for (const col of (roleMap['TREND'] || [])) {
+        const val = _num(row[col.originalName]);
+        const isUp = val > 0;
+        const isNeutral = val === 0;
+        const arrow = isNeutral ? '→' : isUp ? '↑' : '↓';
+        const color = isNeutral ? 'text-warning' : isUp ? 'text-success' : 'text-error';
+        const sign = isUp ? '+' : '';
+        parts.push(`<div class="stat">
+            <div class="stat-title">${col.displayName !== 'TREND' ? col.displayName : 'Tendance'}</div>
+            <div class="stat-value ${color}">${arrow} ${sign}${val}</div>
         </div>`);
     }
 
@@ -662,11 +880,66 @@ export function buildKpiHtml(results: any[], parsed: ParsedColumnRoles): string 
     return `<div class="stats shadow w-full flex-wrap">${parts.join('')}</div>`;
 }
 
+// ─── Table cell HTML builder ──────────────────────────────────────────────────
+
+/**
+ * Returns an object mapping column originalName → HTML renderer function.
+ * Used by renderTableInContainer to apply special formatting for PERCENT and TREND columns.
+ */
+export function buildTableColumnRenderers(parsed: ParsedColumnRoles): Record<string, (val: any) => string> {
+    const { roleMap } = parsed;
+    const renderers: Record<string, (val: any) => string> = {};
+
+    for (const col of (roleMap['PERCENT'] || [])) {
+        renderers[col.originalName] = (val) => {
+            const n = _num(val);
+            const color = n >= 75 ? '#22c55e' : n >= 40 ? '#f59e0b' : '#ef4444';
+            const barWidth = Math.min(100, Math.max(0, n));
+            return `<div style="display:flex;align-items:center;gap:6px;min-width:80px">
+                <div style="flex:1;height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden">
+                    <div style="height:100%;width:${barWidth}%;background:${color};border-radius:3px"></div>
+                </div>
+                <span style="color:${color};font-weight:600;white-space:nowrap;min-width:3.5em;text-align:right">${n.toFixed(1)}%</span>
+            </div>`;
+        };
+    }
+
+    for (const col of (roleMap['TREND'] || [])) {
+        renderers[col.originalName] = (val) => {
+            const n = _num(val);
+            const isUp = n > 0;
+            const isNeutral = n === 0;
+            const arrow = isNeutral ? '→' : isUp ? '↑' : '↓';
+            const color = isNeutral ? '#f59e0b' : isUp ? '#22c55e' : '#ef4444';
+            const sign = isUp ? '+' : '';
+            return `<span style="color:${color};font-weight:600">${arrow} ${sign}${n}</span>`;
+        };
+    }
+
+    return renderers;
+}
+
+/**
+ * Returns the display name for a column (strips role suffix from the header).
+ */
+export function getTableColumnDisplayNames(parsed: ParsedColumnRoles): Record<string, string> {
+    const map: Record<string, string> = {};
+    for (const col of parsed.roles) {
+        // Use displayName if it differs from originalName (i.e., suffix was stripped)
+        if (col.displayName && col.displayName !== col.originalName) {
+            map[col.originalName] = col.displayName;
+        }
+    }
+    return map;
+}
+
 // ─── Main class export (for Alpine / global access) ──────────────────────────
 
 export class EChartSqlParser {
     static parseColumnRoles = parseColumnRoles;
     static buildEChartsOption = buildEChartsOption;
     static buildKpiHtml = buildKpiHtml;
+    static buildTableColumnRenderers = buildTableColumnRenderers;
+    static getTableColumnDisplayNames = getTableColumnDisplayNames;
     static detectChartType = _detectChartType;
 }
