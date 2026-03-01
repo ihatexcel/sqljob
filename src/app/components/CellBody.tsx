@@ -381,7 +381,7 @@ export function CellBody({ cell, path, cellIndex, group }: { cell: any, path: nu
         devMode, isLoading,
         hasCellHeight, getCellHeightVars,
         bodyDisplayShouldShowSkeleton, bodyDisplayShouldShowContent,
-        openChildGroupModal
+        openChildGroupModal, _rev
     } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         isLoading: s.isLoading,
@@ -389,7 +389,8 @@ export function CellBody({ cell, path, cellIndex, group }: { cell: any, path: nu
         getCellHeightVars: s.getCellHeightVars,
         bodyDisplayShouldShowSkeleton: s.bodyDisplayShouldShowSkeleton,
         bodyDisplayShouldShowContent: s.bodyDisplayShouldShowContent,
-        openChildGroupModal: s.openChildGroupModal
+        openChildGroupModal: s.openChildGroupModal,
+        _rev: s._rev
     })))
 
     const hasHeight = hasCellHeight(cell)

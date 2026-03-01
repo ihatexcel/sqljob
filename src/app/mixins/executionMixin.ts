@@ -318,6 +318,7 @@ export function executionMixin() {
                     cell._status = 'running';
                     this.isLoading = true;
                     this.setStatus(`Exécution de ${cell.name || cell.type}...`, 'loading');
+                    this.forceUpdate();
 
                     try {
                         const schema = CELL_TYPE_SCHEMAS?.types[cell?.type];
@@ -336,6 +337,7 @@ export function executionMixin() {
                         this.setStatus('Erreur: ' + error.message, 'error');
                     } finally {
                         this.isLoading = false;
+                        this.forceUpdate();
                     }
                 },
 

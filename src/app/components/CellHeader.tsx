@@ -14,7 +14,7 @@ export function CellHeader({ cell, path, cellIndex, group }: Props) {
         devMode, isLoading,
         runCellAt, openCellConfig, openChildGroupModal,
         moveItemInGroup, deleteCellAt,
-        isFirstInGroup, isLastInGroup, getCellIcon
+        isFirstInGroup, isLastInGroup, getCellIcon, _rev
     } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         isLoading: s.isLoading,
@@ -25,7 +25,8 @@ export function CellHeader({ cell, path, cellIndex, group }: Props) {
         deleteCellAt: s.deleteCellAt,
         isFirstInGroup: s.isFirstInGroup,
         isLastInGroup: s.isLastInGroup,
-        getCellIcon: s.getCellIcon
+        getCellIcon: s.getCellIcon,
+        _rev: s._rev
     })))
 
     if (!devMode) return null
