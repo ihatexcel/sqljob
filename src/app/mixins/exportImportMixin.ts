@@ -26,17 +26,16 @@ export function exportImportMixin() {
                     const defaultFileName = `sqljob_${yyyymmdd}_${hhmmss}`;
 
                     // Réinitialiser la modale avec les valeurs par défaut
-                    this.exportModal.show = false;
-                    this.$nextTick(() => {
-                        this.exportModal.type = type;
-                        this.exportModal.fileName = defaultFileName;
-                        this.exportModal.description = 'sqljob Notebook Configuration';
-                        this.exportModal.devMode = false;
-                        this.exportModal.showLayout = this.showLayout;
-                        this.exportModal.encryptGist = false;
-                        this.exportModal.gistPassphrase = '';
-                        this.exportModal.show = true;
-                    });
+                    this.exportModal = {
+                        show: true,
+                        type: type,
+                        fileName: defaultFileName,
+                        description: 'sqljob Notebook Configuration',
+                        devMode: false,
+                        showLayout: this.showLayout,
+                        encryptGist: false,
+                        gistPassphrase: ''
+                    };
                 },
 
                 async executeExport() {
@@ -46,7 +45,7 @@ export function exportImportMixin() {
                     const devMode = this.exportModal.devMode;
                     const showLayout = this.exportModal.showLayout;
 
-                    this.exportModal.show = false;
+                    this.exportModal = { ...this.exportModal, show: false };
 
                     try {
                         this.isLoading = true;
@@ -345,7 +344,7 @@ ${configScriptTag}${embeddedScripts}</head>
                 },
 
                 cancelExport() {
-                    this.exportModal.show = false;
+                    this.exportModal = { ...this.exportModal, show: false };
                 },
 
                 saveGithubToken() {

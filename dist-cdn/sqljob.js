@@ -46702,13 +46702,20 @@ function Bz() {
         return;
       }
       const r = /* @__PURE__ */ new Date(), n = r.toISOString().slice(0, 10).replace(/-/g, ""), a = r.toTimeString().slice(0, 8).replace(/:/g, ""), h = `sqljob_${n}_${a}`;
-      this.exportModal.show = !1, this.$nextTick(() => {
-        this.exportModal.type = i, this.exportModal.fileName = h, this.exportModal.description = "sqljob Notebook Configuration", this.exportModal.devMode = !1, this.exportModal.showLayout = this.showLayout, this.exportModal.encryptGist = !1, this.exportModal.gistPassphrase = "", this.exportModal.show = !0;
-      });
+      this.exportModal = {
+        show: !0,
+        type: i,
+        fileName: h,
+        description: "sqljob Notebook Configuration",
+        devMode: !1,
+        showLayout: this.showLayout,
+        encryptGist: !1,
+        gistPassphrase: ""
+      };
     },
     async executeExport() {
       const i = this.exportModal.type, r = this.exportModal.fileName || "notebook-config.json", n = this.exportModal.description || "sqljob Notebook Configuration", a = this.exportModal.devMode, h = this.exportModal.showLayout;
-      this.exportModal.show = !1;
+      this.exportModal = { ...this.exportModal, show: !1 };
       try {
         this.isLoading = !0;
         const E = i === "gist" || i === "json" || i === "base64", t = await ConfigManager.buildConfigFromState(
@@ -46893,7 +46900,7 @@ ${rt}${e}</head>
       FileHandler.downloadFile(V, r);
     },
     cancelExport() {
-      this.exportModal.show = !1;
+      this.exportModal = { ...this.exportModal, show: !1 };
     },
     saveGithubToken() {
       if (!this.githubToken || this.githubToken.trim() === "") {
