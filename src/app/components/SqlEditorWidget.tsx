@@ -11,6 +11,7 @@ import { sql } from '@codemirror/lang-sql'
 import { DuckDBDialect } from '@marimo-team/codemirror-sql/dialects'
 import { sqlExtension, cteCompletionSource } from '@marimo-team/codemirror-sql'
 import { oneDark } from '@codemirror/theme-one-dark'
+import { useShallow } from 'zustand/react/shallow'
 import { useNotebookStore } from '../store/notebookStore'
 import { useTemplateModal } from '../store/uiStores'
 import { ConfigManager } from '../../lib/ConfigManager'
@@ -80,13 +81,13 @@ export function SqlEditorWidget({
     badgeClass = null,
     applySourceDefaultIfEmpty = false,
 }: any) {
-    const { devMode, isLoading, runCellAt, forceUpdate, _tables } = useNotebookStore(s => ({
+    const { devMode, isLoading, runCellAt, forceUpdate, _tables } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         isLoading: s.isLoading,
         runCellAt: s.runCellAt,
         forceUpdate: s.forceUpdate,
         _tables: s._tables,
-    }))
+    })))
 
     const cmRef = useRef<HTMLDivElement>(null)
     const editorRef = useRef<EditorView | null>(null)
@@ -171,15 +172,16 @@ export function SqlEditorWidget({
     }, [cell._id, isSql, showParsed])
 
     // Sync external value changes into CodeMirror (e.g. template insertion)
+    // Depends on the cell's query value so it only runs when the value actually changes
+    const cellQueryValue = ConfigManager.getCellQuery(cell, queryName) || ''
     useEffect(() => {
         const editor = editorRef.current
         if (!editor || !isSql || showParsed || editor.hasFocus) return
         const currentDoc = editor.state.doc.toString()
-        const cellValue = ConfigManager.getCellQuery(cell, queryName) || ''
-        if (currentDoc !== cellValue) {
-            editor.dispatch({ changes: { from: 0, to: currentDoc.length, insert: cellValue } })
+        if (currentDoc !== cellQueryValue) {
+            editor.dispatch({ changes: { from: 0, to: currentDoc.length, insert: cellQueryValue } })
         }
-    })
+    }, [cellQueryValue, isSql, showParsed])
 
     // ─── Handlers ────────────────────────────────────────────────────────────
     function toggleParsed() {
