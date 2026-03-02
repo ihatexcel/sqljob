@@ -26,13 +26,14 @@ function GroupDivider({ atIndex }: { atIndex: number }) {
 export function PageContent() {
     const {
         devMode, isLoading, showAddGroupModal,
-        getGroups, addGroup, _rev
+        getGroups, addGroup, activePageIndex, _rev
     } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         isLoading: s.isLoading,
         showAddGroupModal: s.showAddGroupModal,
         getGroups: s.getGroups,
         addGroup: s.addGroup,
+        activePageIndex: s.activePageIndex,
         _rev: s._rev
     })))
     const set = useNotebookStore.setState
