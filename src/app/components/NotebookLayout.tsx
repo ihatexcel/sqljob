@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { useRef } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import { useNotebookStore } from '../store/notebookStore'
 import { PageContent } from './PageContent'
@@ -95,14 +96,16 @@ function PageTab({ page, index, isActive, devMode, activatePage, deletePage, sta
 function NavBar() {
     const {
         devMode, isLoading, showLayout,
-        openExportModal, runAllGroups
+        openExportModal, runAllGroups, loadConfig
     } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         isLoading: s.isLoading,
         showLayout: s.showLayout,
         openExportModal: s.openExportModal,
-        runAllGroups: s.runAllGroups
+        runAllGroups: s.runAllGroups,
+        loadConfig: s.loadConfig
     })))
+    const importJsonRef = useRef<HTMLInputElement>(null)
 
     if (!showLayout) return null
 
@@ -126,6 +129,13 @@ function NavBar() {
                                 <li><button onClick={() => openExportModal('gist')}>
                                     <span className="iconify" data-icon="material-symbols-light:share" style={{ fontSize: '1rem' }}></span> Partager (Gist)
                                 </button></li>
+                                <li>
+                                    <label className="cursor-pointer flex items-center gap-2 px-4 py-2 hover:bg-base-200 rounded-lg">
+                                        <span className="iconify" data-icon="material-symbols-light:folder-open" style={{ fontSize: '1rem' }}></span> Import JSON
+                                        <input ref={importJsonRef} type="file" accept=".json" hidden
+                                            onChange={e => { loadConfig(e); (document.activeElement as HTMLElement)?.blur() }} />
+                                    </label>
+                                </li>
                                 <li><button onClick={() => openExportModal('json')}>
                                     <span className="iconify" data-icon="material-symbols-light:data-object" style={{ fontSize: '1rem' }}></span> Export JSON
                                 </button></li>
