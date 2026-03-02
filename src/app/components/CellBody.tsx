@@ -189,7 +189,11 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
 
     useEffect(() => {
         if (tableRef.current && cell._results?.length > 0 && cell._status !== 'running') {
-            renderTableInContainer?.(cell)
+            // fromExecute=true : bypass du garde anti-cascade Alpine (inutile en React,
+            // pas de MutationObserver qui déclenche x-init). Sans ça, le guard reste à
+            // true car React réutilise le même nœud DOM et le contenu SimpleDatatables
+            // de l'exécution précédente est encore présent dans le container.
+            renderTableInContainer?.(cell, true)
         }
     }, [cell._results, cell._status])
 
