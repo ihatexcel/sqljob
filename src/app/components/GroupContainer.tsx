@@ -106,8 +106,8 @@ export function GroupContainer({
         getSortedCells, getSortedChildren, getAllItemsSorted,
         shouldShowGroup, shouldShowCell,
         runGroupAtPath, addNestedGroup, openAddCellToGroupModal,
-        moveItemInGroup, deleteGroupAtPath, insertGroupBelow,
-        openInsertGroupModal, openLoopConfigModal, openGroupSettingsModal,
+        moveItemInGroup, deleteGroupAtPath,
+        openLoopConfigModal, openGroupSettingsModal,
         isFirstInGroup, isLastInGroup, forceUpdate, _rev
     } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
@@ -122,8 +122,6 @@ export function GroupContainer({
         openAddCellToGroupModal: s.openAddCellToGroupModal,
         moveItemInGroup: s.moveItemInGroup,
         deleteGroupAtPath: s.deleteGroupAtPath,
-        insertGroupBelow: s.insertGroupBelow,
-        openInsertGroupModal: s.openInsertGroupModal,
         openLoopConfigModal: s.openLoopConfigModal,
         openGroupSettingsModal: s.openGroupSettingsModal,
         isFirstInGroup: s.isFirstInGroup,
@@ -190,11 +188,6 @@ export function GroupContainer({
                             {!isLast && (
                                 <button className="btn btn-xs join-item" onClick={() => moveItemInGroup?.([...path.slice(0, -1)], 'child', path[path.length - 1], 1)} title="Descendre">
                                     <span className="iconify" data-icon="material-symbols-light:arrow-downward" style={{ fontSize: '1rem' }}></span>
-                                </button>
-                            )}
-                            {!inModal && (
-                                <button className="btn btn-xs join-item" onClick={() => openInsertGroupModal?.(path[0])} title="Insérer un groupe">
-                                    <span className="iconify" data-icon="material-symbols-light:add-circle-outline" style={{ fontSize: '1rem' }}></span>
                                 </button>
                             )}
                             <button className="btn btn-xs btn-error join-item" onClick={() => deleteGroupAtPath?.(path)} title="Supprimer le groupe">
