@@ -183,12 +183,12 @@ export function GroupContainer({
                                 <span className="iconify" data-icon="material-symbols-light:settings" style={{ fontSize: '1rem' }}></span>
                             </button>
                             {!isFirst && (
-                                <button className="btn btn-xs join-item" onClick={() => moveItemInGroup?.([...path.slice(0, -1)], 'group', path[path.length - 1], -1)} title="Monter">
+                                <button className="btn btn-xs join-item" onClick={() => moveItemInGroup?.([...path.slice(0, -1)], 'child', path[path.length - 1], -1)} title="Monter">
                                     <span className="iconify" data-icon="material-symbols-light:arrow-upward" style={{ fontSize: '1rem' }}></span>
                                 </button>
                             )}
                             {!isLast && (
-                                <button className="btn btn-xs join-item" onClick={() => moveItemInGroup?.([...path.slice(0, -1)], 'group', path[path.length - 1], 1)} title="Descendre">
+                                <button className="btn btn-xs join-item" onClick={() => moveItemInGroup?.([...path.slice(0, -1)], 'child', path[path.length - 1], 1)} title="Descendre">
                                     <span className="iconify" data-icon="material-symbols-light:arrow-downward" style={{ fontSize: '1rem' }}></span>
                                 </button>
                             )}

@@ -437,7 +437,10 @@ FROM source1 LIMIT 10;`;
 
                 // Déplace un item (cellule ou child) dans un groupe de façon unifiée
                 moveItemInGroup(path, itemType, originalIndex, direction) {
-                    const group = this.getGroupAtPath(path);
+                    // Cas top-level (path vide) : les groupes sont les children de la page active
+                    const group = (!path || path.length === 0)
+                        ? { children: this.activePage?.groups || [] }
+                        : this.getGroupAtPath(path);
                     if (!group) return;
 
                     const allItems = this.getAllItemsSorted(group);
