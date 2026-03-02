@@ -131,13 +131,16 @@ function SourceBody({ cell, path, cellIndex }: any) {
                 onDrop={e => { e.preventDefault(); setIsDragging(false); handleSingleSourceDrop(e, path, cellIndex) }}
             >
                 {!cell._fileName ? (
-                    <div style={{ width: '100%', textAlign: 'center', padding: '4px' }}>
+                    // key distinct : force React à démonter/remonter au lieu de recycler le nœud DOM.
+                    // Sans ça, iconify ayant remplacé les <span> par des <svg> hors du VDOM React,
+                    // React ne sait pas les supprimer → l'ancienne icône persiste après suppression.
+                    <div key="no-file" style={{ width: '100%', textAlign: 'center', padding: '4px' }}>
                         <span className="iconify" data-icon="material-symbols-light:create-new-folder" style={{ fontSize: '3rem', display: 'block', margin: 'auto' }}></span>
                         <p className="m-0 text-base-content/60 text-sm">{cell.title || 'Glissez-déposez ici'}</p>
                         <p className="mt-0 mb-0 text-accent text-xs font-semibold">→ {cell.name}</p>
                     </div>
                 ) : (
-                    <div className="flex flex-wrap items-center gap-3 px-4 py-3 w-full">
+                    <div key="has-file" className="flex flex-wrap items-center gap-3 px-4 py-3 w-full">
                         <span className="iconify text-success" data-icon="material-symbols-light:check-circle" style={{ fontSize: '1.25rem' }}></span>
                         <span className="flex-1 text-success font-medium truncate">{cell._fileName}</span>
                         <span className="text-base-content/60 text-xs">→ {cell.name}</span>
