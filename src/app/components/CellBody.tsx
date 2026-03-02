@@ -64,7 +64,7 @@ function MarkdownBody({ cell, path, cellIndex }: any) {
                 element: el,
                 spellChecker: false,
                 status: false,
-                toolbar: isReadOnly ? false : ['bold', 'italic', 'heading', '|', 'quote', 'unordered-list', 'ordered-list', '|', 'link', 'image', '|', 'preview', '|', 'guide'],
+                toolbar: (isReadOnly || !devMode) ? false : ['bold', 'italic', 'heading', '|', 'quote', 'unordered-list', 'ordered-list', '|', 'link', 'image', '|', 'preview', '|', 'guide'],
                 readOnly: isReadOnly,
                 minHeight: hasCellHeight(cell) ? '100%' : '50px',
                 autorefresh: { delay: 200 }
