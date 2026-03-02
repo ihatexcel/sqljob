@@ -441,19 +441,22 @@ FROM source1 LIMIT 10;`;
                     const group = (!path || path.length === 0)
                         ? { children: this.activePage?.groups || [] }
                         : this.getGroupAtPath(path);
-                    if (!group) return;
+                    console.log('[moveItemInGroup]', { path, itemType, originalIndex, direction, group });
+                    if (!group) { console.warn('[moveItemInGroup] no group'); return; }
 
                     const allItems = this.getAllItemsSorted(group);
-                    if (allItems.length < 2) return;
+                    console.log('[moveItemInGroup] allItems', allItems.map(i => ({ type: i.type, idx: i.originalIndex, order: i.order })));
+                    if (allItems.length < 2) { console.warn('[moveItemInGroup] < 2 items'); return; }
 
                     // Trouver l'item actuel dans la liste triée
                     const currentSortedIndex = allItems.findIndex(
                         item => item.type === itemType && item.originalIndex === originalIndex
                     );
-                    if (currentSortedIndex === -1) return;
+                    console.log('[moveItemInGroup] currentSortedIndex', currentSortedIndex);
+                    if (currentSortedIndex === -1) { console.warn('[moveItemInGroup] item not found'); return; }
 
                     const newSortedIndex = currentSortedIndex + direction;
-                    if (newSortedIndex < 0 || newSortedIndex >= allItems.length) return;
+                    if (newSortedIndex < 0 || newSortedIndex >= allItems.length) { console.warn('[moveItemInGroup] out of bounds'); return; }
 
                     // Échanger les _order des deux éléments
                     const currentItem = allItems[currentSortedIndex];
@@ -462,6 +465,7 @@ FROM source1 LIMIT 10;`;
                     const tempOrder = currentItem.item._order;
                     currentItem.item._order = targetItem.item._order;
                     targetItem.item._order = tempOrder;
+                    console.log('[moveItemInGroup] swapped _order:', currentItem.item._order, targetItem.item._order);
 
                     this.forceUpdate();
                 },
