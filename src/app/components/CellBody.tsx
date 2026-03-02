@@ -303,8 +303,17 @@ function SqlStatBody({ cell, path, cellIndex }: any) {
                 <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
                     placeholder="SELECT 42 AS value, 'Titre' AS title, 'info' AS type" />
             )}
-            {cell._statContent && (
-                <div dangerouslySetInnerHTML={{ __html: cell._statContent }} />
+            {cell._results && (
+                <div className="stat place-items-center py-1">
+                    {cell.icon && (
+                        <div className="stat-figure text-secondary">
+                            <span className="iconify inline-block h-8 w-8" data-icon={cell.icon}></span>
+                        </div>
+                    )}
+                    <div className="stat-title">{cell.title || 'Stat'}</div>
+                    <div className="stat-value">{cell._statValue || '-'}</div>
+                    <div className="stat-desc">{cell.subtitle || ''}</div>
+                </div>
             )}
             <ResultInfo cell={cell} />
         </div>
@@ -347,26 +356,99 @@ function EChartBody({ cell, path, cellIndex }: any) {
 
 // ─── UiParameterBody ──────────────────────────────────────────────────────────
 function UiParameterBody({ cell, path, cellIndex }: any) {
-    const devMode = useNotebookStore(s => s.devMode)
+    const { devMode, onParameterValueChange } = useNotebookStore(useShallow(s => ({
+        devMode: s.devMode,
+        onParameterValueChange: s.onParameterValueChange,
+    })))
     const languageType = ConfigManager.getCellEngine(cell, 'main')
     const isJs = languageType === 'js'
     const isText = languageType === 'text'
     const languageLabel = isJs ? 'JavaScript' : isText ? 'Texte' : 'SQL'
     const badgeClass = isJs ? 'badge-warning' : isText ? 'badge-ghost' : 'badge-info'
+    const placeholder = isJs ? 'return ["Option 1", "Option 2"];' : isText ? 'Saisir le texte' : 'SELECT * from source1'
+
+    const [localValue, setLocalValue] = useState(cell._value ?? '')
+
+    // Sync la valeur locale quand cell._value change suite à une exécution externe
+    useEffect(() => {
+        setLocalValue(cell._value ?? '')
+    }, [cell._value])
+
+    if (!devMode && cell.userVisible === false) return null
+
+    function handleChange(newValue: any) {
+        cell._value = newValue
+        cell._userModified = true
+        setLocalValue(newValue)
+        onParameterValueChange?.(cell)
+    }
 
     return (
-        <div>
+        <div className="flex flex-col gap-0">
+            {devMode && (
+                <div className="text-sm font-semibold text-primary mb-1">
+                    ${ConfigManager.getCellReferenceName(cell) || ''}
+                </div>
+            )}
             {devMode && (
                 <SqlEditorWidget
                     cell={cell} path={path} cellIndex={cellIndex}
-                    placeholder={isJs ? 'return ["Option 1", "Option 2"];' : isText ? 'Saisir le texte' : 'SELECT * from source1'}
+                    placeholder={placeholder}
                     languageLabel={languageLabel}
                     badgeClass={badgeClass}
                 />
             )}
-            {cell._uiHtml ? (
-                <div dangerouslySetInnerHTML={{ __html: cell._uiHtml }} />
-            ) : null}
+            {cell.paramType === 'input' && (
+                <fieldset className="fieldset">
+                    <legend className="fieldset-legend">{cell.title}</legend>
+                    <input
+                        type={cell.inputType || 'text'}
+                        className="input input-bordered input-sm w-full"
+                        value={localValue}
+                        onChange={e => handleChange(e.target.value)}
+                        disabled={cell.userEditable === false}
+                        placeholder={`Valeur de ${ConfigManager.getCellReferenceName(cell) || ''}`}
+                    />
+                </fieldset>
+            )}
+            {cell.paramType === 'dropdown' && (cell._options?.length ?? 0) > 0 && (
+                <fieldset className="fieldset">
+                    <legend className="fieldset-legend">{cell.title}</legend>
+                    <select
+                        className="select select-bordered select-sm w-full"
+                        value={localValue}
+                        onChange={e => handleChange(e.target.value)}
+                        disabled={cell.userEditable === false}
+                    >
+                        {(cell._options || []).map((opt: any) => (
+                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                        ))}
+                    </select>
+                </fieldset>
+            )}
+            {cell.paramType === 'range' && (
+                <fieldset className="fieldset">
+                    <legend className="fieldset-legend">{cell.title}</legend>
+                    <div className="flex items-center gap-3 w-full">
+                        <span className="text-xs text-base-content/60 min-w-[2rem] text-right">{cell.rangeMin ?? 0}</span>
+                        <input
+                            type="range"
+                            className="range range-sm range-primary flex-1"
+                            value={localValue}
+                            min={cell.rangeMin ?? 0}
+                            max={cell.rangeMax ?? 100}
+                            step={cell.rangeStep ?? 1}
+                            onChange={e => handleChange(Number(e.target.value))}
+                            disabled={cell.userEditable === false}
+                        />
+                        <span className="text-xs text-base-content/60 min-w-[2rem]">{cell.rangeMax ?? 100}</span>
+                        <span className="badge badge-primary badge-sm font-mono min-w-[3rem] text-center">{localValue}</span>
+                    </div>
+                </fieldset>
+            )}
+            {cell._paramError && (
+                <div className="p-2 text-error text-sm bg-error/10 rounded">{cell._paramError}</div>
+            )}
             <ResultInfo cell={cell} />
         </div>
     )
