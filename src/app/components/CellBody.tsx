@@ -545,7 +545,68 @@ function PublipostageWordBody({ cell, path, cellIndex }: any) {
     )
 }
 
-// ─── GenericHtmlBody (perspective, pdfme) ────────────────────────────────────
+// ─── PdfmeBody ────────────────────────────────────────────────────────────────
+function PdfmeBody({ cell, path, cellIndex }: any) {
+    const { runCellAt, isLoading, devMode, forceUpdate } = useNotebookStore(useShallow(s => ({
+        runCellAt: s.runCellAt,
+        isLoading: s.isLoading,
+        devMode: s.devMode,
+        forceUpdate: s.forceUpdate
+    })))
+
+    return (
+        <div className="flex flex-col gap-3">
+            {devMode && (
+                <div className="flex flex-col gap-3">
+                    <div>
+                        <div className="text-sm font-semibold text-primary mb-1">Requête de données</div>
+                        <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
+                            queryType="query" showParsedQueryProp="_showParsedQuery" />
+                    </div>
+                    <div>
+                        <div className="text-sm font-semibold text-primary mb-1 flex items-center gap-2">
+                            <span>Requête nom de fichier PDF</span>
+                            <span className="badge badge-soft badge-info text-xs flex items-center gap-1">
+                                <span className="iconify" data-icon="material-symbols-light:storage" style={{ fontSize: '0.875rem' }}></span>
+                                SQL
+                            </span>
+                        </div>
+                        <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
+                            queryType="query2" showParsedQueryProp="_showParsedQuery2" />
+                    </div>
+                    <div className="form-control">
+                        <label className="label gap-2">
+                            <span className="label-text font-semibold">Template pdfme (JSON)</span>
+                            <span className="badge badge-soft badge-primary text-xs">Layout</span>
+                        </label>
+                        <textarea
+                            className="textarea textarea-bordered w-full font-mono text-xs"
+                            rows={10}
+                            style={{ minHeight: '180px' }}
+                            placeholder='{"basePdf": {...}, "schemas": [...]}'
+                            value={cell.json || ''}
+                            onChange={e => { cell.json = e.target.value; forceUpdate() }}
+                        />
+                    </div>
+                </div>
+            )}
+            {cell.buttonLabel && (
+                <div className="flex justify-center">
+                    <button
+                        className="btn btn-primary btn-sm"
+                        onClick={() => runCellAt(path, cellIndex)}
+                        disabled={isLoading}
+                    >
+                        <span>{cell.buttonLabel}</span>
+                    </button>
+                </div>
+            )}
+            <ResultInfo cell={cell} />
+        </div>
+    )
+}
+
+// ─── GenericHtmlBody (perspective) ───────────────────────────────────────────
 function GenericHtmlBody({ cell, path, cellIndex }: any) {
     const { devMode, showSqlEditorVisible } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
@@ -607,8 +668,9 @@ export function CellBody({ cell, path, cellIndex, group }: { cell: any, path: nu
             case 'uiParameter': return <UiParameterBody cell={cell} path={path} cellIndex={cellIndex} />
             case 'publipostageWord':
                 return <PublipostageWordBody cell={cell} path={path} cellIndex={cellIndex} />
-            case 'perspective':
             case 'pdfme':
+                return <PdfmeBody cell={cell} path={path} cellIndex={cellIndex} />
+            case 'perspective':
                 return <GenericHtmlBody cell={cell} path={path} cellIndex={cellIndex} />
             default: return null
         }
