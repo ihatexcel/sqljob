@@ -111,11 +111,13 @@ function NavBar() {
 
     return (
         <div className="navbar bg-base-100 border-b border-base-300 px-4 py-2 gap-2">
-            <div className="flex-1">
+            <div className="navbar-start">
                 <span className="font-bold text-primary text-lg">sqljob</span>
             </div>
-            <div className="flex-none flex gap-2 items-center flex-wrap">
+            <div className="navbar-center">
                 <TabBar />
+            </div>
+            <div className="navbar-end flex gap-2 items-center">
                 {devMode && (
                     <>
                         <button className="btn btn-sm btn-ghost" onClick={runAllGroups} disabled={isLoading} title="Tout exécuter">
