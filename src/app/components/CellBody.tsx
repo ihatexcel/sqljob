@@ -454,7 +454,98 @@ function UiParameterBody({ cell, path, cellIndex }: any) {
     )
 }
 
-// ─── GenericHtmlBody (perspective, pdfme, publipostageWord) ──────────────────
+// ─── PublipostageWordBody ─────────────────────────────────────────────────────
+function PublipostageWordBody({ cell, path, cellIndex }: any) {
+    const {
+        handleDocxTemplateDrop, handleDocxTemplateFileSelect,
+        downloadDocxTemplate, removeDocxTemplate,
+        runCellAt, isLoading, devMode, forceUpdate
+    } = useNotebookStore(useShallow(s => ({
+        handleDocxTemplateDrop: s.handleDocxTemplateDrop,
+        handleDocxTemplateFileSelect: s.handleDocxTemplateFileSelect,
+        downloadDocxTemplate: s.downloadDocxTemplate,
+        removeDocxTemplate: s.removeDocxTemplate,
+        runCellAt: s.runCellAt,
+        isLoading: s.isLoading,
+        devMode: s.devMode,
+        forceUpdate: s.forceUpdate
+    })))
+
+    const inputRef = useRef<HTMLInputElement>(null)
+    const [isDragging, setIsDragging] = useState(false)
+
+    return (
+        <div className="flex flex-col gap-3">
+            <div
+                className={`flex items-center justify-center rounded-lg transition-all duration-200 mt-1 mb-1 ${cell.docxTemplateFileName
+                    ? 'border-2 border-solid border-success bg-success/10 cursor-default'
+                    : isDragging
+                        ? 'border-2 border-solid border-accent bg-accent/10 cursor-pointer'
+                        : 'border-2 border-dashed border-primary bg-primary/5 cursor-pointer hover:border-accent hover:bg-accent/10'
+                    }`}
+                onClick={() => !cell.docxTemplateFileName && inputRef.current?.click()}
+                onDragOver={e => { e.preventDefault(); setIsDragging(true) }}
+                onDragLeave={e => { e.preventDefault(); setIsDragging(false) }}
+                onDrop={e => { e.preventDefault(); setIsDragging(false); handleDocxTemplateDrop(e, path, cellIndex) }}
+            >
+                {!cell.docxTemplateFileName ? (
+                    <div key="no-file" className="text-center p-1">
+                        <span className="iconify" data-icon="material-symbols-light:description" style={{ fontSize: '4rem', display: 'block', margin: 'auto' }}></span>
+                        <p className="m-0 text-base-content/60 text-sm">Glissez-déposez votre template Word (.docx)</p>
+                        <p className="mt-0 mb-0 text-accent text-xs font-semibold">Template de publipostage</p>
+                    </div>
+                ) : (
+                    <div key="has-file" className="flex flex-wrap items-center gap-3 px-4 py-3 w-full">
+                        <span className="iconify text-success" data-icon="material-symbols-light:check-circle" style={{ fontSize: '1.25rem' }}></span>
+                        <span className="flex-1 text-success font-medium truncate">{cell.docxTemplateFileName}</span>
+                        <button className="btn btn-ghost" onClick={e => { e.stopPropagation(); downloadDocxTemplate(path, cellIndex) }} title="Télécharger">
+                            <span className="iconify" data-icon="material-symbols-light:download" style={{ fontSize: '1.25rem' }}></span>
+                        </button>
+                        <button className="btn btn-ghost btn-error" onClick={e => { e.stopPropagation(); removeDocxTemplate(path, cellIndex) }} title="Supprimer">
+                            <span className="iconify" data-icon="material-symbols-light:close" style={{ fontSize: '1.5rem' }}></span>
+                        </button>
+                    </div>
+                )}
+                <input ref={inputRef} type="file" hidden accept=".docx"
+                    onChange={e => handleDocxTemplateFileSelect(e, path, cellIndex)} />
+            </div>
+            {devMode && (
+                <div className="flex flex-col gap-3">
+                    <div>
+                        <div className="text-sm font-semibold text-primary mb-1">Requête de données</div>
+                        <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
+                            queryType="query" showParsedQueryProp="_showParsedQuery" />
+                    </div>
+                    <div>
+                        <div className="text-sm font-semibold text-primary mb-1 flex items-center gap-2">
+                            <span>Requête de nom de fichier</span>
+                            <span className="badge badge-soft badge-info text-xs flex items-center gap-1">
+                                <span className="iconify" data-icon="material-symbols-light:storage" style={{ fontSize: '0.875rem' }}></span>
+                                SQL
+                            </span>
+                        </div>
+                        <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
+                            queryType="query2" showParsedQueryProp="_showParsedQuery2" />
+                    </div>
+                </div>
+            )}
+            {cell.buttonLabel && (
+                <div className="flex justify-center">
+                    <button
+                        className="btn btn-primary btn-sm"
+                        onClick={() => runCellAt(path, cellIndex)}
+                        disabled={isLoading || !cell.docxTemplateFileName}
+                    >
+                        <span>{cell.buttonLabel}</span>
+                    </button>
+                </div>
+            )}
+            <ResultInfo cell={cell} />
+        </div>
+    )
+}
+
+// ─── GenericHtmlBody (perspective, pdfme) ────────────────────────────────────
 function GenericHtmlBody({ cell, path, cellIndex }: any) {
     const { devMode, showSqlEditorVisible } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
@@ -514,9 +605,10 @@ export function CellBody({ cell, path, cellIndex, group }: { cell: any, path: nu
             case 'sqlStat': return <SqlStatBody cell={cell} path={path} cellIndex={cellIndex} />
             case 'echart': return <EChartBody cell={cell} path={path} cellIndex={cellIndex} />
             case 'uiParameter': return <UiParameterBody cell={cell} path={path} cellIndex={cellIndex} />
+            case 'publipostageWord':
+                return <PublipostageWordBody cell={cell} path={path} cellIndex={cellIndex} />
             case 'perspective':
             case 'pdfme':
-            case 'publipostageWord':
                 return <GenericHtmlBody cell={cell} path={path} cellIndex={cellIndex} />
             default: return null
         }
