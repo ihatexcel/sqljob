@@ -361,6 +361,7 @@ export function filesMixin() {
                     delete cell.fileName;
 
                     this.setStatus(`Fichier supprimé de ${cell.name}`, 'success');
+                    this.forceUpdate();
                 },
 
                 /** Valide le nom d'une cellule (unicité globale, format SQL pour source). */
