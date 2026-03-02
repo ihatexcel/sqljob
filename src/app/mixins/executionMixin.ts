@@ -1454,9 +1454,11 @@ export function executionMixin() {
                         cell._arrowTable = arrowTable;
                         cell._perspectiveScheduled = true;
                         cell._perspectiveReady = true;
+                        // Déclencher le re-render React pour que <perspective-viewer> soit inséré dans le DOM.
+                        this.forceUpdate();
 
                         try {
-                            // Attendre que Alpine ait inséré <perspective-viewer> dans le DOM.
+                            // Attendre que React ait rendu <perspective-viewer> dans le DOM.
                             await this.$nextTick();
                             const _containerId = 'perspective-' + cell._id;
                             let _waited = 0;

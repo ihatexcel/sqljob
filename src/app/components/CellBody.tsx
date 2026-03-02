@@ -606,7 +606,62 @@ function PdfmeBody({ cell, path, cellIndex }: any) {
     )
 }
 
-// ─── GenericHtmlBody (perspective) ───────────────────────────────────────────
+// ─── PerspectiveBody ──────────────────────────────────────────────────────────
+function PerspectiveBody({ cell, path, cellIndex }: any) {
+    const { devMode, showSqlEditorVisible, hasCellHeight, renderPerspectiveInContainer, _rev } = useNotebookStore(useShallow(s => ({
+        devMode: s.devMode,
+        showSqlEditorVisible: s.showSqlEditorVisible,
+        hasCellHeight: s.hasCellHeight,
+        renderPerspectiveInContainer: s.renderPerspectiveInContainer,
+        _rev: s._rev
+    })))
+
+    // Equivalent Alpine x-init: déclencher le rendu quand le viewer est monté et données prêtes
+    // (cas rechargement de page où _arrowTable existe déjà, _perspectiveScheduled = false)
+    useEffect(() => {
+        if (!cell._perspectiveReady) return
+        const viewer = document.getElementById('perspective-' + cell._id)
+        if (!viewer) return
+        if (cell._arrowTable && !cell._perspectiveScheduled && !cell._perspectiveRendering && !cell._perspectiveTable) {
+            renderPerspectiveInContainer(cell).catch((e: any) => {
+                cell._perspectiveReady = false
+                cell._resultInfo = '❌ ' + e.message
+            })
+        }
+    }, [_rev])
+
+    const mh = '400px'
+    const hasHeight = hasCellHeight?.(cell)
+
+    return (
+        <div className={hasHeight ? 'flex-1 min-h-0 flex flex-col' : 'flex flex-col gap-2'}>
+            {showSqlEditorVisible?.(cell) && (
+                <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
+                    queryType="query" showParsedQueryProp="_showParsedQuery" />
+            )}
+            {cell._status === 'running' && !cell._perspectiveReady && (
+                <div className={hasHeight ? 'flex-1 min-h-0 rounded-lg bg-base-100 overflow-hidden' : 'rounded-lg bg-base-100 overflow-hidden'}
+                    style={hasHeight ? {} : { minHeight: mh }}>
+                    <div className="animate-pulse h-full w-full bg-base-200 rounded-lg" style={{ minHeight: mh }}></div>
+                </div>
+            )}
+            {cell._perspectiveReady && (
+                <div className={hasHeight ? 'flex-1 min-h-0 flex flex-col perspective-fill-height' : ''}
+                    style={hasHeight ? {} : { minHeight: mh }}>
+                    <perspective-viewer
+                        id={`perspective-${cell._id}`}
+                        theme="Pro Light"
+                        class={hasHeight ? 'flex-1 min-h-0 w-full rounded-lg' : 'w-full rounded-lg'}
+                        style={hasHeight ? {} : { minHeight: mh }}
+                    ></perspective-viewer>
+                </div>
+            )}
+            <ResultInfo cell={cell} />
+        </div>
+    )
+}
+
+// ─── GenericHtmlBody (fallback) ───────────────────────────────────────────────
 function GenericHtmlBody({ cell, path, cellIndex }: any) {
     const { devMode, showSqlEditorVisible } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
@@ -671,7 +726,7 @@ export function CellBody({ cell, path, cellIndex, group }: { cell: any, path: nu
             case 'pdfme':
                 return <PdfmeBody cell={cell} path={path} cellIndex={cellIndex} />
             case 'perspective':
-                return <GenericHtmlBody cell={cell} path={path} cellIndex={cellIndex} />
+                return <PerspectiveBody cell={cell} path={path} cellIndex={cellIndex} />
             default: return null
         }
     }
