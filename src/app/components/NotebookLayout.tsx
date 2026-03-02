@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { useRef } from 'react'
+import { useRef, useEffect } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import { useNotebookStore } from '../store/notebookStore'
 import { PageContent } from './PageContent'
@@ -112,8 +112,9 @@ function NavBar() {
     return (
         <div className="navbar bg-base-100 border-b border-base-300 px-4 py-2 gap-2">
             <div className="navbar-start">
-                <a href="https://ihatexcel.github.io/sqljob/?gist=68cd597ba5da05ceba24fb975c05384f" target="_blank" rel="noopener noreferrer">
+                <a href="https://ihatexcel.github.io/sqljob/?gist=68cd597ba5da05ceba24fb975c05384f" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
                     <img src="https://raw.githubusercontent.com/ihatexcel/sqljob/main/ihatexcel.svg" alt="sqljob" className="h-8" />
+                    <span className="font-bold text-primary text-lg">sqlJob</span>
                 </a>
             </div>
             <div className="navbar-center">
@@ -232,7 +233,18 @@ function FloatingControls() {
 
 // ─── Layout principal ─────────────────────────────────────────────────────────
 export function NotebookLayout() {
-    const showLayout = useNotebookStore(s => s.showLayout)
+    const { showLayout, setShowLayout } = useNotebookStore(useShallow(s => ({ showLayout: s.showLayout, setShowLayout: s.setShowLayout })))
+
+    useEffect(() => {
+        const handler = (e: KeyboardEvent) => {
+            if (e.ctrlKey && e.key === ',') {
+                e.preventDefault()
+                setShowLayout(!showLayout)
+            }
+        }
+        window.addEventListener('keydown', handler)
+        return () => window.removeEventListener('keydown', handler)
+    }, [showLayout, setShowLayout])
 
     return (
         <div className="min-h-screen flex flex-col">
