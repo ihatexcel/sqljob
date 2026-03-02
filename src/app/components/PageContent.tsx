@@ -55,7 +55,7 @@ export function PageContent() {
                 items.push(
                     <div
                         key={group._id}
-                        className="border border-base-300 rounded-lg overflow-hidden bg-base-100 transition-colors duration-200 shadow-sm hover:border-primary hover:shadow-md"
+                        className="overflow-hidden bg-base-100"
                     >
                         <GroupContainer
                             group={group}
