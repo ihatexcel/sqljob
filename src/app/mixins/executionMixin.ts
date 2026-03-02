@@ -701,8 +701,17 @@ export function executionMixin() {
                     if (container && rawResults && rawResults.length > 0) {
                         await CDNManager.loadSimpleDatatables();
                         if (this._tables[cell._id]) {
-                            this._tables[cell._id].destroy();
+                            try {
+                                this._tables[cell._id].destroy();
+                            } catch (_e) {
+                                // L'ancien élément DOM peut être détaché (React a remplacé
+                                // le div par le skeleton puis l'a recréé). On ignore l'erreur.
+                            }
+                            this._tables[cell._id] = null;
                         }
+                        // Garantir un conteneur vide avant de créer la nouvelle instance,
+                        // car simpleDatatables laisse des résidus DOM après destroy().
+                        container.innerHTML = '';
 
                         // Parse column roles for PERCENT/TREND rendering and display names
                         const _parsedRoles = EChartSqlParser.parseColumnRoles(rawResults);
