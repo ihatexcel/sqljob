@@ -978,7 +978,7 @@ export function executionMixin() {
 
                         cell._results = results;
                         cell._statValue = statValue !== null && statValue !== undefined ? String(statValue) : '-';
-                        cell._resultInfo = `✅ Stat calculée` + (cell._parseLevels.length > 1 ? ` - ${cell._parseLevels.length - 1} niveau(x) de parsing` : '');
+                        cell._resultInfo = cell._parseLevels.length > 1 ? `${cell._parseLevels.length - 1} niveau(x) de parsing` : '';
 
                         this.setStatus('Stat SQL exécutée', 'success');
                     } catch (error) {
