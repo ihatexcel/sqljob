@@ -441,22 +441,22 @@ FROM source1 LIMIT 10;`;
                     const group = (!path || path.length === 0)
                         ? { children: this.activePage?.groups || [] }
                         : this.getGroupAtPath(path);
-                    console.log('[moveItemInGroup]', { path, itemType, originalIndex, direction, group });
-                    if (!group) { console.warn('[moveItemInGroup] no group'); return; }
+                    if (!group) return;
 
                     const allItems = this.getAllItemsSorted(group);
-                    console.log('[moveItemInGroup] allItems', allItems.map(i => ({ type: i.type, idx: i.originalIndex, order: i.order })));
-                    if (allItems.length < 2) { console.warn('[moveItemInGroup] < 2 items'); return; }
+                    if (allItems.length < 2) return;
 
-                    // Trouver l'item actuel dans la liste triée
+                    // Normaliser les _order pour garantir des valeurs distinctes
+                    // (nécessaire si plusieurs items partagent la même valeur _order)
+                    allItems.forEach((item, idx) => { item.item._order = idx; });
+
                     const currentSortedIndex = allItems.findIndex(
                         item => item.type === itemType && item.originalIndex === originalIndex
                     );
-                    console.log('[moveItemInGroup] currentSortedIndex', currentSortedIndex);
-                    if (currentSortedIndex === -1) { console.warn('[moveItemInGroup] item not found'); return; }
+                    if (currentSortedIndex === -1) return;
 
                     const newSortedIndex = currentSortedIndex + direction;
-                    if (newSortedIndex < 0 || newSortedIndex >= allItems.length) { console.warn('[moveItemInGroup] out of bounds'); return; }
+                    if (newSortedIndex < 0 || newSortedIndex >= allItems.length) return;
 
                     // Échanger les _order des deux éléments
                     const currentItem = allItems[currentSortedIndex];
@@ -465,7 +465,6 @@ FROM source1 LIMIT 10;`;
                     const tempOrder = currentItem.item._order;
                     currentItem.item._order = targetItem.item._order;
                     targetItem.item._order = tempOrder;
-                    console.log('[moveItemInGroup] swapped _order:', currentItem.item._order, targetItem.item._order);
 
                     this.forceUpdate();
                 },

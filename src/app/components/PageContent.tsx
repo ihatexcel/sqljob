@@ -24,11 +24,14 @@ export function PageContent() {
     const set = useNotebookStore.setState
 
     const groups = getGroups()
+    const sortedGroups = [...groups].sort((a: any, b: any) => (a._order ?? 0) - (b._order ?? 0))
 
     return (
         <div className="flex flex-col gap-4 p-2">
             {/* Groupes de la page active */}
-            {groups.map((group: any, i: number) => (
+            {groups.map((group: any, i: number) => {
+                const sortedIdx = sortedGroups.indexOf(group)
+                return (
                 <div
                     key={group._id}
                     className="border border-base-300 rounded-lg overflow-hidden bg-base-100 transition-colors duration-200 shadow-sm hover:border-primary hover:shadow-md"
@@ -38,12 +41,13 @@ export function PageContent() {
                         group={group}
                         path={[i]}
                         depth={0}
-                        isFirst={i === 0}
-                        isLast={i === groups.length - 1}
+                        isFirst={sortedIdx === 0}
+                        isLast={sortedIdx === groups.length - 1}
                         siblingCount={groups.length}
                     />
                 </div>
-            ))}
+                )
+            })}
 
             {/* Boutons d'ajout (devMode uniquement) */}
             {devMode && (

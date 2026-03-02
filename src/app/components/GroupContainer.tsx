@@ -257,6 +257,7 @@ function GroupContent({ group, path, depth }: { group: any, path: number[], dept
                     const childItem = item
                     const childPath = [...path, childItem.originalIndex]
                     if (!devMode && !shouldShowGroup?.(childItem.item)) return null
+                    const childSortedIdx = allItems.indexOf(childItem)
                     return (
                         <div key={childItem.item._id || `child-${childItem.originalIndex}`}
                             className="flex-1 bg-base-100 border border-base-300 rounded-lg overflow-hidden transition-all duration-200 shadow-sm hover:border-primary hover:shadow-md"
@@ -265,9 +266,9 @@ function GroupContent({ group, path, depth }: { group: any, path: number[], dept
                                 group={childItem.item}
                                 path={childPath}
                                 depth={depth + 1}
-                                isFirst={childItem.originalIndex === 0}
-                                isLast={childItem.originalIndex === (group.children?.length ?? 1) - 1}
-                                siblingCount={group.children?.length ?? 1}
+                                isFirst={childSortedIdx === 0}
+                                isLast={childSortedIdx === allItems.length - 1}
+                                siblingCount={allItems.length}
                             />
                         </div>
                     )
