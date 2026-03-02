@@ -112,7 +112,9 @@ function NavBar() {
     return (
         <div className="navbar bg-base-100 border-b border-base-300 px-4 py-2 gap-2">
             <div className="navbar-start">
-                <span className="font-bold text-primary text-lg">sqljob</span>
+                <a href="https://ihatexcel.github.io/sqljob/?gist=68cd597ba5da05ceba24fb975c05384f" target="_blank" rel="noopener noreferrer">
+                    <img src="https://raw.githubusercontent.com/ihatexcel/sqljob/main/ihatexcel.svg" alt="sqljob" className="h-8" />
+                </a>
             </div>
             <div className="navbar-center">
                 <TabBar />
