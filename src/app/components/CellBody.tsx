@@ -155,6 +155,22 @@ function SourceBody({ cell, path, cellIndex }: any) {
                 <input ref={inputRef} type="file" hidden accept=".csv,.parquet,.xlsx,.xls"
                     onChange={e => handleSingleSourceFileSelect(e, path, cellIndex)} />
             </div>
+            {devMode && (
+                <div className="mt-1 flex flex-col gap-3">
+                    <div>
+                        <div className="text-sm font-semibold text-primary mb-1">Requête d'import</div>
+                        <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
+                            queryType="query" showParsedQueryProp="_showParsedQuery"
+                            applySourceDefaultIfEmpty={true} />
+                    </div>
+                    <div>
+                        <div className="text-sm font-semibold text-primary mb-1">Requête de fallback (si erreur)</div>
+                        <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
+                            queryType="query2" showParsedQueryProp="_showParsedQuery2"
+                            applySourceDefaultIfEmpty={true} />
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
