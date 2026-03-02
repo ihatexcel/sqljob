@@ -459,6 +459,8 @@ FROM source1 LIMIT 10;`;
                     const tempOrder = currentItem.item._order;
                     currentItem.item._order = targetItem.item._order;
                     targetItem.item._order = tempOrder;
+
+                    this.forceUpdate();
                 },
 
                 // Vérifie si un item est le premier dans l'ordre unifié
