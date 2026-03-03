@@ -913,7 +913,7 @@ export function executionMixin() {
                         if (languageType === 'text') {
                             htmlContent = (cellQuery || '').trim();
                             cell._parseLevels = [];
-                            cell._resultInfo = '✅ Texte utilisé tel quel';
+                            cell._resultInfo = '';
                         } else if (languageType === 'js') {
                             cell._parseLevels = [];
                             let jsCode = this.parseQueryWithParameters(cellQuery || '');
