@@ -83,13 +83,6 @@ export function PageContent() {
                     </button>
                 </div>
             )}
-
-            {groups.length === 0 && devMode && (
-                <div className="flex flex-col items-center justify-center py-20 text-base-content/40">
-                    <span className="iconify" data-icon="material-symbols-light:add-circle-outline" style={{ fontSize: '4rem' }}></span>
-                    <p className="mt-2 text-sm">Aucun groupe. Cliquez sur "Ajouter un groupe" pour commencer.</p>
-                </div>
-            )}
         </div>
     )
 }
