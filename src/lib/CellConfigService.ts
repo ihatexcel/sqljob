@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { CELL_TYPE_SCHEMAS, CELL_TYPE_HANDLERS } from './cellTypeSchemas'
+import { ConfigManager } from './ConfigManager'
 
         /** Initialisation partagée d'une cellule (initCell + restore). Utilisé par notebookApp et applyImportedConfig. */
         export function initializeCell(cell, cellIndex, opts = {}) {
