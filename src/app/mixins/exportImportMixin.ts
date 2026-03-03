@@ -210,22 +210,9 @@ export function exportImportMixin() {
                             configScriptTag = `    <script type="application/octet-stream" id="defaultConfigBase64">${configBase64}</script>\n`;
                         }
 
-                        // Trouver le src de sqljob.js depuis la page hôte.
-                        // On compare script.src (URL absolue) avec window.__sqljobScriptUrl
-                        // pour identifier le bon élément, puis on lit getAttribute('src')
-                        // qui préserve le chemin relatif original du client.
-                        let sqljobSrc = 'sqljob.js';
-                        if (window.__sqljobScriptUrl) {
-                            for (const el of document.querySelectorAll('script[src]')) {
-                                if (el.src === window.__sqljobScriptUrl) {
-                                    sqljobSrc = el.getAttribute('src');
-                                    break;
-                                }
-                            }
-                        }
-
-                        // Déduire l'URL du CSS depuis celle du JS (sqljob.js → sqljob.css)
-                        const sqljobCss = sqljobSrc.replace(/\.js$/, '.css');
+                        // URLs CDN GitHub — dist-cdn sur la branche main
+                        const sqljobSrc = 'https://raw.githubusercontent.com/ihatexcel/sqljob/refs/heads/main/dist-cdn/sqljob.js';
+                        const sqljobCss = 'https://raw.githubusercontent.com/ihatexcel/sqljob/refs/heads/main/dist-cdn/sqljob.css';
 
                         // Template HTML fixe — identique à test-cdn.html
                         const htmlContent = `<!DOCTYPE html>
