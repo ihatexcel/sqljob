@@ -72,7 +72,9 @@ function MarkdownBody({ cell, path, cellIndex }: any) {
             const cm = inst.codemirror || inst.cm
             if (cm && isReadOnly) cm.setOption('readOnly', true)
             cell._easyMDEcli = inst
-            if (typeof inst.togglePreview === 'function') {
+            // En clientMode (pas devMode) : basculer en preview par défaut
+            // En devMode : rester en mode édition (pas de togglePreview)
+            if (!devMode && typeof inst.togglePreview === 'function') {
                 try { inst.togglePreview() } catch (_) {}
             }
             setTimeout(() => {
@@ -246,7 +248,7 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
                     }
                 </div>
             )}
-            <ResultInfo cell={cell} />
+            <ResultInfo cell={cell} devOnly />
         </div>
     )
 }
@@ -286,7 +288,7 @@ function IframeBody({ cell, path, cellIndex }: any) {
                 sandbox="allow-scripts allow-same-origin"
                 className={`w-full border-0 ${hasHeight ? 'flex-1' : 'min-h-[200px]'}`}
             />
-            <ResultInfo cell={cell} />
+            <ResultInfo cell={cell} devOnly />
         </div>
     )
 }
@@ -316,7 +318,7 @@ function SqlStatBody({ cell, path, cellIndex }: any) {
                     <div className="stat-desc">{cell.subtitle || ''}</div>
                 </div>
             )}
-            <ResultInfo cell={cell} />
+            <ResultInfo cell={cell} devOnly />
         </div>
     )
 }
@@ -350,7 +352,7 @@ function EChartBody({ cell, path, cellIndex }: any) {
                     placeholder="SELECT 1 AS value" />
             )}
             <div ref={chartRef} className={hasHeight ? 'flex-1 min-h-0' : 'min-h-[300px]'} />
-            <ResultInfo cell={cell} />
+            <ResultInfo cell={cell} devOnly />
         </div>
     )
 }
@@ -450,7 +452,7 @@ function UiParameterBody({ cell, path, cellIndex }: any) {
             {cell._paramError && (
                 <div className="p-2 text-error text-sm bg-error/10 rounded">{cell._paramError}</div>
             )}
-            <ResultInfo cell={cell} />
+            <ResultInfo cell={cell} devOnly />
         </div>
     )
 }
@@ -541,7 +543,7 @@ function PublipostageWordBody({ cell, path, cellIndex }: any) {
                     </button>
                 </div>
             )}
-            <ResultInfo cell={cell} />
+            <ResultInfo cell={cell} devOnly />
         </div>
     )
 }
@@ -602,7 +604,7 @@ function PdfmeBody({ cell, path, cellIndex }: any) {
                     </button>
                 </div>
             )}
-            <ResultInfo cell={cell} />
+            <ResultInfo cell={cell} devOnly />
         </div>
     )
 }
@@ -657,7 +659,7 @@ function PerspectiveBody({ cell, path, cellIndex }: any) {
                     ></perspective-viewer>
                 </div>
             )}
-            <ResultInfo cell={cell} />
+            <ResultInfo cell={cell} devOnly />
         </div>
     )
 }
@@ -683,7 +685,7 @@ function GenericHtmlBody({ cell, path, cellIndex }: any) {
                     placeholder="SELECT 1" />
             )}
             <div ref={contentRef}></div>
-            <ResultInfo cell={cell} />
+            <ResultInfo cell={cell} devOnly />
         </div>
     )
 }

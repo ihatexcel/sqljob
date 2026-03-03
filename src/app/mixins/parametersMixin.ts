@@ -252,7 +252,7 @@ export function parametersMixin() {
                         return;
                     }
 
-                    this.setStatus(`🔄 Rafraîchissement de ${dependentCells.length} cellule(s) et ${dependentGroups.length} groupe(s) dépendant(s) de $${paramName}...`, 'loading');
+                    if (this.devMode) this.setStatus(`🔄 Rafraîchissement de ${dependentCells.length} cellule(s) et ${dependentGroups.length} groupe(s) dépendant(s) de $${paramName}...`, 'loading');
 
                     // Réévaluer les ifQuery des groupes dépendants
                     for (let i = 0; i < dependentGroups.length; i++) {
@@ -283,7 +283,7 @@ export function parametersMixin() {
                         }
                     }
 
-                    this.setStatus(`✅ ${dependentCells.length} cellule(s) et ${dependentGroups.length} groupe(s) rafraîchi(s)`, 'success');
+                    if (this.devMode) this.setStatus(`✅ ${dependentCells.length} cellule(s) et ${dependentGroups.length} groupe(s) rafraîchi(s)`, 'success');
                 },
 
                 // Générer un nom de paramètre unique (param1, param2, param3...) - vérifie dans TOUTES les pages
