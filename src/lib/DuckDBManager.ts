@@ -56,6 +56,7 @@
                     }
 
                     DuckDBManager.duckdbModuleRef = null;
+                    DuckDBManager._chartTypesInitialized = false;
                     window.duckdbModule = null;
                     window.ducklingsModule = null;
 
@@ -213,8 +214,22 @@
 
             static _chartTypesInitialized = false;
 
-            /** Crée tous les types taleshape dans DuckDB (VARCHAR alias).
-             *  Idempotent : utilise IF NOT EXISTS, peut être appelé plusieurs fois. */
+            /** Rôles dont la valeur est numérique → créés comme DOUBLE pour que
+             *  `42000::BARCHART` fonctionne directement sans double cast. */
+            static readonly NUMERIC_CHART_TYPES = new Set([
+                'BARCHART', 'BARCHART_STACKED', 'BARCHART_PERCENT', 'BARCHART_STACKED_PERCENT',
+                'LINECHART', 'LINECHART_PERCENT',
+                'PIECHART', 'PIECHART_PERCENT',
+                'DONUTCHART', 'DONUTCHART_PERCENT',
+                'GAUGE', 'GAUGE_PERCENT',
+                'BOXPLOT',
+                'PERCENT', 'COMPARE', 'TREND',
+                'YLINE',
+            ]);
+
+            /** Crée tous les types taleshape dans DuckDB.
+             *  Rôles numériques → DOUBLE, rôles texte → VARCHAR.
+             *  Idempotent : utilise IF NOT EXISTS. */
             static async initChartTypes() {
                 if (DuckDBManager._chartTypesInitialized) return;
                 if (DuckDBManager.currentEngine === 'ducklings') {
@@ -224,7 +239,7 @@
                 }
                 if (!DuckDBManager.connInstance) return;
                 const sql = DuckDBManager.CHART_TYPE_NAMES
-                    .map(t => `CREATE TYPE IF NOT EXISTS ${t} AS VARCHAR;`)
+                    .map(t => `CREATE TYPE IF NOT EXISTS ${t} AS ${DuckDBManager.NUMERIC_CHART_TYPES.has(t) ? 'DOUBLE' : 'VARCHAR'};`)
                     .join('\n');
                 await DuckDBManager.connInstance.query(sql);
                 DuckDBManager._chartTypesInitialized = true;
