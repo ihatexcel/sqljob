@@ -27,11 +27,19 @@ jobs:
 
       - run: npm ci
 
-      - run: npm run build
+      - run: npm run build:cdn
+
+      - name: Prepare deploy directory
+        run: |
+          mkdir -p _site
+          cp index.html _site/
+          cp ihatexcel.ico _site/ 2>/dev/null || true
+          cp ihatexcel.svg _site/ 2>/dev/null || true
+          cp -r dist-cdn _site/
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: _site
 
   deploy:
     needs: build
