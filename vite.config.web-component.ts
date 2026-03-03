@@ -8,6 +8,12 @@ export default defineConfig({
         tailwindcss(),
     ],
 
+    define: {
+        'process.env.NODE_ENV': '"production"',
+        'process.env': '{}',
+        'process': '{ env: {} }',
+    },
+
     build: {
         lib: {
             entry: 'src/web-component/sqljob-app.ts',
