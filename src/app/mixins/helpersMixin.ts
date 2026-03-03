@@ -135,6 +135,8 @@ export function helpersMixin() {
                 // HELPERS
                 // ─────────────────────────────────────────────────────────────────
                 setStatus(message, type) {
+                    // En clientMode, ne pas afficher les confirmations de succès
+                    if (!this.devMode && type === 'success') return;
                     this.status = message;
                     this.statusType = type;
                     if (type !== 'loading') {
