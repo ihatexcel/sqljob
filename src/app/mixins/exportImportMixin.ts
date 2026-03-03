@@ -191,9 +191,9 @@ export function exportImportMixin() {
                         configScriptTag = `    <script type="application/octet-stream" id="defaultConfigBase64">${configBase64}</script>\n`;
                     }
 
-                    // URLs jsDelivr — sert les fichiers GitHub avec le bon MIME type (text/plain interdit pour type="module")
-                    const sqljobSrc = 'https://cdn.jsdelivr.net/gh/ihatexcel/sqljob@main/dist-cdn/sqljob.js';
-                    const sqljobCss = 'https://cdn.jsdelivr.net/gh/ihatexcel/sqljob@main/dist-cdn/sqljob.css';
+                    // URLs GitHub Pages — MIME type correct, pas de trace CDN externe
+                    const sqljobSrc = 'https://ihatexcel.github.io/sqljob/dist-cdn/sqljob.js';
+                    const sqljobCss = 'https://ihatexcel.github.io/sqljob/dist-cdn/sqljob.css';
 
                     // Template HTML fixe — identique à test-cdn.html
                     const htmlContent = `<!DOCTYPE html>
