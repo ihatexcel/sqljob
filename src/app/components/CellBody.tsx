@@ -260,11 +260,20 @@ function IframeBody({ cell, path, cellIndex }: any) {
         _rev: s._rev
     })))
 
-    const hasHeight = hasCellHeight(cell)
+    const iframeRef = useRef<HTMLIFrameElement>(null)
 
-    const srcDoc = cell._htmlContent
-        ? `<style>html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden}</style>${cell._htmlContent}`
-        : ''
+    useEffect(() => {
+        const iframe = iframeRef.current
+        if (!iframe || !cell._htmlContent) return
+        const doc = iframe.contentDocument || iframe.contentWindow?.document
+        if (doc) {
+            doc.open()
+            doc.write(cell._htmlContent)
+            doc.close()
+        }
+    }, [cell._htmlContent, _rev])
+
+    const hasHeight = hasCellHeight(cell)
 
     return (
         <div className={hasHeight ? 'flex-1 min-h-0 flex flex-col' : ''}>
@@ -273,8 +282,8 @@ function IframeBody({ cell, path, cellIndex }: any) {
                     placeholder="SELECT '<h1>Hello</h1>'" />
             )}
             <iframe
-                srcDoc={srcDoc}
-                sandbox="allow-scripts"
+                ref={iframeRef}
+                sandbox="allow-scripts allow-same-origin"
                 className={`w-full border-0 ${hasHeight ? 'flex-1' : 'min-h-[200px]'}`}
             />
             <ResultInfo cell={cell} />
