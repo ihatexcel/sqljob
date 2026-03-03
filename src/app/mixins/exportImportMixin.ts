@@ -127,95 +127,76 @@ export function exportImportMixin() {
                     }
                 },
 
-                _buildExportHTMLEncrypted(fullOuterHTML, configScriptContent) {
-                    let html = fullOuterHTML;
-                    const openTag = '\x3cscript type="application/octet-stream" id="defaultConfigBase64" data-encrypted="true"\x3e';
-                    const closeTag = '\x3c/script\x3e';
-                    const encryptedScript = openTag + configScriptContent + closeTag;
-                    if (/<script[^>]*\sid="defaultConfigBase64"/i.test(html)) {
-                        html = html.replace(/<script[^>]*\sid="defaultConfigBase64"[^>]*>[\s\S]*?<\/script>/i, encryptedScript);
-                    } else {
-                        html = html.replace(/<\/head>/i, encryptedScript + '</head>');
-                    }
-                    html = html.replace(/<script[^>]*\sid="sourceFile_[^"]*"[^>]*>[\s\S]*?<\/script>/gi, '');
-                    html = html.replace(/<script[^>]*\sid="docxTemplate_[^"]*"[^>]*>[\s\S]*?<\/script>/gi, '');
-                    return '<!DOCTYPE html>\n' + html;
-                },
-
                 async exportHTMLWithConfig(config, fileName = 'index.sqljob.html', passphrase = null) {
                     const sourceFilesPayload = [];
                     const docxTemplatesPayload = [];
 
-                    // ─── Web Component mode : export depuis un template propre ───────────
-                    // On ne touche pas au DOM de la page hôte (le client peut y mettre
-                    // n'importe quoi). On construit l'HTML de zéro depuis un template fixe.
-                    if (document.querySelector('sqljob-app')) {
-                        // Collecter les fichiers embarqués sous forme de chaînes HTML
-                        let embeddedScripts = '';
+                    // Collecter les fichiers embarqués sous forme de chaînes HTML
+                    let embeddedScripts = '';
 
-                        const collectFilesForTemplate = async (group, groupPath = []) => {
-                            for (let ci = 0; ci < (group.cells || []).length; ci++) {
-                                const cell = group.cells[ci];
+                    const collectFilesForTemplate = async (group, groupPath = []) => {
+                        for (let ci = 0; ci < (group.cells || []).length; ci++) {
+                            const cell = group.cells[ci];
 
-                                if (cell.type === 'source' && cell._currentFile && cell._fileName) {
-                                    const safeName = cell.name.replace(/[^a-zA-Z0-9_]/g, '_');
-                                    const ab = await cell._currentFile.arrayBuffer();
-                                    const compressed = await FileHandler.compressGzip(ab);
-                                    const b64 = FileHandler.arrayBufferToBase64(compressed);
-                                    if (passphrase) {
-                                        sourceFilesPayload.push({ id: `sourceFile_${safeName}`, sourceName: cell.name, fileName: cell._fileName, base64: b64 });
-                                    } else {
-                                        embeddedScripts += `    <script type="application/octet-stream" id="sourceFile_${safeName}" data-source-name="${cell.name}" data-file-name="${cell._fileName}">${b64}</script>\n`;
-                                    }
-                                }
-
-                                if (cell.type === 'publipostageWord' && cell.docxTemplateBase64 && cell.docxTemplateFileName) {
-                                    const cellPath = [...groupPath, ci].join('_');
-                                    const stableId = `docxTemplate_${cellPath}`;
-                                    const docxBytes = FileHandler.base64ToUint8Array(cell.docxTemplateBase64);
-                                    const docxCompressed = await FileHandler.compressGzip(docxBytes.buffer || docxBytes);
-                                    const docxB64 = FileHandler.arrayBufferToBase64(docxCompressed);
-                                    if (passphrase) {
-                                        docxTemplatesPayload.push({ id: stableId, cellPath, fileName: cell.docxTemplateFileName, base64: docxB64, compressed: true });
-                                    } else {
-                                        embeddedScripts += `    <script type="application/octet-stream" id="${stableId}" data-cell-path="${cellPath}" data-file-name="${cell.docxTemplateFileName}" data-compressed="true">${docxB64}</script>\n`;
-                                    }
+                            if (cell.type === 'source' && cell._currentFile && cell._fileName) {
+                                const safeName = cell.name.replace(/[^a-zA-Z0-9_]/g, '_');
+                                const ab = await cell._currentFile.arrayBuffer();
+                                const compressed = await FileHandler.compressGzip(ab);
+                                const b64 = FileHandler.arrayBufferToBase64(compressed);
+                                if (passphrase) {
+                                    sourceFilesPayload.push({ id: `sourceFile_${safeName}`, sourceName: cell.name, fileName: cell._fileName, base64: b64 });
+                                } else {
+                                    embeddedScripts += `    <script type="application/octet-stream" id="sourceFile_${safeName}" data-source-name="${cell.name}" data-file-name="${cell._fileName}">${b64}</script>\n`;
                                 }
                             }
-                            for (let ci = 0; ci < (group.children || []).length; ci++) {
-                                await collectFilesForTemplate(group.children[ci], [...groupPath, ci]);
-                            }
-                        };
 
-                        for (let pi = 0; pi < this.pages.length; pi++) {
-                            for (let gi = 0; gi < this.pages[pi].groups.length; gi++) {
-                                await collectFilesForTemplate(this.pages[pi].groups[gi], [gi]);
-                            }
-                            for (let gi = 0; gi < (this.pages[pi].linkGroups || []).length; gi++) {
-                                await collectFilesForTemplate(this.pages[pi].linkGroups[gi], [-1, gi]);
+                            if (cell.type === 'publipostageWord' && cell.docxTemplateBase64 && cell.docxTemplateFileName) {
+                                const cellPath = [...groupPath, ci].join('_');
+                                const stableId = `docxTemplate_${cellPath}`;
+                                const docxBytes = FileHandler.base64ToUint8Array(cell.docxTemplateBase64);
+                                const docxCompressed = await FileHandler.compressGzip(docxBytes.buffer || docxBytes);
+                                const docxB64 = FileHandler.arrayBufferToBase64(docxCompressed);
+                                if (passphrase) {
+                                    docxTemplatesPayload.push({ id: stableId, cellPath, fileName: cell.docxTemplateFileName, base64: docxB64, compressed: true });
+                                } else {
+                                    embeddedScripts += `    <script type="application/octet-stream" id="${stableId}" data-cell-path="${cellPath}" data-file-name="${cell.docxTemplateFileName}" data-compressed="true">${docxB64}</script>\n`;
+                                }
                             }
                         }
-
-                        // Construire la balise de config
-                        let configScriptTag;
-                        if (passphrase) {
-                            const payload = { config, sourceFiles: sourceFilesPayload, docxTemplates: docxTemplatesPayload };
-                            let payloadStr;
-                            try { payloadStr = JSON.stringify(payload); } catch (e) { payloadStr = '[stringify error]'; }
-                            const encrypted = await GistEncrypt.encrypt(payloadStr, passphrase);
-                            const configScriptContent = btoa(JSON.stringify(encrypted));
-                            configScriptTag = `    <script type="application/octet-stream" id="defaultConfigBase64" data-encrypted="true">${configScriptContent}</script>\n`;
-                        } else {
-                            const configBase64 = ConfigManager.encodeUTF8ToBase64(JSON.stringify(config, null, 2));
-                            configScriptTag = `    <script type="application/octet-stream" id="defaultConfigBase64">${configBase64}</script>\n`;
+                        for (let ci = 0; ci < (group.children || []).length; ci++) {
+                            await collectFilesForTemplate(group.children[ci], [...groupPath, ci]);
                         }
+                    };
 
-                        // URLs CDN GitHub — dist-cdn sur la branche main
-                        const sqljobSrc = 'https://raw.githubusercontent.com/ihatexcel/sqljob/refs/heads/main/dist-cdn/sqljob.js';
-                        const sqljobCss = 'https://raw.githubusercontent.com/ihatexcel/sqljob/refs/heads/main/dist-cdn/sqljob.css';
+                    for (let pi = 0; pi < this.pages.length; pi++) {
+                        for (let gi = 0; gi < this.pages[pi].groups.length; gi++) {
+                            await collectFilesForTemplate(this.pages[pi].groups[gi], [gi]);
+                        }
+                        for (let gi = 0; gi < (this.pages[pi].linkGroups || []).length; gi++) {
+                            await collectFilesForTemplate(this.pages[pi].linkGroups[gi], [-1, gi]);
+                        }
+                    }
 
-                        // Template HTML fixe — identique à test-cdn.html
-                        const htmlContent = `<!DOCTYPE html>
+                    // Construire la balise de config
+                    let configScriptTag;
+                    if (passphrase) {
+                        const payload = { config, sourceFiles: sourceFilesPayload, docxTemplates: docxTemplatesPayload };
+                        let payloadStr;
+                        try { payloadStr = JSON.stringify(payload); } catch (e) { payloadStr = '[stringify error]'; }
+                        const encrypted = await GistEncrypt.encrypt(payloadStr, passphrase);
+                        const configScriptContent = btoa(JSON.stringify(encrypted));
+                        configScriptTag = `    <script type="application/octet-stream" id="defaultConfigBase64" data-encrypted="true">${configScriptContent}</script>\n`;
+                    } else {
+                        const configBase64 = ConfigManager.encodeUTF8ToBase64(JSON.stringify(config, null, 2));
+                        configScriptTag = `    <script type="application/octet-stream" id="defaultConfigBase64">${configBase64}</script>\n`;
+                    }
+
+                    // URLs CDN GitHub — dist-cdn sur la branche main
+                    const sqljobSrc = 'https://raw.githubusercontent.com/ihatexcel/sqljob/refs/heads/main/dist-cdn/sqljob.js';
+                    const sqljobCss = 'https://raw.githubusercontent.com/ihatexcel/sqljob/refs/heads/main/dist-cdn/sqljob.css';
+
+                    // Template HTML fixe — identique à test-cdn.html
+                    const htmlContent = `<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -228,103 +209,6 @@ ${configScriptTag}${embeddedScripts}</head>
     <sqljob-app></sqljob-app>
 </body>
 </html>`;
-
-                        const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
-                        FileHandler.downloadFile(blob, fileName);
-                        return;
-                    }
-                    // ─────────────────────────────────────────────────────────────────────
-
-                    // Collecter les fichiers source et templates docx depuis tous les groupes (récursivement)
-                    const collectSourceFiles = async (group, groupPath = []) => {
-                        for (let cellIndex = 0; cellIndex < (group.cells || []).length; cellIndex++) {
-                            const cell = group.cells[cellIndex];
-                            if (cell.type === 'source' && cell._currentFile && cell._fileName) {
-                                const safeSourceName = cell.name.replace(/[^a-zA-Z0-9_]/g, '_');
-                                const arrayBuffer = await cell._currentFile.arrayBuffer();
-                                const compressedBuffer = await FileHandler.compressGzip(arrayBuffer);
-                                const fileBase64 = FileHandler.arrayBufferToBase64(compressedBuffer);
-
-                                if (passphrase) {
-                                    sourceFilesPayload.push({ id: `sourceFile_${safeSourceName}`, sourceName: cell.name, fileName: cell._fileName, base64: fileBase64 });
-                                } else {
-                                    document.querySelectorAll(`script[id^="sourceFile_${safeSourceName}"]`).forEach(s => s.remove());
-                                    const script = document.createElement('script');
-                                    script.type = 'application/octet-stream';
-                                    script.id = `sourceFile_${safeSourceName}`;
-                                    script.dataset.sourceName = cell.name;
-                                    script.dataset.fileName = cell._fileName;
-                                    script.textContent = fileBase64;
-                                    document.head.appendChild(script);
-                                }
-                            } else if (cell.type === 'source' && !cell._currentFile && !passphrase) {
-                                const safeSourceName = cell.name.replace(/[^a-zA-Z0-9_]/g, '_');
-                                document.querySelectorAll(`script[id^="sourceFile_${safeSourceName}"]`).forEach(s => s.remove());
-                            }
-
-                            if (cell.type === 'publipostageWord' && cell.docxTemplateBase64 && cell.docxTemplateFileName) {
-                                const cellPath = [...groupPath, cellIndex].join('_');
-                                const stableId = `docxTemplate_${cellPath}`;
-
-                                if (passphrase) {
-                                    const docxBytes = FileHandler.base64ToUint8Array(cell.docxTemplateBase64);
-                                    const docxCompressed = await FileHandler.compressGzip(docxBytes.buffer || docxBytes);
-                                    const docxBase64 = FileHandler.arrayBufferToBase64(docxCompressed);
-                                    docxTemplatesPayload.push({ id: stableId, cellPath, fileName: cell.docxTemplateFileName, base64: docxBase64, compressed: true });
-                                } else {
-                                    document.querySelectorAll(`script[id="${stableId}"]`).forEach(s => s.remove());
-                                    const docxBytes = FileHandler.base64ToUint8Array(cell.docxTemplateBase64);
-                                    const docxCompressed = await FileHandler.compressGzip(docxBytes.buffer || docxBytes);
-                                    const docxBase64 = FileHandler.arrayBufferToBase64(docxCompressed);
-                                    const script = document.createElement('script');
-                                    script.type = 'application/octet-stream';
-                                    script.id = stableId;
-                                    script.dataset.cellPath = cellPath;
-                                    script.dataset.fileName = cell.docxTemplateFileName;
-                                    script.dataset.compressed = 'true';
-                                    script.textContent = docxBase64;
-                                    document.head.appendChild(script);
-                                }
-                            } else if (cell.type === 'publipostageWord' && !cell.docxTemplateBase64 && !passphrase) {
-                                const cellPath = [...groupPath, cellIndex].join('_');
-                                const stableId = `docxTemplate_${cellPath}`;
-                                document.querySelectorAll(`script[id="${stableId}"]`).forEach(s => s.remove());
-                            }
-                        }
-                        for (let childIndex = 0; childIndex < (group.children || []).length; childIndex++) {
-                            await collectSourceFiles(group.children[childIndex], [...groupPath, childIndex]);
-                        }
-                    };
-
-                    // Collecter les fichiers de toutes les pages
-                    for (let pageIndex = 0; pageIndex < this.pages.length; pageIndex++) {
-                        const page = this.pages[pageIndex];
-                        for (let groupIndex = 0; groupIndex < page.groups.length; groupIndex++) {
-                            await collectSourceFiles(page.groups[groupIndex], [groupIndex]);
-                        }
-                        for (let groupIndex = 0; groupIndex < (page.linkGroups || []).length; groupIndex++) {
-                            await collectSourceFiles(page.linkGroups[groupIndex], [-1, groupIndex]);
-                        }
-                    }
-
-                    let htmlContent;
-                    if (passphrase) {
-                        const payload = { config, sourceFiles: sourceFilesPayload, docxTemplates: docxTemplatesPayload };
-                        let payloadStr;
-                        try { payloadStr = JSON.stringify(payload); } catch (e) { payloadStr = '[stringify error]'; }
-                        const encrypted = await GistEncrypt.encrypt(payloadStr, passphrase);
-                        const configScriptContent = btoa(JSON.stringify(encrypted));
-                        htmlContent = this._buildExportHTMLEncrypted(document.documentElement.outerHTML, configScriptContent);
-                    } else {
-                        document.getElementById('defaultConfigBase64')?.remove();
-                        const configScript = document.createElement('script');
-                        configScript.type = 'application/octet-stream';
-                        configScript.id = 'defaultConfigBase64';
-                        configScript.textContent = ConfigManager.encodeUTF8ToBase64(JSON.stringify(config, null, 2));
-                        document.head.appendChild(configScript);
-                        htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
-                    }
-                    htmlContent = htmlContent.replace(/<html[^>]*>/i, '<html lang="fr">');
 
                     const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
                     FileHandler.downloadFile(blob, fileName);
