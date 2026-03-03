@@ -1,0 +1,143 @@
+// @ts-nocheck
+import { CellRenderer } from './CellRenderer'
+
+        export class CellBodyRenderer {
+            static _sqlPlaceholder(s) { return (s ?? '').replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, '\\n'); }
+            static _defaultSql(schema, index = 0, fallback = 'SELECT 1') { return this._sqlPlaceholder(schema?.defaults?.queries?.[index]?.sql ?? fallback); }
+            static _defaultSqls(schema, fallbacks = ['SELECT 1']) { const qs = schema?.defaults?.queries ?? []; return fallbacks.map((fb, i) => this._sqlPlaceholder(qs[i]?.sql ?? fb)); }
+            static renderResultInfoBlock(showDevOnly = false) {
+                const showAttr = showDevOnly ? 'x-show="devMode" ' : '';
+                return `<template x-if="cellItem.cell._resultInfo"><div class="mt-2 p-2 bg-base-200 rounded text-sm text-base-content/70" ${showAttr}x-text="cellItem.cell._resultInfo"></div></template>`;
+            }
+            static renderMarkdown(pathExpr, cellIdxExpr, schema) {
+                const cfg = schema.bodyConfig || {};
+                return `<div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 flex flex-col' : ''">${this.renderResultInfoBlock(true)}
+                    <template x-if="devMode && ConfigManager.getCellEngine(cellItem.cell,'main') === 'text'"><div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 flex flex-col' : ''">
+                    <textarea :key="'md_dev_'+cellItem.cell._id" :id="'markdown_dev_'+cellItem.cell._id" x-text="ConfigManager.getCellContentDisplay(cellItem.cell) || ''"
+                        x-init="$nextTick(async () => {
+                            const el = document.getElementById('markdown_dev_'+cellItem.cell._id);
+                            if (!el) return;
+                            await CDNManager.loadEasyMDE();
+                            if (cellItem.cell._easyMDE) { try { cellItem.cell._easyMDE.toTextArea(); } catch (_) {} cellItem.cell._easyMDE = null; }
+                            cellItem.cell._easyMDE = new EasyMDE({ element: el, spellChecker: false, status: false, minHeight: hasCellHeight(cellItem.cell) ? '100%' : '50px', toolbar: ['bold', 'italic', 'heading', '|', 'quote', 'unordered-list', 'ordered-list', '|', 'link', 'image', '|', 'preview', '|', 'guide'], autorefresh: { delay: 200 } });
+                            const cm = cellItem.cell._easyMDE.codemirror || cellItem.cell._easyMDE.cm;
+                            if (cm && typeof cm.on === 'function') cm.on('change', () => { if (cellItem.cell._easyMDE && ConfigManager.getCellEngine(cellItem.cell, 'main') === 'text') ConfigManager.setCellEditableContent(cellItem.cell, cellItem.cell._easyMDE.value()); });
+                        })"
+                        x-effect="(() => { const c = cellItem.cell; if (!c._easyMDE) return; const target = ConfigManager.getCellEditableContent(c); if (target != null && c._easyMDE.value() !== target) { c._easyMDE.value(target); const cm = c._easyMDE.codemirror || c._easyMDE.cm; if (cm?.refresh) cm.refresh(); } })()"></textarea></div></template>
+                    <template x-if="devMode && (ConfigManager.getCellEngine(cellItem.cell,'main') === 'sql' || ConfigManager.getCellEngine(cellItem.cell,'main') === 'js')"><div class="flex flex-col gap-2" :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0' : ''"><div x-effect="safeRenderMarkdownQueryEditor($el, cellItem.cell, ${pathExpr}, ${cellIdxExpr})"></div></div></template>
+                    <template x-if="!devMode || ConfigManager.getCellEngine(cellItem.cell,'main') !== 'text'"><div class="easymde-client" :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 flex flex-col' : ''">
+                    <textarea :id="'markdown_cli_' + cellItem.cell._id" x-text="ConfigManager.getCellContentDisplay(cellItem.cell) || ''"
+                        x-init="$nextTick(async () => {
+                            const el = document.getElementById('markdown_cli_' + cellItem.cell._id);
+                            if (!el) return;
+                            await CDNManager.loadEasyMDE();
+                            const isReadOnly = ConfigManager.getCellEngine(cellItem.cell, 'main') !== 'text';
+                            let inst = new EasyMDE({ element: el, spellChecker: false, status: false, toolbar: false, readOnly: isReadOnly, minHeight: hasCellHeight(cellItem.cell) ? '100%' : '50px', previewRender: (plainText) => inst ? inst.markdown(plainText) : plainText, autorefresh: { delay: 200 } });
+                            const cm = inst.codemirror || inst.cm;
+                            if (cm && isReadOnly) cm.setOption('readOnly', true);
+                            if (cm && !isReadOnly && typeof cm.on === 'function') cm.on('change', () => { if (cellItem.cell._easyMDEcli && ConfigManager.getCellEngine(cellItem.cell, 'main') === 'text') ConfigManager.setCellEditableContent(cellItem.cell, cellItem.cell._easyMDEcli.value()); });
+                            cellItem.cell._easyMDEcli = inst;
+                            if (typeof inst.togglePreview === 'function') { try { inst.togglePreview(); } catch (_) {} }
+                            setTimeout(() => { $el.closest('.easymde-client')?.classList.add('easymde-ready'); if (cm?.refresh) cm.refresh(); }, 100);
+                        })"
+                        x-effect="(() => { const c = cellItem.cell; if (!c._easyMDEcli) return; const isRo = ConfigManager.getCellEngine(c, 'main') !== 'text'; const cm = c._easyMDEcli.codemirror || c._easyMDEcli.cm; if (cm && cm.getOption('readOnly') !== isRo) { cm.setOption('readOnly', isRo); if (!isRo) c._easyMDEcli.value(ConfigManager.getCellEditableContent(c)); } if (isRo && c._markdownContent && c._easyMDEcli.value() !== c._markdownContent) { c._easyMDEcli.value(c._markdownContent); if (cm?.refresh) cm.refresh(); } })()"></textarea></div></template>
+                </div>`;
+            }
+            static renderFileDropZone(pathExpr, cellIdxExpr, schema) {
+                const c = schema.bodyConfig || {};
+                const fileKey = c.fileKey || '_fileName';
+                const accept = c.accept || '.csv,.parquet,.xlsx,.xls';
+                const inputId = c.inputId || 'fileInput_';
+                const emptyIcon = c.emptyIcon || 'material-symbols-light:create-new-folder';
+                const titleKey = c.emptyTitleKey || 'title';
+                const subTitleExpr = `'→ ' + cellItem.cell.name`;
+                const [defaultSql1, defaultSql2] = this._defaultSqls(schema, ["CREATE OR REPLACE TABLE {name} AS SELECT * FROM '{fileNameUpload}'", 'SELECT 1']);
+                const queryBlock = c.showQueryInDevMode ? `<div x-show="devMode" class="mt-3 flex flex-col gap-3"><div><div class="text-sm font-semibold text-primary mb-1">Requête d'import</div><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${defaultSql1}', false, 'query', '_showParsedQuery', null, null, null, '${pathExpr}', '${cellIdxExpr}', true)"></div></div><div><div class="text-sm font-semibold text-primary mb-1">Requête de fallback (si erreur)</div><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${defaultSql2}', false, 'query2', '_showParsedQuery2', null, null, null, '${pathExpr}', '${cellIdxExpr}', true)"></div></div></div>` : '';
+                return `<div class="flex flex-col gap-2"><div class="flex items-center justify-center rounded-lg transition-all duration-200 mt-1 mb-1 min-h-[${c.minHeight || '20'}px]" :class="[cellItem.cell.${fileKey} ? 'border-2 border-solid border-success bg-success/10 cursor-default' : (cellItem.cell._isDragging ? 'border-2 border-solid border-accent bg-accent/10 cursor-pointer' : 'border-2 border-dashed border-primary bg-primary/5 cursor-pointer hover:border-accent hover:bg-accent/10'), hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0' : '']" @click="!cellItem.cell.${fileKey} && document.getElementById('${inputId}' + cellItem.cell._id).click()" @dragover.prevent="cellItem.cell._isDragging = true" @dragleave.prevent="cellItem.cell._isDragging = false" @drop.prevent="handleSingleSourceDrop($event, ${pathExpr}, ${cellIdxExpr})">
+                    <template x-if="!cellItem.cell.${fileKey}"><div style="width:100%;text-align:center;padding:4px"><div class="mb-0"><span class="iconify" data-icon="${emptyIcon}" style="font-size:3rem;display:block;margin:auto"></span></div><p class="m-0 text-base-content/60 text-sm" x-text="cellItem.cell.${titleKey} || 'Glissez-déposez ici'"></p><p class="mt-0 mb-0 text-accent text-xs font-semibold" x-text="${subTitleExpr}"></p></div></template>
+                    <template x-if="cellItem.cell.${fileKey}"><div class="flex flex-wrap items-center gap-3 px-4 py-3 w-full"><span class="iconify text-success" data-icon="material-symbols-light:check-circle" style="font-size:1.25rem"></span><span class="flex-1 text-success font-medium truncate" x-text="cellItem.cell.${fileKey}"></span><span class="text-base-content/60 text-xs" x-text="'→ ' + cellItem.cell.name"></span><button class="btn btn-ghost" @click.stop="downloadSourceFile(${pathExpr}, ${cellIdxExpr})" title="Télécharger"><span class="iconify" data-icon="material-symbols-light:download" style="font-size: 1.25rem;"></span></button><button class="btn btn-ghost btn-error" @click.stop="removeSingleSourceFile(${pathExpr}, ${cellIdxExpr})" title="Supprimer"><span class="iconify" data-icon="material-symbols-light:close" style="font-size: 1.5rem;"></span></button></div></template>
+                    <input type="file" hidden :id="'${inputId}' + cellItem.cell._id" accept="${accept}" @change="handleSingleSourceFileSelect($event, ${pathExpr}, ${cellIdxExpr})"></div>${queryBlock}</div>`;
+            }
+            static renderButtonRun(pathExpr, cellIdxExpr, schema) {
+                const c = schema.bodyConfig || {};
+                const lb = (c.defaultLabel || 'Exécuter').replace(/'/g, "\\'");
+                return `<div class="flex justify-center p-0"><button class="btn btn-primary btn-sm" @click="runCellsAfter(${pathExpr}, ${cellIdxExpr})" :disabled="isLoading"><span x-text="cellItem.cell.buttonLabel || '${lb}'"></span></button></div>`;
+            }
+            static renderSqlWithTable(pathExpr, cellIdxExpr, schema) {
+                const c = schema.bodyConfig || {};
+                const defaultSql = this._defaultSql(schema, 0, 'SELECT * FROM source1 LIMIT 100');
+                const ts = CellRenderer.renderTableSkeleton();
+                const showTextResult = c.showTextResult === true;
+                let out = `<div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 flex flex-col' : ''">`;
+                out += `<div x-show="showSqlEditorVisible(cellItem.cell)" x-effect="safeRenderSqlEditor($el, cellItem.cell, '${defaultSql}', false, 'query', '_showParsedQuery', null, null, null, '${pathExpr}', '${cellIdxExpr}')"></div>`;
+                if (showTextResult) {
+                    out += `<template x-if="(showSqlEditorVisible(cellItem.cell)) && isSqlResultTabular(cellItem.cell)"><div class="relative rounded-lg mt-2" :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 overflow-auto' : ''"><div x-show="cellItem.cell._status === 'running'" class="bg-base-100 rounded-lg overflow-x-auto">${ts}</div><div x-show="cellItem.cell._status !== 'running'" class="bg-base-100 rounded-lg overflow-x-auto" :id="'table-' + cellItem.cell._id" x-init="$nextTick(async () => { if (cellItem.cell._results && cellItem.cell._results.length > 0) { await renderTableInContainer(cellItem.cell); } })"></div></div></template>`;
+                    out += `<template x-if="(showSqlEditorVisible(cellItem.cell)) && isSqlResultText(cellItem.cell)"><textarea class="textarea textarea-bordered w-full mt-2 min-h-[120px] font-mono text-sm" placeholder="Résultat texte/JSON" readonly :value="getSqlResultAsText(cellItem.cell)"></textarea></template>`;
+                } else {
+                    out += `<div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 overflow-auto' : ''"><div x-show="cellItem.cell._status === 'running'" class="bg-base-100 rounded-lg overflow-x-auto">${ts}</div><div x-show="cellItem.cell._status !== 'running'" class="bg-base-100 rounded-lg overflow-x-auto" :id="'table-' + cellItem.cell._id" x-init="$nextTick(async () => { if (cellItem.cell._results && cellItem.cell._results.length > 0) { await renderTableInContainer(cellItem.cell); } })"></div></div>`;
+                }
+                out += this.renderResultInfoBlock(false) + '</div>';
+                return out;
+            }
+            static renderSqlWithIframe(pathExpr, cellIdxExpr, schema) {
+                const c = schema.bodyConfig || {};
+                return `<div class="flex flex-col flex-1 min-h-0 overflow-hidden"><div x-show="showSqlEditorVisible(cellItem.cell)" x-effect="safeRenderIframeEditor($el, cellItem.cell, ${pathExpr}, ${cellIdxExpr})"></div><iframe class="flex-1 min-h-0 w-full border-none rounded-lg bg-white" :id="'iframe-' + cellItem.cell._id" x-init="$nextTick(() => { if (cellItem.cell._htmlContent) { renderIframeInContainer(cellItem.cell); } })"></iframe></div>`;
+            }
+            static renderSqlStat(pathExpr, cellIdxExpr, schema) {
+                const c = schema.bodyConfig || {};
+                const defaultSql = this._defaultSql(schema, 0, 'SELECT COUNT(*) FROM source1');
+                return `<div><div x-show="showSqlEditorVisible(cellItem.cell)" x-effect="safeRenderSqlEditor($el, cellItem.cell, '${defaultSql}', false, 'query', '_showParsedQuery', null, null, null, '${pathExpr}', '${cellIdxExpr}')"></div><div class="stat place-items-center py-1" x-show="cellItem.cell._results"><template x-if="cellItem.cell.icon"><div class="stat-figure text-secondary"><span class="iconify inline-block h-8 w-8" :data-icon="cellItem.cell.icon"></span></div></template><div class="stat-title" x-text="cellItem.cell.title || 'Stat'"></div><div class="stat-value" x-text="cellItem.cell._statValue || '-'"></div><div class="stat-desc" x-text="cellItem.cell.subtitle || ''"></div></div>${this.renderResultInfoBlock(true)}</div>`;
+            }
+            static renderUiParameter(pathExpr, cellIdxExpr, schema) {
+                return `<div class="flex flex-col gap-0" x-show="devMode || cellItem.cell.userVisible !== false"><div x-show="devMode" class="text-sm font-semibold text-primary mb-1" x-text="'$' + (ConfigManager.getCellReferenceName(cellItem.cell) || '')"></div><div x-show="devMode" x-effect="safeRenderUiParameterEditor($el, cellItem.cell)"></div><template x-if="cellItem.cell.paramType === 'input'"><fieldset class="fieldset"><legend class="fieldset-legend" x-text="cellItem.cell.title"></legend><input :type="cellItem.cell.inputType || 'text'" class="input input-bordered input-sm w-full" x-model="cellItem.cell._value" @change="cellItem.cell._userModified = true; onParameterValueChange(cellItem.cell)" :disabled="cellItem.cell.userEditable === false" :placeholder="'Valeur de ' + (ConfigManager.getCellReferenceName(cellItem.cell) || '')"></fieldset></template><template x-if="cellItem.cell.paramType === 'dropdown'"><div><template x-if="cellItem.cell._options && cellItem.cell._options.length > 0"><fieldset class="fieldset"><legend class="fieldset-legend" x-text="cellItem.cell.title"></legend><select class="select select-bordered select-sm w-full" x-model="cellItem.cell._value" @change="cellItem.cell._userModified = true; onParameterValueChange(cellItem.cell)" :disabled="cellItem.cell.userEditable === false"><template x-for="opt in cellItem.cell._options" :key="opt.value"><option :value="opt.value" x-text="opt.label"></option></template></select></fieldset></template></div></template><template x-if="cellItem.cell.paramType === 'range'"><fieldset class="fieldset"><legend class="fieldset-legend" x-text="cellItem.cell.title"></legend><div class="flex items-center gap-3 w-full"><span class="text-xs text-base-content/60 min-w-[2rem] text-right" x-text="cellItem.cell.rangeMin ?? 0"></span><input type="range" class="range range-sm range-primary flex-1" x-model.number="cellItem.cell._value" :min="cellItem.cell.rangeMin ?? 0" :max="cellItem.cell.rangeMax ?? 100" :step="cellItem.cell.rangeStep ?? 1" @input="cellItem.cell._userModified = true; onParameterValueChange(cellItem.cell)" :disabled="cellItem.cell.userEditable === false"><span class="text-xs text-base-content/60 min-w-[2rem]" x-text="cellItem.cell.rangeMax ?? 100"></span><span class="badge badge-primary badge-sm font-mono min-w-[3rem] text-center" x-text="cellItem.cell._value"></span></div></fieldset></template><template x-if="cellItem.cell._paramError"><div class="p-2 text-error text-sm bg-error/10 rounded" x-text="cellItem.cell._paramError"></div></template></div>`;
+            }
+            static renderPublipostageWord(pathExpr, cellIdxExpr, schema) {
+                const c = schema.bodyConfig || {};
+                const [defaultSql1, defaultSql2] = this._defaultSqls(schema, ['SELECT * FROM source1 LIMIT 10', "SELECT 'document_' || STRFTIME(current_timestamp::TIMESTAMP, '%Y-%m-%d_%H-%M-%S') || '.docx' AS filename;"]);
+                return `<div class="flex flex-col gap-3"><div class="flex items-center justify-center rounded-lg transition-all duration-200 mt-1 mb-1" :class="cellItem.cell.docxTemplateFileName ? 'border-2 border-solid border-success bg-success/10 cursor-default' : (cellItem.cell._isDragging ? 'border-2 border-solid border-accent bg-accent/10 cursor-pointer' : 'border-2 border-dashed border-primary bg-primary/5 cursor-pointer hover:border-accent hover:bg-accent/10')" @click="!cellItem.cell.docxTemplateFileName && document.getElementById('docxInput_' + cellItem.cell._id).click()" @dragover.prevent="cellItem.cell._isDragging = true" @dragleave.prevent="cellItem.cell._isDragging = false" @drop.prevent="handleDocxTemplateDrop($event, ${pathExpr}, ${cellIdxExpr})"><template x-if="!cellItem.cell.docxTemplateFileName"><div class="text-center p-1"><div class="mb-0"><span class="iconify" data-icon="material-symbols-light:description" style="font-size:4rem"></span></div><p class="m-0 text-base-content/60 text-sm">Glissez-déposez votre template Word (.docx)</p><p class="mt-0 mb-0 text-accent text-xs font-semibold">Template de publipostage</p></div></template><template x-if="cellItem.cell.docxTemplateFileName"><div class="flex flex-wrap items-center gap-3 px-4 py-3 w-full"><span class="iconify text-success" data-icon="material-symbols-light:check-circle" style="font-size:1.25rem"></span><span class="flex-1 text-success font-medium truncate" x-text="cellItem.cell.docxTemplateFileName"></span><button class="btn btn-ghost" @click.stop="downloadDocxTemplate(${pathExpr}, ${cellIdxExpr})" title="Télécharger"><span class="iconify" data-icon="material-symbols-light:download" style="font-size: 1.25rem;"></span></button><button class="btn btn-ghost btn-error" @click.stop="removeDocxTemplate(${pathExpr}, ${cellIdxExpr})" title="Supprimer"><span class="iconify" data-icon="material-symbols-light:close" style="font-size: 1.5rem;"></span></button></div></template><input type="file" hidden :id="'docxInput_' + cellItem.cell._id" accept=".docx" @change="handleDocxTemplateFileSelect($event, ${pathExpr}, ${cellIdxExpr})"></div><div x-show="devMode"><div class="text-sm font-semibold text-primary mb-1">Requête de données</div><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${defaultSql1}', true)"></div></div><div x-show="devMode"><div class="text-sm font-semibold text-primary mb-1 flex items-center gap-2"><span>Requête de nom de fichier</span><span class="badge badge-soft badge-info text-xs flex items-center gap-1"><span class="iconify" data-icon="material-symbols-light:storage" style="font-size:0.875rem"></span> SQL</span></div><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${defaultSql2}', false, 'query2')"></div></div><div class="flex justify-center" x-show="cellItem.cell.buttonLabel"><button class="btn btn-primary btn-sm" @click="runCellAt(${pathExpr}, ${cellIdxExpr})" :disabled="isLoading || !cellItem.cell.docxTemplateFileName"><span x-text="cellItem.cell.buttonLabel || '📄 Générer les documents'"></span></button></div>${this.renderResultInfoBlock(false)}</div>`;
+            }
+            static renderPdfme(pathExpr, cellIdxExpr, schema) {
+                const c = schema.bodyConfig || {};
+                const [defaultSql1, defaultSql2] = this._defaultSqls(schema, ["with v_source as (select * from source1 limit 10)\nSELECT 'Titre' as header, 'Pied de page' as footer, json_group_array(json_array(col1, col2, col3)) as datatable\nFROM v_source LIMIT 10", "SELECT '$loop' || '_2.pdf'"]);
+                return `<div class="flex flex-col gap-3"><div x-show="devMode"><div class="text-sm font-semibold text-primary mb-1">Requête de données</div><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${defaultSql1}', true)"></div></div><div x-show="devMode"><div class="text-sm font-semibold text-primary mb-1 flex items-center gap-2"><span>Requête nom de fichier PDF</span><span class="badge badge-soft badge-info text-xs flex items-center gap-1"><span class="iconify" data-icon="material-symbols-light:storage" style="font-size:0.875rem"></span> SQL</span></div><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${defaultSql2}', false, 'query2')"></div></div><div x-show="devMode" class="form-control"><label class="label gap-2"><span class="label-text font-semibold">Template pdfme (JSON)</span><span class="badge badge-soft badge-primary text-xs">Layout</span></label><textarea class="textarea textarea-bordered w-full font-mono text-xs" x-model="cellItem.cell.json" rows="10" style="min-height: 180px;" placeholder='{"basePdf": {...}, "schemas": [...]}'></textarea></div><div class="flex justify-center" x-show="cellItem.cell.buttonLabel"><button class="btn btn-primary btn-sm" @click="runCellAt(${pathExpr}, ${cellIdxExpr})" :disabled="isLoading"><span x-text="cellItem.cell.buttonLabel || '📑 Générer le PDF'"></span></button></div>${this.renderResultInfoBlock(false)}</div>`;
+            }
+            static renderSqlWithEchart(pathExpr, cellIdxExpr, schema) {
+                const c = schema.bodyConfig || {};
+                const defaultSql = this._defaultSql(schema, 0,
+                    "SELECT month AS XAXIS, revenue AS BARCHART FROM source1 LIMIT 100");
+                const mh = c.minHeight || '350px';
+                const ts = CellRenderer.renderTableSkeleton();
+                return `<div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 flex flex-col' : 'flex flex-col gap-2'">
+                    <template x-if="showSqlEditorVisible(cellItem.cell)"><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${defaultSql}', false, 'query', '_showParsedQuery', null, null, null, '${pathExpr}', '${cellIdxExpr}')"></div></template>
+                    <template x-if="cellItem.cell._status === 'running' && !cellItem.cell._echartReady"><div :class="(hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 ' : '') + 'rounded-lg bg-base-100 overflow-hidden'" style="min-height: ${mh}">${ts}</div></template>
+                    <div :id="'echart-' + cellItem.cell._id"
+                         :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 w-full rounded-lg' : 'w-full rounded-lg'"
+                         :style="hasCellHeight(cellItem.cell) ? '' : 'min-height: ${mh}'"
+                         x-show="cellItem.cell._echartReady"
+                         x-init="$nextTick(() => { if (cellItem.cell._results && cellItem.cell._results.length > 0) { renderEchartInContainer(cellItem.cell); } })">
+                    </div>
+                    ${this.renderResultInfoBlock(true)}
+                </div>`;
+            }
+            static renderSqlWithPerspective(pathExpr, cellIdxExpr, schema) {
+                const c = schema.bodyConfig || {};
+                const defaultSql = this._defaultSql(schema, 0, 'SELECT * FROM source1');
+                const mh = c.minHeight || '400px';
+                const ps = CellRenderer.renderTableSkeleton();
+                return `<div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 flex flex-col' : 'flex flex-col gap-2'"><template x-if="showSqlEditorVisible(cellItem.cell)"><div x-effect="safeRenderSqlEditor($el, cellItem.cell, '${defaultSql}', false, 'query', '_showParsedQuery', null, null, null, '${pathExpr}', '${cellIdxExpr}')"></div></template><template x-if="cellItem.cell._status === 'running' && !cellItem.cell._perspectiveReady"><div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 rounded-lg bg-base-100 overflow-hidden' : 'rounded-lg bg-base-100 overflow-hidden'" :style="hasCellHeight(cellItem.cell) ? '' : 'min-height: ${mh}'">${ps}</div></template><template x-if="cellItem.cell._perspectiveReady"><div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 flex flex-col perspective-fill-height' : ''" :style="hasCellHeight(cellItem.cell) ? '' : 'min-height: ${mh}'"><perspective-viewer :id="'perspective-' + cellItem.cell._id" theme="Pro Light" :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 w-full rounded-lg' : 'w-full rounded-lg'" :style="hasCellHeight(cellItem.cell) ? '' : 'min-height: ${mh}'" x-init="$nextTick(() => { if (cellItem.cell._arrowTable && !cellItem.cell._perspectiveScheduled && !cellItem.cell._perspectiveRendering && !cellItem.cell._perspectiveTable) { renderPerspectiveInContainer(cellItem.cell).catch(e => { cellItem.cell._perspectiveReady = false; cellItem.cell._resultInfo = '❌ ' + e.message; }); } })"></perspective-viewer></div></template></div>`;
+            }
+        }
+
+        export const CELL_BODY_FAMILIES = {
+            markdown: { render: (p, i, s) => CellBodyRenderer.renderMarkdown(p, i, s) },
+            fileDropZone: { render: (p, i, s) => CellBodyRenderer.renderFileDropZone(p, i, s) },
+            buttonRun: { render: (pathExpr, cellIdxExpr, schema) => CellBodyRenderer.renderButtonRun(pathExpr, cellIdxExpr, schema) },
+            sqlWithTable: { render: (p, i, s) => CellBodyRenderer.renderSqlWithTable(p, i, s) },
+            sqlWithIframe: { render: (p, i, s) => CellBodyRenderer.renderSqlWithIframe(p, i, s) },
+            sqlStat: { render: (p, i, s) => CellBodyRenderer.renderSqlStat(p, i, s) },
+            uiParameter: { render: (p, i, s) => CellBodyRenderer.renderUiParameter(p, i, s) },
+            publipostageWord: { render: (p, i, s) => CellBodyRenderer.renderPublipostageWord(p, i, s) },
+            pdfme: { render: (p, i, s) => CellBodyRenderer.renderPdfme(p, i, s) },
+            sqlWithEchart: { render: (p, i, s) => CellBodyRenderer.renderSqlWithEchart(p, i, s) },
+            sqlWithPerspective: { render: (p, i, s) => CellBodyRenderer.renderSqlWithPerspective(p, i, s) }
+        };
