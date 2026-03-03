@@ -934,8 +934,7 @@ export function executionMixin() {
                         }
 
                         cell._htmlContent = htmlContent;
-                        await this.$nextTick();
-                        this.renderIframeInContainer(cell);
+                        this.forceUpdate();
                         this.setStatus('HTML chargé', 'success');
                     } catch (error) {
                         throw error;

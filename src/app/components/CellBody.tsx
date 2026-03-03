@@ -253,10 +253,11 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
 
 // ─── IframeBody ───────────────────────────────────────────────────────────────
 function IframeBody({ cell, path, cellIndex }: any) {
-    const { devMode, hasCellHeight, showSqlEditorVisible } = useNotebookStore(useShallow(s => ({
+    const { devMode, hasCellHeight, showSqlEditorVisible, _rev } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         hasCellHeight: s.hasCellHeight,
-        showSqlEditorVisible: s.showSqlEditorVisible
+        showSqlEditorVisible: s.showSqlEditorVisible,
+        _rev: s._rev
     })))
 
     const hasHeight = hasCellHeight(cell)
@@ -268,7 +269,7 @@ function IframeBody({ cell, path, cellIndex }: any) {
                     placeholder="SELECT '<h1>Hello</h1>'" />
             )}
             <iframe
-                srcDoc={cell._iframeContent || ''}
+                srcDoc={cell._htmlContent || ''}
                 sandbox="allow-scripts"
                 className={`w-full border-0 ${hasHeight ? 'flex-1' : 'min-h-[200px]'}`}
             />
