@@ -262,6 +262,10 @@ function IframeBody({ cell, path, cellIndex }: any) {
 
     const hasHeight = hasCellHeight(cell)
 
+    const srcDoc = cell._htmlContent
+        ? `<style>html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden}</style>${cell._htmlContent}`
+        : ''
+
     return (
         <div className={hasHeight ? 'flex-1 min-h-0 flex flex-col' : ''}>
             {devMode && showSqlEditorVisible?.(cell) && (
@@ -269,7 +273,7 @@ function IframeBody({ cell, path, cellIndex }: any) {
                     placeholder="SELECT '<h1>Hello</h1>'" />
             )}
             <iframe
-                srcDoc={cell._htmlContent || ''}
+                srcDoc={srcDoc}
                 sandbox="allow-scripts"
                 className={`w-full border-0 ${hasHeight ? 'flex-1' : 'min-h-[200px]'}`}
             />
