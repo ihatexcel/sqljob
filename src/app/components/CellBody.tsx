@@ -72,9 +72,9 @@ function MarkdownBody({ cell, path, cellIndex }: any) {
             const cm = inst.codemirror || inst.cm
             if (cm && isReadOnly) cm.setOption('readOnly', true)
             cell._easyMDEcli = inst
-            // En clientMode (pas devMode) : basculer en preview par défaut
-            // En devMode : rester en mode édition (pas de togglePreview)
-            if (!devMode && typeof inst.togglePreview === 'function') {
+            // En clientMode explicitement (devMode === false) : basculer en preview par défaut
+            // En devMode (true) ou état indéterminé (null) : rester en mode édition
+            if (devMode === false && typeof inst.togglePreview === 'function') {
                 try { inst.togglePreview() } catch (_) {}
             }
             setTimeout(() => {
