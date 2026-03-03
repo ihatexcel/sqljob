@@ -46,7 +46,11 @@ function CellItem({ cell, cellIndex, path, group }: { cell: any, cellIndex: numb
 
 // ─── TabsChild view ───────────────────────────────────────────────────────────
 function TabsChildContent({ group, path, depth }: { group: any, path: number[], depth: number }) {
-    const items = useNotebookStore(s => s.getAllItemsSorted?.(group) || [])
+    const { getAllItemsSorted, _rev } = useNotebookStore(useShallow(s => ({
+        getAllItemsSorted: s.getAllItemsSorted,
+        _rev: s._rev
+    })))
+    const items = getAllItemsSorted?.(group) || []
     const [activeTab, setActiveTab] = useState(0)
 
     const tabs = items.map((item: any, i: number) => ({
