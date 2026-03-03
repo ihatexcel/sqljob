@@ -259,19 +259,6 @@ function IframeBody({ cell, path, cellIndex }: any) {
         showSqlEditorVisible: s.showSqlEditorVisible
     })))
 
-    const iframeRef = useRef<HTMLIFrameElement>(null)
-
-    useEffect(() => {
-        if (iframeRef.current && cell._iframeContent) {
-            const doc = iframeRef.current.contentDocument || iframeRef.current.contentWindow?.document
-            if (doc) {
-                doc.open()
-                doc.write(cell._iframeContent)
-                doc.close()
-            }
-        }
-    }, [cell._iframeContent])
-
     const hasHeight = hasCellHeight(cell)
 
     return (
@@ -281,8 +268,8 @@ function IframeBody({ cell, path, cellIndex }: any) {
                     placeholder="SELECT '<h1>Hello</h1>'" />
             )}
             <iframe
-                ref={iframeRef}
-                sandbox="allow-scripts allow-same-origin"
+                srcDoc={cell._iframeContent || ''}
+                sandbox="allow-scripts"
                 className={`w-full border-0 ${hasHeight ? 'flex-1' : 'min-h-[200px]'}`}
             />
             <ResultInfo cell={cell} />
