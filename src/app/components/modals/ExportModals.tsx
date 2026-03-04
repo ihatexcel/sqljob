@@ -75,6 +75,20 @@ export function ExportModal() {
 
                     <div className="form-control">
                         <label className="label cursor-pointer justify-start gap-3">
+                            <input type="checkbox" className="toggle toggle-warning"
+                                checked={!!em.includeFiles} onChange={e => update({ includeFiles: e.target.checked })} />
+                            <div>
+                                <span className="label-text font-semibold flex items-center gap-2">
+                                    <span className="iconify" data-icon="material-symbols-light:database" style={{ fontSize: '1rem' }}></span>
+                                    Inclure les fichiers chargés
+                                </span>
+                                <p className="text-xs text-base-content/60">Par défaut désactivé — évite de diffuser des données par erreur (datachunks, fichiers source)</p>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div className="form-control">
+                        <label className="label cursor-pointer justify-start gap-3">
                             <input type="checkbox" className="toggle toggle-primary"
                                 checked={!!em.devMode} onChange={e => update({ devMode: e.target.checked })} />
                             <div>
