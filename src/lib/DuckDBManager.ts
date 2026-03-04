@@ -275,30 +275,20 @@
                 if (!DuckDBManager.connInstance) {
                     throw new Error('DuckDB non initialisé');
                 }
+
+                // On extrait les ::ROLENAME (XAXIS, BARCHART…) via regex avant d'exécuter.
+                // DESCRIBE retourne le type sous-jacent (VARCHAR) et non le nom du type custom,
+                // et nomme les colonnes "CAST(col AS TYPE)" quand il n'y a pas d'alias —
+                // donc _stripChartCasts est la seule source fiable des rôles, sur tous les moteurs.
+                const { strippedSql, columnTypes } = DuckDBManager._stripChartCasts(query);
+
                 if (DuckDBManager.currentEngine === 'ducklings') {
-                    // Ducklings ne supporte pas CREATE TYPE ni DESCRIBE.
-                    // On extrait les ::ROLENAME du SQL via regex, on les restitue comme columnTypes,
-                    // et on envoie le SQL nettoyé à Ducklings.
-                    const { strippedSql, columnTypes } = DuckDBManager._stripChartCasts(query);
                     const rows = await DuckDBManager.connInstance.query(strippedSql);
                     return { rows, columnTypes };
                 }
 
-                // 1. Lire les types via DESCRIBE
-                const columnTypes = {};
-                try {
-                    const desc = await DuckDBManager.connInstance.query(`DESCRIBE (${query})`);
-                    for (const row of desc.toArray()) {
-                        const r = Object.fromEntries(row);
-                        columnTypes[r['column_name']] = r['column_type'];
-                    }
-                } catch (e) {
-                    // DESCRIBE peut échouer sur des requêtes sans SELECT (ex: CREATE TABLE)
-                    // On continue sans types
-                }
-
-                // 2. Exécuter la requête
-                const result = await DuckDBManager.connInstance.query(query);
+                // DuckDB WASM : exécuter le SQL nettoyé (sans ::ROLENAME)
+                const result = await DuckDBManager.connInstance.query(strippedSql);
                 const rows = result.toArray().map(row => Object.fromEntries(row));
                 return { rows, columnTypes };
             }
