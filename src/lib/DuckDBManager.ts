@@ -226,10 +226,10 @@
                     return;
                 }
                 if (!DuckDBManager.connInstance) return;
-                const sql = DuckDBManager.CHART_TYPE_NAMES
-                    .map(t => `CREATE TYPE IF NOT EXISTS ${t} AS VARCHAR;`)
-                    .join('\n');
-                await DuckDBManager.connInstance.query(sql);
+                // conn.query() n'accepte qu'une seule instruction par appel dans duckdb-wasm
+                for (const t of DuckDBManager.CHART_TYPE_NAMES) {
+                    await DuckDBManager.connInstance.query(`CREATE TYPE IF NOT EXISTS ${t} AS VARCHAR;`);
+                }
                 DuckDBManager._chartTypesInitialized = true;
             }
 

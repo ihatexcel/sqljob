@@ -1575,12 +1575,12 @@ export function executionMixin() {
                     this.setStatus('Chargement ECharts...', 'loading');
                     await CDNManager.loadECharts();
 
-                    // Créer les types DuckDB taleshape (XAXIS, BARCHART, etc.) si pas déjà fait
-                    await DuckDBManager.initChartTypes();
-
                     this.setStatus('Parsing de la requête SQL...', 'loading');
 
                     try {
+                        // Créer les types DuckDB taleshape (XAXIS, BARCHART, etc.) si pas déjà fait
+                        await DuckDBManager.initChartTypes();
+
                         const finalQuery = await this.parseQueryRecursively(cell);
 
                         this.setStatus('Exécution de la requête...', 'loading');
