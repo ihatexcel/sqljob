@@ -29069,9 +29069,9 @@ function Tz() {
         if (!this.isCellSkippedInAutoFlow(a)) {
           if (a.type === "source") {
             if (!a._fileName || !a._currentFile || !a._loaded)
-              return { stopped: !0, reason: "source_no_file", cellName: a.name };
+              return this.setStatus(`Source "${a.name || "source"}" sans fichier chargé — exécution interrompue`, "warning"), { stopped: !0, reason: "source_no_file", cellName: a.name };
             if (a._status === "error")
-              return { stopped: !0, reason: "source_error", cellName: a.name };
+              return this.setStatus(`Erreur source "${a.name || "source"}" — exécution interrompue`, "error"), { stopped: !0, reason: "source_error", cellName: a.name };
             continue;
           }
           await this.runCellAt(n, u.originalIndex);
@@ -30112,7 +30112,7 @@ function Tz() {
       for (let n = 0; n < this.groups.length; n++) {
         const r = await this.runGroup(n);
         if (r != null && r.stopped) {
-          this.isLoading = !1;
+          this.isLoading = !1, this.statusType === "loading" && this.setStatus("Exécution interrompue", "warning");
           return;
         }
       }

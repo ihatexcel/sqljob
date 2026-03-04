@@ -64,9 +64,11 @@ export function executionMixin() {
                         // Cellule source sans fileInput chargé : interrompre le flux
                         if (cell.type === 'source') {
                             if (!cell._fileName || !cell._currentFile || !cell._loaded) {
+                                this.setStatus(`Source "${cell.name || 'source'}" sans fichier chargé — exécution interrompue`, 'warning');
                                 return { stopped: true, reason: 'source_no_file', cellName: cell.name };
                             }
                             if (cell._status === 'error') {
+                                this.setStatus(`Erreur source "${cell.name || 'source'}" — exécution interrompue`, 'error');
                                 return { stopped: true, reason: 'source_error', cellName: cell.name };
                             }
                             continue;
@@ -1948,6 +1950,9 @@ export function executionMixin() {
                         const result = await this.runGroup(groupIndex);
                         if (result?.stopped) {
                             this.isLoading = false;
+                            if (this.statusType === 'loading') {
+                                this.setStatus('Exécution interrompue', 'warning');
+                            }
                             return; // Ne pas exécuter les groupes suivants
                         }
                     }
