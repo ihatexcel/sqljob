@@ -1571,6 +1571,9 @@ export function executionMixin() {
                     if (!ConfigManager.getCellQuery(cell, 0)?.trim()) {
                         throw new Error('Requête SQL manquante');
                     }
+                    if (DuckDBManager.currentEngine === 'ducklings') {
+                        throw new Error('Les cellules EChart nécessitent le moteur DuckDB WASM. Changez le moteur dans les paramètres.');
+                    }
 
                     this.setStatus('Chargement ECharts...', 'loading');
                     await CDNManager.loadECharts();
@@ -1584,17 +1587,23 @@ export function executionMixin() {
                         const finalQuery = await this.parseQueryRecursively(cell);
 
                         this.setStatus('Exécution de la requête...', 'loading');
-                        // executeQueryWithSchema retourne les lignes + les types DuckDB des colonnes
-                        // (ex: { 'Time of Day': 'TIME', 'Total Sessions': 'BARCHART' })
                         const { rows, columnTypes } = await DuckDBManager.executeQueryWithSchema(finalQuery);
 
                         cell._results = rows;
-                        cell._columnTypes = columnTypes; // stocker pour re-render (resize etc.)
+                        cell._columnTypes = columnTypes;
+
+                        // Construire l'option ECharts et la stocker sur la cellule.
+                        // Le composant React EChartBody surveille cell._echartsOption via useEffect.
+                        const parsed = EChartSqlParser.parseColumnRoles(rows, columnTypes);
+                        if (parsed.chartType === 'kpi') {
+                            cell._kpiHtml = EChartSqlParser.buildKpiHtml(rows, parsed);
+                            cell._echartsOption = null;
+                        } else {
+                            cell._echartsOption = EChartSqlParser.buildEChartsOption(rows, parsed) ?? null;
+                            cell._kpiHtml = null;
+                        }
                         cell._echartReady = true;
-
-                        await this.$nextTick();
-
-                        await this.renderEchartInContainer(cell, true);
+                        this.forceUpdate();
 
                         cell._resultInfo = `✅ ${rows.length} ligne(s)` +
                             (cell._parseLevels.length > 1

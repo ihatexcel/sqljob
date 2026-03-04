@@ -325,10 +325,11 @@ function SqlStatBody({ cell, path, cellIndex }: any) {
 
 // ─── EChartBody ───────────────────────────────────────────────────────────────
 function EChartBody({ cell, path, cellIndex }: any) {
-    const { devMode, showSqlEditorVisible, hasCellHeight } = useNotebookStore(useShallow(s => ({
+    const { devMode, showSqlEditorVisible, hasCellHeight, _rev } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         showSqlEditorVisible: s.showSqlEditorVisible,
-        hasCellHeight: s.hasCellHeight
+        hasCellHeight: s.hasCellHeight,
+        _rev: s._rev,
     })))
 
     const chartRef = useRef<HTMLDivElement>(null)
@@ -341,7 +342,7 @@ function EChartBody({ cell, path, cellIndex }: any) {
             let chart = echarts.getInstanceByDom(chartRef.current) || echarts.init(chartRef.current)
             chart.setOption(cell._echartsOption)
         })
-    }, [cell._echartsOption])
+    }, [_rev, cell._echartsOption])
 
     const hasHeight = hasCellHeight(cell)
 
@@ -349,9 +350,12 @@ function EChartBody({ cell, path, cellIndex }: any) {
         <div className={hasHeight ? 'flex-1 min-h-0 flex flex-col' : ''}>
             {devMode && showSqlEditorVisible?.(cell) && (
                 <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
-                    placeholder="SELECT 1 AS value" />
+                    placeholder="SELECT month::XAXIS, revenue::BARCHART AS &quot;Revenue&quot; FROM source1" />
             )}
-            <div ref={chartRef} className={hasHeight ? 'flex-1 min-h-0' : 'min-h-[300px]'} />
+            {cell._kpiHtml
+                ? <div dangerouslySetInnerHTML={{ __html: cell._kpiHtml }} />
+                : <div ref={chartRef} className={hasHeight ? 'flex-1 min-h-0' : 'min-h-[300px]'} />
+            }
             <ResultInfo cell={cell} devOnly />
         </div>
     )
