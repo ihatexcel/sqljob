@@ -258,11 +258,11 @@
                 const columnTypes: Record<string, string> = {};
                 const roleNames = DuckDBManager.CHART_TYPE_NAMES.join('|');
                 // Matches: expr::ROLENAME [AS "alias" | AS alias]?
-                // expr = simple identifier or table.column
-                const re = new RegExp(`([\\w.]+)\\s*::\\s*(${roleNames})\\b(\\s+AS\\s+(?:"([^"]+)"|(\\w+)))?`, 'gi');
+                // expr = simple identifier, table.column, or closing ) of a sub-expression
+                const re = new RegExp(`([\\w.]+|\\))\\s*::\\s*(${roleNames})\\b(\\s+AS\\s+(?:"([^"]+)"|(\\w+)))?`, 'gi');
                 const strippedSql = sql.replace(re, (_, expr, role, asClause, dqAlias, bareAlias) => {
-                    const colName = dqAlias ?? bareAlias ?? expr.split('.').at(-1);
-                    columnTypes[colName] = role.toUpperCase();
+                    const colName = dqAlias ?? bareAlias ?? (expr === ')' ? null : expr.split('.').at(-1));
+                    if (colName) columnTypes[colName] = role.toUpperCase();
                     return expr + (asClause ?? '');
                 });
                 return { strippedSql, columnTypes };
