@@ -33,7 +33,7 @@ export function ExportModal() {
 
     return (
         <div className="modal modal-open z-[2100]" onClick={e => { if (e.target === e.currentTarget) cancelExport() }} role="presentation">
-            <div className="modal-box max-w-lg" role="dialog" aria-modal="true">
+            <div className="modal-box max-w-lg overflow-y-auto max-h-[90vh]" role="dialog" aria-modal="true">
                 <div className="flex items-center justify-between gap-2">
                     <h3 className="text-lg font-semibold">{typeLabels[em.type] || em.type}</h3>
                     <button className="btn btn-sm btn-ghost" onClick={cancelExport}>
@@ -82,7 +82,7 @@ export function ExportModal() {
                                     <span className="iconify" data-icon="material-symbols-light:database" style={{ fontSize: '1rem' }}></span>
                                     Inclure les fichiers chargés
                                 </span>
-                                <p className="text-xs text-base-content/60">Par défaut désactivé — évite de diffuser des données par erreur (datachunks, fichiers source)</p>
+                                <p className="text-xs text-base-content/60">Attention vos données seront partagées si coché</p>
                             </div>
                         </label>
                     </div>
@@ -104,7 +104,7 @@ export function ExportModal() {
                                 checked={!!em.showLayout} onChange={e => update({ showLayout: e.target.checked })} />
                             <div>
                                 <span className="label-text font-semibold">Afficher l'entête et pied de page</span>
-                                <p className="text-xs text-base-content/60">Parfait pour partager votre notebook sous forme d'iframe</p>
+                                <p className="text-xs text-base-content/60">Décocher pour partager votre notebook sous forme d'iframe</p>
                             </div>
                         </label>
                     </div>
@@ -127,7 +127,7 @@ export function ExportModal() {
                                             <span className="iconify" data-icon="material-symbols-light:lock" style={{ fontSize: '1rem' }}></span>
                                             Chiffrer la configuration
                                         </span>
-                                        <p className="text-xs text-base-content/60">Chiffre la config et les datachunks avec un mot de passe</p>
+                                        <p className="text-xs text-base-content/60">Chiffrer la configuration et les données avec un mot de passe</p>
                                     </div>
                                 </label>
                             </div>
