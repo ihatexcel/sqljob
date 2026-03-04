@@ -249,6 +249,25 @@
                 console.log('[initChartTypes] all types created successfully');
             }
 
+            /** Pour Ducklings : extrait les casts ::ROLENAME du SQL et retourne le SQL nettoyé
+             *  + la map columnTypes équivalente à ce que DESCRIBE donnerait sur DuckDB WASM.
+             *  Ex: "month::XAXIS, revenue::BARCHART AS Rev"
+             *   → strippedSql: "month, revenue AS Rev"
+             *   → columnTypes: { month: 'XAXIS', Rev: 'BARCHART' } */
+            static _stripChartCasts(sql: string): { strippedSql: string, columnTypes: Record<string, string> } {
+                const columnTypes: Record<string, string> = {};
+                const roleNames = DuckDBManager.CHART_TYPE_NAMES.join('|');
+                // Matches: expr::ROLENAME [AS "alias" | AS alias]?
+                // expr = simple identifier or table.column
+                const re = new RegExp(`([\\w.]+)\\s*::\\s*(${roleNames})\\b(\\s+AS\\s+(?:"([^"]+)"|(\\w+)))?`, 'gi');
+                const strippedSql = sql.replace(re, (_, expr, role, asClause, dqAlias, bareAlias) => {
+                    const colName = dqAlias ?? bareAlias ?? expr.split('.').at(-1);
+                    columnTypes[colName] = role.toUpperCase();
+                    return expr + (asClause ?? '');
+                });
+                return { strippedSql, columnTypes };
+            }
+
             /** Exécute une requête et retourne les lignes + les types DuckDB de chaque colonne.
              *  Utilise DESCRIBE pour lire les types (ex: 'XAXIS', 'BARCHART').
              *  columnTypes: { colAlias -> 'XAXIS' | 'BARCHART' | ... } */
@@ -257,9 +276,12 @@
                     throw new Error('DuckDB non initialisé');
                 }
                 if (DuckDBManager.currentEngine === 'ducklings') {
-                    // Ducklings ne supporte pas DESCRIBE : retourne les lignes sans types
-                    const rows = await DuckDBManager.connInstance.query(query);
-                    return { rows, columnTypes: {} };
+                    // Ducklings ne supporte pas CREATE TYPE ni DESCRIBE.
+                    // On extrait les ::ROLENAME du SQL via regex, on les restitue comme columnTypes,
+                    // et on envoie le SQL nettoyé à Ducklings.
+                    const { strippedSql, columnTypes } = DuckDBManager._stripChartCasts(query);
+                    const rows = await DuckDBManager.connInstance.query(strippedSql);
+                    return { rows, columnTypes };
                 }
 
                 // 1. Lire les types via DESCRIBE
