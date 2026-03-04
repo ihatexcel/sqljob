@@ -335,10 +335,12 @@ function EChartBody({ cell, path, cellIndex }: any) {
     const chartRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
+        console.log('[EChartBody] useEffect fired | _rev:', _rev, '| _echartsOption:', !!cell._echartsOption, '| chartRef:', !!chartRef.current)
         if (!chartRef.current || !cell._echartsOption) return
         CDNManager.loadECharts?.().then(() => {
             const echarts = (window as any).echarts
             if (!echarts || !chartRef.current) return
+            console.log('[EChartBody] init ECharts on', chartRef.current)
             let chart = echarts.getInstanceByDom(chartRef.current) || echarts.init(chartRef.current)
             chart.setOption(cell._echartsOption)
         })
