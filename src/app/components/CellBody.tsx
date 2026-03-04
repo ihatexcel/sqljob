@@ -71,6 +71,11 @@ function MarkdownBody({ cell, path, cellIndex }: any) {
             })
             const cm = inst.codemirror || inst.cm
             if (cm && isReadOnly) cm.setOption('readOnly', true)
+            if (cm && !isReadOnly) {
+                cm.on('change', () => {
+                    ConfigManager.setCellEditableContent(cell, inst.value())
+                })
+            }
             cell._easyMDEcli = inst
             // En clientMode explicitement (devMode === false) : basculer en preview par défaut
             // En devMode (true) ou état indéterminé (null) : rester en mode édition
