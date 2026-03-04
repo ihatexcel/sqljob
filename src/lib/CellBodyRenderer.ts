@@ -104,7 +104,7 @@ import { CellRenderer } from './CellRenderer'
             static renderSqlWithEchart(pathExpr, cellIdxExpr, schema) {
                 const c = schema.bodyConfig || {};
                 const defaultSql = this._defaultSql(schema, 0,
-                    "SELECT month AS XAXIS, revenue AS BARCHART FROM source1 LIMIT 100");
+                    "SELECT month::XAXIS, revenue::BARCHART AS \"Revenue\" FROM source1 LIMIT 100");
                 const mh = c.minHeight || '350px';
                 const ts = CellRenderer.renderTableSkeleton();
                 return `<div :class="hasCellHeight(cellItem.cell) ? 'flex-1 min-h-0 flex flex-col' : 'flex flex-col gap-2'">

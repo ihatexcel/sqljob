@@ -56,6 +56,7 @@
                     }
 
                     DuckDBManager.duckdbModuleRef = null;
+                    DuckDBManager._chartTypesInitialized = false;
                     window.duckdbModule = null;
                     window.ducklingsModule = null;
 
@@ -213,21 +214,58 @@
 
             static _chartTypesInitialized = false;
 
-            /** Crée tous les types taleshape dans DuckDB (VARCHAR alias).
-             *  Idempotent : utilise IF NOT EXISTS, peut être appelé plusieurs fois. */
+            /** Crée tous les types taleshape dans DuckDB comme alias VARCHAR.
+             *  DuckDB ne supporte que VARCHAR (et ENUM/STRUCT) pour CREATE TYPE —
+             *  pas DOUBLE. Les valeurs numériques sont converties via _num() côté parser.
+             *  Idempotent : utilise IF NOT EXISTS. */
             static async initChartTypes() {
-                if (DuckDBManager._chartTypesInitialized) return;
+                console.log('[initChartTypes] called — initialized:', DuckDBManager._chartTypesInitialized, '| engine:', DuckDBManager.currentEngine, '| conn:', !!DuckDBManager.connInstance);
+                if (DuckDBManager._chartTypesInitialized) {
+                    console.log('[initChartTypes] already done, skip');
+                    return;
+                }
                 if (DuckDBManager.currentEngine === 'ducklings') {
                     // Ducklings ne supporte pas CREATE TYPE - on skip silencieusement
                     DuckDBManager._chartTypesInitialized = true;
+                    console.log('[initChartTypes] ducklings engine, skipped');
                     return;
                 }
-                if (!DuckDBManager.connInstance) return;
-                const sql = DuckDBManager.CHART_TYPE_NAMES
-                    .map(t => `CREATE TYPE IF NOT EXISTS ${t} AS VARCHAR;`)
-                    .join('\n');
-                await DuckDBManager.connInstance.query(sql);
+                if (!DuckDBManager.connInstance) {
+                    console.warn('[initChartTypes] connInstance is null, cannot create types');
+                    return;
+                }
+                // conn.query() n'accepte qu'une seule instruction par appel dans duckdb-wasm
+                console.log('[initChartTypes] creating', DuckDBManager.CHART_TYPE_NAMES.length, 'types...');
+                for (const t of DuckDBManager.CHART_TYPE_NAMES) {
+                    try {
+                        await DuckDBManager.connInstance.query(`CREATE TYPE IF NOT EXISTS ${t} AS VARCHAR;`);
+                        console.log('[initChartTypes] OK:', t);
+                    } catch (err) {
+                        console.error('[initChartTypes] FAILED on', t, ':', err?.message ?? err);
+                        throw err;
+                    }
+                }
                 DuckDBManager._chartTypesInitialized = true;
+                console.log('[initChartTypes] all types created successfully');
+            }
+
+            /** Pour Ducklings : extrait les casts ::ROLENAME du SQL et retourne le SQL nettoyé
+             *  + la map columnTypes équivalente à ce que DESCRIBE donnerait sur DuckDB WASM.
+             *  Ex: "month::XAXIS, revenue::BARCHART AS Rev"
+             *   → strippedSql: "month, revenue AS Rev"
+             *   → columnTypes: { month: 'XAXIS', Rev: 'BARCHART' } */
+            static _stripChartCasts(sql: string): { strippedSql: string, columnTypes: Record<string, string> } {
+                const columnTypes: Record<string, string> = {};
+                const roleNames = DuckDBManager.CHART_TYPE_NAMES.join('|');
+                // Matches: expr::ROLENAME [AS "alias" | AS alias]?
+                // expr = simple identifier or table.column
+                const re = new RegExp(`([\\w.]+)\\s*::\\s*(${roleNames})\\b(\\s+AS\\s+(?:"([^"]+)"|(\\w+)))?`, 'gi');
+                const strippedSql = sql.replace(re, (_, expr, role, asClause, dqAlias, bareAlias) => {
+                    const colName = dqAlias ?? bareAlias ?? expr.split('.').at(-1);
+                    columnTypes[colName] = role.toUpperCase();
+                    return expr + (asClause ?? '');
+                });
+                return { strippedSql, columnTypes };
             }
 
             /** Exécute une requête et retourne les lignes + les types DuckDB de chaque colonne.
@@ -238,9 +276,12 @@
                     throw new Error('DuckDB non initialisé');
                 }
                 if (DuckDBManager.currentEngine === 'ducklings') {
-                    // Ducklings ne supporte pas DESCRIBE : retourne les lignes sans types
-                    const rows = await DuckDBManager.connInstance.query(query);
-                    return { rows, columnTypes: {} };
+                    // Ducklings ne supporte pas CREATE TYPE ni DESCRIBE.
+                    // On extrait les ::ROLENAME du SQL via regex, on les restitue comme columnTypes,
+                    // et on envoie le SQL nettoyé à Ducklings.
+                    const { strippedSql, columnTypes } = DuckDBManager._stripChartCasts(query);
+                    const rows = await DuckDBManager.connInstance.query(strippedSql);
+                    return { rows, columnTypes };
                 }
 
                 // 1. Lire les types via DESCRIBE

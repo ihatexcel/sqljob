@@ -72,7 +72,9 @@ function MarkdownBody({ cell, path, cellIndex }: any) {
             const cm = inst.codemirror || inst.cm
             if (cm && isReadOnly) cm.setOption('readOnly', true)
             cell._easyMDEcli = inst
-            if (typeof inst.togglePreview === 'function') {
+            // En clientMode explicitement (devMode === false) : basculer en preview par défaut
+            // En devMode (true) ou état indéterminé (null) : rester en mode édition
+            if (devMode === false && typeof inst.togglePreview === 'function') {
                 try { inst.togglePreview() } catch (_) {}
             }
             setTimeout(() => {
@@ -246,7 +248,7 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
                     }
                 </div>
             )}
-            <ResultInfo cell={cell} />
+            <ResultInfo cell={cell} devOnly />
         </div>
     )
 }
@@ -286,7 +288,7 @@ function IframeBody({ cell, path, cellIndex }: any) {
                 sandbox="allow-scripts allow-same-origin"
                 className={`w-full border-0 ${hasHeight ? 'flex-1' : 'min-h-[200px]'}`}
             />
-            <ResultInfo cell={cell} />
+            <ResultInfo cell={cell} devOnly />
         </div>
     )
 }
@@ -316,30 +318,33 @@ function SqlStatBody({ cell, path, cellIndex }: any) {
                     <div className="stat-desc">{cell.subtitle || ''}</div>
                 </div>
             )}
-            <ResultInfo cell={cell} />
+            <ResultInfo cell={cell} devOnly />
         </div>
     )
 }
 
 // ─── EChartBody ───────────────────────────────────────────────────────────────
 function EChartBody({ cell, path, cellIndex }: any) {
-    const { devMode, showSqlEditorVisible, hasCellHeight } = useNotebookStore(useShallow(s => ({
+    const { devMode, showSqlEditorVisible, hasCellHeight, _rev } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         showSqlEditorVisible: s.showSqlEditorVisible,
-        hasCellHeight: s.hasCellHeight
+        hasCellHeight: s.hasCellHeight,
+        _rev: s._rev,
     })))
 
     const chartRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
+        console.log('[EChartBody] useEffect fired | _rev:', _rev, '| _echartsOption:', !!cell._echartsOption, '| chartRef:', !!chartRef.current)
         if (!chartRef.current || !cell._echartsOption) return
         CDNManager.loadECharts?.().then(() => {
             const echarts = (window as any).echarts
             if (!echarts || !chartRef.current) return
+            console.log('[EChartBody] init ECharts on', chartRef.current)
             let chart = echarts.getInstanceByDom(chartRef.current) || echarts.init(chartRef.current)
             chart.setOption(cell._echartsOption)
         })
-    }, [cell._echartsOption])
+    }, [_rev, cell._echartsOption])
 
     const hasHeight = hasCellHeight(cell)
 
@@ -347,10 +352,13 @@ function EChartBody({ cell, path, cellIndex }: any) {
         <div className={hasHeight ? 'flex-1 min-h-0 flex flex-col' : ''}>
             {devMode && showSqlEditorVisible?.(cell) && (
                 <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
-                    placeholder="SELECT 1 AS value" />
+                    placeholder="SELECT month::XAXIS, revenue::BARCHART AS &quot;Revenue&quot; FROM source1" />
             )}
-            <div ref={chartRef} className={hasHeight ? 'flex-1 min-h-0' : 'min-h-[300px]'} />
-            <ResultInfo cell={cell} />
+            {cell._kpiHtml
+                ? <div dangerouslySetInnerHTML={{ __html: cell._kpiHtml }} />
+                : <div ref={chartRef} className={hasHeight ? 'flex-1 min-h-0' : 'min-h-[300px]'} />
+            }
+            <ResultInfo cell={cell} devOnly />
         </div>
     )
 }
@@ -450,7 +458,7 @@ function UiParameterBody({ cell, path, cellIndex }: any) {
             {cell._paramError && (
                 <div className="p-2 text-error text-sm bg-error/10 rounded">{cell._paramError}</div>
             )}
-            <ResultInfo cell={cell} />
+            <ResultInfo cell={cell} devOnly />
         </div>
     )
 }
@@ -541,7 +549,7 @@ function PublipostageWordBody({ cell, path, cellIndex }: any) {
                     </button>
                 </div>
             )}
-            <ResultInfo cell={cell} />
+            <ResultInfo cell={cell} devOnly />
         </div>
     )
 }
@@ -602,7 +610,7 @@ function PdfmeBody({ cell, path, cellIndex }: any) {
                     </button>
                 </div>
             )}
-            <ResultInfo cell={cell} />
+            <ResultInfo cell={cell} devOnly />
         </div>
     )
 }
@@ -657,7 +665,7 @@ function PerspectiveBody({ cell, path, cellIndex }: any) {
                     ></perspective-viewer>
                 </div>
             )}
-            <ResultInfo cell={cell} />
+            <ResultInfo cell={cell} devOnly />
         </div>
     )
 }
@@ -683,7 +691,7 @@ function GenericHtmlBody({ cell, path, cellIndex }: any) {
                     placeholder="SELECT 1" />
             )}
             <div ref={contentRef}></div>
-            <ResultInfo cell={cell} />
+            <ResultInfo cell={cell} devOnly />
         </div>
     )
 }

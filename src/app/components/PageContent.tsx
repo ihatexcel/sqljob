@@ -42,7 +42,7 @@ export function PageContent() {
     const sortedGroups = [...groups].sort((a: any, b: any) => (a._order ?? 0) - (b._order ?? 0))
 
     return (
-        <div className="flex flex-col gap-2 p-2">
+        <div className={`flex flex-col p-2 ${devMode ? 'gap-2' : 'gap-0.5'}`}>
             {/* Groupes triés avec séparateurs hover entre eux */}
             {sortedGroups.flatMap((group: any, sortedIdx: number) => {
                 const rawIdx = groups.indexOf(group)

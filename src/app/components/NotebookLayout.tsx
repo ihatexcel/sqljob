@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import { useNotebookStore } from '../store/notebookStore'
 import { PageContent } from './PageContent'
@@ -63,14 +63,62 @@ function TabBar() {
 }
 
 function PageTab({ page, index, isActive, devMode, activatePage, deletePage, startPageDrag, onPageDragOver, onPageDragLeave, onPageDrop, endPageDrag, isDragOver }: any) {
-    const forceUpdate = useNotebookStore(s => s.forceUpdate)
+    const [editing, setEditing] = useState(false)
+    const [editName, setEditName] = useState('')
+    const inputRef = useRef<HTMLInputElement>(null)
     const set = useNotebookStore.setState
+
+    function startEditing(e: any) {
+        if (!devMode) return
+        e.stopPropagation()
+        setEditName(page.name)
+        setEditing(true)
+    }
+
+    useEffect(() => {
+        if (editing && inputRef.current) {
+            inputRef.current.focus()
+            inputRef.current.select()
+        }
+    }, [editing])
+
+    function commitEdit() {
+        const newName = editName.trim() || page.name
+        set(s => {
+            const pages = [...s.pages]
+            pages[index] = { ...pages[index], name: newName }
+            return { pages }
+        })
+        setEditing(false)
+    }
+
+    function handleKeyDown(e: any) {
+        if (e.key === 'Enter') commitEdit()
+        else if (e.key === 'Escape') setEditing(false)
+    }
+
+    if (editing) {
+        return (
+            <span role="tab" className={`tab ${isActive ? 'tab-active' : ''}`}>
+                <input
+                    ref={inputRef}
+                    className="input input-xs input-bordered w-24"
+                    value={editName}
+                    onChange={e => setEditName(e.target.value)}
+                    onBlur={commitEdit}
+                    onKeyDown={handleKeyDown}
+                    onClick={e => e.stopPropagation()}
+                />
+            </span>
+        )
+    }
 
     return (
         <button
             role="tab"
             className={`tab ${isActive ? 'tab-active' : ''} ${isDragOver ? 'opacity-50' : ''}`}
             onClick={() => activatePage(index)}
+            onDoubleClick={startEditing}
             draggable={devMode}
             onDragStart={e => startPageDrag(index, e)}
             onDragOver={e => onPageDragOver(index, e)}
