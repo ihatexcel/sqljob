@@ -33,6 +33,7 @@ export function exportImportMixin() {
                         description: 'sqljob Notebook Configuration',
                         devMode: false,
                         showLayout: this.showLayout,
+                        includeFiles: false,
                         encryptGist: false,
                         gistPassphrase: ''
                     };
@@ -44,6 +45,7 @@ export function exportImportMixin() {
                     const description = this.exportModal.description || 'sqljob Notebook Configuration';
                     const devMode = this.exportModal.devMode;
                     const showLayout = this.exportModal.showLayout;
+                    const includeFiles = !!this.exportModal.includeFiles;
 
                     this.exportModal = { ...this.exportModal, show: false };
 
@@ -51,7 +53,7 @@ export function exportImportMixin() {
                         this.isLoading = true;
 
                         // Générer la configuration avec les paramètres choisis
-                        const includeFileData = (type === 'gist' || type === 'json' || type === 'base64');
+                        const includeFileData = includeFiles;
                         const config = await ConfigManager.buildConfigFromState(
                             this.pages,
                             devMode,
@@ -85,9 +87,9 @@ export function exportImportMixin() {
                                 if (jsonPassphrase) {
                                     const jsonString = JSON.stringify(config);
                                     const encrypted = await GistEncrypt.encrypt(jsonString, jsonPassphrase);
-                                    jsonContent = JSON.stringify(encrypted);
+                                    jsonContent = JSON.stringify(encrypted, null, 2);
                                 } else {
-                                    jsonContent = JSON.stringify(config);
+                                    jsonContent = JSON.stringify(config, null, 2);
                                 }
                                 const jsonBlob = new Blob([jsonContent], { type: 'application/json' });
                                 const jsonFileName = fileName.endsWith('.json') ? fileName : fileName + '.json';
@@ -109,7 +111,7 @@ export function exportImportMixin() {
                                 this.setStatus('Génération HTML...', 'loading');
                                 const htmlFileName = (fileName.endsWith('.html') ? fileName : fileName + '.html');
                                 const htmlPassphrase = this.exportModal.encryptGist ? ((this.exportModal.gistPassphrase || '').trim() || GistEncrypt.generatePassphrase()) : null;
-                                await this.exportHTMLWithConfig(config, htmlFileName, htmlPassphrase);
+                                await this.exportHTMLWithConfig(config, htmlFileName, htmlPassphrase, includeFiles);
                                 this.setStatus('HTML exporté', 'success');
                                 break;
                         }
@@ -127,7 +129,7 @@ export function exportImportMixin() {
                     }
                 },
 
-                async exportHTMLWithConfig(config, fileName = 'index.sqljob.html', passphrase = null) {
+                async exportHTMLWithConfig(config, fileName = 'index.sqljob.html', passphrase = null, includeFiles = false) {
                     const sourceFilesPayload = [];
                     const docxTemplatesPayload = [];
 
@@ -168,12 +170,14 @@ export function exportImportMixin() {
                         }
                     };
 
-                    for (let pi = 0; pi < this.pages.length; pi++) {
-                        for (let gi = 0; gi < this.pages[pi].groups.length; gi++) {
-                            await collectFilesForTemplate(this.pages[pi].groups[gi], [gi]);
-                        }
-                        for (let gi = 0; gi < (this.pages[pi].linkGroups || []).length; gi++) {
-                            await collectFilesForTemplate(this.pages[pi].linkGroups[gi], [-1, gi]);
+                    if (includeFiles) {
+                        for (let pi = 0; pi < this.pages.length; pi++) {
+                            for (let gi = 0; gi < this.pages[pi].groups.length; gi++) {
+                                await collectFilesForTemplate(this.pages[pi].groups[gi], [gi]);
+                            }
+                            for (let gi = 0; gi < (this.pages[pi].linkGroups || []).length; gi++) {
+                                await collectFilesForTemplate(this.pages[pi].linkGroups[gi], [-1, gi]);
+                            }
                         }
                     }
 
