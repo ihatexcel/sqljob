@@ -342,6 +342,7 @@ function EChartBody({ cell, path, cellIndex }: any) {
             if (!echarts || !chartRef.current) return
             console.log('[EChartBody] init ECharts on', chartRef.current)
             let chart = echarts.getInstanceByDom(chartRef.current) || echarts.init(chartRef.current)
+            chart.clear()
             chart.setOption(cell._echartsOption)
         })
     }, [_rev, cell._echartsOption])
