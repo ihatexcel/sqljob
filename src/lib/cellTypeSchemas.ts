@@ -275,7 +275,7 @@ export const CELL_TYPE_SCHEMAS = {
                     defaults: {
                         queries: [{
                             name: 'main',
-                            sql: "SELECT\n    month::XAXIS,\n    revenue::BARCHART AS \"Revenue\",\n    target::LINECHART  AS \"Target\"\nFROM (VALUES\n    ('Jan', '42000', '40000'),\n    ('Feb', '38000', '40000'),\n    ('Mar', '51000', '45000'),\n    ('Apr', '47000', '45000'),\n    ('May', '60000', '50000'),\n    ('Jun', '55000', '50000')\n) t(month, revenue, target)",
+                            sql: "SELECT\n    month::XAXIS,\n    revenue::BARCHART AS \"Revenue\",\n    target::LINECHART  AS \"Target\"\nFROM (VALUES\n    ('Jan', 42000, 40000),\n    ('Feb', 38000, 40000),\n    ('Mar', 51000, 45000),\n    ('Apr', 47000, 45000),\n    ('May', 60000, 50000),\n    ('Jun', 55000, 50000)\n) t(month, revenue, target)",
                             engine: 'sql',
                             clientVisible: false
                         }]
