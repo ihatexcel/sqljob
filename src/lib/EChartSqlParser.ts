@@ -699,6 +699,13 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
                         value: threshold,
                         label: String(parsed[i]),
                     }));
+                } else {
+                    // Fallback: equal distribution across range (e.g. RANGE=[min,max] with N labels)
+                    const rng = max - min || 1;
+                    gaugeAxisLabels = parsed.map((lbl, i) => ({
+                        value: min + rng * (i + 1) / parsed.length,
+                        label: String(lbl),
+                    }));
                 }
             }
         } catch (_) {}
@@ -719,15 +726,20 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
 
     // Build axisLabel formatter
     let axisLabelFormatter: any = isPercent ? '{value}%' : '{value}';
+    let axisLabelRich: any = undefined;
     if (gaugeAxisLabels) {
-        const labelMap: Record<string, string> = {};
-        for (const item of gaugeAxisLabels) {
-            if (item && item.value !== undefined && item.label !== undefined) {
-                labelMap[String(item.value)] = String(item.label);
+        // Every tick shows the name of the zone it belongs to, in bold rich text.
+        const thresholds = [min, ...gaugeAxisLabels.map(item => item.value)];
+        axisLabelFormatter = (val: number) => {
+            let prev = thresholds[0];
+            for (let i = 1; i < thresholds.length; i++) {
+                const hi = thresholds[i];
+                if (val >= prev && val <= hi) return `{b|${gaugeAxisLabels![i - 1].label}}`;
+                prev = hi;
             }
-        }
-        // Only show labels at labeled positions; hide all other ticks
-        axisLabelFormatter = (val: number) => labelMap[String(val)] ?? '';
+            return '';
+        };
+        axisLabelRich = { b: { fontWeight: 'bold', fontSize: 11, color: textColor } };
     }
 
     return {
@@ -747,6 +759,7 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
             axisLabel: {
                 color: textColor,
                 fontSize: 11,
+                rich: axisLabelRich,
                 formatter: axisLabelFormatter,
             },
             axisTick: { distance: -20, length: 8 },

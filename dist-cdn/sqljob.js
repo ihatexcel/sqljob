@@ -32575,6 +32575,10 @@ function Fz(n, r, s, u, a) {
           Sr = Pu;
         } else if ($e.length === Pu.length) {
           Sr = $e.map((Vu, i) => ({ value: Vu, label: String(Pu[i]) }));
+        } else {
+          // Fallback: equal distribution across range (e.g. RANGE=[min,max] but N labels)
+          const rng = Ze - Me || 1;
+          Sr = Pu.map((lbl, i) => ({ value: Me + rng * (i + 1) / Pu.length, label: String(lbl) }));
         }
       }
     } catch {}
@@ -32586,11 +32590,20 @@ function Fz(n, r, s, u, a) {
     [1, "#ee6666"]
   ];
   let as = m ? "{value}%" : "{value}";
+  let axisLabelRich = void 0;
   if (Sr) {
-    const yu = {};
-    for (const Pu of Sr)
-      Pu && Pu.value !== void 0 && Pu.label !== void 0 && (yu[String(Pu.value)] = String(Pu.label));
-    as = (Pu) => yu[String(Pu)] ?? "";
+    // Every tick shows the name of the zone it belongs to, in bold.
+    const thresholds = [Me, ...Sr.map((s) => s.value)];
+    as = (val) => {
+      let prev = thresholds[0];
+      for (let i = 1; i < thresholds.length; i++) {
+        const hi = thresholds[i];
+        if (val >= prev && val <= hi) return `{b|${Sr[i - 1].label}}`;
+        prev = hi;
+      }
+      return "";
+    };
+    axisLabelRich = { b: { fontWeight: "bold", fontSize: 11, color: a } };
   }
   return {
     ...u,
@@ -32609,6 +32622,7 @@ function Fz(n, r, s, u, a) {
       axisLabel: {
         color: a,
         fontSize: 11,
+        rich: axisLabelRich,
         formatter: as
       },
       axisTick: { distance: -20, length: 8 },
