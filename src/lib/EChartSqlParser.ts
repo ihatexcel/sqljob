@@ -699,6 +699,13 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
                         value: threshold,
                         label: String(parsed[i]),
                     }));
+                } else {
+                    // Fallback: equal distribution across range (e.g. RANGE=[min,max] with N labels)
+                    const rng = max - min || 1;
+                    gaugeAxisLabels = parsed.map((lbl, i) => ({
+                        value: min + rng * (i + 1) / parsed.length,
+                        label: String(lbl),
+                    }));
                 }
             }
         } catch (_) {}
@@ -720,14 +727,17 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
     // Build axisLabel formatter
     let axisLabelFormatter: any = isPercent ? '{value}%' : '{value}';
     if (gaugeAxisLabels) {
-        const labelMap: Record<string, string> = {};
-        for (const item of gaugeAxisLabels) {
-            if (item && item.value !== undefined && item.label !== undefined) {
-                labelMap[String(item.value)] = String(item.label);
+        // Zone-based formatter: show a zone's label on whichever tick falls in the
+        // upper half of that zone. Works regardless of splitNumber or zone alignment.
+        const thresholds = [min, ...gaugeAxisLabels.map(item => item.value)];
+        axisLabelFormatter = (val: number) => {
+            for (let i = 1; i < thresholds.length; i++) {
+                const lo = thresholds[i - 1], hi = thresholds[i];
+                if (val >= lo && val <= hi && val >= (lo + hi) / 2)
+                    return gaugeAxisLabels![i - 1].label;
             }
-        }
-        // Only show labels at labeled positions; hide all other ticks
-        axisLabelFormatter = (val: number) => labelMap[String(val)] ?? '';
+            return '';
+        };
     }
 
     return {

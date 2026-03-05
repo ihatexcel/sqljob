@@ -32575,6 +32575,10 @@ function Fz(n, r, s, u, a) {
           Sr = Pu;
         } else if ($e.length === Pu.length) {
           Sr = $e.map((Vu, i) => ({ value: Vu, label: String(Pu[i]) }));
+        } else {
+          // Fallback: equal distribution across range (e.g. RANGE=[min,max] but N labels)
+          const rng = Ze - Me || 1;
+          Sr = Pu.map((lbl, i) => ({ value: Me + rng * (i + 1) / Pu.length, label: String(lbl) }));
         }
       }
     } catch {}
@@ -32587,10 +32591,17 @@ function Fz(n, r, s, u, a) {
   ];
   let as = m ? "{value}%" : "{value}";
   if (Sr) {
-    const yu = {};
-    for (const Pu of Sr)
-      Pu && Pu.value !== void 0 && Pu.label !== void 0 && (yu[String(Pu.value)] = String(Pu.label));
-    as = (Pu) => yu[String(Pu)] ?? "";
+    // Zone-based formatter: show a zone's label on whichever tick falls in the upper half of that zone.
+    // This works regardless of splitNumber or whether zone boundaries align with ticks.
+    const thresholds = [Me, ...Sr.map((s) => s.value)];
+    as = (val) => {
+      for (let i = 1; i < thresholds.length; i++) {
+        const lo = thresholds[i - 1], hi = thresholds[i];
+        if (val >= lo && val <= hi && val >= (lo + hi) / 2)
+          return Sr[i - 1].label;
+      }
+      return "";
+    };
   }
   return {
     ...u,
