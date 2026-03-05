@@ -32531,21 +32531,26 @@ function Fz(n, r, s, u, a) {
   if (We && ((bo = n[0]) == null ? void 0 : bo[We]) != null) {
     const yu = n[0][We];
     let Pu = null;
-    if (Array.isArray(yu) && yu.length >= 2)
-      Pu = yu.map(zv);
+    const _toArr = (v) => Array.isArray(v) ? v : v != null && typeof v !== "string" && typeof v[Symbol.iterator] === "function" ? Array.from(v) : null;
+    const yu_arr = _toArr(yu);
+    if (yu_arr && yu_arr.length >= 2)
+      Pu = yu_arr.map(zv);
     else if (typeof yu == "string")
       try {
         const Xu = JSON.parse(yu);
-        Array.isArray(Xu) && Xu.length >= 2 && (Pu = Xu.map(zv));
+        const Xu_arr = _toArr(Xu);
+        Xu_arr && Xu_arr.length >= 2 && (Pu = Xu_arr.map(zv));
       } catch {}
     if (Pu) { Me = Pu[0]; Ze = Pu[Pu.length - 1]; $e = Pu.slice(1); }
   }
+  const _toJSArr = (v) => Array.isArray(v) ? v : v != null && typeof v !== "string" && typeof v[Symbol.iterator] === "function" ? Array.from(v) : null;
   const dr = (Qo = (r.COLORS || [])[0]) == null ? void 0 : Qo.originalName;
   let fr;
   if (dr && ((Ro = n[0]) == null ? void 0 : Ro[dr]) != null) {
     const yu = n[0][dr];
     try {
-      const Pu = typeof yu == "string" ? JSON.parse(yu) : yu;
+      const raw = typeof yu == "string" ? JSON.parse(yu) : yu;
+      const Pu = _toJSArr(raw);
       if (Array.isArray(Pu) && Pu.length > 0) {
         if (Array.isArray(Pu[0])) {
           fr = Pu;
@@ -32563,8 +32568,9 @@ function Fz(n, r, s, u, a) {
   if (Kt && ((ti = n[0]) == null ? void 0 : ti[Kt]) != null) {
     const yu = n[0][Kt];
     try {
-      const Pu = typeof yu == "string" ? JSON.parse(yu) : yu;
-      if (Array.isArray(Pu) && Pu.length > 0) {
+      const raw = typeof yu == "string" ? JSON.parse(yu) : yu;
+      const Pu = _toJSArr(raw);
+      if (Pu && Pu.length > 0) {
         if (Pu[0] && typeof Pu[0] === "object" && "value" in Pu[0]) {
           Sr = Pu;
         } else if ($e.length === Pu.length) {
