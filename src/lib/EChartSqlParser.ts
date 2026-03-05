@@ -613,6 +613,14 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
     const value = _num(results[0]?.[valueCol]);
     const label = valueCols[0]?.displayName || '';
 
+    // Helper: convert Arrow Vector / typed-array / plain Array to a JS Array
+    const _toJSArr = (v: unknown): unknown[] | null => {
+        if (Array.isArray(v)) return v;
+        if (v == null || typeof v === 'string') return null;
+        if (typeof (v as any)[Symbol.iterator] === 'function') return Array.from(v as Iterable<unknown>);
+        return null;
+    };
+
     // RANGE column: [min, max] OR [v0, v1, v2, ..., vN] for a segmented gauge
     const rangeCols = roleMap['RANGE'] || [];
     const rangeCol = rangeCols[0]?.originalName;
@@ -621,12 +629,14 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
     if (rangeCol && results[0]?.[rangeCol] != null) {
         const r = results[0][rangeCol];
         let arr: number[] | null = null;
-        if (Array.isArray(r) && r.length >= 2) {
-            arr = r.map(_num);
+        const r_arr = _toJSArr(r);
+        if (r_arr && r_arr.length >= 2) {
+            arr = r_arr.map(_num);
         } else if (typeof r === 'string') {
             try {
                 const parsed = JSON.parse(r);
-                if (Array.isArray(parsed) && parsed.length >= 2) arr = parsed.map(_num);
+                const p_arr = _toJSArr(parsed);
+                if (p_arr && p_arr.length >= 2) arr = p_arr.map(_num);
             } catch (_) {}
         }
         if (arr) {
@@ -643,11 +653,12 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
     if (colorsCol && results[0]?.[colorsCol] != null) {
         const raw = results[0][colorsCol];
         try {
-            const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
-            if (Array.isArray(parsed) && parsed.length > 0) {
+            const raw_parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+            const parsed = _toJSArr(raw_parsed);
+            if (parsed && parsed.length > 0) {
                 if (Array.isArray(parsed[0])) {
                     // Already ECharts format [[fraction, color], ...]
-                    gaugeColors = parsed;
+                    gaugeColors = parsed as any[];
                 } else {
                     // Simple string array ['#color1', '#color2', ...] → convert to ECharts format
                     const range = max - min || 1;
@@ -676,11 +687,12 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
     if (labelsCol && results[0]?.[labelsCol] != null) {
         const raw = results[0][labelsCol];
         try {
-            const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
-            if (Array.isArray(parsed) && parsed.length > 0) {
-                if (parsed[0] && typeof parsed[0] === 'object' && 'value' in parsed[0]) {
+            const raw_parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+            const parsed = _toJSArr(raw_parsed);
+            if (parsed && parsed.length > 0) {
+                if (parsed[0] && typeof parsed[0] === 'object' && 'value' in (parsed[0] as object)) {
                     // Already {value, label} format
-                    gaugeAxisLabels = parsed;
+                    gaugeAxisLabels = parsed as any[];
                 } else if (rangeThresholds.length === parsed.length) {
                     // Simple string array aligned with range thresholds
                     gaugeAxisLabels = rangeThresholds.map((threshold, i) => ({
