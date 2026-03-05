@@ -31593,10 +31593,21 @@ let xP = (Su = class {
    *   → strippedSql: "month, revenue AS Rev"
    *   → columnTypes: { month: 'XAXIS', Rev: 'BARCHART' } */
   static _stripChartCasts(r) {
-    const s = {}, u = Su.CHART_TYPE_NAMES.join("|"), a = new RegExp(`([\\w.]+|\\))\\s*::\\s*(${u})\\b(\\s+AS\\s+(?:"([^"]+)"|(\\w+)))?`, "gi");
+    const s = {}, u = Su.CHART_TYPE_NAMES.join("|"), a = new RegExp(`(\\[[^\\]]*\\]|[\\w.]+|\\))\\s*::\\s*(${u})\\b(\\s+AS\\s+(?:"([^"]+)"|(\\w+)))?`, "gi");
     return { strippedSql: r.replace(a, (t, D, Y, e, Re, We) => {
-      const Me = Re ?? We ?? (D === ")" ? null : D.split(".").at(-1));
-      return Me && (s[Me] = Y.toUpperCase()), D + (e ?? "");
+      const fe = Y.toUpperCase();
+      let Me, qe;
+      if (D.startsWith("[")) {
+        Me = Re ?? We ?? fe;
+        qe = D + (e ?? ` AS "${fe}"`);
+      } else if (D !== ")" && /^\d/.test(D) && D.includes(".")) {
+        Me = Re ?? We ?? D;
+        qe = D + (e ?? "");
+      } else {
+        Me = Re ?? We ?? (D === ")" ? null : D.split(".").at(-1));
+        qe = D + (e ?? "");
+      }
+      return Me && (s[Me] = fe), qe;
     }), columnTypes: s };
   }
   /** Exécute une requête et retourne les lignes + les types DuckDB de chaque colonne.
@@ -32516,20 +32527,18 @@ function v2(n, r, s, u, a, m) {
 function Fz(n, r, s, u, a) {
   var vs, Es, Js, wo, bo, Qo, Ro, Du, ti;
   const m = s === "gauge_percent", t = r.GAUGE_PERCENT || r.GAUGE || [], D = (vs = t[0]) == null ? void 0 : vs.originalName, Y = zv((Es = n[0]) == null ? void 0 : Es[D]), e = ((Js = t[0]) == null ? void 0 : Js.displayName) || "", We = (wo = (r.RANGE || [])[0]) == null ? void 0 : wo.originalName;
-  let Me = 0, Ze = 100;
+  let Me = 0, Ze = 100, $e = [];
   if (We && ((bo = n[0]) == null ? void 0 : bo[We]) != null) {
     const yu = n[0][We];
+    let Pu = null;
     if (Array.isArray(yu) && yu.length >= 2)
-      Me = zv(yu[0]), Ze = zv(yu[1]);
+      Pu = yu.map(zv);
     else if (typeof yu == "string")
       try {
-        const Pu = JSON.parse(yu);
-        Array.isArray(Pu) && Pu.length >= 2 && (Me = zv(Pu[0]), Ze = zv(Pu[1]));
-      } catch {
-        Ze = zv(yu);
-      }
-    else
-      Ze = zv(yu);
+        const Xu = JSON.parse(yu);
+        Array.isArray(Xu) && Xu.length >= 2 && (Pu = Xu.map(zv));
+      } catch {}
+    if (Pu) { Me = Pu[0]; Ze = Pu[Pu.length - 1]; $e = Pu.slice(1); }
   }
   const dr = (Qo = (r.COLORS || [])[0]) == null ? void 0 : Qo.originalName;
   let fr;
@@ -32537,9 +32546,17 @@ function Fz(n, r, s, u, a) {
     const yu = n[0][dr];
     try {
       const Pu = typeof yu == "string" ? JSON.parse(yu) : yu;
-      Array.isArray(Pu) && (fr = Pu);
-    } catch {
-    }
+      if (Array.isArray(Pu) && Pu.length > 0) {
+        if (Array.isArray(Pu[0])) {
+          fr = Pu;
+        } else {
+          const Xu = Ze - Me || 1;
+          fr = $e.length === Pu.length
+            ? $e.map((Vu, i) => [(Vu - Me) / Xu, Pu[i]])
+            : Pu.map((Vu, i) => [(i + 1) / Pu.length, Vu]);
+        }
+      }
+    } catch {}
   }
   const Kt = (Du = (r.LABELS || [])[0]) == null ? void 0 : Du.originalName;
   let Sr;
@@ -32547,9 +32564,14 @@ function Fz(n, r, s, u, a) {
     const yu = n[0][Kt];
     try {
       const Pu = typeof yu == "string" ? JSON.parse(yu) : yu;
-      Array.isArray(Pu) && (Sr = Pu);
-    } catch {
-    }
+      if (Array.isArray(Pu) && Pu.length > 0) {
+        if (Pu[0] && typeof Pu[0] === "object" && "value" in Pu[0]) {
+          Sr = Pu;
+        } else if ($e.length === Pu.length) {
+          Sr = $e.map((Vu, i) => ({ value: Vu, label: String(Pu[i]) }));
+        }
+      }
+    } catch {}
   }
   const Bn = { width: 6 };
   fr ? Bn.color = fr : Bn.color = [
@@ -32562,7 +32584,7 @@ function Fz(n, r, s, u, a) {
     const yu = {};
     for (const Pu of Sr)
       Pu && Pu.value !== void 0 && Pu.label !== void 0 && (yu[String(Pu.value)] = String(Pu.label));
-    as = (Pu) => yu[String(Pu)] ?? (m ? Pu + "%" : String(Pu));
+    as = (Pu) => yu[String(Pu)] ?? "";
   }
   return {
     ...u,

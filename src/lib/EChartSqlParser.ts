@@ -613,23 +613,30 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
     const value = _num(results[0]?.[valueCol]);
     const label = valueCols[0]?.displayName || '';
 
-    // RANGE column: [min, max] from first row
+    // RANGE column: [min, max] OR [v0, v1, v2, ..., vN] for a segmented gauge
     const rangeCols = roleMap['RANGE'] || [];
     const rangeCol = rangeCols[0]?.originalName;
-    let min = 0, max = isPercent ? 100 : 100;
+    let min = 0, max = 100;
+    let rangeThresholds: number[] = []; // segment boundaries excluding min (used for COLORS/LABELS)
     if (rangeCol && results[0]?.[rangeCol] != null) {
         const r = results[0][rangeCol];
-        if (Array.isArray(r) && r.length >= 2) { min = _num(r[0]); max = _num(r[1]); }
-        else if (typeof r === 'string') {
+        let arr: number[] | null = null;
+        if (Array.isArray(r) && r.length >= 2) {
+            arr = r.map(_num);
+        } else if (typeof r === 'string') {
             try {
                 const parsed = JSON.parse(r);
-                if (Array.isArray(parsed) && parsed.length >= 2) { min = _num(parsed[0]); max = _num(parsed[1]); }
-            } catch (_) { max = _num(r); }
-        } else { max = _num(r); }
+                if (Array.isArray(parsed) && parsed.length >= 2) arr = parsed.map(_num);
+            } catch (_) {}
+        }
+        if (arr) {
+            min = arr[0];
+            max = arr[arr.length - 1];
+            rangeThresholds = arr.slice(1); // everything after min; last = max
+        }
     }
 
-    // COLORS column: ECharts color array [[fraction, color], ...] from first row
-    // e.g. '[[0.3,"#91cc75"],[0.7,"#fac858"],[1,"#ee6666"]]'
+    // COLORS column: either ECharts format [[fraction, color], ...] or simple ['#c1', '#c2', ...]
     const colorsCols = roleMap['COLORS'] || [];
     const colorsCol = colorsCols[0]?.originalName;
     let gaugeColors: any[] | undefined;
@@ -637,19 +644,51 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
         const raw = results[0][colorsCol];
         try {
             const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
-            if (Array.isArray(parsed)) gaugeColors = parsed;
+            if (Array.isArray(parsed) && parsed.length > 0) {
+                if (Array.isArray(parsed[0])) {
+                    // Already ECharts format [[fraction, color], ...]
+                    gaugeColors = parsed;
+                } else {
+                    // Simple string array ['#color1', '#color2', ...] → convert to ECharts format
+                    const range = max - min || 1;
+                    if (rangeThresholds.length === parsed.length) {
+                        // Map each color to its corresponding threshold fraction
+                        gaugeColors = rangeThresholds.map((threshold, i) => [
+                            (threshold - min) / range,
+                            parsed[i],
+                        ]);
+                    } else {
+                        // Equal distribution across the gauge
+                        gaugeColors = parsed.map((color, i) => [
+                            (i + 1) / parsed.length,
+                            color,
+                        ]);
+                    }
+                }
+            }
         } catch (_) {}
     }
 
-    // LABELS column: custom axis labels JSON [{value: number, label: string}, ...]
+    // LABELS column: [{value, label}, ...] OR simple ['label1', 'label2', ...]
     const labelsCols = roleMap['LABELS'] || [];
     const labelsCol = labelsCols[0]?.originalName;
-    let gaugeAxisLabels: any[] | undefined;
+    let gaugeAxisLabels: Array<{ value: number; label: string }> | undefined;
     if (labelsCol && results[0]?.[labelsCol] != null) {
         const raw = results[0][labelsCol];
         try {
             const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
-            if (Array.isArray(parsed)) gaugeAxisLabels = parsed;
+            if (Array.isArray(parsed) && parsed.length > 0) {
+                if (parsed[0] && typeof parsed[0] === 'object' && 'value' in parsed[0]) {
+                    // Already {value, label} format
+                    gaugeAxisLabels = parsed;
+                } else if (rangeThresholds.length === parsed.length) {
+                    // Simple string array aligned with range thresholds
+                    gaugeAxisLabels = rangeThresholds.map((threshold, i) => ({
+                        value: threshold,
+                        label: String(parsed[i]),
+                    }));
+                }
+            }
         } catch (_) {}
     }
 
@@ -675,7 +714,8 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
                 labelMap[String(item.value)] = String(item.label);
             }
         }
-        axisLabelFormatter = (val: number) => labelMap[String(val)] ?? (isPercent ? val + '%' : String(val));
+        // Only show labels at labeled positions; hide all other ticks
+        axisLabelFormatter = (val: number) => labelMap[String(val)] ?? '';
     }
 
     return {
