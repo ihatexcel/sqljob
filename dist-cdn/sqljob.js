@@ -32595,7 +32595,8 @@ function Fz(n, r, s, u, a) {
   let axisTickCfg = { distance: -20, length: 8 };
   let splitLineCfg = { distance: -25, length: 20 };
   let innerLabelFmt = m ? "{value}%" : "{value}";  // threshold values (inside arc)
-  let outerSeries = null;                           // zone label overlay series (outside arc)
+  let outerSeries = null;                           // non-active zone labels (outside arc)
+  let boldSeries = null;                            // active zone label (outside arc, bold)
 
   if (Sr) {
     // splitNumber = N*4 covers both zone midpoints and threshold positions
@@ -32630,11 +32631,12 @@ function Fz(n, r, s, u, a) {
     // Series 1 inner labels: threshold values only, INSIDE the arc
     innerLabelFmt = (val) => findInMap(thresholdMap, val) ?? "";
 
-    // Series 2 outer labels: zone names, OUTSIDE the arc, bold when active
+    // Series 2: zone labels OUTSIDE arc (distance negative = outward in ECharts gauge)
+    // Non-active zones: regular weight
     const outerFmt = (val) => {
       const item = findInMap(zoneMap, val);
-      if (!item) return "";
-      return item.isActive ? `{act|${item.text}}` : item.text;
+      if (!item || item.isActive) return "";   // active zone handled by series 3
+      return item.text;
     };
     outerSeries = {
       type: "gauge", min: Me, max: Ze, startAngle: 200, endAngle: -20,
@@ -32643,11 +32645,24 @@ function Fz(n, r, s, u, a) {
       axisLine: { show: false },
       axisTick: { show: false },
       splitLine: { show: false },
-      axisLabel: {
-        color: a, fontSize: 11, distance: 18,
-        rich: { act: { fontWeight: "bold", fontSize: 12, color: a } },
-        formatter: outerFmt,
-      },
+      axisLabel: { color: a, fontSize: 11, distance: -20, formatter: outerFmt },
+      detail: { show: false },
+      data: [],
+    };
+
+    // Series 3: active zone label only, bold (fontWeight on axisLabel — no rich text needed)
+    const activeFmt = (val) => {
+      const item = findInMap(zoneMap, val);
+      return (item && item.isActive) ? item.text : "";
+    };
+    boldSeries = {
+      type: "gauge", min: Me, max: Ze, startAngle: 200, endAngle: -20,
+      splitNumber: splitNum,
+      pointer: { show: false },
+      axisLine: { show: false },
+      axisTick: { show: false },
+      splitLine: { show: false },
+      axisLabel: { color: a, fontSize: 13, fontWeight: "bold", distance: -20, formatter: activeFmt },
       detail: { show: false },
       data: [],
     };
@@ -32660,7 +32675,7 @@ function Fz(n, r, s, u, a) {
     splitNumber: splitNum,
     pointer: { show: !0, length: "60%" },
     axisLine: { lineStyle: Bn },
-    axisLabel: { color: a, fontSize: 11, distance: -35, formatter: innerLabelFmt },
+    axisLabel: { color: a, fontSize: 11, distance: 25, formatter: innerLabelFmt },
     axisTick: axisTickCfg,
     splitLine: splitLineCfg,
     detail: {
@@ -32674,7 +32689,7 @@ function Fz(n, r, s, u, a) {
   return {
     ...u,
     tooltip: { formatter: "{b}: {c}" + (m ? "%" : "") },
-    series: outerSeries ? [mainSeries, outerSeries] : [mainSeries],
+    series: outerSeries ? [mainSeries, outerSeries, boldSeries] : [mainSeries],
   };
 }
 function Bz(n, r, s, u) {

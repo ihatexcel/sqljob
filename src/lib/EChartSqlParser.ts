@@ -729,7 +729,8 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
     let axisTickCfg: any = { distance: -20, length: 8 };
     let splitLineCfg: any = { distance: -25, length: 20 };
     let innerLabelFmt: any = isPercent ? '{value}%' : '{value}'; // threshold values (inside arc)
-    let outerSeries: any = null;                                   // zone labels overlay (outside arc)
+    let outerSeries: any = null;   // non-active zone labels (outside arc, normal weight)
+    let boldSeries: any = null;    // active zone label (outside arc, bold)
 
     if (gaugeAxisLabels) {
         // splitNumber = N*4 covers both zone midpoints and threshold positions
@@ -743,11 +744,9 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
         const zoneMidpoints = gaugeAxisLabels.map((_, i) => (zoneBoundaries[i] + zoneBoundaries[i + 1]) / 2);
         const activeZoneIdx = gaugeAxisLabels.findIndex((item, i) => value >= zoneBoundaries[i] && value <= item.value);
 
-        // Map: snapped tick → threshold string (numeric)
         const thresholdMap = new Map<number, string>();
         zoneBoundaries.forEach(pos => thresholdMap.set(snapToTick(pos), String(pos)));
 
-        // Map: snapped tick → zone label { text, isActive }
         const zoneMap = new Map<number, { text: string; isActive: boolean }>();
         zoneMidpoints.forEach((pos, i) => {
             const snap = snapToTick(pos);
@@ -761,40 +760,44 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
             return null;
         };
 
-        // Series 1 inner labels: threshold values only, INSIDE the arc
+        // Series 1: threshold values INSIDE arc (positive distance = toward center in ECharts gauge)
         innerLabelFmt = (val: number) => findInMap(thresholdMap, val) ?? '';
 
-        // Series 2 outer labels: zone names OUTSIDE the arc, bold when active
+        // Series 2: non-active zone labels OUTSIDE arc (negative distance = away from center)
         const outerFmt = (val: number) => {
             const item = findInMap(zoneMap, val);
-            if (!item) return '';
-            return item.isActive ? `{act|${item.text}}` : item.text;
+            return (item && !item.isActive) ? item.text : '';
         };
         outerSeries = {
-            type: 'gauge', min, max, startAngle: 200, endAngle: -20,
-            splitNumber,
-            pointer: { show: false },
-            axisLine: { show: false },
-            axisTick: { show: false },
-            splitLine: { show: false },
-            axisLabel: {
-                color: textColor, fontSize: 11, distance: 18,
-                rich: { act: { fontWeight: 'bold', fontSize: 12, color: textColor } },
-                formatter: outerFmt,
-            },
-            detail: { show: false },
-            data: [],
+            type: 'gauge', min, max, startAngle: 200, endAngle: -20, splitNumber,
+            pointer: { show: false }, axisLine: { show: false },
+            axisTick: { show: false }, splitLine: { show: false },
+            axisLabel: { color: textColor, fontSize: 11, distance: -20, formatter: outerFmt },
+            detail: { show: false }, data: [],
+        };
+
+        // Series 3: active zone label only, bold (fontWeight on axisLabel avoids rich text issues)
+        const activeFmt = (val: number) => {
+            const item = findInMap(zoneMap, val);
+            return (item && item.isActive) ? item.text : '';
+        };
+        boldSeries = {
+            type: 'gauge', min, max, startAngle: 200, endAngle: -20, splitNumber,
+            pointer: { show: false }, axisLine: { show: false },
+            axisTick: { show: false }, splitLine: { show: false },
+            axisLabel: { color: textColor, fontSize: 13, fontWeight: 'bold', distance: -20, formatter: activeFmt },
+            detail: { show: false }, data: [],
         };
         axisTickCfg = { show: false };
         splitLineCfg = { show: false };
     }
 
     const mainSeries: any = {
-        type: 'gauge', min, max, startAngle: 200, endAngle: -20,
-        splitNumber,
+        type: 'gauge', min, max, startAngle: 200, endAngle: -20, splitNumber,
         pointer: { show: true, length: '60%' },
         axisLine: { lineStyle: axisLineStyle },
-        axisLabel: { color: textColor, fontSize: 11, distance: -35, formatter: innerLabelFmt },
+        // positive distance = inside arc (toward center) in ECharts gauge
+        axisLabel: { color: textColor, fontSize: 11, distance: 25, formatter: innerLabelFmt },
         axisTick: axisTickCfg,
         splitLine: splitLineCfg,
         detail: {
@@ -808,7 +811,7 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
     return {
         ...base,
         tooltip: { formatter: '{b}: {c}' + (isPercent ? '%' : '') },
-        series: outerSeries ? [mainSeries, outerSeries] : [mainSeries],
+        series: boldSeries ? [mainSeries, outerSeries, boldSeries] : [mainSeries],
     };
 }
 
