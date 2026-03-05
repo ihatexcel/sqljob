@@ -727,19 +727,44 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
     // Build axisLabel formatter
     let axisLabelFormatter: any = isPercent ? '{value}%' : '{value}';
     let axisLabelRich: any = undefined;
+    let splitNumber = 5;
+    let axisTickCfg: any = { distance: -20, length: 8 };
+    let splitLineCfg: any = { distance: -25, length: 20 };
+
     if (gaugeAxisLabels) {
-        // Every tick shows the name of the zone it belongs to, in bold rich text.
-        const thresholds = [min, ...gaugeAxisLabels.map(item => item.value)];
+        // Use N*4 ticks so both zone midpoints and thresholds are covered (even non-uniform zones).
+        const N = gaugeAxisLabels.length;
+        splitNumber = N * 4;
+        const tickInterval = (max - min) / splitNumber;
+        const snapToTick = (pos: number) => Math.round((pos - min) / tickInterval) * tickInterval + min;
+        const eps = tickInterval * 1e-4;
+
+        const zoneBoundaries = [min, ...gaugeAxisLabels.map(item => item.value)];
+        const zoneMidpoints = gaugeAxisLabels.map((_, i) => (zoneBoundaries[i] + zoneBoundaries[i + 1]) / 2);
+        const activeZoneIdx = gaugeAxisLabels.findIndex((item, i) => value >= zoneBoundaries[i] && value <= item.value);
+
+        // Threshold labels at zone boundaries (numeric), then zone labels at midpoints
+        const labelMap = new Map<number, { text: string; bold: boolean }>();
+        zoneBoundaries.forEach(pos => {
+            labelMap.set(snapToTick(pos), { text: String(pos), bold: false });
+        });
+        zoneMidpoints.forEach((pos, i) => {
+            const snap = snapToTick(pos);
+            if (!labelMap.has(snap))
+                labelMap.set(snap, { text: gaugeAxisLabels![i].label, bold: i === activeZoneIdx });
+        });
+
         axisLabelFormatter = (val: number) => {
-            let prev = thresholds[0];
-            for (let i = 1; i < thresholds.length; i++) {
-                const hi = thresholds[i];
-                if (val >= prev && val <= hi) return `{b|${gaugeAxisLabels![i - 1].label}}`;
-                prev = hi;
+            for (const [tickPos, item] of labelMap.entries()) {
+                if (Math.abs(val - tickPos) < eps)
+                    return item.bold ? `{b|${item.text}}` : item.text;
             }
             return '';
         };
         axisLabelRich = { b: { fontWeight: 'bold', fontSize: 11, color: textColor } };
+        // Hide tick marks and split lines — labels-only rendering
+        axisTickCfg = { show: false };
+        splitLineCfg = { show: false };
     }
 
     return {
@@ -751,7 +776,7 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
             max,
             startAngle: 200,
             endAngle: -20,
-            splitNumber: 5,
+            splitNumber,
             pointer: { show: true, length: '60%' },
             axisLine: {
                 lineStyle: axisLineStyle,
@@ -762,8 +787,8 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
                 rich: axisLabelRich,
                 formatter: axisLabelFormatter,
             },
-            axisTick: { distance: -20, length: 8 },
-            splitLine: { distance: -25, length: 20 },
+            axisTick: axisTickCfg,
+            splitLine: splitLineCfg,
             detail: {
                 fontSize: 24,
                 fontWeight: 'bold',

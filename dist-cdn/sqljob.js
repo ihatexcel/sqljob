@@ -32591,19 +32591,50 @@ function Fz(n, r, s, u, a) {
   ];
   let as = m ? "{value}%" : "{value}";
   let axisLabelRich = void 0;
+  let splitNum = 5;
+  let axisTickCfg = { distance: -20, length: 8 };
+  let splitLineCfg = { distance: -25, length: 20 };
   if (Sr) {
-    // Every tick shows the name of the zone it belongs to, in bold.
-    const thresholds = [Me, ...Sr.map((s) => s.value)];
+    // Use splitNumber = N*4 so ticks are dense enough to cover both
+    // zone midpoints and thresholds (even for non-uniform zones).
+    const N = Sr.length;
+    splitNum = N * 4;
+    const tickInterval = (Ze - Me) / splitNum;
+    const snapToTick = (pos) => Math.round((pos - Me) / tickInterval) * tickInterval + Me;
+    const eps = tickInterval * 1e-4;
+
+    // Zone boundaries [min, ...thresholds]
+    const zoneBoundaries = [Me, ...Sr.map((s) => s.value)];
+    // Zone midpoints: center of each segment
+    const zoneMidpoints = Sr.map((_, i) => (zoneBoundaries[i] + zoneBoundaries[i + 1]) / 2);
+    // Active zone: which segment contains the current gauge value?
+    const activeZoneIdx = Sr.findIndex((s, i) => Y >= zoneBoundaries[i] && Y <= s.value);
+
+    // Build label map: snapped tick position → { text, bold }
+    // Threshold labels first (numeric values at zone boundaries)
+    const labelMap = new Map();
+    zoneBoundaries.forEach((pos) => {
+      labelMap.set(snapToTick(pos), { text: String(pos), bold: false });
+    });
+    // Zone labels at midpoints (only if they don't collide with a threshold tick)
+    zoneMidpoints.forEach((pos, i) => {
+      const snap = snapToTick(pos);
+      if (!labelMap.has(snap)) {
+        labelMap.set(snap, { text: Sr[i].label, bold: i === activeZoneIdx });
+      }
+    });
+
     as = (val) => {
-      let prev = thresholds[0];
-      for (let i = 1; i < thresholds.length; i++) {
-        const hi = thresholds[i];
-        if (val >= prev && val <= hi) return `{b|${Sr[i - 1].label}}`;
-        prev = hi;
+      for (const [tickPos, item] of labelMap.entries()) {
+        if (Math.abs(val - tickPos) < eps)
+          return item.bold ? `{b|${item.text}}` : item.text;
       }
       return "";
     };
     axisLabelRich = { b: { fontWeight: "bold", fontSize: 11, color: a } };
+    // Hide tick marks and split lines — only labels are shown
+    axisTickCfg = { show: false };
+    splitLineCfg = { show: false };
   }
   return {
     ...u,
@@ -32614,7 +32645,7 @@ function Fz(n, r, s, u, a) {
       max: Ze,
       startAngle: 200,
       endAngle: -20,
-      splitNumber: 5,
+      splitNumber: splitNum,
       pointer: { show: !0, length: "60%" },
       axisLine: {
         lineStyle: Bn
@@ -32625,8 +32656,8 @@ function Fz(n, r, s, u, a) {
         rich: axisLabelRich,
         formatter: as
       },
-      axisTick: { distance: -20, length: 8 },
-      splitLine: { distance: -25, length: 20 },
+      axisTick: axisTickCfg,
+      splitLine: splitLineCfg,
       detail: {
         fontSize: 24,
         fontWeight: "bold",
