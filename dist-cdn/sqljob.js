@@ -32675,7 +32675,7 @@ function Fz(n, r, s, u, a) {
     splitNumber: splitNum,
     pointer: { show: !0, length: "60%" },
     axisLine: { lineStyle: Bn },
-    axisLabel: { color: a, fontSize: 11, distance: 30, formatter: innerLabelFmt },
+    axisLabel: { color: a, fontSize: 11, distance: 40, formatter: innerLabelFmt },
     axisTick: axisTickCfg,
     splitLine: splitLineCfg,
     detail: {
