@@ -772,7 +772,7 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
             type: 'gauge', min, max, startAngle: 200, endAngle: -20, splitNumber,
             pointer: { show: false }, axisLine: { show: false },
             axisTick: { show: false }, splitLine: { show: false },
-            axisLabel: { color: textColor, fontSize: 11, distance: -38, formatter: outerFmt },
+            axisLabel: { color: textColor, fontSize: 11, distance: -60, formatter: outerFmt },
             detail: { show: false }, data: [],
         };
 
@@ -785,7 +785,7 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
             type: 'gauge', min, max, startAngle: 200, endAngle: -20, splitNumber,
             pointer: { show: false }, axisLine: { show: false },
             axisTick: { show: false }, splitLine: { show: false },
-            axisLabel: { color: textColor, fontSize: 13, fontWeight: 'bold', distance: -38, formatter: activeFmt },
+            axisLabel: { color: textColor, fontSize: 13, fontWeight: 'bold', distance: -60, formatter: activeFmt },
             detail: { show: false }, data: [],
         };
         axisTickCfg = { show: false };
