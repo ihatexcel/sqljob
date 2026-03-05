@@ -795,13 +795,14 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
     const mainSeries: any = {
         type: 'gauge', min, max, startAngle: 200, endAngle: -20, splitNumber,
         pointer: { show: true, length: '60%' },
+        title: { show: false },
         axisLine: { lineStyle: axisLineStyle },
         // positive distance = inside arc (toward center) in ECharts gauge
         axisLabel: { color: textColor, fontSize: 11, distance: 10, formatter: innerLabelFmt },
         axisTick: axisTickCfg,
         splitLine: splitLineCfg,
         detail: {
-            fontSize: 24, fontWeight: 'bold', color: textColor,
+            fontSize: 48, fontWeight: 'bold', color: textColor,
             formatter: isPercent ? '{value}%' : '{value}',
             offsetCenter: [0, '70%'],
         },

@@ -32678,8 +32678,9 @@ function Fz(n, r, s, u, a) {
     axisLabel: { color: a, fontSize: 11, distance: 10, formatter: innerLabelFmt },
     axisTick: axisTickCfg,
     splitLine: splitLineCfg,
+    title: { show: false },
     detail: {
-      fontSize: 24, fontWeight: "bold", color: a,
+      fontSize: 48, fontWeight: "bold", color: a,
       formatter: m ? "{value}%" : "{value}",
       offsetCenter: [0, "70%"],
     },
