@@ -724,15 +724,15 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
         ];
     }
 
-    // Build axisLabel formatter
-    let axisLabelFormatter: any = isPercent ? '{value}%' : '{value}';
-    let axisLabelRich: any = undefined;
+    // Default: simple gauge with standard numeric labels
     let splitNumber = 5;
     let axisTickCfg: any = { distance: -20, length: 8 };
     let splitLineCfg: any = { distance: -25, length: 20 };
+    let innerLabelFmt: any = isPercent ? '{value}%' : '{value}'; // threshold values (inside arc)
+    let outerSeries: any = null;                                   // zone labels overlay (outside arc)
 
     if (gaugeAxisLabels) {
-        // Use N*4 ticks so both zone midpoints and thresholds are covered (even non-uniform zones).
+        // splitNumber = N*4 covers both zone midpoints and threshold positions
         const N = gaugeAxisLabels.length;
         splitNumber = N * 4;
         const tickInterval = (max - min) / splitNumber;
@@ -743,61 +743,72 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
         const zoneMidpoints = gaugeAxisLabels.map((_, i) => (zoneBoundaries[i] + zoneBoundaries[i + 1]) / 2);
         const activeZoneIdx = gaugeAxisLabels.findIndex((item, i) => value >= zoneBoundaries[i] && value <= item.value);
 
-        // Threshold labels at zone boundaries (numeric), then zone labels at midpoints
-        const labelMap = new Map<number, { text: string; bold: boolean }>();
-        zoneBoundaries.forEach(pos => {
-            labelMap.set(snapToTick(pos), { text: String(pos), bold: false });
-        });
+        // Map: snapped tick → threshold string (numeric)
+        const thresholdMap = new Map<number, string>();
+        zoneBoundaries.forEach(pos => thresholdMap.set(snapToTick(pos), String(pos)));
+
+        // Map: snapped tick → zone label { text, isActive }
+        const zoneMap = new Map<number, { text: string; isActive: boolean }>();
         zoneMidpoints.forEach((pos, i) => {
             const snap = snapToTick(pos);
-            if (!labelMap.has(snap))
-                labelMap.set(snap, { text: gaugeAxisLabels![i].label, bold: i === activeZoneIdx });
+            if (!thresholdMap.has(snap))
+                zoneMap.set(snap, { text: gaugeAxisLabels![i].label, isActive: i === activeZoneIdx });
         });
 
-        axisLabelFormatter = (val: number) => {
-            for (const [tickPos, item] of labelMap.entries()) {
-                if (Math.abs(val - tickPos) < eps)
-                    return item.bold ? `{b|${item.text}}` : item.text;
-            }
-            return '';
+        const findInMap = <T>(map: Map<number, T>, val: number): T | null => {
+            for (const [k, v] of map.entries())
+                if (Math.abs(val - k) < eps) return v;
+            return null;
         };
-        axisLabelRich = { b: { fontWeight: 'bold', fontSize: 11, color: textColor } };
-        // Hide tick marks and split lines — labels-only rendering
+
+        // Series 1 inner labels: threshold values only, INSIDE the arc
+        innerLabelFmt = (val: number) => findInMap(thresholdMap, val) ?? '';
+
+        // Series 2 outer labels: zone names OUTSIDE the arc, bold when active
+        const outerFmt = (val: number) => {
+            const item = findInMap(zoneMap, val);
+            if (!item) return '';
+            return item.isActive ? `{act|${item.text}}` : item.text;
+        };
+        outerSeries = {
+            type: 'gauge', min, max, startAngle: 200, endAngle: -20,
+            splitNumber,
+            pointer: { show: false },
+            axisLine: { show: false },
+            axisTick: { show: false },
+            splitLine: { show: false },
+            axisLabel: {
+                color: textColor, fontSize: 11, distance: 18,
+                rich: { act: { fontWeight: 'bold', fontSize: 12, color: textColor } },
+                formatter: outerFmt,
+            },
+            detail: { show: false },
+            data: [],
+        };
         axisTickCfg = { show: false };
         splitLineCfg = { show: false };
     }
 
+    const mainSeries: any = {
+        type: 'gauge', min, max, startAngle: 200, endAngle: -20,
+        splitNumber,
+        pointer: { show: true, length: '60%' },
+        axisLine: { lineStyle: axisLineStyle },
+        axisLabel: { color: textColor, fontSize: 11, distance: -35, formatter: innerLabelFmt },
+        axisTick: axisTickCfg,
+        splitLine: splitLineCfg,
+        detail: {
+            fontSize: 24, fontWeight: 'bold', color: textColor,
+            formatter: isPercent ? '{value}%' : '{value}',
+            offsetCenter: [0, '70%'],
+        },
+        data: [{ value, name: label }],
+    };
+
     return {
         ...base,
         tooltip: { formatter: '{b}: {c}' + (isPercent ? '%' : '') },
-        series: [{
-            type: 'gauge',
-            min,
-            max,
-            startAngle: 200,
-            endAngle: -20,
-            splitNumber,
-            pointer: { show: true, length: '60%' },
-            axisLine: {
-                lineStyle: axisLineStyle,
-            },
-            axisLabel: {
-                color: textColor,
-                fontSize: 11,
-                rich: axisLabelRich,
-                formatter: axisLabelFormatter,
-            },
-            axisTick: axisTickCfg,
-            splitLine: splitLineCfg,
-            detail: {
-                fontSize: 24,
-                fontWeight: 'bold',
-                color: textColor,
-                formatter: isPercent ? '{value}%' : '{value}',
-                offsetCenter: [0, '70%'],
-            },
-            data: [{ value, name: label }],
-        }],
+        series: outerSeries ? [mainSeries, outerSeries] : [mainSeries],
     };
 }
 

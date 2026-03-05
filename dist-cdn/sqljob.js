@@ -32589,84 +32589,92 @@ function Fz(n, r, s, u, a) {
     [0.7, "#fac858"],
     [1, "#ee6666"]
   ];
-  let as = m ? "{value}%" : "{value}";
-  let axisLabelRich = void 0;
+
+  // Default: simple gauge with standard numeric labels
   let splitNum = 5;
   let axisTickCfg = { distance: -20, length: 8 };
   let splitLineCfg = { distance: -25, length: 20 };
+  let innerLabelFmt = m ? "{value}%" : "{value}";  // threshold values (inside arc)
+  let outerSeries = null;                           // zone label overlay series (outside arc)
+
   if (Sr) {
-    // Use splitNumber = N*4 so ticks are dense enough to cover both
-    // zone midpoints and thresholds (even for non-uniform zones).
+    // splitNumber = N*4 covers both zone midpoints and threshold positions
     const N = Sr.length;
     splitNum = N * 4;
     const tickInterval = (Ze - Me) / splitNum;
     const snapToTick = (pos) => Math.round((pos - Me) / tickInterval) * tickInterval + Me;
     const eps = tickInterval * 1e-4;
 
-    // Zone boundaries [min, ...thresholds]
     const zoneBoundaries = [Me, ...Sr.map((s) => s.value)];
-    // Zone midpoints: center of each segment
     const zoneMidpoints = Sr.map((_, i) => (zoneBoundaries[i] + zoneBoundaries[i + 1]) / 2);
-    // Active zone: which segment contains the current gauge value?
     const activeZoneIdx = Sr.findIndex((s, i) => Y >= zoneBoundaries[i] && Y <= s.value);
 
-    // Build label map: snapped tick position → { text, bold }
-    // Threshold labels first (numeric values at zone boundaries)
-    const labelMap = new Map();
-    zoneBoundaries.forEach((pos) => {
-      labelMap.set(snapToTick(pos), { text: String(pos), bold: false });
-    });
-    // Zone labels at midpoints (only if they don't collide with a threshold tick)
+    // Map of snapped tick → threshold label (numeric string)
+    const thresholdMap = new Map();
+    zoneBoundaries.forEach((pos) => thresholdMap.set(snapToTick(pos), String(pos)));
+
+    // Map of snapped tick → zone label { text, bold }
+    const zoneMap = new Map();
     zoneMidpoints.forEach((pos, i) => {
       const snap = snapToTick(pos);
-      if (!labelMap.has(snap)) {
-        labelMap.set(snap, { text: Sr[i].label, bold: i === activeZoneIdx });
-      }
+      if (!thresholdMap.has(snap))  // no collision with a threshold tick
+        zoneMap.set(snap, { text: Sr[i].label, isActive: i === activeZoneIdx });
     });
 
-    as = (val) => {
-      for (const [tickPos, item] of labelMap.entries()) {
-        if (Math.abs(val - tickPos) < eps)
-          return item.bold ? `{b|${item.text}}` : item.text;
-      }
-      return "";
+    const findInMap = (map, val) => {
+      for (const [k, v] of map.entries())
+        if (Math.abs(val - k) < eps) return v;
+      return null;
     };
-    axisLabelRich = { b: { fontWeight: "bold", fontSize: 11, color: a } };
-    // Hide tick marks and split lines — only labels are shown
+
+    // Series 1 inner labels: threshold values only, INSIDE the arc
+    innerLabelFmt = (val) => findInMap(thresholdMap, val) ?? "";
+
+    // Series 2 outer labels: zone names, OUTSIDE the arc, bold when active
+    const outerFmt = (val) => {
+      const item = findInMap(zoneMap, val);
+      if (!item) return "";
+      return item.isActive ? `{act|${item.text}}` : item.text;
+    };
+    outerSeries = {
+      type: "gauge", min: Me, max: Ze, startAngle: 200, endAngle: -20,
+      splitNumber: splitNum,
+      pointer: { show: false },
+      axisLine: { show: false },
+      axisTick: { show: false },
+      splitLine: { show: false },
+      axisLabel: {
+        color: a, fontSize: 11, distance: 18,
+        rich: { act: { fontWeight: "bold", fontSize: 12, color: a } },
+        formatter: outerFmt,
+      },
+      detail: { show: false },
+      data: [],
+    };
     axisTickCfg = { show: false };
     splitLineCfg = { show: false };
   }
+
+  const mainSeries = {
+    type: "gauge", min: Me, max: Ze, startAngle: 200, endAngle: -20,
+    splitNumber: splitNum,
+    pointer: { show: !0, length: "60%" },
+    axisLine: { lineStyle: Bn },
+    axisLabel: { color: a, fontSize: 11, distance: -35, formatter: innerLabelFmt },
+    axisTick: axisTickCfg,
+    splitLine: splitLineCfg,
+    detail: {
+      fontSize: 24, fontWeight: "bold", color: a,
+      formatter: m ? "{value}%" : "{value}",
+      offsetCenter: [0, "70%"],
+    },
+    data: [{ value: Y, name: e }],
+  };
+
   return {
     ...u,
     tooltip: { formatter: "{b}: {c}" + (m ? "%" : "") },
-    series: [{
-      type: "gauge",
-      min: Me,
-      max: Ze,
-      startAngle: 200,
-      endAngle: -20,
-      splitNumber: splitNum,
-      pointer: { show: !0, length: "60%" },
-      axisLine: {
-        lineStyle: Bn
-      },
-      axisLabel: {
-        color: a,
-        fontSize: 11,
-        rich: axisLabelRich,
-        formatter: as
-      },
-      axisTick: axisTickCfg,
-      splitLine: splitLineCfg,
-      detail: {
-        fontSize: 24,
-        fontWeight: "bold",
-        color: a,
-        formatter: m ? "{value}%" : "{value}",
-        offsetCenter: [0, "70%"]
-      },
-      data: [{ value: Y, name: e }]
-    }]
+    series: outerSeries ? [mainSeries, outerSeries] : [mainSeries],
   };
 }
 function Bz(n, r, s, u) {
