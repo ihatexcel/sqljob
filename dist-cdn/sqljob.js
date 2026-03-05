@@ -32681,6 +32681,7 @@ function Fz(n, r, s, u, a) {
     title: { show: false },
     detail: {
       fontSize: 48, fontWeight: "bold", color: a,
+      width: 120, height: 60,
       formatter: m ? "{value}%" : "{value}",
       offsetCenter: [0, "70%"],
     },
