@@ -610,7 +610,9 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
     const isPercent = chartType === 'gauge_percent';
     const valueCols: ColumnRole[] = roleMap['GAUGE_PERCENT'] || roleMap['GAUGE'] || [];
     const valueCol = valueCols[0]?.originalName;
-    const value = _num(results[0]?.[valueCol]);
+    // GAUGE_PERCENT: fraction 0.22 → 22; whole number 75 → 75 (leave as-is)
+    const rawValue = _num(results[0]?.[valueCol]);
+    const value = isPercent && rawValue >= 0 && rawValue <= 1 ? rawValue * 100 : rawValue;
     const label = valueCols[0]?.displayName || '';
 
     // Helper: convert Arrow Vector / typed-array / plain Array to a JS Array
@@ -711,24 +713,32 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
         } catch (_) {}
     }
 
+    // Gauge visual constants — matching taleshape reference design
+    const barWidth = 40;
+    const startAngle = 180; // pure semicircle
+    const endAngle = 0;
+    const center = ['50%', '75%']; // shift center down so arc fills upper area
+    const radius = '70%';
+
     // Build axisLine color config
-    const axisLineStyle: any = { width: 25 };
+    const axisLineStyle: any = { width: barWidth };
     if (gaugeColors) {
         axisLineStyle.color = gaugeColors;
-    } else {
-        // Default: green → yellow → red gradient
+    } else if (gaugeAxisLabels) {
+        // Labels without explicit colors: use default gradient for zones
         axisLineStyle.color = [
             [0.3, '#91cc75'],
             [0.7, '#fac858'],
             [1, '#ee6666'],
         ];
+    } else {
+        // Simple gauge: neutral background arc, progress bar shows value
+        axisLineStyle.color = [[1, '#e0e0e0']];
     }
 
     // Default: simple gauge with standard numeric labels
     let splitNumber = 5;
-    let axisTickCfg: any = { distance: -20, length: 8 };
-    let splitLineCfg: any = { distance: -25, length: 20 };
-    let innerLabelFmt: any = isPercent ? '{value}%' : '{value}'; // threshold values (inside arc)
+    let innerLabelFmt: any = isPercent ? '{value}%' : '{value}';
     let outerSeries: any = null;   // non-active zone labels (outside arc, normal weight)
     let boldSeries: any = null;    // active zone label (outside arc, bold)
 
@@ -760,51 +770,68 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
             return null;
         };
 
-        // Series 1: threshold values INSIDE arc (positive distance = toward center in ECharts gauge)
+        // Series 1 (main): threshold boundary values just inside inner arc edge (distance 38)
         innerLabelFmt = (val: number) => findInMap(thresholdMap, val) ?? '';
 
-        // Series 2: non-active zone labels OUTSIDE arc (negative distance = away from center)
+        // Series 2: non-active zone labels outside arc (negative distance = away from center)
         const outerFmt = (val: number) => {
             const item = findInMap(zoneMap, val);
             return (item && !item.isActive) ? item.text : '';
         };
         outerSeries = {
-            type: 'gauge', min, max, startAngle: 200, endAngle: -20, splitNumber,
+            type: 'gauge', min, max, startAngle, endAngle, splitNumber,
+            center, radius,
             pointer: { show: false }, axisLine: { show: false },
             axisTick: { show: false }, splitLine: { show: false },
-            axisLabel: { color: textColor, fontSize: 11, distance: -50, formatter: outerFmt },
+            axisLabel: { color: textColor, fontSize: 11, distance: -15, formatter: outerFmt },
             detail: { show: false }, data: [],
         };
 
-        // Series 3: active zone label only, bold (fontWeight on axisLabel avoids rich text issues)
+        // Series 3: active zone label only, bold
         const activeFmt = (val: number) => {
             const item = findInMap(zoneMap, val);
             return (item && item.isActive) ? item.text : '';
         };
         boldSeries = {
-            type: 'gauge', min, max, startAngle: 200, endAngle: -20, splitNumber,
+            type: 'gauge', min, max, startAngle, endAngle, splitNumber,
+            center, radius,
             pointer: { show: false }, axisLine: { show: false },
             axisTick: { show: false }, splitLine: { show: false },
-            axisLabel: { color: textColor, fontSize: 13, fontWeight: 'bold', distance: -50, formatter: activeFmt },
+            axisLabel: { color: textColor, fontSize: 13, fontWeight: 'bold', distance: -15, formatter: activeFmt },
             detail: { show: false }, data: [],
         };
-        axisTickCfg = { show: false };
-        splitLineCfg = { show: false };
     }
 
     const mainSeries: any = {
-        type: 'gauge', min, max, startAngle: 200, endAngle: -20, splitNumber,
-        pointer: { show: true, length: '60%' },
+        type: 'gauge', min, max, startAngle, endAngle, splitNumber,
+        center, radius,
+        // Small triangle pointer at arc edge (matching taleshape reference)
+        pointer: {
+            show: true,
+            icon: 'triangle',
+            length: 14,
+            width: 12,
+            offsetCenter: [0, '-68%'],
+            itemStyle: { color: textColor },
+        },
         title: { show: false },
         axisLine: { lineStyle: axisLineStyle },
-        // positive distance = inside arc (toward center) in ECharts gauge
-        axisLabel: { color: textColor, fontSize: 11, distance: 10, formatter: innerLabelFmt },
-        axisTick: axisTickCfg,
-        splitLine: splitLineCfg,
+        axisTick: { show: false },
+        splitLine: { show: false },
+        // distance 38: labels appear just inside inner arc edge (matching reference)
+        axisLabel: { color: textColor, fontSize: 11, distance: 38, formatter: innerLabelFmt },
+        // Progress bar for simple gauges (no explicit labels/colors) — like reference
+        progress: {
+            show: !gaugeAxisLabels && !gaugeColors,
+            width: barWidth,
+            itemStyle: { color: '#5470c6' },
+        },
         detail: {
-            fontSize: 48, fontWeight: 'bold', color: textColor,
+            fontSize: 30, fontWeight: 'bold', color: textColor,
+            width: 120, height: 50,
             formatter: isPercent ? '{value}%' : '{value}',
-            offsetCenter: [0, '70%'],
+            // Inside the semicircle arc area (not below it)
+            offsetCenter: [0, '-20%'],
         },
         data: [{ value, name: label }],
     };
