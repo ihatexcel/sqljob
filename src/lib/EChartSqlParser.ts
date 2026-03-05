@@ -797,7 +797,7 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
         pointer: { show: true, length: '60%' },
         axisLine: { lineStyle: axisLineStyle },
         // positive distance = inside arc (toward center) in ECharts gauge
-        axisLabel: { color: textColor, fontSize: 11, distance: 20, formatter: innerLabelFmt },
+        axisLabel: { color: textColor, fontSize: 11, distance: 30, formatter: innerLabelFmt },
         axisTick: axisTickCfg,
         splitLine: splitLineCfg,
         detail: {
