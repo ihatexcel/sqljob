@@ -772,7 +772,7 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
             type: 'gauge', min, max, startAngle: 200, endAngle: -20, splitNumber,
             pointer: { show: false }, axisLine: { show: false },
             axisTick: { show: false }, splitLine: { show: false },
-            axisLabel: { color: textColor, fontSize: 11, distance: -20, formatter: outerFmt },
+            axisLabel: { color: textColor, fontSize: 11, distance: -38, formatter: outerFmt },
             detail: { show: false }, data: [],
         };
 
@@ -785,7 +785,7 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
             type: 'gauge', min, max, startAngle: 200, endAngle: -20, splitNumber,
             pointer: { show: false }, axisLine: { show: false },
             axisTick: { show: false }, splitLine: { show: false },
-            axisLabel: { color: textColor, fontSize: 13, fontWeight: 'bold', distance: -20, formatter: activeFmt },
+            axisLabel: { color: textColor, fontSize: 13, fontWeight: 'bold', distance: -38, formatter: activeFmt },
             detail: { show: false }, data: [],
         };
         axisTickCfg = { show: false };
@@ -797,7 +797,7 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
         pointer: { show: true, length: '60%' },
         axisLine: { lineStyle: axisLineStyle },
         // positive distance = inside arc (toward center) in ECharts gauge
-        axisLabel: { color: textColor, fontSize: 11, distance: 25, formatter: innerLabelFmt },
+        axisLabel: { color: textColor, fontSize: 11, distance: 15, formatter: innerLabelFmt },
         axisTick: axisTickCfg,
         splitLine: splitLineCfg,
         detail: {

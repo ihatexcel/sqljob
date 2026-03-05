@@ -32645,7 +32645,7 @@ function Fz(n, r, s, u, a) {
       axisLine: { show: false },
       axisTick: { show: false },
       splitLine: { show: false },
-      axisLabel: { color: a, fontSize: 11, distance: -20, formatter: outerFmt },
+      axisLabel: { color: a, fontSize: 11, distance: -38, formatter: outerFmt },
       detail: { show: false },
       data: [],
     };
@@ -32662,7 +32662,7 @@ function Fz(n, r, s, u, a) {
       axisLine: { show: false },
       axisTick: { show: false },
       splitLine: { show: false },
-      axisLabel: { color: a, fontSize: 13, fontWeight: "bold", distance: -20, formatter: activeFmt },
+      axisLabel: { color: a, fontSize: 13, fontWeight: "bold", distance: -38, formatter: activeFmt },
       detail: { show: false },
       data: [],
     };
@@ -32675,7 +32675,7 @@ function Fz(n, r, s, u, a) {
     splitNumber: splitNum,
     pointer: { show: !0, length: "60%" },
     axisLine: { lineStyle: Bn },
-    axisLabel: { color: a, fontSize: 11, distance: 25, formatter: innerLabelFmt },
+    axisLabel: { color: a, fontSize: 11, distance: 15, formatter: innerLabelFmt },
     axisTick: axisTickCfg,
     splitLine: splitLineCfg,
     detail: {
