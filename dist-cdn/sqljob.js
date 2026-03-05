@@ -32526,7 +32526,7 @@ function v2(n, r, s, u, a, m) {
 }
 function Fz(n, r, s, u, a) {
   var vs, Es, Js, wo, bo, Qo, Ro, Du, ti;
-  const m = s === "gauge_percent", t = r.GAUGE_PERCENT || r.GAUGE || [], D = (vs = t[0]) == null ? void 0 : vs.originalName, Y = zv((Es = n[0]) == null ? void 0 : Es[D]), e = ((Js = t[0]) == null ? void 0 : Js.displayName) || "", We = (wo = (r.RANGE || [])[0]) == null ? void 0 : wo.originalName;
+  const m = s === "gauge_percent", t = r.GAUGE_PERCENT || r.GAUGE || [], D = (vs = t[0]) == null ? void 0 : vs.originalName, Y_raw = zv((Es = n[0]) == null ? void 0 : Es[D]), Y = m && Y_raw >= 0 && Y_raw <= 1 ? Y_raw * 100 : Y_raw, e = ((Js = t[0]) == null ? void 0 : Js.displayName) || "", We = (wo = (r.RANGE || [])[0]) == null ? void 0 : wo.originalName;
   let Me = 0, Ze = 100, $e = [];
   if (We && ((bo = n[0]) == null ? void 0 : bo[We]) != null) {
     const yu = n[0][We];
@@ -32583,20 +32583,25 @@ function Fz(n, r, s, u, a) {
       }
     } catch {}
   }
-  const Bn = { width: 25 };
-  fr ? Bn.color = fr : Bn.color = [
-    [0.3, "#91cc75"],
-    [0.7, "#fac858"],
-    [1, "#ee6666"]
-  ];
+  // Gauge visual constants — matching taleshape reference design
+  const barWidth = 40, startAngle = 180, endAngle = 0;
+  const center = ["50%", "75%"], radius = "70%";
+  const Bn = { width: barWidth };
+  if (fr) {
+    Bn.color = fr;
+  } else if (Sr) {
+    // Labels without explicit colors: default gradient
+    Bn.color = [[0.3, "#91cc75"], [0.7, "#fac858"], [1, "#ee6666"]];
+  } else {
+    // Simple gauge: neutral gray background, progress bar shows value
+    Bn.color = [[1, "#e0e0e0"]];
+  }
 
   // Default: simple gauge with standard numeric labels
   let splitNum = 5;
-  let axisTickCfg = { distance: -20, length: 8 };
-  let splitLineCfg = { distance: -25, length: 20 };
-  let innerLabelFmt = m ? "{value}%" : "{value}";  // threshold values (inside arc)
-  let outerSeries = null;                           // non-active zone labels (outside arc)
-  let boldSeries = null;                            // active zone label (outside arc, bold)
+  let innerLabelFmt = m ? "{value}%" : "{value}";
+  let outerSeries = null;
+  let boldSeries = null;
 
   if (Sr) {
     // splitNumber = N*4 covers both zone midpoints and threshold positions
@@ -32639,51 +32644,59 @@ function Fz(n, r, s, u, a) {
       return item.text;
     };
     outerSeries = {
-      type: "gauge", min: Me, max: Ze, startAngle: 200, endAngle: -20,
-      splitNumber: splitNum,
-      pointer: { show: false },
-      axisLine: { show: false },
-      axisTick: { show: false },
-      splitLine: { show: false },
-      axisLabel: { color: a, fontSize: 11, distance: -50, formatter: outerFmt },
-      detail: { show: false },
-      data: [],
+      type: "gauge", min: Me, max: Ze, startAngle, endAngle,
+      splitNumber: splitNum, center, radius,
+      pointer: { show: false }, axisLine: { show: false },
+      axisTick: { show: false }, splitLine: { show: false },
+      axisLabel: { color: a, fontSize: 11, distance: -15, formatter: outerFmt },
+      detail: { show: false }, data: [],
     };
 
-    // Series 3: active zone label only, bold (fontWeight on axisLabel — no rich text needed)
+    // Series 3: active zone label only, bold
     const activeFmt = (val) => {
       const item = findInMap(zoneMap, val);
       return (item && item.isActive) ? item.text : "";
     };
     boldSeries = {
-      type: "gauge", min: Me, max: Ze, startAngle: 200, endAngle: -20,
-      splitNumber: splitNum,
-      pointer: { show: false },
-      axisLine: { show: false },
-      axisTick: { show: false },
-      splitLine: { show: false },
-      axisLabel: { color: a, fontSize: 13, fontWeight: "bold", distance: -50, formatter: activeFmt },
-      detail: { show: false },
-      data: [],
+      type: "gauge", min: Me, max: Ze, startAngle, endAngle,
+      splitNumber: splitNum, center, radius,
+      pointer: { show: false }, axisLine: { show: false },
+      axisTick: { show: false }, splitLine: { show: false },
+      axisLabel: { color: a, fontSize: 13, fontWeight: "bold", distance: -15, formatter: activeFmt },
+      detail: { show: false }, data: [],
     };
-    axisTickCfg = { show: false };
-    splitLineCfg = { show: false };
   }
 
   const mainSeries = {
-    type: "gauge", min: Me, max: Ze, startAngle: 200, endAngle: -20,
-    splitNumber: splitNum,
-    pointer: { show: !0, length: "60%" },
+    type: "gauge", min: Me, max: Ze, startAngle, endAngle,
+    splitNumber: splitNum, center, radius,
+    // Small triangle pointer at arc edge (matching taleshape reference)
+    pointer: {
+      show: !0,
+      icon: "triangle",
+      length: 14,
+      width: 12,
+      offsetCenter: [0, "-68%"],
+      itemStyle: { color: a },
+    },
     axisLine: { lineStyle: Bn },
-    axisLabel: { color: a, fontSize: 11, distance: 10, formatter: innerLabelFmt },
-    axisTick: axisTickCfg,
-    splitLine: splitLineCfg,
+    axisTick: { show: false },
+    splitLine: { show: false },
+    // distance 38: labels appear just inside inner arc edge (matching reference)
+    axisLabel: { color: a, fontSize: 11, distance: 38, formatter: innerLabelFmt },
+    // Progress bar for simple gauges (no explicit labels/colors)
+    progress: {
+      show: !Sr && !fr,
+      width: barWidth,
+      itemStyle: { color: "#5470c6" },
+    },
     title: { show: false },
     detail: {
-      fontSize: 48, fontWeight: "bold", color: a,
-      width: 120, height: 60,
+      fontSize: 30, fontWeight: "bold", color: a,
+      width: 120, height: 50,
       formatter: m ? "{value}%" : "{value}",
-      offsetCenter: [0, "70%"],
+      // Inside the semicircle arc area (not below it)
+      offsetCenter: [0, "-20%"],
     },
     data: [{ value: Y, name: e }],
   };
