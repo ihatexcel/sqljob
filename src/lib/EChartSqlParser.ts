@@ -712,7 +712,7 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
     }
 
     // Build axisLine color config
-    const axisLineStyle: any = { width: 6 };
+    const axisLineStyle: any = { width: 25 };
     if (gaugeColors) {
         axisLineStyle.color = gaugeColors;
     } else {

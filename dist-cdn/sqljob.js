@@ -32583,7 +32583,7 @@ function Fz(n, r, s, u, a) {
       }
     } catch {}
   }
-  const Bn = { width: 6 };
+  const Bn = { width: 25 };
   fr ? Bn.color = fr : Bn.color = [
     [0.3, "#91cc75"],
     [0.7, "#fac858"],
