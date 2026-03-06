@@ -298,12 +298,7 @@ export const useNotebookStore = create<any>((set, get, api) => {
         layout: {
             config: {
                 type: 'mosaic',
-                nodes: {
-                    direction: 'row',
-                    splitPercentage: 20,
-                    first: 'data',
-                    second: 'main',
-                },
+                nodes: 'main',
             },
             panels: {
                 main: {
