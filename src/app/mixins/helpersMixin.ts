@@ -91,6 +91,9 @@ export function helpersMixin() {
                         this.$nextTick(() => setTimeout(() => this.refreshMarkdownCellsForPage(0), 300));
                         // Rafraîchir le panneau Tables DuckDB après l'exécution initiale
                         await this.refreshDuckdbTables();
+                        // Signaler à RoomShell que l'init est terminée
+                        // (sans ça room.initialized reste false → bouton toggle panneau disabled)
+                        this.room = { ...this.room, initialized: true };
                     } catch (error) {
                         this.setStatus('Erreur d\'initialisation: ' + error.message, 'error');
                     } finally {
