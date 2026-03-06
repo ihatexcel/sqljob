@@ -16,8 +16,8 @@ import { useToast } from '@sqlrooms/ui'
 
 // ─── Affichage des tables chargées ───────────────────────────────────────────
 function TablesListPanel() {
-    const _tables = useNotebookStore(s => s._tables)
-    const tables = Object.entries(_tables || {})
+    const _duckdbTables = useNotebookStore(s => s._duckdbTables)
+    const tables = Object.entries(_duckdbTables || {})
 
     if (tables.length === 0) {
         return (
@@ -30,10 +30,7 @@ function TablesListPanel() {
     return (
         <div className="flex flex-col gap-1 p-2 overflow-auto">
             {tables.map(([tableName, data]: [string, any]) => {
-                const columns = Array.isArray(data) && data.length > 0
-                    ? Object.keys(data[0])
-                    : []
-                const rowCount = Array.isArray(data) ? data.length : 0
+                const { rowCount, columns } = data
                 return (
                     <div key={tableName} className="border border-border rounded-md p-2 bg-background">
                         <div className="flex items-center gap-1 mb-1">
@@ -43,7 +40,7 @@ function TablesListPanel() {
                         </div>
                         {columns.length > 0 && (
                             <div className="flex flex-wrap gap-1 mt-1">
-                                {columns.slice(0, 5).map(col => (
+                                {columns.slice(0, 5).map((col: string) => (
                                     <span key={col} className="inline-flex items-center px-1.5 py-0.5 rounded text-xs bg-muted text-muted-foreground truncate max-w-[8rem]">{col}</span>
                                 ))}
                                 {columns.length > 5 && (

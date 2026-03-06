@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { DuckDBManager } from '../../lib/DuckDBManager';
 import { safeEvalJs } from '../../lib/safeEval';
 
 export function helpersMixin() {
@@ -47,6 +48,30 @@ export function helpersMixin() {
                 // ─────────────────────────────────────────────────────────────────
                 // INITIALISATION
                 // ─────────────────────────────────────────────────────────────────
+                async refreshDuckdbTables() {
+                    try {
+                        const tableRows = await DuckDBManager.executeQuery(`SHOW TABLES`);
+                        const result: Record<string, { rowCount: number, columns: string[] }> = {};
+                        for (const row of tableRows) {
+                            const name = row.name ?? row.table_name;
+                            if (!name) continue;
+                            try {
+                                const countRows = await DuckDBManager.executeQuery(`SELECT COUNT(*) as cnt FROM "${name}"`);
+                                const descRows = await DuckDBManager.executeQuery(`DESCRIBE "${name}"`);
+                                result[name] = {
+                                    rowCount: Number(countRows[0]?.cnt ?? 0),
+                                    columns: descRows.map((r: any) => r.column_name),
+                                };
+                            } catch {
+                                result[name] = { rowCount: 0, columns: [] };
+                            }
+                        }
+                        this._duckdbTables = result;
+                    } catch {
+                        // DuckDB pas encore prêt, on ignore silencieusement
+                    }
+                },
+
                 async init() {
                     try {
                         await DuckDBManager.initDuckDB((msg, type) => this.setStatus(msg, type));
@@ -64,6 +89,8 @@ export function helpersMixin() {
                         await this.runAllGroups();
                         if (this.pages[0]) this._pagesInitialized.add(this.pages[0]._id);
                         this.$nextTick(() => setTimeout(() => this.refreshMarkdownCellsForPage(0), 300));
+                        // Rafraîchir le panneau Tables DuckDB après l'exécution initiale
+                        await this.refreshDuckdbTables();
                     } catch (error) {
                         this.setStatus('Erreur d\'initialisation: ' + error.message, 'error');
                     } finally {

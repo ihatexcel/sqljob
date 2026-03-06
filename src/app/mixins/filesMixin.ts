@@ -286,6 +286,7 @@ export function filesMixin() {
                         cell._pendingFileLoad = false;
                         if (!cell._parseLevels?.length) cell._parseLevels = [{ level: 'final', innerQuery: loadQuery, replacement: null }]; // xls ou requête directe sans template
                         this.setStatus(`${cell.name} chargé!`, 'success');
+                        await this.refreshDuckdbTables();
 
                         // Exécuter les cellules suivantes (sauf pendant l'init : runAllGroups s'en charge)
                         if (!skipRunNextCells) {
