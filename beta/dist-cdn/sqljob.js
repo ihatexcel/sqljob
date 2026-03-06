@@ -79018,8 +79018,9 @@ function rwt() {
       try {
         await Bw.initDuckDB((n, t) => this.setStatus(n, t)), this.ensureAllCellsHaveNames(), await this.loadEmbeddedFiles(), await this.loadPendingSourceFiles(), await this.evaluateAllGroupIfQueries(), await this.runAllGroups(), this.pages[0] && this._pagesInitialized.add(this.pages[0]._id), this.$nextTick(() => setTimeout(() => this.refreshMarkdownCellsForPage(0), 300)), await this.refreshDuckdbTables();
         try {
-          await this.db.initialize();
-        } catch {
+          console.log("[sqljob] Calling room.initialize()…"), await this.room.initialize(), console.log("[sqljob] room.initialize() done. schemaTrees:", this.db.schemaTrees);
+        } catch (n) {
+          console.warn("[sqljob] room.initialize() error:", n);
         }
         this.room = { ...this.room, initialized: !0 };
       } catch (n) {
@@ -83528,7 +83529,15 @@ const Swt = tge(
   {
     initializeInternal: async () => {
     },
-    executeQueryInternal: async (n) => Bw.executeQueryArrow(n)
+    executeQueryInternal: async (n) => {
+      console.log("[duckdbBridge] query:", n.slice(0, 100));
+      try {
+        const t = await Bw.executeQueryArrow(n);
+        return console.log("[duckdbBridge] ok, rows:", t == null ? void 0 : t.numRows), t;
+      } catch (t) {
+        throw console.error("[duckdbBridge] error:", t), t;
+      }
+    }
   }
 ), hl = _9((n, t, s) => {
   const o = vvt({ config: kge() })(n, t, s), i = spt({
