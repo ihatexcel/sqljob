@@ -12,6 +12,7 @@
  */
 import { create } from 'zustand'
 import { createRoomShellSlice } from '@sqlrooms/room-shell'
+import { createSqlEditorSlice, createDefaultSqlEditorConfig } from '@sqlrooms/sql-editor'
 import { DatabaseIcon } from 'lucide-react'
 // Panel components (lazy import safe — utilisés uniquement au rendu, pas à l'évaluation)
 import { NotebookPanel } from '../components/NotebookPanel'
@@ -293,6 +294,9 @@ function buildInitialState() {
 
 // ─── Store Zustand ────────────────────────────────────────────────────────────
 export const useNotebookStore = create<any>((set, get, api) => {
+    // === Slice SqlEditor ===
+    const sqlEditorState = createSqlEditorSlice({ config: createDefaultSqlEditorConfig() })(set, get, api)
+
     // === Slice RoomShell : layout mosaic + panels ===
     const roomShellState = createRoomShellSlice({
         config: { title: 'SQLjob', dataSources: [] },
@@ -346,6 +350,7 @@ export const useNotebookStore = create<any>((set, get, api) => {
     }
 
     return {
+        ...sqlEditorState,
         ...roomShellState,
         ...initialState,
         ...wrappedActions,
