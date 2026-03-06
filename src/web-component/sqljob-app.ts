@@ -39,15 +39,8 @@ class SQLJobApp extends HTMLElement {
     private _root: ReturnType<typeof createRoot> | null = null
 
     connectedCallback() {
-        // Appliquer les classes body si pas déjà fait
-        if (!document.body.classList.contains('font-sans')) {
-            document.body.classList.add(
-                'min-h-screen', 'font-sans', 'bg-base-100',
-                'text-base-content', 'transition-colors', 'duration-200'
-            )
-        }
-
-        // Rendu React en light DOM : DaisyUI/Tailwind fonctionnent nativement
+        // Rendu React en light DOM : @sqlrooms/ui/Tailwind fonctionnent nativement
+        // ThemeProvider (dans App) gère automatiquement la classe dark/light sur <html>
         this._root = createRoot(this)
         this._root.render(React.createElement(App))
     }

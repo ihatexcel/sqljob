@@ -8,6 +8,9 @@
  * 3. Sinon → initialise le store Zustand + affiche NotebookLayout
  */
 import { useEffect, useState } from 'react'
+import { ThemeProvider } from '@sqlrooms/ui'
+import { Toaster } from '@sqlrooms/ui'
+import { Spinner } from '@sqlrooms/ui'
 import { ConfigManager } from '../lib/ConfigManager'
 import { useNotebookStore, exposeGlobals } from './store/notebookStore'
 import { useTemplateModal } from './store/uiStores'
@@ -16,7 +19,7 @@ import { GistPassphraseModal } from './components/modals/GistPassphraseModal'
 
 type AppState = 'loading' | 'passphrase' | 'ready'
 
-export function App() {
+function AppContent() {
     const [appState, setAppState] = useState<AppState>('loading')
     const initFromConfig = useNotebookStore(s => s.initFromConfig)
 
@@ -59,10 +62,10 @@ export function App() {
 
     if (appState === 'loading') {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-base-100">
+            <div className="min-h-screen flex items-center justify-center bg-background">
                 <div className="flex flex-col items-center gap-4">
-                    <span className="loading loading-spinner loading-lg text-primary"></span>
-                    <p className="text-base-content/60">Chargement...</p>
+                    <Spinner className="h-8 w-8 text-primary" />
+                    <p className="text-muted-foreground">Chargement...</p>
                 </div>
             </div>
         )
@@ -77,4 +80,13 @@ export function App() {
     }
 
     return <NotebookLayout />
+}
+
+export function App() {
+    return (
+        <ThemeProvider defaultTheme="light" storageKey="sqljob-theme">
+            <AppContent />
+            <Toaster />
+        </ThemeProvider>
+    )
 }

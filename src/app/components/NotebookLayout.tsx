@@ -2,6 +2,15 @@
 import { useRef, useEffect, useState } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import { useNotebookStore } from '../store/notebookStore'
+import {
+    Button,
+    Input,
+    DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator,
+    Separator,
+    Alert, AlertDescription,
+    ThemeSwitch,
+    Spinner,
+} from '@sqlrooms/ui'
 import { PageContent } from './PageContent'
 import { ConfirmModal } from './modals/ConfirmModal'
 import { TemplateModal } from './modals/TemplateModal'
@@ -35,7 +44,7 @@ function TabBar() {
     })))
 
     return (
-        <div role="tablist" className="tabs tabs-border flex-nowrap overflow-x-auto">
+        <div className="flex flex-nowrap overflow-x-auto gap-1">
             {pages.map((page: any, index: number) => (
                 <PageTab
                     key={page._id}
@@ -54,9 +63,9 @@ function TabBar() {
                 />
             ))}
             {devMode && (
-                <button role="tab" className="tab tab-sm" onClick={addPage} title="Nouvelle page">
+                <Button variant="ghost" size="sm" onClick={addPage} title="Nouvelle page" className="h-8 px-2">
                     <span className="iconify" data-icon="material-symbols-light:add" style={{ fontSize: '1rem' }}></span>
-                </button>
+                </Button>
             )}
         </div>
     )
@@ -99,10 +108,10 @@ function PageTab({ page, index, isActive, devMode, activatePage, deletePage, sta
 
     if (editing) {
         return (
-            <span role="tab" className={`tab ${isActive ? 'tab-active' : ''}`}>
-                <input
+            <span className={`inline-flex items-center border-b-2 px-2 ${isActive ? 'border-primary' : 'border-transparent'}`}>
+                <Input
                     ref={inputRef}
-                    className="input input-xs input-bordered w-24"
+                    className="h-6 text-xs w-24"
                     value={editName}
                     onChange={e => setEditName(e.target.value)}
                     onBlur={commitEdit}
@@ -115,8 +124,9 @@ function PageTab({ page, index, isActive, devMode, activatePage, deletePage, sta
 
     return (
         <button
-            role="tab"
-            className={`tab ${isActive ? 'tab-active' : ''} ${isDragOver ? 'opacity-50' : ''}`}
+            className={`inline-flex items-center gap-1 px-3 py-1 text-sm border-b-2 transition-colors whitespace-nowrap
+                ${isActive ? 'border-primary font-medium text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'}
+                ${isDragOver ? 'opacity-50' : ''}`}
             onClick={() => activatePage(index)}
             onDoubleClick={startEditing}
             draggable={devMode}
@@ -129,7 +139,7 @@ function PageTab({ page, index, isActive, devMode, activatePage, deletePage, sta
             {page.name}
             {devMode && (
                 <span
-                    className="ml-1 text-error hover:text-error-content"
+                    className="ml-1 text-destructive hover:text-destructive/80"
                     onClick={e => { e.stopPropagation(); deletePage(index) }}
                     title="Supprimer"
                 >
@@ -158,52 +168,55 @@ function NavBar() {
     if (!showLayout) return null
 
     return (
-        <div className="navbar bg-base-100 border-b border-base-300 px-4 py-2 gap-2">
-            <div className="navbar-start">
+        <div className="flex items-center border-b border-border bg-background px-4 py-2 gap-2">
+            <div className="flex-none">
                 <a href="https://ihatexcel.github.io/sqljob/?gist=68cd597ba5da05ceba24fb975c05384f" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
                     <img src="https://raw.githubusercontent.com/ihatexcel/sqljob/main/ihatexcel.svg" alt="sqljob" className="h-8" />
                     <span className="font-bold text-primary text-lg">sqlJob</span>
                 </a>
             </div>
-            <div className="navbar-center">
+            <div className="flex-1 flex justify-center overflow-hidden">
                 <TabBar />
             </div>
-            <div className="navbar-end flex gap-2 items-center">
+            <div className="flex-none flex gap-2 items-center">
                 {devMode && (
                     <>
-                        <button className="btn btn-sm btn-ghost" onClick={runAllGroups} disabled={isLoading} title="Tout exécuter">
+                        <Button variant="ghost" size="sm" onClick={runAllGroups} disabled={isLoading} title="Tout exécuter">
                             <span className="iconify" data-icon="material-symbols-light:play-arrow" style={{ fontSize: '1.25rem' }}></span>
-                        </button>
-                        <div className="dropdown dropdown-end">
-                            <div tabIndex={0} role="button" className="btn btn-sm btn-ghost">
-                                <span className="iconify" data-icon="material-symbols-light:share" style={{ fontSize: '1.25rem' }}></span>
-                            </div>
-                            <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-48 p-2 shadow">
-                                <li><button onClick={() => openExportModal('gist')}>
-                                    <span className="iconify" data-icon="material-symbols-light:share" style={{ fontSize: '1rem' }}></span> Partager (Gist)
-                                </button></li>
-                                <li><button onClick={() => openExportModal('json')}>
-                                    <span className="iconify" data-icon="material-symbols-light:data-object" style={{ fontSize: '1rem' }}></span> Export JSON
-                                </button></li>
-                                <li><button onClick={() => openExportModal('html')}>
-                                    <span className="iconify" data-icon="material-symbols-light:save" style={{ fontSize: '1rem' }}></span> Export HTML
-                                </button></li>
-                                <li><button onClick={() => openExportModal('base64')}>
-                                    <span className="iconify" data-icon="material-symbols-light:lock" style={{ fontSize: '1rem' }}></span> Export Base64
-                                </button></li>
-                                <li>
-                                    <label className="cursor-pointer flex items-center gap-2 px-4 py-2 hover:bg-base-200 rounded-lg">
+                        </Button>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="sm">
+                                    <span className="iconify" data-icon="material-symbols-light:share" style={{ fontSize: '1.25rem' }}></span>
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-48">
+                                <DropdownMenuItem onClick={() => openExportModal('gist')}>
+                                    <span className="iconify mr-2" data-icon="material-symbols-light:share" style={{ fontSize: '1rem' }}></span> Partager (Gist)
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => openExportModal('json')}>
+                                    <span className="iconify mr-2" data-icon="material-symbols-light:data-object" style={{ fontSize: '1rem' }}></span> Export JSON
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => openExportModal('html')}>
+                                    <span className="iconify mr-2" data-icon="material-symbols-light:save" style={{ fontSize: '1rem' }}></span> Export HTML
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => openExportModal('base64')}>
+                                    <span className="iconify mr-2" data-icon="material-symbols-light:lock" style={{ fontSize: '1rem' }}></span> Export Base64
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem asChild>
+                                    <label className="cursor-pointer flex items-center gap-2 w-full">
                                         <span className="iconify" data-icon="material-symbols-light:folder-open" style={{ fontSize: '1rem' }}></span> Import JSON
                                         <input ref={importJsonRef} type="file" accept=".json" hidden
                                             onChange={e => { loadConfig(e); (document.activeElement as HTMLElement)?.blur() }} />
                                     </label>
-                                </li>
-                            </ul>
-                        </div>
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </>
                 )}
                 {isLoading && (
-                    <span className="loading loading-spinner loading-sm"></span>
+                    <Spinner className="h-4 w-4" />
                 )}
             </div>
         </div>
@@ -214,12 +227,18 @@ function NavBar() {
 function StatusBar() {
     const { status, statusType } = useNotebookStore(useShallow(s => ({ status: s.status, statusType: s.statusType })))
     if (!status) return null
+
+    const alertClass =
+        statusType === 'loading' ? 'border-blue-300 bg-blue-50 dark:bg-blue-950 dark:border-blue-700' :
+        statusType === 'success' ? 'border-green-300 bg-green-50 dark:bg-green-950 dark:border-green-700' :
+        'border-destructive bg-destructive/10'
+
     return (
-        <div className="toast toast-end toast-bottom z-[1500]">
-            <div className={`alert ${statusType === 'loading' ? 'alert-info' : statusType === 'success' ? 'alert-success' : 'alert-error'}`}>
-                {statusType === 'loading' && <span className="loading loading-spinner loading-md"></span>}
-                <span>{status}</span>
-            </div>
+        <div className="fixed bottom-4 right-4 z-[1500]">
+            <Alert className={`flex items-center gap-2 ${alertClass}`}>
+                {statusType === 'loading' && <Spinner className="h-4 w-4 shrink-0" />}
+                <AlertDescription>{status}</AlertDescription>
+            </Alert>
         </div>
     )
 }
@@ -240,39 +259,27 @@ function FloatingControls() {
 
     return (
         <div className="fixed bottom-4 left-4 z-[1500] flex gap-1">
-            <button
-                className={`btn btn-sm ${devMode ? 'btn-soft' : 'btn-ghost'}`}
+            <Button
+                variant={devMode ? 'secondary' : 'ghost'}
+                size="sm"
                 title={devMode ? 'Mode client' : 'Mode développeur'}
                 onClick={() => set({ devMode: !devMode })}
             >
                 <span className="iconify" data-icon={devMode ? 'material-symbols-light:visibility' : 'material-symbols-light:settings'} style={{ fontSize: '1.25rem' }}></span>
-            </button>
+            </Button>
 
             {devMode && (
                 <>
-                    <div className="dropdown dropdown-top">
-                        <div tabIndex={0} className="btn btn-sm btn-ghost">
-                            <span className="iconify" data-icon="material-symbols-light:palette" style={{ fontSize: '1.25rem' }}></span>
-                        </div>
-                        <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-40 p-2 shadow max-h-60 overflow-y-auto">
-                            {availableThemes.map((themeName: string) => (
-                                <li key={themeName}>
-                                    <button
-                                        onClick={() => setTheme(themeName)}
-                                        className={currentTheme === themeName ? 'active' : ''}
-                                    >{themeName}</button>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
+                    <ThemeSwitch />
 
-                    <button
-                        className="btn btn-sm btn-ghost"
+                    <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={() => set({ showDbEngineModal: true })}
                         title={`Moteur: ${dbEngine === 'ducklings' ? 'Ducklings' : 'DuckDB WASM'}`}
                     >
                         <span>{dbEngine === 'ducklings' ? '🐤' : '🦆'}</span>
-                    </button>
+                    </Button>
                 </>
             )}
         </div>
@@ -295,7 +302,7 @@ export function NotebookLayout() {
     }, [showLayout, setShowLayout])
 
     return (
-        <div className="min-h-screen flex flex-col">
+        <div className="min-h-screen flex flex-col bg-background text-foreground">
             <NavBar />
 
             <main className="flex-1 overflow-auto">
@@ -303,10 +310,8 @@ export function NotebookLayout() {
             </main>
 
             {showLayout && (
-                <footer className="footer sm:footer-horizontal footer-center bg-base-300 text-base-content p-4">
-                    <aside>
-                        <p>iHateXcel - sqljob - Made with ❤️ by Théo Nobella-Pichonnier</p>
-                    </aside>
+                <footer className="flex justify-center items-center bg-muted text-muted-foreground p-4 text-sm border-t border-border">
+                    <p>iHateXcel - sqljob - Made with ❤️ by Théo Nobella-Pichonnier</p>
                 </footer>
             )}
 

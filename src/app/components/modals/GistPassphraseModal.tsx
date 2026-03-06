@@ -3,6 +3,12 @@ import { useState } from 'react'
 import { ConfigManager } from '../../../lib/ConfigManager'
 import { GistEncrypt } from '../../../lib/GistEncrypt'
 import { useNotebookStore } from '../../store/notebookStore'
+import {
+    Button, Input, Label,
+    Alert, AlertDescription,
+    Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
+    Spinner,
+} from '@sqlrooms/ui'
 
 interface Props {
     onUnlocked: () => void
@@ -82,51 +88,48 @@ export function GistPassphraseModal({ onUnlocked }: Props) {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-4 bg-base-200">
-            <div className="modal modal-open">
-                <div className="modal-box max-w-md">
-                    <h3 className="font-bold text-lg flex items-center gap-2">
-                        <span className="iconify" data-icon="material-symbols-light:lock" style={{ fontSize: '1.25rem' }}></span>
-                        Configuration chiffrée
-                    </h3>
-                    <p className="py-2 text-sm text-base-content/70">
+        <div className="min-h-screen flex items-center justify-center p-4 bg-muted">
+            <Dialog open={true}>
+                <DialogContent className="max-w-md" onInteractOutside={e => e.preventDefault()}>
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                            <span className="iconify" data-icon="material-symbols-light:lock" style={{ fontSize: '1.25rem' }}></span>
+                            Configuration chiffrée
+                        </DialogTitle>
+                    </DialogHeader>
+                    <p className="text-sm text-muted-foreground">
                         Cette configuration est protégée par un mot de passe. Entrez-le pour charger les données.
                     </p>
-                    <div className="form-control mt-4">
-                        <label className="label"><span className="label-text">Passphrase</span></label>
-                        <input
+                    <div className="space-y-2">
+                        <Label>Passphrase</Label>
+                        <Input
                             type="password"
                             value={passphrase}
                             onChange={e => setPassphrase(e.target.value)}
                             onKeyDown={e => e.key === 'Enter' && unlock()}
                             placeholder="68cd597ba5da05ceba24fb975c05384f"
-                            className="input input-bordered w-full font-mono"
+                            className="font-mono"
                             autoComplete="current-password"
                         />
                     </div>
                     {error && (
-                        <div className="alert alert-error mt-3">
-                            <span>{error}</span>
-                        </div>
+                        <Alert variant="destructive">
+                            <AlertDescription>{error}</AlertDescription>
+                        </Alert>
                     )}
-                    <div className="modal-action flex-wrap gap-2">
+                    <DialogFooter className="flex-wrap gap-2">
                         {!isHtmlSource && (
-                            <button className="btn btn-ghost btn-sm" onClick={useDefaultConfig}>
+                            <Button variant="ghost" size="sm" onClick={useDefaultConfig}>
                                 Utiliser la config par défaut
-                            </button>
+                            </Button>
                         )}
-                        <button className="btn btn-primary" onClick={unlock} disabled={loading}>
-                            {loading
-                                ? <span className="loading loading-spinner loading-sm"></span>
-                                : 'Déchiffrer'
-                            }
-                        </button>
-                    </div>
-                </div>
-                <form method="dialog" className="modal-backdrop">
-                    <button type="button">close</button>
-                </form>
-            </div>
+                        <Button onClick={unlock} disabled={loading}>
+                            {loading ? <Spinner className="h-4 w-4 mr-2" /> : null}
+                            Déchiffrer
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }
