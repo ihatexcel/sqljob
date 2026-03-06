@@ -983,7 +983,7 @@ export function buildKpiHtml(results: any[], parsed: ParsedColumnRoles): string 
     }
     for (const col of (roleMap['PERCENT'] || [])) {
         const val = _num(row[col.originalName]);
-        const color = val >= 75 ? 'text-success' : val >= 40 ? 'text-warning' : 'text-error';
+        const color = val >= 75 ? 'text-green-600 dark:text-green-400' : val >= 40 ? 'text-yellow-500 dark:text-yellow-400' : 'text-red-500 dark:text-red-400';
         parts.push(`<div class="stat">
             <div class="stat-title">${col.displayName !== 'PERCENT' ? col.displayName : ''}</div>
             <div class="stat-value ${color}">${val.toFixed(1)}%</div>
@@ -992,7 +992,7 @@ export function buildKpiHtml(results: any[], parsed: ParsedColumnRoles): string 
     for (const col of (roleMap['COMPARE'] || [])) {
         const val = _num(row[col.originalName]);
         const sign = val >= 0 ? '+' : '';
-        const color = val >= 0 ? 'text-success' : 'text-error';
+        const color = val >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400';
         const icon = val >= 0
             ? `<span style="font-size:0.6em">▲</span>`
             : `<span style="font-size:0.6em">▼</span>`;
@@ -1006,7 +1006,7 @@ export function buildKpiHtml(results: any[], parsed: ParsedColumnRoles): string 
         const isUp = val > 0;
         const isNeutral = val === 0;
         const arrow = isNeutral ? '→' : isUp ? '↑' : '↓';
-        const color = isNeutral ? 'text-warning' : isUp ? 'text-success' : 'text-error';
+        const color = isNeutral ? 'text-yellow-500 dark:text-yellow-400' : isUp ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400';
         const sign = isUp ? '+' : '';
         parts.push(`<div class="stat">
             <div class="stat-title">${col.displayName !== 'TREND' ? col.displayName : 'Tendance'}</div>
@@ -1014,7 +1014,7 @@ export function buildKpiHtml(results: any[], parsed: ParsedColumnRoles): string 
         </div>`);
     }
 
-    if (parts.length === 0) return '<div class="p-4 text-base-content/50 text-sm">Aucune donnée</div>';
+    if (parts.length === 0) return '<div class="p-4 text-muted-foreground text-sm">Aucune donnée</div>';
 
     return `<div class="stats shadow w-full flex-wrap">${parts.join('')}</div>`;
 }

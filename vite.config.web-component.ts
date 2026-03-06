@@ -24,8 +24,9 @@ export default defineConfig({
         assetsInlineLimit: 100_000_000,
         sourcemap: true,
         rollupOptions: {
-            // Tout est bundlé — aucune dépendance externe
-            external: [],
+            // Monaco editor externalisé — utilisé uniquement par RoomShell.CommandPalette
+            // que sqljob n'utilise pas. Réduit considérablement la taille du bundle CDN.
+            external: [/@sqlrooms\/monaco-editor/, /monaco-editor/],
             output: {
                 // CSS exportée en sqljob.css (fichier distinct du JS)
                 assetFileNames: 'sqljob[extname]',

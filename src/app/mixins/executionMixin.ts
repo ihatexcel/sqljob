@@ -769,12 +769,12 @@ export function executionMixin() {
                                 if (tHead && tHead.childNodes) {
                                     tHead.childNodes.forEach((tr, trIndex) => {
                                         tr.attributes = tr.attributes || {};
-                                        tr.attributes.class = "bg-base-200";
+                                        tr.attributes.class = "bg-muted";
                                         if (tr.childNodes) {
                                             tr.childNodes.forEach((th, thIndex) => {
                                                 th.attributes = th.attributes || {};
-                                                const stickyClass = thIndex === 0 ? " sticky left-0 z-10 bg-base-200" : "";
-                                                th.attributes.class = "text-base-content font-semibold text-sm px-3 py-2" + stickyClass;
+                                                const stickyClass = thIndex === 0 ? " sticky left-0 z-10 bg-muted" : "";
+                                                th.attributes.class = "text-foreground font-semibold text-sm px-3 py-2" + stickyClass;
                                             });
                                         }
                                     });
@@ -785,13 +785,13 @@ export function executionMixin() {
                                     tBody.childNodes.forEach((tr, trIndex) => {
                                         tr.attributes = tr.attributes || {};
                                         const isEven = trIndex % 2 === 0;
-                                        const rowClass = isEven ? "bg-base-100" : "bg-base-200/50";
-                                        tr.attributes.class = `${rowClass} hover:bg-base-300/50 transition-colors`;
+                                        const rowClass = isEven ? "bg-background" : "bg-muted/50";
+                                        tr.attributes.class = `${rowClass} hover:bg-muted/80 transition-colors`;
                                         if (tr.childNodes) {
                                             tr.childNodes.forEach((td, tdIndex) => {
                                                 td.attributes = td.attributes || {};
-                                                const stickyClass = tdIndex === 0 ? ` sticky left-0 z-10 ${isEven ? "bg-base-100" : "bg-base-200"}` : "";
-                                                td.attributes.class = "text-base-content text-sm px-3 py-2" + stickyClass;
+                                                const stickyClass = tdIndex === 0 ? ` sticky left-0 z-10 ${isEven ? "bg-background" : "bg-muted/50"}` : "";
+                                                td.attributes.class = "text-foreground text-sm px-3 py-2" + stickyClass;
                                             });
                                         }
                                     });
@@ -800,18 +800,18 @@ export function executionMixin() {
                                 // Ajouter ligne de filtres par colonne
                                 const filterHeaders = {
                                     nodeName: "TR",
-                                    attributes: { class: "bg-base-100 filter-row" },
+                                    attributes: { class: "bg-background filter-row" },
                                     childNodes: tHead.childNodes[0].childNodes.map(
                                         (_th, index) => ({
                                             nodeName: "TH",
                                             attributes: {
-                                                class: "px-2 py-1" + (index === 0 ? " sticky left-0 z-10 bg-base-100" : "")
+                                                class: "px-2 py-1" + (index === 0 ? " sticky left-0 z-10 bg-background" : "")
                                             },
                                             childNodes: [
                                                 {
                                                     nodeName: "INPUT",
                                                     attributes: {
-                                                        class: "input input-bordered input-xs w-full column-filter",
+                                                        class: "border border-input rounded px-1 py-0.5 text-xs bg-background w-full column-filter",
                                                         type: "search",
                                                         placeholder: "Filtrer...",
                                                         "data-column-index": index
