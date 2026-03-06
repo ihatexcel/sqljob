@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="fr">
+<!--Begin of sqljob notebook -->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iHateXcel - sqljob</title>
+    <link rel="icon" href="https://raw.githubusercontent.com/ihatexcel/sqljob/main/ihatexcel.ico" type="image/x-icon">
+    <!-- simple-datatables CSS chargé dynamiquement via CDNManager -->
+
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5/themes.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- iconify chargé localement via npm (évite le blocage COEP) -->
+
+    <!--
+    -->
+    <link rel="stylesheet" href="./dist-cdn/sqljob.css?v=20260306b">
+    <script type="module" src="./dist-cdn/sqljob.js?v=20260306b"></script>
+
+    <style>
+
+
+        /* Simple-datatables dark mode fix */
+        .datatable-wrapper,
+        .datatable-top,
+        .datatable-bottom,
+        .datatable-container {
+            background: transparent !important;
+        }
+
+        .datatable-input,
+        .datatable-selector {
+            background: oklch(var(--b1)) !important;
+            color: oklch(var(--bc)) !important;
+            border-color: oklch(var(--b3)) !important;
+        }
+
+        /* Container query pour le responsive */
+        .cell-container {
+            container-type: inline-size;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        @container (max-width: 350px) {
+            .cell-header-responsive .flex.gap-1.items-center>.join {
+                display: none;
+            }
+
+            .cell-header-responsive .flex.gap-1.items-center>.dropdown.hidden {
+                display: block;
+            }
+        }
+
+        /* Container query pour le responsive des groupes */
+        .flex-1.bg-base-100.border {
+            container-type: inline-size;
+        }
+
+        @container (max-width: 500px) {
+
+            /* Cacher les boutons join dans les headers de groupes */
+            .flex-1.bg-base-100.border .flex.items-center.justify-between>.join {
+                display: none;
+            }
+
+            /* Afficher le dropdown dans les headers de groupes */
+            .flex-1.bg-base-100.border .flex.items-center.justify-between>.dropdown.hidden {
+                display: block;
+            }
+        }
+
+        /* Empêcher DaisyUI d'écraser les styles EasyMDE */
+        .editor-preview-active *:not(h1):not(h2):not(h3):not(h4):not(h5):not(h6),
+        .editor-preview *:not(h1):not(h2):not(h3):not(h4):not(h5):not(h6),
+        .editor-preview-side *:not(h1):not(h2):not(h3):not(h4):not(h5):not(h6),
+        .editor-preview-full *:not(h1):not(h2):not(h3):not(h4):not(h5):not(h6) {
+            all: revert;
+        }
+
+        .editor-preview-full {
+            overflow: visible;
+        }
+
+        .editor-preview {
+            background-color: var(--color-base-100) !important;
+        }
+
+        .EasyMDEContainer .editor-preview-active~.CodeMirror {
+            display: none;
+        }
+
+        /* EasyMDE mode client : pas de bordure + masquer le glitch au chargement */
+        .easymde-client {
+            opacity: 0;
+            transition: opacity 0.15s ease-in;
+        }
+        .easymde-client.easymde-ready {
+            opacity: 1;
+        }
+        .easymde-client .EasyMDEContainer,
+        .easymde-client .CodeMirror,
+        .easymde-client .cm-editor,
+        .easymde-client .editor-preview,
+        .easymde-client .editor-preview-full {
+            border: none !important;
+        }
+        /* Masquer la scrollbar verticale en mode client */
+        .easymde-client .CodeMirror,
+        .easymde-client .CodeMirror-scroll,
+        .easymde-client .cm-editor,
+        .easymde-client .cm-scroller,
+        .easymde-client .editor-preview,
+        .easymde-client .editor-preview-full {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .easymde-client .CodeMirror::-webkit-scrollbar,
+        .easymde-client .CodeMirror-scroll::-webkit-scrollbar,
+        .easymde-client .cm-editor::-webkit-scrollbar,
+        .easymde-client .cm-scroller::-webkit-scrollbar,
+        .easymde-client .editor-preview::-webkit-scrollbar,
+        .easymde-client .editor-preview-full::-webkit-scrollbar {
+            display: none;
+        }
+
+
+
+        /* Hauteur cellule : variables CSS + max/min natifs (px et % combinables) */
+        .cell-body-has-height {
+            min-height: max(var(--cell-min-h-px, 0), var(--cell-min-h-pct, 0%));
+            max-height: min(var(--cell-max-h-px, 9999px), var(--cell-max-h-pct, 9999px));
+        }
+
+        /* Perspective: remplir tout l'espace disponible (quand hasCellHeight) */
+        .cell-body .perspective-fill-height perspective-viewer {
+            flex: 1;
+            min-height: 0;
+            min-width: 0;
+        }
+
+        /* Markdown/EasyMDE : remplir la hauteur quand cell-body a min/max height */
+        .cell-body .flex-1.min-h-0 .EasyMDEContainer {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        .cell-body .flex-1.min-h-0 .EasyMDEContainer .CodeMirror,
+        .cell-body .flex-1.min-h-0 .EasyMDEContainer .cm-editor,
+        .cell-body .flex-1.min-h-0 .EasyMDEContainer .editor-preview,
+        .cell-body .flex-1.min-h-0 .EasyMDEContainer .editor-preview-full {
+            flex: 1;
+            min-height: 0;
+        }
+
+        /* Styles pour les titres - doit venir APRÈS all: revert */
+        .editor-preview-active h1,
+        .editor-preview h1,
+        .editor-preview-side h1,
+        .editor-preview-full h1 {
+            color: var(--color-primary) !important;
+            font-size: 2.25rem;
+            /* équivalent text-4xl */
+            line-height: 2.5rem;
+            font-weight: 700;
+        }
+
+        .editor-preview-active h2,
+        .editor-preview h2,
+        .editor-preview-side h2,
+        .editor-preview-full h2 {
+            color: var(--color-secondary) !important;
+            font-size: 1.875rem;
+            /* équivalent text-3xl */
+            line-height: 2.25rem;
+            font-weight: 600;
+        }
+
+        /* CodeMirror SQL Editor Styles */
+        .codemirror-sql-container {
+            width: 100%;
+            min-height: 20px;
+        }
+
+        .codemirror-sql-container .cm-editor {
+            background: oklch(var(--b1));
+        }
+
+        .codemirror-sql-container .cm-gutters {
+            background: oklch(var(--b2));
+            border-right: 1px solid oklch(var(--b3));
+        }
+
+        .codemirror-sql-container .cm-activeLineGutter {
+            background: oklch(var(--b3));
+        }
+
+        .codemirror-sql-container .cm-line {
+            color: oklch(var(--bc));
+        }
+
+        /* Tooltips marimo-sql */
+        .cm-tooltip {
+            background: oklch(var(--b2)) !important;
+            border: 1px solid oklch(var(--b3)) !important;
+            border-radius: 0.5rem !important;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1) !important;
+        }
+
+        .cm-tooltip-autocomplete {
+            background: oklch(var(--b2)) !important;
+        }
+
+        .cm-tooltip-autocomplete>ul>li {
+            color: oklch(var(--bc)) !important;
+        }
+
+        .cm-tooltip-autocomplete>ul>li[aria-selected] {
+            background: oklch(var(--p) / 0.2) !important;
+            color: oklch(var(--bc)) !important;
+        }
+
+        /* Cursor */
+        .codemirror-sql-container .cm-cursor {
+            border-left-color: oklch(var(--p)) !important;
+        }
+
+        .codemirror-sql-container div::selection {
+            color: var(--color-secondary) !important;
+            background-color: var(--color-base-300) !important;
+        }
+    </style>
+
+</head>
+
+<body class="min-h-screen font-sans bg-base-100 text-base-content transition-colors duration-200">
+    <sqljob-app></sqljob-app>
+</body>
+
+</html>
