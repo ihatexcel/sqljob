@@ -91,11 +91,16 @@ export function helpersMixin() {
                         this.$nextTick(() => setTimeout(() => this.refreshMarkdownCellsForPage(0), 300));
                         // Rafraîchir le panneau Tables DuckDB après l'exécution initiale
                         await this.refreshDuckdbTables();
-                        // Initialiser le connecteur sqlrooms (db.initialize → refreshTableSchemas)
-                        // pour que SqlEditorModal voie les tables dans son panneau de schéma
-                        try { await this.db.initialize(); } catch { /* ignore si déjà init */ }
+                        // Appel room.initialize() comme createRoomStore le fait dans le mosaic example
+                        // → db.initialize() → refreshTableSchemas() → peuple db.schemaTrees pour SqlEditorModal
+                        try {
+                            console.log('[sqljob] Calling room.initialize()…');
+                            await this.room.initialize();
+                            console.log('[sqljob] room.initialize() done. schemaTrees:', this.db.schemaTrees);
+                        } catch (err) {
+                            console.warn('[sqljob] room.initialize() error:', err);
+                        }
                         // Signaler à RoomShell que l'init est terminée
-                        // (sans ça room.initialized reste false → bouton toggle panneau disabled)
                         this.room = { ...this.room, initialized: true };
                     } catch (error) {
                         this.setStatus('Erreur d\'initialisation: ' + error.message, 'error');
