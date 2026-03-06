@@ -285,6 +285,7 @@ function buildInitialState() {
         ],
 
         _tables: {},
+        _duckdbTables: {} as Record<string, { rowCount: number, columns: string[] }>,
         _rev: 0,  // compteur de version pour forcer les re-renders
     }
 }
@@ -352,6 +353,26 @@ export const useNotebookStore = create<any>((set, get, api) => {
         ...roomShellState,
         ...initialState,
         ...wrappedActions,
+
+        // Override addRoomFile : redirige vers DuckDBManager au lieu du connecteur sqlrooms
+        // pour partager une seule instance DuckDB avec toutes les cells sqljob.
+        addRoomFile: async (file: File, tableName: string) => {
+            const ext = (file.name.split('.').pop() ?? '').toLowerCase();
+            await DuckDBManager.registerFile(file.name, file);
+            let query: string;
+            if (ext === 'csv' || ext === 'tsv') {
+                query = `CREATE OR REPLACE TABLE "${tableName}" AS SELECT * FROM read_csv('${file.name}', HEADER = true, AUTO_DETECT = true, SAMPLE_SIZE = -1)`;
+            } else if (ext === 'parquet') {
+                query = `CREATE OR REPLACE TABLE "${tableName}" AS SELECT * FROM read_parquet('${file.name}')`;
+            } else if (ext === 'json') {
+                query = `CREATE OR REPLACE TABLE "${tableName}" AS SELECT * FROM read_json_auto('${file.name}')`;
+            } else {
+                query = `CREATE OR REPLACE TABLE "${tableName}" AS SELECT * FROM '${file.name}'`;
+            }
+            await DuckDBManager.executeQuery(query);
+            const proxy = createThisProxy(get, set);
+            await proxy.refreshDuckdbTables();
+        },
 
         // Overrides de méthodes mixin qui font des mutations profondes (this.X.Y = val)
         // que le proxy ne peut pas intercepter — on remplace par des set() Zustand directs.
