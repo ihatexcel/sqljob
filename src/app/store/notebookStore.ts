@@ -8,8 +8,14 @@
  * - Un shim Alpine minimal (window.Alpine) permet aux mixins d'utiliser
  *   Alpine.store('confirmModal') sans modification
  * - forceUpdate() déclenche un re-render React après des mutations profondes
+ * - createRoomShellSlice ajoute le système de layout mosaic (RoomShell)
  */
 import { create } from 'zustand'
+import { createRoomShellSlice } from '@sqlrooms/room-shell'
+import { DatabaseIcon } from 'lucide-react'
+// Panel components (lazy import safe — utilisés uniquement au rendu, pas à l'évaluation)
+import { NotebookPanel } from '../components/NotebookPanel'
+import { DataSourcesPanel } from '../components/DataSourcesPanel'
 import '@iconify/iconify'
 import { pagesMixin } from '../mixins/pagesMixin'
 import { helpersMixin } from '../mixins/helpersMixin'
@@ -284,7 +290,37 @@ function buildInitialState() {
 }
 
 // ─── Store Zustand ────────────────────────────────────────────────────────────
-export const useNotebookStore = create<any>((set, get) => {
+export const useNotebookStore = create<any>((set, get, api) => {
+    // === Slice RoomShell : layout mosaic + panels ===
+    const roomShellState = createRoomShellSlice({
+        config: { title: 'SQLjob', dataSources: [] },
+        layout: {
+            config: {
+                type: 'mosaic',
+                nodes: {
+                    direction: 'row',
+                    splitPercentage: 20,
+                    first: 'data',
+                    second: 'main',
+                },
+            },
+            panels: {
+                main: {
+                    title: 'Notebook',
+                    icon: () => null,
+                    component: NotebookPanel,
+                    placement: 'main',
+                },
+                data: {
+                    title: 'Sources',
+                    icon: DatabaseIcon,
+                    component: DataSourcesPanel,
+                    placement: 'sidebar',
+                },
+            },
+        },
+    })(set, get, api)
+
     const initialState = buildInitialState()
 
     // Fusionner toutes les méthodes des mixins
@@ -313,6 +349,7 @@ export const useNotebookStore = create<any>((set, get) => {
     }
 
     return {
+        ...roomShellState,
         ...initialState,
         ...wrappedActions,
 

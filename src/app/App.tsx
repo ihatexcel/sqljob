@@ -14,7 +14,7 @@ import { Spinner } from '@sqlrooms/ui'
 import { ConfigManager } from '../lib/ConfigManager'
 import { useNotebookStore, exposeGlobals } from './store/notebookStore'
 import { useTemplateModal } from './store/uiStores'
-import { NotebookLayout } from './components/NotebookLayout'
+import { Room } from './room'
 import { GistPassphraseModal } from './components/modals/GistPassphraseModal'
 
 type AppState = 'loading' | 'passphrase' | 'ready'
@@ -79,7 +79,7 @@ function AppContent() {
         )
     }
 
-    return <NotebookLayout />
+    return <Room />
 }
 
 export function App() {
