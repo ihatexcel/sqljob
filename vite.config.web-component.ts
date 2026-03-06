@@ -1,12 +1,21 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
+import path from 'path'
 
 export default defineConfig({
     plugins: [
         react(),
         tailwindcss(),
     ],
+
+    resolve: {
+        alias: {
+            // Replace @sqlrooms/monaco-editor with a no-op stub in the CDN build.
+            // Monaco is too large to bundle and not used by sqljob itself.
+            '@sqlrooms/monaco-editor': path.resolve(__dirname, 'src/stubs/monaco-editor-stub.ts'),
+        },
+    },
 
     define: {
         'process.env.NODE_ENV': '"production"',
@@ -24,9 +33,9 @@ export default defineConfig({
         assetsInlineLimit: 100_000_000,
         sourcemap: true,
         rollupOptions: {
-            // Monaco editor externalisé — utilisé uniquement par RoomShell.CommandPalette
-            // que sqljob n'utilise pas. Réduit considérablement la taille du bundle CDN.
-            external: [/@sqlrooms\/monaco-editor/, /monaco-editor/],
+            // monaco-editor (the underlying lib) reste externalisé car il est très lourd
+            // et n'est pas utilisé directement par sqljob.
+            external: [/^monaco-editor/],
             output: {
                 // CSS exportée en sqljob.css (fichier distinct du JS)
                 assetFileNames: 'sqljob[extname]',
