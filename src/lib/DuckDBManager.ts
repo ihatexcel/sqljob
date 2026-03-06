@@ -219,34 +219,27 @@
              *  pas DOUBLE. Les valeurs numériques sont converties via _num() côté parser.
              *  Idempotent : utilise IF NOT EXISTS. */
             static async initChartTypes() {
-                console.log('[initChartTypes] called — initialized:', DuckDBManager._chartTypesInitialized, '| engine:', DuckDBManager.currentEngine, '| conn:', !!DuckDBManager.connInstance);
                 if (DuckDBManager._chartTypesInitialized) {
-                    console.log('[initChartTypes] already done, skip');
                     return;
                 }
                 if (DuckDBManager.currentEngine === 'ducklings') {
                     // Ducklings ne supporte pas CREATE TYPE - on skip silencieusement
                     DuckDBManager._chartTypesInitialized = true;
-                    console.log('[initChartTypes] ducklings engine, skipped');
                     return;
                 }
                 if (!DuckDBManager.connInstance) {
-                    console.warn('[initChartTypes] connInstance is null, cannot create types');
                     return;
                 }
                 // conn.query() n'accepte qu'une seule instruction par appel dans duckdb-wasm
-                console.log('[initChartTypes] creating', DuckDBManager.CHART_TYPE_NAMES.length, 'types...');
                 for (const t of DuckDBManager.CHART_TYPE_NAMES) {
                     try {
                         await DuckDBManager.connInstance.query(`CREATE TYPE IF NOT EXISTS ${t} AS VARCHAR;`);
-                        console.log('[initChartTypes] OK:', t);
                     } catch (err) {
                         console.error('[initChartTypes] FAILED on', t, ':', err?.message ?? err);
                         throw err;
                     }
                 }
                 DuckDBManager._chartTypesInitialized = true;
-                console.log('[initChartTypes] all types created successfully');
             }
 
             /** Pour Ducklings : extrait les casts ::ROLENAME du SQL et retourne le SQL nettoyé

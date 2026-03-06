@@ -1590,7 +1590,6 @@ export function executionMixin() {
 
                         this.setStatus('Exécution de la requête...', 'loading');
                         const { rows, columnTypes } = await DuckDBManager.executeQueryWithSchema(finalQuery);
-                        console.log('[EChart] rows:', rows.length, '| columnTypes:', columnTypes);
 
                         cell._results = rows;
                         cell._columnTypes = columnTypes;
@@ -1598,7 +1597,6 @@ export function executionMixin() {
                         // Construire l'option ECharts et la stocker sur la cellule.
                         // Le composant React EChartBody surveille cell._echartsOption via useEffect.
                         const parsed = EChartSqlParser.parseColumnRoles(rows, columnTypes);
-                        console.log('[EChart] parsed chartType:', parsed.chartType, '| roles:', parsed.roles);
                         if (parsed.chartType === 'kpi') {
                             cell._kpiHtml = EChartSqlParser.buildKpiHtml(rows, parsed);
                             cell._echartsOption = null;
@@ -1606,7 +1604,6 @@ export function executionMixin() {
                             cell._echartsOption = EChartSqlParser.buildEChartsOption(rows, parsed) ?? null;
                             cell._kpiHtml = null;
                         }
-                        console.log('[EChart] _echartsOption set:', !!cell._echartsOption);
                         cell._echartReady = true;
                         this.forceUpdate();
 
