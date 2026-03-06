@@ -286,6 +286,16 @@ export function filesMixin() {
                         cell._pendingFileLoad = false;
                         if (!cell._parseLevels?.length) cell._parseLevels = [{ level: 'final', innerQuery: loadQuery, replacement: null }]; // xls ou requête directe sans template
                         this.setStatus(`${cell.name} chargé!`, 'success');
+                        // Référencer le fichier dans _roomFiles pour l'affichage dans DataSourcesPanel
+                        const existing = this._roomFiles ?? [];
+                        if (!existing.some((f) => f.tableName === tableName)) {
+                            this._roomFiles = [...existing, {
+                                name: file.name,
+                                tableName,
+                                size: file.size ?? 0,
+                                source: 'source-cell',
+                            }];
+                        }
                         await this.refreshDuckdbTables();
 
                         // Exécuter les cellules suivantes (sauf pendant l'init : runAllGroups s'en charge)

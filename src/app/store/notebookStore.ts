@@ -285,7 +285,8 @@ function buildInitialState() {
         ],
 
         _tables: {},
-        _duckdbTables: {} as Record<string, { rowCount: number, columns: string[] }>,
+        _duckdbTables: {} as Record<string, { rowCount: number, columns: {name: string, type: string}[] }>,
+        _roomFiles: [] as Array<{name: string, tableName: string, size: number, source: 'dropzone' | 'source-cell'}>,
         _rev: 0,  // compteur de version pour forcer les re-renders
     }
 }
@@ -365,6 +366,12 @@ export const useNotebookStore = create<any>((set, get, api) => {
                 query = `CREATE OR REPLACE TABLE "${tableName}" AS SELECT * FROM '${file.name}'`;
             }
             await DuckDBManager.executeQuery(query);
+            set((s: any) => {
+                const existing = s._roomFiles ?? [];
+                const alreadyPresent = existing.some((f: any) => f.tableName === tableName);
+                if (alreadyPresent) return {};
+                return { _roomFiles: [...existing, { name: file.name, tableName, size: file.size, source: 'dropzone' }] };
+            });
             const proxy = createThisProxy(get, set);
             await proxy.refreshDuckdbTables();
         },

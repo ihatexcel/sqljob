@@ -51,7 +51,7 @@ export function helpersMixin() {
                 async refreshDuckdbTables() {
                     try {
                         const tableRows = await DuckDBManager.executeQuery(`SHOW TABLES`);
-                        const result: Record<string, { rowCount: number, columns: string[] }> = {};
+                        const result: Record<string, { rowCount: number, columns: {name: string, type: string}[] }> = {};
                         for (const row of tableRows) {
                             const name = row.name ?? row.table_name;
                             if (!name) continue;
@@ -60,7 +60,7 @@ export function helpersMixin() {
                                 const descRows = await DuckDBManager.executeQuery(`DESCRIBE "${name}"`);
                                 result[name] = {
                                     rowCount: Number(countRows[0]?.cnt ?? 0),
-                                    columns: descRows.map((r: any) => r.column_name),
+                                    columns: descRows.map((r: any) => ({ name: r.column_name, type: r.column_type })),
                                 };
                             } catch {
                                 result[name] = { rowCount: 0, columns: [] };
