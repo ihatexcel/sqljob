@@ -297,6 +297,7 @@ export function filesMixin() {
                             }];
                         }
                         await this.refreshDuckdbTables();
+                        try { await this.db.refreshTableSchemas(); } catch { /* ignore */ }
 
                         // Exécuter les cellules suivantes (sauf pendant l'init : runAllGroups s'en charge)
                         if (!skipRunNextCells) {
