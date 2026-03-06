@@ -60453,13 +60453,12 @@ function dJe({ cell: n, path: t, cellIndex: s }) {
   }))), b = tr.useRef(null);
   tr.useEffect(() => {
     var e;
-    console.log("[EChartBody] useEffect fired | _rev:", r, "| _echartsOption:", !!n._echartsOption, "| chartRef:", !!b.current), !(!b.current || !n._echartsOption) && ((e = BA.loadECharts) == null || e.call(BA).then(() => {
+    !b.current || !n._echartsOption || (e = BA.loadECharts) == null || e.call(BA).then(() => {
       const K = window.echarts;
       if (!K || !b.current) return;
-      console.log("[EChartBody] init ECharts on", b.current);
       let ne = K.getInstanceByDom(b.current) || K.init(b.current);
       ne.clear(), ne.setOption(n._echartsOption);
-    }));
+    });
   }, [r, n._echartsOption]);
   const w = a(n);
   return /* @__PURE__ */ Qe.jsxs("div", { className: w ? "flex-1 min-h-0 flex flex-col" : "", children: [
