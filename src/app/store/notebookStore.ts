@@ -12,6 +12,7 @@
  */
 import { create } from 'zustand'
 import { createRoomShellSlice } from '@sqlrooms/room-shell'
+import { createBaseDuckDbConnector } from '@sqlrooms/duckdb-core'
 import { createSqlEditorSlice, createDefaultSqlEditorConfig } from '@sqlrooms/sql-editor'
 import { DatabaseIcon } from 'lucide-react'
 // Panel components (lazy import safe — utilisés uniquement au rendu, pas à l'évaluation)
@@ -292,6 +293,21 @@ function buildInitialState() {
     }
 }
 
+// ─── Connecteur DuckDB ponté vers DuckDBManager ───────────────────────────────
+// Permet à SqlEditorModal (et state.db) d'utiliser la même instance DuckDB
+// que les cells sqljob, sans dupliquer la connexion.
+const duckdbManagerConnector = createBaseDuckDbConnector(
+    { dbPath: ':memory:' },
+    {
+        initializeInternal: async () => {
+            // DuckDB est déjà initialisé par helpersMixin.init() — rien à faire
+        },
+        executeQueryInternal: async (sql: string) => {
+            return DuckDBManager.executeQueryArrow(sql)
+        },
+    }
+)
+
 // ─── Store Zustand ────────────────────────────────────────────────────────────
 export const useNotebookStore = create<any>((set, get, api) => {
     // === Slice SqlEditor ===
@@ -300,6 +316,7 @@ export const useNotebookStore = create<any>((set, get, api) => {
     // === Slice RoomShell : layout mosaic + panels ===
     const roomShellState = createRoomShellSlice({
         config: { title: 'SQLjob', dataSources: [] },
+        connector: duckdbManagerConnector,
         layout: {
             config: {
                 type: 'mosaic',
@@ -379,6 +396,7 @@ export const useNotebookStore = create<any>((set, get, api) => {
             });
             const proxy = createThisProxy(get, set);
             await proxy.refreshDuckdbTables();
+            try { await get().db.refreshTableSchemas(); } catch { /* ignore */ }
         },
 
         // Overrides de méthodes mixin qui font des mutations profondes (this.X.Y = val)
