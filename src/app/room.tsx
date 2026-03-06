@@ -8,9 +8,11 @@
  * - Modals globaux (portals → document.body, indépendants du layout)
  */
 import { RoomShell } from '@sqlrooms/room-shell'
-import { ThemeSwitch, Button } from '@sqlrooms/ui'
+import { ThemeSwitch, Button, useDisclosure } from '@sqlrooms/ui'
 import { useShallow } from 'zustand/react/shallow'
 import { useNotebookStore } from './store/notebookStore'
+import { SqlEditorModal } from '@sqlrooms/sql-editor'
+import { TerminalIcon } from 'lucide-react'
 import { ConfirmModal } from './components/modals/ConfirmModal'
 import { TemplateModal } from './components/modals/TemplateModal'
 import { AddGroupModal, InsertGroupModal, InsertCellModal, AddCellToGroupModal } from './components/modals/SimpleModals'
@@ -63,14 +65,26 @@ function SidebarControls() {
 }
 
 export function Room() {
+    const sqlEditorDisclosure = useDisclosure()
+
     return (
         <>
             <RoomShell roomStore={useNotebookStore} className="h-screen w-screen">
                 <RoomShell.Sidebar>
+                    <RoomShell.SidebarButton
+                        title="SQL Editor"
+                        onClick={sqlEditorDisclosure.onToggle}
+                        isSelected={sqlEditorDisclosure.isOpen}
+                        icon={TerminalIcon}
+                    />
                     <SidebarControls />
                 </RoomShell.Sidebar>
                 <RoomShell.LayoutComposer tileClassName="p-0" />
                 <RoomShell.LoadingProgress />
+                <SqlEditorModal
+                    isOpen={sqlEditorDisclosure.isOpen}
+                    onClose={sqlEditorDisclosure.onClose}
+                />
             </RoomShell>
 
             {/* Modals globaux — portals vers document.body, indépendants du layout */}
