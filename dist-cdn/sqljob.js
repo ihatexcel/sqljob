@@ -65772,7 +65772,7 @@ function prt() {
     },
     async init() {
       try {
-        await Mw.initDuckDB((n, t) => this.setStatus(n, t)), this.ensureAllCellsHaveNames(), await this.loadEmbeddedFiles(), await this.loadPendingSourceFiles(), await this.evaluateAllGroupIfQueries(), await this.runAllGroups(), this.pages[0] && this._pagesInitialized.add(this.pages[0]._id), this.$nextTick(() => setTimeout(() => this.refreshMarkdownCellsForPage(0), 300)), await this.refreshDuckdbTables();
+        await Mw.initDuckDB((n, t) => this.setStatus(n, t)), this.ensureAllCellsHaveNames(), await this.loadEmbeddedFiles(), await this.loadPendingSourceFiles(), await this.evaluateAllGroupIfQueries(), await this.runAllGroups(), this.pages[0] && this._pagesInitialized.add(this.pages[0]._id), this.$nextTick(() => setTimeout(() => this.refreshMarkdownCellsForPage(0), 300)), await this.refreshDuckdbTables(), this.room = { ...this.room, initialized: !0 };
       } catch (n) {
         this.setStatus("Erreur d'initialisation: " + n.message, "error");
       } finally {
