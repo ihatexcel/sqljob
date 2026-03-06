@@ -1,10 +1,4 @@
-@import "tailwindcss";
-@plugin "daisyui" {
-    themes: light, dark, cupcake, bumblebee, emerald, corporate, synthwave, retro,
-            cyberpunk, valentine, halloween, garden, forest, aqua, lofi, pastel,
-            fantasy, wireframe, black, luxury, dracula, cmyk, autumn, business,
-            acid, lemonade, night, coffee, winter, dim, nord, sunset;
-}
+@import "@sqlrooms/ui/tailwind-preset.css";
 
 /* Alpine.js x-cloak pour cacher les éléments non initialisés */
 [x-cloak] {
@@ -21,9 +15,9 @@
 
 .datatable-input,
 .datatable-selector {
-    background: oklch(var(--b1)) !important;
-    color: oklch(var(--bc)) !important;
-    border-color: oklch(var(--b3)) !important;
+    background: hsl(var(--background)) !important;
+    color: hsl(var(--foreground)) !important;
+    border-color: hsl(var(--border)) !important;
 }
 
 /* Container query pour le responsive */
@@ -45,19 +39,19 @@
 }
 
 /* Container query pour le responsive des groupes */
-.flex-1.bg-base-100.border {
+.group-container-responsive {
     container-type: inline-size;
 }
 
 @container (max-width: 500px) {
 
     /* Cacher les boutons join dans les headers de groupes */
-    .flex-1.bg-base-100.border .flex.items-center.justify-between>.join {
+    .group-container-responsive .flex.items-center.justify-between>.join {
         display: none;
     }
 
     /* Afficher le dropdown dans les headers de groupes */
-    .flex-1.bg-base-100.border .flex.items-center.justify-between>.dropdown.hidden {
+    .group-container-responsive .flex.items-center.justify-between>.dropdown.hidden {
         display: block;
     }
 }
@@ -75,7 +69,7 @@
 }
 
 .editor-preview {
-    background-color: var(--color-base-100) !important;
+    background-color: hsl(var(--background)) !important;
 }
 
 .EasyMDEContainer .editor-preview-active~.CodeMirror {
@@ -149,7 +143,7 @@
 .editor-preview h1,
 .editor-preview-side h1,
 .editor-preview-full h1 {
-    color: var(--color-primary) !important;
+    color: hsl(var(--primary)) !important;
     font-size: 2.25rem;
     line-height: 2.5rem;
     font-weight: 700;
@@ -159,7 +153,7 @@
 .editor-preview h2,
 .editor-preview-side h2,
 .editor-preview-full h2 {
-    color: var(--color-secondary) !important;
+    color: hsl(var(--secondary-foreground)) !important;
     font-size: 1.875rem;
     line-height: 2.25rem;
     font-weight: 600;
@@ -172,49 +166,49 @@
 }
 
 .codemirror-sql-container .cm-editor {
-    background: oklch(var(--b1));
+    background: hsl(var(--background));
 }
 
 .codemirror-sql-container .cm-gutters {
-    background: oklch(var(--b2));
-    border-right: 1px solid oklch(var(--b3));
+    background: hsl(var(--muted));
+    border-right: 1px solid hsl(var(--border));
 }
 
 .codemirror-sql-container .cm-activeLineGutter {
-    background: oklch(var(--b3));
+    background: hsl(var(--accent));
 }
 
 .codemirror-sql-container .cm-line {
-    color: oklch(var(--bc));
+    color: hsl(var(--foreground));
 }
 
 /* Tooltips marimo-sql */
 .cm-tooltip {
-    background: oklch(var(--b2)) !important;
-    border: 1px solid oklch(var(--b3)) !important;
+    background: hsl(var(--popover)) !important;
+    border: 1px solid hsl(var(--border)) !important;
     border-radius: 0.5rem !important;
     box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1) !important;
 }
 
 .cm-tooltip-autocomplete {
-    background: oklch(var(--b2)) !important;
+    background: hsl(var(--popover)) !important;
 }
 
 .cm-tooltip-autocomplete>ul>li {
-    color: oklch(var(--bc)) !important;
+    color: hsl(var(--popover-foreground)) !important;
 }
 
 .cm-tooltip-autocomplete>ul>li[aria-selected] {
-    background: oklch(var(--p) / 0.2) !important;
-    color: oklch(var(--bc)) !important;
+    background: hsl(var(--primary) / 0.2) !important;
+    color: hsl(var(--popover-foreground)) !important;
 }
 
 /* Cursor */
 .codemirror-sql-container .cm-cursor {
-    border-left-color: oklch(var(--p)) !important;
+    border-left-color: hsl(var(--primary)) !important;
 }
 
 .codemirror-sql-container div::selection {
-    color: var(--color-secondary) !important;
-    background-color: var(--color-base-300) !important;
+    color: hsl(var(--foreground)) !important;
+    background-color: hsl(var(--muted)) !important;
 }

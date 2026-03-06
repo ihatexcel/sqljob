@@ -181,7 +181,10 @@ function buildInitialState() {
     const savedTheme = typeof localStorage !== 'undefined' ? localStorage.getItem('sqljob-theme') : null
     const currentTheme = config.ui?.theme || savedTheme || 'light'
     if (typeof document !== 'undefined') {
-        document.documentElement.setAttribute('data-theme', currentTheme)
+        const theme = currentTheme === 'dark' ? 'dark' : 'light'
+        document.documentElement.classList.remove('light', 'dark')
+        document.documentElement.classList.add(theme)
+        localStorage.setItem('sqljob-theme', theme)
     }
     const savedDbEngine = typeof localStorage !== 'undefined' ? localStorage.getItem('sqljob-dbEngine') : null
     const initialDbEngine = config.ui?.dbEngine || savedDbEngine || 'duckdb-wasm'
@@ -195,14 +198,7 @@ function buildInitialState() {
         statusType: '',
         devMode,
         showLayout,
-        availableThemes: [
-            'light', 'dark', 'cupcake', 'bumblebee', 'emerald', 'corporate',
-            'synthwave', 'retro', 'cyberpunk', 'valentine', 'halloween',
-            'garden', 'forest', 'aqua', 'lofi', 'pastel', 'fantasy',
-            'wireframe', 'black', 'luxury', 'dracula', 'cmyk', 'autumn',
-            'business', 'acid', 'lemonade', 'night', 'coffee', 'winter',
-            'dim', 'nord', 'sunset'
-        ],
+        availableThemes: ['light', 'dark'],
         currentTheme,
         dbEngine: initialDbEngine,
         showDbEngineModal: false,

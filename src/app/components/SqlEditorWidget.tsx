@@ -17,12 +17,12 @@ import { useTemplateModal } from '../store/uiStores'
 import { ConfigManager } from '../../lib/ConfigManager'
 import { CELL_TYPE_SCHEMAS } from '../../lib/cellTypeSchemas'
 
-// ─── Thème CodeMirror adapté DaisyUI ─────────────────────────────────────────
+// ─── Thème CodeMirror ─────────────────────────────────────────────────────────
 const daisyUITheme = EditorView.theme({
     '&': {
         fontSize: '14px',
         minHeight: '20px',
-        border: '1px solid oklch(var(--b3, #d1d5db))',
+        border: '1px solid hsl(var(--border))',
         borderRadius: '0.5rem',
     },
     '.cm-scroller': {
@@ -34,7 +34,7 @@ const daisyUITheme = EditorView.theme({
     '.cm-content': { padding: '0.5rem 0' },
     '.cm-gutters': { borderRadius: '0.5rem 0 0 0.5rem' },
     '&.cm-focused': {
-        outline: '2px solid oklch(var(--p, #570df8))',
+        outline: '2px solid hsl(var(--primary))',
         outlineOffset: '-1px',
     },
 })
@@ -42,23 +42,23 @@ const daisyUITheme = EditorView.theme({
 // ─── Parsed query view ────────────────────────────────────────────────────────
 function ParsedQueryView({ cell, parseLevelsProp }: any) {
     const levels = cell[parseLevelsProp] || []
-    if (levels.length === 0) return <div className="p-3 text-sm text-base-content/50">Aucune requête parsée</div>
+    if (levels.length === 0) return <div className="p-3 text-sm text-muted-foreground/50">Aucune requête parsée</div>
     return (
         <div>
             {levels.map((parseLevel: any, idx: number) => (
                 <div key={idx} className="relative w-full" style={{ marginBottom: '0.75rem' }}>
                     <div className="flex justify-between items-center mb-2">
-                        <span className="text-xs text-base-content/70 flex items-center gap-2">
-                            <span className="badge badge-soft badge-primary">
+                        <span className="text-xs text-muted-foreground flex items-center gap-2">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-primary/10 text-primary">
                                 {parseLevel.level === 'final' ? 'Final' : `Niveau ${parseLevel.level}`}
                             </span>
                         </span>
                     </div>
-                    <div className="w-full min-h-20 max-h-72 p-3 bg-base-200 border border-primary rounded-lg text-base-content font-mono text-sm overflow-auto whitespace-pre-wrap break-words">
+                    <div className="w-full min-h-20 max-h-72 p-3 bg-muted border border-primary rounded-lg text-foreground font-mono text-sm overflow-auto whitespace-pre-wrap break-words">
                         {parseLevel.innerQuery || ''}
                     </div>
                     {parseLevel.replacement && (
-                        <div style={{ marginTop: '0.1rem', padding: '0.5rem', borderLeft: '3px solid oklch(var(--su))' }} className="font-mono text-sm bg-success/10">
+                        <div style={{ marginTop: '0.1rem', padding: '0.5rem', borderLeft: '3px solid hsl(var(--chart-2))' }} className="font-mono text-sm bg-green-500/10">
                             <strong>→ Résultat:</strong> {parseLevel.replacement}
                         </div>
                     )}
@@ -130,7 +130,7 @@ export function SqlEditorWidget({
             }
         }
 
-        const isDark = document.documentElement.getAttribute('data-theme')?.includes('dark') ||
+        const isDark = document.documentElement.classList.contains('dark') ||
             window.matchMedia('(prefers-color-scheme: dark)').matches
 
         const extensions: any[] = [
@@ -206,27 +206,27 @@ export function SqlEditorWidget({
             <div className="relative w-full">
                 {/* Toolbar */}
                 <div className="flex justify-between items-center mb-2">
-                    <span className="text-xs text-base-content/70 flex items-center gap-2">
-                        <span className={`badge badge-soft ${finalBadgeClass} flex items-center gap-1`}>
+                    <span className="text-xs text-muted-foreground flex items-center gap-2">
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs ${finalBadgeClass === "badge-warning" ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-200" : finalBadgeClass === "badge-ghost" ? "bg-muted text-muted-foreground" : "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200"}`}>
                             <span className="iconify" data-icon={iconName} style={{ fontSize: '0.875rem' }}></span>
                             {finalLanguageLabel}
                         </span>
                         {devMode && !isText && (
-                            <label className="label cursor-pointer justify-start gap-2 py-0 min-h-0">
+                            <label className="cursor-pointer flex items-center justify-start gap-2 py-0">
                                 <input
                                     type="checkbox"
-                                    className="toggle toggle-sm"
+                                    className="accent-primary w-4 h-4"
                                     checked={showParsed}
                                     onChange={toggleParsed}
                                 />
-                                <span className="label-text text-xs">Parsé</span>
+                                <span className="text-xs">Parsé</span>
                             </label>
                         )}
                     </span>
                     <div className="flex gap-1 items-center">
                         {!showParsed && devMode && !isText && (
                             <button
-                                className="px-2 py-1 border border-base-300 bg-base-200 text-base-content/70 rounded cursor-pointer text-xs transition-all hover:border-primary hover:text-base-content"
+                                className="px-2 py-1 border border-border bg-muted text-muted-foreground rounded cursor-pointer text-xs transition-all hover:border-primary hover:text-foreground"
                                 title={`Insérer un template ${isJs ? 'JavaScript' : 'SQL'}`}
                                 onClick={openTemplates}
                             >
@@ -235,25 +235,25 @@ export function SqlEditorWidget({
                         )}
                         {!showParsed && path != null && cellIndex != null && (
                             <button
-                                className="p-1.5 text-base-content/40 hover:text-base-content transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="p-1.5 text-muted-foreground/40 hover:text-foreground transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                                 title="Exécuter la requête"
                                 disabled={isLoading}
                                 onClick={() => runCellAt(path, cellIndex)}
                             >
                                 {cell._status === 'running'
-                                    ? <span className="loading loading-spinner loading-sm"></span>
+                                    ? <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="animate-spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>
                                     : <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
                                 }
                             </button>
                         )}
                         {!showParsed && (
                             <button
-                                className="p-1.5 text-base-content/40 hover:text-base-content transition-colors cursor-pointer"
+                                className="p-1.5 text-muted-foreground/40 hover:text-foreground transition-colors cursor-pointer"
                                 title="Copier le code"
                                 onClick={copyQuery}
                             >
                                 {copyDone
-                                    ? <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-success"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                    ? <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-600"><polyline points="20 6 9 17 4 12"></polyline></svg>
                                     : <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                                 }
                             </button>
@@ -268,7 +268,7 @@ export function SqlEditorWidget({
                     <div ref={cmRef} className="codemirror-sql-container" />
                 ) : (
                     <textarea
-                        className="textarea textarea-bordered w-full font-mono min-h-20 p-3 resize-y text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                        className="flex w-full rounded-md border border-input bg-background px-3 py-2 font-mono min-h-20 p-3 resize-y text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         placeholder={placeholder}
                         defaultValue={ConfigManager.getCellQuery(cell, queryName) || ''}
                         onChange={e => { ConfigManager.setCellQuery(cell, queryName, e.target.value) }}

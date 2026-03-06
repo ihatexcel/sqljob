@@ -16,7 +16,6 @@
     "@types/react": "^18.3.28",
     "@types/react-dom": "^18.3.7",
     "@vitejs/plugin-react": "^4.7.0",
-    "daisyui": "^5.5.19",
     "tailwindcss": "^4.2.1",
     "typescript": "^5.5.0",
     "vite": "^5.4.0",
@@ -34,7 +33,9 @@
     "@codemirror/view": "^6.39.15",
     "@iconify/iconify": "^3.1.1",
     "@marimo-team/codemirror-sql": "^0.2.4",
+    "@sqlrooms/ui": "^0.28.0",
     "codemirror": "^6.0.2",
+    "lucide-react": "^0.577.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "zustand": "^5.0.11"
