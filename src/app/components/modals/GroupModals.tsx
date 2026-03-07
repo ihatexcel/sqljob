@@ -15,6 +15,7 @@ import {
     Switch,
     Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@sqlrooms/ui'
+import { Icon } from \'../../../lib/icons\'
 
 // ─── LoopConfigModal ──────────────────────────────────────────────────────────
 export function LoopConfigModal() {
@@ -35,7 +36,7 @@ export function LoopConfigModal() {
             <DialogContent className="max-w-2xl" aria-describedby={undefined}>
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
-                        <span className="iconify" data-icon="material-symbols-light:autorenew" style={{ fontSize: '1.25rem' }}></span>
+                        <Icon name="autorenew" size={20} />
                         Configuration de la boucle
                     </DialogTitle>
                 </DialogHeader>
@@ -64,7 +65,7 @@ export function LoopConfigModal() {
                                     />
                                 </div>
                                 <Button variant="outline" size="sm" onClick={() => { group.loop.query = getDefaultLoopQuery(); forceUpdate() }}>
-                                    <span className="iconify mr-1" data-icon="material-symbols-light:article" style={{ fontSize: '1rem' }}></span> Requête par défaut
+                                    <Icon name="article" size={16} /> Requête par défaut
                                 </Button>
 
                                 <Separator />
@@ -86,7 +87,7 @@ export function LoopConfigModal() {
                                             placeholder="SELECT 'export.zip' as filename;"
                                         />
                                         <Button variant="outline" size="sm" onClick={() => { group.loop.zipQuery = getDefaultZipQuery(); forceUpdate() }}>
-                                            <span className="iconify mr-1" data-icon="material-symbols-light:article" style={{ fontSize: '1rem' }}></span> Requête par défaut
+                                            <Icon name="article" size={16} /> Requête par défaut
                                         </Button>
                                     </div>
                                 )}
@@ -119,7 +120,7 @@ export function GroupSettingsModal() {
             <DialogContent className="max-w-lg" aria-describedby={undefined}>
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
-                        <span className="iconify" data-icon="material-symbols-light:settings" style={{ fontSize: '1.25rem' }}></span>
+                        <Icon name="settings" size={20} />
                         Paramètres du groupe
                     </DialogTitle>
                 </DialogHeader>
@@ -235,10 +236,10 @@ export function ChildGroupModal() {
                 {/* Header sticky */}
                 <div className="flex items-center justify-between bg-primary text-primary-foreground px-6 py-4 shadow-md flex-none">
                     <h3 className="text-xl font-bold flex items-center gap-2">
-                        <span className="iconify" data-icon="material-symbols-light:export-notes-outline-sharp" style={{ fontSize: '1.5rem' }}></span>
+                        <Icon name="export-notes-outline-sharp" size={24} />
                     </h3>
                     <Button variant="ghost" size="icon" className="text-primary-foreground hover:bg-primary-foreground/20" onClick={closeChildGroupModal}>
-                        <span className="iconify" data-icon="material-symbols-light:close" style={{ fontSize: '1rem' }}></span>
+                        <Icon name="close" size={16} />
                     </Button>
                 </div>
 
@@ -251,19 +252,19 @@ export function ChildGroupModal() {
                                     <div className="inline-flex rounded-md overflow-hidden border border-border divide-x divide-border">
                                         <button className="inline-flex items-center justify-center h-6 px-2 text-xs bg-green-600 text-white hover:bg-green-700 disabled:opacity-50"
                                             onClick={() => runGroupAtPath([-1])} disabled={isLoading} title="Exécuter">
-                                            <span className="iconify" data-icon="material-symbols-light:play-arrow" style={{ fontSize: '1rem' }}></span>
+                                            <Icon name="play-arrow" size={16} />
                                         </button>
                                         <button className="inline-flex items-center justify-center h-6 px-2 text-xs bg-background hover:bg-muted"
                                             onClick={() => addNestedGroup([-1])} title="Ajouter un sous-groupe">
-                                            <span className="iconify" data-icon="material-symbols-light:create-new-folder" style={{ fontSize: '1rem' }}></span>
+                                            <Icon name="create-new-folder" size={16} />
                                         </button>
                                         <button className="inline-flex items-center justify-center h-6 px-2 text-xs bg-background hover:bg-muted"
                                             onClick={() => openAddCellToGroupModal([-1])} title="Ajouter une cellule">
-                                            <span className="iconify" data-icon="material-symbols-light:add" style={{ fontSize: '1rem' }}></span>
+                                            <Icon name="add" size={16} />
                                         </button>
                                         <button className="inline-flex items-center justify-center h-6 px-2 text-xs bg-destructive text-destructive-foreground hover:bg-destructive/80"
                                             onClick={deleteChildGroupModal} title="Supprimer le groupe">
-                                            <span className="iconify" data-icon="material-symbols-light:delete" style={{ fontSize: '1rem' }}></span>
+                                            <Icon name="delete" size={16} />
                                         </button>
                                     </div>
                                 </div>

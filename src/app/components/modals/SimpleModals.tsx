@@ -9,6 +9,7 @@ import {
     Button,
     Dialog, DialogContent, DialogHeader, DialogTitle,
 } from '@sqlrooms/ui'
+import { Icon, CellTypeIcon } from '../../../lib/icons'
 
 // ─── Icônes cellules ──────────────────────────────────────────────────────────
 const CellTypeGrid = memo(function CellTypeGrid({ onSelect }: { onSelect: (type: string) => void }) {
@@ -22,7 +23,7 @@ const CellTypeGrid = memo(function CellTypeGrid({ onSelect }: { onSelect: (type:
                     className="justify-start"
                     onClick={() => onSelect(ct.type)}
                 >
-                    <span dangerouslySetInnerHTML={{ __html: ct.icon }}></span>
+                    <CellTypeIcon type={ct.type} size={20} />
                     <span>{ct.label}</span>
                 </Button>
             ))}
@@ -43,7 +44,7 @@ export function AddGroupModal() {
             <DialogContent aria-describedby={undefined}>
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
-                        <span className="iconify" data-icon="material-symbols-light:add" style={{ fontSize: '1.25rem' }}></span>
+                        <Icon name="add" size={20} />
                         Ajouter un groupe
                     </DialogTitle>
                 </DialogHeader>
@@ -69,7 +70,7 @@ export function InsertGroupModal() {
             <DialogContent aria-describedby={undefined}>
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
-                        <span className="iconify" data-icon="material-symbols-light:add" style={{ fontSize: '1.25rem' }}></span>
+                        <Icon name="add" size={20} />
                         Insérer un groupe à la position {(insertGroupModal.atIndex ?? 0) + 1}
                     </DialogTitle>
                 </DialogHeader>
@@ -98,7 +99,7 @@ export function InsertCellModal() {
             <DialogContent aria-describedby={undefined}>
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
-                        <span className="iconify" data-icon="material-symbols-light:add" style={{ fontSize: '1.25rem' }}></span>
+                        <Icon name="add" size={20} />
                         Insérer une cellule à la position {(insertCellModal.atCellIndex ?? 0) + 1}
                     </DialogTitle>
                 </DialogHeader>
@@ -124,7 +125,7 @@ export function AddCellToGroupModal() {
             <DialogContent aria-describedby={undefined}>
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
-                        <span className="iconify" data-icon="material-symbols-light:add" style={{ fontSize: '1.25rem' }}></span>
+                        <Icon name="add" size={20} />
                         Ajouter une cellule au groupe
                     </DialogTitle>
                 </DialogHeader>

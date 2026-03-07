@@ -13,6 +13,7 @@ import { useNotebookStore } from '../store/notebookStore'
 import { useTemplateModal } from '../store/uiStores'
 import { ConfigManager } from '../../lib/ConfigManager'
 import { CELL_TYPE_SCHEMAS } from '../../lib/cellTypeSchemas'
+import { Icon } from '../../lib/icons'
 
 // ─── Parsed query view ────────────────────────────────────────────────────────
 function ParsedQueryView({ cell, parseLevelsProp }: any) {
@@ -76,7 +77,7 @@ export function SqlEditorWidget({
 
     const finalLanguageLabel = languageLabel || (isJs ? 'JavaScript' : isText ? 'Texte' : 'SQL')
     const finalBadgeClass = badgeClass || (isJs ? 'badge-warning' : isText ? 'badge-ghost' : 'badge-info')
-    const iconName = isJs ? 'material-symbols-light:bolt' : isText ? 'material-symbols-light:article' : 'material-symbols-light:storage'
+    const iconName = isJs ? 'bolt' : isText ? 'article' : 'storage'
 
     // tableSchemas depuis db.schemaTrees pour l'autocomplétion Monaco DuckDB
     const tableSchemas = db?.schemaTrees ?? []
@@ -121,7 +122,7 @@ export function SqlEditorWidget({
                 <div className="flex justify-between items-center mb-2">
                     <span className="text-xs text-muted-foreground flex items-center gap-2">
                         <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs ${finalBadgeClass === "badge-warning" ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-200" : finalBadgeClass === "badge-ghost" ? "bg-muted text-muted-foreground" : "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200"}`}>
-                            <span className="iconify" data-icon={iconName} style={{ fontSize: '0.875rem' }}></span>
+                            <Icon name={iconName} size={14} />
                             {finalLanguageLabel}
                         </span>
                         {devMode && !isText && (

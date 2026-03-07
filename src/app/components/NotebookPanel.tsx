@@ -19,6 +19,7 @@ import {
     Alert, AlertDescription,
     Spinner,
 } from '@sqlrooms/ui'
+import { Icon } from '../../lib/icons'
 import { PageContent } from './PageContent'
 
 // ─── TabBar (liste des pages) ─────────────────────────────────────────────────
@@ -65,7 +66,7 @@ function TabBar() {
             ))}
             {devMode && (
                 <Button variant="ghost" size="sm" onClick={addPage} title="Nouvelle page" className="h-8 px-2">
-                    <span className="iconify" data-icon="material-symbols-light:add" style={{ fontSize: '1rem' }}></span>
+                    <Icon name="add" size={16} />
                 </Button>
             )}
         </div>
@@ -144,7 +145,7 @@ function PageTab({ page, index, isActive, devMode, activatePage, deletePage, sta
                     onClick={e => { e.stopPropagation(); deletePage(index) }}
                     title="Supprimer"
                 >
-                    <span className="iconify" data-icon="material-symbols-light:close" style={{ fontSize: '0.75rem' }}></span>
+                    <Icon name="close" size={12} />
                 </span>
             )}
         </button>
@@ -186,31 +187,31 @@ function NavBar() {
                 {devMode && (
                     <>
                         <Button variant="ghost" size="sm" onClick={runAllGroups} disabled={isLoading} title="Tout exécuter">
-                            <span className="iconify" data-icon="material-symbols-light:play-arrow" style={{ fontSize: '1.25rem' }}></span>
+                            <Icon name="play-arrow" size={20} />
                         </Button>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="ghost" size="sm">
-                                    <span className="iconify" data-icon="material-symbols-light:share" style={{ fontSize: '1.25rem' }}></span>
+                                    <Icon name="share" size={20} />
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-48">
                                 <DropdownMenuItem onClick={() => openExportModal('gist')}>
-                                    <span className="iconify mr-2" data-icon="material-symbols-light:share" style={{ fontSize: '1rem' }}></span> Partager (Gist)
+                                    <Icon name="share" size={16} className="mr-2" /> Partager (Gist)
                                 </DropdownMenuItem>
                                 <DropdownMenuItem onClick={() => openExportModal('json')}>
-                                    <span className="iconify mr-2" data-icon="material-symbols-light:data-object" style={{ fontSize: '1rem' }}></span> Export JSON
+                                    <Icon name="data-object" size={16} className="mr-2" /> Export JSON
                                 </DropdownMenuItem>
                                 <DropdownMenuItem onClick={() => openExportModal('html')}>
-                                    <span className="iconify mr-2" data-icon="material-symbols-light:save" style={{ fontSize: '1rem' }}></span> Export HTML
+                                    <Icon name="save" size={16} className="mr-2" /> Export HTML
                                 </DropdownMenuItem>
                                 <DropdownMenuItem onClick={() => openExportModal('base64')}>
-                                    <span className="iconify mr-2" data-icon="material-symbols-light:lock" style={{ fontSize: '1rem' }}></span> Export Base64
+                                    <Icon name="lock" size={16} className="mr-2" /> Export Base64
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem asChild>
                                     <label className="cursor-pointer flex items-center gap-2 w-full">
-                                        <span className="iconify" data-icon="material-symbols-light:folder-open" style={{ fontSize: '1rem' }}></span> Import JSON
+                                        <Icon name="folder-open" size={16} /> Import JSON
                                         <input ref={importJsonRef} type="file" accept=".json" hidden
                                             onChange={e => { loadConfig(e); (document.activeElement as HTMLElement)?.blur() }} />
                                     </label>

@@ -5,6 +5,7 @@ import { useNotebookStore } from '../store/notebookStore'
 import { Button, Badge, Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@sqlrooms/ui'
 import { CellHeader } from './CellHeader'
 import { CellBody } from './CellBody'
+import { Icon } from '../../lib/icons'
 
 // ─── CellItem ─────────────────────────────────────────────────────────────────
 function CellItem({ cell, cellIndex, path, group }: { cell: any, cellIndex: number, path: number[], group: any }) {
@@ -176,44 +177,44 @@ export function GroupContainer({
                         <div className="inline-flex rounded-md overflow-hidden border border-border divide-x divide-border">
                             <button className="inline-flex items-center justify-center h-6 px-2 text-xs bg-green-600 text-white hover:bg-green-700 disabled:opacity-50"
                                 onClick={() => runGroupAtPath(path)} disabled={isLoading} title="Exécuter le groupe">
-                                <span className="iconify" data-icon="material-symbols-light:play-arrow" style={{ fontSize: '1rem' }}></span>
+                                <Icon name="play-arrow" size={16} />
                             </button>
                             <button className="inline-flex items-center justify-center h-6 px-2 text-xs bg-background hover:bg-muted"
                                 onClick={() => { group.direction = group.direction === 'column' ? 'row' : 'column'; forceUpdate() }}
                                 title={group.direction === 'column' ? 'Passer en ligne' : 'Passer en colonne'}>
-                                <span className="iconify" data-icon={group.direction === 'column' ? 'material-symbols-light:swap-vert' : 'material-symbols-light:swap-horiz'} style={{ fontSize: '1rem' }}></span>
+                                <Icon name={group.direction === 'column' ? 'swap-vert' : 'swap-horiz'} size={16} />
                             </button>
                             <button className="inline-flex items-center justify-center h-6 px-2 text-xs bg-background hover:bg-muted"
                                 onClick={() => addNestedGroup(path)} title="Ajouter un sous-groupe">
-                                <span className="iconify" data-icon="material-symbols-light:create-new-folder" style={{ fontSize: '1rem' }}></span>
+                                <Icon name="create-new-folder" size={16} />
                             </button>
                             <button className="inline-flex items-center justify-center h-6 px-2 text-xs bg-background hover:bg-muted"
                                 onClick={() => openAddCellToGroupModal(path)} title="Ajouter une cellule">
-                                <span className="iconify" data-icon="material-symbols-light:add" style={{ fontSize: '1rem' }}></span>
+                                <Icon name="add" size={16} />
                             </button>
                             <button className="inline-flex items-center justify-center h-6 px-2 text-xs bg-background hover:bg-muted"
                                 onClick={() => openLoopConfigModal?.(path)} title="Boucle">
-                                <span className="iconify" data-icon="material-symbols-light:autorenew" style={{ fontSize: '1rem' }}></span>
+                                <Icon name="autorenew" size={16} />
                             </button>
                             <button className="inline-flex items-center justify-center h-6 px-2 text-xs bg-background hover:bg-muted"
                                 onClick={() => openGroupSettingsModal?.(path)} title="Paramètres">
-                                <span className="iconify" data-icon="material-symbols-light:settings" style={{ fontSize: '1rem' }}></span>
+                                <Icon name="settings" size={16} />
                             </button>
                             {!isFirst && (
                                 <button className="inline-flex items-center justify-center h-6 px-2 text-xs bg-background hover:bg-muted"
                                     onClick={() => moveItemInGroup?.([...path.slice(0, -1)], 'child', path[path.length - 1], -1)} title="Monter">
-                                    <span className="iconify" data-icon="material-symbols-light:arrow-upward" style={{ fontSize: '1rem' }}></span>
+                                    <Icon name="arrow-upward" size={16} />
                                 </button>
                             )}
                             {!isLast && (
                                 <button className="inline-flex items-center justify-center h-6 px-2 text-xs bg-background hover:bg-muted"
                                     onClick={() => moveItemInGroup?.([...path.slice(0, -1)], 'child', path[path.length - 1], 1)} title="Descendre">
-                                    <span className="iconify" data-icon="material-symbols-light:arrow-downward" style={{ fontSize: '1rem' }}></span>
+                                    <Icon name="arrow-downward" size={16} />
                                 </button>
                             )}
                             <button className="inline-flex items-center justify-center h-6 px-2 text-xs bg-destructive text-destructive-foreground hover:bg-destructive/80"
                                 onClick={() => deleteGroupAtPath?.(path)} title="Supprimer le groupe">
-                                <span className="iconify" data-icon="material-symbols-light:delete" style={{ fontSize: '1rem' }}></span>
+                                <Icon name="delete" size={16} />
                             </button>
                         </div>
                         {group.loop?.enabled && (

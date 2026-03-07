@@ -2,6 +2,7 @@
 import { useShallow } from 'zustand/react/shallow'
 import { useNotebookStore } from '../store/notebookStore'
 import { GroupContainer } from './GroupContainer'
+import { Icon } from '../../lib/icons'
 
 // ─── Séparateur entre groupes (hover uniquement) ──────────────────────────────
 function GroupDivider({ atIndex }: { atIndex: number }) {
@@ -78,7 +79,7 @@ export function PageContent() {
                         className="inline-flex items-center justify-center px-3 py-1.5 rounded-md text-sm border border-border hover:bg-muted"
                         onClick={() => set({ showAddGroupModal: true })}
                     >
-                        <span className="iconify" data-icon="material-symbols-light:add" style={{ fontSize: '1rem' }}></span>
+                        <Icon name="add" size={16} />
                         Ajouter un groupe
                     </button>
                 </div>

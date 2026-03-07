@@ -9,6 +9,7 @@ import {
     Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
     Spinner,
 } from '@sqlrooms/ui'
+import { Icon } from \'../../../lib/icons\'
 
 interface Props {
     onUnlocked: () => void
@@ -93,7 +94,7 @@ export function GistPassphraseModal({ onUnlocked }: Props) {
                 <DialogContent className="max-w-md" onInteractOutside={e => e.preventDefault()} aria-describedby={undefined}>
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-2">
-                            <span className="iconify" data-icon="material-symbols-light:lock" style={{ fontSize: '1.25rem' }}></span>
+                            <Icon name="lock" size={20} />
                             Configuration chiffrée
                         </DialogTitle>
                     </DialogHeader>
