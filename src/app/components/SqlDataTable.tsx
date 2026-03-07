@@ -6,7 +6,7 @@
  */
 import { useMemo, useState } from 'react'
 import DataTablePaginated from '@sqlrooms/data-table/dist/DataTablePaginated'
-import { _rawTableDataStore } from '../../mixins/executionMixin'
+import { rawTableDataStore as _rawTableDataStore } from '../../lib/tableDataStore'
 import { parseColumnRoles, getTableColumnDisplayNames } from '../../lib/EChartSqlParser'
 
 export function SqlDataTable({ cell, searchable = false }: { cell: any; searchable?: boolean }) {
