@@ -191,7 +191,8 @@ function buildInitialState() {
     }
 
     const devMode = config.ui?.devMode !== false
-    const showLayout = (config.ui?.showLayout ?? config.ui?.displaySettings) !== false
+    // La barre latérale est cachée par défaut — le logo sqljob dans le header la toggle.
+    const showLayout = config.ui?.showLayout ?? false
     const savedTheme = typeof localStorage !== 'undefined' ? localStorage.getItem('sqljob-theme') : null
     const currentTheme = config.ui?.theme || savedTheme || 'light'
     if (typeof document !== 'undefined') {

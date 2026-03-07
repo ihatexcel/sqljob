@@ -154,24 +154,30 @@ function PageTab({ page, index, isActive, devMode, activatePage, deletePage, sta
 // ─── Navbar ───────────────────────────────────────────────────────────────────
 function NavBar() {
     const {
-        devMode, isLoading,
+        devMode, isLoading, showLayout,
         openExportModal, runAllGroups, loadConfig
     } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         isLoading: s.isLoading,
+        showLayout: s.showLayout,
         openExportModal: s.openExportModal,
         runAllGroups: s.runAllGroups,
         loadConfig: s.loadConfig
     })))
     const importJsonRef = useRef<HTMLInputElement>(null)
+    const set = useNotebookStore.setState
 
     return (
         <div className="flex items-center border-b border-border bg-background px-4 py-2 gap-2 shrink-0">
             <div className="flex-none">
-                <a href="https://ihatexcel.github.io/sqljob/?gist=68cd597ba5da05ceba24fb975c05384f" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+                <button
+                    onClick={() => set({ showLayout: !showLayout })}
+                    title={showLayout ? 'Masquer la barre' : 'Afficher la barre'}
+                    className="flex items-center gap-2 hover:opacity-70 transition-opacity cursor-pointer"
+                >
                     <img src="https://raw.githubusercontent.com/ihatexcel/sqljob/main/ihatexcel.svg" alt="sqljob" className="h-8" />
                     <span className="font-bold text-primary text-lg">sqlJob</span>
-                </a>
+                </button>
             </div>
             <div className="flex-1 flex justify-center overflow-hidden">
                 <TabBar />
