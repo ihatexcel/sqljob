@@ -1,43 +1,18 @@
 // @ts-nocheck
 /**
- * Éditeur SQL/JS React utilisant @marimo-team/codemirror-sql (bundlé, pas de CDN).
- * Remplace l'approche Alpine: x-init="initCodeMirrorForCell(...)"
+ * Éditeur SQL/JS React.
+ * Pour les cellules SQL/DuckDB : utilise SqlMonacoEditor de @sqlrooms/sql-editor
+ *   → Monaco chargé depuis jsDelivr CDN (AMD loader configuré dans sqljob-app.ts)
+ *   → Autocomplétion DuckDB via tableSchemas (db.schemaTrees du store)
+ * Pour JS et texte : textarea simple.
  */
-import { useEffect, useRef, useState } from 'react'
-import { EditorView } from '@codemirror/view'
-import { EditorState } from '@codemirror/state'
-import { basicSetup } from 'codemirror'
-import { sql } from '@codemirror/lang-sql'
-import { DuckDBDialect } from '@marimo-team/codemirror-sql/dialects'
-import { sqlExtension, cteCompletionSource } from '@marimo-team/codemirror-sql'
-import { oneDark } from '@codemirror/theme-one-dark'
+import { useEffect, useState } from 'react'
+import { SqlMonacoEditor } from '@sqlrooms/sql-editor'
 import { useShallow } from 'zustand/react/shallow'
 import { useNotebookStore } from '../store/notebookStore'
 import { useTemplateModal } from '../store/uiStores'
 import { ConfigManager } from '../../lib/ConfigManager'
 import { CELL_TYPE_SCHEMAS } from '../../lib/cellTypeSchemas'
-
-// ─── Thème CodeMirror ─────────────────────────────────────────────────────────
-const daisyUITheme = EditorView.theme({
-    '&': {
-        fontSize: '14px',
-        minHeight: '20px',
-        border: '1px solid hsl(var(--border))',
-        borderRadius: '0.5rem',
-    },
-    '.cm-scroller': {
-        fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
-        minHeight: '20px',
-        maxHeight: '250px',
-        overflow: 'auto',
-    },
-    '.cm-content': { padding: '0.5rem 0' },
-    '.cm-gutters': { borderRadius: '0.5rem 0 0 0.5rem' },
-    '&.cm-focused': {
-        outline: '2px solid hsl(var(--primary))',
-        outlineOffset: '-1px',
-    },
-})
 
 // ─── Parsed query view ────────────────────────────────────────────────────────
 function ParsedQueryView({ cell, parseLevelsProp }: any) {
@@ -81,16 +56,14 @@ export function SqlEditorWidget({
     badgeClass = null,
     applySourceDefaultIfEmpty = false,
 }: any) {
-    const { devMode, isLoading, runCellAt, forceUpdate, _tables } = useNotebookStore(useShallow(s => ({
+    const { devMode, isLoading, runCellAt, forceUpdate, db } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         isLoading: s.isLoading,
         runCellAt: s.runCellAt,
         forceUpdate: s.forceUpdate,
-        _tables: s._tables,
+        db: s.db,
     })))
 
-    const cmRef = useRef<HTMLDivElement>(null)
-    const editorRef = useRef<EditorView | null>(null)
     const [copyDone, setCopyDone] = useState(false)
 
     const queryName = queryType === 'query2' ? ConfigManager.getQuery2Name(cell) : 'main'
@@ -105,83 +78,19 @@ export function SqlEditorWidget({
     const finalBadgeClass = badgeClass || (isJs ? 'badge-warning' : isText ? 'badge-ghost' : 'badge-info')
     const iconName = isJs ? 'material-symbols-light:bolt' : isText ? 'material-symbols-light:article' : 'material-symbols-light:storage'
 
-    // ─── Init / destroy CodeMirror ──────────────────────────────────────────
+    // tableSchemas depuis db.schemaTrees pour l'autocomplétion Monaco DuckDB
+    const tableSchemas = db?.schemaTrees ?? []
+
+    // Appliquer la requête source par défaut si vide (cellule source)
     useEffect(() => {
-        if (!cmRef.current || !isSql || showParsed) return
-
-        // Destroy previous instance if any
-        editorRef.current?.destroy()
-        editorRef.current = null
-
-        // Build schema from _tables
-        const schema: Record<string, string[]> = {}
-        if (_tables) {
-            for (const [tableName, data] of Object.entries(_tables as any)) {
-                if (Array.isArray(data) && data.length > 0) schema[tableName] = Object.keys(data[0])
-            }
-        }
-
-        let initialContent = ConfigManager.getCellQuery(cell, queryName) || ''
-        if (applySourceDefaultIfEmpty && !initialContent.trim() && cell.type === 'source') {
+        if (applySourceDefaultIfEmpty && isSql && !ConfigManager.getCellQuery(cell, queryName)?.trim() && cell.type === 'source') {
             const defaultQ = CELL_TYPE_SCHEMAS?.types?.source?.defaults?.queries?.find((q: any) => q.name === queryName)?.sql
             if (defaultQ) {
-                initialContent = defaultQ.replace(/\{name\}/g, cell.name || 'source1')
-                ConfigManager.setCellQuery(cell, queryName, initialContent)
+                const initial = defaultQ.replace(/\{name\}/g, cell.name || 'source1')
+                ConfigManager.setCellQuery(cell, queryName, initial)
             }
         }
-
-        const isDark = document.documentElement.classList.contains('dark') ||
-            window.matchMedia('(prefers-color-scheme: dark)').matches
-
-        const extensions: any[] = [
-            basicSetup,
-            sql({ dialect: DuckDBDialect, schema, upperCaseKeywords: true }),
-            daisyUITheme,
-            EditorView.updateListener.of(update => {
-                if (update.docChanged) {
-                    ConfigManager.setCellQuery(cell, queryName, update.state.doc.toString())
-                }
-            }),
-            // CTE completion source
-            DuckDBDialect.language.data.of({ autocomplete: cteCompletionSource }),
-            // marimo-sql extension (linter, hover, gutter)
-            sqlExtension({
-                linterConfig: { delay: 300 },
-                gutterConfig: { backgroundColor: '#3b82f6', errorBackgroundColor: '#ef4444', hideWhenNotFocused: true },
-                enableHover: true,
-                hoverConfig: { schema, hoverTime: 300, enableKeywords: true, enableTables: true, enableColumns: true },
-            }),
-        ]
-        if (isDark) extensions.push(oneDark)
-
-        editorRef.current = new EditorView({
-            state: EditorState.create({ doc: initialContent, extensions }),
-            parent: cmRef.current,
-        })
-
-        // Store reference on cell for external sync
-        cell[`_cmEditor_${queryType}`] = editorRef.current
-
-        return () => {
-            editorRef.current?.destroy()
-            editorRef.current = null
-            if (cell[`_cmEditor_${queryType}`] === editorRef.current) {
-                cell[`_cmEditor_${queryType}`] = null
-            }
-        }
-    }, [cell._id, isSql, showParsed])
-
-    // Sync external value changes into CodeMirror (e.g. template insertion)
-    // Depends on the cell's query value so it only runs when the value actually changes
-    const cellQueryValue = ConfigManager.getCellQuery(cell, queryName) || ''
-    useEffect(() => {
-        const editor = editorRef.current
-        if (!editor || !isSql || showParsed || editor.hasFocus) return
-        const currentDoc = editor.state.doc.toString()
-        if (currentDoc !== cellQueryValue) {
-            editor.dispatch({ changes: { from: 0, to: currentDoc.length, insert: cellQueryValue } })
-        }
-    }, [cellQueryValue, isSql, showParsed])
+    }, [cell._id])
 
     // ─── Handlers ────────────────────────────────────────────────────────────
     function toggleParsed() {
@@ -199,6 +108,10 @@ export function SqlEditorWidget({
 
     function openTemplates() {
         useTemplateModal.getState().open(cell._id, queryType, languageType)
+    }
+
+    function handleMonacoChange(value: string | undefined) {
+        ConfigManager.setCellQuery(cell, queryName, value ?? '')
     }
 
     return (
@@ -265,7 +178,24 @@ export function SqlEditorWidget({
                 {showParsed ? (
                     <ParsedQueryView cell={cell} parseLevelsProp={parseLevelsProp} />
                 ) : isSql ? (
-                    <div ref={cmRef} className="codemirror-sql-container" />
+                    <SqlMonacoEditor
+                        key={cell._id + '_' + queryType}
+                        value={ConfigManager.getCellQuery(cell, queryName) || ''}
+                        onChange={handleMonacoChange}
+                        tableSchemas={tableSchemas}
+                        className="border border-border rounded-md overflow-hidden"
+                        options={{
+                            minimap: { enabled: false },
+                            lineNumbers: 'off',
+                            scrollBeyondLastLine: false,
+                            wordWrap: 'on',
+                            fontSize: 13,
+                            renderLineHighlight: 'none',
+                            overviewRulerLanes: 0,
+                            scrollbar: { vertical: 'auto', alwaysConsumeMouseWheel: false },
+                        }}
+                        height="120px"
+                    />
                 ) : (
                     <textarea
                         className="flex w-full rounded-md border border-input bg-background px-3 py-2 font-mono min-h-20 p-3 resize-y text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
