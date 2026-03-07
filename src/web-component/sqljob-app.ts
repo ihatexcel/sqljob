@@ -15,8 +15,15 @@
  */
 import React from 'react'
 import { createRoot } from 'react-dom/client'
+import { loader } from '@monaco-editor/react'
 import { App } from '../app/App'
 import './styles.css'
+
+// Configure Monaco to load from jsDelivr CDN at runtime (not bundled — too large).
+// @monaco-editor/react uses AMD loader internally; this just sets the base URL.
+loader.config({
+    paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.55.1/min/vs' },
+})
 
 // URL absolue de ce fichier (import.meta.url) — utilisée par l'export HTML
 // pour retrouver exactement le bon élément <script src> dans la page hôte.
