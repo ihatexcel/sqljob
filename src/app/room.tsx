@@ -66,6 +66,15 @@ function SidebarControls() {
 
 export function Room() {
     const sqlEditorDisclosure = useDisclosure()
+    const { schemaTrees, isRefreshingTableSchemas } = useNotebookStore(useShallow(s => ({
+        schemaTrees: s.db?.schemaTrees,
+        isRefreshingTableSchemas: s.db?.isRefreshingTableSchemas,
+    })))
+
+    const handleSqlEditorOpen = () => {
+        console.log('[SqlEditorModal] open → db.schemaTrees:', schemaTrees, '| isRefreshing:', isRefreshingTableSchemas)
+        sqlEditorDisclosure.onToggle()
+    }
 
     return (
         <>
@@ -73,7 +82,7 @@ export function Room() {
                 <RoomShell.Sidebar>
                     <RoomShell.SidebarButton
                         title="SQL Editor"
-                        onClick={sqlEditorDisclosure.onToggle}
+                        onClick={handleSqlEditorOpen}
                         isSelected={sqlEditorDisclosure.isOpen}
                         icon={TerminalIcon}
                     />
