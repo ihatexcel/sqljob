@@ -79847,9 +79847,14 @@ function QCt() {
       try {
         await Gw.initDuckDB((r, t) => this.setStatus(r, t)), this.ensureAllCellsHaveNames(), await this.loadEmbeddedFiles(), await this.loadPendingSourceFiles(), await this.evaluateAllGroupIfQueries(), await this.runAllGroups(), this.pages[0] && this._pagesInitialized.add(this.pages[0]._id), this.$nextTick(() => setTimeout(() => this.refreshMarkdownCellsForPage(0), 300)), await this.refreshDuckdbTables();
         try {
-          console.log("[sqljob] Calling room.initialize()…"), await this.room.initialize(), console.log("[sqljob] room.initialize() done. schemaTrees:", this.db.schemaTrees);
+          await this.room.initialize();
         } catch (r) {
           console.warn("[sqljob] room.initialize() error:", r);
+        }
+        try {
+          await this.db.refreshTableSchemas(), console.log("[sqljob] schemaTrees:", this.db.schemaTrees);
+        } catch (r) {
+          console.warn("[sqljob] refreshTableSchemas error:", r);
         }
         this.room = { ...this.room, initialized: !0 };
       } catch (r) {
@@ -84413,6 +84418,10 @@ const gLt = Pge(
     ...i,
     ...a,
     ...f,
+    // db.schemaTrees démarre undefined dans DuckDbSlice.
+    // deepEquals([], []) bloque la mise à jour si aucune table → schemaTrees reste undefined.
+    // On force [] pour que TableStructurePanel render même quand la base est vide.
+    db: { ...i.db, schemaTrees: [] },
     // Override addRoomFile : redirige vers DuckDBManager au lieu du connecteur sqlrooms
     // pour partager une seule instance DuckDB avec toutes les cells sqljob.
     addRoomFile: async (b, e) => {
