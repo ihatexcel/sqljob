@@ -1,18 +1,17 @@
 // @ts-nocheck
 /**
  * Room — Composant racine utilisant RoomShell de @sqlrooms/room-shell.
- * Structure identique au notebook example de sqlrooms.
  *
- * - RoomShell.Sidebar : boutons de navigation (ThemeSwitch, DevMode, DB Engine)
+ * - RoomShell.Sidebar : boutons de navigation (SQL Editor, Theme, DB Engine, DevMode)
  * - RoomShell.LayoutComposer : mosaic layout (NotebookPanel + DataSourcesPanel)
  * - Modals globaux (portals → document.body, indépendants du layout)
  */
 import { RoomShell } from '@sqlrooms/room-shell'
-import { ThemeSwitch, Button, useDisclosure } from '@sqlrooms/ui'
+import { useDisclosure, useTheme } from '@sqlrooms/ui'
 import { useShallow } from 'zustand/react/shallow'
 import { useNotebookStore } from './store/notebookStore'
 import { SqlEditorModal } from '@sqlrooms/sql-editor'
-import { TerminalIcon } from 'lucide-react'
+import { DatabaseIcon, MoonIcon, Settings2Icon, SunIcon, TerminalIcon } from 'lucide-react'
 import { ConfirmModal } from './components/modals/ConfirmModal'
 import { TemplateModal } from './components/modals/TemplateModal'
 import { AddGroupModal, InsertGroupModal, InsertCellModal, AddCellToGroupModal } from './components/modals/SimpleModals'
@@ -27,55 +26,46 @@ function SidebarControls() {
         dbEngine: s.dbEngine,
         showLayout: s.showLayout,
     })))
+    const { theme, setTheme } = useTheme()
     const set = useNotebookStore.setState
 
     if (!showLayout) return null
 
     return (
-        <div className="flex flex-col gap-1 p-1">
-            <Button
-                variant={devMode ? 'secondary' : 'ghost'}
-                size="sm"
+        <>
+            {/* Theme toggle */}
+            <RoomShell.SidebarButton
+                title={theme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                icon={theme === 'dark' ? SunIcon : MoonIcon}
+            />
+
+            {/* DB Engine (devMode only) */}
+            {devMode && (
+                <RoomShell.SidebarButton
+                    title={`Moteur : ${dbEngine === 'ducklings' ? 'Ducklings' : 'DuckDB WASM'}`}
+                    onClick={() => set({ showDbEngineModal: true })}
+                    icon={DatabaseIcon}
+                />
+            )}
+
+            {/* DevMode toggle — ancré en bas via spacer */}
+            <div className="flex-1" />
+            <RoomShell.SidebarButton
                 title={devMode ? 'Passer en mode client' : 'Passer en mode développeur'}
                 onClick={() => set({ devMode: !devMode })}
-                className="w-full justify-start"
-            >
-                <span
-                    className="iconify"
-                    data-icon={devMode ? 'material-symbols-light:visibility' : 'material-symbols-light:settings'}
-                    style={{ fontSize: '1.25rem' }}
-                ></span>
-            </Button>
-
-            <ThemeSwitch />
-
-            {devMode && (
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => set({ showDbEngineModal: true })}
-                    title={`Moteur: ${dbEngine === 'ducklings' ? 'Ducklings' : 'DuckDB WASM'}`}
-                    className="w-full justify-start"
-                >
-                    <span>{dbEngine === 'ducklings' ? '🐤' : '🦆'}</span>
-                </Button>
-            )}
-        </div>
+                isSelected={devMode}
+                icon={Settings2Icon}
+            />
+        </>
     )
 }
 
 export function Room() {
     const sqlEditorDisclosure = useDisclosure()
-    const { schemaTrees, isRefreshingTableSchemas, showLayout } = useNotebookStore(useShallow(s => ({
-        schemaTrees: s.db?.schemaTrees,
-        isRefreshingTableSchemas: s.db?.isRefreshingTableSchemas,
+    const { showLayout } = useNotebookStore(useShallow(s => ({
         showLayout: s.showLayout,
     })))
-
-    const handleSqlEditorOpen = () => {
-        console.log('[SqlEditorModal] open → db.schemaTrees:', schemaTrees, '| isRefreshing:', isRefreshingTableSchemas)
-        sqlEditorDisclosure.onToggle()
-    }
 
     return (
         <>
@@ -83,7 +73,7 @@ export function Room() {
                 <RoomShell.Sidebar className={showLayout ? '' : 'hidden'}>
                     <RoomShell.SidebarButton
                         title="SQL Editor"
-                        onClick={handleSqlEditorOpen}
+                        onClick={sqlEditorDisclosure.onToggle}
                         isSelected={sqlEditorDisclosure.isOpen}
                         icon={TerminalIcon}
                     />
