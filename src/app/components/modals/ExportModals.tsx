@@ -12,6 +12,7 @@ import {
     Switch,
     Spinner,
 } from '@sqlrooms/ui'
+import { Icon } from \'../../../lib/icons\'
 
 // ─── ExportModal ──────────────────────────────────────────────────────────────
 export function ExportModal() {
@@ -39,7 +40,7 @@ export function ExportModal() {
 
     return (
         <Dialog open={!!em.show} onOpenChange={open => !open && cancelExport()}>
-            <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+            <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto" aria-describedby={undefined}>
                 <DialogHeader>
                     <DialogTitle>{typeLabels[em.type] || em.type}</DialogTitle>
                 </DialogHeader>
@@ -75,7 +76,7 @@ export function ExportModal() {
                     <div className="flex items-center justify-between gap-3">
                         <div>
                             <Label className="font-semibold flex items-center gap-2">
-                                <span className="iconify" data-icon="material-symbols-light:database" style={{ fontSize: '1rem' }}></span>
+                                <Icon name="database" size={16} />
                                 Inclure les fichiers chargés
                             </Label>
                             <p className="text-xs text-muted-foreground">Attention vos données seront partagées si coché</p>
@@ -104,7 +105,7 @@ export function ExportModal() {
                             <div className="flex items-center justify-between gap-3">
                                 <div>
                                     <Label className="font-semibold flex items-center gap-2">
-                                        <span className="iconify" data-icon="material-symbols-light:lock" style={{ fontSize: '1rem' }}></span>
+                                        <Icon name="lock" size={20} />
                                         Chiffrer la configuration
                                     </Label>
                                     <p className="text-xs text-muted-foreground">Chiffrer la configuration et les données avec un mot de passe</p>
@@ -162,10 +163,10 @@ export function GistTokenModal() {
 
     return (
         <Dialog open={showGistTokenModal} onOpenChange={open => !open && cancelGithubToken()}>
-            <DialogContent className="max-w-lg">
+            <DialogContent className="max-w-lg" aria-describedby={undefined}>
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
-                        <span className="iconify" data-icon="material-symbols-light:settings" style={{ fontSize: '1.25rem' }}></span>
+                        <Icon name="settings" size={20} />
                         Configuration GitHub
                     </DialogTitle>
                 </DialogHeader>
@@ -216,10 +217,10 @@ export function GistResultModal() {
 
     return (
         <Dialog open={showGistModal} onOpenChange={open => !open && closeGistModal()}>
-            <DialogContent className="max-w-2xl">
+            <DialogContent className="max-w-2xl" aria-describedby={undefined}>
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
-                        <span className="iconify text-green-600" data-icon="material-symbols-light:check-circle" style={{ fontSize: '1.25rem' }}></span>
+                        <Icon name="check-circle" size={20} className="text-green-600" />
                         Gist créé avec succès
                     </DialogTitle>
                 </DialogHeader>
@@ -232,7 +233,7 @@ export function GistResultModal() {
                             className="flex-1 font-mono text-sm"
                             onClick={e => (e.target as HTMLInputElement).select()} />
                         <Button onClick={copyGistUrl}>
-                            <span className="iconify mr-1" data-icon="material-symbols-light:content-copy" style={{ fontSize: '1rem' }}></span> Copier
+                            <Icon name="content-copy" size={16} /> Copier
                         </Button>
                     </div>
                     {gistWasEncrypted && (
@@ -247,7 +248,7 @@ export function GistResultModal() {
                                         className="flex-1 font-mono text-sm"
                                         onClick={e => (e.target as HTMLInputElement).select()} />
                                     <Button onClick={copyGistPassphrase}>
-                                        <span className="iconify mr-1" data-icon="material-symbols-light:content-copy" style={{ fontSize: '1rem' }}></span> Copier
+                                        <Icon name="content-copy" size={16} /> Copier
                                     </Button>
                                 </div>
                             </div>
@@ -280,10 +281,10 @@ export function JsonPassphraseModal() {
 
     return (
         <Dialog open={showJsonPassphraseModal} onOpenChange={open => !open && cancelJsonPassphraseModal()}>
-            <DialogContent className="max-w-md">
+            <DialogContent className="max-w-md" aria-describedby={undefined}>
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
-                        <span className="iconify" data-icon="material-symbols-light:lock" style={{ fontSize: '1.25rem' }}></span>
+                        <Icon name="lock" size={20} />
                         Fichier JSON chiffré
                     </DialogTitle>
                 </DialogHeader>

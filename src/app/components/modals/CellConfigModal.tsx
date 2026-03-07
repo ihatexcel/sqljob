@@ -12,6 +12,7 @@ import {
     Accordion, AccordionContent, AccordionItem, AccordionTrigger,
     Checkbox,
 } from '@sqlrooms/ui'
+import { Icon } from \'../../../lib/icons\'
 
 function getCommonParamDef(paramKey: string, cellType: string) {
     const schema = CELL_TYPE_SCHEMAS?.types?.[cellType]
@@ -63,10 +64,10 @@ export function CellConfigModal() {
 
     return (
         <Dialog open={open} onOpenChange={open => !open && closeCellConfig()}>
-            <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+            <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto" aria-describedby={undefined}>
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
-                        <span className="iconify" data-icon="material-symbols-light:settings" style={{ fontSize: '1.25rem' }}></span>
+                        <Icon name="settings" size={20} />
                         Configuration de la cellule
                     </DialogTitle>
                 </DialogHeader>

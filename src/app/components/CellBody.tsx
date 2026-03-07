@@ -10,6 +10,7 @@ import { ConfigManager } from '../../lib/ConfigManager'
 import { CDNManager } from '../../lib/CDNManager'
 import { SqlEditorWidget } from './SqlEditorWidget'
 import { SqlDataTable } from './SqlDataTable'
+import { Icon } from '../../lib/icons'
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 function CellBodySkeleton() {
@@ -143,20 +144,20 @@ function SourceBody({ cell, path, cellIndex }: any) {
                     // Sans ça, iconify ayant remplacé les <span> par des <svg> hors du VDOM React,
                     // React ne sait pas les supprimer → l'ancienne icône persiste après suppression.
                     <div key="no-file" style={{ width: '100%', textAlign: 'center', padding: '4px' }}>
-                        <span className="iconify" data-icon="material-symbols-light:create-new-folder" style={{ fontSize: '3rem', display: 'block', margin: 'auto' }}></span>
+                        <Icon name="create-new-folder" size={48} />
                         <p className="m-0 text-muted-foreground text-sm">{cell.title || 'Glissez-déposez ici'}</p>
                         <p className="mt-0 mb-0 text-accent text-xs font-semibold">→ {cell.name}</p>
                     </div>
                 ) : (
                     <div key="has-file" className="flex flex-wrap items-center gap-3 px-4 py-3 w-full">
-                        <span className="iconify text-green-600" data-icon="material-symbols-light:check-circle" style={{ fontSize: '1.25rem' }}></span>
+                        <Icon name="check-circle" size={20} className="text-green-600" />
                         <span className="flex-1 text-green-600 font-medium truncate">{cell._fileName}</span>
                         <span className="text-muted-foreground text-xs">→ {cell.name}</span>
                         <button className="inline-flex items-center justify-center p-2 rounded hover:bg-muted" onClick={e => { e.stopPropagation(); downloadSourceFile(path, cellIndex) }} title="Télécharger">
-                            <span className="iconify" data-icon="material-symbols-light:download" style={{ fontSize: '1.25rem' }}></span>
+                            <Icon name="download" size={20} />
                         </button>
                         <button className="inline-flex items-center justify-center p-2 rounded hover:bg-destructive/10 text-destructive" onClick={e => { e.stopPropagation(); removeSingleSourceFile(path, cellIndex) }} title="Supprimer">
-                            <span className="iconify" data-icon="material-symbols-light:close" style={{ fontSize: '1.5rem' }}></span>
+                            <Icon name="close" size={24} />
                         </button>
                     </div>
                 )}
@@ -492,19 +493,19 @@ function PublipostageWordBody({ cell, path, cellIndex }: any) {
             >
                 {!cell.docxTemplateFileName ? (
                     <div key="no-file" className="text-center p-1">
-                        <span className="iconify" data-icon="material-symbols-light:description" style={{ fontSize: '4rem', display: 'block', margin: 'auto' }}></span>
+                        <Icon name="description" size={64} />
                         <p className="m-0 text-muted-foreground text-sm">Glissez-déposez votre template Word (.docx)</p>
                         <p className="mt-0 mb-0 text-accent text-xs font-semibold">Template de publipostage</p>
                     </div>
                 ) : (
                     <div key="has-file" className="flex flex-wrap items-center gap-3 px-4 py-3 w-full">
-                        <span className="iconify text-green-600" data-icon="material-symbols-light:check-circle" style={{ fontSize: '1.25rem' }}></span>
+                        <Icon name="check-circle" size={20} className="text-green-600" />
                         <span className="flex-1 text-green-600 font-medium truncate">{cell.docxTemplateFileName}</span>
                         <button className="inline-flex items-center justify-center p-2 rounded hover:bg-muted" onClick={e => { e.stopPropagation(); downloadDocxTemplate(path, cellIndex) }} title="Télécharger">
-                            <span className="iconify" data-icon="material-symbols-light:download" style={{ fontSize: '1.25rem' }}></span>
+                            <Icon name="download" size={20} />
                         </button>
                         <button className="inline-flex items-center justify-center p-2 rounded hover:bg-destructive/10 text-destructive" onClick={e => { e.stopPropagation(); removeDocxTemplate(path, cellIndex) }} title="Supprimer">
-                            <span className="iconify" data-icon="material-symbols-light:close" style={{ fontSize: '1.5rem' }}></span>
+                            <Icon name="close" size={24} />
                         </button>
                     </div>
                 )}
@@ -522,7 +523,7 @@ function PublipostageWordBody({ cell, path, cellIndex }: any) {
                         <div className="text-sm font-semibold text-primary mb-1 flex items-center gap-2">
                             <span>Requête de nom de fichier</span>
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200">
-                                <span className="iconify" data-icon="material-symbols-light:storage" style={{ fontSize: '0.875rem' }}></span>
+                                <Icon name="storage" size={14} />
                                 SQL
                             </span>
                         </div>
@@ -569,7 +570,7 @@ function PdfmeBody({ cell, path, cellIndex }: any) {
                         <div className="text-sm font-semibold text-primary mb-1 flex items-center gap-2">
                             <span>Requête nom de fichier PDF</span>
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200">
-                                <span className="iconify" data-icon="material-symbols-light:storage" style={{ fontSize: '0.875rem' }}></span>
+                                <Icon name="storage" size={14} />
                                 SQL
                             </span>
                         </div>
@@ -748,7 +749,7 @@ export function CellBody({ cell, path, cellIndex, group }: { cell: any, path: nu
                             <button className="inline-flex items-center justify-center px-2 py-1 rounded text-sm border border-border hover:bg-muted"
                                 onClick={() => openChildGroupModal(path, cellIndex)}
                                 title="Ouvrir le groupe enfant">
-                                <span className="iconify" data-icon="material-symbols-light:export-notes-outline-sharp" style={{ fontSize: '1rem' }}></span>
+                                <Icon name="export-notes-outline-sharp" size={16} />
                             </button>
                         </div>
                     )}

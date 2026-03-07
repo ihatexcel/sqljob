@@ -9,6 +9,7 @@ import {
     Switch,
     Card, CardContent,
 } from '@sqlrooms/ui'
+import { Icon } from \'../../../lib/icons\'
 
 export function DbEngineModal() {
     const {
@@ -27,10 +28,10 @@ export function DbEngineModal() {
 
     return (
         <Dialog open={showDbEngineModal} onOpenChange={open => !open && set({ showDbEngineModal: false })}>
-            <DialogContent>
+            <DialogContent aria-describedby={undefined}>
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
-                        <span className="iconify" data-icon="material-symbols-light:settings" style={{ fontSize: '1.25rem' }}></span>
+                        <Icon name="settings" size={20} />
                         Configuration job générale
                     </DialogTitle>
                 </DialogHeader>
@@ -85,7 +86,7 @@ export function DbEngineModal() {
                     <div className="flex items-center justify-between gap-4 p-4 rounded-lg bg-muted">
                         <div>
                             <h4 className="font-semibold flex items-center gap-2">
-                                <span className="iconify" data-icon="material-symbols-light:account-tree" style={{ fontSize: '1.25rem' }}></span>
+                                <Icon name="account-tree" size={20} />
                                 DAG (graphe acyclique dirigé)
                             </h4>
                             <p className="text-sm text-muted-foreground mt-1">Les cellules dépendantes se rafraîchissent automatiquement.</p>

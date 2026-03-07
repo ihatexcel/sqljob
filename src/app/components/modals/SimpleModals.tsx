@@ -2,15 +2,17 @@
 /**
  * Modals simples : AddGroup, InsertGroup, InsertCell, AddCellToGroup
  */
+import { memo } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import { useNotebookStore } from '../../store/notebookStore'
 import {
     Button,
     Dialog, DialogContent, DialogHeader, DialogTitle,
 } from '@sqlrooms/ui'
+import { Icon, CellTypeIcon } from '../../../lib/icons'
 
 // ─── Icônes cellules ──────────────────────────────────────────────────────────
-function CellTypeGrid({ onSelect }: { onSelect: (type: string) => void }) {
+const CellTypeGrid = memo(function CellTypeGrid({ onSelect }: { onSelect: (type: string) => void }) {
     const cellTypes = useNotebookStore(s => s.cellTypes)
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -21,13 +23,13 @@ function CellTypeGrid({ onSelect }: { onSelect: (type: string) => void }) {
                     className="justify-start"
                     onClick={() => onSelect(ct.type)}
                 >
-                    <span dangerouslySetInnerHTML={{ __html: ct.icon }}></span>
+                    <CellTypeIcon type={ct.type} size={20} />
                     <span>{ct.label}</span>
                 </Button>
             ))}
         </div>
     )
-}
+})
 
 // ─── AddGroupModal ────────────────────────────────────────────────────────────
 export function AddGroupModal() {
@@ -39,10 +41,10 @@ export function AddGroupModal() {
 
     return (
         <Dialog open={showAddGroupModal} onOpenChange={open => !open && set({ showAddGroupModal: false })}>
-            <DialogContent>
+            <DialogContent aria-describedby={undefined}>
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
-                        <span className="iconify" data-icon="material-symbols-light:add" style={{ fontSize: '1.25rem' }}></span>
+                        <Icon name="add" size={20} />
                         Ajouter un groupe
                     </DialogTitle>
                 </DialogHeader>
@@ -65,10 +67,10 @@ export function InsertGroupModal() {
 
     return (
         <Dialog open={insertGroupModal.open} onOpenChange={open => !open && set({ insertGroupModal: { ...insertGroupModal, open: false } })}>
-            <DialogContent>
+            <DialogContent aria-describedby={undefined}>
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
-                        <span className="iconify" data-icon="material-symbols-light:add" style={{ fontSize: '1.25rem' }}></span>
+                        <Icon name="add" size={20} />
                         Insérer un groupe à la position {(insertGroupModal.atIndex ?? 0) + 1}
                     </DialogTitle>
                 </DialogHeader>
@@ -94,10 +96,10 @@ export function InsertCellModal() {
 
     return (
         <Dialog open={insertCellModal.open} onOpenChange={open => !open && set({ insertCellModal: { ...insertCellModal, open: false } })}>
-            <DialogContent>
+            <DialogContent aria-describedby={undefined}>
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
-                        <span className="iconify" data-icon="material-symbols-light:add" style={{ fontSize: '1.25rem' }}></span>
+                        <Icon name="add" size={20} />
                         Insérer une cellule à la position {(insertCellModal.atCellIndex ?? 0) + 1}
                     </DialogTitle>
                 </DialogHeader>
@@ -120,10 +122,10 @@ export function AddCellToGroupModal() {
 
     return (
         <Dialog open={addCellToGroupModal.open} onOpenChange={open => !open && set({ addCellToGroupModal: { ...addCellToGroupModal, open: false } })}>
-            <DialogContent>
+            <DialogContent aria-describedby={undefined}>
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
-                        <span className="iconify" data-icon="material-symbols-light:add" style={{ fontSize: '1.25rem' }}></span>
+                        <Icon name="add" size={20} />
                         Ajouter une cellule au groupe
                     </DialogTitle>
                 </DialogHeader>

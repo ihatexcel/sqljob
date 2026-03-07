@@ -279,20 +279,20 @@ function buildInitialState() {
         dragOverChildPath: null,
         draggedTopGroup: null,
 
-        // Cell types
+        // Cell types — icon = nom material-symbols-light (sans préfixe), rendu par CellTypeIcon (lucide)
         cellTypes: [
-            { type: 'markdown', label: 'Markdown', icon: '<span class="iconify" data-icon="material-symbols-light:edit-note" style="font-size:1.25rem"></span>' },
-            { type: 'source', label: 'Source', icon: '<span class="iconify" data-icon="material-symbols-light:folder-open" style="font-size:1.25rem"></span>' },
-            { type: 'uiParameter', label: 'Paramètre UI', icon: '<span class="iconify" data-icon="material-symbols-light:tune" style="font-size:1.25rem"></span>' },
-            { type: 'buttonRunNextCells', label: 'Bouton Exécuter', icon: '<span class="iconify" data-icon="material-symbols-light:play-circle" style="font-size:1.25rem"></span>' },
-            { type: 'sqlRecursiveParse', label: 'SQL', icon: '<span class="iconify" data-icon="material-symbols-light:storage" style="font-size:1.25rem"></span>' },
-            { type: 'table', label: 'Tableau', icon: '<span class="iconify" data-icon="material-symbols-light:table" style="font-size:1.25rem"></span>' },
-            { type: 'iframe', label: 'HTML/Iframe', icon: '<span class="iconify" data-icon="material-symbols-light:web" style="font-size:1.25rem"></span>' },
-            { type: 'sqlStat', label: 'Stat SQL', icon: '<span class="iconify" data-icon="material-symbols-light:monitoring" style="font-size:1.25rem"></span>' },
-            { type: 'publipostageWord', label: 'Publipostage Word', icon: '<span class="iconify" data-icon="material-symbols-light:description" style="font-size:1.25rem"></span>' },
-            { type: 'pdfme', label: 'PDF (pdfme)', icon: '<span class="iconify" data-icon="material-symbols-light:picture-as-pdf" style="font-size:1.25rem"></span>' },
-            { type: 'echart', label: 'EChart (Apache ECharts)', icon: '<span class="iconify" data-icon="material-symbols-light:bar-chart" style="font-size:1.25rem"></span>' },
-            { type: 'perspective', label: 'Perspective Viewer', icon: '<span class="iconify" data-icon="material-symbols-light:analytics" style="font-size:1.25rem"></span>' }
+            { type: 'markdown',           label: 'Markdown',                icon: 'edit-note' },
+            { type: 'source',             label: 'Source',                   icon: 'folder-open' },
+            { type: 'uiParameter',        label: 'Paramètre UI',             icon: 'tune' },
+            { type: 'buttonRunNextCells', label: 'Bouton Exécuter',          icon: 'play-circle' },
+            { type: 'sqlRecursiveParse',  label: 'SQL',                      icon: 'storage' },
+            { type: 'table',              label: 'Tableau',                  icon: 'table' },
+            { type: 'iframe',             label: 'HTML/Iframe',              icon: 'web' },
+            { type: 'sqlStat',            label: 'Stat SQL',                 icon: 'monitoring' },
+            { type: 'publipostageWord',   label: 'Publipostage Word',        icon: 'description' },
+            { type: 'pdfme',              label: 'PDF (pdfme)',               icon: 'picture-as-pdf' },
+            { type: 'echart',             label: 'EChart (Apache ECharts)',  icon: 'bar-chart' },
+            { type: 'perspective',        label: 'Perspective Viewer',       icon: 'analytics' },
         ],
 
         _tables: {},
