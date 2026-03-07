@@ -9,7 +9,7 @@ import {
     Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
     Spinner,
 } from '@sqlrooms/ui'
-import { Icon } from \'../../../lib/icons\'
+import { Icon } from '../../../lib/icons'
 
 interface Props {
     onUnlocked: () => void

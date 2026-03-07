@@ -9,7 +9,7 @@ import {
     Switch,
     Card, CardContent,
 } from '@sqlrooms/ui'
-import { Icon } from \'../../../lib/icons\'
+import { Icon } from '../../../lib/icons'
 
 export function DbEngineModal() {
     const {

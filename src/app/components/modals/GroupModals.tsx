@@ -15,7 +15,7 @@ import {
     Switch,
     Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@sqlrooms/ui'
-import { Icon } from \'../../../lib/icons\'
+import { Icon } from '../../../lib/icons'
 
 // ─── LoopConfigModal ──────────────────────────────────────────────────────────
 export function LoopConfigModal() {

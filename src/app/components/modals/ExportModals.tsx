@@ -12,7 +12,7 @@ import {
     Switch,
     Spinner,
 } from '@sqlrooms/ui'
-import { Icon } from \'../../../lib/icons\'
+import { Icon } from '../../../lib/icons'
 
 // ─── ExportModal ──────────────────────────────────────────────────────────────
 export function ExportModal() {
