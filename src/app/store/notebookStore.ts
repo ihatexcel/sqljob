@@ -20,15 +20,17 @@ import { DatabaseIcon } from 'lucide-react'
 import { NotebookPanel } from '../components/NotebookPanel'
 import { DataSourcesPanel } from '../components/DataSourcesPanel'
 import '@iconify/iconify'
-import { pagesMixin } from '../mixins/pagesMixin'
-import { helpersMixin } from '../mixins/helpersMixin'
+// Slices convertis (Zustand pur, sans proxy this)
+import { createPagesSlice } from './slices/pagesSlice'
+import { createHelpersSlice } from './slices/helpersSlice'
+import { createParametersSlice } from './slices/parametersSlice'
+import { createExportSlice } from './slices/exportSlice'
+// Mixins restants (encore sous proxy createThisProxy — migration progressive)
 import { groupsMixin } from '../mixins/groupsMixin'
 import { cellsMixin } from '../mixins/cellsMixin'
 import { filesMixin } from '../mixins/filesMixin'
 import { executionMixin } from '../mixins/executionMixin'
-import { parametersMixin } from '../mixins/parametersMixin'
 import { editorsMixin } from '../mixins/editorsMixin'
-import { exportImportMixin } from '../mixins/exportImportMixin'
 import { ConfigManager } from '../../lib/ConfigManager'
 import { DuckDBManager } from '../../lib/DuckDBManager'
 import { CellConfigService, initializeCell } from '../../lib/CellConfigService'
@@ -356,17 +358,19 @@ export const useNotebookStore = create<any>((set, get, api) => {
 
     const initialState = buildInitialState()
 
-    // Fusionner toutes les méthodes des mixins
+    // Slices Zustand purs (convertis depuis les mixins Alpine)
+    const pagesActions = createPagesSlice(set, get)
+    const helpersActions = createHelpersSlice(set, get)
+    const parametersActions = createParametersSlice(set, get)
+    const exportActions = createExportSlice(set, get)
+
+    // Fusionner les mixins restants (encore sous proxy createThisProxy)
     const allMixinMethods: any = {
-        ...pagesMixin(),
-        ...helpersMixin(),
         ...groupsMixin(),
         ...cellsMixin(),
         ...filesMixin(),
         ...executionMixin(),
-        ...parametersMixin(),
         ...editorsMixin(),
-        ...exportImportMixin(),
     }
 
     // Wrapper chaque méthode pour qu'elle utilise le proxy "this"
@@ -386,6 +390,9 @@ export const useNotebookStore = create<any>((set, get, api) => {
         ...roomShellState,
         ...initialState,
         ...wrappedActions,
+        // Slices convertis (écrasent les méthodes équivalentes des wrappedActions si elles existent)
+        ...pagesActions,
+        ...exportActions,
 
         // db.schemaTrees démarre undefined dans DuckDbSlice.
         // deepEquals([], []) bloque la mise à jour si aucune table → schemaTrees reste undefined.
