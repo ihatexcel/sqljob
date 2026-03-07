@@ -66,9 +66,10 @@ function SidebarControls() {
 
 export function Room() {
     const sqlEditorDisclosure = useDisclosure()
-    const { schemaTrees, isRefreshingTableSchemas } = useNotebookStore(useShallow(s => ({
+    const { schemaTrees, isRefreshingTableSchemas, showLayout } = useNotebookStore(useShallow(s => ({
         schemaTrees: s.db?.schemaTrees,
         isRefreshingTableSchemas: s.db?.isRefreshingTableSchemas,
+        showLayout: s.showLayout,
     })))
 
     const handleSqlEditorOpen = () => {
@@ -79,7 +80,7 @@ export function Room() {
     return (
         <>
             <RoomShell roomStore={useNotebookStore} className="h-screen w-screen">
-                <RoomShell.Sidebar>
+                <RoomShell.Sidebar className={showLayout ? '' : 'hidden'}>
                     <RoomShell.SidebarButton
                         title="SQL Editor"
                         onClick={handleSqlEditorOpen}
