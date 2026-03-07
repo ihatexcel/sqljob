@@ -12,7 +12,7 @@ export function TemplateModal() {
 
     return (
         <Dialog open={isOpen} onOpenChange={open => !open && close()}>
-            <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col p-0 gap-0">
+            <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col p-0 gap-0" aria-describedby={undefined}>
                 <DialogHeader className="p-4 border-b border-border">
                     <DialogTitle>{getModalTitle()}</DialogTitle>
                 </DialogHeader>

@@ -39,7 +39,7 @@ export function ExportModal() {
 
     return (
         <Dialog open={!!em.show} onOpenChange={open => !open && cancelExport()}>
-            <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+            <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto" aria-describedby={undefined}>
                 <DialogHeader>
                     <DialogTitle>{typeLabels[em.type] || em.type}</DialogTitle>
                 </DialogHeader>
@@ -162,7 +162,7 @@ export function GistTokenModal() {
 
     return (
         <Dialog open={showGistTokenModal} onOpenChange={open => !open && cancelGithubToken()}>
-            <DialogContent className="max-w-lg">
+            <DialogContent className="max-w-lg" aria-describedby={undefined}>
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                         <span className="iconify" data-icon="material-symbols-light:settings" style={{ fontSize: '1.25rem' }}></span>
@@ -216,7 +216,7 @@ export function GistResultModal() {
 
     return (
         <Dialog open={showGistModal} onOpenChange={open => !open && closeGistModal()}>
-            <DialogContent className="max-w-2xl">
+            <DialogContent className="max-w-2xl" aria-describedby={undefined}>
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                         <span className="iconify text-green-600" data-icon="material-symbols-light:check-circle" style={{ fontSize: '1.25rem' }}></span>
@@ -280,7 +280,7 @@ export function JsonPassphraseModal() {
 
     return (
         <Dialog open={showJsonPassphraseModal} onOpenChange={open => !open && cancelJsonPassphraseModal()}>
-            <DialogContent className="max-w-md">
+            <DialogContent className="max-w-md" aria-describedby={undefined}>
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                         <span className="iconify" data-icon="material-symbols-light:lock" style={{ fontSize: '1.25rem' }}></span>

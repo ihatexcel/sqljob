@@ -2,6 +2,7 @@
 /**
  * Modals simples : AddGroup, InsertGroup, InsertCell, AddCellToGroup
  */
+import { memo } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import { useNotebookStore } from '../../store/notebookStore'
 import {
@@ -10,7 +11,7 @@ import {
 } from '@sqlrooms/ui'
 
 // ─── Icônes cellules ──────────────────────────────────────────────────────────
-function CellTypeGrid({ onSelect }: { onSelect: (type: string) => void }) {
+const CellTypeGrid = memo(function CellTypeGrid({ onSelect }: { onSelect: (type: string) => void }) {
     const cellTypes = useNotebookStore(s => s.cellTypes)
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -27,7 +28,7 @@ function CellTypeGrid({ onSelect }: { onSelect: (type: string) => void }) {
             ))}
         </div>
     )
-}
+})
 
 // ─── AddGroupModal ────────────────────────────────────────────────────────────
 export function AddGroupModal() {
@@ -39,7 +40,7 @@ export function AddGroupModal() {
 
     return (
         <Dialog open={showAddGroupModal} onOpenChange={open => !open && set({ showAddGroupModal: false })}>
-            <DialogContent>
+            <DialogContent aria-describedby={undefined}>
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                         <span className="iconify" data-icon="material-symbols-light:add" style={{ fontSize: '1.25rem' }}></span>
@@ -65,7 +66,7 @@ export function InsertGroupModal() {
 
     return (
         <Dialog open={insertGroupModal.open} onOpenChange={open => !open && set({ insertGroupModal: { ...insertGroupModal, open: false } })}>
-            <DialogContent>
+            <DialogContent aria-describedby={undefined}>
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                         <span className="iconify" data-icon="material-symbols-light:add" style={{ fontSize: '1.25rem' }}></span>
@@ -94,7 +95,7 @@ export function InsertCellModal() {
 
     return (
         <Dialog open={insertCellModal.open} onOpenChange={open => !open && set({ insertCellModal: { ...insertCellModal, open: false } })}>
-            <DialogContent>
+            <DialogContent aria-describedby={undefined}>
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                         <span className="iconify" data-icon="material-symbols-light:add" style={{ fontSize: '1.25rem' }}></span>
@@ -120,7 +121,7 @@ export function AddCellToGroupModal() {
 
     return (
         <Dialog open={addCellToGroupModal.open} onOpenChange={open => !open && set({ addCellToGroupModal: { ...addCellToGroupModal, open: false } })}>
-            <DialogContent>
+            <DialogContent aria-describedby={undefined}>
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                         <span className="iconify" data-icon="material-symbols-light:add" style={{ fontSize: '1.25rem' }}></span>

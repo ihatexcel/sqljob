@@ -8,7 +8,7 @@ export function ConfirmModal() {
     const { isOpen, message, confirm, cancel } = useConfirmModal()
     return (
         <Dialog open={isOpen} onOpenChange={open => !open && cancel()}>
-            <DialogContent className="max-w-sm">
+            <DialogContent className="max-w-sm" aria-describedby={undefined}>
                 <DialogHeader>
                     <DialogTitle>Confirmation</DialogTitle>
                     <DialogDescription>{message}</DialogDescription>

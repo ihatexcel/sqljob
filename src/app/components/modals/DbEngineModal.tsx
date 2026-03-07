@@ -27,7 +27,7 @@ export function DbEngineModal() {
 
     return (
         <Dialog open={showDbEngineModal} onOpenChange={open => !open && set({ showDbEngineModal: false })}>
-            <DialogContent>
+            <DialogContent aria-describedby={undefined}>
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                         <span className="iconify" data-icon="material-symbols-light:settings" style={{ fontSize: '1.25rem' }}></span>

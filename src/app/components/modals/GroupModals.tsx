@@ -32,7 +32,7 @@ export function LoopConfigModal() {
 
     return (
         <Dialog open={loopConfigModal.open} onOpenChange={open => !open && set({ loopConfigModal: { open: false, path: null } })}>
-            <DialogContent className="max-w-2xl">
+            <DialogContent className="max-w-2xl" aria-describedby={undefined}>
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                         <span className="iconify" data-icon="material-symbols-light:autorenew" style={{ fontSize: '1.25rem' }}></span>
@@ -116,7 +116,7 @@ export function GroupSettingsModal() {
 
     return (
         <Dialog open={groupSettingsModal.open} onOpenChange={open => !open && set({ groupSettingsModal: { open: false, path: null } })}>
-            <DialogContent className="max-w-lg">
+            <DialogContent className="max-w-lg" aria-describedby={undefined}>
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                         <span className="iconify" data-icon="material-symbols-light:settings" style={{ fontSize: '1.25rem' }}></span>
@@ -231,7 +231,7 @@ export function ChildGroupModal() {
 
     return (
         <Dialog open={open} onOpenChange={open => !open && closeChildGroupModal()}>
-            <DialogContent className="w-screen h-screen max-w-none max-h-none rounded-none p-0 flex flex-col">
+            <DialogContent className="w-screen h-screen max-w-none max-h-none rounded-none p-0 flex flex-col" aria-describedby={undefined}>
                 {/* Header sticky */}
                 <div className="flex items-center justify-between bg-primary text-primary-foreground px-6 py-4 shadow-md flex-none">
                     <h3 className="text-xl font-bold flex items-center gap-2">
