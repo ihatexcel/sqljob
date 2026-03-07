@@ -9,6 +9,7 @@ import { useNotebookStore } from '../store/notebookStore'
 import { ConfigManager } from '../../lib/ConfigManager'
 import { CDNManager } from '../../lib/CDNManager'
 import { SqlEditorWidget } from './SqlEditorWidget'
+import { SqlDataTable } from './SqlDataTable'
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 function CellBodySkeleton() {
@@ -197,33 +198,21 @@ function ButtonRunBody({ cell, path, cellIndex }: any) {
 // ─── SqlTableBody ─────────────────────────────────────────────────────────────
 function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
     const {
-        devMode, isLoading, hasCellHeight,
+        devMode, hasCellHeight,
         showSqlEditorVisible, isSqlResultTabular, isSqlResultText,
-        getSqlResultAsText, renderTableInContainer,
+        getSqlResultAsText,
     } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
-        isLoading: s.isLoading,
         hasCellHeight: s.hasCellHeight,
         showSqlEditorVisible: s.showSqlEditorVisible,
         isSqlResultTabular: s.isSqlResultTabular,
         isSqlResultText: s.isSqlResultText,
         getSqlResultAsText: s.getSqlResultAsText,
-        renderTableInContainer: s.renderTableInContainer,
     })))
 
-    const tableRef = useRef<HTMLDivElement>(null)
-
-    useEffect(() => {
-        if (tableRef.current && cell._results?.length > 0 && cell._status !== 'running') {
-            // fromExecute=true : bypass du garde anti-cascade Alpine (inutile en React,
-            // pas de MutationObserver qui déclenche x-init). Sans ça, le guard reste à
-            // true car React réutilise le même nœud DOM et le contenu SimpleDatatables
-            // de l'exécution précédente est encore présent dans le container.
-            renderTableInContainer?.(cell, true)
-        }
-    }, [cell._results, cell._status])
-
     const hasHeight = hasCellHeight(cell)
+    const isRunning = cell._status === 'running'
+    const searchable = cell.type === 'table'
 
     return (
         <div className={hasHeight ? 'flex-1 min-h-0 flex flex-col' : ''}>
@@ -235,9 +224,9 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
                 <>
                     {showSqlEditorVisible?.(cell) && isSqlResultTabular?.(cell) && (
                         <div className={`relative rounded-lg mt-2 ${hasHeight ? 'flex-1 min-h-0 overflow-auto' : ''}`}>
-                            {cell._status === 'running'
+                            {isRunning
                                 ? <div className="bg-background rounded-lg overflow-x-auto"><TableSkeleton /></div>
-                                : <div ref={tableRef} id={`table-${cell._id}`} className="bg-background rounded-lg overflow-x-auto"></div>
+                                : <div className="bg-background rounded-lg overflow-x-auto"><SqlDataTable cell={cell} searchable={searchable} /></div>
                             }
                         </div>
                     )}
@@ -247,9 +236,9 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
                 </>
             ) : (
                 <div className={hasHeight ? 'flex-1 min-h-0 overflow-auto' : ''}>
-                    {cell._status === 'running'
+                    {isRunning
                         ? <div className="bg-background rounded-lg overflow-x-auto"><TableSkeleton /></div>
-                        : <div ref={tableRef} id={`table-${cell._id}`} className="bg-background rounded-lg overflow-x-auto"></div>
+                        : <div className="bg-background rounded-lg overflow-x-auto"><SqlDataTable cell={cell} searchable={searchable} /></div>
                     }
                 </div>
             )}
