@@ -392,6 +392,8 @@ export const useNotebookStore = create<any>((set, get, api) => {
         ...wrappedActions,
         // Slices convertis (écrasent les méthodes équivalentes des wrappedActions si elles existent)
         ...pagesActions,
+        ...helpersActions,
+        ...parametersActions,
         ...exportActions,
 
         // db.schemaTrees démarre undefined dans DuckDbSlice.
