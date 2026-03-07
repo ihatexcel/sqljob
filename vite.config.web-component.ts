@@ -1,24 +1,31 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
-import path from 'path'
 
 export default defineConfig({
     plugins: [
         react(),
         tailwindcss(),
-    ],
-
-    resolve: {
-        alias: {
-            // @sqlrooms/monaco-editor est stubbé dans le build CDN :
-            // Monaco (~4MB) est trop lourd à bundler et ses imports ESM directs
-            // (ex: monaco-editor/esm/vs/language/json/monaco.contribution) ne peuvent
-            // pas être résolus comme bare specifiers dans le navigateur.
-            // Le SqlEditorModal fonctionnera sans l'éditeur Monaco (schema tree OK).
-            '@sqlrooms/monaco-editor': path.resolve(__dirname, 'src/stubs/monaco-editor-stub.ts'),
+        // JsonMonacoEditor.js a un import statique de side-effect :
+        //   import 'monaco-editor/esm/vs/language/json/monaco.contribution'
+        // Avec external: [/^monaco-editor/], cet import devient un bare specifier ESM
+        // que le navigateur ne peut pas résoudre. On le supprime par transform (avant la
+        // résolution external). sqljob n'utilise pas JsonMonacoEditor.
+        {
+            name: 'patch-json-monaco-editor',
+            transform(code, id) {
+                if (id.includes('JsonMonacoEditor')) {
+                    return {
+                        code: code.replace(
+                            /import\s+['"]monaco-editor\/esm\/vs\/language\/json\/monaco\.contribution['"];?/,
+                            '// (patched: JSON Monaco contribution not needed in CDN build)'
+                        ),
+                        map: null,
+                    }
+                }
+            },
         },
-    },
+    ],
 
     define: {
         'process.env.NODE_ENV': '"production"',
@@ -35,6 +42,8 @@ export default defineConfig({
         assetsInlineLimit: 100_000_000,
         sourcemap: true,
         rollupOptions: {
+            // monaco-editor est externalisé (trop lourd à bundler).
+            // Il est chargé au runtime depuis jsDelivr via AMD (@monaco-editor/react loader).
             external: [/^monaco-editor/],
             output: {
                 assetFileNames: 'sqljob[extname]',
