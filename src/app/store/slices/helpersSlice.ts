@@ -196,7 +196,7 @@ export const createHelpersSlice = (set: any, get: any) => ({
     getCellIcon(type: string) {
         const { cellTypes } = get()
         const found = cellTypes.find((ct: any) => ct.type === type)
-        return found ? found.icon : '<span class="iconify" data-icon="material-symbols-light:description" style="font-size:1rem"></span>'
+        return found ? found.icon : 'description'
     },
 
     generateCellId() {
