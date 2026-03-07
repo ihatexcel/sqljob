@@ -11,6 +11,7 @@
  * - createRoomShellSlice ajoute le système de layout mosaic (RoomShell)
  */
 import { create } from 'zustand'
+import { setAutoFreeze } from 'immer'
 import { createRoomShellSlice } from '@sqlrooms/room-shell'
 import { createBaseDuckDbConnector } from '@sqlrooms/duckdb-core'
 import { createSqlEditorSlice, createDefaultSqlEditorConfig } from '@sqlrooms/sql-editor'
@@ -41,6 +42,11 @@ import { CDNManager } from '../../lib/CDNManager'
 import { CELL_TYPE_SCHEMAS, CELL_TYPE_HANDLERS } from '../../lib/cellTypeSchemas'
 import { formatValueForInputType } from '../../lib/utils'
 import { useConfirmModal, useTemplateModal } from './uiStores'
+
+// Les mixins Alpine mutent directement les tableaux du state (this.groups.push(...)).
+// @sqlrooms/duckdb utilise Immer en interne qui freeze le state après chaque produce().
+// setAutoFreeze(false) empêche ce freeze pour que les mutations des mixins fonctionnent.
+setAutoFreeze(false)
 
 // ─── Shim Alpine pour compatibilité mixins ───────────────────────────────────
 // Les mixins appellent Alpine.store('confirmModal').show(...) et Alpine.initTree()
