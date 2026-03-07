@@ -77,7 +77,7 @@ export const createExportSlice = (set: any, get: any) => ({
         const showLayout = exportModal.showLayout
         const includeFiles = !!exportModal.includeFiles
 
-        set((st: any) => { st.exportModal = { ...st.exportModal, show: false } })
+        set((st: any) => ({ exportModal: { ...st.exportModal, show: false } }))
 
         try {
             set({ isLoading: true })
@@ -243,7 +243,7 @@ ${configScriptTag}${embeddedScripts}</head>
     },
 
     cancelExport() {
-        set((s: any) => { s.exportModal = { ...s.exportModal, show: false } })
+        set((s: any) => ({ exportModal: { ...s.exportModal, show: false } }))
     },
 
     saveGithubToken() {
@@ -385,18 +385,15 @@ ${configScriptTag}${embeddedScripts}</head>
             loadedPages = [{ _id: get().generatePageId(), name: 'Feuille 1', groups: [], linkGroups: [] }]
         }
 
-        set((s: any) => {
-            s.pages = loadedPages
-            s.activePageIndex = 0
-            s._pagesInitialized.clear()
-        })
+        set({ pages: loadedPages, activePageIndex: 0, _pagesInitialized: new Set() })
         get().ensureAllCellsHaveNames()
         await get().loadPendingSourceFiles()
         await get().evaluateAllGroupIfQueries()
         await get().runAllGroups()
-        set((s: any) => {
-            if (s.pages[0]) s._pagesInitialized.add(s.pages[0]._id)
-        })
+        const firstPage = get().pages[0]
+        if (firstPage) {
+            set((s: any) => ({ _pagesInitialized: new Set([...s._pagesInitialized, firstPage._id]) }))
+        }
         setTimeout(() => setTimeout(() => get().refreshMarkdownCellsForPage(0), 300), 0)
 
         const configDbEngine = config.ui?.dbEngine
