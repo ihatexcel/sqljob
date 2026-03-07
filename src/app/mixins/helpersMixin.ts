@@ -94,11 +94,17 @@ export function helpersMixin() {
                         // Appel room.initialize() comme createRoomStore le fait dans le mosaic example
                         // → db.initialize() → refreshTableSchemas() → peuple db.schemaTrees pour SqlEditorModal
                         try {
-                            console.log('[sqljob] Calling room.initialize()…');
                             await this.room.initialize();
-                            console.log('[sqljob] room.initialize() done. schemaTrees:', this.db.schemaTrees);
                         } catch (err) {
                             console.warn('[sqljob] room.initialize() error:', err);
+                        }
+                        // db.schemaTrees peut rester vide si deepEquals([],[]) a bloqué la mise à jour initiale.
+                        // Un second appel avec des tables créées par runAllGroups() force la synchronisation.
+                        try {
+                            await this.db.refreshTableSchemas();
+                            console.log('[sqljob] schemaTrees:', this.db.schemaTrees);
+                        } catch (err) {
+                            console.warn('[sqljob] refreshTableSchemas error:', err);
                         }
                         // Signaler à RoomShell que l'init est terminée
                         this.room = { ...this.room, initialized: true };

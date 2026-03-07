@@ -380,6 +380,11 @@ export const useNotebookStore = create<any>((set, get, api) => {
         ...initialState,
         ...wrappedActions,
 
+        // db.schemaTrees démarre undefined dans DuckDbSlice.
+        // deepEquals([], []) bloque la mise à jour si aucune table → schemaTrees reste undefined.
+        // On force [] pour que TableStructurePanel render même quand la base est vide.
+        db: { ...roomShellState.db, schemaTrees: [] },
+
         // Override addRoomFile : redirige vers DuckDBManager au lieu du connecteur sqlrooms
         // pour partager une seule instance DuckDB avec toutes les cells sqljob.
         addRoomFile: async (file: File, tableName: string) => {
