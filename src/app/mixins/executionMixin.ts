@@ -1,10 +1,6 @@
 // @ts-nocheck
 import { safeEvalJs } from '../../lib/safeEval';
-
-// Stockage des données brutes hors Proxy Alpine pour éviter le freeze
-// sur les grands jeux de données (millions de traps lors de l'itération).
-// Déclarée ici au niveau module (singleton ESM) et partagée avec cellsMixin.
-export const _rawTableDataStore = new Map()
+import { rawTableDataStore as _rawTableDataStore } from '../../lib/tableDataStore';
 
 export function executionMixin() {
     return {
