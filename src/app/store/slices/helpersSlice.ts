@@ -80,9 +80,10 @@ export const createHelpersSlice = (set: any, get: any) => ({
             await get().loadPendingSourceFiles()
             await get().evaluateAllGroupIfQueries()
             await get().runAllGroups()
-            set((s: any) => {
-                if (s.pages[0]) s._pagesInitialized.add(s.pages[0]._id)
-            })
+            const firstPage = get().pages[0]
+            if (firstPage) {
+                set((s: any) => ({ _pagesInitialized: new Set([...s._pagesInitialized, firstPage._id]) }))
+            }
             setTimeout(() => setTimeout(() => get().refreshMarkdownCellsForPage(0), 300), 0)
             await get().refreshDuckdbTables()
             try {

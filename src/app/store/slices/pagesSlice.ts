@@ -4,6 +4,7 @@
  * Converti de pagesMixin.ts (Alpine this-proxy) vers un slice Zustand pur.
  * Utilise get()/set() directement au lieu du proxy createThisProxy.
  */
+import { produce } from 'immer'
 import { ConfigManager } from '../../../lib/ConfigManager'
 import { useConfirmModal } from '../uiStores'
 
@@ -17,10 +18,10 @@ export const createPagesSlice = (set: any, get: any) => ({
             groups: [],
             linkGroups: []
         }
-        set((s: any) => {
+        set(produce((s: any) => {
             s.pages.push(newPage)
             s.activePageIndex = s.pages.length - 1
-        })
+        }))
     },
 
     async deletePage(index: number) {
@@ -30,12 +31,12 @@ export const createPagesSlice = (set: any, get: any) => ({
             return
         }
         if (await useConfirmModal.getState().show(`Supprimer la page "${pages[index].name}" ?`)) {
-            set((s: any) => {
+            set(produce((s: any) => {
                 s.pages.splice(index, 1)
                 if (s.activePageIndex >= s.pages.length) {
                     s.activePageIndex = s.pages.length - 1
                 }
-            })
+            }))
         }
     },
 
@@ -64,7 +65,7 @@ export const createPagesSlice = (set: any, get: any) => ({
             set({ draggedPageIndex: null, dragOverPageIndex: null })
             return
         }
-        set((s: any) => {
+        set(produce((s: any) => {
             const [movedPage] = s.pages.splice(draggedPageIndex, 1)
             s.pages.splice(targetIndex, 0, movedPage)
             if (s.activePageIndex === draggedPageIndex) {
@@ -76,7 +77,7 @@ export const createPagesSlice = (set: any, get: any) => ({
             }
             s.draggedPageIndex = null
             s.dragOverPageIndex = null
-        })
+        }))
         get().saveToLocalStorage?.()
     },
 
