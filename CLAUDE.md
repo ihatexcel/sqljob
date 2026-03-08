@@ -8,13 +8,13 @@
 |---------|------|-------------|
 | `main`  | Production | `/` (racine) |
 | `beta`  | Recette / pré-prod | `/beta` |
-| `dev`   | Intégration continue | `/dev` |
+| `claude/dev` | Intégration continue | `/dev` |
 
 ### Règles de développement
 
-- **Ne jamais committer directement sur `main`, `beta` ou `dev`.** Tout développement se fait sur une branche `claude/<feature>`.
-- Chaque branche `claude/<feature>` doit faire l'objet d'une **Pull Request** vers `dev` avant tout merge.
-- La promotion se fait par PR : `dev` → `beta` → `main`.
+- **Ne jamais committer directement sur `main`, `beta` ou `claude/dev`.** Tout développement se fait sur une branche `claude/<feature>`.
+- Chaque branche `claude/<feature>` doit faire l'objet d'une **Pull Request** vers `claude/dev` avant tout merge.
+- La promotion se fait par PR : `claude/dev` → `beta` → `main`.
 - Toujours committer et pousser les changements sur la branche de travail désignée.
 
 ## Build CDN
