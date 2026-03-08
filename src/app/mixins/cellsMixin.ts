@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { _rawTableDataStore } from './executionMixin'
+import { rawTableDataStore as _rawTableDataStore } from '../../lib/tableDataStore'
 
 export function cellsMixin() {
     return {

@@ -8,18 +8,29 @@
  * - Un shim Alpine minimal (window.Alpine) permet aux mixins d'utiliser
  *   Alpine.store('confirmModal') sans modification
  * - forceUpdate() déclenche un re-render React après des mutations profondes
+ * - createRoomShellSlice ajoute le système de layout mosaic (RoomShell)
  */
 import { create } from 'zustand'
+import { setAutoFreeze } from 'immer'
+import { createRoomShellSlice } from '@sqlrooms/room-shell'
+import { createBaseDuckDbConnector } from '@sqlrooms/duckdb-core'
+import { createSqlEditorSlice, createDefaultSqlEditorConfig } from '@sqlrooms/sql-editor'
+import { DatabaseIcon } from 'lucide-react'
+// Panel components (lazy import safe — utilisés uniquement au rendu, pas à l'évaluation)
+import { NotebookPanel } from '../components/NotebookPanel'
+import { DataSourcesPanel } from '../components/DataSourcesPanel'
 import '@iconify/iconify'
-import { pagesMixin } from '../mixins/pagesMixin'
-import { helpersMixin } from '../mixins/helpersMixin'
+// Slices convertis (Zustand pur, sans proxy this)
+import { createPagesSlice } from './slices/pagesSlice'
+import { createHelpersSlice } from './slices/helpersSlice'
+import { createParametersSlice } from './slices/parametersSlice'
+import { createExportSlice } from './slices/exportSlice'
+// Mixins restants (encore sous proxy createThisProxy — migration progressive)
 import { groupsMixin } from '../mixins/groupsMixin'
 import { cellsMixin } from '../mixins/cellsMixin'
 import { filesMixin } from '../mixins/filesMixin'
 import { executionMixin } from '../mixins/executionMixin'
-import { parametersMixin } from '../mixins/parametersMixin'
 import { editorsMixin } from '../mixins/editorsMixin'
-import { exportImportMixin } from '../mixins/exportImportMixin'
 import { ConfigManager } from '../../lib/ConfigManager'
 import { DuckDBManager } from '../../lib/DuckDBManager'
 import { CellConfigService, initializeCell } from '../../lib/CellConfigService'
@@ -33,6 +44,11 @@ import { CDNManager } from '../../lib/CDNManager'
 import { CELL_TYPE_SCHEMAS, CELL_TYPE_HANDLERS } from '../../lib/cellTypeSchemas'
 import { formatValueForInputType } from '../../lib/utils'
 import { useConfirmModal, useTemplateModal } from './uiStores'
+
+// Les mixins Alpine mutent directement les tableaux du state (this.groups.push(...)).
+// @sqlrooms/duckdb utilise Immer en interne qui freeze le state après chaque produce().
+// setAutoFreeze(false) empêche ce freeze pour que les mutations des mixins fonctionnent.
+setAutoFreeze(false)
 
 // ─── Shim Alpine pour compatibilité mixins ───────────────────────────────────
 // Les mixins appellent Alpine.store('confirmModal').show(...) et Alpine.initTree()
@@ -177,11 +193,15 @@ function buildInitialState() {
     }
 
     const devMode = config.ui?.devMode !== false
-    const showLayout = (config.ui?.showLayout ?? config.ui?.displaySettings) !== false
+    // La barre latérale est cachée par défaut — le logo sqljob dans le header la toggle.
+    const showLayout = config.ui?.showLayout ?? false
     const savedTheme = typeof localStorage !== 'undefined' ? localStorage.getItem('sqljob-theme') : null
     const currentTheme = config.ui?.theme || savedTheme || 'light'
     if (typeof document !== 'undefined') {
-        document.documentElement.setAttribute('data-theme', currentTheme)
+        const theme = currentTheme === 'dark' ? 'dark' : 'light'
+        document.documentElement.classList.remove('light', 'dark')
+        document.documentElement.classList.add(theme)
+        localStorage.setItem('sqljob-theme', theme)
     }
     const savedDbEngine = typeof localStorage !== 'undefined' ? localStorage.getItem('sqljob-dbEngine') : null
     const initialDbEngine = config.ui?.dbEngine || savedDbEngine || 'duckdb-wasm'
@@ -195,14 +215,7 @@ function buildInitialState() {
         statusType: '',
         devMode,
         showLayout,
-        availableThemes: [
-            'light', 'dark', 'cupcake', 'bumblebee', 'emerald', 'corporate',
-            'synthwave', 'retro', 'cyberpunk', 'valentine', 'halloween',
-            'garden', 'forest', 'aqua', 'lofi', 'pastel', 'fantasy',
-            'wireframe', 'black', 'luxury', 'dracula', 'cmyk', 'autumn',
-            'business', 'acid', 'lemonade', 'night', 'coffee', 'winter',
-            'dim', 'nord', 'sunset'
-        ],
+        availableThemes: ['light', 'dark'],
         currentTheme,
         dbEngine: initialDbEngine,
         showDbEngineModal: false,
@@ -266,42 +279,98 @@ function buildInitialState() {
         dragOverChildPath: null,
         draggedTopGroup: null,
 
-        // Cell types
+        // Cell types — icon = nom material-symbols-light (sans préfixe), rendu par CellTypeIcon (lucide)
         cellTypes: [
-            { type: 'markdown', label: 'Markdown', icon: '<span class="iconify" data-icon="material-symbols-light:edit-note" style="font-size:1.25rem"></span>' },
-            { type: 'source', label: 'Source', icon: '<span class="iconify" data-icon="material-symbols-light:folder-open" style="font-size:1.25rem"></span>' },
-            { type: 'uiParameter', label: 'Paramètre UI', icon: '<span class="iconify" data-icon="material-symbols-light:tune" style="font-size:1.25rem"></span>' },
-            { type: 'buttonRunNextCells', label: 'Bouton Exécuter', icon: '<span class="iconify" data-icon="material-symbols-light:play-circle" style="font-size:1.25rem"></span>' },
-            { type: 'sqlRecursiveParse', label: 'SQL', icon: '<span class="iconify" data-icon="material-symbols-light:storage" style="font-size:1.25rem"></span>' },
-            { type: 'table', label: 'Tableau', icon: '<span class="iconify" data-icon="material-symbols-light:table" style="font-size:1.25rem"></span>' },
-            { type: 'iframe', label: 'HTML/Iframe', icon: '<span class="iconify" data-icon="material-symbols-light:web" style="font-size:1.25rem"></span>' },
-            { type: 'sqlStat', label: 'Stat SQL', icon: '<span class="iconify" data-icon="material-symbols-light:monitoring" style="font-size:1.25rem"></span>' },
-            { type: 'publipostageWord', label: 'Publipostage Word', icon: '<span class="iconify" data-icon="material-symbols-light:description" style="font-size:1.25rem"></span>' },
-            { type: 'pdfme', label: 'PDF (pdfme)', icon: '<span class="iconify" data-icon="material-symbols-light:picture-as-pdf" style="font-size:1.25rem"></span>' },
-            { type: 'echart', label: 'EChart (Apache ECharts)', icon: '<span class="iconify" data-icon="material-symbols-light:bar-chart" style="font-size:1.25rem"></span>' },
-            { type: 'perspective', label: 'Perspective Viewer', icon: '<span class="iconify" data-icon="material-symbols-light:analytics" style="font-size:1.25rem"></span>' }
+            { type: 'markdown',           label: 'Markdown',                icon: 'edit-note' },
+            { type: 'source',             label: 'Source',                   icon: 'folder-open' },
+            { type: 'uiParameter',        label: 'Paramètre UI',             icon: 'tune' },
+            { type: 'buttonRunNextCells', label: 'Bouton Exécuter',          icon: 'play-circle' },
+            { type: 'sqlRecursiveParse',  label: 'SQL',                      icon: 'storage' },
+            { type: 'table',              label: 'Tableau',                  icon: 'table' },
+            { type: 'iframe',             label: 'HTML/Iframe',              icon: 'web' },
+            { type: 'sqlStat',            label: 'Stat SQL',                 icon: 'monitoring' },
+            { type: 'publipostageWord',   label: 'Publipostage Word',        icon: 'description' },
+            { type: 'pdfme',              label: 'PDF (pdfme)',               icon: 'picture-as-pdf' },
+            { type: 'echart',             label: 'EChart (Apache ECharts)',  icon: 'bar-chart' },
+            { type: 'perspective',        label: 'Perspective Viewer',       icon: 'analytics' },
         ],
 
         _tables: {},
+        _duckdbTables: {} as Record<string, { rowCount: number, columns: {name: string, type: string}[] }>,
+        _roomFiles: [] as Array<{name: string, tableName: string, size: number, source: 'dropzone' | 'source-cell'}>,
         _rev: 0,  // compteur de version pour forcer les re-renders
     }
 }
 
+// ─── Connecteur DuckDB ponté vers DuckDBManager ───────────────────────────────
+// Permet à SqlEditorModal (et state.db) d'utiliser la même instance DuckDB
+// que les cells sqljob, sans dupliquer la connexion.
+const duckdbManagerConnector = createBaseDuckDbConnector(
+    { dbPath: ':memory:' },
+    {
+        initializeInternal: async () => {
+            // DuckDB est déjà initialisé par helpersMixin.init() — rien à faire
+        },
+        executeQueryInternal: async (sql: string) => {
+            console.log('[duckdbBridge] query:', sql.slice(0, 100))
+            try {
+                const result = await DuckDBManager.executeQueryArrow(sql)
+                console.log('[duckdbBridge] ok, rows:', result?.numRows)
+                return result
+            } catch (err) {
+                console.error('[duckdbBridge] error:', err)
+                throw err
+            }
+        },
+    }
+)
+
 // ─── Store Zustand ────────────────────────────────────────────────────────────
-export const useNotebookStore = create<any>((set, get) => {
+export const useNotebookStore = create<any>((set, get, api) => {
+    // === Slice SqlEditor ===
+    const sqlEditorState = createSqlEditorSlice({ config: createDefaultSqlEditorConfig() })(set, get, api)
+
+    // === Slice RoomShell : layout mosaic + panels ===
+    const roomShellState = createRoomShellSlice({
+        config: { title: 'SQLjob', dataSources: [] },
+        connector: duckdbManagerConnector,
+        layout: {
+            config: {
+                type: 'mosaic',
+                nodes: 'main',
+            },
+            panels: {
+                main: {
+                    title: 'Notebook',
+                    icon: () => null,
+                    component: NotebookPanel,
+                    placement: 'main',
+                },
+                data: {
+                    title: 'Sources',
+                    icon: DatabaseIcon,
+                    component: DataSourcesPanel,
+                    placement: 'manual',
+                },
+            },
+        },
+    })(set, get, api)
+
     const initialState = buildInitialState()
 
-    // Fusionner toutes les méthodes des mixins
+    // Slices Zustand purs (convertis depuis les mixins Alpine)
+    const pagesActions = createPagesSlice(set, get)
+    const helpersActions = createHelpersSlice(set, get)
+    const parametersActions = createParametersSlice(set, get)
+    const exportActions = createExportSlice(set, get)
+
+    // Fusionner les mixins restants (encore sous proxy createThisProxy)
     const allMixinMethods: any = {
-        ...pagesMixin(),
-        ...helpersMixin(),
         ...groupsMixin(),
         ...cellsMixin(),
         ...filesMixin(),
         ...executionMixin(),
-        ...parametersMixin(),
         ...editorsMixin(),
-        ...exportImportMixin(),
     }
 
     // Wrapper chaque méthode pour qu'elle utilise le proxy "this"
@@ -317,8 +386,47 @@ export const useNotebookStore = create<any>((set, get) => {
     }
 
     return {
+        ...sqlEditorState,
+        ...roomShellState,
         ...initialState,
         ...wrappedActions,
+        // Slices convertis (écrasent les méthodes équivalentes des wrappedActions si elles existent)
+        ...pagesActions,
+        ...helpersActions,
+        ...parametersActions,
+        ...exportActions,
+
+        // db.schemaTrees démarre undefined dans DuckDbSlice.
+        // deepEquals([], []) bloque la mise à jour si aucune table → schemaTrees reste undefined.
+        // On force [] pour que TableStructurePanel render même quand la base est vide.
+        db: { ...roomShellState.db, schemaTrees: [] },
+
+        // Override addRoomFile : redirige vers DuckDBManager au lieu du connecteur sqlrooms
+        // pour partager une seule instance DuckDB avec toutes les cells sqljob.
+        addRoomFile: async (file: File, tableName: string) => {
+            const ext = (file.name.split('.').pop() ?? '').toLowerCase();
+            await DuckDBManager.registerFile(file.name, file);
+            let query: string;
+            if (ext === 'csv' || ext === 'tsv') {
+                query = `CREATE OR REPLACE TABLE "${tableName}" AS SELECT * FROM read_csv('${file.name}', HEADER = true, AUTO_DETECT = true, SAMPLE_SIZE = -1)`;
+            } else if (ext === 'parquet') {
+                query = `CREATE OR REPLACE TABLE "${tableName}" AS SELECT * FROM read_parquet('${file.name}')`;
+            } else if (ext === 'json') {
+                query = `CREATE OR REPLACE TABLE "${tableName}" AS SELECT * FROM read_json_auto('${file.name}')`;
+            } else {
+                query = `CREATE OR REPLACE TABLE "${tableName}" AS SELECT * FROM '${file.name}'`;
+            }
+            await DuckDBManager.executeQuery(query);
+            set((s: any) => {
+                const existing = s._roomFiles ?? [];
+                const alreadyPresent = existing.some((f: any) => f.tableName === tableName);
+                if (alreadyPresent) return {};
+                return { _roomFiles: [...existing, { name: file.name, tableName, size: file.size, source: 'dropzone' }] };
+            });
+            const proxy = createThisProxy(get, set);
+            await proxy.refreshDuckdbTables();
+            try { await get().db.refreshTableSchemas(); } catch { /* ignore */ }
+        },
 
         // Overrides de méthodes mixin qui font des mutations profondes (this.X.Y = val)
         // que le proxy ne peut pas intercepter — on remplace par des set() Zustand directs.

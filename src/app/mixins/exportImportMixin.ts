@@ -3,9 +3,11 @@
 export function exportImportMixin() {
     return {
                 setTheme(themeName) {
-                    this.currentTheme = themeName;
-                    document.documentElement.setAttribute('data-theme', themeName);
-                    localStorage.setItem('sqljob-theme', themeName);
+                    const theme = themeName === 'dark' ? 'dark' : 'light'
+                    this.currentTheme = theme;
+                    document.documentElement.classList.remove('light', 'dark');
+                    document.documentElement.classList.add(theme);
+                    localStorage.setItem('sqljob-theme', theme);
                 },
 
                 // ─────────────────────────────────────────────────────────────────

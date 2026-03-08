@@ -6,6 +6,25 @@ export default defineConfig({
     plugins: [
         react(),
         tailwindcss(),
+        // JsonMonacoEditor.js a un import statique de side-effect :
+        //   import 'monaco-editor/esm/vs/language/json/monaco.contribution'
+        // Avec external: [/^monaco-editor/], cet import devient un bare specifier ESM
+        // que le navigateur ne peut pas résoudre. On le supprime par transform (avant la
+        // résolution external). sqljob n'utilise pas JsonMonacoEditor.
+        {
+            name: 'patch-json-monaco-editor',
+            transform(code, id) {
+                if (id.includes('JsonMonacoEditor')) {
+                    return {
+                        code: code.replace(
+                            /import\s+['"]monaco-editor\/esm\/vs\/language\/json\/monaco\.contribution['"];?/,
+                            '// (patched: JSON Monaco contribution not needed in CDN build)'
+                        ),
+                        map: null,
+                    }
+                }
+            },
+        },
     ],
 
     define: {
@@ -20,22 +39,19 @@ export default defineConfig({
             fileName: 'sqljob',
         },
         outDir: 'dist-cdn',
-        // Inline les assets pour un fichier le plus autonome possible
         assetsInlineLimit: 100_000_000,
         sourcemap: true,
         rollupOptions: {
-            // Tout est bundlé — aucune dépendance externe
-            external: [],
+            // monaco-editor est externalisé (trop lourd à bundler).
+            // Il est chargé au runtime depuis jsDelivr via AMD (@monaco-editor/react loader).
+            external: [/^monaco-editor/],
             output: {
-                // CSS exportée en sqljob.css (fichier distinct du JS)
                 assetFileNames: 'sqljob[extname]',
-                // Force un seul fichier JS (pas de code splitting)
                 inlineDynamicImports: true,
             },
             onwarn(warning, warn) {
-                // safeEvalJs utilise new Function() intentionnellement dans un sandbox restreint
-                if (warning.code === 'EVAL') return;
-                warn(warning);
+                if (warning.code === 'EVAL') return
+                warn(warning)
             },
         },
     },

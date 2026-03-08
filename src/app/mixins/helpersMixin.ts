@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { DuckDBManager } from '../../lib/DuckDBManager';
 import { safeEvalJs } from '../../lib/safeEval';
 
 export function helpersMixin() {
@@ -47,6 +48,30 @@ export function helpersMixin() {
                 // ─────────────────────────────────────────────────────────────────
                 // INITIALISATION
                 // ─────────────────────────────────────────────────────────────────
+                async refreshDuckdbTables() {
+                    try {
+                        const tableRows = await DuckDBManager.executeQuery(`SHOW TABLES`);
+                        const result: Record<string, { rowCount: number, columns: {name: string, type: string}[] }> = {};
+                        for (const row of tableRows) {
+                            const name = row.name ?? row.table_name;
+                            if (!name) continue;
+                            try {
+                                const countRows = await DuckDBManager.executeQuery(`SELECT COUNT(*) as cnt FROM "${name}"`);
+                                const descRows = await DuckDBManager.executeQuery(`DESCRIBE "${name}"`);
+                                result[name] = {
+                                    rowCount: Number(countRows[0]?.cnt ?? 0),
+                                    columns: descRows.map((r: any) => ({ name: r.column_name, type: r.column_type })),
+                                };
+                            } catch {
+                                result[name] = { rowCount: 0, columns: [] };
+                            }
+                        }
+                        this._duckdbTables = result;
+                    } catch {
+                        // DuckDB pas encore prêt, on ignore silencieusement
+                    }
+                },
+
                 async init() {
                     try {
                         await DuckDBManager.initDuckDB((msg, type) => this.setStatus(msg, type));
@@ -64,6 +89,25 @@ export function helpersMixin() {
                         await this.runAllGroups();
                         if (this.pages[0]) this._pagesInitialized.add(this.pages[0]._id);
                         this.$nextTick(() => setTimeout(() => this.refreshMarkdownCellsForPage(0), 300));
+                        // Rafraîchir le panneau Tables DuckDB après l'exécution initiale
+                        await this.refreshDuckdbTables();
+                        // Appel room.initialize() comme createRoomStore le fait dans le mosaic example
+                        // → db.initialize() → refreshTableSchemas() → peuple db.schemaTrees pour SqlEditorModal
+                        try {
+                            await this.room.initialize();
+                        } catch (err) {
+                            console.warn('[sqljob] room.initialize() error:', err);
+                        }
+                        // db.schemaTrees peut rester vide si deepEquals([],[]) a bloqué la mise à jour initiale.
+                        // Un second appel avec des tables créées par runAllGroups() force la synchronisation.
+                        try {
+                            await this.db.refreshTableSchemas();
+                            console.log('[sqljob] schemaTrees:', this.db.schemaTrees);
+                        } catch (err) {
+                            console.warn('[sqljob] refreshTableSchemas error:', err);
+                        }
+                        // Signaler à RoomShell que l'init est terminée
+                        this.room = { ...this.room, initialized: true };
                     } catch (error) {
                         this.setStatus('Erreur d\'initialisation: ' + error.message, 'error');
                     } finally {

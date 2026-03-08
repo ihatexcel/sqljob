@@ -1,10 +1,18 @@
 // @ts-nocheck
-import { useEffect, useRef } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import { useNotebookStore } from '../../store/notebookStore'
 import { ConfigManager } from '../../../lib/ConfigManager'
 import { CellConfigService } from '../../../lib/CellConfigService'
 import { CELL_TYPE_SCHEMAS } from '../../../lib/cellTypeSchemas'
+import {
+    Button, Input, Label, Textarea, Switch,
+    Badge,
+    Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
+    Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+    Accordion, AccordionContent, AccordionItem, AccordionTrigger,
+    Checkbox,
+} from '@sqlrooms/ui'
+import { Icon } from '../../../lib/icons'
 
 function getCommonParamDef(paramKey: string, cellType: string) {
     const schema = CELL_TYPE_SCHEMAS?.types?.[cellType]
@@ -41,13 +49,11 @@ export function CellConfigModal() {
         _rev: s._rev
     })))
 
-    if (!cellConfigModal.open) return null
+    const open = cellConfigModal.open
+    const cell = open ? getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex) : null
 
-    const cell = getCellAtPath(cellConfigModal.path, cellConfigModal.cellIndex)
-    if (!cell) return null
-
-    const specificParams = getSpecificParamsForType(cell.type)
-    const commonParamKeys = ['name', ...getCommonParamsExcludingName(cell.type)]
+    const specificParams = cell ? getSpecificParamsForType(cell.type) : []
+    const commonParamKeys = cell ? ['name', ...getCommonParamsExcludingName(cell.type)] : []
 
     function isParamVisible(param: any) {
         if (!param.visibleWhen) return true
@@ -57,168 +63,177 @@ export function CellConfigModal() {
     }
 
     return (
-        <div className="modal modal-open z-[2100]" onClick={e => { if (e.target === e.currentTarget) closeCellConfig() }} role="presentation">
-            <div className="modal-box" role="dialog" aria-modal="true">
-                <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onClick={closeCellConfig}>
-                    <span className="iconify" data-icon="material-symbols-light:close" style={{ fontSize: '1rem' }}></span>
-                </button>
-                <h3 className="text-lg font-bold flex items-center gap-2">
-                    <span className="iconify" data-icon="material-symbols-light:settings" style={{ fontSize: '1.25rem' }}></span>
-                    Configuration de la cellule
-                </h3>
-
-                <div className="mt-4 space-y-4">
-                    {/* Type de cellule */}
-                    <div className="flex flex-col gap-2">
-                        <label className="label"><span className="label-text">Type de cellule</span></label>
-                        <select
-                            className="select select-bordered select-sm w-full"
-                            value={cell.type}
-                            onChange={e => {
-                                const oldType = cell.type
-                                cell.type = e.target.value
-                                onCellTypeChange(cellConfigModal.path, cellConfigModal.cellIndex, oldType)
-                                forceUpdate()
-                            }}
-                        >
-                            <option value="markdown">Markdown</option>
-                            <option value="source">Source</option>
-                            <option value="uiParameter">Paramètre UI</option>
-                            <option value="buttonRunNextCells">Bouton Exécuter</option>
-                            <option value="sqlRecursiveParse">SQL</option>
-                            <option value="table">Tableau</option>
-                            <option value="iframe">HTML/Iframe</option>
-                            <option value="sqlStat">Stat SQL (daisyui)</option>
-                            <option value="publipostageWord">Publipostage Word</option>
-                            <option value="pdfme">PDF (pdfme)</option>
-                            <option value="echart">EChart (Apache ECharts)</option>
-                            <option value="perspective">Perspective Viewer</option>
-                        </select>
-                    </div>
-
-                    {/* Paramètres communs */}
-                    {commonParamKeys.map(paramKey => (
-                        <div className="form-control" key={paramKey}>
-                            {paramKey === 'name' ? (
-                                <div>
-                                    <label className="label gap-2">
-                                        <span className="label-text">Nom</span>
-                                        <span className="tooltip tooltip-bottom" data-tip="Identifiant unique. Pour source = nom de la table SQL.">
-                                            <span className="badge badge-sm cursor-help">?</span>
-                                        </span>
-                                    </label>
-                                    <input type="text" className="input input-bordered input-sm w-full"
-                                        value={cell.name || ''}
-                                        onChange={e => { cell.name = e.target.value; forceUpdate() }}
-                                        onBlur={() => validateCellName(cellConfigModal.path, cellConfigModal.cellIndex)}
-                                        placeholder="Identifiant unique de la cellule" />
-                                </div>
-                            ) : ['title', 'subtitle', 'icon', 'buttonLabel'].includes(paramKey) ? (
-                                <div>
-                                    <label className="label gap-2">
-                                        <span className="label-text">{getCommonParamDef(paramKey, cell.type)?.label || paramKey}</span>
-                                    </label>
-                                    <input type="text" className="input input-bordered input-sm w-full"
-                                        value={getCellValueByPath(cell, paramKey) || ''}
-                                        onChange={e => { setCellValueByPath(cell, paramKey, e.target.value); forceUpdate() }}
-                                        placeholder={getCommonParamDef(paramKey, cell.type)?.placeholder || ''} />
-                                </div>
-                            ) : null}
+        <Dialog open={open} onOpenChange={open => !open && closeCellConfig()}>
+            <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto" aria-describedby={undefined}>
+                <DialogHeader>
+                    <DialogTitle className="flex items-center gap-2">
+                        <Icon name="settings" size={20} />
+                        Configuration de la cellule
+                    </DialogTitle>
+                </DialogHeader>
+                {cell && (
+                    <div className="space-y-4">
+                        {/* Type de cellule */}
+                        <div className="space-y-1">
+                            <Label>Type de cellule</Label>
+                            <Select
+                                value={cell.type}
+                                onValueChange={v => {
+                                    const oldType = cell.type
+                                    cell.type = v
+                                    onCellTypeChange(cellConfigModal.path, cellConfigModal.cellIndex, oldType)
+                                    forceUpdate()
+                                }}
+                            >
+                                <SelectTrigger className="h-8 text-sm w-full">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="markdown">Markdown</SelectItem>
+                                    <SelectItem value="source">Source</SelectItem>
+                                    <SelectItem value="uiParameter">Paramètre UI</SelectItem>
+                                    <SelectItem value="buttonRunNextCells">Bouton Exécuter</SelectItem>
+                                    <SelectItem value="sqlRecursiveParse">SQL</SelectItem>
+                                    <SelectItem value="table">Tableau</SelectItem>
+                                    <SelectItem value="iframe">HTML/Iframe</SelectItem>
+                                    <SelectItem value="sqlStat">Stat SQL</SelectItem>
+                                    <SelectItem value="publipostageWord">Publipostage Word</SelectItem>
+                                    <SelectItem value="pdfme">PDF (pdfme)</SelectItem>
+                                    <SelectItem value="echart">EChart (Apache ECharts)</SelectItem>
+                                    <SelectItem value="perspective">Perspective Viewer</SelectItem>
+                                </SelectContent>
+                            </Select>
                         </div>
-                    ))}
 
-                    {/* Format cellule */}
-                    <div className="collapse collapse-arrow border border-base-300 bg-base-100">
-                        <input type="checkbox" />
-                        <div className="collapse-title min-h-0 py-3 font-medium">Format de la cellule</div>
-                        <div className="collapse-content">
-                            <label className="label cursor-pointer justify-start gap-3 py-1">
-                                <input type="checkbox" className="checkbox checkbox-sm"
-                                    checked={cell.border !== false}
-                                    onChange={e => { cell.border = e.target.checked; forceUpdate() }} />
-                                <span className="label-text">Afficher bordure et ombre</span>
-                            </label>
-                            <div className="grid grid-cols-2 gap-3 pt-1">
-                                <div className="col-span-2 font-medium text-sm">Largeur</div>
-                                {['minSizePx', 'minSizePercent', 'maxSizePx', 'maxSizePercent'].map(k => (
-                                    <div key={k}>
-                                        <span className="label-text-alt">{k.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase())}</span>
-                                        <input type="text" className="input input-bordered input-sm w-full"
-                                            value={cell[k] || ''}
-                                            onChange={e => { cell[k] = e.target.value; forceUpdate() }} />
+                        {/* Paramètres communs */}
+                        {commonParamKeys.map(paramKey => (
+                            <div key={paramKey}>
+                                {paramKey === 'name' ? (
+                                    <div className="space-y-1">
+                                        <div className="flex items-center gap-2">
+                                            <Label>Nom</Label>
+                                            <Badge variant="outline" className="text-xs cursor-help" title="Identifiant unique. Pour source = nom de la table SQL.">?</Badge>
+                                        </div>
+                                        <Input className="h-8 text-sm"
+                                            value={cell.name || ''}
+                                            onChange={e => { cell.name = e.target.value; forceUpdate() }}
+                                            onBlur={() => validateCellName(cellConfigModal.path, cellConfigModal.cellIndex)}
+                                            placeholder="Identifiant unique de la cellule" />
                                     </div>
-                                ))}
-                                <div className="col-span-2 font-medium text-sm mt-1">Hauteur</div>
-                                {['minHeightPx', 'minHeightPercent', 'maxHeightPx', 'maxHeightPercent'].map(k => (
-                                    <div key={k}>
-                                        <span className="label-text-alt">{k.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase())}</span>
-                                        <input type="text" className="input input-bordered input-sm w-full"
-                                            value={cell[k] || ''}
-                                            onChange={e => { cell[k] = e.target.value; forceUpdate() }} />
+                                ) : ['title', 'subtitle', 'icon', 'buttonLabel'].includes(paramKey) ? (
+                                    <div className="space-y-1">
+                                        <Label>{getCommonParamDef(paramKey, cell.type)?.label || paramKey}</Label>
+                                        <Input className="h-8 text-sm"
+                                            value={getCellValueByPath(cell, paramKey) || ''}
+                                            onChange={e => { setCellValueByPath(cell, paramKey, e.target.value); forceUpdate() }}
+                                            placeholder={getCommonParamDef(paramKey, cell.type)?.placeholder || ''} />
                                     </div>
-                                ))}
+                                ) : null}
                             </div>
-                        </div>
-                    </div>
+                        ))}
 
-                    {/* Paramètres spécifiques */}
-                    {specificParams.filter(isParamVisible).map((param: any) => (
-                        <div className="form-control" key={param.key}>
-                            {param.inputType === 'checkbox' ? (
-                                <label className="label cursor-pointer justify-start gap-3">
-                                    <input type="checkbox" className="checkbox checkbox-sm"
-                                        checked={!!getCellValueByPath(cell, param.key)}
-                                        onChange={e => { setCellValueByPath(cell, param.key, e.target.checked); forceUpdate() }} />
-                                    <span className="label-text">{param.label}</span>
-                                </label>
-                            ) : param.inputType === 'select' ? (
-                                <div>
-                                    <label className="label gap-2"><span className="label-text">{param.label}</span></label>
-                                    <select className="select select-bordered select-sm w-full"
-                                        value={getCellValueByPath(cell, param.key) || ''}
-                                        onChange={e => { setCellValueByPath(cell, param.key, e.target.value); forceUpdate() }}>
-                                        {(param.options || []).map((opt: any) => (
-                                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                        {/* Format cellule */}
+                        <Accordion type="single" collapsible className="border border-border rounded-lg">
+                            <AccordionItem value="format" className="border-0">
+                                <AccordionTrigger className="px-3 py-2 text-sm font-medium">Format de la cellule</AccordionTrigger>
+                                <AccordionContent className="px-3 pb-3">
+                                    <div className="flex items-center gap-3 mb-3">
+                                        <Checkbox
+                                            checked={cell.border !== false}
+                                            onCheckedChange={v => { cell.border = !!v; forceUpdate() }}
+                                        />
+                                        <Label className="cursor-pointer">Afficher bordure et ombre</Label>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div className="col-span-2 font-medium text-sm">Largeur</div>
+                                        {['minSizePx', 'minSizePercent', 'maxSizePx', 'maxSizePercent'].map(k => (
+                                            <div key={k} className="space-y-1">
+                                                <Label className="text-xs">{k.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase())}</Label>
+                                                <Input className="h-7 text-xs"
+                                                    value={cell[k] || ''}
+                                                    onChange={e => { cell[k] = e.target.value; forceUpdate() }} />
+                                            </div>
                                         ))}
-                                    </select>
-                                </div>
-                            ) : param.inputType === 'textarea' ? (
-                                <div>
-                                    <label className="label gap-2"><span className="label-text">{param.label}</span></label>
-                                    <textarea
-                                        className={`textarea textarea-bordered w-full ${param.key.includes('json') ? 'font-mono text-sm' : ''}`}
-                                        rows={param.rows || 5}
-                                        placeholder={param.placeholder || ''}
-                                        value={getCellValueByPath(cell, param.key) || ''}
-                                        onChange={e => {
-                                            const val = e.target.value
-                                            if (param.key === 'content') {
-                                                setCellValueByPath(cell, 'content', val)
-                                                syncMarkdownToEditor(cellConfigModal.path, cellConfigModal.cellIndex)
-                                            } else {
-                                                setCellValueByPath(cell, param.key, val)
-                                            }
-                                            forceUpdate()
-                                        }}
-                                    />
-                                </div>
-                            ) : param.inputType === 'number' ? (
-                                <div>
-                                    <label className="label gap-2"><span className="label-text">{param.label}</span></label>
-                                    <input type="number" className="input input-bordered input-sm w-full"
-                                        value={getCellValueByPath(cell, param.key) || 0}
-                                        onChange={e => { setCellValueByPath(cell, param.key, parseFloat(e.target.value) || 0); forceUpdate() }}
-                                        placeholder={param.placeholder}
-                                        min={param.min} step="any" />
-                                </div>
-                            ) : null}
-                        </div>
-                    ))}
-                </div>
-                <div className="modal-action">
-                    <button className="btn" onClick={closeCellConfig}>Fermer</button>
-                </div>
-            </div>
-        </div>
+                                        <div className="col-span-2 font-medium text-sm mt-1">Hauteur</div>
+                                        {['minHeightPx', 'minHeightPercent', 'maxHeightPx', 'maxHeightPercent'].map(k => (
+                                            <div key={k} className="space-y-1">
+                                                <Label className="text-xs">{k.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase())}</Label>
+                                                <Input className="h-7 text-xs"
+                                                    value={cell[k] || ''}
+                                                    onChange={e => { cell[k] = e.target.value; forceUpdate() }} />
+                                            </div>
+                                        ))}
+                                    </div>
+                                </AccordionContent>
+                            </AccordionItem>
+                        </Accordion>
+
+                        {/* Paramètres spécifiques */}
+                        {specificParams.filter(isParamVisible).map((param: any) => (
+                            <div key={param.key}>
+                                {param.inputType === 'checkbox' ? (
+                                    <div className="flex items-center gap-3">
+                                        <Checkbox
+                                            checked={!!getCellValueByPath(cell, param.key)}
+                                            onCheckedChange={v => { setCellValueByPath(cell, param.key, !!v); forceUpdate() }}
+                                        />
+                                        <Label className="cursor-pointer">{param.label}</Label>
+                                    </div>
+                                ) : param.inputType === 'select' ? (
+                                    <div className="space-y-1">
+                                        <Label>{param.label}</Label>
+                                        <Select
+                                            value={getCellValueByPath(cell, param.key) || ''}
+                                            onValueChange={v => { setCellValueByPath(cell, param.key, v); forceUpdate() }}
+                                        >
+                                            <SelectTrigger className="h-8 text-sm w-full">
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {(param.options || []).map((opt: any) => (
+                                                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                ) : param.inputType === 'textarea' ? (
+                                    <div className="space-y-1">
+                                        <Label>{param.label}</Label>
+                                        <Textarea
+                                            className={`${param.key.includes('json') ? 'font-mono text-sm' : ''}`}
+                                            rows={param.rows || 5}
+                                            placeholder={param.placeholder || ''}
+                                            value={getCellValueByPath(cell, param.key) || ''}
+                                            onChange={e => {
+                                                const val = e.target.value
+                                                if (param.key === 'content') {
+                                                    setCellValueByPath(cell, 'content', val)
+                                                    syncMarkdownToEditor(cellConfigModal.path, cellConfigModal.cellIndex)
+                                                } else {
+                                                    setCellValueByPath(cell, param.key, val)
+                                                }
+                                                forceUpdate()
+                                            }}
+                                        />
+                                    </div>
+                                ) : param.inputType === 'number' ? (
+                                    <div className="space-y-1">
+                                        <Label>{param.label}</Label>
+                                        <Input type="number" className="h-8 text-sm"
+                                            value={getCellValueByPath(cell, param.key) || 0}
+                                            onChange={e => { setCellValueByPath(cell, param.key, parseFloat(e.target.value) || 0); forceUpdate() }}
+                                            placeholder={param.placeholder}
+                                            min={param.min} step="any" />
+                                    </div>
+                                ) : null}
+                            </div>
+                        ))}
+                    </div>
+                )}
+                <DialogFooter>
+                    <Button variant="ghost" onClick={closeCellConfig}>Fermer</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     )
 }

@@ -2,8 +2,10 @@
 import { useState } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import { useNotebookStore } from '../store/notebookStore'
+import { Button, Badge, Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@sqlrooms/ui'
 import { CellHeader } from './CellHeader'
 import { CellBody } from './CellBody'
+import { Icon } from '../../lib/icons'
 
 // ─── CellItem ─────────────────────────────────────────────────────────────────
 function CellItem({ cell, cellIndex, path, group }: { cell: any, cellIndex: number, path: number[], group: any }) {
@@ -26,17 +28,17 @@ function CellItem({ cell, cellIndex, path, group }: { cell: any, cellIndex: numb
     const innerClass = getCellSizeInnerClass?.() || ''
 
     const statusBorder = cell._status === 'running'
-        ? 'border-warning shadow-[0_0_10px_rgba(251,191,36,0.3)]'
-        : cell._status === 'success' ? 'border-success'
-            : cell._status === 'error' ? 'border-error' : ''
+        ? 'border-yellow-400 shadow-[0_0_10px_rgba(251,191,36,0.3)]'
+        : cell._status === 'success' ? 'border-green-500'
+            : cell._status === 'error' ? 'border-destructive' : ''
 
     const borderClass = cell.border !== false
-        ? `border border-base-300 shadow-sm hover:border-primary hover:shadow-lg ${statusBorder}`
+        ? `border border-border shadow-sm hover:border-primary hover:shadow-lg ${statusBorder}`
         : 'border-0 shadow-none'
 
     return (
         <div className={`flex flex-1 ${outerClass}`} style={wrapperStyle}>
-            <div className={`rounded-lg overflow-hidden bg-base-100 cell-container ${innerClass} ${borderClass}`}>
+            <div className={`rounded-lg overflow-hidden bg-background cell-container ${innerClass} ${borderClass}`}>
                 <CellHeader cell={cell} path={path} cellIndex={cellIndex} group={group} />
                 <CellBody cell={cell} path={path} cellIndex={cellIndex} group={group} />
             </div>
@@ -65,10 +67,17 @@ function TabsChildContent({ group, path, depth }: { group: any, path: number[], 
 
     return (
         <div>
-            <div role="tablist" className="tabs tabs-border">
+            <div className="flex gap-1 border-b border-border overflow-x-auto">
                 {tabs.map((t: any, i: number) => (
-                    <button key={i} role="tab" className={`tab ${activeTab === i ? 'tab-active' : ''}`}
-                        onClick={() => setActiveTab(i)}>
+                    <button
+                        key={i}
+                        className={`px-3 py-1.5 text-sm border-b-2 transition-colors whitespace-nowrap
+                            ${activeTab === i
+                                ? 'border-primary font-medium text-foreground'
+                                : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
+                            }`}
+                        onClick={() => setActiveTab(i)}
+                    >
                         {t.label}
                     </button>
                 ))}
@@ -134,20 +143,21 @@ export function GroupContainer({
         _rev: s._rev
     })))
 
-    const [accordionOpen, setAccordionOpen] = useState(group.accordionOpen !== false)
+    const [accordionOpen, setAccordionOpen] = useState(group.accordionOpen !== false ? 'item' : '')
 
     if (!devMode && !shouldShowGroup?.(group)) return null
 
-    // Mode accordion
+    // Mode accordion (client only)
     if (!devMode && group.accordion) {
         return (
-            <div className="collapse border border-base-300 rounded-lg bg-base-100">
-                <input type="checkbox" checked={accordionOpen} onChange={e => setAccordionOpen(e.target.checked)} />
-                <div className="collapse-title font-medium">{group.title || ''}</div>
-                <div className="collapse-content">
-                    <GroupContent group={group} path={path} depth={depth} />
-                </div>
-            </div>
+            <Accordion type="single" collapsible value={accordionOpen} onValueChange={setAccordionOpen} className="border border-border rounded-lg bg-background">
+                <AccordionItem value="item" className="border-0">
+                    <AccordionTrigger className="px-4 py-3 font-medium">{group.title || ''}</AccordionTrigger>
+                    <AccordionContent className="px-0 pb-0">
+                        <GroupContent group={group} path={path} depth={depth} />
+                    </AccordionContent>
+                </AccordionItem>
+            </Accordion>
         )
     }
 
@@ -158,48 +168,57 @@ export function GroupContainer({
 
     // Mode normal
     return (
-        <div className="bg-base-100 w-full">
+        <div className="bg-background w-full">
             {/* Header groupe (devMode uniquement) */}
             {devMode && (
-                <div className="flex items-center justify-between gap-2 py-1 px-2 bg-base-200/80 border-b border-base-300 group-header">
-                    <div className="flex gap-1 flex-wrap">
-                        <div className="join">
-                            <button className="btn btn-xs btn-success join-item" onClick={() => runGroupAtPath(path)} disabled={isLoading} title="Exécuter le groupe">
-                                <span className="iconify" data-icon="material-symbols-light:play-arrow" style={{ fontSize: '1rem' }}></span>
+                <div className="flex items-center justify-between gap-2 py-1 px-2 bg-muted/80 border-b border-border group-header">
+                    <div className="flex gap-1 flex-wrap items-center">
+                        {/* Button group */}
+                        <div className="inline-flex rounded-md overflow-hidden border border-border divide-x divide-border">
+                            <button className="inline-flex items-center justify-center h-6 px-2 text-xs bg-green-600 text-white hover:bg-green-700 disabled:opacity-50"
+                                onClick={() => runGroupAtPath(path)} disabled={isLoading} title="Exécuter le groupe">
+                                <Icon name="play-arrow" size={16} />
                             </button>
-                            <button className="btn btn-xs join-item"
+                            <button className="inline-flex items-center justify-center h-6 px-2 text-xs bg-background hover:bg-muted"
                                 onClick={() => { group.direction = group.direction === 'column' ? 'row' : 'column'; forceUpdate() }}
                                 title={group.direction === 'column' ? 'Passer en ligne' : 'Passer en colonne'}>
-                                <span className="iconify" data-icon={group.direction === 'column' ? 'material-symbols-light:swap-vert' : 'material-symbols-light:swap-horiz'} style={{ fontSize: '1rem' }}></span>
+                                <Icon name={group.direction === 'column' ? 'swap-vert' : 'swap-horiz'} size={16} />
                             </button>
-                            <button className="btn btn-xs join-item" onClick={() => addNestedGroup(path)} title="Ajouter un sous-groupe">
-                                <span className="iconify" data-icon="material-symbols-light:create-new-folder" style={{ fontSize: '1rem' }}></span>
+                            <button className="inline-flex items-center justify-center h-6 px-2 text-xs bg-background hover:bg-muted"
+                                onClick={() => addNestedGroup(path)} title="Ajouter un sous-groupe">
+                                <Icon name="create-new-folder" size={16} />
                             </button>
-                            <button className="btn btn-xs join-item" onClick={() => openAddCellToGroupModal(path)} title="Ajouter une cellule">
-                                <span className="iconify" data-icon="material-symbols-light:add" style={{ fontSize: '1rem' }}></span>
+                            <button className="inline-flex items-center justify-center h-6 px-2 text-xs bg-background hover:bg-muted"
+                                onClick={() => openAddCellToGroupModal(path)} title="Ajouter une cellule">
+                                <Icon name="add" size={16} />
                             </button>
-                            <button className="btn btn-xs join-item" onClick={() => openLoopConfigModal?.(path)} title="Boucle">
-                                <span className="iconify" data-icon="material-symbols-light:autorenew" style={{ fontSize: '1rem' }}></span>
+                            <button className="inline-flex items-center justify-center h-6 px-2 text-xs bg-background hover:bg-muted"
+                                onClick={() => openLoopConfigModal?.(path)} title="Boucle">
+                                <Icon name="autorenew" size={16} />
                             </button>
-                            <button className="btn btn-xs join-item" onClick={() => openGroupSettingsModal?.(path)} title="Paramètres">
-                                <span className="iconify" data-icon="material-symbols-light:settings" style={{ fontSize: '1rem' }}></span>
+                            <button className="inline-flex items-center justify-center h-6 px-2 text-xs bg-background hover:bg-muted"
+                                onClick={() => openGroupSettingsModal?.(path)} title="Paramètres">
+                                <Icon name="settings" size={16} />
                             </button>
                             {!isFirst && (
-                                <button className="btn btn-xs join-item" onClick={() => moveItemInGroup?.([...path.slice(0, -1)], 'child', path[path.length - 1], -1)} title="Monter">
-                                    <span className="iconify" data-icon="material-symbols-light:arrow-upward" style={{ fontSize: '1rem' }}></span>
+                                <button className="inline-flex items-center justify-center h-6 px-2 text-xs bg-background hover:bg-muted"
+                                    onClick={() => moveItemInGroup?.([...path.slice(0, -1)], 'child', path[path.length - 1], -1)} title="Monter">
+                                    <Icon name="arrow-upward" size={16} />
                                 </button>
                             )}
                             {!isLast && (
-                                <button className="btn btn-xs join-item" onClick={() => moveItemInGroup?.([...path.slice(0, -1)], 'child', path[path.length - 1], 1)} title="Descendre">
-                                    <span className="iconify" data-icon="material-symbols-light:arrow-downward" style={{ fontSize: '1rem' }}></span>
+                                <button className="inline-flex items-center justify-center h-6 px-2 text-xs bg-background hover:bg-muted"
+                                    onClick={() => moveItemInGroup?.([...path.slice(0, -1)], 'child', path[path.length - 1], 1)} title="Descendre">
+                                    <Icon name="arrow-downward" size={16} />
                                 </button>
                             )}
-                            <button className="btn btn-xs btn-error join-item" onClick={() => deleteGroupAtPath?.(path)} title="Supprimer le groupe">
-                                <span className="iconify" data-icon="material-symbols-light:delete" style={{ fontSize: '1rem' }}></span>
+                            <button className="inline-flex items-center justify-center h-6 px-2 text-xs bg-destructive text-destructive-foreground hover:bg-destructive/80"
+                                onClick={() => deleteGroupAtPath?.(path)} title="Supprimer le groupe">
+                                <Icon name="delete" size={16} />
                             </button>
                         </div>
                         {group.loop?.enabled && (
-                            <span className="badge badge-secondary badge-sm">↺ Boucle</span>
+                            <Badge variant="secondary" className="text-xs">↺ Boucle</Badge>
                         )}
                     </div>
                 </div>
@@ -257,7 +276,7 @@ function GroupContent({ group, path, depth }: { group: any, path: number[], dept
                     const childSortedIdx = allItems.indexOf(childItem)
                     return (
                         <div key={childItem.item._id || `child-${childItem.originalIndex}`}
-                            className="flex-1 bg-base-100 border border-base-300 rounded-lg overflow-hidden transition-all duration-200 shadow-sm hover:border-primary hover:shadow-md"
+                            className="flex-1 bg-background border border-border rounded-lg overflow-hidden transition-all duration-200 shadow-sm hover:border-primary hover:shadow-md group-container-responsive"
                             style={{ order: childItem.item._order ?? 0 }}>
                             <GroupContainer
                                 group={childItem.item}

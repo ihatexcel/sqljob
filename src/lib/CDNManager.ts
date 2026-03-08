@@ -152,7 +152,7 @@ export class CDNManager {
 
             // Créer une instance d'éditeur CodeMirror SQL (utilisé par editorsMixin pour les modales de groupe)
             static createSqlEditor(container, initialValue, onChange, options = {}) {
-                const isDarkTheme = document.documentElement.getAttribute('data-theme')?.includes('dark') ||
+                const isDarkTheme = document.documentElement.classList.contains('dark') ||
                     window.matchMedia('(prefers-color-scheme: dark)').matches;
 
                 const schema = options.schema || {};
@@ -164,11 +164,11 @@ export class CDNManager {
                         if (update.docChanged && onChange) onChange(update.state.doc.toString());
                     }),
                     EditorView.theme({
-                        '&': { fontSize: '14px', minHeight: '20px', border: '1px solid oklch(var(--b3, #d1d5db))', borderRadius: '0.5rem' },
+                        '&': { fontSize: '14px', minHeight: '20px', border: '1px solid hsl(var(--border, #d1d5db))', borderRadius: '0.5rem' },
                         '.cm-scroller': { fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace', minHeight: '20px', maxHeight: '250px', overflow: 'auto' },
                         '.cm-content': { padding: '0.5rem 0' },
                         '.cm-gutters': { borderRadius: '0.5rem 0 0 0.5rem' },
-                        '&.cm-focused': { outline: '2px solid oklch(var(--p, #570df8))', outlineOffset: '-1px' },
+                        '&.cm-focused': { outline: '2px solid hsl(var(--primary, #570df8))', outlineOffset: '-1px' },
                     }),
                     DuckDBDialect.language.data.of({ autocomplete: cteCompletionSource }),
                     sqlExtension({

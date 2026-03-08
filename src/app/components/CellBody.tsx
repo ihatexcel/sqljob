@@ -9,15 +9,17 @@ import { useNotebookStore } from '../store/notebookStore'
 import { ConfigManager } from '../../lib/ConfigManager'
 import { CDNManager } from '../../lib/CDNManager'
 import { SqlEditorWidget } from './SqlEditorWidget'
+import { SqlDataTable } from './SqlDataTable'
+import { Icon } from '../../lib/icons'
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 function CellBodySkeleton() {
     return (
         <div className="flex min-w-0 w-full flex-col mt-2 gap-4">
-            <div className="skeleton h-8 w-full"></div>
-            <div className="skeleton h-2 w-28"></div>
-            <div className="skeleton h-2 w-full"></div>
-            <div className="skeleton h-2 w-full"></div>
+            <div className="animate-pulse rounded-md bg-muted h-8 w-full"></div>
+            <div className="animate-pulse rounded-md bg-muted h-2 w-28"></div>
+            <div className="animate-pulse rounded-md bg-muted h-2 w-full"></div>
+            <div className="animate-pulse rounded-md bg-muted h-2 w-full"></div>
         </div>
     )
 }
@@ -25,10 +27,10 @@ function CellBodySkeleton() {
 function TableSkeleton() {
     return (
         <div className="flex flex-col gap-2 p-4">
-            <div className="skeleton h-6 w-full"></div>
-            <div className="skeleton h-4 w-full"></div>
-            <div className="skeleton h-4 w-full"></div>
-            <div className="skeleton h-4 w-3/4"></div>
+            <div className="animate-pulse rounded-md bg-muted h-6 w-full"></div>
+            <div className="animate-pulse rounded-md bg-muted h-4 w-full"></div>
+            <div className="animate-pulse rounded-md bg-muted h-4 w-full"></div>
+            <div className="animate-pulse rounded-md bg-muted h-4 w-3/4"></div>
         </div>
     )
 }
@@ -38,7 +40,7 @@ function ResultInfo({ cell, devOnly = false }: { cell: any, devOnly?: boolean })
     const devMode = useNotebookStore(s => s.devMode)
     if (!cell._resultInfo) return null
     if (devOnly && !devMode) return null
-    return <div className="mt-2 p-2 bg-base-200 rounded text-sm text-base-content/70">{cell._resultInfo}</div>
+    return <div className="mt-2 p-2 bg-muted rounded text-sm text-muted-foreground">{cell._resultInfo}</div>
 }
 
 // ─── MarkdownBody ─────────────────────────────────────────────────────────────
@@ -127,7 +129,7 @@ function SourceBody({ cell, path, cellIndex }: any) {
         <div className="flex flex-col gap-2">
             <div
                 className={`flex items-center justify-center rounded-lg transition-all duration-200 mt-1 mb-1 min-h-[20px] ${cell._fileName
-                    ? 'border-2 border-solid border-success bg-success/10 cursor-default'
+                    ? 'border-2 border-solid border-green-500 bg-green-500/10 cursor-default'
                     : isDragging
                         ? 'border-2 border-solid border-accent bg-accent/10 cursor-pointer'
                         : 'border-2 border-dashed border-primary bg-primary/5 cursor-pointer hover:border-accent hover:bg-accent/10'
@@ -142,20 +144,20 @@ function SourceBody({ cell, path, cellIndex }: any) {
                     // Sans ça, iconify ayant remplacé les <span> par des <svg> hors du VDOM React,
                     // React ne sait pas les supprimer → l'ancienne icône persiste après suppression.
                     <div key="no-file" style={{ width: '100%', textAlign: 'center', padding: '4px' }}>
-                        <span className="iconify" data-icon="material-symbols-light:create-new-folder" style={{ fontSize: '3rem', display: 'block', margin: 'auto' }}></span>
-                        <p className="m-0 text-base-content/60 text-sm">{cell.title || 'Glissez-déposez ici'}</p>
+                        <Icon name="create-new-folder" size={48} />
+                        <p className="m-0 text-muted-foreground text-sm">{cell.title || 'Glissez-déposez ici'}</p>
                         <p className="mt-0 mb-0 text-accent text-xs font-semibold">→ {cell.name}</p>
                     </div>
                 ) : (
                     <div key="has-file" className="flex flex-wrap items-center gap-3 px-4 py-3 w-full">
-                        <span className="iconify text-success" data-icon="material-symbols-light:check-circle" style={{ fontSize: '1.25rem' }}></span>
-                        <span className="flex-1 text-success font-medium truncate">{cell._fileName}</span>
-                        <span className="text-base-content/60 text-xs">→ {cell.name}</span>
-                        <button className="btn btn-ghost" onClick={e => { e.stopPropagation(); downloadSourceFile(path, cellIndex) }} title="Télécharger">
-                            <span className="iconify" data-icon="material-symbols-light:download" style={{ fontSize: '1.25rem' }}></span>
+                        <Icon name="check-circle" size={20} className="text-green-600" />
+                        <span className="flex-1 text-green-600 font-medium truncate">{cell._fileName}</span>
+                        <span className="text-muted-foreground text-xs">→ {cell.name}</span>
+                        <button className="inline-flex items-center justify-center p-2 rounded hover:bg-muted" onClick={e => { e.stopPropagation(); downloadSourceFile(path, cellIndex) }} title="Télécharger">
+                            <Icon name="download" size={20} />
                         </button>
-                        <button className="btn btn-ghost btn-error" onClick={e => { e.stopPropagation(); removeSingleSourceFile(path, cellIndex) }} title="Supprimer">
-                            <span className="iconify" data-icon="material-symbols-light:close" style={{ fontSize: '1.5rem' }}></span>
+                        <button className="inline-flex items-center justify-center p-2 rounded hover:bg-destructive/10 text-destructive" onClick={e => { e.stopPropagation(); removeSingleSourceFile(path, cellIndex) }} title="Supprimer">
+                            <Icon name="close" size={24} />
                         </button>
                     </div>
                 )}
@@ -187,7 +189,7 @@ function ButtonRunBody({ cell, path, cellIndex }: any) {
     const { runCellsAfter, isLoading } = useNotebookStore(useShallow(s => ({ runCellsAfter: s.runCellsAfter, isLoading: s.isLoading })))
     return (
         <div className="flex justify-center p-0">
-            <button className="btn btn-primary btn-sm" onClick={() => runCellsAfter(path, cellIndex)} disabled={isLoading}>
+            <button className="inline-flex items-center justify-center px-4 py-1.5 rounded text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50" onClick={() => runCellsAfter(path, cellIndex)} disabled={isLoading}>
                 <span>{cell.buttonLabel || 'Exécuter'}</span>
             </button>
         </div>
@@ -197,33 +199,21 @@ function ButtonRunBody({ cell, path, cellIndex }: any) {
 // ─── SqlTableBody ─────────────────────────────────────────────────────────────
 function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
     const {
-        devMode, isLoading, hasCellHeight,
+        devMode, hasCellHeight,
         showSqlEditorVisible, isSqlResultTabular, isSqlResultText,
-        getSqlResultAsText, renderTableInContainer,
+        getSqlResultAsText,
     } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
-        isLoading: s.isLoading,
         hasCellHeight: s.hasCellHeight,
         showSqlEditorVisible: s.showSqlEditorVisible,
         isSqlResultTabular: s.isSqlResultTabular,
         isSqlResultText: s.isSqlResultText,
         getSqlResultAsText: s.getSqlResultAsText,
-        renderTableInContainer: s.renderTableInContainer,
     })))
 
-    const tableRef = useRef<HTMLDivElement>(null)
-
-    useEffect(() => {
-        if (tableRef.current && cell._results?.length > 0 && cell._status !== 'running') {
-            // fromExecute=true : bypass du garde anti-cascade Alpine (inutile en React,
-            // pas de MutationObserver qui déclenche x-init). Sans ça, le guard reste à
-            // true car React réutilise le même nœud DOM et le contenu SimpleDatatables
-            // de l'exécution précédente est encore présent dans le container.
-            renderTableInContainer?.(cell, true)
-        }
-    }, [cell._results, cell._status])
-
     const hasHeight = hasCellHeight(cell)
+    const isRunning = cell._status === 'running'
+    const searchable = cell.type === 'table'
 
     return (
         <div className={hasHeight ? 'flex-1 min-h-0 flex flex-col' : ''}>
@@ -235,21 +225,21 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
                 <>
                     {showSqlEditorVisible?.(cell) && isSqlResultTabular?.(cell) && (
                         <div className={`relative rounded-lg mt-2 ${hasHeight ? 'flex-1 min-h-0 overflow-auto' : ''}`}>
-                            {cell._status === 'running'
-                                ? <div className="bg-base-100 rounded-lg overflow-x-auto"><TableSkeleton /></div>
-                                : <div ref={tableRef} id={`table-${cell._id}`} className="bg-base-100 rounded-lg overflow-x-auto"></div>
+                            {isRunning
+                                ? <div className="bg-background rounded-lg overflow-x-auto"><TableSkeleton /></div>
+                                : <div className="bg-background rounded-lg overflow-x-auto"><SqlDataTable cell={cell} searchable={searchable} /></div>
                             }
                         </div>
                     )}
                     {showSqlEditorVisible?.(cell) && isSqlResultText?.(cell) && (
-                        <textarea className="textarea textarea-bordered w-full mt-2 min-h-[120px] font-mono text-sm" readOnly value={getSqlResultAsText?.(cell) || ''} />
+                        <textarea className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-mono mt-2 min-h-[120px]" readOnly value={getSqlResultAsText?.(cell) || ''} />
                     )}
                 </>
             ) : (
                 <div className={hasHeight ? 'flex-1 min-h-0 overflow-auto' : ''}>
-                    {cell._status === 'running'
-                        ? <div className="bg-base-100 rounded-lg overflow-x-auto"><TableSkeleton /></div>
-                        : <div ref={tableRef} id={`table-${cell._id}`} className="bg-base-100 rounded-lg overflow-x-auto"></div>
+                    {isRunning
+                        ? <div className="bg-background rounded-lg overflow-x-auto"><TableSkeleton /></div>
+                        : <div className="bg-background rounded-lg overflow-x-auto"><SqlDataTable cell={cell} searchable={searchable} /></div>
                     }
                 </div>
             )}
@@ -312,15 +302,15 @@ function SqlStatBody({ cell, path, cellIndex }: any) {
                     placeholder="SELECT 42 AS value, 'Titre' AS title, 'info' AS type" />
             )}
             {cell._results && (
-                <div className="stat place-items-center py-1">
+                <div className="flex flex-col items-center py-1">
                     {cell.icon && (
-                        <div className="stat-figure text-secondary">
+                        <div className="text-muted-foreground">
                             <span className="iconify inline-block h-8 w-8" data-icon={cell.icon}></span>
                         </div>
                     )}
-                    <div className="stat-title">{cell.title || 'Stat'}</div>
-                    <div className="stat-value">{cell._statValue || '-'}</div>
-                    <div className="stat-desc">{cell.subtitle || ''}</div>
+                    <div className="text-sm text-muted-foreground">{cell.title || 'Stat'}</div>
+                    <div className="text-4xl font-bold">{cell._statValue || '-'}</div>
+                    <div className="text-xs text-muted-foreground">{cell.subtitle || ''}</div>
                 </div>
             )}
             <ResultInfo cell={cell} devOnly />
@@ -340,12 +330,10 @@ function EChartBody({ cell, path, cellIndex }: any) {
     const chartRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
-        console.log('[EChartBody] useEffect fired | _rev:', _rev, '| _echartsOption:', !!cell._echartsOption, '| chartRef:', !!chartRef.current)
         if (!chartRef.current || !cell._echartsOption) return
         CDNManager.loadECharts?.().then(() => {
             const echarts = (window as any).echarts
             if (!echarts || !chartRef.current) return
-            console.log('[EChartBody] init ECharts on', chartRef.current)
             let chart = echarts.getInstanceByDom(chartRef.current) || echarts.init(chartRef.current)
             chart.clear()
             chart.setOption(cell._echartsOption)
@@ -414,23 +402,23 @@ function UiParameterBody({ cell, path, cellIndex }: any) {
                 />
             )}
             {cell.paramType === 'input' && (
-                <fieldset className="fieldset">
-                    <legend className="fieldset-legend">{cell.title}</legend>
+                <div className="flex flex-col gap-1">
+                    <label className="text-sm font-medium text-foreground">{cell.title}</label>
                     <input
                         type={cell.inputType || 'text'}
-                        className="input input-bordered input-sm w-full"
+                        className="flex h-8 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm"
                         value={localValue}
                         onChange={e => handleChange(e.target.value)}
                         disabled={cell.userEditable === false}
                         placeholder={`Valeur de ${ConfigManager.getCellReferenceName(cell) || ''}`}
                     />
-                </fieldset>
+                </div>
             )}
             {cell.paramType === 'dropdown' && (cell._options?.length ?? 0) > 0 && (
-                <fieldset className="fieldset">
-                    <legend className="fieldset-legend">{cell.title}</legend>
+                <div className="flex flex-col gap-1">
+                    <label className="text-sm font-medium text-foreground">{cell.title}</label>
                     <select
-                        className="select select-bordered select-sm w-full"
+                        className="flex h-8 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm"
                         value={localValue}
                         onChange={e => handleChange(e.target.value)}
                         disabled={cell.userEditable === false}
@@ -439,16 +427,16 @@ function UiParameterBody({ cell, path, cellIndex }: any) {
                             <option key={opt.value} value={opt.value}>{opt.label}</option>
                         ))}
                     </select>
-                </fieldset>
+                </div>
             )}
             {cell.paramType === 'range' && (
-                <fieldset className="fieldset">
-                    <legend className="fieldset-legend">{cell.title}</legend>
+                <div className="flex flex-col gap-1">
+                    <label className="text-sm font-medium text-foreground">{cell.title}</label>
                     <div className="flex items-center gap-3 w-full">
-                        <span className="text-xs text-base-content/60 min-w-[2rem] text-right">{cell.rangeMin ?? 0}</span>
+                        <span className="text-xs text-muted-foreground min-w-[2rem] text-right">{cell.rangeMin ?? 0}</span>
                         <input
                             type="range"
-                            className="range range-sm range-primary flex-1"
+                            className="flex-1 accent-primary"
                             value={localValue}
                             min={cell.rangeMin ?? 0}
                             max={cell.rangeMax ?? 100}
@@ -456,13 +444,13 @@ function UiParameterBody({ cell, path, cellIndex }: any) {
                             onChange={e => handleChange(Number(e.target.value))}
                             disabled={cell.userEditable === false}
                         />
-                        <span className="text-xs text-base-content/60 min-w-[2rem]">{cell.rangeMax ?? 100}</span>
-                        <span className="badge badge-primary badge-sm font-mono min-w-[3rem] text-center">{localValue}</span>
+                        <span className="text-xs text-muted-foreground min-w-[2rem]">{cell.rangeMax ?? 100}</span>
+                        <span className="inline-flex items-center justify-center px-2 py-0.5 rounded text-xs font-mono bg-primary text-primary-foreground min-w-[3rem]">{localValue}</span>
                     </div>
-                </fieldset>
+                </div>
             )}
             {cell._paramError && (
-                <div className="p-2 text-error text-sm bg-error/10 rounded">{cell._paramError}</div>
+                <div className="p-2 text-destructive text-sm bg-destructive/10 rounded">{cell._paramError}</div>
             )}
             <ResultInfo cell={cell} devOnly />
         </div>
@@ -493,7 +481,7 @@ function PublipostageWordBody({ cell, path, cellIndex }: any) {
         <div className="flex flex-col gap-3">
             <div
                 className={`flex items-center justify-center rounded-lg transition-all duration-200 mt-1 mb-1 ${cell.docxTemplateFileName
-                    ? 'border-2 border-solid border-success bg-success/10 cursor-default'
+                    ? 'border-2 border-solid border-green-500 bg-green-500/10 cursor-default'
                     : isDragging
                         ? 'border-2 border-solid border-accent bg-accent/10 cursor-pointer'
                         : 'border-2 border-dashed border-primary bg-primary/5 cursor-pointer hover:border-accent hover:bg-accent/10'
@@ -505,19 +493,19 @@ function PublipostageWordBody({ cell, path, cellIndex }: any) {
             >
                 {!cell.docxTemplateFileName ? (
                     <div key="no-file" className="text-center p-1">
-                        <span className="iconify" data-icon="material-symbols-light:description" style={{ fontSize: '4rem', display: 'block', margin: 'auto' }}></span>
-                        <p className="m-0 text-base-content/60 text-sm">Glissez-déposez votre template Word (.docx)</p>
+                        <Icon name="description" size={64} />
+                        <p className="m-0 text-muted-foreground text-sm">Glissez-déposez votre template Word (.docx)</p>
                         <p className="mt-0 mb-0 text-accent text-xs font-semibold">Template de publipostage</p>
                     </div>
                 ) : (
                     <div key="has-file" className="flex flex-wrap items-center gap-3 px-4 py-3 w-full">
-                        <span className="iconify text-success" data-icon="material-symbols-light:check-circle" style={{ fontSize: '1.25rem' }}></span>
-                        <span className="flex-1 text-success font-medium truncate">{cell.docxTemplateFileName}</span>
-                        <button className="btn btn-ghost" onClick={e => { e.stopPropagation(); downloadDocxTemplate(path, cellIndex) }} title="Télécharger">
-                            <span className="iconify" data-icon="material-symbols-light:download" style={{ fontSize: '1.25rem' }}></span>
+                        <Icon name="check-circle" size={20} className="text-green-600" />
+                        <span className="flex-1 text-green-600 font-medium truncate">{cell.docxTemplateFileName}</span>
+                        <button className="inline-flex items-center justify-center p-2 rounded hover:bg-muted" onClick={e => { e.stopPropagation(); downloadDocxTemplate(path, cellIndex) }} title="Télécharger">
+                            <Icon name="download" size={20} />
                         </button>
-                        <button className="btn btn-ghost btn-error" onClick={e => { e.stopPropagation(); removeDocxTemplate(path, cellIndex) }} title="Supprimer">
-                            <span className="iconify" data-icon="material-symbols-light:close" style={{ fontSize: '1.5rem' }}></span>
+                        <button className="inline-flex items-center justify-center p-2 rounded hover:bg-destructive/10 text-destructive" onClick={e => { e.stopPropagation(); removeDocxTemplate(path, cellIndex) }} title="Supprimer">
+                            <Icon name="close" size={24} />
                         </button>
                     </div>
                 )}
@@ -534,8 +522,8 @@ function PublipostageWordBody({ cell, path, cellIndex }: any) {
                     <div>
                         <div className="text-sm font-semibold text-primary mb-1 flex items-center gap-2">
                             <span>Requête de nom de fichier</span>
-                            <span className="badge badge-soft badge-info text-xs flex items-center gap-1">
-                                <span className="iconify" data-icon="material-symbols-light:storage" style={{ fontSize: '0.875rem' }}></span>
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200">
+                                <Icon name="storage" size={14} />
                                 SQL
                             </span>
                         </div>
@@ -547,7 +535,7 @@ function PublipostageWordBody({ cell, path, cellIndex }: any) {
             {cell.buttonLabel && (
                 <div className="flex justify-center">
                     <button
-                        className="btn btn-primary btn-sm"
+                        className="inline-flex items-center justify-center px-4 py-1.5 rounded text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
                         onClick={() => runCellAt(path, cellIndex)}
                         disabled={isLoading || !cell.docxTemplateFileName}
                     >
@@ -581,21 +569,21 @@ function PdfmeBody({ cell, path, cellIndex }: any) {
                     <div>
                         <div className="text-sm font-semibold text-primary mb-1 flex items-center gap-2">
                             <span>Requête nom de fichier PDF</span>
-                            <span className="badge badge-soft badge-info text-xs flex items-center gap-1">
-                                <span className="iconify" data-icon="material-symbols-light:storage" style={{ fontSize: '0.875rem' }}></span>
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200">
+                                <Icon name="storage" size={14} />
                                 SQL
                             </span>
                         </div>
                         <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
                             queryType="query2" showParsedQueryProp="_showParsedQuery2" />
                     </div>
-                    <div className="form-control">
-                        <label className="label gap-2">
-                            <span className="label-text font-semibold">Template pdfme (JSON)</span>
-                            <span className="badge badge-soft badge-primary text-xs">Layout</span>
+                    <div className="flex flex-col gap-1">
+                        <label className="flex items-center gap-2">
+                            <span className="text-sm font-semibold">Template pdfme (JSON)</span>
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-primary/10 text-primary">Layout</span>
                         </label>
                         <textarea
-                            className="textarea textarea-bordered w-full font-mono text-xs"
+                            className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-xs font-mono"
                             rows={10}
                             style={{ minHeight: '180px' }}
                             placeholder='{"basePdf": {...}, "schemas": [...]}'
@@ -608,7 +596,7 @@ function PdfmeBody({ cell, path, cellIndex }: any) {
             {cell.buttonLabel && (
                 <div className="flex justify-center">
                     <button
-                        className="btn btn-primary btn-sm"
+                        className="inline-flex items-center justify-center px-4 py-1.5 rounded text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
                         onClick={() => runCellAt(path, cellIndex)}
                         disabled={isLoading}
                     >
@@ -655,9 +643,9 @@ function PerspectiveBody({ cell, path, cellIndex }: any) {
                     queryType="query" showParsedQueryProp="_showParsedQuery" />
             )}
             {cell._status === 'running' && !cell._perspectiveReady && (
-                <div className={hasHeight ? 'flex-1 min-h-0 rounded-lg bg-base-100 overflow-hidden' : 'rounded-lg bg-base-100 overflow-hidden'}
+                <div className={hasHeight ? 'flex-1 min-h-0 rounded-lg bg-background overflow-hidden' : 'rounded-lg bg-background overflow-hidden'}
                     style={hasHeight ? {} : { minHeight: mh }}>
-                    <div className="animate-pulse h-full w-full bg-base-200 rounded-lg" style={{ minHeight: mh }}></div>
+                    <div className="animate-pulse h-full w-full bg-muted rounded-lg" style={{ minHeight: mh }}></div>
                 </div>
             )}
             {cell._perspectiveReady && (
@@ -758,10 +746,10 @@ export function CellBody({ cell, path, cellIndex, group }: { cell: any, path: nu
                     {/* Client mode: bouton pour ouvrir childGroup */}
                     {!devMode && cell.childGroupId && (
                         <div className="absolute top-2 right-2">
-                            <button className="btn btn-sm gap-0"
+                            <button className="inline-flex items-center justify-center px-2 py-1 rounded text-sm border border-border hover:bg-muted"
                                 onClick={() => openChildGroupModal(path, cellIndex)}
                                 title="Ouvrir le groupe enfant">
-                                <span className="iconify" data-icon="material-symbols-light:export-notes-outline-sharp" style={{ fontSize: '1rem' }}></span>
+                                <Icon name="export-notes-outline-sharp" size={16} />
                             </button>
                         </div>
                     )}

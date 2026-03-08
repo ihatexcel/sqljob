@@ -1,10 +1,6 @@
 // @ts-nocheck
 import { safeEvalJs } from '../../lib/safeEval';
-
-// Stockage des données brutes hors Proxy Alpine pour éviter le freeze
-// sur les grands jeux de données (millions de traps lors de l'itération).
-// Déclarée ici au niveau module (singleton ESM) et partagée avec cellsMixin.
-export const _rawTableDataStore = new Map()
+import { rawTableDataStore as _rawTableDataStore } from '../../lib/tableDataStore';
 
 export function executionMixin() {
     return {
@@ -604,9 +600,6 @@ export function executionMixin() {
                                 _rawTableDataStore.set(cell._id, rawResults);
                                 cell._results = rawResults;
                                 if (truncated) cell._resultInfo = `✅ ${finalResults.length} ligne(s) (limité à ${maxRows})` + (cell._parseLevels?.length > 1 ? ` - ${cell._parseLevels.length - 1} niveau(x) de parsing` : '');
-                                await this.$nextTick();
-                                await this.$nextTick(); // Double tick pour laisser Alpine rendre le template x-if du conteneur table
-                                await this.renderTableInContainer(cell, true);
                             }
                         }
 
@@ -641,11 +634,6 @@ export function executionMixin() {
                         cell._resultInfo = `${results.length} ligne(s)` + (truncated ? ` (limité à ${maxRows})` : '') +
                             (cell._parseLevels.length > 1 ? ` - ${cell._parseLevels.length - 1} niveau(x) de parsing` : '');
 
-                        await this.$nextTick();
-
-                        // Rendre le tableau (fromExecute=true lève le garde anti-cascade)
-                        await this.renderTableInContainer(cell, true);
-
                         this.setStatus('Tableau chargé', 'success');
                     } catch (error) {
                         // En cas d'erreur, on garde les niveaux déjà parsés pour debug
@@ -678,189 +666,6 @@ export function executionMixin() {
                     if (!this.isSqlResultText(cell)) return '';
                     const keys = Object.keys(cell._results[0]);
                     return cell._results[0][keys[0]] ?? '';
-                },
-
-                // Fonction pour rendre un tableau dans son conteneur (appelée aussi par x-init)
-                async renderTableInContainer(cell, fromExecute = false) {
-                    const containerId = 'table-' + cell._id;
-                    const container = document.getElementById(containerId);
-
-                    // Si le conteneur a été recréé (ex: changement de page), réinitialiser le garde
-                    // pour permettre le rendu du SimpleDataTable dans le nouveau DOM.
-                    if (container && !container.querySelector('.datatable-wrapper')) {
-                        cell._tableRenderGuard = false;
-                    }
-
-                    // Garde anti-cascade : les mutations DOM du DataTable déclenchent
-                    // le MutationObserver Alpine → x-init re-fire → boucle infinie.
-                    // Seul executeTableCell peut lever ce garde (fromExecute = true).
-                    if (cell._tableRenderGuard && !fromExecute) return;
-                    // Utiliser les données brutes du store (hors Proxy Alpine) pour éviter
-                    // le freeze lors de l'itération sur des grands jeux de données.
-                    // Fallback sur cell._results si le store est vide (ex: x-init au chargement).
-                    const rawResults = _rawTableDataStore.get(cell._id) || cell._results;
-
-                    if (container && rawResults && rawResults.length > 0) {
-                        await CDNManager.loadSimpleDatatables();
-                        if (this._tables[cell._id]) {
-                            try {
-                                this._tables[cell._id].destroy();
-                            } catch (_e) {
-                                // L'ancien élément DOM peut être détaché (React a remplacé
-                                // le div par le skeleton puis l'a recréé). On ignore l'erreur.
-                            }
-                            this._tables[cell._id] = null;
-                        }
-                        // Garantir un conteneur vide avant de créer la nouvelle instance,
-                        // car simpleDatatables laisse des résidus DOM après destroy().
-                        container.innerHTML = '';
-
-                        // Parse column roles for PERCENT/TREND rendering and display names
-                        const _parsedRoles = EChartSqlParser.parseColumnRoles(rawResults);
-                        const _colRenderers = EChartSqlParser.buildTableColumnRenderers(_parsedRoles);
-                        const _displayNames = EChartSqlParser.getTableColumnDisplayNames(_parsedRoles);
-                        const _colKeys = Object.keys(rawResults[0]);
-                        const _hasSpecialCols = Object.keys(_colRenderers).length > 0;
-
-                        const tableData = {
-                            headings: _colKeys.map(k => _displayNames[k] || k),
-                            data: rawResults.map(row => _colKeys.map(k =>
-                                _colRenderers[k] ? _colRenderers[k](row[k]) : (row[k] ?? '')
-                            ))
-                        };
-
-                        const dataTable = new simpleDatatables.DataTable('#' + containerId, {
-                            data: tableData,
-                            perPage: 10,
-                            perPageSelect: [5, 10, 25, 50],
-                            html: _hasSpecialCols,
-                            searchable: cell.type === 'table',
-                            sortable: true,
-                            labels: {
-                                placeholder: "Rechercher...",
-                                perPage: "entrées par page",
-                                noRows: "Aucune donnée",
-                                info: "Affichage de {start} à {end} sur {rows} entrées"
-                            },
-                            template: (options) => {
-                                const c = options.classes;
-                                const top = options.searchable
-                                    ? `<div class="${c.top}"><div class="${c.search}"><input class="${c.input}" placeholder="${options.labels.placeholder || ''}" type="search"></div></div>`
-                                    : `<div class="${c.top}"></div>`;
-                                const bottom = options.paging
-                                    ? `<div class="${c.bottom}" style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:0.75rem;">
-<div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">${options.perPageSelect ? `<div class="${c.dropdown}" style="display:flex;align-items:center;gap:0.5rem;"><label>${options.labels.perPage}</label><select class="${c.selector}"></select></div>` : ''}<div class="${c.info}"></div></div><nav class="${c.pagination}"></nav></div>`
-                                    : '';
-                                return `${top}<div class="${c.container}"></div>${bottom}`;
-                            },
-                            tableRender: (_data, table, type) => {
-                                if (type === "print") {
-                                    return table;
-                                }
-
-                                // Classes DaisyUI/Tailwind sur la table
-                                table.attributes = table.attributes || {};
-                                table.attributes.class = "table table-zebra table-pin-rows w-full";
-
-                                const tHead = table.childNodes[0];
-                                const tBody = table.childNodes[1];
-
-                                // Style header
-                                if (tHead && tHead.childNodes) {
-                                    tHead.childNodes.forEach((tr, trIndex) => {
-                                        tr.attributes = tr.attributes || {};
-                                        tr.attributes.class = "bg-base-200";
-                                        if (tr.childNodes) {
-                                            tr.childNodes.forEach((th, thIndex) => {
-                                                th.attributes = th.attributes || {};
-                                                const stickyClass = thIndex === 0 ? " sticky left-0 z-10 bg-base-200" : "";
-                                                th.attributes.class = "text-base-content font-semibold text-sm px-3 py-2" + stickyClass;
-                                            });
-                                        }
-                                    });
-                                }
-
-                                // Style body rows
-                                if (tBody && tBody.childNodes) {
-                                    tBody.childNodes.forEach((tr, trIndex) => {
-                                        tr.attributes = tr.attributes || {};
-                                        const isEven = trIndex % 2 === 0;
-                                        const rowClass = isEven ? "bg-base-100" : "bg-base-200/50";
-                                        tr.attributes.class = `${rowClass} hover:bg-base-300/50 transition-colors`;
-                                        if (tr.childNodes) {
-                                            tr.childNodes.forEach((td, tdIndex) => {
-                                                td.attributes = td.attributes || {};
-                                                const stickyClass = tdIndex === 0 ? ` sticky left-0 z-10 ${isEven ? "bg-base-100" : "bg-base-200"}` : "";
-                                                td.attributes.class = "text-base-content text-sm px-3 py-2" + stickyClass;
-                                            });
-                                        }
-                                    });
-                                }
-
-                                // Ajouter ligne de filtres par colonne
-                                const filterHeaders = {
-                                    nodeName: "TR",
-                                    attributes: { class: "bg-base-100 filter-row" },
-                                    childNodes: tHead.childNodes[0].childNodes.map(
-                                        (_th, index) => ({
-                                            nodeName: "TH",
-                                            attributes: {
-                                                class: "px-2 py-1" + (index === 0 ? " sticky left-0 z-10 bg-base-100" : "")
-                                            },
-                                            childNodes: [
-                                                {
-                                                    nodeName: "INPUT",
-                                                    attributes: {
-                                                        class: "input input-bordered input-xs w-full column-filter",
-                                                        type: "search",
-                                                        placeholder: "Filtrer...",
-                                                        "data-column-index": index
-                                                    }
-                                                }
-                                            ]
-                                        })
-                                    )
-                                };
-                                tHead.childNodes.push(filterHeaders);
-                                return table;
-                            }
-                        });
-
-                        this._tables[cell._id] = dataTable;
-
-                        // Ajouter les event listeners pour les filtres de colonne
-                        dataTable.on('datatable.init', () => {
-                            const filterInputs = container.querySelectorAll('.column-filter');
-                            const columnFilters = {};
-
-                            filterInputs.forEach(input => {
-                                input.addEventListener('input', (e) => {
-                                    const columnIndex = parseInt(e.target.dataset.columnIndex);
-                                    const value = e.target.value.trim();
-
-                                    // Stocker la valeur du filtre pour cette colonne
-                                    if (value) {
-                                        columnFilters[columnIndex] = value;
-                                    } else {
-                                        delete columnFilters[columnIndex];
-                                    }
-
-                                    // Construire les queries pour multiSearch
-                                    const queries = Object.entries(columnFilters).map(([col, term]) => ({
-                                        terms: [term],
-                                        columns: [parseInt(col)]
-                                    }));
-
-                                    // Appliquer le filtre multi-colonnes
-                                    dataTable.multiSearch(queries);
-                                });
-                            });
-                        });
-
-                        // Garde anti-cascade : les mutations DOM du DataTable déclenchent
-                        // Alpine MutationObserver → x-init re-fire → on bloque les appels suivants.
-                        cell._tableRenderGuard = true;
-                    }
                 },
 
                 async executeMarkdownCell(cell) {
@@ -1590,7 +1395,6 @@ export function executionMixin() {
 
                         this.setStatus('Exécution de la requête...', 'loading');
                         const { rows, columnTypes } = await DuckDBManager.executeQueryWithSchema(finalQuery);
-                        console.log('[EChart] rows:', rows.length, '| columnTypes:', columnTypes);
 
                         cell._results = rows;
                         cell._columnTypes = columnTypes;
@@ -1598,7 +1402,6 @@ export function executionMixin() {
                         // Construire l'option ECharts et la stocker sur la cellule.
                         // Le composant React EChartBody surveille cell._echartsOption via useEffect.
                         const parsed = EChartSqlParser.parseColumnRoles(rows, columnTypes);
-                        console.log('[EChart] parsed chartType:', parsed.chartType, '| roles:', parsed.roles);
                         if (parsed.chartType === 'kpi') {
                             cell._kpiHtml = EChartSqlParser.buildKpiHtml(rows, parsed);
                             cell._echartsOption = null;
@@ -1606,7 +1409,6 @@ export function executionMixin() {
                             cell._echartsOption = EChartSqlParser.buildEChartsOption(rows, parsed) ?? null;
                             cell._kpiHtml = null;
                         }
-                        console.log('[EChart] _echartsOption set:', !!cell._echartsOption);
                         cell._echartReady = true;
                         this.forceUpdate();
 

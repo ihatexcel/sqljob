@@ -1,26 +1,26 @@
 // @ts-nocheck
-import { useRef, useEffect, useState, useCallback } from 'react'
+/**
+ * NotebookPanel — Panneau principal du notebook sqljob.
+ * Rendu à l'intérieur du mosaic layout de RoomShell (placement: 'main').
+ *
+ * Contient :
+ * - NavBar (logo, onglets de pages, export/import, run all)
+ * - PageContent (groupes + cellules)
+ * - StatusBar (messages loading/success/error)
+ */
+import { useEffect, useRef, useState } from 'react'
+import { RoomPanel } from '@sqlrooms/room-shell'
 import { useShallow } from 'zustand/react/shallow'
 import { useNotebookStore } from '../store/notebookStore'
 import {
     Button,
     Input,
     DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator,
-    Separator,
     Alert, AlertDescription,
-    ThemeSwitch,
     Spinner,
 } from '@sqlrooms/ui'
 import { Icon } from '../../lib/icons'
 import { PageContent } from './PageContent'
-import { ConfirmModal } from './modals/ConfirmModal'
-import { TemplateModal } from './modals/TemplateModal'
-import { AddGroupModal, InsertGroupModal, InsertCellModal, AddCellToGroupModal } from './modals/SimpleModals'
-import { DbEngineModal } from './modals/DbEngineModal'
-import { ThemeCustomModal, initCustomTheme } from './modals/ThemeCustomModal'
-import { ExportModal, GistTokenModal, GistResultModal, JsonPassphraseModal } from './modals/ExportModals'
-import { CellConfigModal } from './modals/CellConfigModal'
-import { LoopConfigModal, GroupSettingsModal, ChildGroupModal } from './modals/GroupModals'
 
 // ─── TabBar (liste des pages) ─────────────────────────────────────────────────
 function TabBar() {
@@ -166,16 +166,19 @@ function NavBar() {
         loadConfig: s.loadConfig
     })))
     const importJsonRef = useRef<HTMLInputElement>(null)
-
-    if (!showLayout) return null
+    const set = useNotebookStore.setState
 
     return (
-        <div className="flex items-center border-b border-border bg-background px-4 py-2 gap-2">
+        <div className="flex items-center border-b border-border bg-background px-4 py-2 gap-2 shrink-0">
             <div className="flex-none">
-                <a href="https://ihatexcel.github.io/sqljob/?gist=68cd597ba5da05ceba24fb975c05384f" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+                <button
+                    onClick={() => set({ showLayout: !showLayout })}
+                    title={showLayout ? 'Masquer la barre' : 'Afficher la barre'}
+                    className="flex items-center gap-2 hover:opacity-70 transition-opacity cursor-pointer"
+                >
                     <img src="https://raw.githubusercontent.com/ihatexcel/sqljob/main/ihatexcel.svg" alt="sqljob" className="h-8" />
                     <span className="font-bold text-primary text-lg">sqlJob</span>
-                </a>
+                </button>
             </div>
             <div className="flex-1 flex justify-center overflow-hidden">
                 <TabBar />
@@ -245,56 +248,15 @@ function StatusBar() {
     )
 }
 
-// ─── Layout principal ─────────────────────────────────────────────────────────
-export function NotebookLayout() {
-    const { showLayout, setShowLayout } = useNotebookStore(useShallow(s => ({ showLayout: s.showLayout, setShowLayout: s.setShowLayout })))
-
-    useEffect(() => { initCustomTheme() }, [])
-
-    useEffect(() => {
-        const handler = (e: KeyboardEvent) => {
-            if (e.ctrlKey && e.key === ',') {
-                e.preventDefault()
-                setShowLayout(!showLayout)
-            }
-        }
-        window.addEventListener('keydown', handler)
-        return () => window.removeEventListener('keydown', handler)
-    }, [showLayout, setShowLayout])
-
+// ─── NotebookPanel ────────────────────────────────────────────────────────────
+export const NotebookPanel = () => {
     return (
-        <div className="min-h-screen flex flex-col bg-background text-foreground">
+        <RoomPanel type="main" showHeader={false} className="flex flex-col h-full">
             <NavBar />
-
-            <main className="flex-1 overflow-auto">
+            <main className="flex-1 overflow-auto min-h-0">
                 <PageContent />
             </main>
-
-            {showLayout && (
-                <footer className="flex justify-center items-center bg-muted text-muted-foreground p-4 text-sm border-t border-border">
-                    <p>iHateXcel - sqljob - Made with ❤️ by Théo Nobella-Pichonnier</p>
-                </footer>
-            )}
-
-            {/* Status bar */}
             <StatusBar />
-
-            {/* All modals */}
-            <ConfirmModal />
-            <TemplateModal />
-            <AddGroupModal />
-            <InsertGroupModal />
-            <InsertCellModal />
-            <AddCellToGroupModal />
-            <CellConfigModal />
-            <ChildGroupModal />
-            <LoopConfigModal />
-            <GroupSettingsModal />
-            <DbEngineModal />
-            <ExportModal />
-            <GistTokenModal />
-            <GistResultModal />
-            <JsonPassphraseModal />
-        </div>
+        </RoomPanel>
     )
 }

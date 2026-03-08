@@ -15,8 +15,20 @@
  */
 import React from 'react'
 import { createRoot } from 'react-dom/client'
+import { loader } from '@monaco-editor/react'
 import { App } from '../app/App'
 import './styles.css'
+
+// Configure Monaco pour charger depuis jsDelivr (AMD, pas ESM — pas de bare specifier).
+// @monaco-editor/react utilise RequireJS en interne, Monaco n'est jamais bundlé.
+loader.config({
+    paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.55.1/min/vs' },
+})
+loader.init().then(() => {
+    console.log('[sqljob] Monaco chargé depuis jsDelivr CDN ✓')
+}).catch((err) => {
+    console.error('[sqljob] Échec chargement Monaco CDN:', err)
+})
 
 // URL absolue de ce fichier (import.meta.url) — utilisée par l'export HTML
 // pour retrouver exactement le bon élément <script src> dans la page hôte.
@@ -39,15 +51,8 @@ class SQLJobApp extends HTMLElement {
     private _root: ReturnType<typeof createRoot> | null = null
 
     connectedCallback() {
-        // Appliquer les classes body si pas déjà fait
-        if (!document.body.classList.contains('font-sans')) {
-            document.body.classList.add(
-                'min-h-screen', 'font-sans', 'bg-base-100',
-                'text-base-content', 'transition-colors', 'duration-200'
-            )
-        }
-
-        // Rendu React en light DOM : DaisyUI/Tailwind fonctionnent nativement
+        // Rendu React en light DOM : @sqlrooms/ui/Tailwind fonctionnent nativement
+        // ThemeProvider (dans App) gère automatiquement la classe dark/light sur <html>
         this._root = createRoot(this)
         this._root.render(React.createElement(App))
     }

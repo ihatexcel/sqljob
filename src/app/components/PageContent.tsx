@@ -2,6 +2,7 @@
 import { useShallow } from 'zustand/react/shallow'
 import { useNotebookStore } from '../store/notebookStore'
 import { GroupContainer } from './GroupContainer'
+import { Icon } from '../../lib/icons'
 
 // ─── Séparateur entre groupes (hover uniquement) ──────────────────────────────
 function GroupDivider({ atIndex }: { atIndex: number }) {
@@ -14,7 +15,7 @@ function GroupDivider({ atIndex }: { atIndex: number }) {
         >
             <div className="absolute inset-x-0 flex items-center opacity-0 group-hover:opacity-100 transition-opacity duration-150">
                 <div className="flex-1 border-t border-dashed border-primary/50"></div>
-                <span className="text-primary text-xs font-bold leading-none mx-2 px-1.5 py-0.5 rounded border border-dashed border-primary/40 bg-base-100 select-none">
+                <span className="text-primary text-xs font-bold leading-none mx-2 px-1.5 py-0.5 rounded border border-dashed border-primary/40 bg-background select-none">
                     +
                 </span>
                 <div className="flex-1 border-t border-dashed border-primary/50"></div>
@@ -55,7 +56,7 @@ export function PageContent() {
                 items.push(
                     <div
                         key={group._id}
-                        className="overflow-hidden bg-base-100"
+                        className="overflow-hidden bg-background"
                     >
                         <GroupContainer
                             group={group}
@@ -75,10 +76,10 @@ export function PageContent() {
             {devMode && (
                 <div className="flex justify-center mt-2">
                     <button
-                        className="btn btn-sm btn-outline"
+                        className="inline-flex items-center justify-center px-3 py-1.5 rounded-md text-sm border border-border hover:bg-muted"
                         onClick={() => set({ showAddGroupModal: true })}
                     >
-                        <span className="iconify" data-icon="material-symbols-light:add" style={{ fontSize: '1rem' }}></span>
+                        <Icon name="add" size={16} />
                         Ajouter un groupe
                     </button>
                 </div>
