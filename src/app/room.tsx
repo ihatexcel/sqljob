@@ -11,8 +11,9 @@ import { useDisclosure, useTheme } from '@sqlrooms/ui'
 import { useShallow } from 'zustand/react/shallow'
 import { useNotebookStore } from './store/notebookStore'
 import { SqlEditorModal } from '@sqlrooms/sql-editor'
-import { BookHeartIcon, MoonIcon, PaintbrushIcon, Settings2Icon, SunIcon, TerminalIcon } from 'lucide-react'
+import { BookHeartIcon, MessageSquareCodeIcon, MoonIcon, PaintbrushIcon, Settings2Icon, SunIcon, TerminalIcon } from 'lucide-react'
 import { ThemeCustomModal } from './components/modals/ThemeCustomModal'
+import { ErudaModal } from './components/modals/ErudaModal'
 import { ConfirmModal } from './components/modals/ConfirmModal'
 import { TemplateModal } from './components/modals/TemplateModal'
 import { AddGroupModal, InsertGroupModal, InsertCellModal, AddCellToGroupModal } from './components/modals/SimpleModals'
@@ -35,6 +36,7 @@ function SidebarControls() {
     const { theme, setTheme } = useTheme()
     const set = useNotebookStore.setState
     const themeModalDisclosure = useDisclosure()
+    const erudaDisclosure = useDisclosure()
 
     if (!showLayout) return null
 
@@ -71,6 +73,15 @@ function SidebarControls() {
                     icon={DbEngineIcon}
                 />
             )}
+
+            {/* Console debug Eruda */}
+            <RoomShell.SidebarButton
+                title="Console debug (Eruda)"
+                onClick={erudaDisclosure.onToggle}
+                isSelected={erudaDisclosure.isOpen}
+                icon={MessageSquareCodeIcon}
+            />
+            <ErudaModal open={erudaDisclosure.isOpen} onClose={erudaDisclosure.onClose} />
 
             {/* DevMode toggle — ancré en bas via spacer */}
             <div className="flex-1" />
