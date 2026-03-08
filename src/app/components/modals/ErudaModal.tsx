@@ -5,15 +5,31 @@ import { MessageSquareCodeIcon } from 'lucide-react'
 
 const ERUDA_CDN = 'https://cdn.jsdelivr.net/npm/eruda'
 
-async function loadEruda(): Promise<any> {
-    if ((window as any).eruda) return (window as any).eruda
-    return new Promise((resolve, reject) => {
-        const script = document.createElement('script')
-        script.src = ERUDA_CDN
-        script.onload = () => resolve((window as any).eruda)
-        script.onerror = reject
-        document.head.appendChild(script)
+// Singleton : promise de chargement + état d'init
+let loadPromise: Promise<any> | null = null
+let initialized = false
+
+function loadEruda(): Promise<any> {
+    if (loadPromise) return loadPromise
+    loadPromise = new Promise((resolve, reject) => {
+        if ((window as any).eruda) { resolve((window as any).eruda); return }
+        const s = document.createElement('script')
+        s.src = ERUDA_CDN
+        s.onload = () => resolve((window as any).eruda)
+        s.onerror = () => { loadPromise = null; reject(new Error('Eruda CDN inaccessible')) }
+        document.head.appendChild(s)
     })
+    return loadPromise
+}
+
+// Conteneur eruda monté hors du Dialog pour survivre aux open/close cycles
+let erudaContainer: HTMLDivElement | null = null
+function getOrCreateErudaContainer() {
+    if (erudaContainer) return erudaContainer
+    erudaContainer = document.createElement('div')
+    erudaContainer.style.cssText = 'position:fixed;inset:0;z-index:9999;pointer-events:none;'
+    document.body.appendChild(erudaContainer)
+    return erudaContainer
 }
 
 interface ErudaModalProps {
@@ -22,41 +38,69 @@ interface ErudaModalProps {
 }
 
 export function ErudaModal({ open, onClose }: ErudaModalProps) {
-    const containerRef = useRef<HTMLDivElement>(null)
+    const mountRef = useRef<HTMLDivElement>(null)
     const [error, setError] = useState<string | null>(null)
-    const initializedRef = useRef(false)
 
     useEffect(() => {
-        if (!open || !containerRef.current) return
-        if (initializedRef.current) return
+        if (!open) {
+            // Masquer eruda sans le détruire
+            if ((window as any).eruda && initialized) {
+                try { (window as any).eruda.hide() } catch {}
+            }
+            return
+        }
 
         setError(null)
         loadEruda()
             .then(eruda => {
-                if (!containerRef.current) return
-                eruda.init({ container: containerRef.current, tool: ['console', 'elements', 'network', 'resources', 'info'] })
-                initializedRef.current = true
+                if (!initialized) {
+                    const container = getOrCreateErudaContainer()
+                    container.style.pointerEvents = 'auto'
+                    eruda.init({
+                        container,
+                        tool: ['console', 'elements', 'network', 'resources', 'info'],
+                        defaults: { displaySize: 80, transparency: 1 },
+                    })
+                    initialized = true
+                    // Petite attente pour que l'UI eruda soit montée
+                    setTimeout(() => {
+                        try { eruda.show() } catch {}
+                    }, 50)
+                } else {
+                    const container = getOrCreateErudaContainer()
+                    container.style.pointerEvents = 'auto'
+                    try { eruda.show() } catch {}
+                }
             })
-            .catch(() => setError('Impossible de charger Eruda. Vérifiez votre connexion.'))
+            .catch(err => setError('Impossible de charger Eruda. Vérifiez votre connexion.'))
     }, [open])
 
+    // Quand le Dialog se ferme via backdrop/Esc, masquer eruda
+    const handleOpenChange = (v: boolean) => {
+        if (!v) {
+            if ((window as any).eruda && initialized) {
+                try { (window as any).eruda.hide() } catch {}
+                const c = erudaContainer
+                if (c) c.style.pointerEvents = 'none'
+            }
+            onClose()
+        }
+    }
+
     return (
-        <Dialog open={open} onOpenChange={v => !v && onClose()}>
-            <DialogContent className="max-w-2xl h-[80vh] flex flex-col p-0 gap-0">
-                <DialogHeader className="px-4 py-3 border-b border-border shrink-0">
+        <Dialog open={open} onOpenChange={handleOpenChange}>
+            <DialogContent className="max-w-xs flex flex-col p-0 gap-0" style={{ height: 'auto' }}>
+                <DialogHeader className="px-4 py-3 border-b border-border">
                     <DialogTitle className="flex items-center gap-2 text-sm">
                         <MessageSquareCodeIcon className="h-4 w-4" />
                         Console debug (Eruda)
                     </DialogTitle>
                 </DialogHeader>
-                <div className="flex-1 relative overflow-hidden">
-                    {error ? (
-                        <div className="flex items-center justify-center h-full text-sm text-destructive px-4 text-center">
-                            {error}
-                        </div>
-                    ) : (
-                        <div ref={containerRef} className="absolute inset-0" />
-                    )}
+                <div className="px-4 py-4 text-sm text-muted-foreground" ref={mountRef}>
+                    {error
+                        ? <span className="text-destructive">{error}</span>
+                        : 'La console Eruda est ouverte en superposition. Fermez cette modale pour la masquer.'
+                    }
                 </div>
             </DialogContent>
         </Dialog>
