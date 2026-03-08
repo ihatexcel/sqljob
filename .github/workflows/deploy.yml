@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [main, beta, dev]
+    branches: [main, beta, recette, claude/dev]
   workflow_dispatch:
 
 permissions:
@@ -37,7 +37,8 @@ jobs:
           cp ihatexcel.svg _site/ 2>/dev/null || true
           cp -r dist-cdn _site/
 
-      - name: Deploy → root (main)
+      # main → racine du site (/)
+      - name: Deploy main to /
         if: github.ref_name == 'main'
         uses: peaceiris/actions-gh-pages@v4
         with:
@@ -45,8 +46,9 @@ jobs:
           publish_dir: _site
           keep_files: true
 
-      - name: Deploy → /beta (beta)
-        if: github.ref_name == 'beta'
+      # beta / recette → sous-dossier /beta/
+      - name: Deploy beta to /beta/
+        if: github.ref_name == 'beta' || github.ref_name == 'recette'
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -54,8 +56,9 @@ jobs:
           destination_dir: beta
           keep_files: true
 
-      - name: Deploy → /dev (dev)
-        if: github.ref_name == 'dev'
+      # claude/dev → sous-dossier /dev/
+      - name: Deploy claude/dev to /dev/
+        if: github.ref == 'refs/heads/claude/dev'
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
