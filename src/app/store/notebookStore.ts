@@ -312,9 +312,41 @@ export const useNotebookStore = create<any>((set, get, api) => {
     const editorsActions = createEditorsSlice(set, get)
     const executionActions = createExecutionSlice(set, get)
 
+    // Helper : vérifie si le panneau 'data' est actuellement visible dans le layout
+    function isDataPanelVisible() {
+        const nodes = get().layout?.config?.nodes
+        if (!nodes) return false
+        if (nodes === 'data') return true
+        if (typeof nodes === 'object') return JSON.stringify(nodes).includes('"data"')
+        return false
+    }
+
+    // Override togglePanel pour mobile (< 768px) :
+    // ouvre le panneau 'data' en plein écran au lieu du layout splitté
+    const originalTogglePanel = roomShellState.layout.togglePanel
+    const mobileTogglePanel = (panel: string, show?: boolean) => {
+        const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
+        if (isMobile && panel === 'data') {
+            const dataVisible = isDataPanelVisible()
+            if (dataVisible) {
+                // Fermer → retour au notebook
+                set((s: any) => ({ layout: { ...s.layout, config: { ...s.layout.config, nodes: 'main' } } }))
+            } else {
+                // Ouvrir → plein écran data
+                set((s: any) => ({ layout: { ...s.layout, config: { ...s.layout.config, nodes: 'data' } } }))
+            }
+            return
+        }
+        originalTogglePanel(panel, show)
+    }
+
     return {
         ...sqlEditorState,
         ...roomShellState,
+        layout: {
+            ...roomShellState.layout,
+            togglePanel: mobileTogglePanel,
+        },
         ...initialState,
         ...pagesActions,
         ...helpersActions,
