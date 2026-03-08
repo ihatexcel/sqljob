@@ -81370,7 +81370,7 @@ const createHelpersSlice = (yt, At) => ({
   },
   setStatus(xt, wt) {
     const { devMode: Et } = At();
-    if (!Et && wt === "success") {
+    if (!Et && wt !== "error") {
       yt({ status: "", statusType: "" });
       return;
     }
