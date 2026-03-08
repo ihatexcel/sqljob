@@ -269,18 +269,18 @@ function FloatingControls() {
                     <Icon name={devMode ? 'visibility' : 'settings'} size={20} />
                 </Button>
 
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowThemeModal(true)}
+                    title="Personnaliser le thème"
+                >
+                    <Icon name="palette" size={20} />
+                </Button>
+
                 {devMode && (
                     <>
                         <ThemeSwitch />
-
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setShowThemeModal(true)}
-                            title="Personnaliser le thème"
-                        >
-                            <Icon name="palette" size={20} />
-                        </Button>
 
                         <Button
                             variant="ghost"
