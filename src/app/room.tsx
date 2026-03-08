@@ -116,7 +116,7 @@ export function Room() {
                     <SidebarControls />
                 </RoomShell.Sidebar>
                 <RoomShell.LayoutComposer tileClassName="p-0" />
-                <RoomShell.LoadingProgress />
+
                 <SqlEditorModal
                     isOpen={sqlEditorDisclosure.isOpen}
                     onClose={sqlEditorDisclosure.onClose}
