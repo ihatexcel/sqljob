@@ -12,10 +12,10 @@
 
 ### Règles de développement
 
-- **Ne jamais committer directement sur `main`, `beta` ou `claude/dev`.** Tout développement se fait sur une branche `claude/<feature>`.
-- Chaque branche `claude/<feature>` doit faire l'objet d'une **Pull Request** vers `claude/dev` avant tout merge.
-- La promotion se fait par PR : `claude/dev` → `beta` → `main`.
-- Toujours committer et pousser les changements sur la branche de travail désignée.
+- **Ne jamais committer directement sur `main` ou `beta`.** Tout développement se fait sur une branche `claude/<feature>`.
+- Une fois la feature terminée, **merger directement** la branche `claude/<feature>` dans `claude/dev` (pas de PR pour cette étape).
+- La promotion vers les branches supérieures se fait par PR : `claude/dev` → `beta` → `main`.
+- Toujours committer et pousser les changements sur la branche de travail désignée avant de merger dans `claude/dev`.
 
 ## Build CDN
 
