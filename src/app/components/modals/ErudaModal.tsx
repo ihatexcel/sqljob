@@ -3,22 +3,14 @@ import { useEffect, useRef, useState } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@sqlrooms/ui'
 import { MessageSquareCodeIcon } from 'lucide-react'
 
-const ERUDA_CDN = 'https://cdn.jsdelivr.net/npm/eruda'
-
 // Singleton : promise de chargement + état d'init
 let loadPromise: Promise<any> | null = null
 let initialized = false
 
 function loadEruda(): Promise<any> {
     if (loadPromise) return loadPromise
-    loadPromise = new Promise((resolve, reject) => {
-        if ((window as any).eruda) { resolve((window as any).eruda); return }
-        const s = document.createElement('script')
-        s.src = ERUDA_CDN
-        s.onload = () => resolve((window as any).eruda)
-        s.onerror = () => { loadPromise = null; reject(new Error('Eruda CDN inaccessible')) }
-        document.head.appendChild(s)
-    })
+    loadPromise = import('eruda').then(m => m.default ?? m)
+    loadPromise.catch(() => { loadPromise = null })
     return loadPromise
 }
 
