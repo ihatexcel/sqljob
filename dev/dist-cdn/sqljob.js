@@ -86184,7 +86184,6 @@ function Room() {
         /* @__PURE__ */ jsxRuntimeExports.jsx(SidebarControls, {})
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(RoomShell.LayoutComposer, { tileClassName: "p-0" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(RoomShell.LoadingProgress, {}),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         SqlEditorModal,
         {
