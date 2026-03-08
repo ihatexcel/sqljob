@@ -74,8 +74,7 @@ const DARK_THEMES = new Set([
 
 function _isDark(): boolean {
     if (typeof document === 'undefined') return false;
-    const t = document.documentElement.getAttribute('data-theme') || '';
-    return DARK_THEMES.has(t) ||
+    return document.documentElement.classList.contains('dark') ||
         (typeof window !== 'undefined' && window.matchMedia?.('(prefers-color-scheme: dark)').matches);
 }
 
