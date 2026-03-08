@@ -6,7 +6,7 @@
  * - RoomShell.LayoutComposer : mosaic layout (NotebookPanel + DataSourcesPanel)
  * - Modals globaux (portals → document.body, indépendants du layout)
  */
-import { RoomShell } from '@sqlrooms/room-shell'
+import { RoomShell, RoomShellSidebarButton } from '@sqlrooms/room-shell'
 import { useDisclosure, useTheme } from '@sqlrooms/ui'
 import { useShallow } from 'zustand/react/shallow'
 import { useNotebookStore } from './store/notebookStore'
@@ -78,6 +78,8 @@ export function Room() {
         <>
             <RoomShell roomStore={useNotebookStore} className="h-screen w-screen">
                 <RoomShell.Sidebar className={showLayout ? '' : 'hidden'}>
+                    {/* Sources panel toggle */}
+                    <RoomShellSidebarButton roomPanelType="data" />
                     <RoomShell.SidebarButton
                         title="SQL Editor"
                         onClick={sqlEditorDisclosure.onToggle}
