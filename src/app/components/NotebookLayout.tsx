@@ -245,68 +245,6 @@ function StatusBar() {
     )
 }
 
-// ─── Floating controls (bottom left) ─────────────────────────────────────────
-function FloatingControls() {
-    const { devMode, showLayout, dbEngine } = useNotebookStore(useShallow(s => ({
-        devMode: s.devMode,
-        showLayout: s.showLayout,
-        dbEngine: s.dbEngine,
-    })))
-    const set = useNotebookStore.setState
-    const [showThemeModal, setShowThemeModal] = useState(false)
-
-    if (!showLayout) return null
-
-    return (
-        <>
-            <div className="fixed bottom-4 left-4 z-[1500] flex gap-1">
-                <Button
-                    variant={devMode ? 'secondary' : 'ghost'}
-                    size="sm"
-                    title={devMode ? 'Mode client' : 'Mode développeur'}
-                    onClick={() => set({ devMode: !devMode })}
-                >
-                    <Icon name={devMode ? 'visibility' : 'settings'} size={20} />
-                </Button>
-
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => window.open('https://ihatexcel.github.io/sqljob/?gist=68cd597ba5da05ceba24fb975c05384f', '_blank')}
-                    title="Documentation"
-                >
-                    <Icon name="book-heart" size={20} />
-                </Button>
-
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setShowThemeModal(true)}
-                    title="Personnaliser le thème"
-                >
-                    <Icon name="palette" size={20} />
-                </Button>
-
-                {devMode && (
-                    <>
-                        <ThemeSwitch />
-
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => set({ showDbEngineModal: true })}
-                            title={`Moteur: ${dbEngine === 'ducklings' ? 'Ducklings' : 'DuckDB WASM'}`}
-                        >
-                            <span>{dbEngine === 'ducklings' ? '🐤' : '🦆'}</span>
-                        </Button>
-                    </>
-                )}
-            </div>
-            <ThemeCustomModal open={showThemeModal} onClose={() => setShowThemeModal(false)} />
-        </>
-    )
-}
-
 // ─── Layout principal ─────────────────────────────────────────────────────────
 export function NotebookLayout() {
     const { showLayout, setShowLayout } = useNotebookStore(useShallow(s => ({ showLayout: s.showLayout, setShowLayout: s.setShowLayout })))
@@ -337,9 +275,6 @@ export function NotebookLayout() {
                     <p>iHateXcel - sqljob - Made with ❤️ by Théo Nobella-Pichonnier</p>
                 </footer>
             )}
-
-            {/* Floating controls */}
-            <FloatingControls />
 
             {/* Status bar */}
             <StatusBar />

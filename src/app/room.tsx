@@ -50,7 +50,7 @@ function SidebarControls() {
             {/* DB Engine (devMode only) */}
             {devMode && (
                 <RoomShell.SidebarButton
-                    title={`Moteur : ${dbEngine === 'ducklings' ? 'Ducklings' : 'DuckDB WASM'}`}
+                    title={`Moteur : ${dbEngine === 'ducklings' ? 'Ducklings 🐤' : 'DuckDB WASM 🦆'}`}
                     onClick={() => set({ showDbEngineModal: true })}
                     icon={DatabaseIcon}
                 />
