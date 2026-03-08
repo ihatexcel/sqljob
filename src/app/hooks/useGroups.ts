@@ -1,0 +1,46 @@
+import { useShallow } from 'zustand/react/shallow'
+import { useNotebookStore } from '../store/notebookStore'
+
+export function useGroups() {
+    return useNotebookStore(useShallow((s: any) => ({
+        getFlattenedGroups: s.getFlattenedGroups,
+        getFlattenedGroupsForAllPages: s.getFlattenedGroupsForAllPages,
+        getGroupItems: s.getGroupItems,
+        getGroupAtPath: s.getGroupAtPath,
+        getParentGroup: s.getParentGroup,
+        getCellAtPath: s.getCellAtPath,
+        createNewGroup: s.createNewGroup,
+        addNestedGroup: s.addNestedGroup,
+        toggleGroupDirection: s.toggleGroupDirection,
+        openLoopConfigModal: s.openLoopConfigModal,
+        openGroupSettingsModal: s.openGroupSettingsModal,
+        testGroupIfQuery: s.testGroupIfQuery,
+        toggleAccordion: s.toggleAccordion,
+        getDefaultLoopQuery: s.getDefaultLoopQuery,
+        getDefaultZipQuery: s.getDefaultZipQuery,
+        deleteGroupAtPath: s.deleteGroupAtPath,
+        getLinkGroupById: s.getLinkGroupById,
+        openChildGroupModal: s.openChildGroupModal,
+        closeChildGroupModal: s.closeChildGroupModal,
+        deleteChildGroupModal: s.deleteChildGroupModal,
+        moveGroupAtPath: s.moveGroupAtPath,
+        moveCellInGroupAtPath: s.moveCellInGroupAtPath,
+        getGroupElementId: s.getGroupElementId,
+        openAddGroupModal: s.openAddGroupModal,
+        getNextOrder: s.getNextOrder,
+        getSortedCells: s.getSortedCells,
+        getSortedChildren: s.getSortedChildren,
+        getAllItemsSorted: s.getAllItemsSorted,
+        getTabName: s.getTabName,
+        moveItemInGroup: s.moveItemInGroup,
+        isFirstInGroup: s.isFirstInGroup,
+        isLastInGroup: s.isLastInGroup,
+        getSortedIndex: s.getSortedIndex,
+        renderChildGroupHTML: s.renderChildGroupHTML,
+        // state
+        childGroupModal: s.childGroupModal,
+        loopConfigModal: s.loopConfigModal,
+        groupSettingsModal: s.groupSettingsModal,
+        showAddGroupModal: s.showAddGroupModal,
+    })))
+}
