@@ -11100,7 +11100,7 @@ ase.displayName = ise;
 function B8(n) {
   return n ? "open" : "closed";
 }
-var use = "DialogTitleWarning", [fEt, lse] = dxe(use, {
+var use = "DialogTitleWarning", [pEt, lse] = dxe(use, {
   contentName: NS,
   titleName: U8,
   docsSlug: "dialog"
@@ -13881,7 +13881,7 @@ var RTe = "MenuArrow", Aoe = et.forwardRef(
   }
 );
 Aoe.displayName = RTe;
-var OTe = "MenuSub", [dEt, _oe] = r1(OTe), qT = "MenuSubTrigger", Toe = et.forwardRef(
+var OTe = "MenuSub", [hEt, _oe] = r1(OTe), qT = "MenuSubTrigger", Toe = et.forwardRef(
   (n, t) => {
     const s = n1(qT, n.__scopeMenu), o = wR(qT, n.__scopeMenu), i = _oe(qT, n.__scopeMenu), a = cz(qT, n.__scopeMenu), r = et.useRef(null), { pointerGraceTimerRef: f, onPointerGraceIntentChange: b } = a, e = { __scopeMenu: n.__scopeMenu }, P = et.useCallback(() => {
       r.current && window.clearTimeout(r.current), r.current = null;
@@ -19425,7 +19425,7 @@ const tOe = /* @__PURE__ */ et.memo(function(t) {
             return;
           const {
             onDragStart: tl
-          } = Jn.current, od = {
+          } = Jn.current, id = {
             activatorEvent: Ru,
             active: {
               id: ef,
@@ -19434,13 +19434,13 @@ const tOe = /* @__PURE__ */ et.memo(function(t) {
             }
           };
           Gy.unstable_batchedUpdates(() => {
-            tl == null || tl(od), gr(_x.Initializing), tt({
+            tl == null || tl(id), gr(_x.Initializing), tt({
               type: Gg.DragStart,
               initialCoordinates: Ju,
               active: ef
             }), Ie({
               type: "onDragStart",
-              event: od
+              event: id
             }), bn(wa.current), kn(Ru);
           });
         },
@@ -19459,7 +19459,7 @@ const tOe = /* @__PURE__ */ et.memo(function(t) {
           const {
             active: el,
             collisions: tl,
-            over: od,
+            over: id,
             scrollAdjustedTranslate: Kl
           } = wo.current;
           let Fl = null;
@@ -19472,7 +19472,7 @@ const tOe = /* @__PURE__ */ et.memo(function(t) {
               active: el,
               collisions: tl,
               delta: Kl,
-              over: od
+              over: id
             }, Ju === Gg.DragEnd && typeof vf == "function" && await Promise.resolve(vf(Fl)) && (Ju = Gg.DragCancel);
           }
           xn.current = null, Gy.unstable_batchedUpdates(() => {
@@ -23443,20 +23443,20 @@ const uMe = (n) => {
         x: 0,
         y: 0
       };
-      const od = (Kl) => 1 / (1.5 + Math.abs(Kl) / 20);
+      const id = (Kl) => 1 / (1.5 + Math.abs(Kl) / 20);
       if (Jn === "y") {
         if (el.includes("top") || el.includes("bottom"))
           if (el.includes("top") && Rl < 0 || el.includes("bottom") && Rl > 0)
             tl.y = Rl;
           else {
-            const Kl = Rl * od(Rl);
+            const Kl = Rl * id(Rl);
             tl.y = Math.abs(Kl) < Math.abs(Rl) ? Kl : Rl;
           }
       } else if (Jn === "x" && (el.includes("left") || el.includes("right")))
         if (el.includes("left") && Ju < 0 || el.includes("right") && Ju > 0)
           tl.x = Ju;
         else {
-          const Kl = Ju * od(Ju);
+          const Kl = Ju * id(Ju);
           tl.x = Math.abs(Kl) < Math.abs(Ju) ? Kl : Ju;
         }
       (Math.abs(tl.x) > 0 || Math.abs(tl.y) > 0) && wo(!0), (mu = ia.current) == null || mu.style.setProperty("--swipe-amount-x", `${tl.x}px`), (Ru = ia.current) == null || Ru.style.setProperty("--swipe-amount-y", `${tl.y}px`);
@@ -42924,7 +42924,7 @@ class B9 {
     jl(this, "getParser", S6e(async () => {
       if (this.parser)
         return this.parser;
-      const t = await Promise.resolve().then(() => lEt), { Parser: s } = t.default || t;
+      const t = await Promise.resolve().then(() => fEt), { Parser: s } = t.default || t;
       return this.parser = new s(), this.parser;
     }));
     this.opts = t;
@@ -73489,7 +73489,7 @@ const _0t = et.forwardRef(
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const wd = (n, t) => {
+const od = (n, t) => {
   const s = et.forwardRef(
     ({ className: o, ...i }, a) => et.createElement(_0t, {
       ref: a,
@@ -73518,7 +73518,7 @@ const T0t = [
       key: "169zse"
     }
   ]
-], I0t = wd("activity", T0t);
+], I0t = od("activity", T0t);
 /**
  * @license lucide-react v0.577.0 - ISC
  *
@@ -73528,7 +73528,7 @@ const T0t = [
 const N0t = [
   ["path", { d: "M12 5v14", key: "s699le" }],
   ["path", { d: "m19 12-7 7-7-7", key: "1idqje" }]
-], R0t = wd("arrow-down", N0t);
+], R0t = od("arrow-down", N0t);
 /**
  * @license lucide-react v0.577.0 - ISC
  *
@@ -73540,7 +73540,7 @@ const O0t = [
   ["path", { d: "M4 7h16", key: "6tx8e3" }],
   ["path", { d: "m16 21 4-4-4-4", key: "siv7j2" }],
   ["path", { d: "M20 17H4", key: "h6l3hr" }]
-], k0t = wd("arrow-left-right", O0t);
+], k0t = od("arrow-left-right", O0t);
 /**
  * @license lucide-react v0.577.0 - ISC
  *
@@ -73550,7 +73550,7 @@ const O0t = [
 const M0t = [
   ["path", { d: "m12 19-7-7 7-7", key: "1l729n" }],
   ["path", { d: "M19 12H5", key: "x3x0zl" }]
-], D0t = wd("arrow-left", M0t);
+], D0t = od("arrow-left", M0t);
 /**
  * @license lucide-react v0.577.0 - ISC
  *
@@ -73560,7 +73560,7 @@ const M0t = [
 const P0t = [
   ["path", { d: "M5 12h14", key: "1ays0h" }],
   ["path", { d: "m12 5 7 7-7 7", key: "xquz4c" }]
-], j0t = wd("arrow-right", P0t);
+], j0t = od("arrow-right", P0t);
 /**
  * @license lucide-react v0.577.0 - ISC
  *
@@ -73572,7 +73572,7 @@ const $0t = [
   ["path", { d: "M17 20V4", key: "1ejh1v" }],
   ["path", { d: "m3 8 4-4 4 4", key: "11wl7u" }],
   ["path", { d: "M7 4v16", key: "1glfcx" }]
-], F0t = wd("arrow-up-down", $0t);
+], F0t = od("arrow-up-down", $0t);
 /**
  * @license lucide-react v0.577.0 - ISC
  *
@@ -73582,7 +73582,7 @@ const $0t = [
 const U0t = [
   ["path", { d: "m5 12 7-7 7 7", key: "hav0vg" }],
   ["path", { d: "M12 19V5", key: "x0mq9r" }]
-], B0t = wd("arrow-up", U0t);
+], B0t = od("arrow-up", U0t);
 /**
  * @license lucide-react v0.577.0 - ISC
  *
@@ -73601,7 +73601,7 @@ const z0t = [
       key: "e1hn23"
     }
   ]
-], q0t = wd("braces", z0t);
+], q0t = od("braces", z0t);
 /**
  * @license lucide-react v0.577.0 - ISC
  *
@@ -73613,7 +73613,7 @@ const G0t = [
   ["path", { d: "M7 16h8", key: "srdodz" }],
   ["path", { d: "M7 11h12", key: "127s9w" }],
   ["path", { d: "M7 6h3", key: "w9rmul" }]
-], H0t = wd("chart-bar", G0t);
+], H0t = od("chart-bar", G0t);
 /**
  * @license lucide-react v0.577.0 - ISC
  *
@@ -73623,7 +73623,7 @@ const G0t = [
 const V0t = [
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
   ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }]
-], W0t = wd("circle-check", V0t);
+], W0t = od("circle-check", V0t);
 /**
  * @license lucide-react v0.577.0 - ISC
  *
@@ -73639,7 +73639,7 @@ const Y0t = [
     }
   ],
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]
-], Q0t = wd("circle-play", Y0t);
+], Q0t = od("circle-play", Y0t);
 /**
  * @license lucide-react v0.577.0 - ISC
  *
@@ -73649,7 +73649,7 @@ const Y0t = [
 const K0t = [
   ["rect", { width: "14", height: "14", x: "8", y: "8", rx: "2", ry: "2", key: "17jyea" }],
   ["path", { d: "M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2", key: "zix9uf" }]
-], X0t = wd("copy", K0t);
+], X0t = od("copy", K0t);
 /**
  * @license lucide-react v0.577.0 - ISC
  *
@@ -73660,7 +73660,7 @@ const Z0t = [
   ["ellipse", { cx: "12", cy: "5", rx: "9", ry: "3", key: "msslwz" }],
   ["path", { d: "M3 5V19A9 3 0 0 0 21 19V5", key: "1wlel7" }],
   ["path", { d: "M3 12A9 3 0 0 0 21 12", key: "mv7ke4" }]
-], IP = wd("database", Z0t);
+], IP = od("database", Z0t);
 /**
  * @license lucide-react v0.577.0 - ISC
  *
@@ -73671,7 +73671,7 @@ const J0t = [
   ["path", { d: "M12 15V3", key: "m9g1x1" }],
   ["path", { d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4", key: "ih7n3h" }],
   ["path", { d: "m7 10 5 5 5-5", key: "brsn70" }]
-], eyt = wd("download", J0t);
+], eyt = od("download", J0t);
 /**
  * @license lucide-react v0.577.0 - ISC
  *
@@ -73687,7 +73687,7 @@ const tyt = [
     }
   ],
   ["circle", { cx: "12", cy: "12", r: "3", key: "1v7zrd" }]
-], ryt = wd("eye", tyt);
+], ryt = od("eye", tyt);
 /**
  * @license lucide-react v0.577.0 - ISC
  *
@@ -73705,7 +73705,7 @@ const nyt = [
   ["path", { d: "M14 2v5a1 1 0 0 0 1 1h5", key: "wfsgrz" }],
   ["path", { d: "m5 11-3 3", key: "1dgrs4" }],
   ["path", { d: "m5 17-3-3h10", key: "1mvvaf" }]
-], syt = wd("file-output", nyt);
+], syt = od("file-output", nyt);
 /**
  * @license lucide-react v0.577.0 - ISC
  *
@@ -73724,7 +73724,7 @@ const oyt = [
   ["path", { d: "M10 9H8", key: "b1mrlr" }],
   ["path", { d: "M16 13H8", key: "t4e002" }],
   ["path", { d: "M16 17H8", key: "z1uh3a" }]
-], QG = wd("file-text", oyt);
+], QG = od("file-text", oyt);
 /**
  * @license lucide-react v0.577.0 - ISC
  *
@@ -73743,7 +73743,7 @@ const iyt = [
   ["path", { d: "M11 18h2", key: "12mj7e" }],
   ["path", { d: "M12 12v6", key: "3ahymv" }],
   ["path", { d: "M9 13v-.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 .5.5v.5", key: "qbrxap" }]
-], ayt = wd("file-type", iyt);
+], ayt = od("file-type", iyt);
 /**
  * @license lucide-react v0.577.0 - ISC
  *
@@ -73758,7 +73758,7 @@ const uyt = [
       key: "usdka0"
     }
   ]
-], lyt = wd("folder-open", uyt);
+], lyt = od("folder-open", uyt);
 /**
  * @license lucide-react v0.577.0 - ISC
  *
@@ -73775,7 +73775,7 @@ const cyt = [
       key: "1kt360"
     }
   ]
-], fyt = wd("folder-plus", cyt);
+], fyt = od("folder-plus", cyt);
 /**
  * @license lucide-react v0.577.0 - ISC
  *
@@ -73790,7 +73790,7 @@ const dyt = [
       key: "1kt360"
     }
   ]
-], pyt = wd("folder", dyt);
+], pyt = od("folder", dyt);
 /**
  * @license lucide-react v0.577.0 - ISC
  *
@@ -73801,7 +73801,7 @@ const hyt = [
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
   ["path", { d: "M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20", key: "13o1zl" }],
   ["path", { d: "M2 12h20", key: "9i4pu4" }]
-], myt = wd("globe", hyt);
+], myt = od("globe", hyt);
 /**
  * @license lucide-react v0.577.0 - ISC
  *
@@ -73811,7 +73811,7 @@ const hyt = [
 const vyt = [
   ["rect", { width: "18", height: "11", x: "3", y: "11", rx: "2", ry: "2", key: "1w4ew1" }],
   ["path", { d: "M7 11V7a5 5 0 0 1 10 0v4", key: "fwvmzm" }]
-], byt = wd("lock", vyt);
+], byt = od("lock", vyt);
 /**
  * @license lucide-react v0.577.0 - ISC
  *
@@ -73826,7 +73826,7 @@ const gyt = [
       key: "kfwtm"
     }
   ]
-], yyt = wd("moon", gyt);
+], yyt = od("moon", gyt);
 /**
  * @license lucide-react v0.577.0 - ISC
  *
@@ -73839,7 +73839,7 @@ const wyt = [
   ["rect", { x: "9", y: "2", width: "6", height: "6", rx: "1", key: "1egb70" }],
   ["path", { d: "M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3", key: "1jsf9p" }],
   ["path", { d: "M12 12V8", key: "2874zd" }]
-], Cyt = wd("network", wyt);
+], Cyt = od("network", wyt);
 /**
  * @license lucide-react v0.577.0 - ISC
  *
@@ -73857,7 +73857,7 @@ const Lyt = [
     }
   ],
   ["rect", { width: "8", height: "4", x: "10", y: "6", rx: "1", key: "aywv1n" }]
-], xyt = wd("newspaper", Lyt);
+], xyt = od("newspaper", Lyt);
 /**
  * @license lucide-react v0.577.0 - ISC
  *
@@ -73865,6 +73865,29 @@ const Lyt = [
  * See the LICENSE file in the root directory of this source tree.
  */
 const Eyt = [
+  ["path", { d: "m14.622 17.897-10.68-2.913", key: "vj2p1u" }],
+  [
+    "path",
+    {
+      d: "M18.376 2.622a1 1 0 1 1 3.002 3.002L17.36 9.643a.5.5 0 0 0 0 .707l.944.944a2.41 2.41 0 0 1 0 3.408l-.944.944a.5.5 0 0 1-.707 0L8.354 7.348a.5.5 0 0 1 0-.707l.944-.944a2.41 2.41 0 0 1 3.408 0l.944.944a.5.5 0 0 0 .707 0z",
+      key: "18tc5c"
+    }
+  ],
+  [
+    "path",
+    {
+      d: "M9 8c-1.804 2.71-3.97 3.46-6.583 3.948a.507.507 0 0 0-.302.819l7.32 8.883a1 1 0 0 0 1.185.204C12.735 20.405 16 16.792 16 15",
+      key: "ytzfxy"
+    }
+  ]
+], Syt = od("paintbrush", Eyt);
+/**
+ * @license lucide-react v0.577.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const Ayt = [
   ["path", { d: "M13 21h8", key: "1jsn5i" }],
   [
     "path",
@@ -73873,22 +73896,7 @@ const Eyt = [
       key: "1a8usu"
     }
   ]
-], Syt = wd("pen-line", Eyt);
-/**
- * @license lucide-react v0.577.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const Ayt = [
-  [
-    "path",
-    {
-      d: "M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z",
-      key: "10ikf1"
-    }
-  ]
-], _yt = wd("play", Ayt);
+], _yt = od("pen-line", Ayt);
 /**
  * @license lucide-react v0.577.0 - ISC
  *
@@ -73896,9 +73904,14 @@ const Ayt = [
  * See the LICENSE file in the root directory of this source tree.
  */
 const Tyt = [
-  ["path", { d: "M5 12h14", key: "1ays0h" }],
-  ["path", { d: "M12 5v14", key: "s699le" }]
-], Iyt = wd("plus", Tyt);
+  [
+    "path",
+    {
+      d: "M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z",
+      key: "10ikf1"
+    }
+  ]
+], Iyt = od("play", Tyt);
 /**
  * @license lucide-react v0.577.0 - ISC
  *
@@ -73906,11 +73919,9 @@ const Tyt = [
  * See the LICENSE file in the root directory of this source tree.
  */
 const Nyt = [
-  ["path", { d: "M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8", key: "v9h5vc" }],
-  ["path", { d: "M21 3v5h-5", key: "1q7to0" }],
-  ["path", { d: "M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16", key: "3uifl3" }],
-  ["path", { d: "M8 16H3v5", key: "1cv678" }]
-], Ryt = wd("refresh-cw", Nyt);
+  ["path", { d: "M5 12h14", key: "1ays0h" }],
+  ["path", { d: "M12 5v14", key: "s699le" }]
+], Ryt = od("plus", Nyt);
 /**
  * @license lucide-react v0.577.0 - ISC
  *
@@ -73918,6 +73929,18 @@ const Nyt = [
  * See the LICENSE file in the root directory of this source tree.
  */
 const Oyt = [
+  ["path", { d: "M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8", key: "v9h5vc" }],
+  ["path", { d: "M21 3v5h-5", key: "1q7to0" }],
+  ["path", { d: "M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16", key: "3uifl3" }],
+  ["path", { d: "M8 16H3v5", key: "1cv678" }]
+], kyt = od("refresh-cw", Oyt);
+/**
+ * @license lucide-react v0.577.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const Myt = [
   [
     "path",
     {
@@ -73927,19 +73950,7 @@ const Oyt = [
   ],
   ["path", { d: "M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7", key: "1ydtos" }],
   ["path", { d: "M7 3v4a1 1 0 0 0 1 1h7", key: "t51u73" }]
-], kyt = wd("save", Oyt);
-/**
- * @license lucide-react v0.577.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const Myt = [
-  ["path", { d: "M14 17H5", key: "gfn3mx" }],
-  ["path", { d: "M19 7h-9", key: "6i9tg" }],
-  ["circle", { cx: "17", cy: "17", r: "3", key: "18b49y" }],
-  ["circle", { cx: "7", cy: "7", r: "3", key: "dfmy0x" }]
-], Dyt = wd("settings-2", Myt);
+], Dyt = od("save", Myt);
 /**
  * @license lucide-react v0.577.0 - ISC
  *
@@ -73947,6 +73958,18 @@ const Myt = [
  * See the LICENSE file in the root directory of this source tree.
  */
 const Pyt = [
+  ["path", { d: "M14 17H5", key: "gfn3mx" }],
+  ["path", { d: "M19 7h-9", key: "6i9tg" }],
+  ["circle", { cx: "17", cy: "17", r: "3", key: "18b49y" }],
+  ["circle", { cx: "7", cy: "7", r: "3", key: "dfmy0x" }]
+], jyt = od("settings-2", Pyt);
+/**
+ * @license lucide-react v0.577.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const $yt = [
   [
     "path",
     {
@@ -73955,20 +73978,7 @@ const Pyt = [
     }
   ],
   ["circle", { cx: "12", cy: "12", r: "3", key: "1v7zrd" }]
-], jyt = wd("settings", Pyt);
-/**
- * @license lucide-react v0.577.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const $yt = [
-  ["circle", { cx: "18", cy: "5", r: "3", key: "gq8acd" }],
-  ["circle", { cx: "6", cy: "12", r: "3", key: "w7nqdw" }],
-  ["circle", { cx: "18", cy: "19", r: "3", key: "1xt0gg" }],
-  ["line", { x1: "8.59", x2: "15.42", y1: "13.51", y2: "17.49", key: "47mynk" }],
-  ["line", { x1: "15.41", x2: "8.59", y1: "6.51", y2: "10.49", key: "1n3mei" }]
-], Fyt = wd("share-2", $yt);
+], Fyt = od("settings", $yt);
 /**
  * @license lucide-react v0.577.0 - ISC
  *
@@ -73976,6 +73986,19 @@ const $yt = [
  * See the LICENSE file in the root directory of this source tree.
  */
 const Uyt = [
+  ["circle", { cx: "18", cy: "5", r: "3", key: "gq8acd" }],
+  ["circle", { cx: "6", cy: "12", r: "3", key: "w7nqdw" }],
+  ["circle", { cx: "18", cy: "19", r: "3", key: "1xt0gg" }],
+  ["line", { x1: "8.59", x2: "15.42", y1: "13.51", y2: "17.49", key: "47mynk" }],
+  ["line", { x1: "15.41", x2: "8.59", y1: "6.51", y2: "10.49", key: "1n3mei" }]
+], Byt = od("share-2", Uyt);
+/**
+ * @license lucide-react v0.577.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const zyt = [
   ["path", { d: "M10 5H3", key: "1qgfaw" }],
   ["path", { d: "M12 19H3", key: "yhmn1j" }],
   ["path", { d: "M14 3v4", key: "1sua03" }],
@@ -73985,14 +74008,14 @@ const Uyt = [
   ["path", { d: "M21 5h-7", key: "1oszz2" }],
   ["path", { d: "M8 10v4", key: "tgpxqk" }],
   ["path", { d: "M8 12H3", key: "a7s4jb" }]
-], Byt = wd("sliders-horizontal", Uyt);
+], qyt = od("sliders-horizontal", zyt);
 /**
  * @license lucide-react v0.577.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const zyt = [
+const Gyt = [
   ["circle", { cx: "12", cy: "12", r: "4", key: "4exip2" }],
   ["path", { d: "M12 2v2", key: "tus03m" }],
   ["path", { d: "M12 20v2", key: "1lh1kg" }],
@@ -74002,22 +74025,7 @@ const zyt = [
   ["path", { d: "M20 12h2", key: "1q8mjw" }],
   ["path", { d: "m6.34 17.66-1.41 1.41", key: "1m8zz5" }],
   ["path", { d: "m19.07 4.93-1.41 1.41", key: "1shlcs" }]
-], qyt = wd("sun", zyt);
-/**
- * @license lucide-react v0.577.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const Gyt = [
-  [
-    "path",
-    {
-      d: "M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18",
-      key: "gugj83"
-    }
-  ]
-], Hyt = wd("table-2", Gyt);
+], Hyt = od("sun", Gyt);
 /**
  * @license lucide-react v0.577.0 - ISC
  *
@@ -74025,11 +74033,14 @@ const Gyt = [
  * See the LICENSE file in the root directory of this source tree.
  */
 const Vyt = [
-  ["path", { d: "M12 3v18", key: "108xh3" }],
-  ["rect", { width: "18", height: "18", x: "3", y: "3", rx: "2", key: "afitv7" }],
-  ["path", { d: "M3 9h18", key: "1pudct" }],
-  ["path", { d: "M3 15h18", key: "5xshup" }]
-], Wyt = wd("table", Vyt);
+  [
+    "path",
+    {
+      d: "M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18",
+      key: "gugj83"
+    }
+  ]
+], Wyt = od("table-2", Vyt);
 /**
  * @license lucide-react v0.577.0 - ISC
  *
@@ -74037,9 +74048,11 @@ const Vyt = [
  * See the LICENSE file in the root directory of this source tree.
  */
 const Yyt = [
-  ["path", { d: "M12 19h8", key: "baeox8" }],
-  ["path", { d: "m4 17 6-6-6-6", key: "1yngyt" }]
-], Qyt = wd("terminal", Yyt);
+  ["path", { d: "M12 3v18", key: "108xh3" }],
+  ["rect", { width: "18", height: "18", x: "3", y: "3", rx: "2", key: "afitv7" }],
+  ["path", { d: "M3 9h18", key: "1pudct" }],
+  ["path", { d: "M3 15h18", key: "5xshup" }]
+], Qyt = od("table", Yyt);
 /**
  * @license lucide-react v0.577.0 - ISC
  *
@@ -74047,12 +74060,9 @@ const Yyt = [
  * See the LICENSE file in the root directory of this source tree.
  */
 const Kyt = [
-  ["path", { d: "M10 11v6", key: "nco0om" }],
-  ["path", { d: "M14 11v6", key: "outv1u" }],
-  ["path", { d: "M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6", key: "miytrc" }],
-  ["path", { d: "M3 6h18", key: "d0wm0j" }],
-  ["path", { d: "M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2", key: "e791ji" }]
-], Xyt = wd("trash-2", Kyt);
+  ["path", { d: "M12 19h8", key: "baeox8" }],
+  ["path", { d: "m4 17 6-6-6-6", key: "1yngyt" }]
+], Xyt = od("terminal", Kyt);
 /**
  * @license lucide-react v0.577.0 - ISC
  *
@@ -74060,9 +74070,12 @@ const Kyt = [
  * See the LICENSE file in the root directory of this source tree.
  */
 const Zyt = [
-  ["path", { d: "M16 7h6v6", key: "box55l" }],
-  ["path", { d: "m22 7-8.5 8.5-5-5L2 17", key: "1t1m79" }]
-], Jyt = wd("trending-up", Zyt);
+  ["path", { d: "M10 11v6", key: "nco0om" }],
+  ["path", { d: "M14 11v6", key: "outv1u" }],
+  ["path", { d: "M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6", key: "miytrc" }],
+  ["path", { d: "M3 6h18", key: "d0wm0j" }],
+  ["path", { d: "M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2", key: "e791ji" }]
+], Jyt = od("trash-2", Zyt);
 /**
  * @license lucide-react v0.577.0 - ISC
  *
@@ -74070,10 +74083,9 @@ const Zyt = [
  * See the LICENSE file in the root directory of this source tree.
  */
 const ewt = [
-  ["path", { d: "M12 3v12", key: "1x0j5s" }],
-  ["path", { d: "m17 8-5-5-5 5", key: "7q97r8" }],
-  ["path", { d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4", key: "ih7n3h" }]
-], twt = wd("upload", ewt);
+  ["path", { d: "M16 7h6v6", key: "box55l" }],
+  ["path", { d: "m22 7-8.5 8.5-5-5L2 17", key: "1t1m79" }]
+], twt = od("trending-up", ewt);
 /**
  * @license lucide-react v0.577.0 - ISC
  *
@@ -74081,9 +74093,10 @@ const ewt = [
  * See the LICENSE file in the root directory of this source tree.
  */
 const rwt = [
-  ["path", { d: "M18 6 6 18", key: "1bl5f8" }],
-  ["path", { d: "m6 6 12 12", key: "d8bk6v" }]
-], nwt = wd("x", rwt);
+  ["path", { d: "M12 3v12", key: "1x0j5s" }],
+  ["path", { d: "m17 8-5-5-5 5", key: "7q97r8" }],
+  ["path", { d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4", key: "ih7n3h" }]
+], nwt = od("upload", rwt);
 /**
  * @license lucide-react v0.577.0 - ISC
  *
@@ -74091,6 +74104,16 @@ const rwt = [
  * See the LICENSE file in the root directory of this source tree.
  */
 const swt = [
+  ["path", { d: "M18 6 6 18", key: "1bl5f8" }],
+  ["path", { d: "m6 6 12 12", key: "d8bk6v" }]
+], owt = od("x", swt);
+/**
+ * @license lucide-react v0.577.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const iwt = [
   [
     "path",
     {
@@ -74098,51 +74121,52 @@ const swt = [
       key: "1xq2db"
     }
   ]
-], owt = wd("zap", swt), iwt = {
-  "edit-note": Syt,
+], awt = od("zap", iwt), uwt = {
+  "edit-note": _yt,
   "folder-open": lyt,
-  tune: Byt,
+  tune: qyt,
   "play-circle": Q0t,
-  "play-arrow": _yt,
+  "play-arrow": Iyt,
   storage: IP,
   database: IP,
-  table: Hyt,
+  table: Wyt,
   web: myt,
   monitoring: I0t,
   description: QG,
   "picture-as-pdf": ayt,
   "bar-chart": H0t,
-  analytics: Jyt,
-  add: Iyt,
-  close: nwt,
-  settings: jyt,
-  delete: Xyt,
+  analytics: twt,
+  add: Ryt,
+  close: owt,
+  settings: Fyt,
+  delete: Jyt,
   "arrow-back": D0t,
   "arrow-forward": j0t,
   "arrow-upward": B0t,
   "arrow-downward": R0t,
   "swap-vert": F0t,
   "swap-horiz": k0t,
-  autorenew: Ryt,
+  autorenew: kyt,
   download: eyt,
-  save: kyt,
+  save: Dyt,
   lock: byt,
   visibility: ryt,
   "create-new-folder": fyt,
   "check-circle": W0t,
   "content-copy": X0t,
-  share: Fyt,
+  share: Byt,
   "data-object": q0t,
   "account-tree": Cyt,
   article: xyt,
   "export-notes-outline-sharp": syt,
-  bolt: owt
+  bolt: awt,
+  palette: Syt
 };
 function vl({ name: n, size: t = 16, className: s = "" }) {
-  const o = iwt[n] ?? QG;
+  const o = uwt[n] ?? QG;
   return /* @__PURE__ */ pe.jsx(o, { size: t, className: s });
 }
-const awt = {
+const lwt = {
   markdown: "edit-note",
   source: "folder-open",
   uiParameter: "tune",
@@ -74157,9 +74181,9 @@ const awt = {
   perspective: "analytics"
 };
 function T0e({ type: n, size: t = 16 }) {
-  return /* @__PURE__ */ pe.jsx(vl, { name: awt[n] ?? "description", size: t });
+  return /* @__PURE__ */ pe.jsx(vl, { name: lwt[n] ?? "description", size: t });
 }
-function uwt({ cell: n, path: t, cellIndex: s, group: o }) {
+function cwt({ cell: n, path: t, cellIndex: s, group: o }) {
   const {
     devMode: i,
     isLoading: a,
@@ -74250,7 +74274,7 @@ function uwt({ cell: n, path: t, cellIndex: s, group: o }) {
     ] }) })
   ] }) : null;
 }
-const lwt = [
+const fwt = [
   {
     name: "Liste des colonnes avec position",
     description: "Affiche les colonnes d'une table avec leur position ordinale",
@@ -74494,7 +74518,7 @@ FROM (VALUES
   ('Churned', 10)
 ) t(status, share);`
   }
-], cwt = [
+], dwt = [
   {
     name: "Dropdown simple",
     description: "Retourne un tableau d'options pour un dropdown",
@@ -74524,8 +74548,8 @@ if ($param1 === "Type A") {
   currentLanguageType: "sql",
   searchQuery: "",
   filteredTemplates: [],
-  sqlTemplates: lwt,
-  jsTemplates: cwt,
+  sqlTemplates: fwt,
+  jsTemplates: dwt,
   _onSelectTemplate: null,
   open(s, o, i = "sql") {
     n({ currentCellId: s, currentQueryType: o, currentLanguageType: i, searchQuery: "", isOpen: !0 }), t().filterTemplates();
@@ -74571,7 +74595,7 @@ if ($param1 === "Type A") {
     n({ isOpen: !1, _resolve: null }), s == null || s(!1);
   }
 }));
-function fwt({ cell: n, parseLevelsProp: t }) {
+function pwt({ cell: n, parseLevelsProp: t }) {
   const s = n[t] || [];
   return s.length === 0 ? /* @__PURE__ */ pe.jsx("div", { className: "p-3 text-sm text-muted-foreground/50", children: "Aucune requête parsée" }) : /* @__PURE__ */ pe.jsx("div", { children: s.map((o, i) => /* @__PURE__ */ pe.jsxs("div", { className: "relative w-full", style: { marginBottom: "0.75rem" }, children: [
     /* @__PURE__ */ pe.jsx("div", { className: "flex justify-between items-center mb-2", children: /* @__PURE__ */ pe.jsx("span", { className: "text-xs text-muted-foreground flex items-center gap-2", children: /* @__PURE__ */ pe.jsx("span", { className: "inline-flex items-center px-2 py-0.5 rounded text-xs bg-primary/10 text-primary", children: o.level === "final" ? "Final" : `Niveau ${o.level}` }) }) }),
@@ -74682,7 +74706,7 @@ function Rw({
         )
       ] })
     ] }),
-    cr ? /* @__PURE__ */ pe.jsx(fwt, { cell: n, parseLevelsProp: Ie }) : ur ? /* @__PURE__ */ pe.jsx(
+    cr ? /* @__PURE__ */ pe.jsx(pwt, { cell: n, parseLevelsProp: Ie }) : ur ? /* @__PURE__ */ pe.jsx(
       YG,
       {
         value: xu.getCellQuery(n, tt) || "",
@@ -74744,7 +74768,7 @@ const tR = /* @__PURE__ */ new Map(), I0e = [
   "TREND",
   "XLINE",
   "YLINE"
-], ree = new Set(I0e), dwt = [
+], ree = new Set(I0e), hwt = [
   "#5470c6",
   "#91cc75",
   "#fac858",
@@ -74755,7 +74779,7 @@ const tR = /* @__PURE__ */ new Map(), I0e = [
   "#9a60b4",
   "#ea7ccc"
 ];
-function pwt() {
+function mwt() {
   var n;
   return typeof document > "u" ? !1 : document.documentElement.classList.contains("dark") || typeof window < "u" && ((n = window.matchMedia) == null ? void 0 : n.call(window, "(prefers-color-scheme: dark)").matches);
 }
@@ -74796,12 +74820,12 @@ function R0e(n) {
   };
   return t("BARCHART_STACKED_PERCENT") ? "bar_stacked_percent" : t("BARCHART_PERCENT") ? "bar_percent" : t("BARCHART_STACKED") ? "bar_stacked" : t("BARCHART") ? t("YAXIS") && !t("XAXIS") ? "bar_horizontal" : "bar" : t("LINECHART_PERCENT") ? "line_percent" : t("LINECHART") ? "line" : t("PIECHART_PERCENT") ? "pie_percent" : t("PIECHART") ? "pie" : t("DONUTCHART_PERCENT") ? "donut_percent" : t("DONUTCHART") ? "donut" : t("GAUGE_PERCENT") ? "gauge_percent" : t("GAUGE") ? "gauge" : t("BOXPLOT") ? "boxplot" : t("LABEL") || t("PERCENT") || t("COMPARE") || t("TREND") ? "kpi" : "unknown";
 }
-function hwt(n, t) {
+function vwt(n, t) {
   const { roleMap: s, chartType: o } = t;
   if (!n || n.length === 0) return null;
-  const a = pwt() ? "#e2e8f0" : "#334155", r = {
+  const a = mwt() ? "#e2e8f0" : "#334155", r = {
     backgroundColor: "transparent",
-    color: dwt,
+    color: hwt,
     textStyle: { color: a, fontFamily: "inherit" },
     tooltip: { trigger: "axis", confine: !0 },
     legend: { show: !0, textStyle: { color: a } },
@@ -74830,9 +74854,9 @@ function hwt(n, t) {
       return see(n, s, o, r, a, !0);
     case "gauge":
     case "gauge_percent":
-      return mwt(n, s, o, r, a);
+      return bwt(n, s, o, r, a);
     case "boxplot":
-      return vwt(n, s, r, a);
+      return gwt(n, s, r, a);
     case "kpi":
       return null;
     default:
@@ -75098,7 +75122,7 @@ function see(n, t, s, o, i, a) {
     }]
   };
 }
-function mwt(n, t, s, o, i) {
+function bwt(n, t, s, o, i) {
   var kn, Jn, Cs, js, os, Es, Fs, Hs, yo;
   const a = s === "gauge_percent", r = t.GAUGE_PERCENT || t.GAUGE || [], f = (kn = r[0]) == null ? void 0 : kn.originalName, b = Ng((Jn = n[0]) == null ? void 0 : Jn[f]), e = a && b >= 0 && b <= 1 ? b * 100 : b, P = ((Cs = r[0]) == null ? void 0 : Cs.displayName) || "", $ = (Ks) => Array.isArray(Ks) ? Ks : Ks == null || typeof Ks == "string" ? null : typeof Ks[Symbol.iterator] == "function" ? Array.from(Ks) : null, oe = (js = (t.RANGE || [])[0]) == null ? void 0 : js.originalName;
   let Ae = 0, Ue = 100, Fe = [];
@@ -75271,7 +75295,7 @@ function mwt(n, t, s, o, i) {
     series: bn ? [ts, pn, bn] : [ts]
   };
 }
-function vwt(n, t, s, o) {
+function gwt(n, t, s, o) {
   var Ae, Ue, Fe;
   const i = t.XAXIS || [], a = t.BOXPLOT || [], r = t.COLOR || [], f = (Ae = i[0]) == null ? void 0 : Ae.originalName, b = (Ue = r[0]) == null ? void 0 : Ue.originalName;
   let e = [], P = [], $ = [];
@@ -75342,7 +75366,7 @@ function vwt(n, t, s, o) {
     series: oe
   };
 }
-function bwt(n, t) {
+function ywt(n, t) {
   const { roleMap: s } = t, o = n[0] || {}, i = [];
   for (const a of s.LABEL || []) {
     const r = ag(o[a.originalName]);
@@ -75374,7 +75398,7 @@ function bwt(n, t) {
   }
   return i.length === 0 ? '<div class="p-4 text-muted-foreground text-sm">Aucune donnée</div>' : `<div class="stats shadow w-full flex-wrap">${i.join("")}</div>`;
 }
-function gwt(n) {
+function wwt(n) {
   const { roleMap: t } = n, s = {};
   for (const o of t.PERCENT || [])
     s[o.originalName] = (i) => {
@@ -75400,8 +75424,8 @@ function D0e(n) {
   return t;
 }
 var Cx;
-let ywt = (Cx = class {
-}, jl(Cx, "parseColumnRoles", N0e), jl(Cx, "buildEChartsOption", hwt), jl(Cx, "buildKpiHtml", bwt), jl(Cx, "buildTableColumnRenderers", gwt), jl(Cx, "getTableColumnDisplayNames", D0e), jl(Cx, "detectChartType", R0e), Cx);
+let Cwt = (Cx = class {
+}, jl(Cx, "parseColumnRoles", N0e), jl(Cx, "buildEChartsOption", vwt), jl(Cx, "buildKpiHtml", ywt), jl(Cx, "buildTableColumnRenderers", wwt), jl(Cx, "getTableColumnDisplayNames", D0e), jl(Cx, "detectChartType", R0e), Cx);
 function oee({ cell: n, searchable: t = !1 }) {
   const [s, o] = et.useState({ pageIndex: 0, pageSize: 10 }), [i, a] = et.useState([]), [r, f] = et.useState(""), b = tR.get(n._id) || n._results || [], { columns: e, allColKeys: P } = et.useMemo(() => {
     if (!(b != null && b.length)) return { columns: [], allColKeys: [] };
@@ -75490,7 +75514,7 @@ function oee({ cell: n, searchable: t = !1 }) {
     )
   ] }) : null;
 }
-function wwt() {
+function Lwt() {
   return /* @__PURE__ */ pe.jsxs("div", { className: "flex min-w-0 w-full flex-col mt-2 gap-4", children: [
     /* @__PURE__ */ pe.jsx("div", { className: "animate-pulse rounded-md bg-muted h-8 w-full" }),
     /* @__PURE__ */ pe.jsx("div", { className: "animate-pulse rounded-md bg-muted h-2 w-28" }),
@@ -75510,7 +75534,7 @@ function dx({ cell: n, devOnly: t = !1 }) {
   const s = al((o) => o.devMode);
   return !n._resultInfo || t && !s ? null : /* @__PURE__ */ pe.jsx("div", { className: "mt-2 p-2 bg-muted rounded text-sm text-muted-foreground", children: n._resultInfo });
 }
-function Cwt({ cell: n, path: t, cellIndex: s }) {
+function xwt({ cell: n, path: t, cellIndex: s }) {
   const o = al((r) => r.devMode), i = et.useRef(null), a = al((r) => r.hasCellHeight);
   return et.useEffect(() => {
     const r = i.current;
@@ -75566,7 +75590,7 @@ function Cwt({ cell: n, path: t, cellIndex: s }) {
     ) })
   ] });
 }
-function Lwt({ cell: n, path: t, cellIndex: s }) {
+function Ewt({ cell: n, path: t, cellIndex: s }) {
   const {
     handleSingleSourceDrop: o,
     handleSingleSourceFileSelect: i,
@@ -75672,7 +75696,7 @@ function Lwt({ cell: n, path: t, cellIndex: s }) {
     ] })
   ] });
 }
-function xwt({ cell: n, path: t, cellIndex: s }) {
+function Swt({ cell: n, path: t, cellIndex: s }) {
   const { runCellsAfter: o, isLoading: i } = al(jh((a) => ({ runCellsAfter: a.runCellsAfter, isLoading: a.isLoading })));
   return /* @__PURE__ */ pe.jsx("div", { className: "flex justify-center p-0", children: /* @__PURE__ */ pe.jsx("button", { className: "inline-flex items-center justify-center px-4 py-1.5 rounded text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50", onClick: () => o(t, s), disabled: i, children: /* @__PURE__ */ pe.jsx("span", { children: n.buttonLabel || "Exécuter" }) }) });
 }
@@ -75709,7 +75733,7 @@ function aee({ cell: n, path: t, cellIndex: s, showTextResult: o = !1 }) {
     /* @__PURE__ */ pe.jsx(dx, { cell: n, devOnly: !0 })
   ] });
 }
-function Ewt({ cell: n, path: t, cellIndex: s }) {
+function Awt({ cell: n, path: t, cellIndex: s }) {
   const { devMode: o, hasCellHeight: i, showSqlEditorVisible: a, _rev: r } = al(jh((e) => ({
     devMode: e.devMode,
     hasCellHeight: e.hasCellHeight,
@@ -75745,7 +75769,7 @@ function Ewt({ cell: n, path: t, cellIndex: s }) {
     /* @__PURE__ */ pe.jsx(dx, { cell: n, devOnly: !0 })
   ] });
 }
-function Swt({ cell: n, path: t, cellIndex: s }) {
+function _wt({ cell: n, path: t, cellIndex: s }) {
   const { devMode: o, showSqlEditorVisible: i } = al(jh((a) => ({
     devMode: a.devMode,
     showSqlEditorVisible: a.showSqlEditorVisible
@@ -75769,7 +75793,7 @@ function Swt({ cell: n, path: t, cellIndex: s }) {
     /* @__PURE__ */ pe.jsx(dx, { cell: n, devOnly: !0 })
   ] });
 }
-function Awt({ cell: n, path: t, cellIndex: s }) {
+function Twt({ cell: n, path: t, cellIndex: s }) {
   const { devMode: o, showSqlEditorVisible: i, hasCellHeight: a, _rev: r } = al(jh((e) => ({
     devMode: e.devMode,
     showSqlEditorVisible: e.showSqlEditorVisible,
@@ -75800,7 +75824,7 @@ function Awt({ cell: n, path: t, cellIndex: s }) {
     /* @__PURE__ */ pe.jsx(dx, { cell: n, devOnly: !0 })
   ] });
 }
-function _wt({ cell: n, path: t, cellIndex: s }) {
+function Iwt({ cell: n, path: t, cellIndex: s }) {
   var Ae;
   const { devMode: o, onParameterValueChange: i } = al(jh((Ue) => ({
     devMode: Ue.devMode,
@@ -75880,7 +75904,7 @@ function _wt({ cell: n, path: t, cellIndex: s }) {
     /* @__PURE__ */ pe.jsx(dx, { cell: n, devOnly: !0 })
   ] });
 }
-function Twt({ cell: n, path: t, cellIndex: s }) {
+function Nwt({ cell: n, path: t, cellIndex: s }) {
   const {
     handleDocxTemplateDrop: o,
     handleDocxTemplateFileSelect: i,
@@ -75992,7 +76016,7 @@ function Twt({ cell: n, path: t, cellIndex: s }) {
     /* @__PURE__ */ pe.jsx(dx, { cell: n, devOnly: !0 })
   ] });
 }
-function Iwt({ cell: n, path: t, cellIndex: s }) {
+function Rwt({ cell: n, path: t, cellIndex: s }) {
   const { runCellAt: o, isLoading: i, devMode: a, forceUpdate: r } = al(jh((f) => ({
     runCellAt: f.runCellAt,
     isLoading: f.isLoading,
@@ -76065,7 +76089,7 @@ function Iwt({ cell: n, path: t, cellIndex: s }) {
     /* @__PURE__ */ pe.jsx(dx, { cell: n, devOnly: !0 })
   ] });
 }
-function Nwt({ cell: n, path: t, cellIndex: s }) {
+function Owt({ cell: n, path: t, cellIndex: s }) {
   const { devMode: o, showSqlEditorVisible: i, hasCellHeight: a, renderPerspectiveInContainer: r, _rev: f } = al(jh((P) => ({
     devMode: P.devMode,
     showSqlEditorVisible: P.showSqlEditorVisible,
@@ -76117,7 +76141,7 @@ function Nwt({ cell: n, path: t, cellIndex: s }) {
     /* @__PURE__ */ pe.jsx(dx, { cell: n, devOnly: !0 })
   ] });
 }
-function Rwt({ cell: n, path: t, cellIndex: s, group: o }) {
+function kwt({ cell: n, path: t, cellIndex: s, group: o }) {
   const {
     devMode: i,
     isLoading: a,
@@ -76140,29 +76164,29 @@ function Rwt({ cell: n, path: t, cellIndex: s, group: o }) {
   function Fe() {
     switch (n.type) {
       case "markdown":
-        return /* @__PURE__ */ pe.jsx(Cwt, { cell: n, path: t, cellIndex: s });
-      case "source":
-        return /* @__PURE__ */ pe.jsx(Lwt, { cell: n, path: t, cellIndex: s });
-      case "buttonRunNextCells":
         return /* @__PURE__ */ pe.jsx(xwt, { cell: n, path: t, cellIndex: s });
+      case "source":
+        return /* @__PURE__ */ pe.jsx(Ewt, { cell: n, path: t, cellIndex: s });
+      case "buttonRunNextCells":
+        return /* @__PURE__ */ pe.jsx(Swt, { cell: n, path: t, cellIndex: s });
       case "sqlRecursiveParse":
         return /* @__PURE__ */ pe.jsx(aee, { cell: n, path: t, cellIndex: s, showTextResult: !0 });
       case "table":
         return /* @__PURE__ */ pe.jsx(aee, { cell: n, path: t, cellIndex: s });
       case "iframe":
-        return /* @__PURE__ */ pe.jsx(Ewt, { cell: n, path: t, cellIndex: s });
-      case "sqlStat":
-        return /* @__PURE__ */ pe.jsx(Swt, { cell: n, path: t, cellIndex: s });
-      case "echart":
         return /* @__PURE__ */ pe.jsx(Awt, { cell: n, path: t, cellIndex: s });
-      case "uiParameter":
+      case "sqlStat":
         return /* @__PURE__ */ pe.jsx(_wt, { cell: n, path: t, cellIndex: s });
-      case "publipostageWord":
+      case "echart":
         return /* @__PURE__ */ pe.jsx(Twt, { cell: n, path: t, cellIndex: s });
-      case "pdfme":
+      case "uiParameter":
         return /* @__PURE__ */ pe.jsx(Iwt, { cell: n, path: t, cellIndex: s });
-      case "perspective":
+      case "publipostageWord":
         return /* @__PURE__ */ pe.jsx(Nwt, { cell: n, path: t, cellIndex: s });
+      case "pdfme":
+        return /* @__PURE__ */ pe.jsx(Rwt, { cell: n, path: t, cellIndex: s });
+      case "perspective":
+        return /* @__PURE__ */ pe.jsx(Owt, { cell: n, path: t, cellIndex: s });
       default:
         return null;
     }
@@ -76173,7 +76197,7 @@ function Rwt({ cell: n, path: t, cellIndex: s, group: o }) {
       className: `pt-1 pb-1 pl-2 pr-2 relative flex-1 flex flex-col min-h-0 cell-body ${V ? "cell-body-has-height" : ""}`,
       style: oe ? Object.fromEntries(oe.split(";").filter(Boolean).map((tt) => tt.split(":"))) : void 0,
       children: [
-        Ae && /* @__PURE__ */ pe.jsx(wwt, {}),
+        Ae && /* @__PURE__ */ pe.jsx(Lwt, {}),
         Ue && /* @__PURE__ */ pe.jsxs("div", { className: "flex-1 flex flex-col min-h-0", children: [
           Fe(),
           !i && n.childGroupId && /* @__PURE__ */ pe.jsx("div", { className: "absolute top-2 right-2", children: /* @__PURE__ */ pe.jsx(
@@ -76207,11 +76231,11 @@ function P0e({ cell: n, cellIndex: t, path: s, group: o }) {
   if (!i && !b(n)) return null;
   const P = (a == null ? void 0 : a(n, e)) || "", $ = (r == null ? void 0 : r(n, e, n._order ?? 0)) || {}, V = (f == null ? void 0 : f()) || "", oe = n._status === "running" ? "border-yellow-400 shadow-[0_0_10px_rgba(251,191,36,0.3)]" : n._status === "success" ? "border-green-500" : n._status === "error" ? "border-destructive" : "", Ae = n.border !== !1 ? `border border-border shadow-sm hover:border-primary hover:shadow-lg ${oe}` : "border-0 shadow-none";
   return /* @__PURE__ */ pe.jsx("div", { className: `flex flex-1 ${P}`, style: $, children: /* @__PURE__ */ pe.jsxs("div", { className: `rounded-lg overflow-hidden bg-background cell-container ${V} ${Ae}`, children: [
-    /* @__PURE__ */ pe.jsx(uwt, { cell: n, path: s, cellIndex: t, group: o }),
-    /* @__PURE__ */ pe.jsx(Rwt, { cell: n, path: s, cellIndex: t, group: o })
+    /* @__PURE__ */ pe.jsx(cwt, { cell: n, path: s, cellIndex: t, group: o }),
+    /* @__PURE__ */ pe.jsx(kwt, { cell: n, path: s, cellIndex: t, group: o })
   ] }) });
 }
-function Owt({ group: n, path: t, depth: s }) {
+function Mwt({ group: n, path: t, depth: s }) {
   var P;
   const { getAllItemsSorted: o, _rev: i } = al(jh(($) => ({
     getAllItemsSorted: $.getAllItemsSorted,
@@ -76297,7 +76321,7 @@ function y3({
   return !f && !(V != null && V(n)) ? null : !f && n.accordion ? /* @__PURE__ */ pe.jsx(k8, { type: "single", collapsible: !0, value: Cr, onValueChange: Nr, className: "border border-border rounded-lg bg-background", children: /* @__PURE__ */ pe.jsxs(aN, { value: "item", className: "border-0", children: [
     /* @__PURE__ */ pe.jsx(uN, { className: "px-4 py-3 font-medium", children: n.title || "" }),
     /* @__PURE__ */ pe.jsx(lN, { className: "px-0 pb-0", children: /* @__PURE__ */ pe.jsx(uee, { group: n, path: t, depth: s }) })
-  ] }) }) : !f && n.tabsChild ? /* @__PURE__ */ pe.jsx(Owt, { group: n, path: t, depth: s }) : /* @__PURE__ */ pe.jsxs("div", { className: "bg-background w-full", children: [
+  ] }) }) : !f && n.tabsChild ? /* @__PURE__ */ pe.jsx(Mwt, { group: n, path: t, depth: s }) : /* @__PURE__ */ pe.jsxs("div", { className: "bg-background w-full", children: [
     f && /* @__PURE__ */ pe.jsx("div", { className: "flex items-center justify-between gap-2 py-1 px-2 bg-muted/80 border-b border-border group-header", children: /* @__PURE__ */ pe.jsxs("div", { className: "flex gap-1 flex-wrap items-center", children: [
       /* @__PURE__ */ pe.jsxs("div", { className: "inline-flex rounded-md overflow-hidden border border-border divide-x divide-border", children: [
         /* @__PURE__ */ pe.jsx(
@@ -76451,7 +76475,7 @@ function uee({ group: n, path: t, depth: s }) {
     }
   }) });
 }
-function kwt({ atIndex: n }) {
+function Dwt({ atIndex: n }) {
   const t = al((s) => s.openInsertGroupModal);
   return /* @__PURE__ */ pe.jsx(
     "div",
@@ -76467,7 +76491,7 @@ function kwt({ atIndex: n }) {
     }
   );
 }
-function Mwt() {
+function Pwt() {
   const {
     devMode: n,
     isLoading: t,
@@ -76488,7 +76512,7 @@ function Mwt() {
   return /* @__PURE__ */ pe.jsxs("div", { className: `flex flex-col p-2 ${n ? "gap-2" : "gap-0.5"}`, children: [
     e.flatMap((P, $) => {
       const V = b.indexOf(P), oe = [];
-      return n && $ > 0 && oe.push(/* @__PURE__ */ pe.jsx(kwt, { atIndex: $ }, `div-${P._id}`)), oe.push(
+      return n && $ > 0 && oe.push(/* @__PURE__ */ pe.jsx(Dwt, { atIndex: $ }, `div-${P._id}`)), oe.push(
         /* @__PURE__ */ pe.jsx(
           "div",
           {
@@ -76522,7 +76546,7 @@ function Mwt() {
     ) })
   ] });
 }
-function Dwt() {
+function jwt() {
   const {
     pages: n,
     activePageIndex: t,
@@ -76554,7 +76578,7 @@ function Dwt() {
   })));
   return /* @__PURE__ */ pe.jsxs("div", { className: "flex flex-nowrap overflow-x-auto gap-1", children: [
     n.map((oe, Ae) => /* @__PURE__ */ pe.jsx(
-      Pwt,
+      $wt,
       {
         page: oe,
         index: Ae,
@@ -76574,7 +76598,7 @@ function Dwt() {
     s && /* @__PURE__ */ pe.jsx(Dl, { variant: "ghost", size: "sm", onClick: i, title: "Nouvelle page", className: "h-8 px-2", children: /* @__PURE__ */ pe.jsx(vl, { name: "add", size: 16 }) })
   ] });
 }
-function Pwt({ page: n, index: t, isActive: s, devMode: o, activatePage: i, deletePage: a, startPageDrag: r, onPageDragOver: f, onPageDragLeave: b, onPageDrop: e, endPageDrag: P, isDragOver: $ }) {
+function $wt({ page: n, index: t, isActive: s, devMode: o, activatePage: i, deletePage: a, startPageDrag: r, onPageDragOver: f, onPageDragLeave: b, onPageDrop: e, endPageDrag: P, isDragOver: $ }) {
   const [V, oe] = et.useState(!1), [Ae, Ue] = et.useState(""), Fe = et.useRef(null), tt = al.setState;
   function Ie(gr) {
     o && (gr.stopPropagation(), Ue(n.name), oe(!0));
@@ -76634,7 +76658,7 @@ function Pwt({ page: n, index: t, isActive: s, devMode: o, activatePage: i, dele
     }
   );
 }
-function jwt() {
+function Fwt() {
   const {
     devMode: n,
     isLoading: t,
@@ -76663,7 +76687,7 @@ function jwt() {
         ]
       }
     ) }),
-    /* @__PURE__ */ pe.jsx("div", { className: "flex-1 flex justify-center overflow-hidden", children: /* @__PURE__ */ pe.jsx(Dwt, {}) }),
+    /* @__PURE__ */ pe.jsx("div", { className: "flex-1 flex justify-center overflow-hidden", children: /* @__PURE__ */ pe.jsx(jwt, {}) }),
     /* @__PURE__ */ pe.jsxs("div", { className: "flex-none flex gap-2 items-center", children: [
       n && /* @__PURE__ */ pe.jsxs(pe.Fragment, { children: [
         /* @__PURE__ */ pe.jsx(Dl, { variant: "ghost", size: "sm", onClick: i, disabled: t, title: "Tout exécuter", children: /* @__PURE__ */ pe.jsx(vl, { name: "play-arrow", size: 20 }) }),
@@ -76711,7 +76735,7 @@ function jwt() {
     ] })
   ] });
 }
-function $wt() {
+function Uwt() {
   const { status: n, statusType: t } = al(jh((o) => ({ status: o.status, statusType: o.statusType })));
   if (!n) return null;
   const s = t === "loading" ? "border-blue-300 bg-blue-50 dark:bg-blue-950 dark:border-blue-700" : t === "success" ? "border-green-300 bg-green-50 dark:bg-green-950 dark:border-green-700" : "border-destructive bg-destructive/10";
@@ -76720,20 +76744,20 @@ function $wt() {
     /* @__PURE__ */ pe.jsx(tx, { children: n })
   ] }) });
 }
-const Fwt = () => /* @__PURE__ */ pe.jsxs(l0e, { type: "main", showHeader: !1, className: "flex flex-col h-full", children: [
-  /* @__PURE__ */ pe.jsx(jwt, {}),
-  /* @__PURE__ */ pe.jsx("main", { className: "flex-1 overflow-auto min-h-0", children: /* @__PURE__ */ pe.jsx(Mwt, {}) }),
-  /* @__PURE__ */ pe.jsx($wt, {})
+const Bwt = () => /* @__PURE__ */ pe.jsxs(l0e, { type: "main", showHeader: !1, className: "flex flex-col h-full", children: [
+  /* @__PURE__ */ pe.jsx(Fwt, {}),
+  /* @__PURE__ */ pe.jsx("main", { className: "flex-1 overflow-auto min-h-0", children: /* @__PURE__ */ pe.jsx(Pwt, {}) }),
+  /* @__PURE__ */ pe.jsx(Uwt, {})
 ] });
-var j0e = { exports: {} }, Uwt = "SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED", Bwt = Uwt, zwt = Bwt;
+var j0e = { exports: {} }, zwt = "SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED", qwt = zwt, Gwt = qwt;
 function $0e() {
 }
 function F0e() {
 }
 F0e.resetWarningCache = $0e;
-var qwt = function() {
+var Hwt = function() {
   function n(o, i, a, r, f, b) {
-    if (b !== zwt) {
+    if (b !== Gwt) {
       var e = new Error(
         "Calling PropTypes validators directly is not supported by the `prop-types` package. Use PropTypes.checkPropTypes() to call them. Read more at http://fb.me/use-check-prop-types"
       );
@@ -76769,9 +76793,9 @@ var qwt = function() {
   };
   return s.PropTypes = s, s;
 };
-j0e.exports = qwt();
-var Gwt = j0e.exports;
-const $b = /* @__PURE__ */ XS(Gwt), Hwt = /* @__PURE__ */ new Map([
+j0e.exports = Hwt();
+var Vwt = j0e.exports;
+const $b = /* @__PURE__ */ XS(Vwt), Wwt = /* @__PURE__ */ new Map([
   // https://github.com/guzzle/psr7/blob/2d9260799e713f1c475d3c5fdc3d6561ff7441b2/src/MimeType.php
   ["1km", "application/vnd.1000minds.decision-model+xml"],
   ["3dml", "text/vnd.in3d.3dml"],
@@ -77975,13 +77999,13 @@ const $b = /* @__PURE__ */ XS(Gwt), Hwt = /* @__PURE__ */ new Map([
   ["zsh", "text/x-scriptzsh"]
 ]);
 function x_(n, t, s) {
-  const o = Vwt(n), { webkitRelativePath: i } = n, a = typeof t == "string" ? t : typeof i == "string" && i.length > 0 ? i : `./${n.name}`;
+  const o = Ywt(n), { webkitRelativePath: i } = n, a = typeof t == "string" ? t : typeof i == "string" && i.length > 0 ? i : `./${n.name}`;
   return typeof o.path != "string" && lee(o, "path", a), lee(o, "relativePath", a), o;
 }
-function Vwt(n) {
+function Ywt(n) {
   const { name: t } = n;
   if (t && t.lastIndexOf(".") !== -1 && !n.type) {
-    const o = t.split(".").pop().toLowerCase(), i = Hwt.get(o);
+    const o = t.split(".").pop().toLowerCase(), i = Wwt.get(o);
     i && Object.defineProperty(n, "type", {
       value: i,
       writable: !1,
@@ -77999,49 +78023,49 @@ function lee(n, t, s) {
     enumerable: !0
   });
 }
-const Wwt = [
+const Qwt = [
   // Thumbnail cache files for macOS and Windows
   ".DS_Store",
   // macOs
   "Thumbs.db"
   // Windows
 ];
-function Ywt(n) {
+function Kwt(n) {
   return Jl(this, void 0, void 0, function* () {
-    return RP(n) && Qwt(n.dataTransfer) ? Jwt(n.dataTransfer, n.type) : Kwt(n) ? Xwt(n) : Array.isArray(n) && n.every((t) => "getFile" in t && typeof t.getFile == "function") ? Zwt(n) : [];
+    return RP(n) && Xwt(n.dataTransfer) ? tCt(n.dataTransfer, n.type) : Zwt(n) ? Jwt(n) : Array.isArray(n) && n.every((t) => "getFile" in t && typeof t.getFile == "function") ? eCt(n) : [];
   });
 }
-function Qwt(n) {
+function Xwt(n) {
   return RP(n);
 }
-function Kwt(n) {
+function Zwt(n) {
   return RP(n) && RP(n.target);
 }
 function RP(n) {
   return typeof n == "object" && n !== null;
 }
-function Xwt(n) {
+function Jwt(n) {
   return o7(n.target.files).map((t) => x_(t));
 }
-function Zwt(n) {
+function eCt(n) {
   return Jl(this, void 0, void 0, function* () {
     return (yield Promise.all(n.map((s) => s.getFile()))).map((s) => x_(s));
   });
 }
-function Jwt(n, t) {
+function tCt(n, t) {
   return Jl(this, void 0, void 0, function* () {
     if (n.items) {
       const s = o7(n.items).filter((i) => i.kind === "file");
       if (t !== "drop")
         return s;
-      const o = yield Promise.all(s.map(eCt));
+      const o = yield Promise.all(s.map(rCt));
       return cee(U0e(o));
     }
     return cee(o7(n.files).map((s) => x_(s)));
   });
 }
 function cee(n) {
-  return n.filter((t) => Wwt.indexOf(t.name) === -1);
+  return n.filter((t) => Qwt.indexOf(t.name) === -1);
 }
 function o7(n) {
   if (n === null)
@@ -78053,7 +78077,7 @@ function o7(n) {
   }
   return t;
 }
-function eCt(n) {
+function rCt(n) {
   if (typeof n.webkitGetAsEntry != "function")
     return fee(n);
   const t = n.webkitGetAsEntry();
@@ -78083,9 +78107,9 @@ function fee(n, t) {
     return x_(o, (s = t == null ? void 0 : t.fullPath) !== null && s !== void 0 ? s : void 0);
   });
 }
-function tCt(n) {
+function nCt(n) {
   return Jl(this, void 0, void 0, function* () {
-    return n.isDirectory ? B0e(n) : rCt(n);
+    return n.isDirectory ? B0e(n) : sCt(n);
   });
 }
 function B0e(n) {
@@ -78095,7 +78119,7 @@ function B0e(n) {
     function a() {
       t.readEntries((r) => Jl(this, void 0, void 0, function* () {
         if (r.length) {
-          const f = Promise.all(r.map(tCt));
+          const f = Promise.all(r.map(nCt));
           i.push(f), a();
         } else
           try {
@@ -78111,7 +78135,7 @@ function B0e(n) {
     a();
   });
 }
-function rCt(n) {
+function sCt(n) {
   return Jl(this, void 0, void 0, function* () {
     return new Promise((t, s) => {
       n.file((o) => {
@@ -78137,16 +78161,16 @@ var w6 = function(n, t) {
   return !0;
 };
 function dee(n) {
-  return oCt(n) || sCt(n) || q0e(n) || nCt();
+  return aCt(n) || iCt(n) || q0e(n) || oCt();
 }
-function nCt() {
+function oCt() {
   throw new TypeError(`Invalid attempt to spread non-iterable instance.
 In order to be iterable, non-array objects must have a [Symbol.iterator]() method.`);
 }
-function sCt(n) {
+function iCt(n) {
   if (typeof Symbol < "u" && n[Symbol.iterator] != null || n["@@iterator"] != null) return Array.from(n);
 }
-function oCt(n) {
+function aCt(n) {
   if (Array.isArray(n)) return i7(n);
 }
 function pee(n, t) {
@@ -78174,9 +78198,9 @@ function z0e(n, t, s) {
   return t in n ? Object.defineProperty(n, t, { value: s, enumerable: !0, configurable: !0, writable: !0 }) : n[t] = s, n;
 }
 function rR(n, t) {
-  return uCt(n) || aCt(n, t) || q0e(n, t) || iCt();
+  return cCt(n) || lCt(n, t) || q0e(n, t) || uCt();
 }
-function iCt() {
+function uCt() {
   throw new TypeError(`Invalid attempt to destructure non-iterable instance.
 In order to be iterable, non-array objects must have a [Symbol.iterator]() method.`);
 }
@@ -78194,7 +78218,7 @@ function i7(n, t) {
     o[s] = n[s];
   return o;
 }
-function aCt(n, t) {
+function lCt(n, t) {
   var s = n == null ? null : typeof Symbol < "u" && n[Symbol.iterator] || n["@@iterator"];
   if (s != null) {
     var o = [], i = !0, a = !1, r, f;
@@ -78213,35 +78237,35 @@ function aCt(n, t) {
     return o;
   }
 }
-function uCt(n) {
+function cCt(n) {
   if (Array.isArray(n)) return n;
 }
-var lCt = typeof w6 == "function" ? w6 : w6.default, cCt = "file-invalid-type", fCt = "file-too-large", dCt = "file-too-small", pCt = "too-many-files", hCt = function() {
+var fCt = typeof w6 == "function" ? w6 : w6.default, dCt = "file-invalid-type", pCt = "file-too-large", hCt = "file-too-small", mCt = "too-many-files", vCt = function() {
   var t = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : "", s = t.split(","), o = s.length > 1 ? "one of ".concat(s.join(", ")) : s[0];
   return {
-    code: cCt,
+    code: dCt,
     message: "File type must be ".concat(o)
   };
 }, mee = function(t) {
   return {
-    code: fCt,
+    code: pCt,
     message: "File is larger than ".concat(t, " ").concat(t === 1 ? "byte" : "bytes")
   };
 }, vee = function(t) {
   return {
-    code: dCt,
+    code: hCt,
     message: "File is smaller than ".concat(t, " ").concat(t === 1 ? "byte" : "bytes")
   };
-}, mCt = {
-  code: pCt,
+}, bCt = {
+  code: mCt,
   message: "Too many files"
 };
-function vCt(n) {
+function gCt(n) {
   return n.type === "" && typeof n.getAsFile == "function";
 }
 function G0e(n, t) {
-  var s = n.type === "application/x-moz-file" || lCt(n, t) || vCt(n);
-  return [s, s ? null : hCt(t)];
+  var s = n.type === "application/x-moz-file" || fCt(n, t) || gCt(n);
+  return [s, s ? null : vCt(t)];
 }
 function H0e(n, t, s) {
   if (uS(n.size))
@@ -78257,7 +78281,7 @@ function H0e(n, t, s) {
 function uS(n) {
   return n != null;
 }
-function bCt(n) {
+function yCt(n) {
   var t = n.files, s = n.accept, o = n.minSize, i = n.maxSize, a = n.multiple, r = n.maxFiles, f = n.validator;
   return !a && t.length > 1 || a && r >= 1 && t.length > r ? !1 : t.every(function(b) {
     var e = G0e(b, s), P = rR(e, 1), $ = P[0], V = H0e(b, o, i), oe = rR(V, 1), Ae = oe[0], Ue = f ? f(b) : null;
@@ -78275,15 +78299,15 @@ function PT(n) {
 function bee(n) {
   n.preventDefault();
 }
-function gCt(n) {
+function wCt(n) {
   return n.indexOf("MSIE") !== -1 || n.indexOf("Trident/") !== -1;
 }
-function yCt(n) {
+function CCt(n) {
   return n.indexOf("Edge/") !== -1;
 }
-function wCt() {
+function LCt() {
   var n = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : window.navigator.userAgent;
-  return gCt(n) || yCt(n);
+  return wCt(n) || CCt(n);
 }
 function EC() {
   for (var n = arguments.length, t = new Array(n), s = 0; s < n; s++)
@@ -78296,10 +78320,10 @@ function EC() {
     });
   };
 }
-function CCt() {
+function xCt() {
   return "showOpenFilePicker" in window;
 }
-function LCt(n) {
+function ECt(n) {
   if (uS(n)) {
     var t = Object.entries(n).filter(function(s) {
       var o = rR(s, 2), i = o[0], a = o[1], r = !0;
@@ -78316,7 +78340,7 @@ function LCt(n) {
   }
   return n;
 }
-function xCt(n) {
+function SCt(n) {
   if (uS(n))
     return Object.entries(n).reduce(function(t, s) {
       var o = rR(s, 2), i = o[0], a = o[1];
@@ -78325,10 +78349,10 @@ function xCt(n) {
       return V0e(t) || W0e(t);
     }).join(",");
 }
-function ECt(n) {
+function ACt(n) {
   return n instanceof DOMException && (n.name === "AbortError" || n.code === n.ABORT_ERR);
 }
-function SCt(n) {
+function _Ct(n) {
   return n instanceof DOMException && (n.name === "SecurityError" || n.code === n.SECURITY_ERR);
 }
 function V0e(n) {
@@ -78337,24 +78361,24 @@ function V0e(n) {
 function W0e(n) {
   return /^.*\.[\w]+$/.test(n);
 }
-var ACt = ["children"], _Ct = ["open"], TCt = ["refKey", "role", "onKeyDown", "onFocus", "onBlur", "onClick", "onDragEnter", "onDragOver", "onDragLeave", "onDrop"], ICt = ["refKey", "onChange", "onClick"];
+var TCt = ["children"], ICt = ["open"], NCt = ["refKey", "role", "onKeyDown", "onFocus", "onBlur", "onClick", "onDragEnter", "onDragOver", "onDragLeave", "onDrop"], RCt = ["refKey", "onChange", "onClick"];
 function gee(n) {
-  return OCt(n) || RCt(n) || Y0e(n) || NCt();
+  return MCt(n) || kCt(n) || Y0e(n) || OCt();
 }
-function NCt() {
+function OCt() {
   throw new TypeError(`Invalid attempt to spread non-iterable instance.
 In order to be iterable, non-array objects must have a [Symbol.iterator]() method.`);
 }
-function RCt(n) {
+function kCt(n) {
   if (typeof Symbol < "u" && n[Symbol.iterator] != null || n["@@iterator"] != null) return Array.from(n);
 }
-function OCt(n) {
+function MCt(n) {
   if (Array.isArray(n)) return a7(n);
 }
 function C6(n, t) {
-  return DCt(n) || MCt(n, t) || Y0e(n, t) || kCt();
+  return jCt(n) || PCt(n, t) || Y0e(n, t) || DCt();
 }
-function kCt() {
+function DCt() {
   throw new TypeError(`Invalid attempt to destructure non-iterable instance.
 In order to be iterable, non-array objects must have a [Symbol.iterator]() method.`);
 }
@@ -78372,7 +78396,7 @@ function a7(n, t) {
     o[s] = n[s];
   return o;
 }
-function MCt(n, t) {
+function PCt(n, t) {
   var s = n == null ? null : typeof Symbol < "u" && n[Symbol.iterator] || n["@@iterator"];
   if (s != null) {
     var o = [], i = !0, a = !1, r, f;
@@ -78391,7 +78415,7 @@ function MCt(n, t) {
     return o;
   }
 }
-function DCt(n) {
+function jCt(n) {
   if (Array.isArray(n)) return n;
 }
 function yee(n, t) {
@@ -78420,7 +78444,7 @@ function u7(n, t, s) {
 }
 function kP(n, t) {
   if (n == null) return {};
-  var s = PCt(n, t), o, i;
+  var s = $Ct(n, t), o, i;
   if (Object.getOwnPropertySymbols) {
     var a = Object.getOwnPropertySymbols(n);
     for (i = 0; i < a.length; i++)
@@ -78428,7 +78452,7 @@ function kP(n, t) {
   }
   return s;
 }
-function PCt(n, t) {
+function $Ct(n, t) {
   if (n == null) return {};
   var s = {}, o = Object.keys(n), i, a;
   for (a = 0; a < o.length; a++)
@@ -78436,7 +78460,7 @@ function PCt(n, t) {
   return s;
 }
 var XG = /* @__PURE__ */ et.forwardRef(function(n, t) {
-  var s = n.children, o = kP(n, ACt), i = K0e(o), a = i.open, r = kP(i, _Ct);
+  var s = n.children, o = kP(n, TCt), i = K0e(o), a = i.open, r = kP(i, ICt);
   return et.useImperativeHandle(t, function() {
     return {
       open: a
@@ -78448,7 +78472,7 @@ var XG = /* @__PURE__ */ et.forwardRef(function(n, t) {
 XG.displayName = "Dropzone";
 var Q0e = {
   disabled: !1,
-  getFilesFromEvent: Ywt,
+  getFilesFromEvent: Kwt,
   maxSize: 1 / 0,
   minSize: 0,
   multiple: !0,
@@ -78644,14 +78668,14 @@ var l7 = {
 };
 function K0e() {
   var n = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {}, t = eg(eg({}, Q0e), n), s = t.accept, o = t.disabled, i = t.getFilesFromEvent, a = t.maxSize, r = t.minSize, f = t.multiple, b = t.maxFiles, e = t.onDragEnter, P = t.onDragLeave, $ = t.onDragOver, V = t.onDrop, oe = t.onDropAccepted, Ae = t.onDropRejected, Ue = t.onFileDialogCancel, Fe = t.onFileDialogOpen, tt = t.useFsAccessApi, Ie = t.autoFocus, ut = t.preventDropOnDocument, Vt = t.noClick, gr = t.noKeyboard, ur = t.noDrag, cr = t.noDragEventsBubbling, Gt = t.onError, Cr = t.validator, Nr = et.useMemo(function() {
-    return xCt(s);
+    return SCt(s);
   }, [s]), ln = et.useMemo(function() {
-    return LCt(s);
+    return ECt(s);
   }, [s]), Lr = et.useMemo(function() {
     return typeof Fe == "function" ? Fe : wee;
   }, [Fe]), Sn = et.useMemo(function() {
     return typeof Ue == "function" ? Ue : wee;
-  }, [Ue]), xn = et.useRef(null), pn = et.useRef(null), bn = et.useReducer(jCt, l7), ts = C6(bn, 2), kn = ts[0], Jn = ts[1], Cs = kn.isFocused, js = kn.isFileDialogActive, os = et.useRef(typeof window < "u" && window.isSecureContext && tt && CCt()), Es = function() {
+  }, [Ue]), xn = et.useRef(null), pn = et.useRef(null), bn = et.useReducer(FCt, l7), ts = C6(bn, 2), kn = ts[0], Jn = ts[1], Cs = kn.isFocused, js = kn.isFileDialogActive, os = et.useRef(typeof window < "u" && window.isSecureContext && tt && xCt()), Es = function() {
     !os.current && js && setTimeout(function() {
       if (pn.current) {
         var rn = pn.current.files;
@@ -78709,7 +78733,7 @@ function K0e() {
   }, [Gt]), To = et.useCallback(function(Eo) {
     Eo.preventDefault(), Eo.persist(), zs(Eo), Fs.current = [].concat(gee(Fs.current), [Eo.target]), PT(Eo) && Promise.resolve(i(Eo)).then(function(rn) {
       if (!(OP(Eo) && !cr)) {
-        var Pn = rn.length, Rs = Pn > 0 && bCt({
+        var Pn = rn.length, Rs = Pn > 0 && yCt({
           files: rn,
           accept: Nr,
           minSize: r,
@@ -78766,7 +78790,7 @@ function K0e() {
     }), (!f && Pn.length > 1 || f && b >= 1 && Pn.length > b) && (Pn.forEach(function(Us) {
       Rs.push({
         file: Us,
-        errors: [mCt]
+        errors: [bCt]
       });
     }), Pn.splice(0)), Jn({
       acceptedFiles: Pn,
@@ -78798,9 +78822,9 @@ function K0e() {
           type: "closeDialog"
         });
       }).catch(function(rn) {
-        ECt(rn) ? (Sn(rn), Jn({
+        ACt(rn) ? (Sn(rn), Jn({
           type: "closeDialog"
-        })) : SCt(rn) ? (os.current = !1, pn.current ? (pn.current.value = null, pn.current.click()) : Ks(new Error("Cannot open the file picker because the https://developer.mozilla.org/en-US/docs/Web/API/File_System_Access_API is not supported and no <input> was provided."))) : Ks(rn);
+        })) : _Ct(rn) ? (os.current = !1, pn.current ? (pn.current.value = null, pn.current.click()) : Ks(new Error("Cannot open the file picker because the https://developer.mozilla.org/en-US/docs/Web/API/File_System_Access_API is not supported and no <input> was provided."))) : Ks(rn);
       });
       return;
     }
@@ -78818,7 +78842,7 @@ function K0e() {
       type: "blur"
     });
   }, []), Ya = et.useCallback(function() {
-    Vt || (wCt() ? setTimeout(yi, 0) : yi());
+    Vt || (LCt() ? setTimeout(yi, 0) : yi());
   }, [Vt, yi]), yu = function(rn) {
     return o ? null : rn;
   }, ia = function(rn) {
@@ -78829,7 +78853,7 @@ function K0e() {
     cr && rn.stopPropagation();
   }, ao = et.useMemo(function() {
     return function() {
-      var Eo = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {}, rn = Eo.refKey, Pn = rn === void 0 ? "ref" : rn, Rs = Eo.role, Us = Eo.onKeyDown, ho = Eo.onFocus, co = Eo.onBlur, Bo = Eo.onClick, Vo = Eo.onDragEnter, di = Eo.onDragOver, wa = Eo.onDragLeave, Ba = Eo.onDrop, Oa = kP(Eo, TCt);
+      var Eo = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {}, rn = Eo.refKey, Pn = rn === void 0 ? "ref" : rn, Rs = Eo.role, Us = Eo.onKeyDown, ho = Eo.onFocus, co = Eo.onBlur, Bo = Eo.onClick, Vo = Eo.onDragEnter, di = Eo.onDragOver, wa = Eo.onDragLeave, Ba = Eo.onDrop, Oa = kP(Eo, NCt);
       return eg(eg(u7({
         onKeyDown: ia(EC(Us, Si)),
         onFocus: ia(EC(ho, fa)),
@@ -78848,7 +78872,7 @@ function K0e() {
     Eo.stopPropagation();
   }, []), qo = et.useMemo(function() {
     return function() {
-      var Eo = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {}, rn = Eo.refKey, Pn = rn === void 0 ? "ref" : rn, Rs = Eo.onChange, Us = Eo.onClick, ho = kP(Eo, ICt), co = u7({
+      var Eo = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {}, rn = Eo.refKey, Pn = rn === void 0 ? "ref" : rn, Rs = Eo.onChange, Us = Eo.onClick, ho = kP(Eo, RCt), co = u7({
         accept: Nr,
         multiple: f,
         type: "file",
@@ -78880,7 +78904,7 @@ function K0e() {
     open: yu(yi)
   });
 }
-function jCt(n, t) {
+function FCt(n, t) {
   switch (t.type) {
     case "focus":
       return eg(eg({}, n), {}, {
@@ -78928,13 +78952,13 @@ function wee() {
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const $Ct = (n) => n.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase(), FCt = (n) => n.replace(
+const UCt = (n) => n.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase(), BCt = (n) => n.replace(
   /^([A-Z])|[\s-_]+(\w)/g,
   (t, s, o) => o ? o.toUpperCase() : s.toLowerCase()
 ), Cee = (n) => {
-  const t = FCt(n);
+  const t = BCt(n);
   return t.charAt(0).toUpperCase() + t.slice(1);
-}, X0e = (...n) => n.filter((t, s, o) => !!t && t.trim() !== "" && o.indexOf(t) === s).join(" ").trim(), UCt = (n) => {
+}, X0e = (...n) => n.filter((t, s, o) => !!t && t.trim() !== "" && o.indexOf(t) === s).join(" ").trim(), zCt = (n) => {
   for (const t in n)
     if (t.startsWith("aria-") || t === "role" || t === "title")
       return !0;
@@ -78945,7 +78969,7 @@ const $Ct = (n) => n.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase(), FCt =
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-var BCt = {
+var qCt = {
   xmlns: "http://www.w3.org/2000/svg",
   width: 24,
   height: 24,
@@ -78962,7 +78986,7 @@ var BCt = {
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const zCt = et.forwardRef(
+const GCt = et.forwardRef(
   ({
     color: n = "currentColor",
     size: t = 24,
@@ -78976,13 +79000,13 @@ const zCt = et.forwardRef(
     "svg",
     {
       ref: b,
-      ...BCt,
+      ...qCt,
       width: t,
       height: t,
       stroke: n,
       strokeWidth: o ? Number(s) * 24 / Number(t) : s,
       className: X0e("lucide", i),
-      ...!a && !UCt(f) && { "aria-hidden": "true" },
+      ...!a && !zCt(f) && { "aria-hidden": "true" },
       ...f
     },
     [
@@ -78997,13 +79021,13 @@ const zCt = et.forwardRef(
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const qCt = (n, t) => {
+const HCt = (n, t) => {
   const s = et.forwardRef(
-    ({ className: o, ...i }, a) => et.createElement(zCt, {
+    ({ className: o, ...i }, a) => et.createElement(GCt, {
       ref: a,
       iconNode: t,
       className: X0e(
-        `lucide-${$Ct(Cee(n))}`,
+        `lucide-${UCt(Cee(n))}`,
         `lucide-${n}`,
         o
       ),
@@ -79018,10 +79042,10 @@ const qCt = (n, t) => {
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const GCt = [
+const VCt = [
   ["path", { d: "M5 12h14", key: "1ays0h" }],
   ["path", { d: "M12 5v14", key: "s699le" }]
-], HCt = qCt("plus", GCt), VCt = (n) => {
+], WCt = HCt("plus", VCt), YCt = (n) => {
   const { isInvalid: t, onDrop: s, multiple: o = !0, className: i, acceptedFormats: a, children: r } = n, [f, b] = et.useState(!1), { getRootProps: e, getInputProps: P, isDragActive: $, open: V } = K0e({
     onDrop: async (oe) => {
       b(!0);
@@ -79036,9 +79060,9 @@ const GCt = [
     noClick: !0,
     noKeyboard: !0
   });
-  return pe.jsx("div", { className: ci("relative flex h-full min-h-[180px] cursor-pointer flex-col overflow-hidden rounded-lg border-2 border-dashed p-2 transition-colors", $ ? "border-muted bg-muted/50" : "border-muted", t && "border-destructive", !f && "hover:border-muted", i), ...e(), onClick: f ? void 0 : V, children: f ? pe.jsxs("div", { className: "text-muted-foreground flex h-full w-full items-center justify-center gap-4 text-xs", children: [pe.jsx(uL, { className: "h-4 w-4" }), "Adding files..."] }) : pe.jsxs(pe.Fragment, { children: [pe.jsx("input", { ...P() }), pe.jsx("div", { className: "relative flex h-full flex-col", children: pe.jsxs("div", { className: "flex h-full flex-col items-center justify-center gap-2", children: [pe.jsxs("div", { className: "flex items-center gap-2", children: [pe.jsx(HCt, { className: "h-6 w-6" }), pe.jsx("p", { className: "text-muted-foreground text-sm", children: $ ? "Drop here ..." : "Add files" })] }), a && pe.jsxs("div", { className: "flex flex-wrap justify-center gap-2", children: [pe.jsx("p", { className: "text-xs font-bold", children: "Supported formats:" }), pe.jsx("p", { className: "text-muted-foreground text-xs", children: Object.values(a).flat().join(", ") })] }), r] }) })] }) });
+  return pe.jsx("div", { className: ci("relative flex h-full min-h-[180px] cursor-pointer flex-col overflow-hidden rounded-lg border-2 border-dashed p-2 transition-colors", $ ? "border-muted bg-muted/50" : "border-muted", t && "border-destructive", !f && "hover:border-muted", i), ...e(), onClick: f ? void 0 : V, children: f ? pe.jsxs("div", { className: "text-muted-foreground flex h-full w-full items-center justify-center gap-4 text-xs", children: [pe.jsx(uL, { className: "h-4 w-4" }), "Adding files..."] }) : pe.jsxs(pe.Fragment, { children: [pe.jsx("input", { ...P() }), pe.jsx("div", { className: "relative flex h-full flex-col", children: pe.jsxs("div", { className: "flex h-full flex-col items-center justify-center gap-2", children: [pe.jsxs("div", { className: "flex items-center gap-2", children: [pe.jsx(WCt, { className: "h-6 w-6" }), pe.jsx("p", { className: "text-muted-foreground text-sm", children: $ ? "Drop here ..." : "Add files" })] }), a && pe.jsxs("div", { className: "flex flex-wrap justify-center gap-2", children: [pe.jsx("p", { className: "text-xs font-bold", children: "Supported formats:" }), pe.jsx("p", { className: "text-muted-foreground text-xs", children: Object.values(a).flat().join(", ") })] }), r] }) })] }) });
 };
-function WCt() {
+function QCt() {
   const t = al((s) => s._roomFiles) ?? [];
   return t.length === 0 ? /* @__PURE__ */ pe.jsx("div", { className: "px-2 py-3 text-xs text-muted-foreground text-center", children: "Aucun fichier chargé" }) : /* @__PURE__ */ pe.jsx("div", { className: "flex flex-col gap-1", children: t.map((s) => /* @__PURE__ */ pe.jsxs("div", { className: "flex items-center gap-2 px-2 py-1.5 rounded-sm hover:bg-muted/50", children: [
     /* @__PURE__ */ pe.jsx(QG, { className: "h-3.5 w-3.5 text-muted-foreground shrink-0" }),
@@ -79053,12 +79077,12 @@ function WCt() {
       ] })
     ] }),
     /* @__PURE__ */ pe.jsxs("div", { className: "flex items-center gap-1 shrink-0", children: [
-      s.source === "dropzone" && /* @__PURE__ */ pe.jsx(twt, { className: "h-3 w-3 text-muted-foreground", title: "importé via dropzone" }),
+      s.source === "dropzone" && /* @__PURE__ */ pe.jsx(nwt, { className: "h-3 w-3 text-muted-foreground", title: "importé via dropzone" }),
       s.size > 0 && /* @__PURE__ */ pe.jsx("span", { className: "text-xs text-muted-foreground", children: s.size < 1024 ? `${s.size}B` : s.size < 1048576 ? `${(s.size / 1024).toFixed(1)}KB` : `${(s.size / 1048576).toFixed(1)}MB` })
     ] })
   ] }, s.tableName)) });
 }
-function YCt() {
+function KCt() {
   const n = al((s) => s._duckdbTables), t = Object.entries(n || {});
   return t.length === 0 ? /* @__PURE__ */ pe.jsx("div", { className: "px-2 py-3 text-xs text-muted-foreground text-center", children: "Aucune table chargée" }) : /* @__PURE__ */ pe.jsx("div", { className: "flex flex-col gap-2", children: t.map(([s, o]) => /* @__PURE__ */ pe.jsx(
     Emt,
@@ -79073,7 +79097,7 @@ function YCt() {
     s
   )) });
 }
-const QCt = () => {
+const XCt = () => {
   const n = al((o) => o.addRoomFile), { toast: t } = Lle();
   async function s(o) {
     for (const i of o)
@@ -79093,7 +79117,7 @@ const QCt = () => {
   }
   return /* @__PURE__ */ pe.jsxs(l0e, { type: "data", className: "flex flex-col h-full overflow-hidden", children: [
     /* @__PURE__ */ pe.jsx("div", { className: "p-2 border-b border-border shrink-0", children: /* @__PURE__ */ pe.jsx(
-      VCt,
+      YCt,
       {
         className: "min-h-[80px]",
         acceptedFormats: {
@@ -79112,14 +79136,14 @@ const QCt = () => {
           /* @__PURE__ */ pe.jsx(pyt, { className: "h-3.5 w-3.5" }),
           /* @__PURE__ */ pe.jsx("span", { className: "text-xs font-semibold uppercase tracking-wide", children: "Fichiers" })
         ] }) }),
-        /* @__PURE__ */ pe.jsx(lN, { className: "pb-4", children: /* @__PURE__ */ pe.jsx(WCt, {}) })
+        /* @__PURE__ */ pe.jsx(lN, { className: "pb-4", children: /* @__PURE__ */ pe.jsx(QCt, {}) })
       ] }),
       /* @__PURE__ */ pe.jsxs(aN, { value: "tables", children: [
         /* @__PURE__ */ pe.jsx(uN, { className: "gap-1 px-1 py-2", children: /* @__PURE__ */ pe.jsxs("div", { className: "flex items-center gap-1 text-muted-foreground", children: [
-          /* @__PURE__ */ pe.jsx(Wyt, { className: "h-3.5 w-3.5" }),
+          /* @__PURE__ */ pe.jsx(Qyt, { className: "h-3.5 w-3.5" }),
           /* @__PURE__ */ pe.jsx("span", { className: "text-xs font-semibold uppercase tracking-wide", children: "Tables DuckDB" })
         ] }) }),
-        /* @__PURE__ */ pe.jsx(lN, { className: "pb-4", children: /* @__PURE__ */ pe.jsx(YCt, {}) })
+        /* @__PURE__ */ pe.jsx(lN, { className: "pb-4", children: /* @__PURE__ */ pe.jsx(KCt, {}) })
       ] })
     ] }) })
   ] });
@@ -79154,19 +79178,19 @@ const Z0e = Object.freeze(
   body: "",
   hidden: !1
 });
-function KCt(n, t) {
+function ZCt(n, t) {
   const s = {};
   !n.hFlip != !t.hFlip && (s.hFlip = !0), !n.vFlip != !t.vFlip && (s.vFlip = !0);
   const o = ((n.rotate || 0) + (t.rotate || 0)) % 4;
   return o && (s.rotate = o), s;
 }
 function Lee(n, t) {
-  const s = KCt(n, t);
+  const s = ZCt(n, t);
   for (const o in c7)
     o in MP ? o in n && !(o in s) && (s[o] = MP[o]) : o in t ? s[o] = t[o] : o in n && (s[o] = n[o]);
   return s;
 }
-function XCt(n, t) {
+function JCt(n, t) {
   const s = n.icons, o = n.aliases || /* @__PURE__ */ Object.create(null), i = /* @__PURE__ */ Object.create(null);
   function a(r) {
     if (s[r])
@@ -79180,7 +79204,7 @@ function XCt(n, t) {
   }
   return Object.keys(s).concat(Object.keys(o)).forEach(a), i;
 }
-function ZCt(n, t, s) {
+function eLt(n, t, s) {
   const o = n.icons, i = n.aliases || /* @__PURE__ */ Object.create(null);
   let a = {};
   function r(f) {
@@ -79191,17 +79215,17 @@ function ZCt(n, t, s) {
   }
   return r(t), s.forEach(r), Lee(n, a);
 }
-function JCt(n, t) {
+function tLt(n, t) {
   const s = [];
   if (typeof n != "object" || typeof n.icons != "object")
     return s;
   n.not_found instanceof Array && n.not_found.forEach((i) => {
     t(i, null), s.push(i);
   });
-  const o = XCt(n);
+  const o = JCt(n);
   for (const i in o) {
     const a = o[i];
-    a && (t(i, ZCt(n, i, a)), s.push(i));
+    a && (t(i, eLt(n, i, a)), s.push(i));
   }
   return s;
 }
@@ -79241,7 +79265,7 @@ const UI = /^[a-z0-9]+(-[a-z0-9]+)*$/, nT = (n, t, s, o = "") => {
     return t && !J2(f, s) ? null : f;
   }
   return null;
-}, J2 = (n, t) => n ? !!((n.provider === "" || n.provider.match(UI)) && (t && n.prefix === "" || n.prefix.match(UI)) && n.name.match(UI)) : !1, eLt = {
+}, J2 = (n, t) => n ? !!((n.provider === "" || n.provider.match(UI)) && (t && n.prefix === "" || n.prefix.match(UI)) && n.name.match(UI)) : !1, rLt = {
   provider: "",
   aliases: {},
   not_found: {},
@@ -79253,11 +79277,11 @@ function L6(n, t) {
       return !1;
   return !0;
 }
-function tLt(n) {
+function nLt(n) {
   if (typeof n != "object" || n === null)
     return null;
   const t = n;
-  if (typeof t.prefix != "string" || !n.icons || typeof n.icons != "object" || !L6(n, eLt))
+  if (typeof t.prefix != "string" || !n.icons || typeof n.icons != "object" || !L6(n, rLt))
     return null;
   const s = t.icons;
   for (const i in s) {
@@ -79280,7 +79304,7 @@ function tLt(n) {
   return t;
 }
 const DP = /* @__PURE__ */ Object.create(null);
-function rLt(n, t) {
+function sLt(n, t) {
   return {
     provider: n,
     prefix: t,
@@ -79290,14 +79314,14 @@ function rLt(n, t) {
 }
 function sL(n, t) {
   const s = DP[n] || (DP[n] = /* @__PURE__ */ Object.create(null));
-  return s[t] || (s[t] = rLt(n, t));
+  return s[t] || (s[t] = sLt(n, t));
 }
 function ZG(n, t) {
-  return tLt(t) ? JCt(t, (s, o) => {
+  return nLt(t) ? tLt(t, (s, o) => {
     o ? n.icons[s] = o : n.missing.add(s);
   }) : [];
 }
-function nLt(n, t, s) {
+function oLt(n, t, s) {
   try {
     if (typeof s.body == "string")
       return n.icons[t] = { ...s }, !0;
@@ -79305,7 +79329,7 @@ function nLt(n, t, s) {
   }
   return !1;
 }
-function sLt(n, t) {
+function iLt(n, t) {
   let s = [];
   return (typeof n == "string" ? [n] : Object.keys(DP)).forEach((i) => {
     (typeof i == "string" && typeof t == "string" ? [t] : Object.keys(DP[i] || {})).forEach((r) => {
@@ -79319,7 +79343,7 @@ function sLt(n, t) {
   }), s;
 }
 let JG = !1;
-function oLt(n) {
+function aLt(n) {
   return JG;
 }
 function fO(n) {
@@ -79329,12 +79353,12 @@ function fO(n) {
     return s.icons[o] || (s.missing.has(o) ? null : void 0);
   }
 }
-function iLt(n, t) {
+function uLt(n, t) {
   const s = nT(n, !0, JG);
   if (!s)
     return !1;
   const o = sL(s.provider, s.prefix);
-  return nLt(o, s.name, t);
+  return oLt(o, s.name, t);
 }
 function J0e(n, t) {
   if (typeof n != "object")
@@ -79350,10 +79374,10 @@ function J0e(n, t) {
   const o = sL(t, s);
   return !!ZG(o, n);
 }
-function aLt(n) {
+function lLt(n) {
   return !!fO(n);
 }
-function uLt(n) {
+function cLt(n) {
   const t = fO(n);
   return t ? {
     ...cO,
@@ -79368,7 +79392,7 @@ const eye = Object.freeze({
   ...eye,
   // Transformations
   ...MP
-}), lLt = /(-?[0-9.]*[0-9]+[0-9.]*)/g, cLt = /^-?[0-9.]*[0-9]+[0-9.]*$/g;
+}), fLt = /(-?[0-9.]*[0-9]+[0-9.]*)/g, dLt = /^-?[0-9.]*[0-9]+[0-9.]*$/g;
 function f7(n, t, s) {
   if (t === 1)
     return n;
@@ -79376,11 +79400,11 @@ function f7(n, t, s) {
     return Math.ceil(n * t * s) / s;
   if (typeof n != "string")
     return n;
-  const o = n.split(lLt);
+  const o = n.split(fLt);
   if (o === null || !o.length)
     return n;
   const i = [];
-  let a = o.shift(), r = cLt.test(a);
+  let a = o.shift(), r = dLt.test(a);
   for (; ; ) {
     if (r) {
       const f = parseFloat(a);
@@ -79392,7 +79416,7 @@ function f7(n, t, s) {
     r = !r;
   }
 }
-const fLt = (n) => n === "unset" || n === "undefined" || n === "none";
+const pLt = (n) => n === "unset" || n === "undefined" || n === "none";
 function w3(n, t) {
   const s = {
     ...cO,
@@ -79439,25 +79463,25 @@ function w3(n, t) {
   let P, $;
   r === null ? ($ = f === null ? "1em" : f === "auto" ? e : f, P = f7($, b / e)) : (P = r === "auto" ? b : r, $ = f === null ? f7(P, e / b) : f === "auto" ? e : f);
   const V = {}, oe = (Ae, Ue) => {
-    fLt(Ue) || (V[Ae] = Ue.toString());
+    pLt(Ue) || (V[Ae] = Ue.toString());
   };
   return oe("width", P), oe("height", $), V.viewBox = i.left.toString() + " " + i.top.toString() + " " + b.toString() + " " + e.toString(), {
     attributes: V,
     body: a
   };
 }
-const dLt = /\sid="(\S+)"/g, pLt = "IconifyId" + Date.now().toString(16) + (Math.random() * 16777216 | 0).toString(16);
-let hLt = 0;
-function rye(n, t = pLt) {
+const hLt = /\sid="(\S+)"/g, mLt = "IconifyId" + Date.now().toString(16) + (Math.random() * 16777216 | 0).toString(16);
+let vLt = 0;
+function rye(n, t = mLt) {
   const s = [];
   let o;
-  for (; o = dLt.exec(n); )
+  for (; o = hLt.exec(n); )
     s.push(o[1]);
   if (!s.length)
     return n;
   const i = "suffix" + (Math.random() * 16777216 | Date.now()).toString(16);
   return s.forEach((a) => {
-    const r = typeof t == "function" ? t(a) : t + (hLt++).toString(), f = a.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const r = typeof t == "function" ? t(a) : t + (vLt++).toString(), f = a.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     n = n.replace(
       // Allowed characters before id: [#;"]
       // Allowed characters after id: [)"], .[a-z]
@@ -79474,10 +79498,10 @@ const ES = {
   session: /* @__PURE__ */ new Set()
 };
 let eH = !1;
-function mLt(n) {
+function bLt(n) {
   eH = n;
 }
-const xee = "iconify2", nR = "iconify", sye = nR + "-count", Eee = nR + "-version", oye = 36e5, vLt = 168;
+const xee = "iconify2", nR = "iconify", sye = nR + "-count", Eee = nR + "-version", oye = 36e5, gLt = 168;
 function d7(n, t) {
   try {
     return n.getItem(t);
@@ -79526,7 +79550,7 @@ function aye(n, t) {
     tH(s, Eee, xee), p7(s, 0);
     return;
   }
-  const i = Math.floor(Date.now() / oye) - vLt, a = (f) => {
+  const i = Math.floor(Date.now() / oye) - gLt, a = (f) => {
     const b = nR + f.toString(), e = d7(s, b);
     if (typeof e == "string") {
       try {
@@ -79545,7 +79569,7 @@ function aye(n, t) {
 }
 function uye() {
   if (!eH) {
-    mLt(!0);
+    bLt(!0);
     for (const n in ES)
       aye(n, (t) => {
         const s = t.data, o = t.provider, i = s.prefix, a = sL(
@@ -79619,10 +79643,10 @@ function fye(n, t) {
 function L3(n) {
   return C3[n];
 }
-function bLt() {
+function yLt() {
   return Object.keys(C3);
 }
-const gLt = () => {
+const wLt = () => {
   let n;
   try {
     if (n = fetch, typeof n == "function")
@@ -79630,14 +79654,14 @@ const gLt = () => {
   } catch {
   }
 };
-let PP = gLt();
-function yLt(n) {
+let PP = wLt();
+function CLt(n) {
   PP = n;
 }
-function wLt() {
+function LLt() {
   return PP;
 }
-function CLt(n, t) {
+function xLt(n, t) {
   const s = L3(n);
   if (!s)
     return 0;
@@ -79654,11 +79678,11 @@ function CLt(n, t) {
   }
   return o;
 }
-function LLt(n) {
+function ELt(n) {
   return n === 404;
 }
-const xLt = (n, t, s) => {
-  const o = [], i = CLt(n, t), a = "icons";
+const SLt = (n, t, s) => {
+  const o = [], i = xLt(n, t), a = "icons";
   let r = {
     type: a,
     provider: n,
@@ -79674,7 +79698,7 @@ const xLt = (n, t, s) => {
     }, f = b.length), r.icons.push(b);
   }), o.push(r), o;
 };
-function ELt(n) {
+function ALt(n) {
   if (typeof n == "string") {
     const t = L3(n);
     if (t)
@@ -79682,12 +79706,12 @@ function ELt(n) {
   }
   return "/";
 }
-const SLt = (n, t, s) => {
+const _Lt = (n, t, s) => {
   if (!PP) {
     s("abort", 424);
     return;
   }
-  let o = ELt(t.provider);
+  let o = ALt(t.provider);
   switch (t.type) {
     case "icons": {
       const a = t.prefix, f = t.icons.join(","), b = new URLSearchParams({
@@ -79710,7 +79734,7 @@ const SLt = (n, t, s) => {
     const r = a.status;
     if (r !== 200) {
       setTimeout(() => {
-        s(LLt(r) ? "abort" : "next", r);
+        s(ELt(r) ? "abort" : "next", r);
       });
       return;
     }
@@ -79728,11 +79752,11 @@ const SLt = (n, t, s) => {
   }).catch(() => {
     s("next", i);
   });
-}, ALt = {
-  prepare: xLt,
-  send: SLt
+}, TLt = {
+  prepare: SLt,
+  send: _Lt
 };
-function _Lt(n) {
+function ILt(n) {
   const t = {
     loaded: [],
     missing: [],
@@ -79765,7 +79789,7 @@ function dye(n, t) {
     o && (s.loaderCallbacks = o.filter((i) => i.id !== t));
   });
 }
-function TLt(n) {
+function NLt(n) {
   n.pendingCallbacksFlag || (n.pendingCallbacksFlag = !0, setTimeout(() => {
     n.pendingCallbacksFlag = !1;
     const t = n.loaderCallbacks ? n.loaderCallbacks.slice(0) : [];
@@ -79803,9 +79827,9 @@ function TLt(n) {
     });
   }));
 }
-let ILt = 0;
-function NLt(n, t, s) {
-  const o = ILt++, i = dye.bind(null, s, o);
+let RLt = 0;
+function OLt(n, t, s) {
+  const o = RLt++, i = dye.bind(null, s, o);
   if (!t.pending.length)
     return i;
   const a = {
@@ -79818,14 +79842,14 @@ function NLt(n, t, s) {
     (r.loaderCallbacks || (r.loaderCallbacks = [])).push(a);
   }), i;
 }
-function RLt(n, t = !0, s = !1) {
+function kLt(n, t = !0, s = !1) {
   const o = [];
   return n.forEach((i) => {
     const a = typeof i == "string" ? nT(i, t, s) : i;
     a && o.push(a);
   }), o;
 }
-var OLt = {
+var MLt = {
   resources: [],
   index: 0,
   timeout: 2e3,
@@ -79833,7 +79857,7 @@ var OLt = {
   random: !1,
   dataAfterTimeout: !1
 };
-function kLt(n, t, s, o) {
+function DLt(n, t, s, o) {
   const i = n.resources.length, a = n.random ? Math.floor(Math.random() * i) : n.index;
   let r;
   if (n.random) {
@@ -79936,7 +79960,7 @@ function kLt(n, t, s, o) {
 }
 function pye(n) {
   const t = {
-    ...OLt,
+    ...MLt,
     ...n
   };
   let s = [];
@@ -79944,7 +79968,7 @@ function pye(n) {
     s = s.filter((f) => f().status === "pending");
   }
   function i(f, b, e) {
-    const P = kLt(
+    const P = DLt(
       t,
       f,
       b,
@@ -79970,7 +79994,7 @@ function pye(n) {
 function Aee() {
 }
 const x6 = /* @__PURE__ */ Object.create(null);
-function MLt(n) {
+function PLt(n) {
   if (!x6[n]) {
     const t = L3(n);
     if (!t)
@@ -79990,7 +80014,7 @@ function hye(n, t, s) {
     if (!a)
       return s(void 0, 424), Aee;
     i = a.send;
-    const r = MLt(n);
+    const r = PLt(n);
     r && (o = r.redundancy);
   } else {
     const a = rH(n);
@@ -80002,7 +80026,7 @@ function hye(n, t, s) {
   }
   return !o || !i ? (s(void 0, 424), Aee) : o.query(t, i, s)().abort;
 }
-function DLt(n, t) {
+function jLt(n, t) {
   const s = n.lastModifiedCached;
   if (
     // Matches or newer
@@ -80017,7 +80041,7 @@ function DLt(n, t) {
       });
   return !0;
 }
-function PLt(n, t) {
+function $Lt(n, t) {
   eH || uye();
   function s(o) {
     let i;
@@ -80040,16 +80064,16 @@ function PLt(n, t) {
       JSON.stringify(f)
     );
   }
-  t.lastModified && !DLt(n, t.lastModified) || Object.keys(t.icons).length && (t.not_found && (t = Object.assign({}, t), delete t.not_found), s("local") || s("session"));
+  t.lastModified && !jLt(n, t.lastModified) || Object.keys(t.icons).length && (t.not_found && (t = Object.assign({}, t), delete t.not_found), s("local") || s("session"));
 }
 function _ee() {
 }
-function jLt(n) {
+function FLt(n) {
   n.iconsLoaderFlag || (n.iconsLoaderFlag = !0, setTimeout(() => {
-    n.iconsLoaderFlag = !1, TLt(n);
+    n.iconsLoaderFlag = !1, NLt(n);
   }));
 }
-function $Lt(n, t) {
+function ULt(n, t) {
   n.iconsToLoad ? n.iconsToLoad = n.iconsToLoad.concat(t).sort() : n.iconsToLoad = t, n.iconsQueueFlag || (n.iconsQueueFlag = !0, setTimeout(() => {
     n.iconsQueueFlag = !1;
     const { provider: s, prefix: o } = n, i = n.iconsToLoad;
@@ -80074,23 +80098,23 @@ function $Lt(n, t) {
             const P = n.pendingIcons;
             P && e.forEach(($) => {
               P.delete($);
-            }), PLt(n, b);
+            }), $Lt(n, b);
           } catch (e) {
             console.error(e);
           }
-        jLt(n);
+        FLt(n);
       });
     });
   }));
 }
-const FLt = (n) => {
+const BLt = (n) => {
   const s = sL(
     n.provider,
     n.prefix
   ).pendingIcons;
   return !!(s && s.has(n.name));
 }, nH = (n, t) => {
-  const s = RLt(n, !0, oLt()), o = _Lt(s);
+  const s = kLt(n, !0, aLt()), o = ILt(s);
   if (!o.pending.length) {
     let b = !0;
     return t && setTimeout(() => {
@@ -80118,9 +80142,9 @@ const FLt = (n) => {
     oe.has($) || (oe.add($), i[e][P].push($));
   }), a.forEach((b) => {
     const { provider: e, prefix: P } = b;
-    i[e][P].length && $Lt(b, i[e][P]);
-  }), t ? NLt(t, o, a) : _ee;
-}, ULt = (n) => new Promise((t, s) => {
+    i[e][P].length && ULt(b, i[e][P]);
+  }), t ? OLt(t, o, a) : _ee;
+}, zLt = (n) => new Promise((t, s) => {
   const o = typeof n == "string" ? nT(n, !0) : n;
   if (!o) {
     s(n);
@@ -80169,25 +80193,25 @@ function vye(n, t = !1) {
     temporary: t
   }, KS.push(s), s);
 }
-function BLt() {
+function qLt() {
   if (document.documentElement)
     return vye(document.documentElement);
   KS.push({
     node: () => document.documentElement
   });
 }
-function zLt(n) {
+function GLt(n) {
   KS = KS.filter((t) => n !== t && n !== (typeof t.node == "function" ? t.node() : t.node));
 }
 function pO() {
   return KS;
 }
-function qLt(n) {
+function HLt(n) {
   const t = document;
   t.readyState && t.readyState !== "loading" ? n() : t.addEventListener("DOMContentLoaded", n);
 }
 let BI = null;
-const GLt = {
+const VLt = {
   childList: !0,
   subtree: !0,
   attributes: !0
@@ -80200,7 +80224,7 @@ function bye(n) {
     delete t.pendingScan, BI && BI(n);
   }));
 }
-function HLt(n, t) {
+function WLt(n, t) {
   if (!n.observer)
     return;
   const s = n.observer;
@@ -80218,7 +80242,7 @@ function HLt(n, t) {
     }
 }
 function gye(n, t) {
-  n.observer.instance.observe(t, GLt);
+  n.observer.instance.observe(t, VLt);
 }
 function jP(n) {
   let t = n.observer;
@@ -80227,7 +80251,7 @@ function jP(n) {
   const s = typeof n.node == "function" ? n.node() : n.node;
   !s || !window || (t || (t = {
     paused: 0
-  }, n.observer = t), t.instance = new window.MutationObserver(HLt.bind(null, n)), gye(n, s), t.paused || bye(n));
+  }, n.observer = t), t.instance = new window.MutationObserver(WLt.bind(null, n)), gye(n, s), t.paused || bye(n));
 }
 function Tee() {
   pO().forEach(jP);
@@ -80238,13 +80262,13 @@ function yye(n) {
   const t = n.observer;
   t.pendingScan && (clearTimeout(t.pendingScan), delete t.pendingScan), t.instance && (t.instance.disconnect(), delete t.instance);
 }
-function VLt(n) {
+function YLt(n) {
   const t = BI !== null;
   if (BI !== n && (BI = n, t && pO().forEach(yye)), t) {
     Tee();
     return;
   }
-  qLt(Tee);
+  HLt(Tee);
 }
 function g7(n) {
   (n ? [n] : pO()).forEach((t) => {
@@ -80260,7 +80284,7 @@ function g7(n) {
     s.instance.disconnect();
   });
 }
-function WLt(n) {
+function QLt(n) {
   if (n) {
     const t = dO(n);
     t && g7(t);
@@ -80282,7 +80306,7 @@ function y7(n) {
     }
   });
 }
-function YLt(n) {
+function KLt(n) {
   if (n) {
     const t = dO(n);
     t && y7(t);
@@ -80295,9 +80319,9 @@ function wye(n, t = !1) {
 }
 function Cye(n) {
   const t = dO(n);
-  t && (yye(t), zLt(n));
+  t && (yye(t), GLt(n));
 }
-function QLt(n, t) {
+function XLt(n, t) {
   if (n.name !== t.name || n.mode !== t.mode)
     return !0;
   const s = n.customisations, o = t.customisations;
@@ -80306,7 +80330,7 @@ function QLt(n, t) {
       return !0;
   return !1;
 }
-function KLt(n, t = 0) {
+function ZLt(n, t = 0) {
   const s = n.replace(/^-?[0-9.]*/, "");
   function o(i) {
     for (; i < 0; )
@@ -80332,9 +80356,9 @@ function KLt(n, t = 0) {
   }
   return t;
 }
-const XLt = /[\s,]+/;
-function ZLt(n, t) {
-  t.split(XLt).forEach((s) => {
+const JLt = /[\s,]+/;
+function ext(n, t) {
+  t.split(JLt).forEach((s) => {
     switch (s.trim()) {
       case "horizontal":
         n.hFlip = !0;
@@ -80345,15 +80369,15 @@ function ZLt(n, t) {
     }
   });
 }
-const JLt = ["width", "height"], ext = [
+const txt = ["width", "height"], rxt = [
   "inline",
   "hFlip",
   "vFlip"
 ];
-function txt(n, t) {
+function nxt(n, t) {
   return n === t || n === "true" ? !0 : n === "" || n === "false" ? !1 : null;
 }
-function rxt(n) {
+function sxt(n) {
   const t = n.getAttribute("data-icon"), s = typeof t == "string" && nT(t, !0);
   if (!s)
     return null;
@@ -80361,15 +80385,15 @@ function rxt(n) {
     ...x3,
     inline: n.classList && n.classList.contains(b7)
   };
-  JLt.forEach((f) => {
+  txt.forEach((f) => {
     const b = n.getAttribute("data-" + f);
     b && (o[f] = b);
   });
   const i = n.getAttribute("data-rotate");
-  typeof i == "string" && (o.rotate = KLt(i));
+  typeof i == "string" && (o.rotate = ZLt(i));
   const a = n.getAttribute("data-flip");
-  typeof a == "string" && ZLt(o, a), ext.forEach((f) => {
-    const b = "data-" + f, e = txt(n.getAttribute(b), b);
+  typeof a == "string" && ext(o, a), rxt.forEach((f) => {
+    const b = "data-" + f, e = nxt(n.getAttribute(b), b);
     typeof e == "boolean" && (o[f] = e);
   });
   const r = n.getAttribute("data-mode");
@@ -80380,11 +80404,11 @@ function rxt(n) {
     mode: r
   };
 }
-const nxt = "svg." + E6 + ", i." + E6 + ", span." + E6 + ", i." + b7 + ", span." + b7;
-function sxt(n) {
+const oxt = "svg." + E6 + ", i." + E6 + ", span." + E6 + ", i." + b7 + ", span." + b7;
+function ixt(n) {
   const t = [];
-  return n.querySelectorAll(nxt).forEach((s) => {
-    const o = s[EE] || s.tagName.toLowerCase() !== "svg" ? rxt(s) : null;
+  return n.querySelectorAll(oxt).forEach((s) => {
+    const o = s[EE] || s.tagName.toLowerCase() !== "svg" ? sxt(s) : null;
     o && t.push({
       node: s,
       props: o
@@ -80398,7 +80422,7 @@ function Lye(n, t) {
   return '<svg xmlns="http://www.w3.org/2000/svg"' + s + ">" + n + "</svg>";
 }
 let zI;
-function oxt() {
+function axt() {
   try {
     zI = window.trustedTypes.createPolicy("iconify", {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
@@ -80408,8 +80432,8 @@ function oxt() {
     zI = null;
   }
 }
-function ixt(n) {
-  return zI === void 0 && oxt(), zI ? zI.createHTML(n) : n;
+function uxt(n) {
+  return zI === void 0 && axt(), zI ? zI.createHTML(n) : n;
 }
 function xye(n) {
   const t = /* @__PURE__ */ new Set(["iconify"]);
@@ -80454,7 +80478,7 @@ function Aye(n, t, s) {
     role: "img",
     ...a.attributes
   });
-  o.innerHTML = ixt(f);
+  o.innerHTML = uxt(f);
   const b = o.childNodes[0], e = n.attributes;
   for (let Ae = 0; Ae < e.length; Ae++) {
     const Ue = e.item(Ae), Fe = Ue.name;
@@ -80470,16 +80494,16 @@ function Aye(n, t, s) {
   };
   return b[EE] = oe, n.parentNode && n.parentNode.replaceChild(b, n), b;
 }
-function axt(n) {
+function lxt(n) {
   return n.replace(/"/g, "'").replace(/%/g, "%25").replace(/#/g, "%23").replace(/</g, "%3C").replace(/>/g, "%3E").replace(/\s+/g, " ");
 }
-function uxt(n) {
-  return "data:image/svg+xml," + axt(n);
+function cxt(n) {
+  return "data:image/svg+xml," + lxt(n);
 }
-function lxt(n) {
-  return 'url("' + uxt(n) + '")';
+function fxt(n) {
+  return 'url("' + cxt(n) + '")';
 }
-const cxt = {
+const dxt = {
   display: "inline-block"
 }, w7 = {
   "background-color": "currentColor"
@@ -80502,16 +80526,16 @@ for (const n in Nee) {
 function Ree(n) {
   return n + (n.match(/^[-0-9.]+$/) ? "px" : "");
 }
-function fxt(n, t, s, o) {
+function pxt(n, t, s, o) {
   const i = t.customisations, a = w3(s, i), r = a.attributes, f = n[EE], b = Lye(a.body, {
     ...r,
     width: s.width + "",
     height: s.height + ""
   }), e = xye(t.icon), P = Eye(n, e, new Set(f && f.addedClasses)), V = {
-    "--svg": lxt(b),
+    "--svg": fxt(b),
     width: Ree(r.width),
     height: Ree(r.height),
-    ...cxt,
+    ...dxt,
     ...o ? w7 : _ye
   };
   i.inline && (V["vertical-align"] = "-0.125em");
@@ -80524,7 +80548,7 @@ function fxt(n, t, s, o) {
   return n[EE] = Ae, n;
 }
 let Xk = !1;
-function dxt() {
+function hxt() {
   Xk || (Xk = !0, setTimeout(() => {
     Xk && (Xk = !1, E_());
   }));
@@ -80542,7 +80566,7 @@ function E_(n, t = !1) {
       return {
         status: "missing"
       };
-    if (a && !FLt(i)) {
+    if (a && !BLt(i)) {
       const $ = s[r] || (s[r] = /* @__PURE__ */ Object.create(null));
       ($[f] || ($[f] = /* @__PURE__ */ new Set())).add(b);
     }
@@ -80559,7 +80583,7 @@ function E_(n, t = !1) {
       if (f || (f = !0, g7(i)), e.tagName.toUpperCase() !== "SVG") {
         const V = P.mode, oe = V === "mask" || (V === "bg" ? !1 : V === "style" ? $.body.indexOf("currentColor") !== -1 : null);
         if (typeof oe == "boolean") {
-          fxt(e, P, {
+          pxt(e, P, {
             ...cO,
             ...$
           }, oe);
@@ -80568,7 +80592,7 @@ function E_(n, t = !1) {
       }
       Aye(e, P, $);
     }
-    sxt(a).forEach(({ node: e, props: P }) => {
+    ixt(a).forEach(({ node: e, props: P }) => {
       const $ = e[EE];
       if (!$) {
         const { status: oe, icon: Ae } = o(P.icon, !0);
@@ -80583,7 +80607,7 @@ function E_(n, t = !1) {
         return;
       }
       let V;
-      if (QLt($, P)) {
+      if (XLt($, P)) {
         if (V = o(P.icon, $.name !== P.name), !V.icon) {
           r = r || V.status === "loading", Object.assign($, {
             ...P,
@@ -80610,11 +80634,11 @@ function E_(n, t = !1) {
         provider: i,
         prefix: r,
         name: b
-      })), dxt);
+      })), hxt);
     }
   }
 }
-function pxt(n) {
+function mxt(n) {
   const t = dO(n);
   t ? E_(t) : E_({
     node: n,
@@ -80632,27 +80656,27 @@ function Tye(n, t, s = !1) {
   }, o);
   return s ? r.outerHTML : r;
 }
-function hxt() {
+function vxt() {
   return "3.1.1";
 }
-function mxt(n, t) {
+function bxt(n, t) {
   return Tye(n, t, !1);
 }
-function vxt(n, t) {
+function gxt(n, t) {
   return Tye(n, t, !0);
 }
-function bxt(n, t) {
+function yxt(n, t) {
   const s = fO(n);
   if (!s)
     return null;
   const o = mye(x3, t || {});
   return w3(s, o);
 }
-function gxt(n) {
-  n ? pxt(n) : E_();
+function wxt(n) {
+  n ? mxt(n) : E_();
 }
 if (typeof document < "u" && typeof window < "u") {
-  BLt();
+  qLt();
   const n = window;
   if (n.IconifyPreload !== void 0) {
     const t = n.IconifyPreload, s = "Invalid IconifyPreload syntax.";
@@ -80668,16 +80692,16 @@ if (typeof document < "u" && typeof window < "u") {
     });
   }
   setTimeout(() => {
-    VLt(E_), E_();
+    YLt(E_), E_();
   });
 }
-function yxt(n, t) {
+function Cxt(n, t) {
   lye(n, t !== !1);
 }
-function wxt(n) {
+function Lxt(n) {
   lye(n, !0);
 }
-cye("", ALt);
+cye("", TLt);
 if (typeof document < "u" && typeof window < "u") {
   uye();
   const n = window;
@@ -80697,49 +80721,49 @@ if (typeof document < "u" && typeof window < "u") {
       }
   }
 }
-const Cxt = {
+const xxt = {
   getAPIConfig: L3,
   setAPIModule: cye,
   sendAPIQuery: hye,
-  setFetch: yLt,
-  getFetch: wLt,
-  listAPIProviders: bLt
-}, Lxt = {
+  setFetch: CLt,
+  getFetch: LLt,
+  listAPIProviders: yLt
+}, Ext = {
   // IconifyAPIInternalFunctions
-  _api: Cxt,
+  _api: xxt,
   // IconifyAPIFunctions
   addAPIProvider: fye,
   loadIcons: nH,
-  loadIcon: ULt,
+  loadIcon: zLt,
   // IconifyStorageFunctions
-  iconExists: aLt,
-  getIcon: uLt,
-  listIcons: sLt,
-  addIcon: iLt,
+  iconExists: lLt,
+  getIcon: cLt,
+  listIcons: iLt,
+  addIcon: uLt,
   addCollection: J0e,
   // IconifyBuilderFunctions
   replaceIDs: rye,
   calculateSize: f7,
   buildIcon: w3,
   // IconifyCommonFunctions
-  getVersion: hxt,
-  renderSVG: mxt,
-  renderHTML: vxt,
-  renderIcon: bxt,
-  scan: gxt,
+  getVersion: vxt,
+  renderSVG: bxt,
+  renderHTML: gxt,
+  renderIcon: yxt,
+  scan: wxt,
   observe: wye,
   stopObserving: Cye,
-  pauseObserver: WLt,
-  resumeObserver: YLt,
+  pauseObserver: QLt,
+  resumeObserver: KLt,
   // IconifyBrowserCacheFunctions
-  enableCache: yxt,
-  disableCache: wxt
+  enableCache: Cxt,
+  disableCache: Lxt
 };
 try {
-  self.Iconify === void 0 && (self.Iconify = Lxt);
+  self.Iconify === void 0 && (self.Iconify = Ext);
 } catch {
 }
-const xxt = (n, t) => ({
+const Sxt = (n, t) => ({
   addPage() {
     const s = t().pages, o = {
       _id: xu.generatePageId(),
@@ -81070,12 +81094,12 @@ const Iye = {
   btoa,
   Intl,
   console
-}, Ext = Object.keys(Iye), Sxt = Object.values(Iye);
+}, Axt = Object.keys(Iye), _xt = Object.values(Iye);
 function tM(n) {
   const t = n.trim(), s = t.startsWith("return ") ? t : `return (${t})`;
-  return new Function(...Ext, `"use strict"; ${s}`)(...Sxt);
+  return new Function(...Axt, `"use strict"; ${s}`)(..._xt);
 }
-const Axt = (n, t) => ({
+const Txt = (n, t) => ({
   hasSourceCells() {
     const { pages: s } = t(), o = (i) => {
       var a;
@@ -81275,7 +81299,7 @@ const Axt = (n, t) => ({
       t().setStatus("Erreur lors du téléchargement: " + r.message, "error");
     }
   }
-}), _xt = (n, t) => ({
+}), Ixt = (n, t) => ({
   getParameters() {
     const { _currentLoopValue: s } = t(), o = t().getGroups(), i = {}, a = (r) => {
       for (const f of (r == null ? void 0 : r.cells) || []) {
@@ -81579,7 +81603,7 @@ function sH(n, t, s = {}) {
   const r = Jz[n == null ? void 0 : n.type];
   return r != null && r.onInit && r.onInit(n, i), i;
 }
-let Txt = class {
+let Nxt = class {
   static getSchemaForType(t) {
     return Oi.types[t] || null;
   }
@@ -81747,7 +81771,7 @@ let Txt = class {
     f && (f[r] = o);
   }
 };
-const Ixt = (n, t) => ({
+const Rxt = (n, t) => ({
   setTheme(s) {
     const o = s === "dark" ? "dark" : "light";
     n({ currentTheme: o }), document.documentElement.classList.remove("light", "dark"), document.documentElement.classList.add(o), localStorage.setItem("sqljob-theme", o);
@@ -82009,7 +82033,7 @@ ${$}${e}</head>
     b && t().availableThemes.includes(b) && t().setTheme(b), t().setStatus("Configuration chargée", "success");
   }
 });
-function Nxt() {
+function Oxt() {
   return {
     // Retourne uniquement les groupes de niveau 0 (les sous-groupes sont rendus dans le template)
     getFlattenedGroups() {
@@ -82428,7 +82452,7 @@ FROM source1 LIMIT 10;`;
     }
   };
 }
-function Rxt() {
+function kxt() {
   return {
     // Helpers factorisés pour la taille des cellules (minSizePx/Percent, maxSizePx/Percent optionnels)
     hasCellMinSize(n) {
@@ -82731,7 +82755,7 @@ function Rxt() {
     }
   };
 }
-function Oxt() {
+function Mxt() {
   return {
     async loadEmbeddedFiles() {
       const n = document.querySelectorAll('script[id^="sourceFile_"]'), t = document.querySelectorAll('script[id^="docxTemplate_"]');
@@ -83033,7 +83057,7 @@ function Oxt() {
     }
   };
 }
-function kxt() {
+function Dxt() {
   return {
     async runGroupAtPath(n) {
       const t = this.getGroupAtPath(n);
@@ -84018,7 +84042,7 @@ function kxt() {
     }
   };
 }
-function Mxt() {
+function Pxt() {
   return {
     // Générer le HTML de l'éditeur pour les cellules uiParameter (SQL, JS ou Texte)
     renderUiParameterEditor(n) {
@@ -84556,7 +84580,7 @@ let rM = class L7 {
     return L7.renderHeader(t, s, o) + L7.renderBody(t, s);
   }
 };
-function Dxt(n, t) {
+function jxt(n, t) {
   if (n == null || n === "") return "";
   let s = null;
   if (n instanceof Date)
@@ -84613,15 +84637,15 @@ typeof window < "u" && !window.Alpine && (window.Alpine = {
   initTree: () => {
   }
 });
-function Pxt() {
+function $xt() {
   Object.assign(window, {
     ConfigManager: xu,
-    CellConfigService: Txt,
+    CellConfigService: Nxt,
     initializeCell: sH,
     CellRenderer: rM,
     CellBodyRenderer: cw,
     CELL_BODY_FAMILIES: C7,
-    EChartSqlParser: ywt,
+    EChartSqlParser: Cwt,
     GistEncrypt: F0,
     GitHubGistManager: PL,
     FileHandler: hg,
@@ -84629,7 +84653,7 @@ function Pxt() {
     CDNManager: jA,
     CELL_TYPE_SCHEMAS: Oi,
     CELL_TYPE_HANDLERS: Jz,
-    formatValueForInputType: Dxt
+    formatValueForInputType: jxt
   });
 }
 function x7(n, t) {
@@ -84793,7 +84817,7 @@ function Oee() {
     // compteur de version pour forcer les re-renders
   };
 }
-const jxt = zge(
+const Fxt = zge(
   { dbPath: ":memory:" },
   {
     initializeInternal: async () => {
@@ -84811,7 +84835,7 @@ const jxt = zge(
 ), al = z9((n, t, s) => {
   const o = fgt({ config: w0e() })(n, t, s), i = Jht({
     config: { title: "SQLjob", dataSources: [] },
-    connector: jxt,
+    connector: Fxt,
     layout: {
       config: {
         type: "mosaic",
@@ -84821,23 +84845,23 @@ const jxt = zge(
         main: {
           title: "Notebook",
           icon: () => null,
-          component: Fwt,
+          component: Bwt,
           placement: "main"
         },
         data: {
           title: "Sources",
           icon: IP,
-          component: QCt,
+          component: XCt,
           placement: "sidebar"
         }
       }
     }
-  })(n, t, s), a = Oee(), r = xxt(n, t), f = Axt(n, t), b = _xt(n, t), e = Ixt(n, t), P = {
-    ...Nxt(),
-    ...Rxt(),
+  })(n, t, s), a = Oee(), r = Sxt(n, t), f = Txt(n, t), b = Ixt(n, t), e = Rxt(n, t), P = {
     ...Oxt(),
     ...kxt(),
-    ...Mxt()
+    ...Mxt(),
+    ...Dxt(),
+    ...Pxt()
   }, $ = {};
   for (const [V, oe] of Object.entries(P))
     typeof oe == "function" && ($[V] = (...Ae) => {
@@ -84907,7 +84931,7 @@ const jxt = zge(
     }
   };
 });
-function $xt() {
+function Uxt() {
   const { isOpen: n, message: t, confirm: s, cancel: o } = KG();
   return /* @__PURE__ */ pe.jsx(rg, { open: n, onOpenChange: (i) => !i && o(), children: /* @__PURE__ */ pe.jsxs(Wb, { className: "max-w-sm", "aria-describedby": void 0, children: [
     /* @__PURE__ */ pe.jsxs(ug, { children: [
@@ -84920,7 +84944,7 @@ function $xt() {
     ] })
   ] }) });
 }
-function Fxt() {
+function Bxt() {
   const {
     isOpen: n,
     filteredTemplates: t,
@@ -84977,7 +85001,7 @@ const E3 = et.memo(function({ onSelect: t }) {
     o.type
   )) });
 });
-function Uxt() {
+function zxt() {
   const { showAddGroupModal: n, addGroup: t } = al(jh((o) => ({
     showAddGroupModal: o.showAddGroupModal,
     addGroup: o.addGroup
@@ -84995,7 +85019,7 @@ function Uxt() {
     ] })
   ] }) });
 }
-function Bxt() {
+function qxt() {
   const { insertGroupModal: n, insertGroupAt: t } = al(jh((o) => ({
     insertGroupModal: o.insertGroupModal,
     insertGroupAt: o.insertGroupAt
@@ -85014,7 +85038,7 @@ function Bxt() {
     ] })
   ] }) });
 }
-function zxt() {
+function Gxt() {
   const { insertCellModal: n, insertCellAt: t } = al(jh((o) => ({
     insertCellModal: o.insertCellModal,
     insertCellAt: o.insertCellAt
@@ -85030,7 +85054,7 @@ function zxt() {
     } })
   ] }) });
 }
-function qxt() {
+function Hxt() {
   const { addCellToGroupModal: n, addCellToGroup: t } = al(jh((o) => ({
     addCellToGroupModal: o.addCellToGroupModal,
     addCellToGroup: o.addCellToGroup
@@ -85045,7 +85069,7 @@ function qxt() {
     } })
   ] }) });
 }
-function Gxt() {
+function Vxt() {
   const {
     showDbEngineModal: n,
     dbEngine: t,
@@ -85138,7 +85162,7 @@ function Gxt() {
     ] })
   ] }) });
 }
-function Hxt() {
+function Wxt() {
   const {
     exportModal: n,
     isLoading: t,
@@ -85256,7 +85280,7 @@ function Hxt() {
     ] })
   ] }) });
 }
-function Vxt() {
+function Yxt() {
   const { showGistTokenModal: n, githubToken: t, saveGithubToken: s, cancelGithubToken: o } = al(jh((a) => ({
     showGistTokenModal: a.showGistTokenModal,
     githubToken: a.githubToken,
@@ -85305,7 +85329,7 @@ function Vxt() {
     ] })
   ] }) });
 }
-function Wxt() {
+function Qxt() {
   const {
     showGistModal: n,
     gistShareUrl: t,
@@ -85378,7 +85402,7 @@ function Wxt() {
     ] })
   ] }) });
 }
-function Yxt() {
+function Kxt() {
   const {
     showJsonPassphraseModal: n,
     jsonPassphrase: t,
@@ -85430,17 +85454,17 @@ function kee(n, t) {
   const s = (o = Oi == null ? void 0 : Oi.types) == null ? void 0 : o[t];
   return ((i = s == null ? void 0 : s.commonParams) == null ? void 0 : i.find((a) => a.key === n)) || null;
 }
-function Qxt(n) {
+function Xxt(n) {
   var s;
   const t = (s = Oi == null ? void 0 : Oi.types) == null ? void 0 : s[n];
   return t != null && t.commonParams ? t.commonParams.filter((o) => o !== "name") : [];
 }
-function Kxt(n) {
+function Zxt(n) {
   var s;
   const t = (s = Oi == null ? void 0 : Oi.types) == null ? void 0 : s[n];
   return (t == null ? void 0 : t.specificParams) || [];
 }
-function Xxt() {
+function Jxt() {
   const {
     cellConfigModal: n,
     closeCellConfig: t,
@@ -85465,7 +85489,7 @@ function Xxt() {
     isLoading: Fe.isLoading,
     forceUpdate: Fe.forceUpdate,
     _rev: Fe._rev
-  }))), $ = n.open, V = $ ? s(n.path, n.cellIndex) : null, oe = V ? Kxt(V.type) : [], Ae = V ? ["name", ...Qxt(V.type)] : [];
+  }))), $ = n.open, V = $ ? s(n.path, n.cellIndex) : null, oe = V ? Zxt(V.type) : [], Ae = V ? ["name", ...Xxt(V.type)] : [];
   function Ue(Fe) {
     if (!Fe.visibleWhen) return !0;
     const tt = Fe.visibleWhen.key;
@@ -85650,7 +85674,7 @@ function Xxt() {
     /* @__PURE__ */ pe.jsx(b0, { children: /* @__PURE__ */ pe.jsx(Dl, { variant: "ghost", onClick: t, children: "Fermer" }) })
   ] }) });
 }
-function Zxt() {
+function eEt() {
   var b, e, P, $, V, oe;
   const { loopConfigModal: n, getGroupAtPath: t, getDefaultLoopQuery: s, getDefaultZipQuery: o, forceUpdate: i, _rev: a } = al(jh((Ae) => ({
     loopConfigModal: Ae.loopConfigModal,
@@ -85742,7 +85766,7 @@ function Zxt() {
     /* @__PURE__ */ pe.jsx(b0, { children: /* @__PURE__ */ pe.jsx(Dl, { variant: "ghost", onClick: () => r({ loopConfigModal: { open: !1, path: null } }), children: "Fermer" }) })
   ] }) });
 }
-function Jxt() {
+function tEt() {
   var r, f;
   const { groupSettingsModal: n, getGroupAtPath: t, forceUpdate: s, _rev: o } = al(jh((b) => ({
     groupSettingsModal: b.groupSettingsModal,
@@ -85867,7 +85891,7 @@ function Jxt() {
     /* @__PURE__ */ pe.jsx(b0, { children: /* @__PURE__ */ pe.jsx(Dl, { variant: "ghost", onClick: () => i({ groupSettingsModal: { open: !1, path: null } }), children: "Fermer" }) })
   ] }) });
 }
-function eEt() {
+function rEt() {
   const {
     childGroupModal: n,
     devMode: t,
@@ -85947,7 +85971,7 @@ function eEt() {
     ] }) }) })
   ] }) });
 }
-function tEt() {
+function nEt() {
   const { devMode: n, dbEngine: t, showLayout: s } = al(jh((r) => ({
     devMode: r.devMode,
     dbEngine: r.dbEngine,
@@ -85959,7 +85983,7 @@ function tEt() {
       {
         title: o === "dark" ? "Passer en mode clair" : "Passer en mode sombre",
         onClick: () => i(o === "dark" ? "light" : "dark"),
-        icon: o === "dark" ? qyt : yyt
+        icon: o === "dark" ? Hyt : yyt
       }
     ),
     n && /* @__PURE__ */ pe.jsx(
@@ -85977,12 +86001,12 @@ function tEt() {
         title: n ? "Passer en mode client" : "Passer en mode développeur",
         onClick: () => a({ devMode: !n }),
         isSelected: n,
-        icon: Dyt
+        icon: jyt
       }
     )
   ] }) : null;
 }
-function rEt() {
+function sEt() {
   const n = Sle(), { showLayout: t } = al(jh((s) => ({
     showLayout: s.showLayout
   })));
@@ -85995,10 +86019,10 @@ function rEt() {
             title: "SQL Editor",
             onClick: n.onToggle,
             isSelected: n.isOpen,
-            icon: Qyt
+            icon: Xyt
           }
         ),
-        /* @__PURE__ */ pe.jsx(tEt, {})
+        /* @__PURE__ */ pe.jsx(nEt, {})
       ] }),
       /* @__PURE__ */ pe.jsx($x.LayoutComposer, { tileClassName: "p-0" }),
       /* @__PURE__ */ pe.jsx($x.LoadingProgress, {}),
@@ -86010,24 +86034,24 @@ function rEt() {
         }
       )
     ] }),
-    /* @__PURE__ */ pe.jsx($xt, {}),
-    /* @__PURE__ */ pe.jsx(Fxt, {}),
     /* @__PURE__ */ pe.jsx(Uxt, {}),
     /* @__PURE__ */ pe.jsx(Bxt, {}),
     /* @__PURE__ */ pe.jsx(zxt, {}),
     /* @__PURE__ */ pe.jsx(qxt, {}),
-    /* @__PURE__ */ pe.jsx(Xxt, {}),
-    /* @__PURE__ */ pe.jsx(eEt, {}),
-    /* @__PURE__ */ pe.jsx(Zxt, {}),
-    /* @__PURE__ */ pe.jsx(Jxt, {}),
     /* @__PURE__ */ pe.jsx(Gxt, {}),
     /* @__PURE__ */ pe.jsx(Hxt, {}),
+    /* @__PURE__ */ pe.jsx(Jxt, {}),
+    /* @__PURE__ */ pe.jsx(rEt, {}),
+    /* @__PURE__ */ pe.jsx(eEt, {}),
+    /* @__PURE__ */ pe.jsx(tEt, {}),
     /* @__PURE__ */ pe.jsx(Vxt, {}),
     /* @__PURE__ */ pe.jsx(Wxt, {}),
-    /* @__PURE__ */ pe.jsx(Yxt, {})
+    /* @__PURE__ */ pe.jsx(Yxt, {}),
+    /* @__PURE__ */ pe.jsx(Qxt, {}),
+    /* @__PURE__ */ pe.jsx(Kxt, {})
   ] });
 }
-function nEt({ onUnlocked: n }) {
+function oEt({ onUnlocked: n }) {
   const [t, s] = et.useState(""), [o, i] = et.useState(""), [a, r] = et.useState(!1), f = al(($) => $.initFromConfig), b = typeof window < "u" && window._encryptedSource === "html";
   function e() {
     const $ = b ? { job: { cells: [] } } : xu.getDefaultConfig(), V = xu.applyURLParamsToConfig($);
@@ -86095,10 +86119,10 @@ function nEt({ onUnlocked: n }) {
     ] })
   ] }) }) });
 }
-function sEt() {
+function iEt() {
   const [n, t] = et.useState("loading"), s = al((o) => o.initFromConfig);
   return et.useEffect(() => {
-    Pxt(), eR.setState({
+    $xt(), eR.setState({
       _onSelectTemplate: (o, i, a, r) => {
         var f, b;
         (b = (f = al.getState()).applyTemplateToCell) == null || b.call(f, o, i, a, r);
@@ -86113,15 +86137,15 @@ function sEt() {
     /* @__PURE__ */ pe.jsx(uL, { className: "h-8 w-8 text-primary" }),
     /* @__PURE__ */ pe.jsx("p", { className: "text-muted-foreground", children: "Chargement..." })
   ] }) }) : n === "passphrase" ? /* @__PURE__ */ pe.jsx(
-    nEt,
+    oEt,
     {
       onUnlocked: () => t("ready")
     }
-  ) : /* @__PURE__ */ pe.jsx(rEt, {});
+  ) : /* @__PURE__ */ pe.jsx(sEt, {});
 }
-function oEt() {
+function aEt() {
   return /* @__PURE__ */ pe.jsxs(v2e, { defaultTheme: "light", storageKey: "sqljob-theme", children: [
-    /* @__PURE__ */ pe.jsx(sEt, {}),
+    /* @__PURE__ */ pe.jsx(iEt, {}),
     /* @__PURE__ */ pe.jsx(xle, {})
   ] });
 }
@@ -86138,22 +86162,22 @@ window.location.protocol === "file:" && console.warn(
   `[sqljob] Page servie via file:// — les cellules iframe avec contenu externe (cartes, Carto, OpenStreetMap…) ne fonctionneront pas : origine null bloquée par les CSP des sites tiers.
 Solution : servir via HTTP → npm run dev:cdn puis ouvrir http://localhost:5174/test-cdn.html`
 );
-class iEt extends HTMLElement {
+class uEt extends HTMLElement {
   constructor() {
     super(...arguments);
     jl(this, "_root", null);
   }
   connectedCallback() {
-    this._root = Wre(this), this._root.render(Po.createElement(oEt));
+    this._root = Wre(this), this._root.render(Po.createElement(aEt));
   }
   disconnectedCallback() {
     var s;
     (s = this._root) == null || s.unmount(), this._root = null;
   }
 }
-customElements.get("sqljob-app") || customElements.define("sqljob-app", iEt);
+customElements.get("sqljob-app") || customElements.define("sqljob-app", uEt);
 var oH = {}, S6 = { exports: {} }, Mee;
-function aEt() {
+function lEt() {
   return Mee || (Mee = 1, function(n) {
     var t = function(s) {
       var o = 1e7, i = 7, a = 9007199254740992, r = Ae(a), f = "0123456789abcdefghijklmnopqrstuvwxyz", b = typeof BigInt == "function";
@@ -86899,7 +86923,7 @@ function aEt() {
       return Object.prototype.hasOwnProperty.call(i, a);
     }, o.p = "", o(o.s = 15);
   }([function(t, s) {
-    t.exports = aEt();
+    t.exports = lEt();
   }, function(t, s, o) {
     var i = o(0);
     function a(r, f, b, e) {
@@ -86979,16 +87003,16 @@ function aEt() {
         return oc(J, be);
       }, mu = _s("!", !1), Ru = function(J) {
         return J[0] + " " + J[2];
-      }, Ll = _s(">=", !1), Rl = _s(">", !1), Ju = _s("<=", !1), ef = _s("<>", !1), el = _s("<", !1), tl = _s("==", !1), od = _s("!=", !1), Kl = function(J, be) {
+      }, Ll = _s(">=", !1), Rl = _s(">", !1), Ju = _s("<=", !1), ef = _s("<>", !1), el = _s("<", !1), tl = _s("==", !1), id = _s("!=", !1), Kl = function(J, be) {
         return { op: J, right: be };
       }, Fl = _s("+", !1), vf = _s("-", !1), Gd = _s("*", !1), tm = _s("/", !1), Hm = _s("%", !1), yp = _s("~", !1), Hd = _s("?|", !1), wp = _s("?&", !1), jp = _s("?", !1), $h = _s("#-", !1), xl = _s("#>>", !1), rm = _s("#>", !1), th = _s("@>", !1), nm = _s("<@", !1), op = function(J) {
         return nu[J.toUpperCase()] === !0;
-      }, $f = _s('"', !1), Bc = /^[^"]/, id = El(['"'], !0, !1), Vm = /^[^']/, ad = El(["'"], !0, !1), rh = _s("`", !1), Wm = /^[^`]/, Cp = El(["`"], !0, !1), Am = function(J, be) {
+      }, $f = _s('"', !1), Bc = /^[^"]/, ad = El(['"'], !0, !1), Vm = /^[^']/, ud = El(["'"], !0, !1), rh = _s("`", !1), Wm = /^[^`]/, Cp = El(["`"], !0, !1), Am = function(J, be) {
         return J + be.join("");
-      }, nh = /^[A-Za-z_]/, ip = El([["A", "Z"], ["a", "z"], "_"], !1, !1), Vd = /^[A-Za-z0-9_]/, Do = El([["A", "Z"], ["a", "z"], ["0", "9"], "_"], !1, !1), bf = /^[A-Za-z0-9_:\u4E00-\u9FA5\xC0-\u017F]/, Ff = El([["A", "Z"], ["a", "z"], ["0", "9"], "_", ":", ["一", "龥"], ["À", "ſ"]], !1, !1), Wd = _s(":", !1), $p = _s("OVER", !0), Fh = _s("filter", !0), Ym = _s("BOTH", !0), Fp = _s("LEADING", !0), Uh = _s("TRAILING", !0), Ch = _s("trim", !0), sm = _s("AT TIME ZONE", !0), Up = _s("CENTURY", !0), Lp = _s("DAY", !0), Nc = _s("DATE", !0), xp = _s("DECADE", !0), hv = _s("DOW", !0), om = _s("DOY", !0), Lh = _s("EPOCH", !0), gf = _s("HOUR", !0), Uf = _s("ISODOW", !0), sh = _s("ISOYEAR", !0), im = _s("MICROSECONDS", !0), ju = _s("MILLENNIUM", !0), Bf = _s("MILLISECONDS", !0), zf = _s("MINUTE", !0), Qm = _s("MONTH", !0), xh = _s("QUARTER", !0), oh = _s("SECOND", !0), Bp = _s("TIMEZONE", !0), am = _s("TIMEZONE_HOUR", !0), Km = _s("TIMEZONE_MINUTE", !0), _m = _s("WEEK", !0), tf = _s("YEAR", !0), qf = _s("u&", !0), ud = function(J, be) {
+      }, nh = /^[A-Za-z_]/, ip = El([["A", "Z"], ["a", "z"], "_"], !1, !1), Vd = /^[A-Za-z0-9_]/, Do = El([["A", "Z"], ["a", "z"], ["0", "9"], "_"], !1, !1), bf = /^[A-Za-z0-9_:\u4E00-\u9FA5\xC0-\u017F]/, Ff = El([["A", "Z"], ["a", "z"], ["0", "9"], "_", ":", ["一", "龥"], ["À", "ſ"]], !1, !1), Wd = _s(":", !1), $p = _s("OVER", !0), Fh = _s("filter", !0), Ym = _s("BOTH", !0), Fp = _s("LEADING", !0), Uh = _s("TRAILING", !0), Ch = _s("trim", !0), sm = _s("AT TIME ZONE", !0), Up = _s("CENTURY", !0), Lp = _s("DAY", !0), Nc = _s("DATE", !0), xp = _s("DECADE", !0), hv = _s("DOW", !0), om = _s("DOY", !0), Lh = _s("EPOCH", !0), gf = _s("HOUR", !0), Uf = _s("ISODOW", !0), sh = _s("ISOYEAR", !0), im = _s("MICROSECONDS", !0), ju = _s("MILLENNIUM", !0), Bf = _s("MILLISECONDS", !0), zf = _s("MINUTE", !0), Qm = _s("MONTH", !0), xh = _s("QUARTER", !0), oh = _s("SECOND", !0), Bp = _s("TIMEZONE", !0), am = _s("TIMEZONE_HOUR", !0), Km = _s("TIMEZONE_MINUTE", !0), _m = _s("WEEK", !0), tf = _s("YEAR", !0), qf = _s("u&", !0), ld = function(J, be) {
         return { type: J.toLowerCase(), value: be[1].join("") };
       }, Bh = /^[^"\\\0-\x1F\x7F]/, ih = El(['"', "\\", ["\0", ""], ""], !0, !1), Eh = /^[^'\\]/, Ep = El(["'", "\\"], !0, !1), Sh = _s("\\'", !1), zh = _s('\\"', !1), Tm = _s("\\\\", !1), Sp = _s("\\/", !1), yf = _s("\\b", !1), zp = _s("\\f", !1), _t = _s("\\n", !1), Or = _s("\\r", !1), cn = _s("\\t", !1), Wr = _s("\\u", !1), bs = _s("\\", !1), cs = _s("''", !1), Ns = _s('""', !1), fo = _s("``", !1), io = /^[\n\r]/, Uo = El([`
-`, "\r"], !1, !1), Ko = /^[0-9]/, fi = El([["0", "9"]], !1, !1), Bi = /^[0-9a-fA-F]/, Di = El([["0", "9"], ["a", "f"], ["A", "F"]], !1, !1), ba = /^[eE]/, Pa = El(["e", "E"], !1, !1), Ki = /^[+\-]/, ja = El(["+", "-"], !1, !1), Ta = _s("NULL", !0), vu = _s("NOT NULL", !0), cu = _s("TRUE", !0), ul = _s("TO", !0), Ou = _s("FALSE", !0), ec = _s("DROP", !0), Eu = _s("USE", !0), uc = _s("ALTER", !0), Td = _s("SELECT", !0), Gf = _s("UPDATE", !0), Cc = _s("CREATE", !0), ah = _s("TEMPORARY", !0), qp = _s("DELETE", !0), ll = _s("INSERT", !0), zc = _s("RECURSIVE", !0), Id = _s("REPLACE", !0), ld = _s("RENAME", !0), um = _s("IGNORE", !0), Xm = _s("PARTITION", !0), Cd = _s("INTO", !0), Hf = _s("OVERWRITE", !0), Nd = _s("FROM", !0), Yd = _s("UNLOCK", !0), Qd = _s("AS", !0), uh = _s("TABLE", !0), Qv = _s("TABLES", !0), Zm = _s("DATABASE", !0), Kv = _s("SCHEMA", !0), Xv = _s("ON", !0), Vf = _s("LEFT", !0), wf = _s("RIGHT", !0), Im = _s("FULL", !0), Gp = _s("CROSS", !0), mv = _s("INNER", !0), Jm = _s("JOIN", !0), vv = _s("OUTER", !0), Zv = _s("UNION", !0), lm = _s("VALUES", !0), ev = _s("USING", !0), bv = _s("WHERE", !0), tv = _s("GROUP", !0), cm = _s("BY", !0), Av = _s("ORDER", !0), _v = _s("HAVING", !0), Nm = _s("LIMIT", !0), Jv = _s("OFFSET", !0), Lb = _s("ASC", !0), gv = _s("DESC", !0), xb = _s("ALL", !0), Tv = _s("DISTINCT", !0), Eb = _s("BETWEEN", !0), Db = _s("IN", !0), Iv = _s("IS", !0), Nv = _s("LIKE", !0), eb = _s("RLIKE", !0), fm = _s("EXISTS", !0), Ap = _s("NOT", !0), Kd = _s("AND", !0), cd = _s("OR", !0), Ah = _s("COUNT", !0), qh = _s("MAX", !0), Rv = _s("MIN", !0), tb = _s("SUM", !0), dm = _s("AVG", !0), Ov = _s("EXTRACT", !0), kv = _s("CALL", !0), Mv = _s("CASE", !0), Rm = _s("WHEN", !0), _h = _s("THEN", !0), Gh = _s("ELSE", !0), rv = _s("END", !0), rb = _s("CAST", !0), Dv = _s("ARRAY", !0), nb = _s("ARRAY_AGG", !0), sb = _s("CHAR", !0), Om = _s("VARCHAR", !0), ob = _s("NUMERIC", !0), ib = _s("DECIMAL", !0), Pv = _s("SIGNED", !0), Sb = _s("STRING", !0), Ab = _s("UNSIGNED", !0), jv = _s("INT", !0), $v = _s("ZEROFILL", !0), Hh = _s("INTEGER", !0), rf = _s("JSON", !0), Rd = _s("SMALLINT", !0), pm = _s("TINYINT", !0), Wf = _s("TINYTEXT", !0), Cf = _s("TEXT", !0), yv = _s("MEDIUMTEXT", !0), km = _s("LONGTEXT", !0), Lf = _s("BIGINT", !0), Od = _s("FLOAT", !0), _b = _s("REAL", !0), ab = _s("DOUBLE", !0), Tb = _s("DATETIME", !0), ub = _s("ROWS", !0), wv = _s("TIME", !0), Cv = _s("TIMESTAMP", !0), Lv = _s("TRUNCATE", !0), lb = _s("USER", !0), Pb = _s("CURRENT_DATE", !0), Ib = _s("INTERVAL", !0), cb = _s("CURRENT_TIME", !0), fb = _s("CURRENT_TIMESTAMP", !0), Fv = _s("CURRENT_USER", !0), Nb = _s("SESSION_USER", !0), Rb = _s("SYSTEM_USER", !0), db = _s("GLOBAL", !0), Ob = _s("SESSION", !0), pb = _s("PERSIST", !0), Uv = _s("PERSIST_ONLY", !0), q = _s("@", !1), as = _s("@@", !1), hm = _s("$", !1), xf = _s("return", !0), nv = _s(":=", !1), $r = _s("DUAL", !0), Gs = _s("ADD", !0), kd = _s("COLUMN", !0), Mm = _s("INDEX", !0), sv = _s("FULLTEXT", !0), ws = _s("SPATIAL", !0), Bv = _s("COMMENT", !0), hb = _s("CONSTRAINT", !0), jb = _s("REFERENCES", !0), mm = _s("SQL_CALC_FOUND_ROWS", !0), B = _s("SQL_CACHE", !0), is = _s("SQL_NO_CACHE", !0), Dm = _s("SQL_SMALL_RESULT", !0), _p = _s("SQL_BIG_RESULT", !0), Pm = _s("SQL_BUFFER_RESULT", !0), Ir = _s(",", !1), Ds = _s("[", !1), fd = _s("]", !1), xv = _s(";", !1), vm = _s("->", !1), ls = _s("||", !1), mb = _s("&&", !1), ov = _s("/*", !1), bm = _s("*/", !1), iv = _s("--", !1), jm = _s("#", !1), Hp = { type: "any" }, $m = /^[ \t\n\r]/, Fm = El([" ", "	", `
+`, "\r"], !1, !1), Ko = /^[0-9]/, fi = El([["0", "9"]], !1, !1), Bi = /^[0-9a-fA-F]/, Di = El([["0", "9"], ["a", "f"], ["A", "F"]], !1, !1), ba = /^[eE]/, Pa = El(["e", "E"], !1, !1), Ki = /^[+\-]/, ja = El(["+", "-"], !1, !1), Ta = _s("NULL", !0), vu = _s("NOT NULL", !0), cu = _s("TRUE", !0), ul = _s("TO", !0), Ou = _s("FALSE", !0), ec = _s("DROP", !0), Eu = _s("USE", !0), uc = _s("ALTER", !0), Td = _s("SELECT", !0), Gf = _s("UPDATE", !0), Cc = _s("CREATE", !0), ah = _s("TEMPORARY", !0), qp = _s("DELETE", !0), ll = _s("INSERT", !0), zc = _s("RECURSIVE", !0), Id = _s("REPLACE", !0), cd = _s("RENAME", !0), um = _s("IGNORE", !0), Xm = _s("PARTITION", !0), Cd = _s("INTO", !0), Hf = _s("OVERWRITE", !0), Nd = _s("FROM", !0), Yd = _s("UNLOCK", !0), Qd = _s("AS", !0), uh = _s("TABLE", !0), Qv = _s("TABLES", !0), Zm = _s("DATABASE", !0), Kv = _s("SCHEMA", !0), Xv = _s("ON", !0), Vf = _s("LEFT", !0), wf = _s("RIGHT", !0), Im = _s("FULL", !0), Gp = _s("CROSS", !0), mv = _s("INNER", !0), Jm = _s("JOIN", !0), vv = _s("OUTER", !0), Zv = _s("UNION", !0), lm = _s("VALUES", !0), ev = _s("USING", !0), bv = _s("WHERE", !0), tv = _s("GROUP", !0), cm = _s("BY", !0), Av = _s("ORDER", !0), _v = _s("HAVING", !0), Nm = _s("LIMIT", !0), Jv = _s("OFFSET", !0), Lb = _s("ASC", !0), gv = _s("DESC", !0), xb = _s("ALL", !0), Tv = _s("DISTINCT", !0), Eb = _s("BETWEEN", !0), Db = _s("IN", !0), Iv = _s("IS", !0), Nv = _s("LIKE", !0), eb = _s("RLIKE", !0), fm = _s("EXISTS", !0), Ap = _s("NOT", !0), Kd = _s("AND", !0), fd = _s("OR", !0), Ah = _s("COUNT", !0), qh = _s("MAX", !0), Rv = _s("MIN", !0), tb = _s("SUM", !0), dm = _s("AVG", !0), Ov = _s("EXTRACT", !0), kv = _s("CALL", !0), Mv = _s("CASE", !0), Rm = _s("WHEN", !0), _h = _s("THEN", !0), Gh = _s("ELSE", !0), rv = _s("END", !0), rb = _s("CAST", !0), Dv = _s("ARRAY", !0), nb = _s("ARRAY_AGG", !0), sb = _s("CHAR", !0), Om = _s("VARCHAR", !0), ob = _s("NUMERIC", !0), ib = _s("DECIMAL", !0), Pv = _s("SIGNED", !0), Sb = _s("STRING", !0), Ab = _s("UNSIGNED", !0), jv = _s("INT", !0), $v = _s("ZEROFILL", !0), Hh = _s("INTEGER", !0), rf = _s("JSON", !0), Rd = _s("SMALLINT", !0), pm = _s("TINYINT", !0), Wf = _s("TINYTEXT", !0), Cf = _s("TEXT", !0), yv = _s("MEDIUMTEXT", !0), km = _s("LONGTEXT", !0), Lf = _s("BIGINT", !0), Od = _s("FLOAT", !0), _b = _s("REAL", !0), ab = _s("DOUBLE", !0), Tb = _s("DATETIME", !0), ub = _s("ROWS", !0), wv = _s("TIME", !0), Cv = _s("TIMESTAMP", !0), Lv = _s("TRUNCATE", !0), lb = _s("USER", !0), Pb = _s("CURRENT_DATE", !0), Ib = _s("INTERVAL", !0), cb = _s("CURRENT_TIME", !0), fb = _s("CURRENT_TIMESTAMP", !0), Fv = _s("CURRENT_USER", !0), Nb = _s("SESSION_USER", !0), Rb = _s("SYSTEM_USER", !0), db = _s("GLOBAL", !0), Ob = _s("SESSION", !0), pb = _s("PERSIST", !0), Uv = _s("PERSIST_ONLY", !0), q = _s("@", !1), as = _s("@@", !1), hm = _s("$", !1), xf = _s("return", !0), nv = _s(":=", !1), $r = _s("DUAL", !0), Gs = _s("ADD", !0), kd = _s("COLUMN", !0), Mm = _s("INDEX", !0), sv = _s("FULLTEXT", !0), ws = _s("SPATIAL", !0), Bv = _s("COMMENT", !0), hb = _s("CONSTRAINT", !0), jb = _s("REFERENCES", !0), mm = _s("SQL_CALC_FOUND_ROWS", !0), B = _s("SQL_CACHE", !0), is = _s("SQL_NO_CACHE", !0), Dm = _s("SQL_SMALL_RESULT", !0), _p = _s("SQL_BIG_RESULT", !0), Pm = _s("SQL_BUFFER_RESULT", !0), Ir = _s(",", !1), Ds = _s("[", !1), dd = _s("]", !1), xv = _s(";", !1), vm = _s("->", !1), ls = _s("||", !1), mb = _s("&&", !1), ov = _s("/*", !1), bm = _s("*/", !1), iv = _s("--", !1), jm = _s("#", !1), Hp = { type: "any" }, $m = /^[ \t\n\r]/, Fm = El([" ", "	", `
 `, "\r"], !1, !1), Th = function(J) {
         return { dataType: J };
       }, Ih = _s("boolean", !0), D = 0, Zn = 0, Vh = [{ line: 1, column: 1 }], Ef = 0, Nh = [], wr = 0;
@@ -87225,7 +87249,7 @@ function aEt() {
               Te && (yn[Qs] = Te), Qs && du.add(`${Ui}::${Te}::${Qs}`);
             }), Je && Je.forEach((_n) => {
               if (_n.table) {
-                const Te = bd(_n.table);
+                const Te = gd(_n.table);
                 du.add(`update::${yn[Te] || null}::${Te}`);
               }
               iu.add(`update::${_n.table}::${_n.column}`);
@@ -87235,8 +87259,8 @@ function aEt() {
           var be, je, Ze, St, ft, u, Je, Gr;
           return be = D, (je = Ld()) !== e && Ot() !== e && (Ze = g()) !== e && Ot() !== e ? ((St = lf()) === e && (St = null), St !== e && Ot() !== e && (ft = rc()) !== e ? ((u = mh()) === e && (u = null), u !== e && Ot() !== e && K() !== e && Ot() !== e && (Je = function() {
             var yn, _n, Te, Jt, Qs, ei, Ui, Qt;
-            if (yn = D, (_n = md()) !== e) {
-              for (Te = [], Jt = D, (Qs = Ot()) !== e && (ei = de()) !== e && (Ui = Ot()) !== e && (Qt = md()) !== e ? Jt = Qs = [Qs, ei, Ui, Qt] : (D = Jt, Jt = e); Jt !== e; ) Te.push(Jt), Jt = D, (Qs = Ot()) !== e && (ei = de()) !== e && (Ui = Ot()) !== e && (Qt = md()) !== e ? Jt = Qs = [Qs, ei, Ui, Qt] : (D = Jt, Jt = e);
+            if (yn = D, (_n = vd()) !== e) {
+              for (Te = [], Jt = D, (Qs = Ot()) !== e && (ei = de()) !== e && (Ui = Ot()) !== e && (Qt = vd()) !== e ? Jt = Qs = [Qs, ei, Ui, Qt] : (D = Jt, Jt = e); Jt !== e; ) Te.push(Jt), Jt = D, (Qs = Ot()) !== e && (ei = de()) !== e && (Ui = Ot()) !== e && (Qt = vd()) !== e ? Jt = Qs = [Qs, ei, Ui, Qt] : (D = Jt, Jt = e);
               Te !== e ? (Zn = yn, _n = Ae(_n, Te), yn = _n) : (D = yn, yn = e);
             } else D = yn, yn = e;
             return yn;
@@ -87304,7 +87328,7 @@ function aEt() {
       }
       function ch() {
         var J;
-        return (J = vb()) === e && (J = dd()) === e && (J = zv()) === e && (J = function() {
+        return (J = vb()) === e && (J = pd()) === e && (J = zv()) === e && (J = function() {
           var be;
           return (be = function() {
             var je, Ze, St, ft, u, Je;
@@ -87316,12 +87340,12 @@ function aEt() {
             je = D, (Ze = Qh()) === e && (Ze = null), Ze !== e && Ot() !== e && (St = function() {
               var zi, Yt, oi, jo;
               return zi = D, r.substr(D, 6).toLowerCase() === "unique" ? (Yt = r.substr(D, 6), D += 6) : (Yt = e, wr === 0 && es(Fe)), Yt !== e ? (oi = D, wr++, jo = Go(), wr--, jo === e ? oi = void 0 : (D = oi, oi = e), oi !== e ? (Zn = zi, zi = Yt = "UNIQUE") : (D = zi, zi = e)) : (D = zi, zi = e), zi;
-            }()) !== e && Ot() !== e ? ((ft = vn()) === e && (ft = h()), ft === e && (ft = null), ft !== e && Ot() !== e ? ((u = md()) === e && (u = null), u !== e && Ot() !== e ? ((Je = Dn()) === e && (Je = null), Je !== e && Ot() !== e && (Gr = T()) !== e && Ot() !== e ? ((yn = Af()) === e && (yn = null), yn !== e ? (Zn = je, Te = St, Jt = ft, Qs = u, ei = Je, Ui = Gr, Qt = yn, Ze = { constraint: (_n = Ze) && _n.constraint, definition: Ui, constraint_type: Jt && `${Te.toLowerCase()} ${Jt.toLowerCase()}` || Te.toLowerCase(), keyword: _n && _n.keyword, index_type: ei, index: Qs, resource: "constraint", index_options: Qt }, je = Ze) : (D = je, je = e)) : (D = je, je = e)) : (D = je, je = e)) : (D = je, je = e)) : (D = je, je = e);
+            }()) !== e && Ot() !== e ? ((ft = vn()) === e && (ft = h()), ft === e && (ft = null), ft !== e && Ot() !== e ? ((u = vd()) === e && (u = null), u !== e && Ot() !== e ? ((Je = Dn()) === e && (Je = null), Je !== e && Ot() !== e && (Gr = T()) !== e && Ot() !== e ? ((yn = Af()) === e && (yn = null), yn !== e ? (Zn = je, Te = St, Jt = ft, Qs = u, ei = Je, Ui = Gr, Qt = yn, Ze = { constraint: (_n = Ze) && _n.constraint, definition: Ui, constraint_type: Jt && `${Te.toLowerCase()} ${Jt.toLowerCase()}` || Te.toLowerCase(), keyword: _n && _n.keyword, index_type: ei, index: Qs, resource: "constraint", index_options: Qt }, je = Ze) : (D = je, je = e)) : (D = je, je = e)) : (D = je, je = e)) : (D = je, je = e)) : (D = je, je = e);
             var _n, Te, Jt, Qs, ei, Ui, Qt;
             return je;
           }()) === e && (be = function() {
             var je, Ze, St, ft, u, Je;
-            je = D, (Ze = Qh()) === e && (Ze = null), Ze !== e && Ot() !== e ? (r.substr(D, 11).toLowerCase() === "foreign key" ? (St = r.substr(D, 11), D += 11) : (St = e, wr === 0 && es(Jn)), St !== e && Ot() !== e ? ((ft = md()) === e && (ft = null), ft !== e && Ot() !== e && (u = T()) !== e && Ot() !== e ? ((Je = Cm()) === e && (Je = null), Je !== e ? (Zn = je, yn = St, _n = ft, Te = u, Jt = Je, Ze = { constraint: (Gr = Ze) && Gr.constraint, definition: Te, constraint_type: yn, keyword: Gr && Gr.keyword, index: _n, resource: "constraint", reference_definition: Jt }, je = Ze) : (D = je, je = e)) : (D = je, je = e)) : (D = je, je = e)) : (D = je, je = e);
+            je = D, (Ze = Qh()) === e && (Ze = null), Ze !== e && Ot() !== e ? (r.substr(D, 11).toLowerCase() === "foreign key" ? (St = r.substr(D, 11), D += 11) : (St = e, wr === 0 && es(Jn)), St !== e && Ot() !== e ? ((ft = vd()) === e && (ft = null), ft !== e && Ot() !== e && (u = T()) !== e && Ot() !== e ? ((Je = Cm()) === e && (Je = null), Je !== e ? (Zn = je, yn = St, _n = ft, Te = u, Jt = Je, Ze = { constraint: (Gr = Ze) && Gr.constraint, definition: Te, constraint_type: yn, keyword: Gr && Gr.keyword, index: _n, resource: "constraint", reference_definition: Jt }, je = Ze) : (D = je, je = e)) : (D = je, je = e)) : (D = je, je = e)) : (D = je, je = e);
             var Gr, yn, _n, Te, Jt;
             return je;
           }()), be;
@@ -87390,7 +87414,7 @@ function aEt() {
           }(Ze, St), be = je) : (D = be, be = e)) : (D = be, be = e), be;
         }()) === e && (J = function() {
           var be, je, Ze;
-          be = D, (je = nr()) !== e && Ot() !== e && (Ze = dd()) !== e ? (Zn = be, St = Ze, je = { action: "add", type: "alter", ...St }, be = je) : (D = be, be = e);
+          be = D, (je = nr()) !== e && Ot() !== e && (Ze = pd()) !== e ? (Zn = be, St = Ze, je = { action: "add", type: "alter", ...St }, be = je) : (D = be, be = e);
           var St;
           return be;
         }()) === e && (J = function() {
@@ -87413,9 +87437,9 @@ function aEt() {
         var J, be, je, Ze;
         return J = D, r.substr(D, 4).toLowerCase() === "lock" ? (be = r.substr(D, 4), D += 4) : (be = e, wr === 0 && es(xn)), be !== e && Ot() !== e ? ((je = qt()) === e && (je = null), je !== e && Ot() !== e ? (r.substr(D, 7).toLowerCase() === "default" ? (Ze = r.substr(D, 7), D += 7) : (Ze = e, wr === 0 && es(ur)), Ze === e && (r.substr(D, 4).toLowerCase() === "none" ? (Ze = r.substr(D, 4), D += 4) : (Ze = e, wr === 0 && es(pn)), Ze === e && (r.substr(D, 6).toLowerCase() === "shared" ? (Ze = r.substr(D, 6), D += 6) : (Ze = e, wr === 0 && es(bn)), Ze === e && (r.substr(D, 9).toLowerCase() === "exclusive" ? (Ze = r.substr(D, 9), D += 9) : (Ze = e, wr === 0 && es(ts))))), Ze !== e ? (Zn = J, J = be = { type: "alter", keyword: "lock", resource: "lock", symbol: je, lock: Ze }) : (D = J, J = e)) : (D = J, J = e)) : (D = J, J = e), J;
       }
-      function dd() {
+      function pd() {
         var J, be, je, Ze, St, ft;
-        return J = D, (be = vn()) === e && (be = h()), be !== e && Ot() !== e ? ((je = md()) === e && (je = null), je !== e && Ot() !== e ? ((Ze = Dn()) === e && (Ze = null), Ze !== e && Ot() !== e && (St = T()) !== e && Ot() !== e ? ((ft = Af()) === e && (ft = null), ft !== e && Ot() !== e ? (Zn = J, J = be = function(u, Je, Gr, yn, _n) {
+        return J = D, (be = vn()) === e && (be = h()), be !== e && Ot() !== e ? ((je = vd()) === e && (je = null), je !== e && Ot() !== e ? ((Ze = Dn()) === e && (Ze = null), Ze !== e && Ot() !== e && (St = T()) !== e && Ot() !== e ? ((ft = Af()) === e && (ft = null), ft !== e && Ot() !== e ? (Zn = J, J = be = function(u, Je, Gr, yn, _n) {
           return { index: Je, definition: yn, keyword: u.toLowerCase(), index_type: Gr, resource: "index", index_options: _n };
         }(be, je, Ze, St, ft)) : (D = J, J = e)) : (D = J, J = e)) : (D = J, J = e)) : (D = J, J = e), J;
       }
@@ -87427,7 +87451,7 @@ function aEt() {
         }()) === e && (be = function() {
           var u, Je, Gr, yn;
           return u = D, r.substr(D, 7).toLowerCase() === "spatial" ? (Je = r.substr(D, 7), D += 7) : (Je = e, wr === 0 && es(ws)), Je !== e ? (Gr = D, wr++, yn = Go(), wr--, yn === e ? Gr = void 0 : (D = Gr, Gr = e), Gr !== e ? (Zn = u, u = Je = "SPATIAL") : (D = u, u = e)) : (D = u, u = e), u;
-        }()), be !== e && Ot() !== e ? ((je = vn()) === e && (je = h()), je === e && (je = null), je !== e && Ot() !== e ? ((Ze = md()) === e && (Ze = null), Ze !== e && Ot() !== e && (St = T()) !== e && Ot() !== e ? ((ft = Af()) === e && (ft = null), ft !== e && Ot() !== e ? (Zn = J, J = be = function(u, Je, Gr, yn, _n) {
+        }()), be !== e && Ot() !== e ? ((je = vn()) === e && (je = h()), je === e && (je = null), je !== e && Ot() !== e ? ((Ze = vd()) === e && (Ze = null), Ze !== e && Ot() !== e && (St = T()) !== e && Ot() !== e ? ((ft = Af()) === e && (ft = null), ft !== e && Ot() !== e ? (Zn = J, J = be = function(u, Je, Gr, yn, _n) {
           return { index: Gr, definition: yn, keyword: Je && `${u.toLowerCase()} ${Je.toLowerCase()}` || u.toLowerCase(), index_options: _n, resource: "index" };
         }(be, je, Ze, St, ft)) : (D = J, J = e)) : (D = J, J = e)) : (D = J, J = e)) : (D = J, J = e), J;
       }
@@ -87792,17 +87816,17 @@ function aEt() {
       }
       function ph() {
         var J, be, je, Ze;
-        return J = D, (be = pd()) !== e && Ot() !== e ? (r.substr(D, 9).toLowerCase() === "following" ? (je = r.substr(D, 9), D += 9) : (je = e, wr === 0 && es(Za)), je !== e ? (Zn = J, (Ze = be).value += " FOLLOWING", J = be = Ze) : (D = J, J = e)) : (D = J, J = e), J === e && (J = Qp()), J;
+        return J = D, (be = hd()) !== e && Ot() !== e ? (r.substr(D, 9).toLowerCase() === "following" ? (je = r.substr(D, 9), D += 9) : (je = e, wr === 0 && es(Za)), je !== e ? (Zn = J, (Ze = be).value += " FOLLOWING", J = be = Ze) : (D = J, J = e)) : (D = J, J = e), J === e && (J = Qp()), J;
       }
       function Tp() {
         var J, be, je, Ze, St;
-        return J = D, (be = pd()) !== e && Ot() !== e ? (r.substr(D, 9).toLowerCase() === "preceding" ? (je = r.substr(D, 9), D += 9) : (je = e, wr === 0 && es(Ja)), je === e && (r.substr(D, 9).toLowerCase() === "following" ? (je = r.substr(D, 9), D += 9) : (je = e, wr === 0 && es(Za))), je !== e ? (Zn = J, St = je, (Ze = be).value += " " + St.toUpperCase(), J = be = Ze) : (D = J, J = e)) : (D = J, J = e), J === e && (J = Qp()), J;
+        return J = D, (be = hd()) !== e && Ot() !== e ? (r.substr(D, 9).toLowerCase() === "preceding" ? (je = r.substr(D, 9), D += 9) : (je = e, wr === 0 && es(Ja)), je === e && (r.substr(D, 9).toLowerCase() === "following" ? (je = r.substr(D, 9), D += 9) : (je = e, wr === 0 && es(Za))), je !== e ? (Zn = J, St = je, (Ze = be).value += " " + St.toUpperCase(), J = be = Ze) : (D = J, J = e)) : (D = J, J = e), J === e && (J = Qp()), J;
       }
       function Qp() {
         var J, be, je;
         return J = D, r.substr(D, 7).toLowerCase() === "current" ? (be = r.substr(D, 7), D += 7) : (be = e, wr === 0 && es(wc)), be !== e && Ot() !== e ? (r.substr(D, 3).toLowerCase() === "row" ? (je = r.substr(D, 3), D += 3) : (je = e, wr === 0 && es(Cl)), je !== e ? (Zn = J, J = be = { type: "origin", value: "current row" }) : (D = J, J = e)) : (D = J, J = e), J;
       }
-      function pd() {
+      function hd() {
         var J, be;
         return J = D, r.substr(D, 9).toLowerCase() === "unbounded" ? (be = r.substr(D, 9), D += 9) : (be = e, wr === 0 && es(Nl)), be !== e && (Zn = J, be = { type: "origin", value: be.toUpperCase() }), (J = be) === e && (J = Xf()), J;
       }
@@ -88006,7 +88030,7 @@ function aEt() {
       }
       function Jd() {
         var J, be, je, Ze, St;
-        return (J = hd()) === e && (J = function() {
+        return (J = md()) === e && (J = function() {
           var ft, u, Je;
           ft = D, (u = function() {
             var _n, Te, Jt, Qs, ei;
@@ -88016,7 +88040,7 @@ function aEt() {
           return ft;
         }()) === e && (J = D, (be = ff()) === e && (be = D, r.charCodeAt(D) === 33 ? (je = "!", D++) : (je = e, wr === 0 && es(mu)), je !== e ? (Ze = D, wr++, r.charCodeAt(D) === 61 ? (St = "=", D++) : (St = e, wr === 0 && es(va)), wr--, St === e ? Ze = void 0 : (D = Ze, Ze = e), Ze !== e ? be = je = [je, Ze] : (D = be, be = e)) : (D = be, be = e)), be !== e && (je = Ot()) !== e && (Ze = Jd()) !== e ? (Zn = J, J = be = Yl("NOT", Ze)) : (D = J, J = e)), J;
       }
-      function hd() {
+      function md() {
         var J, be, je, Ze, St;
         return J = D, (be = af()) !== e && Ot() !== e ? ((je = function() {
           var ft;
@@ -88046,19 +88070,19 @@ function aEt() {
             return u = D, (Je = function() {
               var yn, _n, Te, Jt, Qs;
               return yn = D, _n = D, (Te = ff()) !== e && (Jt = Ot()) !== e && (Qs = Qa()) !== e ? _n = Te = [Te, Jt, Qs] : (D = _n, _n = e), _n !== e && (Zn = yn, _n = Ru(_n)), (yn = _n) === e && (yn = Qa()), yn;
-            }()) !== e && Ot() !== e ? ((Gr = qe()) === e && (Gr = hd()), Gr !== e ? (Zn = u, Je = Kl(Je, Gr), u = Je) : (D = u, u = e)) : (D = u, u = e), u;
+            }()) !== e && Ot() !== e ? ((Gr = qe()) === e && (Gr = md()), Gr !== e ? (Zn = u, Je = Kl(Je, Gr), u = Je) : (D = u, u = e)) : (D = u, u = e), u;
           }()) === e && (ft = function() {
             var u, Je, Gr;
             return u = D, (Je = function() {
               var yn, _n, Te, Jt, Qs;
               return yn = D, _n = D, (Te = ff()) !== e && (Jt = Ot()) !== e && (Qs = Nf()) !== e ? _n = Te = [Te, Jt, Qs] : (D = _n, _n = e), _n !== e && (Zn = yn, _n = Ru(_n)), (yn = _n) === e && (yn = Nf()), yn;
-            }()) !== e && Ot() !== e ? ((Gr = qe()) === e && (Gr = hd()), Gr !== e ? (Zn = u, Je = Kl(Je, Gr), u = Je) : (D = u, u = e)) : (D = u, u = e), u;
+            }()) !== e && Ot() !== e ? ((Gr = qe()) === e && (Gr = md()), Gr !== e ? (Zn = u, Je = Kl(Je, Gr), u = Je) : (D = u, u = e)) : (D = u, u = e), u;
           }()), ft;
         }()) === e && (je = null), je !== e ? (Zn = J, Ze = be, J = be = (St = je) === null ? Ze : St.type === "arithmetic" ? oc(Ze, St.tail) : Mu(St.op, Ze, St.right)) : (D = J, J = e)) : (D = J, J = e), J === e && (J = zu()) === e && (J = fc()), J;
       }
       function Dd() {
         var J;
-        return r.substr(D, 2) === ">=" ? (J = ">=", D += 2) : (J = e, wr === 0 && es(Ll)), J === e && (r.charCodeAt(D) === 62 ? (J = ">", D++) : (J = e, wr === 0 && es(Rl)), J === e && (r.substr(D, 2) === "<=" ? (J = "<=", D += 2) : (J = e, wr === 0 && es(Ju)), J === e && (r.substr(D, 2) === "<>" ? (J = "<>", D += 2) : (J = e, wr === 0 && es(ef)), J === e && (r.charCodeAt(D) === 60 ? (J = "<", D++) : (J = e, wr === 0 && es(el)), J === e && (r.substr(D, 2) === "==" ? (J = "==", D += 2) : (J = e, wr === 0 && es(tl)), J === e && (r.charCodeAt(D) === 61 ? (J = "=", D++) : (J = e, wr === 0 && es(va)), J === e && (r.substr(D, 2) === "!=" ? (J = "!=", D += 2) : (J = e, wr === 0 && es(od))))))))), J;
+        return r.substr(D, 2) === ">=" ? (J = ">=", D += 2) : (J = e, wr === 0 && es(Ll)), J === e && (r.charCodeAt(D) === 62 ? (J = ">", D++) : (J = e, wr === 0 && es(Rl)), J === e && (r.substr(D, 2) === "<=" ? (J = "<=", D += 2) : (J = e, wr === 0 && es(Ju)), J === e && (r.substr(D, 2) === "<>" ? (J = "<>", D += 2) : (J = e, wr === 0 && es(ef)), J === e && (r.charCodeAt(D) === 60 ? (J = "<", D++) : (J = e, wr === 0 && es(el)), J === e && (r.substr(D, 2) === "==" ? (J = "==", D += 2) : (J = e, wr === 0 && es(tl)), J === e && (r.charCodeAt(D) === 61 ? (J = "=", D++) : (J = e, wr === 0 && es(va)), J === e && (r.substr(D, 2) === "!=" ? (J = "!=", D += 2) : (J = e, wr === 0 && es(id))))))))), J;
       }
       function ep() {
         var J, be, je, Ze, St;
@@ -88187,14 +88211,14 @@ function aEt() {
       function fc() {
         var J, be, je, Ze, St, ft, u, Je, Gr, yn, _n, Te;
         if (J = D, (be = Sl()) !== e) if (je = D, (Ze = Ot()) !== e && (St = ne()) !== e && (ft = Ot()) !== e && (u = Sl()) !== e ? je = Ze = [Ze, St, ft, u] : (D = je, je = e), je !== e) {
-          if (Ze = [], St = D, (ft = Ot()) !== e && (u = ne()) !== e && (Je = Ot()) !== e && (Gr = md()) !== e ? St = ft = [ft, u, Je, Gr] : (D = St, St = e), St !== e) for (; St !== e; ) Ze.push(St), St = D, (ft = Ot()) !== e && (u = ne()) !== e && (Je = Ot()) !== e && (Gr = md()) !== e ? St = ft = [ft, u, Je, Gr] : (D = St, St = e);
+          if (Ze = [], St = D, (ft = Ot()) !== e && (u = ne()) !== e && (Je = Ot()) !== e && (Gr = vd()) !== e ? St = ft = [ft, u, Je, Gr] : (D = St, St = e), St !== e) for (; St !== e; ) Ze.push(St), St = D, (ft = Ot()) !== e && (u = ne()) !== e && (Je = Ot()) !== e && (Gr = vd()) !== e ? St = ft = [ft, u, Je, Gr] : (D = St, St = e);
           else Ze = e;
           Ze !== e ? (St = D, (ft = Ot()) !== e && (u = ym()) !== e ? St = ft = [ft, u] : (D = St, St = e), St === e && (St = null), St !== e ? (Zn = J, J = be = function(Jt, Qs, ei, Ui) {
             return ei.length === 1 ? (iu.add(`select::${Jt}.${Qs[3]}::${ei[0][3].value || ei[0][3]}`), { type: "column_ref", schema: Jt, table: Qs[3], column: ei[0][3], collate: Ui && Ui[1] }) : { type: "column_ref", column: { expr: oc(Mu(".", Jt, Qs[3]), ei) }, collate: Ui && Ui[1] };
           }(be, je, Ze, St)) : (D = J, J = e)) : (D = J, J = e);
         } else D = J, J = e;
         else D = J, J = e;
-        return J === e && (J = D, (be = Sl()) !== e && (je = Ot()) !== e && (Ze = ne()) !== e && (St = Ot()) !== e && (ft = md()) !== e ? (u = D, (Je = Ot()) !== e && (Gr = ym()) !== e ? u = Je = [Je, Gr] : (D = u, u = e), u === e && (u = null), u !== e ? (Zn = J, yn = be, _n = ft, Te = u, iu.add(`select::${yn}::${_n}`), J = be = { type: "column_ref", table: yn, column: _n, collate: Te && Te[1] }) : (D = J, J = e)) : (D = J, J = e), J === e && (J = D, (be = md()) !== e ? (je = D, (Ze = Ot()) !== e && (St = ym()) !== e ? je = Ze = [Ze, St] : (D = je, je = e), je === e && (je = null), je !== e ? (Zn = J, J = be = function(Jt, Qs) {
+        return J === e && (J = D, (be = Sl()) !== e && (je = Ot()) !== e && (Ze = ne()) !== e && (St = Ot()) !== e && (ft = vd()) !== e ? (u = D, (Je = Ot()) !== e && (Gr = ym()) !== e ? u = Je = [Je, Gr] : (D = u, u = e), u === e && (u = null), u !== e ? (Zn = J, yn = be, _n = ft, Te = u, iu.add(`select::${yn}::${_n}`), J = be = { type: "column_ref", table: yn, column: _n, collate: Te && Te[1] }) : (D = J, J = e)) : (D = J, J = e), J === e && (J = D, (be = vd()) !== e ? (je = D, (Ze = Ot()) !== e && (St = ym()) !== e ? je = Ze = [Ze, St] : (D = je, je = e), je === e && (je = null), je !== e ? (Zn = J, J = be = function(Jt, Qs) {
           return iu.add("select::null::" + Jt), { type: "column_ref", table: null, column: Jt, collate: Qs && Qs[1] };
         }(be, je)) : (D = J, J = e)) : (D = J, J = e))), J;
       }
@@ -88224,7 +88248,7 @@ function aEt() {
       function Ol() {
         var J, be, je, Ze;
         if (J = D, r.charCodeAt(D) === 34 ? (be = '"', D++) : (be = e, wr === 0 && es($f)), be !== e) {
-          if (je = [], Bc.test(r.charAt(D)) ? (Ze = r.charAt(D), D++) : (Ze = e, wr === 0 && es(id)), Ze !== e) for (; Ze !== e; ) je.push(Ze), Bc.test(r.charAt(D)) ? (Ze = r.charAt(D), D++) : (Ze = e, wr === 0 && es(id));
+          if (je = [], Bc.test(r.charAt(D)) ? (Ze = r.charAt(D), D++) : (Ze = e, wr === 0 && es(ad)), Ze !== e) for (; Ze !== e; ) je.push(Ze), Bc.test(r.charAt(D)) ? (Ze = r.charAt(D), D++) : (Ze = e, wr === 0 && es(ad));
           else je = e;
           je !== e ? (r.charCodeAt(D) === 34 ? (Ze = '"', D++) : (Ze = e, wr === 0 && es($f)), Ze !== e ? (Zn = J, J = be = { type: "double_quote_string", value: je.join("") }) : (D = J, J = e)) : (D = J, J = e);
         } else D = J, J = e;
@@ -88233,7 +88257,7 @@ function aEt() {
       function bh() {
         var J, be, je, Ze;
         if (J = D, r.charCodeAt(D) === 39 ? (be = "'", D++) : (be = e, wr === 0 && es(ia)), be !== e) {
-          if (je = [], Vm.test(r.charAt(D)) ? (Ze = r.charAt(D), D++) : (Ze = e, wr === 0 && es(ad)), Ze !== e) for (; Ze !== e; ) je.push(Ze), Vm.test(r.charAt(D)) ? (Ze = r.charAt(D), D++) : (Ze = e, wr === 0 && es(ad));
+          if (je = [], Vm.test(r.charAt(D)) ? (Ze = r.charAt(D), D++) : (Ze = e, wr === 0 && es(ud)), Ze !== e) for (; Ze !== e; ) je.push(Ze), Vm.test(r.charAt(D)) ? (Ze = r.charAt(D), D++) : (Ze = e, wr === 0 && es(ud));
           else je = e;
           je !== e ? (r.charCodeAt(D) === 39 ? (Ze = "'", D++) : (Ze = e, wr === 0 && es(ia)), Ze !== e ? (Zn = J, J = be = { type: "single_quote_string", value: je.join("") }) : (D = J, J = e)) : (D = J, J = e);
         } else D = J, J = e;
@@ -88250,13 +88274,13 @@ function aEt() {
       }
       function jd() {
         var J, be;
-        return J = D, (be = vd()) !== e && (Zn = J, be = be), (J = be) === e && (J = uf()), J;
-      }
-      function md() {
-        var J, be;
-        return J = D, (be = vd()) !== e ? (Zn = D, (op(be) ? e : void 0) !== e ? (Zn = J, J = be = be) : (D = J, J = e)) : (D = J, J = e), J === e && (J = uf()), J;
+        return J = D, (be = bd()) !== e && (Zn = J, be = be), (J = be) === e && (J = uf()), J;
       }
       function vd() {
+        var J, be;
+        return J = D, (be = bd()) !== e ? (Zn = D, (op(be) ? e : void 0) !== e ? (Zn = J, J = be = be) : (D = J, J = e)) : (D = J, J = e), J === e && (J = uf()), J;
+      }
+      function bd() {
         var J, be, je, Ze;
         if (J = D, (be = rp()) !== e) {
           for (je = [], Ze = Oc(); Ze !== e; ) je.push(Ze), Ze = Oc();
@@ -88419,7 +88443,7 @@ function aEt() {
               for (ft = [], u = hn(); u !== e; ) ft.push(u), u = hn();
               ft !== e ? (r.charCodeAt(D) === 39 ? (u = "'", D++) : (u = e, wr === 0 && es(ia)), u !== e ? Ze = St = [St, ft, u] : (D = Ze, Ze = e)) : (D = Ze, Ze = e);
             } else D = Ze, Ze = e;
-            Ze !== e ? (Zn = be, je = ud(je, Ze), be = je) : (D = be, be = e);
+            Ze !== e ? (Zn = be, je = ld(je, Ze), be = je) : (D = be, be = e);
           } else D = be, be = e;
           else D = be, be = e;
           if (be === e) if (be = D, (je = Y()) === e && (je = za()) === e && (je = _e()) === e && (je = br()), je !== e) if (Ot() !== e) {
@@ -88427,7 +88451,7 @@ function aEt() {
               for (ft = [], u = fp(); u !== e; ) ft.push(u), u = fp();
               ft !== e ? (r.charCodeAt(D) === 34 ? (u = '"', D++) : (u = e, wr === 0 && es($f)), u !== e ? Ze = St = [St, ft, u] : (D = Ze, Ze = e)) : (D = Ze, Ze = e);
             } else D = Ze, Ze = e;
-            Ze !== e ? (Zn = be, je = ud(je, Ze), be = je) : (D = be, be = e);
+            Ze !== e ? (Zn = be, je = ld(je, Ze), be = je) : (D = be, be = e);
           } else D = be, be = e;
           else D = be, be = e;
           return be;
@@ -88567,7 +88591,7 @@ function aEt() {
       }
       function Al() {
         var J, be, je, Ze;
-        return J = D, r.substr(D, 6).toLowerCase() === "rename" ? (be = r.substr(D, 6), D += 6) : (be = e, wr === 0 && es(ld)), be !== e ? (je = D, wr++, Ze = Go(), wr--, Ze === e ? je = void 0 : (D = je, je = e), je !== e ? J = be = [be, je] : (D = J, J = e)) : (D = J, J = e), J;
+        return J = D, r.substr(D, 6).toLowerCase() === "rename" ? (be = r.substr(D, 6), D += 6) : (be = e, wr === 0 && es(cd)), be !== e ? (je = D, wr++, Ze = Go(), wr--, Ze === e ? je = void 0 : (D = je, je = e), je !== e ? J = be = [be, je] : (D = J, J = e)) : (D = J, J = e), J;
       }
       function Pc() {
         var J, be, je, Ze;
@@ -88675,7 +88699,7 @@ function aEt() {
       }
       function zr() {
         var J, be, je, Ze;
-        return J = D, r.substr(D, 2).toLowerCase() === "or" ? (be = r.substr(D, 2), D += 2) : (be = e, wr === 0 && es(cd)), be !== e ? (je = D, wr++, Ze = Go(), wr--, Ze === e ? je = void 0 : (D = je, je = e), je !== e ? (Zn = J, J = be = "OR") : (D = J, J = e)) : (D = J, J = e), J;
+        return J = D, r.substr(D, 2).toLowerCase() === "or" ? (be = r.substr(D, 2), D += 2) : (be = e, wr === 0 && es(fd)), be !== e ? (je = D, wr++, Ze = Go(), wr--, Ze === e ? je = void 0 : (D = je, je = e), je !== e ? (Zn = J, J = be = "OR") : (D = J, J = e)) : (D = J, J = e), J;
       }
       function sc() {
         var J, be, je, Ze;
@@ -88840,7 +88864,7 @@ function aEt() {
       }
       function tr() {
         var J;
-        return r.charCodeAt(D) === 93 ? (J = "]", D++) : (J = e, wr === 0 && es(fd)), J;
+        return r.charCodeAt(D) === 93 ? (J = "]", D++) : (J = e, wr === 0 && es(dd)), J;
       }
       function Rr() {
         var J;
@@ -89153,7 +89177,7 @@ function aEt() {
         for (let Ze = 0; Ze < be.length; Ze++) je = Mu(be[Ze][1], je, be[Ze][3]);
         return je;
       }
-      function bd(J) {
+      function gd(J) {
         return eu[J] || J || null;
       }
       function Tl(J) {
@@ -89164,7 +89188,7 @@ function aEt() {
             be.add(je);
             break;
           }
-          Ze && Ze[1] && (Ze[1] = bd(Ze[1])), be.add(Ze.join("::"));
+          Ze && Ze[1] && (Ze[1] = gd(Ze[1])), be.add(Ze.join("::"));
         }
         return Array.from(be);
       }
@@ -89242,7 +89266,7 @@ function aEt() {
         return gn(Q, he);
       }, Ue = ms("=", !1), Fe = ms("DUPLICATE", !0), tt = ms("BINARY", !0), Ie = ms("MASTER", !0), ut = ms("LOGS", !0), Vt = ms("BINLOG", !0), gr = ms("EVENTS", !0), ur = ms("CHARACTER", !0), cr = ms("SET", !0), Gt = ms("COLLATION", !0), Cr = function(Q, he) {
         return gn(Q, he, 1);
-      }, Nr = ms("IF", !0), ln = ms("CASCADED", !0), Lr = ms("LOCAL", !0), Sn = ms("CHECK", !0), xn = ms("OPTION", !1), pn = ms("check_option", !0), bn = ms("security_barrier", !0), ts = ms("security_invoker", !0), kn = ms("GRANTS", !0), Jn = ms(".", !1), Cs = ms("ALGORITHM", !0), js = ms("DEFAULT", !0), os = ms("INSTANT", !0), Es = ms("INPLACE", !0), Fs = ms("COPY", !0), Hs = ms("LOCK", !0), yo = ms("NONE", !0), Ks = ms("SHARED", !0), To = ms("EXCLUSIVE", !0), to = ms("AUTO_INCREMENT", !0), So = ms("UNIQUE", !0), Fo = ms("KEY", !0), wo = ms("PRIMARY", !0), yi = ms("FOR", !0), Si = ms("COLUMN_FORMAT", !0), fa = ms("FIXED", !0), Ga = ms("DYNAMIC", !0), Ya = ms("STORAGE", !0), yu = ms("DISK", !0), ia = ms("MEMORY", !0), ru = ms("MATCH FULL", !0), zs = ms("MATCH PARTIAL", !0), ao = ms("MATCH SIMPLE", !0), ko = ms("expiration_timestamp", !0), qo = ms("partition_expiration_days", !0), Eo = ms("require_partition_filter", !0), rn = ms("kms_key_name", !0), Pn = ms("friendly_name", !0), Rs = ms("description", !0), Us = ms("labels", !0), ho = ms("default_rounding_mode", !0), co = ms("AVG_ROW_LENGTH", !0), Bo = ms("KEY_BLOCK_SIZE", !0), Vo = ms("MAX_ROWS", !0), di = ms("MIN_ROWS", !0), wa = ms("STATS_SAMPLE_PAGES", !0), Ba = ms("CONNECTION", !0), Oa = ms("COMPRESSION", !0), Ma = ms("'", !1), Za = ms("ZLIB", !0), Ja = ms("LZ4", !0), wc = ms("ENGINE", !0), Cl = ms("CLUSTER", !0), Nl = ms("BY", !0), va = ms("OPTIONS", !0), Nu = ms("CHARSET", !0), mu = ms("COLLATE", !0), Ru = ms("READ", !0), Ll = ms("LOW_PRIORITY", !0), Rl = ms("WRITE", !0), Ju = ms("NOT", !0), ef = ms("BTREE", !0), el = ms("HASH", !0), tl = ms("WITH", !0), od = ms("PARSER", !0), Kl = ms("VISIBLE", !0), Fl = ms("INVISIBLE", !0), vf = ms("RESTRICT", !0), Gd = ms("CASCADE", !0), tm = ms("SET NULL", !0), Hm = ms("NO ACTION", !0), yp = ms("SET DEFAULT", !0), Hd = ms("UPDATE", !0), wp = ms("CREATE", !0), jp = ms("DELETE", !0), $h = ms("INSERT", !0), xl = ms(":=", !1), rm = ms("return", !0), th = ms("REPLACE", !0), nm = ms("ANALYZE", !0), op = ms("ATTACH", !0), $f = ms("DATABASE", !0), Bc = ms("RENAME", !0), id = ms("SHOW", !0), Vm = ms("DESCRIBE", !0), ad = ms("@", !1), rh = ms("@@", !1), Wm = ms("$", !1), Cp = ms("TEMPORARY", !0), Am = ms("TEMP", !0), nh = ms("SCHEMA", !0), ip = ms("ALTER", !0), Vd = ms("SPATIAL", !0), Do = ms("(", !1), bf = ms(")", !1), Ff = ms("INTERSECT", !0), Wd = ms("EXCEPT", !0), $p = ms("SYSTEM_TIME", !0), Fh = ms("AS", !0), Ym = ms("OF", !0), Fp = ms("UNNEST", !0), Uh = function(Q, he) {
+      }, Nr = ms("IF", !0), ln = ms("CASCADED", !0), Lr = ms("LOCAL", !0), Sn = ms("CHECK", !0), xn = ms("OPTION", !1), pn = ms("check_option", !0), bn = ms("security_barrier", !0), ts = ms("security_invoker", !0), kn = ms("GRANTS", !0), Jn = ms(".", !1), Cs = ms("ALGORITHM", !0), js = ms("DEFAULT", !0), os = ms("INSTANT", !0), Es = ms("INPLACE", !0), Fs = ms("COPY", !0), Hs = ms("LOCK", !0), yo = ms("NONE", !0), Ks = ms("SHARED", !0), To = ms("EXCLUSIVE", !0), to = ms("AUTO_INCREMENT", !0), So = ms("UNIQUE", !0), Fo = ms("KEY", !0), wo = ms("PRIMARY", !0), yi = ms("FOR", !0), Si = ms("COLUMN_FORMAT", !0), fa = ms("FIXED", !0), Ga = ms("DYNAMIC", !0), Ya = ms("STORAGE", !0), yu = ms("DISK", !0), ia = ms("MEMORY", !0), ru = ms("MATCH FULL", !0), zs = ms("MATCH PARTIAL", !0), ao = ms("MATCH SIMPLE", !0), ko = ms("expiration_timestamp", !0), qo = ms("partition_expiration_days", !0), Eo = ms("require_partition_filter", !0), rn = ms("kms_key_name", !0), Pn = ms("friendly_name", !0), Rs = ms("description", !0), Us = ms("labels", !0), ho = ms("default_rounding_mode", !0), co = ms("AVG_ROW_LENGTH", !0), Bo = ms("KEY_BLOCK_SIZE", !0), Vo = ms("MAX_ROWS", !0), di = ms("MIN_ROWS", !0), wa = ms("STATS_SAMPLE_PAGES", !0), Ba = ms("CONNECTION", !0), Oa = ms("COMPRESSION", !0), Ma = ms("'", !1), Za = ms("ZLIB", !0), Ja = ms("LZ4", !0), wc = ms("ENGINE", !0), Cl = ms("CLUSTER", !0), Nl = ms("BY", !0), va = ms("OPTIONS", !0), Nu = ms("CHARSET", !0), mu = ms("COLLATE", !0), Ru = ms("READ", !0), Ll = ms("LOW_PRIORITY", !0), Rl = ms("WRITE", !0), Ju = ms("NOT", !0), ef = ms("BTREE", !0), el = ms("HASH", !0), tl = ms("WITH", !0), id = ms("PARSER", !0), Kl = ms("VISIBLE", !0), Fl = ms("INVISIBLE", !0), vf = ms("RESTRICT", !0), Gd = ms("CASCADE", !0), tm = ms("SET NULL", !0), Hm = ms("NO ACTION", !0), yp = ms("SET DEFAULT", !0), Hd = ms("UPDATE", !0), wp = ms("CREATE", !0), jp = ms("DELETE", !0), $h = ms("INSERT", !0), xl = ms(":=", !1), rm = ms("return", !0), th = ms("REPLACE", !0), nm = ms("ANALYZE", !0), op = ms("ATTACH", !0), $f = ms("DATABASE", !0), Bc = ms("RENAME", !0), ad = ms("SHOW", !0), Vm = ms("DESCRIBE", !0), ud = ms("@", !1), rh = ms("@@", !1), Wm = ms("$", !1), Cp = ms("TEMPORARY", !0), Am = ms("TEMP", !0), nh = ms("SCHEMA", !0), ip = ms("ALTER", !0), Vd = ms("SPATIAL", !0), Do = ms("(", !1), bf = ms(")", !1), Ff = ms("INTERSECT", !0), Wd = ms("EXCEPT", !0), $p = ms("SYSTEM_TIME", !0), Fh = ms("AS", !0), Ym = ms("OF", !0), Fp = ms("UNNEST", !0), Uh = function(Q, he) {
         return he.unshift(Q), he.forEach(($e) => {
           const { table: Re, as: wt } = $e;
           $o[Re] = Re, wt && ($o[wt] = Re), function(Dt) {
@@ -89252,14 +89276,14 @@ function aEt() {
         }), he;
       }, Ch = /^[@]/, sm = On(["@"], !1, !1), Up = /^[{]/, Lp = On(["{"], !1, !1), Nc = /^[=]/, xp = On(["="], !1, !1), hv = /^[}]/, om = On(["}"], !1, !1), Lh = ms("TABLESAMPLE", !0), gf = ms("BERNOULLI", !0), Uf = ms("RESERVOIR", !0), sh = ms("PERCENT", !0), im = ms("ROWS", !0), ju = ms("RANGE", !0), Bf = ms("FOLLOWING", !0), zf = ms("PRECEDING", !0), Qm = ms("CURRENT", !0), xh = ms("ROW", !0), oh = ms("UNBOUNDED", !0), Bp = ms("!", !1), am = function(Q) {
         return Q[0] + " " + Q[2];
-      }, Km = ms(">=", !1), _m = ms(">", !1), tf = ms("<=", !1), qf = ms("<>", !1), ud = ms("<", !1), Bh = ms("!=", !1), ih = ms("+", !1), Eh = ms("-", !1), Ep = ms("*", !1), Sh = ms("/", !1), zh = ms("%", !1), Tm = ms("~", !1), Sp = function(Q) {
+      }, Km = ms(">=", !1), _m = ms(">", !1), tf = ms("<=", !1), qf = ms("<>", !1), ld = ms("<", !1), Bh = ms("!=", !1), ih = ms("+", !1), Eh = ms("-", !1), Ep = ms("*", !1), Sh = ms("/", !1), zh = ms("%", !1), Tm = ms("~", !1), Sp = function(Q) {
         return Et[Q.toUpperCase()] === !0;
       }, yf = ms('"', !1), zp = /^[^"]/, _t = On(['"'], !0, !1), Or = /^[^']/, cn = On(["'"], !0, !1), Wr = ms("`", !1), bs = /^[^`]/, cs = On(["`"], !0, !1), Ns = function(Q, he) {
         return Q + he.join("");
-      }, fo = /^[A-Za-z_]/, io = On([["A", "Z"], ["a", "z"], "_"], !1, !1), Uo = /^[A-Za-z0-9_\-]/, Ko = On([["A", "Z"], ["a", "z"], ["0", "9"], "_", "-"], !1, !1), fi = /^[A-Za-z0-9_:\u4E00-\u9FA5\xC0-\u017F]/, Bi = On([["A", "Z"], ["a", "z"], ["0", "9"], "_", ":", ["一", "龥"], ["À", "ſ"]], !1, !1), Di = ms(":", !1), ba = ms("string_agg", !0), Pa = ms("ANY_VALUE", !0), Ki = ms("YEAR_MONTH", !0), ja = ms("DAY_HOUR", !0), Ta = ms("DAY_MINUTE", !0), vu = ms("DAY_SECOND", !0), cu = ms("DAY_MICROSECOND", !0), ul = ms("HOUR_MINUTE", !0), Ou = ms("HOUR_SECOND", !0), ec = ms("HOUR_MICROSECOND", !0), Eu = ms("MINUTE_SECOND", !0), uc = ms("MINUTE_MICROSECOND", !0), Td = ms("SECOND_MICROSECOND", !0), Gf = ms("TIMEZONE_HOUR", !0), Cc = ms("TIMEZONE_MINUTE", !0), ah = ms("CENTURY", !0), qp = ms("DAYOFWEEK", !0), ll = ms("DAY", !0), zc = ms("DATE", !0), Id = ms("DECADE", !0), ld = ms("DOW", !0), um = ms("DOY", !0), Xm = ms("EPOCH", !0), Cd = ms("HOUR", !0), Hf = ms("ISODOW", !0), Nd = ms("ISOWEEK", !0), Yd = ms("ISOYEAR", !0), Qd = ms("MICROSECONDS", !0), uh = ms("MILLENNIUM", !0), Qv = ms("MILLISECONDS", !0), Zm = ms("MINUTE", !0), Kv = ms("MONTH", !0), Xv = ms("QUARTER", !0), Vf = ms("SECOND", !0), wf = ms("TIME", !0), Im = ms("TIMEZONE", !0), Gp = ms("WEEK", !0), mv = ms("YEAR", !0), Jm = ms("DATE_TRUNC", !0), vv = ms("R", !0), Zv = function(Q, he) {
+      }, fo = /^[A-Za-z_]/, io = On([["A", "Z"], ["a", "z"], "_"], !1, !1), Uo = /^[A-Za-z0-9_\-]/, Ko = On([["A", "Z"], ["a", "z"], ["0", "9"], "_", "-"], !1, !1), fi = /^[A-Za-z0-9_:\u4E00-\u9FA5\xC0-\u017F]/, Bi = On([["A", "Z"], ["a", "z"], ["0", "9"], "_", ":", ["一", "龥"], ["À", "ſ"]], !1, !1), Di = ms(":", !1), ba = ms("string_agg", !0), Pa = ms("ANY_VALUE", !0), Ki = ms("YEAR_MONTH", !0), ja = ms("DAY_HOUR", !0), Ta = ms("DAY_MINUTE", !0), vu = ms("DAY_SECOND", !0), cu = ms("DAY_MICROSECOND", !0), ul = ms("HOUR_MINUTE", !0), Ou = ms("HOUR_SECOND", !0), ec = ms("HOUR_MICROSECOND", !0), Eu = ms("MINUTE_SECOND", !0), uc = ms("MINUTE_MICROSECOND", !0), Td = ms("SECOND_MICROSECOND", !0), Gf = ms("TIMEZONE_HOUR", !0), Cc = ms("TIMEZONE_MINUTE", !0), ah = ms("CENTURY", !0), qp = ms("DAYOFWEEK", !0), ll = ms("DAY", !0), zc = ms("DATE", !0), Id = ms("DECADE", !0), cd = ms("DOW", !0), um = ms("DOY", !0), Xm = ms("EPOCH", !0), Cd = ms("HOUR", !0), Hf = ms("ISODOW", !0), Nd = ms("ISOWEEK", !0), Yd = ms("ISOYEAR", !0), Qd = ms("MICROSECONDS", !0), uh = ms("MILLENNIUM", !0), Qv = ms("MILLISECONDS", !0), Zm = ms("MINUTE", !0), Kv = ms("MONTH", !0), Xv = ms("QUARTER", !0), Vf = ms("SECOND", !0), wf = ms("TIME", !0), Im = ms("TIMEZONE", !0), Gp = ms("WEEK", !0), mv = ms("YEAR", !0), Jm = ms("DATE_TRUNC", !0), vv = ms("R", !0), Zv = function(Q, he) {
         return { type: Q.toLowerCase(), value: he[1].join("") };
       }, lm = /^[^"\\\0-\x1F\x7F]/, ev = On(['"', "\\", ["\0", ""], ""], !0, !1), bv = /^[^'\\]/, tv = On(["'", "\\"], !0, !1), cm = ms("\\'", !1), Av = ms('\\"', !1), _v = ms("\\\\", !1), Nm = ms("\\/", !1), Jv = ms("\\b", !1), Lb = ms("\\f", !1), gv = ms("\\n", !1), xb = ms("\\r", !1), Tv = ms("\\t", !1), Eb = ms("\\u", !1), Db = ms("\\", !1), Iv = ms("''", !1), Nv = ms('""', !1), eb = ms("``", !1), fm = /^[\n\r]/, Ap = On([`
-`, "\r"], !1, !1), Kd = /^[0-9]/, cd = On([["0", "9"]], !1, !1), Ah = /^[0-9a-fA-F]/, qh = On([["0", "9"], ["a", "f"], ["A", "F"]], !1, !1), Rv = /^[eE]/, tb = On(["e", "E"], !1, !1), dm = /^[+\-]/, Ov = On(["+", "-"], !1, !1), kv = ms("NULL", !0), Mv = ms("NOT NULL", !0), Rm = ms("TRUE", !0), _h = ms("TO", !0), Gh = ms("FALSE", !0), rv = ms("DROP", !0), rb = ms("USE", !0), Dv = ms("SELECT", !0), nb = ms("RECURSIVE", !0), sb = ms("IGNORE", !0), Om = ms("PARTITION", !0), ob = ms("INTO", !0), ib = ms("FROM", !0), Pv = ms("UNLOCK", !0), Sb = ms("TABLE", !0), Ab = ms("TABLES", !0), jv = ms("ON", !0), $v = ms("LEFT", !0), Hh = ms("RIGHT", !0), rf = ms("FULL", !0), Rd = ms("INNER", !0), pm = ms("CROSS", !0), Wf = ms("JOIN", !0), Cf = ms("OUTER", !0), yv = ms("OVER", !0), km = ms("UNION", !0), Lf = ms("VALUE", !0), Od = ms("VALUES", !0), _b = ms("USING", !0), ab = ms("WHERE", !0), Tb = ms("GROUP", !0), ub = ms("ORDER", !0), wv = ms("HAVING", !0), Cv = ms("QUALIFY", !0), Lv = ms("WINDOW", !0), lb = ms("ORDINAL", !0), Pb = ms("SAFE_ORDINAL", !0), Ib = ms("LIMIT", !0), cb = ms("OFFSET", !0), fb = ms("SAFE_OFFSET", !0), Fv = ms("ASC", !0), Nb = ms("DESC", !0), Rb = ms("ALL", !0), db = ms("DISTINCT", !0), Ob = ms("BETWEEN", !0), pb = ms("IN", !0), Uv = ms("IS", !0), q = ms("LIKE", !0), as = ms("EXISTS", !0), hm = ms("AND", !0), xf = ms("OR", !0), nv = ms("COUNT", !0), $r = ms("MAX", !0), Gs = ms("MIN", !0), kd = ms("SUM", !0), Mm = ms("AVG", !0), sv = ms("EXTRACT", !0), ws = ms("CALL", !0), Bv = ms("CASE", !0), hb = ms("WHEN", !0), jb = ms("THEN", !0), mm = ms("ELSE", !0), B = ms("END", !0), is = ms("CAST", !0), Dm = ms("SAFE_CAST", !0), _p = ms("ARRAY", !0), Pm = ms("ARRAY_AGG", !0), Ir = ms("STRING_AGG", !0), Ds = ms("BYTES", !0), fd = ms("BOOL", !0), xv = ms("GEOGRAPHY", !0), vm = ms("NUMERIC", !0), ls = ms("DECIMAL", !0), mb = ms("SIGNED", !0), ov = ms("UNSIGNED", !0), bm = ms("INT64", !0), iv = ms("INTEGER", !0), jm = ms("JSON", !0), Hp = ms("STRING", !0), $m = ms("STRUCT", !0), Fm = ms("FLOAT64", !0), Th = ms("DATETIME", !0), Ih = ms("TIMESTAMP", !0), D = ms("TRUNCATE", !0), Zn = ms("CURRENT_DATE", !0), Vh = ms("INTERVAL", !0), Ef = ms("CURRENT_TIME", !0), Nh = ms("CURRENT_TIMESTAMP", !0), wr = ms("SESSION_USER", !0), _s = ms("GLOBAL", !0), El = ms("SESSION", !0), lh = ms("PIVOT", !0), Wh = ms("PERSIST", !0), es = ms("PERSIST_ONLY", !0), qc = ms("VIEW", !0), lc = ms("ADD", !0), av = ms("COLUMN", !0), Vp = ms("INDEX", !0), ap = ms("FULLTEXT", !0), Xd = ms("COMMENT", !0), Ev = ms("REFERENCES", !0), ch = ms(",", !1), gm = ms("[", !1), vb = ms("]", !1), ym = ms(";", !1), wm = ms("||", !1), Yh = ms("&&", !1), Um = ms("/*", !1), dd = ms("*/", !1), zv = ms("--", !1), Qh = ms("#", !1), Cm = { type: "any" }, up = /^[ \t\n\r]/, Bm = On([" ", "	", `
+`, "\r"], !1, !1), Kd = /^[0-9]/, fd = On([["0", "9"]], !1, !1), Ah = /^[0-9a-fA-F]/, qh = On([["0", "9"], ["a", "f"], ["A", "F"]], !1, !1), Rv = /^[eE]/, tb = On(["e", "E"], !1, !1), dm = /^[+\-]/, Ov = On(["+", "-"], !1, !1), kv = ms("NULL", !0), Mv = ms("NOT NULL", !0), Rm = ms("TRUE", !0), _h = ms("TO", !0), Gh = ms("FALSE", !0), rv = ms("DROP", !0), rb = ms("USE", !0), Dv = ms("SELECT", !0), nb = ms("RECURSIVE", !0), sb = ms("IGNORE", !0), Om = ms("PARTITION", !0), ob = ms("INTO", !0), ib = ms("FROM", !0), Pv = ms("UNLOCK", !0), Sb = ms("TABLE", !0), Ab = ms("TABLES", !0), jv = ms("ON", !0), $v = ms("LEFT", !0), Hh = ms("RIGHT", !0), rf = ms("FULL", !0), Rd = ms("INNER", !0), pm = ms("CROSS", !0), Wf = ms("JOIN", !0), Cf = ms("OUTER", !0), yv = ms("OVER", !0), km = ms("UNION", !0), Lf = ms("VALUE", !0), Od = ms("VALUES", !0), _b = ms("USING", !0), ab = ms("WHERE", !0), Tb = ms("GROUP", !0), ub = ms("ORDER", !0), wv = ms("HAVING", !0), Cv = ms("QUALIFY", !0), Lv = ms("WINDOW", !0), lb = ms("ORDINAL", !0), Pb = ms("SAFE_ORDINAL", !0), Ib = ms("LIMIT", !0), cb = ms("OFFSET", !0), fb = ms("SAFE_OFFSET", !0), Fv = ms("ASC", !0), Nb = ms("DESC", !0), Rb = ms("ALL", !0), db = ms("DISTINCT", !0), Ob = ms("BETWEEN", !0), pb = ms("IN", !0), Uv = ms("IS", !0), q = ms("LIKE", !0), as = ms("EXISTS", !0), hm = ms("AND", !0), xf = ms("OR", !0), nv = ms("COUNT", !0), $r = ms("MAX", !0), Gs = ms("MIN", !0), kd = ms("SUM", !0), Mm = ms("AVG", !0), sv = ms("EXTRACT", !0), ws = ms("CALL", !0), Bv = ms("CASE", !0), hb = ms("WHEN", !0), jb = ms("THEN", !0), mm = ms("ELSE", !0), B = ms("END", !0), is = ms("CAST", !0), Dm = ms("SAFE_CAST", !0), _p = ms("ARRAY", !0), Pm = ms("ARRAY_AGG", !0), Ir = ms("STRING_AGG", !0), Ds = ms("BYTES", !0), dd = ms("BOOL", !0), xv = ms("GEOGRAPHY", !0), vm = ms("NUMERIC", !0), ls = ms("DECIMAL", !0), mb = ms("SIGNED", !0), ov = ms("UNSIGNED", !0), bm = ms("INT64", !0), iv = ms("INTEGER", !0), jm = ms("JSON", !0), Hp = ms("STRING", !0), $m = ms("STRUCT", !0), Fm = ms("FLOAT64", !0), Th = ms("DATETIME", !0), Ih = ms("TIMESTAMP", !0), D = ms("TRUNCATE", !0), Zn = ms("CURRENT_DATE", !0), Vh = ms("INTERVAL", !0), Ef = ms("CURRENT_TIME", !0), Nh = ms("CURRENT_TIMESTAMP", !0), wr = ms("SESSION_USER", !0), _s = ms("GLOBAL", !0), El = ms("SESSION", !0), lh = ms("PIVOT", !0), Wh = ms("PERSIST", !0), es = ms("PERSIST_ONLY", !0), qc = ms("VIEW", !0), lc = ms("ADD", !0), av = ms("COLUMN", !0), Vp = ms("INDEX", !0), ap = ms("FULLTEXT", !0), Xd = ms("COMMENT", !0), Ev = ms("REFERENCES", !0), ch = ms(",", !1), gm = ms("[", !1), vb = ms("]", !1), ym = ms(";", !1), wm = ms("||", !1), Yh = ms("&&", !1), Um = ms("/*", !1), pd = ms("*/", !1), zv = ms("--", !1), Qh = ms("#", !1), Cm = { type: "any" }, up = /^[ \t\n\r]/, Bm = On([" ", "	", `
 `, "\r"], !1, !1), fh = function(Q) {
         return { dataType: Q };
       }, N = ms("MAX", !1), Hn = ms("max", !1), Sf = function(Q, he) {
@@ -89330,7 +89354,7 @@ function aEt() {
             }(wt, Dt, Xt, Ar, an, qr), $e = Re) : (T = $e, $e = e)) : (T = $e, $e = e)) : (T = $e, $e = e)) : (T = $e, $e = e)) : (T = $e, $e = e), $e;
           }()) === e && (he = function() {
             var $e, Re, wt, Dt, Xt, Ar, an, qr;
-            return $e = T, (Re = ph()) !== e && Yt() !== e ? ((wt = K()) === e && (wt = null), wt !== e && Yt() !== e && (Dt = Qu()) !== e && Yt() !== e ? ((Xt = Tp()) === e && (Xt = null), Xt !== e && Yt() !== e && _n() !== e && Yt() !== e && (Ar = Gl()) !== e && Yt() !== e && Te() !== e && Yt() !== e && (an = Qp()) !== e && Yt() !== e ? ((qr = pd()) === e && (qr = null), qr !== e ? (Vn = $e, Re = function(wn, Kn, H, ie, we, Oe) {
+            return $e = T, (Re = ph()) !== e && Yt() !== e ? ((wt = K()) === e && (wt = null), wt !== e && Yt() !== e && (Dt = Qu()) !== e && Yt() !== e ? ((Xt = Tp()) === e && (Xt = null), Xt !== e && Yt() !== e && _n() !== e && Yt() !== e && (Ar = Gl()) !== e && Yt() !== e && Te() !== e && Yt() !== e && (an = Qp()) !== e && Yt() !== e ? ((qr = hd()) === e && (qr = null), qr !== e ? (Vn = $e, Re = function(wn, Kn, H, ie, we, Oe) {
               if (Kn && (mo.add(`insert::${Kn.db}::${Kn.table}`), Kn.as = null), ie) {
                 let mt = Kn && Kn.table || null;
                 Array.isArray(we.values) && we.values.forEach((yt, Ut) => {
@@ -89344,14 +89368,14 @@ function aEt() {
             return $e = T, (Re = ph()) !== e && Yt() !== e ? ((wt = function() {
               var wn, Kn, H, ie;
               return wn = T, r.substr(T, 6).toLowerCase() === "ignore" ? (Kn = r.substr(T, 6), T += 6) : (Kn = e, mr === 0 && $n(sb)), Kn !== e ? (H = T, mr++, ie = Io(), mr--, ie === e ? H = void 0 : (T = H, H = e), H !== e ? wn = Kn = [Kn, H] : (T = wn, wn = e)) : (T = wn, wn = e), wn;
-            }()) === e && (wt = null), wt !== e && Yt() !== e ? ((Dt = K()) === e && (Dt = null), Dt !== e && Yt() !== e && (Xt = Qu()) !== e && Yt() !== e ? ((Ar = Tp()) === e && (Ar = null), Ar !== e && Yt() !== e && (an = Qp()) !== e && Yt() !== e ? ((qr = pd()) === e && (qr = null), qr !== e ? (Vn = $e, Re = function(wn, Kn, H, ie, we, Oe, mt) {
+            }()) === e && (wt = null), wt !== e && Yt() !== e ? ((Dt = K()) === e && (Dt = null), Dt !== e && Yt() !== e && (Xt = Qu()) !== e && Yt() !== e ? ((Ar = Tp()) === e && (Ar = null), Ar !== e && Yt() !== e && (an = Qp()) !== e && Yt() !== e ? ((qr = hd()) === e && (qr = null), qr !== e ? (Vn = $e, Re = function(wn, Kn, H, ie, we, Oe, mt) {
               ie && (mo.add(`insert::${ie.db}::${ie.table}`), vo.add(`insert::${ie.table}::(.*)`), ie.as = null);
               const yt = [Kn, H].filter((Ut) => Ut).map((Ut) => Ut[0] && Ut[0].toLowerCase()).join(" ");
               return { tableList: Array.from(mo), columnList: Ps(vo), ast: { type: wn, table: [ie], columns: null, values: Oe, partition: we, prefix: yt, on_duplicate_update: mt } };
             }(Re, wt, Dt, Xt, Ar, an, qr), $e = Re) : (T = $e, $e = e)) : (T = $e, $e = e)) : (T = $e, $e = e)) : (T = $e, $e = e)) : (T = $e, $e = e), $e;
           }()) === e && (he = function() {
             var $e, Re, wt, Dt, Xt, Ar, an;
-            $e = T, (Re = ph()) !== e && Yt() !== e ? ((wt = K()) === e && (wt = null), wt !== e && Yt() !== e && (Dt = Qu()) !== e && Yt() !== e ? ((Xt = Tp()) === e && (Xt = null), Xt !== e && Yt() !== e && Ft() !== e && Yt() !== e && (Ar = Rh()) !== e && Yt() !== e ? ((an = pd()) === e && (an = null), an !== e ? (Vn = $e, qr = Re, Kn = Xt, H = Ar, ie = an, (wn = Dt) && (mo.add(`insert::${wn.db}::${wn.table}`), vo.add(`insert::${wn.table}::(.*)`), wn.as = null), Re = { tableList: Array.from(mo), columnList: Ps(vo), ast: { type: qr, table: [wn], columns: null, partition: Kn, set: H, on_duplicate_update: ie } }, $e = Re) : (T = $e, $e = e)) : (T = $e, $e = e)) : (T = $e, $e = e)) : (T = $e, $e = e);
+            $e = T, (Re = ph()) !== e && Yt() !== e ? ((wt = K()) === e && (wt = null), wt !== e && Yt() !== e && (Dt = Qu()) !== e && Yt() !== e ? ((Xt = Tp()) === e && (Xt = null), Xt !== e && Yt() !== e && Ft() !== e && Yt() !== e && (Ar = Rh()) !== e && Yt() !== e ? ((an = hd()) === e && (an = null), an !== e ? (Vn = $e, qr = Re, Kn = Xt, H = Ar, ie = an, (wn = Dt) && (mo.add(`insert::${wn.db}::${wn.table}`), vo.add(`insert::${wn.table}::(.*)`), wn.as = null), Re = { tableList: Array.from(mo), columnList: Ps(vo), ast: { type: qr, table: [wn], columns: null, partition: Kn, set: H, on_duplicate_update: ie } }, $e = Re) : (T = $e, $e = e)) : (T = $e, $e = e)) : (T = $e, $e = e)) : (T = $e, $e = e);
             var qr, wn, Kn, H, ie;
             return $e;
           }()) === e && (he = function() {
@@ -89728,7 +89752,7 @@ function aEt() {
           }()) !== e ? (Vn = $e, $e = { type: "values", values: Re }) : (T = $e, $e = e), $e;
         }()) === e && (Q = T, (he = Pd()) !== e && (Vn = Q, he = he.ast), Q = he), Q;
       }
-      function pd() {
+      function hd() {
         var Q, he, $e;
         return Q = T, dt() !== e && Yt() !== e ? (r.substr(T, 9).toLowerCase() === "duplicate" ? (he = r.substr(T, 9), T += 9) : (he = e, mr === 0 && $n(Fe)), he !== e && Yt() !== e && ft() !== e && Yt() !== e && ep() !== e && Yt() !== e && ($e = Rh()) !== e ? (Vn = Q, Q = { keyword: "on duplicate key update", set: $e }) : (T = Q, Q = e)) : (T = Q, Q = e), Q;
       }
@@ -89943,8 +89967,8 @@ function aEt() {
       }
       function Jd() {
         var Q, he, $e, Re, wt, Dt;
-        if (Q = T, (he = hd()) !== e) {
-          for ($e = [], Re = T, (wt = Yt()) !== e && (Dt = hd()) !== e ? Re = wt = [wt, Dt] : (T = Re, Re = e); Re !== e; ) $e.push(Re), Re = T, (wt = Yt()) !== e && (Dt = hd()) !== e ? Re = wt = [wt, Dt] : (T = Re, Re = e);
+        if (Q = T, (he = md()) !== e) {
+          for ($e = [], Re = T, (wt = Yt()) !== e && (Dt = md()) !== e ? Re = wt = [wt, Dt] : (T = Re, Re = e); Re !== e; ) $e.push(Re), Re = T, (wt = Yt()) !== e && (Dt = md()) !== e ? Re = wt = [wt, Dt] : (T = Re, Re = e);
           $e !== e ? (Vn = Q, Q = he = function(Xt, Ar) {
             const an = [Xt];
             for (let qr = 0; qr < Ar.length; qr++) an.push(Ar[qr][1]);
@@ -89953,12 +89977,12 @@ function aEt() {
         } else T = Q, Q = e;
         return Q;
       }
-      function hd() {
+      function md() {
         var Q, he, $e, Re, wt, Dt;
         return Q = T, (he = function() {
           var Xt, Ar, an, qr;
           return Xt = T, r.substr(T, 14).toLowerCase() === "key_block_size" ? (Ar = r.substr(T, 14), T += 14) : (Ar = e, mr === 0 && $n(Bo)), Ar !== e ? (an = T, mr++, qr = Io(), mr--, qr === e ? an = void 0 : (T = an, an = e), an !== e ? Xt = Ar = [Ar, an] : (T = Xt, Xt = e)) : (T = Xt, Xt = e), Xt;
-        }()) !== e && Yt() !== e ? (($e = Yu()) === e && ($e = null), $e !== e && Yt() !== e && (Re = He()) !== e ? (Vn = Q, wt = $e, Dt = Re, Q = he = { type: he.toLowerCase(), symbol: wt, expr: Dt }) : (T = Q, Q = e)) : (T = Q, Q = e), Q === e && (Q = of()) === e && (Q = T, r.substr(T, 4).toLowerCase() === "with" ? (he = r.substr(T, 4), T += 4) : (he = e, mr === 0 && $n(tl)), he !== e && Yt() !== e ? (r.substr(T, 6).toLowerCase() === "parser" ? ($e = r.substr(T, 6), T += 6) : ($e = e, mr === 0 && $n(od)), $e !== e && Yt() !== e && (Re = gl()) !== e ? (Vn = Q, Q = he = { type: "with parser", expr: Re }) : (T = Q, Q = e)) : (T = Q, Q = e), Q === e && (Q = T, r.substr(T, 7).toLowerCase() === "visible" ? (he = r.substr(T, 7), T += 7) : (he = e, mr === 0 && $n(Kl)), he === e && (r.substr(T, 9).toLowerCase() === "invisible" ? (he = r.substr(T, 9), T += 9) : (he = e, mr === 0 && $n(Fl))), he !== e && (Vn = Q, he = function(Xt) {
+        }()) !== e && Yt() !== e ? (($e = Yu()) === e && ($e = null), $e !== e && Yt() !== e && (Re = He()) !== e ? (Vn = Q, wt = $e, Dt = Re, Q = he = { type: he.toLowerCase(), symbol: wt, expr: Dt }) : (T = Q, Q = e)) : (T = Q, Q = e), Q === e && (Q = of()) === e && (Q = T, r.substr(T, 4).toLowerCase() === "with" ? (he = r.substr(T, 4), T += 4) : (he = e, mr === 0 && $n(tl)), he !== e && Yt() !== e ? (r.substr(T, 6).toLowerCase() === "parser" ? ($e = r.substr(T, 6), T += 6) : ($e = e, mr === 0 && $n(id)), $e !== e && Yt() !== e && (Re = gl()) !== e ? (Vn = Q, Q = he = { type: "with parser", expr: Re }) : (T = Q, Q = e)) : (T = Q, Q = e), Q === e && (Q = T, r.substr(T, 7).toLowerCase() === "visible" ? (he = r.substr(T, 7), T += 7) : (he = e, mr === 0 && $n(Kl)), he === e && (r.substr(T, 9).toLowerCase() === "invisible" ? (he = r.substr(T, 9), T += 9) : (he = e, mr === 0 && $n(Fl))), he !== e && (Vn = Q, he = function(Xt) {
           return { type: Xt.toLowerCase(), expr: Xt.toLowerCase() };
         }(he)), (Q = he) === e && (Q = Yf()))), Q;
       }
@@ -89999,11 +90023,11 @@ function aEt() {
       }
       function Op() {
         var Q, he, $e, Re;
-        return Q = T, r.substr(T, 4).toLowerCase() === "show" ? (he = r.substr(T, 4), T += 4) : (he = e, mr === 0 && $n(id)), he !== e ? ($e = T, mr++, Re = Io(), mr--, Re === e ? $e = void 0 : (T = $e, $e = e), $e !== e ? Q = he = [he, $e] : (T = Q, Q = e)) : (T = Q, Q = e), Q;
+        return Q = T, r.substr(T, 4).toLowerCase() === "show" ? (he = r.substr(T, 4), T += 4) : (he = e, mr === 0 && $n(ad)), he !== e ? ($e = T, mr++, Re = Io(), mr--, Re === e ? $e = void 0 : (T = $e, $e = e), $e !== e ? Q = he = [he, $e] : (T = Q, Q = e)) : (T = Q, Q = e), Q;
       }
       function fc() {
         var Q;
-        return r.charCodeAt(T) === 64 ? (Q = "@", T++) : (Q = e, mr === 0 && $n(ad)), Q;
+        return r.charCodeAt(T) === 64 ? (Q = "@", T++) : (Q = e, mr === 0 && $n(ud)), Q;
       }
       function _f() {
         var Q, he, $e, Re;
@@ -90128,9 +90152,9 @@ function aEt() {
       }
       function jd() {
         var Q, he, $e;
-        return Q = T, (he = md()) !== e && Yt() !== e ? (($e = Gr()) === e && ($e = null), $e !== e ? (Vn = Q, Q = he = he) : (T = Q, Q = e)) : (T = Q, Q = e), Q;
+        return Q = T, (he = vd()) !== e && Yt() !== e ? (($e = Gr()) === e && ($e = null), $e !== e ? (Vn = Q, Q = he = he) : (T = Q, Q = e)) : (T = Q, Q = e), Q;
       }
-      function md() {
+      function vd() {
         var Q, he, $e, Re, wt, Dt, Xt, Ar;
         if (Q = T, (he = rp()) !== e) {
           for ($e = [], Re = T, (wt = Yt()) !== e && (Dt = Gr()) !== e && (Xt = Yt()) !== e && (Ar = rp()) !== e ? Re = wt = [wt, Dt, Xt, Ar] : (T = Re, Re = e); Re !== e; ) $e.push(Re), Re = T, (wt = Yt()) !== e && (Dt = Gr()) !== e && (Xt = Yt()) !== e && (Ar = rp()) !== e ? Re = wt = [wt, Dt, Xt, Ar] : (T = Re, Re = e);
@@ -90138,13 +90162,13 @@ function aEt() {
         } else T = Q, Q = e;
         return Q;
       }
-      function vd() {
+      function bd() {
         var Q, he;
         return Q = T, ei() !== e && Yt() !== e ? ((he = He()) === e && (he = br()), he !== e && Yt() !== e && Ui() !== e ? (Vn = Q, Q = { value: he }) : (T = Q, Q = e)) : (T = Q, Q = e), Q;
       }
       function zl() {
         var Q, he, $e, Re, wt, Dt, Xt, Ar, an, qr, wn, Kn, H, ie;
-        if (Q = T, he = [], ($e = vd()) !== e) for (; $e !== e; ) he.push($e), $e = vd();
+        if (Q = T, he = [], ($e = bd()) !== e) for (; $e !== e; ) he.push($e), $e = bd();
         else he = e;
         if (he !== e && (Vn = Q, he = he), (Q = he) === e) {
           if (Q = T, he = [], $e = T, (Re = ei()) !== e && (wt = Yt()) !== e ? ((Dt = Qo()) === e && (Dt = er()) === e && (Dt = Ti()) === e && (Dt = Ai()), Dt !== e && (Xt = Yt()) !== e && (Ar = _n()) !== e && (an = Yt()) !== e ? ((qr = He()) === e && (qr = br()), qr !== e && (wn = Yt()) !== e && (Kn = Te()) !== e && (H = Yt()) !== e && (ie = Ui()) !== e ? $e = Re = [Re, wt, Dt, Xt, Ar, an, qr, wn, Kn, H, ie] : (T = $e, $e = e)) : (T = $e, $e = e)) : (T = $e, $e = e), $e !== e) for (; $e !== e; ) he.push($e), $e = T, (Re = ei()) !== e && (wt = Yt()) !== e ? ((Dt = Qo()) === e && (Dt = er()) === e && (Dt = Ti()) === e && (Dt = Ai()), Dt !== e && (Xt = Yt()) !== e && (Ar = _n()) !== e && (an = Yt()) !== e ? ((qr = He()) === e && (qr = br()), qr !== e && (wn = Yt()) !== e && (Kn = Te()) !== e && (H = Yt()) !== e && (ie = Ui()) !== e ? $e = Re = [Re, wt, Dt, Xt, Ar, an, qr, wn, Kn, H, ie] : (T = $e, $e = e)) : (T = $e, $e = e)) : (T = $e, $e = e);
@@ -90159,7 +90183,7 @@ function aEt() {
       }
       function rp() {
         var Q, he, $e, Re, wt, Dt, Xt, Ar, an, qr;
-        return Q = T, he = T, ($e = Gu()) !== e && (Re = Yt()) !== e && (wt = Je()) !== e ? he = $e = [$e, Re, wt] : (T = he, he = e), he === e && (he = null), he !== e && ($e = yn()) !== e && (Re = Yt()) !== e ? (r.substr(T, 6).toLowerCase() === "except" ? (wt = r.substr(T, 6), T += 6) : (wt = e, mr === 0 && $n(Wd)), wt === e && (r.substr(T, 7).toLowerCase() === "replace" ? (wt = r.substr(T, 7), T += 7) : (wt = e, mr === 0 && $n(th))), wt !== e && (Dt = Yt()) !== e && (Xt = _n()) !== e && (Ar = Yt()) !== e && (an = md()) !== e && Yt() !== e && Te() !== e ? (Vn = Q, Q = he = function(wn, Kn, H) {
+        return Q = T, he = T, ($e = Gu()) !== e && (Re = Yt()) !== e && (wt = Je()) !== e ? he = $e = [$e, Re, wt] : (T = he, he = e), he === e && (he = null), he !== e && ($e = yn()) !== e && (Re = Yt()) !== e ? (r.substr(T, 6).toLowerCase() === "except" ? (wt = r.substr(T, 6), T += 6) : (wt = e, mr === 0 && $n(Wd)), wt === e && (r.substr(T, 7).toLowerCase() === "replace" ? (wt = r.substr(T, 7), T += 7) : (wt = e, mr === 0 && $n(th))), wt !== e && (Dt = Yt()) !== e && (Xt = _n()) !== e && (Ar = Yt()) !== e && (an = vd()) !== e && Yt() !== e && Te() !== e ? (Vn = Q, Q = he = function(wn, Kn, H) {
           const ie = wn && wn[0];
           return vo.add(`select::${ie}::(.*)`), { expr_list: H, parentheses: !0, expr: { type: "column_ref", table: ie, column: "*" }, type: Kn.toLowerCase(), ...Ht() };
         }(he, wt, an)) : (T = Q, Q = e)) : (T = Q, Q = e), Q === e && (Q = T, (he = Hi()) === e && (he = T, ($e = yn()) !== e ? (Re = T, mr++, wt = Io(), mr--, wt === e ? Re = void 0 : (T = Re, Re = e), Re !== e ? he = $e = [$e, Re] : (T = he, he = e)) : (T = he, he = e), he === e && (he = yn())), he !== e && (Vn = Q, he = function(wn) {
@@ -90526,7 +90550,7 @@ function aEt() {
       }
       function Hc() {
         var Q;
-        return r.substr(T, 2) === ">=" ? (Q = ">=", T += 2) : (Q = e, mr === 0 && $n(Km)), Q === e && (r.charCodeAt(T) === 62 ? (Q = ">", T++) : (Q = e, mr === 0 && $n(_m)), Q === e && (r.substr(T, 2) === "<=" ? (Q = "<=", T += 2) : (Q = e, mr === 0 && $n(tf)), Q === e && (r.substr(T, 2) === "<>" ? (Q = "<>", T += 2) : (Q = e, mr === 0 && $n(qf)), Q === e && (r.charCodeAt(T) === 60 ? (Q = "<", T++) : (Q = e, mr === 0 && $n(ud)), Q === e && (r.charCodeAt(T) === 61 ? (Q = "=", T++) : (Q = e, mr === 0 && $n(Ue)), Q === e && (r.substr(T, 2) === "!=" ? (Q = "!=", T += 2) : (Q = e, mr === 0 && $n(Bh)))))))), Q;
+        return r.substr(T, 2) === ">=" ? (Q = ">=", T += 2) : (Q = e, mr === 0 && $n(Km)), Q === e && (r.charCodeAt(T) === 62 ? (Q = ">", T++) : (Q = e, mr === 0 && $n(_m)), Q === e && (r.substr(T, 2) === "<=" ? (Q = "<=", T += 2) : (Q = e, mr === 0 && $n(tf)), Q === e && (r.substr(T, 2) === "<>" ? (Q = "<>", T += 2) : (Q = e, mr === 0 && $n(qf)), Q === e && (r.charCodeAt(T) === 60 ? (Q = "<", T++) : (Q = e, mr === 0 && $n(ld)), Q === e && (r.charCodeAt(T) === 61 ? (Q = "=", T++) : (Q = e, mr === 0 && $n(Ue)), Q === e && (r.substr(T, 2) === "!=" ? (Q = "!=", T += 2) : (Q = e, mr === 0 && $n(Bh)))))))), Q;
       }
       function bl() {
         var Q, he, $e, Re, wt;
@@ -90621,7 +90645,7 @@ function aEt() {
               var Kn, H, ie, we;
               return Kn = T, r.substr(T, 8).toLowerCase() === "unsigned" ? (H = r.substr(T, 8), T += 8) : (H = e, mr === 0 && $n(ov)), H !== e ? (ie = T, mr++, we = Io(), mr--, we === e ? ie = void 0 : (T = ie, ie = e), ie !== e ? (Vn = Kn, Kn = H = "UNSIGNED") : (T = Kn, Kn = e)) : (T = Kn, Kn = e), Kn;
             }()), wn;
-          }()) !== e && Yt() !== e ? ((Ar = bd()) === e && (Ar = null), Ar !== e && Yt() !== e && (an = Te()) !== e ? (Vn = Re, wt = function(wn, Kn, H, ie) {
+          }()) !== e && Yt() !== e ? ((Ar = gd()) === e && (Ar = null), Ar !== e && Yt() !== e && (an = Te()) !== e ? (Vn = Re, wt = function(wn, Kn, H, ie) {
             return { type: "cast", keyword: wn.toLowerCase(), ...Kn, symbol: "as", target: [{ dataType: H + (ie ? " " + ie : "") }] };
           }(wt, Dt, Xt, Ar), Re = wt) : (T = Re, Re = e)) : (T = Re, Re = e)))), Re;
         }()) === e && (Q = d()) === e && (Q = function() {
@@ -90677,7 +90701,7 @@ function aEt() {
           }(he, $e, wt, Dt)) : (T = Q, Q = e)) : (T = Q, Q = e)) : (T = Q, Q = e);
         } else T = Q, Q = e;
         if (Q === e) if (Q = T, (he = lu()) === e && (he = zr()), he !== e) if (($e = Yt()) !== e) {
-          for (Re = [], wt = vd(); wt !== e; ) Re.push(wt), wt = vd();
+          for (Re = [], wt = bd(); wt !== e; ) Re.push(wt), wt = bd();
           Re !== e ? (wt = T, (Dt = Yt()) !== e && (Xt = sf()) !== e ? wt = Dt = [Dt, Xt] : (T = wt, wt = e), wt === e && (wt = null), wt !== e ? (Vn = Q, Q = he = function(Kn, H, ie) {
             const we = typeof Kn == "string" ? Kn : Kn.value;
             vo.add("select::null::" + we);
@@ -90779,7 +90803,7 @@ function aEt() {
       }
       function Vc() {
         var Q, he, $e;
-        return Q = T, r.charCodeAt(T) === 58 ? (he = ":", T++) : (he = e, mr === 0 && $n(Di)), he === e && (r.charCodeAt(T) === 64 ? (he = "@", T++) : (he = e, mr === 0 && $n(ad))), he !== e && ($e = gl()) !== e ? (Vn = Q, Q = he = { type: "param", value: $e, prefix: he }) : (T = Q, Q = e), Q;
+        return Q = T, r.charCodeAt(T) === 58 ? (he = ":", T++) : (he = e, mr === 0 && $n(Di)), he === e && (r.charCodeAt(T) === 64 ? (he = "@", T++) : (he = e, mr === 0 && $n(ud))), he !== e && ($e = gl()) !== e ? (Vn = Q, Q = he = { type: "param", value: $e, prefix: he }) : (T = Q, Q = e), Q;
       }
       function Au() {
         var Q;
@@ -90907,7 +90931,7 @@ function aEt() {
       }
       function Ul() {
         var Q, he;
-        return Q = T, r.substr(T, 10).toLowerCase() === "year_month" ? (he = r.substr(T, 10), T += 10) : (he = e, mr === 0 && $n(Ki)), he === e && (r.substr(T, 8).toLowerCase() === "day_hour" ? (he = r.substr(T, 8), T += 8) : (he = e, mr === 0 && $n(ja)), he === e && (r.substr(T, 10).toLowerCase() === "day_minute" ? (he = r.substr(T, 10), T += 10) : (he = e, mr === 0 && $n(Ta)), he === e && (r.substr(T, 10).toLowerCase() === "day_second" ? (he = r.substr(T, 10), T += 10) : (he = e, mr === 0 && $n(vu)), he === e && (r.substr(T, 15).toLowerCase() === "day_microsecond" ? (he = r.substr(T, 15), T += 15) : (he = e, mr === 0 && $n(cu)), he === e && (r.substr(T, 11).toLowerCase() === "hour_minute" ? (he = r.substr(T, 11), T += 11) : (he = e, mr === 0 && $n(ul)), he === e && (r.substr(T, 11).toLowerCase() === "hour_second" ? (he = r.substr(T, 11), T += 11) : (he = e, mr === 0 && $n(Ou)), he === e && (r.substr(T, 16).toLowerCase() === "hour_microsecond" ? (he = r.substr(T, 16), T += 16) : (he = e, mr === 0 && $n(ec)), he === e && (r.substr(T, 13).toLowerCase() === "minute_second" ? (he = r.substr(T, 13), T += 13) : (he = e, mr === 0 && $n(Eu)), he === e && (r.substr(T, 18).toLowerCase() === "minute_microsecond" ? (he = r.substr(T, 18), T += 18) : (he = e, mr === 0 && $n(uc)), he === e && (r.substr(T, 18).toLowerCase() === "second_microsecond" ? (he = r.substr(T, 18), T += 18) : (he = e, mr === 0 && $n(Td)), he === e && (r.substr(T, 13).toLowerCase() === "timezone_hour" ? (he = r.substr(T, 13), T += 13) : (he = e, mr === 0 && $n(Gf)), he === e && (r.substr(T, 15).toLowerCase() === "timezone_minute" ? (he = r.substr(T, 15), T += 15) : (he = e, mr === 0 && $n(Cc)), he === e && (r.substr(T, 7).toLowerCase() === "century" ? (he = r.substr(T, 7), T += 7) : (he = e, mr === 0 && $n(ah)), he === e && (r.substr(T, 9).toLowerCase() === "dayofweek" ? (he = r.substr(T, 9), T += 9) : (he = e, mr === 0 && $n(qp)), he === e && (r.substr(T, 3).toLowerCase() === "day" ? (he = r.substr(T, 3), T += 3) : (he = e, mr === 0 && $n(ll)), he === e && (r.substr(T, 4).toLowerCase() === "date" ? (he = r.substr(T, 4), T += 4) : (he = e, mr === 0 && $n(zc)), he === e && (r.substr(T, 6).toLowerCase() === "decade" ? (he = r.substr(T, 6), T += 6) : (he = e, mr === 0 && $n(Id)), he === e && (r.substr(T, 3).toLowerCase() === "dow" ? (he = r.substr(T, 3), T += 3) : (he = e, mr === 0 && $n(ld)), he === e && (r.substr(T, 3).toLowerCase() === "doy" ? (he = r.substr(T, 3), T += 3) : (he = e, mr === 0 && $n(um)), he === e && (r.substr(T, 5).toLowerCase() === "epoch" ? (he = r.substr(T, 5), T += 5) : (he = e, mr === 0 && $n(Xm)), he === e && (r.substr(T, 4).toLowerCase() === "hour" ? (he = r.substr(T, 4), T += 4) : (he = e, mr === 0 && $n(Cd)), he === e && (r.substr(T, 6).toLowerCase() === "isodow" ? (he = r.substr(T, 6), T += 6) : (he = e, mr === 0 && $n(Hf)), he === e && (r.substr(T, 7).toLowerCase() === "isoweek" ? (he = r.substr(T, 7), T += 7) : (he = e, mr === 0 && $n(Nd)), he === e && (r.substr(T, 7).toLowerCase() === "isoyear" ? (he = r.substr(T, 7), T += 7) : (he = e, mr === 0 && $n(Yd)), he === e && (r.substr(T, 12).toLowerCase() === "microseconds" ? (he = r.substr(T, 12), T += 12) : (he = e, mr === 0 && $n(Qd)), he === e && (r.substr(T, 10).toLowerCase() === "millennium" ? (he = r.substr(T, 10), T += 10) : (he = e, mr === 0 && $n(uh)), he === e && (r.substr(T, 12).toLowerCase() === "milliseconds" ? (he = r.substr(T, 12), T += 12) : (he = e, mr === 0 && $n(Qv)), he === e && (r.substr(T, 6).toLowerCase() === "minute" ? (he = r.substr(T, 6), T += 6) : (he = e, mr === 0 && $n(Zm)), he === e && (r.substr(T, 5).toLowerCase() === "month" ? (he = r.substr(T, 5), T += 5) : (he = e, mr === 0 && $n(Kv)), he === e && (r.substr(T, 7).toLowerCase() === "quarter" ? (he = r.substr(T, 7), T += 7) : (he = e, mr === 0 && $n(Xv)), he === e && (r.substr(T, 6).toLowerCase() === "second" ? (he = r.substr(T, 6), T += 6) : (he = e, mr === 0 && $n(Vf)), he === e && (r.substr(T, 4).toLowerCase() === "time" ? (he = r.substr(T, 4), T += 4) : (he = e, mr === 0 && $n(wf)), he === e && (r.substr(T, 8).toLowerCase() === "timezone" ? (he = r.substr(T, 8), T += 8) : (he = e, mr === 0 && $n(Im)), he === e && (r.substr(T, 4).toLowerCase() === "week" ? (he = r.substr(T, 4), T += 4) : (he = e, mr === 0 && $n(Gp)), he === e && (r.substr(T, 4).toLowerCase() === "year" ? (he = r.substr(T, 4), T += 4) : (he = e, mr === 0 && $n(mv))))))))))))))))))))))))))))))))))))), he !== e && (Vn = Q, he = he), Q = he;
+        return Q = T, r.substr(T, 10).toLowerCase() === "year_month" ? (he = r.substr(T, 10), T += 10) : (he = e, mr === 0 && $n(Ki)), he === e && (r.substr(T, 8).toLowerCase() === "day_hour" ? (he = r.substr(T, 8), T += 8) : (he = e, mr === 0 && $n(ja)), he === e && (r.substr(T, 10).toLowerCase() === "day_minute" ? (he = r.substr(T, 10), T += 10) : (he = e, mr === 0 && $n(Ta)), he === e && (r.substr(T, 10).toLowerCase() === "day_second" ? (he = r.substr(T, 10), T += 10) : (he = e, mr === 0 && $n(vu)), he === e && (r.substr(T, 15).toLowerCase() === "day_microsecond" ? (he = r.substr(T, 15), T += 15) : (he = e, mr === 0 && $n(cu)), he === e && (r.substr(T, 11).toLowerCase() === "hour_minute" ? (he = r.substr(T, 11), T += 11) : (he = e, mr === 0 && $n(ul)), he === e && (r.substr(T, 11).toLowerCase() === "hour_second" ? (he = r.substr(T, 11), T += 11) : (he = e, mr === 0 && $n(Ou)), he === e && (r.substr(T, 16).toLowerCase() === "hour_microsecond" ? (he = r.substr(T, 16), T += 16) : (he = e, mr === 0 && $n(ec)), he === e && (r.substr(T, 13).toLowerCase() === "minute_second" ? (he = r.substr(T, 13), T += 13) : (he = e, mr === 0 && $n(Eu)), he === e && (r.substr(T, 18).toLowerCase() === "minute_microsecond" ? (he = r.substr(T, 18), T += 18) : (he = e, mr === 0 && $n(uc)), he === e && (r.substr(T, 18).toLowerCase() === "second_microsecond" ? (he = r.substr(T, 18), T += 18) : (he = e, mr === 0 && $n(Td)), he === e && (r.substr(T, 13).toLowerCase() === "timezone_hour" ? (he = r.substr(T, 13), T += 13) : (he = e, mr === 0 && $n(Gf)), he === e && (r.substr(T, 15).toLowerCase() === "timezone_minute" ? (he = r.substr(T, 15), T += 15) : (he = e, mr === 0 && $n(Cc)), he === e && (r.substr(T, 7).toLowerCase() === "century" ? (he = r.substr(T, 7), T += 7) : (he = e, mr === 0 && $n(ah)), he === e && (r.substr(T, 9).toLowerCase() === "dayofweek" ? (he = r.substr(T, 9), T += 9) : (he = e, mr === 0 && $n(qp)), he === e && (r.substr(T, 3).toLowerCase() === "day" ? (he = r.substr(T, 3), T += 3) : (he = e, mr === 0 && $n(ll)), he === e && (r.substr(T, 4).toLowerCase() === "date" ? (he = r.substr(T, 4), T += 4) : (he = e, mr === 0 && $n(zc)), he === e && (r.substr(T, 6).toLowerCase() === "decade" ? (he = r.substr(T, 6), T += 6) : (he = e, mr === 0 && $n(Id)), he === e && (r.substr(T, 3).toLowerCase() === "dow" ? (he = r.substr(T, 3), T += 3) : (he = e, mr === 0 && $n(cd)), he === e && (r.substr(T, 3).toLowerCase() === "doy" ? (he = r.substr(T, 3), T += 3) : (he = e, mr === 0 && $n(um)), he === e && (r.substr(T, 5).toLowerCase() === "epoch" ? (he = r.substr(T, 5), T += 5) : (he = e, mr === 0 && $n(Xm)), he === e && (r.substr(T, 4).toLowerCase() === "hour" ? (he = r.substr(T, 4), T += 4) : (he = e, mr === 0 && $n(Cd)), he === e && (r.substr(T, 6).toLowerCase() === "isodow" ? (he = r.substr(T, 6), T += 6) : (he = e, mr === 0 && $n(Hf)), he === e && (r.substr(T, 7).toLowerCase() === "isoweek" ? (he = r.substr(T, 7), T += 7) : (he = e, mr === 0 && $n(Nd)), he === e && (r.substr(T, 7).toLowerCase() === "isoyear" ? (he = r.substr(T, 7), T += 7) : (he = e, mr === 0 && $n(Yd)), he === e && (r.substr(T, 12).toLowerCase() === "microseconds" ? (he = r.substr(T, 12), T += 12) : (he = e, mr === 0 && $n(Qd)), he === e && (r.substr(T, 10).toLowerCase() === "millennium" ? (he = r.substr(T, 10), T += 10) : (he = e, mr === 0 && $n(uh)), he === e && (r.substr(T, 12).toLowerCase() === "milliseconds" ? (he = r.substr(T, 12), T += 12) : (he = e, mr === 0 && $n(Qv)), he === e && (r.substr(T, 6).toLowerCase() === "minute" ? (he = r.substr(T, 6), T += 6) : (he = e, mr === 0 && $n(Zm)), he === e && (r.substr(T, 5).toLowerCase() === "month" ? (he = r.substr(T, 5), T += 5) : (he = e, mr === 0 && $n(Kv)), he === e && (r.substr(T, 7).toLowerCase() === "quarter" ? (he = r.substr(T, 7), T += 7) : (he = e, mr === 0 && $n(Xv)), he === e && (r.substr(T, 6).toLowerCase() === "second" ? (he = r.substr(T, 6), T += 6) : (he = e, mr === 0 && $n(Vf)), he === e && (r.substr(T, 4).toLowerCase() === "time" ? (he = r.substr(T, 4), T += 4) : (he = e, mr === 0 && $n(wf)), he === e && (r.substr(T, 8).toLowerCase() === "timezone" ? (he = r.substr(T, 8), T += 8) : (he = e, mr === 0 && $n(Im)), he === e && (r.substr(T, 4).toLowerCase() === "week" ? (he = r.substr(T, 4), T += 4) : (he = e, mr === 0 && $n(Gp)), he === e && (r.substr(T, 4).toLowerCase() === "year" ? (he = r.substr(T, 4), T += 4) : (he = e, mr === 0 && $n(mv))))))))))))))))))))))))))))))))))))), he !== e && (Vn = Q, he = he), Q = he;
       }
       function rl() {
         var Q, he, $e;
@@ -91051,7 +91075,7 @@ function aEt() {
       }
       function vn() {
         var Q;
-        return Kd.test(r.charAt(T)) ? (Q = r.charAt(T), T++) : (Q = e, mr === 0 && $n(cd)), Q;
+        return Kd.test(r.charAt(T)) ? (Q = r.charAt(T), T++) : (Q = e, mr === 0 && $n(fd)), Q;
       }
       function h() {
         var Q;
@@ -91221,7 +91245,7 @@ function aEt() {
         var Q, he, $e, Re;
         return Q = T, r.substr(T, 7).toLowerCase() === "decimal" ? (he = r.substr(T, 7), T += 7) : (he = e, mr === 0 && $n(ls)), he !== e ? ($e = T, mr++, Re = Io(), mr--, Re === e ? $e = void 0 : (T = $e, $e = e), $e !== e ? (Vn = Q, Q = he = "DECIMAL") : (T = Q, Q = e)) : (T = Q, Q = e), Q;
       }
-      function bd() {
+      function gd() {
         var Q, he, $e, Re;
         return Q = T, r.substr(T, 7).toLowerCase() === "integer" ? (he = r.substr(T, 7), T += 7) : (he = e, mr === 0 && $n(iv)), he !== e ? ($e = T, mr++, Re = Io(), mr--, Re === e ? $e = void 0 : (T = $e, $e = e), $e !== e ? (Vn = Q, Q = he = "INTEGER") : (T = Q, Q = e)) : (T = Q, Q = e), Q;
       }
@@ -91295,7 +91319,7 @@ function aEt() {
       }
       function Jt() {
         var Q;
-        return r.charCodeAt(T) === 60 ? (Q = "<", T++) : (Q = e, mr === 0 && $n(ud)), Q;
+        return r.charCodeAt(T) === 60 ? (Q = "<", T++) : (Q = e, mr === 0 && $n(ld)), Q;
       }
       function Qs() {
         var Q;
@@ -91339,8 +91363,8 @@ function aEt() {
         return (Q = function() {
           var he, $e, Re, wt, Dt, Xt;
           if (he = T, r.substr(T, 2) === "/*" ? ($e = "/*", T += 2) : ($e = e, mr === 0 && $n(Um)), $e !== e) {
-            for (Re = [], wt = T, Dt = T, mr++, r.substr(T, 2) === "*/" ? (Xt = "*/", T += 2) : (Xt = e, mr === 0 && $n(dd)), mr--, Xt === e ? Dt = void 0 : (T = Dt, Dt = e), Dt !== e && (Xt = Ni()) !== e ? wt = Dt = [Dt, Xt] : (T = wt, wt = e); wt !== e; ) Re.push(wt), wt = T, Dt = T, mr++, r.substr(T, 2) === "*/" ? (Xt = "*/", T += 2) : (Xt = e, mr === 0 && $n(dd)), mr--, Xt === e ? Dt = void 0 : (T = Dt, Dt = e), Dt !== e && (Xt = Ni()) !== e ? wt = Dt = [Dt, Xt] : (T = wt, wt = e);
-            Re !== e ? (r.substr(T, 2) === "*/" ? (wt = "*/", T += 2) : (wt = e, mr === 0 && $n(dd)), wt !== e ? he = $e = [$e, Re, wt] : (T = he, he = e)) : (T = he, he = e);
+            for (Re = [], wt = T, Dt = T, mr++, r.substr(T, 2) === "*/" ? (Xt = "*/", T += 2) : (Xt = e, mr === 0 && $n(pd)), mr--, Xt === e ? Dt = void 0 : (T = Dt, Dt = e), Dt !== e && (Xt = Ni()) !== e ? wt = Dt = [Dt, Xt] : (T = wt, wt = e); wt !== e; ) Re.push(wt), wt = T, Dt = T, mr++, r.substr(T, 2) === "*/" ? (Xt = "*/", T += 2) : (Xt = e, mr === 0 && $n(pd)), mr--, Xt === e ? Dt = void 0 : (T = Dt, Dt = e), Dt !== e && (Xt = Ni()) !== e ? wt = Dt = [Dt, Xt] : (T = wt, wt = e);
+            Re !== e ? (r.substr(T, 2) === "*/" ? (wt = "*/", T += 2) : (wt = e, mr === 0 && $n(pd)), wt !== e ? he = $e = [$e, Re, wt] : (T = he, he = e)) : (T = he, he = e);
           } else T = he, he = e;
           return he;
         }()) === e && (Q = function() {
@@ -91399,14 +91423,14 @@ function aEt() {
             return Kn = T, r.substr(T, 6).toLowerCase() === "string" ? (H = r.substr(T, 6), T += 6) : (H = e, mr === 0 && $n(Hp)), H !== e ? (ie = T, mr++, we = Io(), mr--, we === e ? ie = void 0 : (T = ie, ie = e), ie !== e ? (Vn = Kn, Kn = H = "STRING") : (T = Kn, Kn = e)) : (T = Kn, Kn = e), Kn;
           }()) !== e) {
             if (Re = [], wt = T, (Dt = Yt()) !== e) if ((Xt = _n()) !== e) if ((Ar = Yt()) !== e) {
-              if (an = [], Kd.test(r.charAt(T)) ? (qr = r.charAt(T), T++) : (qr = e, mr === 0 && $n(cd)), qr !== e) for (; qr !== e; ) an.push(qr), Kd.test(r.charAt(T)) ? (qr = r.charAt(T), T++) : (qr = e, mr === 0 && $n(cd));
+              if (an = [], Kd.test(r.charAt(T)) ? (qr = r.charAt(T), T++) : (qr = e, mr === 0 && $n(fd)), qr !== e) for (; qr !== e; ) an.push(qr), Kd.test(r.charAt(T)) ? (qr = r.charAt(T), T++) : (qr = e, mr === 0 && $n(fd));
               else an = e;
               an !== e && (qr = Yt()) !== e && (wn = Te()) !== e ? wt = Dt = [Dt, Xt, Ar, an, qr, wn] : (T = wt, wt = e);
             } else T = wt, wt = e;
             else T = wt, wt = e;
             else T = wt, wt = e;
             for (; wt !== e; ) if (Re.push(wt), wt = T, (Dt = Yt()) !== e) if ((Xt = _n()) !== e) if ((Ar = Yt()) !== e) {
-              if (an = [], Kd.test(r.charAt(T)) ? (qr = r.charAt(T), T++) : (qr = e, mr === 0 && $n(cd)), qr !== e) for (; qr !== e; ) an.push(qr), Kd.test(r.charAt(T)) ? (qr = r.charAt(T), T++) : (qr = e, mr === 0 && $n(cd));
+              if (an = [], Kd.test(r.charAt(T)) ? (qr = r.charAt(T), T++) : (qr = e, mr === 0 && $n(fd)), qr !== e) for (; qr !== e; ) an.push(qr), Kd.test(r.charAt(T)) ? (qr = r.charAt(T), T++) : (qr = e, mr === 0 && $n(fd));
               else an = e;
               an !== e && (qr = Yt()) !== e && (wn = Te()) !== e ? wt = Dt = [Dt, Xt, Ar, an, qr, wn] : (T = wt, wt = e);
             } else T = wt, wt = e;
@@ -91429,11 +91453,11 @@ function aEt() {
           }()) === e && ($e = function() {
             var Re, wt, Dt, Xt;
             return Re = T, r.substr(T, 7).toLowerCase() === "float64" ? (wt = r.substr(T, 7), T += 7) : (wt = e, mr === 0 && $n(Fm)), wt !== e ? (Dt = T, mr++, Xt = Io(), mr--, Xt === e ? Dt = void 0 : (T = Dt, Dt = e), Dt !== e ? (Vn = Re, Re = wt = "FLOAT64") : (T = Re, Re = e)) : (T = Re, Re = e), Re;
-          }()) === e && ($e = bd()), $e !== e && (Vn = he, $e = fh($e)), he = $e;
+          }()) === e && ($e = gd()), $e !== e && (Vn = he, $e = fh($e)), he = $e;
         }()) === e && (Q = function() {
           var he, $e, Re, wt;
           if (he = T, ($e = Ql()) === e && ($e = du()) === e && ($e = eu()) === e && ($e = J()), $e !== e) if (Yt() !== e) if (_n() !== e) if (Yt() !== e) {
-            if (Re = [], Kd.test(r.charAt(T)) ? (wt = r.charAt(T), T++) : (wt = e, mr === 0 && $n(cd)), wt !== e) for (; wt !== e; ) Re.push(wt), Kd.test(r.charAt(T)) ? (wt = r.charAt(T), T++) : (wt = e, mr === 0 && $n(cd));
+            if (Re = [], Kd.test(r.charAt(T)) ? (wt = r.charAt(T), T++) : (wt = e, mr === 0 && $n(fd)), wt !== e) for (; wt !== e; ) Re.push(wt), Kd.test(r.charAt(T)) ? (wt = r.charAt(T), T++) : (wt = e, mr === 0 && $n(fd));
             else Re = e;
             Re !== e && (wt = Yt()) !== e && Te() !== e ? (Vn = he, $e = { dataType: $e, length: parseInt(Re.join(""), 10), parentheses: !0 }, he = $e) : (T = he, he = e);
           } else T = he, he = e;
@@ -91447,7 +91471,7 @@ function aEt() {
             var qr, wn, Kn, H;
             return qr = T, r.substr(T, 5).toLowerCase() === "bytes" ? (wn = r.substr(T, 5), T += 5) : (wn = e, mr === 0 && $n(Ds)), wn !== e ? (Kn = T, mr++, H = Io(), mr--, H === e ? Kn = void 0 : (T = Kn, Kn = e), Kn !== e ? (Vn = qr, qr = wn = "BYTES") : (T = qr, qr = e)) : (T = qr, qr = e), qr;
           }()) !== e) if ((wt = _n()) !== e) if ((Dt = Yt()) !== e) {
-            if (Xt = [], Kd.test(r.charAt(T)) ? (Ar = r.charAt(T), T++) : (Ar = e, mr === 0 && $n(cd)), Ar !== e) for (; Ar !== e; ) Xt.push(Ar), Kd.test(r.charAt(T)) ? (Ar = r.charAt(T), T++) : (Ar = e, mr === 0 && $n(cd));
+            if (Xt = [], Kd.test(r.charAt(T)) ? (Ar = r.charAt(T), T++) : (Ar = e, mr === 0 && $n(fd)), Ar !== e) for (; Ar !== e; ) Xt.push(Ar), Kd.test(r.charAt(T)) ? (Ar = r.charAt(T), T++) : (Ar = e, mr === 0 && $n(fd));
             else Xt = e;
             Xt === e && (r.substr(T, 3) === "MAX" ? (Xt = "MAX", T += 3) : (Xt = e, mr === 0 && $n(N)), Xt === e && (r.substr(T, 3) === "max" ? (Xt = "max", T += 3) : (Xt = e, mr === 0 && $n(Hn)))), Xt !== e && (Ar = Yt()) !== e && (an = Te()) !== e ? $e = Re = [Re, wt, Dt, Xt, Ar, an] : (T = $e, $e = e);
           } else T = $e, $e = e;
@@ -91455,7 +91479,7 @@ function aEt() {
           else T = $e, $e = e;
           return $e === e && ($e = function() {
             var qr, wn, Kn, H;
-            return qr = T, r.substr(T, 4).toLowerCase() === "bool" ? (wn = r.substr(T, 4), T += 4) : (wn = e, mr === 0 && $n(fd)), wn !== e ? (Kn = T, mr++, H = Io(), mr--, H === e ? Kn = void 0 : (T = Kn, Kn = e), Kn !== e ? (Vn = qr, qr = wn = "BOOL") : (T = qr, qr = e)) : (T = qr, qr = e), qr;
+            return qr = T, r.substr(T, 4).toLowerCase() === "bool" ? (wn = r.substr(T, 4), T += 4) : (wn = e, mr === 0 && $n(dd)), wn !== e ? (Kn = T, mr++, H = Io(), mr--, H === e ? Kn = void 0 : (T = Kn, Kn = e), Kn !== e ? (Vn = qr, qr = wn = "BOOL") : (T = qr, qr = e)) : (T = qr, qr = e), qr;
           }()) === e && ($e = function() {
             var qr, wn, Kn, H;
             return qr = T, r.substr(T, 9).toLowerCase() === "geography" ? (wn = r.substr(T, 9), T += 9) : (wn = e, mr === 0 && $n(xv)), wn !== e ? (Kn = T, mr++, H = Io(), mr--, H === e ? Kn = void 0 : (T = Kn, Kn = e), Kn !== e ? (Vn = qr, qr = wn = "GEOGRAPHY") : (T = qr, qr = e)) : (T = qr, qr = e), qr;
@@ -91601,18 +91625,18 @@ function aEt() {
             Ft.clear(), tr.forEach((Rr) => Ft.add(Rr));
           }(h);
         }), de;
-      }, Cl = Ds("FIRST", !0), Nl = Ds("LAST", !0), va = Ds("NEXT", !0), Nu = Ds("ROWS", !0), mu = Ds("ROW", !0), Ru = Ds("ONLY", !0), Ll = Ds("CS", !0), Rl = Ds("UR", !0), Ju = Ds("RS", !0), ef = Ds("RR", !0), el = Ds("=", !1), tl = Ds("DUPLICATE", !0), od = function(ne, de) {
+      }, Cl = Ds("FIRST", !0), Nl = Ds("LAST", !0), va = Ds("NEXT", !0), Nu = Ds("ROWS", !0), mu = Ds("ROW", !0), Ru = Ds("ONLY", !0), Ll = Ds("CS", !0), Rl = Ds("UR", !0), Ju = Ds("RS", !0), ef = Ds("RR", !0), el = Ds("=", !1), tl = Ds("DUPLICATE", !0), id = function(ne, de) {
         return Se(ne, de);
       }, Kl = Ds("!", !1), Fl = function(ne) {
         return ne[0] + " " + ne[2];
-      }, vf = Ds(">=", !1), Gd = Ds(">", !1), tm = Ds("<=", !1), Hm = Ds("<>", !1), yp = Ds("<", !1), Hd = Ds("!=", !1), wp = Ds("+", !1), jp = Ds("-", !1), $h = Ds("*", !1), xl = Ds("/", !1), rm = Ds("%", !1), th = Ds("~", !1), nm = Ds("?|", !1), op = Ds("?&", !1), $f = Ds("?", !1), Bc = Ds("#-", !1), id = Ds("#>>", !1), Vm = Ds("#>", !1), ad = Ds("@>", !1), rh = Ds("<@", !1), Wm = function(ne) {
+      }, vf = Ds(">=", !1), Gd = Ds(">", !1), tm = Ds("<=", !1), Hm = Ds("<>", !1), yp = Ds("<", !1), Hd = Ds("!=", !1), wp = Ds("+", !1), jp = Ds("-", !1), $h = Ds("*", !1), xl = Ds("/", !1), rm = Ds("%", !1), th = Ds("~", !1), nm = Ds("?|", !1), op = Ds("?&", !1), $f = Ds("?", !1), Bc = Ds("#-", !1), ad = Ds("#>>", !1), Vm = Ds("#>", !1), ud = Ds("@>", !1), rh = Ds("<@", !1), Wm = function(ne) {
         return br[ne.toUpperCase()] === !0;
-      }, Cp = Ds('"', !1), Am = /^[^"]/, nh = fd(['"'], !0, !1), ip = /^[^']/, Vd = fd(["'"], !0, !1), Do = Ds("`", !1), bf = /^[^`]/, Ff = fd(["`"], !0, !1), Wd = function(ne, de) {
+      }, Cp = Ds('"', !1), Am = /^[^"]/, nh = dd(['"'], !0, !1), ip = /^[^']/, Vd = dd(["'"], !0, !1), Do = Ds("`", !1), bf = /^[^`]/, Ff = dd(["`"], !0, !1), Wd = function(ne, de) {
         return ne + de.join("");
-      }, $p = /^[A-Za-z_\u4E00-\u9FA5\xC0-\u017F]/, Fh = fd([["A", "Z"], ["a", "z"], "_", ["一", "龥"], ["À", "ſ"]], !1, !1), Ym = /^[A-Za-z0-9_$\u4E00-\u9FA5\xC0-\u017F]/, Fp = fd([["A", "Z"], ["a", "z"], ["0", "9"], "_", "$", ["一", "龥"], ["À", "ſ"]], !1, !1), Uh = /^[A-Za-z0-9_:\u4E00-\u9FA5\xC0-\u017F]/, Ch = fd([["A", "Z"], ["a", "z"], ["0", "9"], "_", ":", ["一", "龥"], ["À", "ſ"]], !1, !1), sm = Ds(":", !1), Up = function(ne, de) {
+      }, $p = /^[A-Za-z_\u4E00-\u9FA5\xC0-\u017F]/, Fh = dd([["A", "Z"], ["a", "z"], "_", ["一", "龥"], ["À", "ſ"]], !1, !1), Ym = /^[A-Za-z0-9_$\u4E00-\u9FA5\xC0-\u017F]/, Fp = dd([["A", "Z"], ["a", "z"], ["0", "9"], "_", "$", ["一", "龥"], ["À", "ſ"]], !1, !1), Uh = /^[A-Za-z0-9_:\u4E00-\u9FA5\xC0-\u017F]/, Ch = dd([["A", "Z"], ["a", "z"], ["0", "9"], "_", ":", ["一", "龥"], ["À", "ſ"]], !1, !1), sm = Ds(":", !1), Up = function(ne, de) {
         return { type: ne.toLowerCase(), value: de[1].join("") };
-      }, Lp = /^[^"\\\0-\x1F\x7F]/, Nc = fd(['"', "\\", ["\0", ""], ""], !0, !1), xp = /^[^'\\]/, hv = fd(["'", "\\"], !0, !1), om = Ds("\\'", !1), Lh = Ds('\\"', !1), gf = Ds("\\\\", !1), Uf = Ds("\\/", !1), sh = Ds("\\b", !1), im = Ds("\\f", !1), ju = Ds("\\n", !1), Bf = Ds("\\r", !1), zf = Ds("\\t", !1), Qm = Ds("\\u", !1), xh = Ds("\\", !1), oh = Ds("''", !1), Bp = Ds('""', !1), am = Ds("``", !1), Km = /^[\n\r]/, _m = fd([`
-`, "\r"], !1, !1), tf = Ds(".", !1), qf = /^[0-9]/, ud = fd([["0", "9"]], !1, !1), Bh = /^[0-9a-fA-F]/, ih = fd([["0", "9"], ["a", "f"], ["A", "F"]], !1, !1), Eh = /^[eE]/, Ep = fd(["e", "E"], !1, !1), Sh = /^[+\-]/, zh = fd(["+", "-"], !1, !1), Tm = Ds("NULL", !0), Sp = Ds("NOT NULL", !0), yf = Ds("TRUE", !0), zp = Ds("TO", !0), _t = Ds("FALSE", !0), Or = Ds("DROP", !0), cn = Ds("USE", !0), Wr = Ds("ALTER", !0), bs = Ds("SELECT", !0), cs = Ds("UPDATE", !0), Ns = Ds("CREATE", !0), fo = Ds("TEMPORARY", !0), io = Ds("DELETE", !0), Uo = Ds("INSERT", !0), Ko = Ds("RECURSIVE", !0), fi = Ds("REPLACE", !0), Bi = Ds("RENAME", !0), Di = Ds("IGNORE", !0), ba = Ds("PARTITION", !0), Pa = Ds("INTO", !0), Ki = Ds("FROM", !0), ja = Ds("UNLOCK", !0), Ta = Ds("AS", !0), vu = Ds("TABLE", !0), cu = Ds("TABLES", !0), ul = Ds("DATABASE", !0), Ou = Ds("SCHEMA", !0), ec = Ds("ON", !0), Eu = Ds("LEFT", !0), uc = Ds("RIGHT", !0), Td = Ds("FULL", !0), Gf = Ds("INNER", !0), Cc = Ds("JOIN", !0), ah = Ds("OUTER", !0), qp = Ds("OVER", !0), ll = Ds("UNION", !0), zc = Ds("MINUS", !0), Id = Ds("INTERSECT", !0), ld = Ds("EXCEPT", !0), um = Ds("VALUES", !0), Xm = Ds("USING", !0), Cd = Ds("WHERE", !0), Hf = Ds("GROUP", !0), Nd = Ds("BY", !0), Yd = Ds("ORDER", !0), Qd = Ds("HAVING", !0), uh = Ds("FETCH", !0), Qv = Ds("OFFSET", !0), Zm = Ds("ASC", !0), Kv = Ds("DESC", !0), Xv = Ds("ALL", !0), Vf = Ds("DISTINCT", !0), wf = Ds("BETWEEN", !0), Im = Ds("IN", !0), Gp = Ds("IS", !0), mv = Ds("LIKE", !0), Jm = Ds("EXISTS", !0), vv = Ds("AND", !0), Zv = Ds("OR", !0), lm = Ds("COUNT", !0), ev = Ds("MAX", !0), bv = Ds("MIN", !0), tv = Ds("SUM", !0), cm = Ds("AVG", !0), Av = Ds("CALL", !0), _v = Ds("CASE", !0), Nm = Ds("WHEN", !0), Jv = Ds("THEN", !0), Lb = Ds("ELSE", !0), gv = Ds("END", !0), xb = Ds("CAST", !0), Tv = Ds("CHAR", !0), Eb = Ds("VARCHAR", !0), Db = Ds("NUMERIC", !0), Iv = Ds("DECIMAL", !0), Nv = Ds("SIGNED", !0), eb = Ds("UNSIGNED", !0), fm = Ds("INT", !0), Ap = Ds("ZEROFILL", !0), Kd = Ds("INTEGER", !0), cd = Ds("JSON", !0), Ah = Ds("SMALLINT", !0), qh = Ds("TINYINT", !0), Rv = Ds("TINYTEXT", !0), tb = Ds("TEXT", !0), dm = Ds("MEDIUMTEXT", !0), Ov = Ds("LONGTEXT", !0), kv = Ds("BIGINT", !0), Mv = Ds("FLOAT", !0), Rm = Ds("DOUBLE", !0), _h = Ds("DATE", !0), Gh = Ds("DATETIME", !0), rv = Ds("TIME", !0), rb = Ds("TIMESTAMP", !0), Dv = Ds("TRUNCATE", !0), nb = Ds("USER", !0), sb = Ds("CURRENT_DATE", !0), Om = Ds("INTERVAL", !0), ob = Ds("YEAR", !0), ib = Ds("MONTH", !0), Pv = Ds("DAY", !0), Sb = Ds("HOUR", !0), Ab = Ds("MINUTE", !0), jv = Ds("SECOND", !0), $v = Ds("CURRENT_TIME", !0), Hh = Ds("CURRENT_TIMESTAMP", !0), rf = Ds("CURRENT_USER", !0), Rd = Ds("SESSION_USER", !0), pm = Ds("SYSTEM_USER", !0), Wf = Ds("GLOBAL", !0), Cf = Ds("SESSION", !0), yv = Ds("PERSIST", !0), km = Ds("PERSIST_ONLY", !0), Lf = Ds("@", !1), Od = Ds("@@", !1), _b = Ds("$", !1), ab = Ds("return", !0), Tb = Ds(":=", !1), ub = Ds("DUAL", !0), wv = Ds("ADD", !0), Cv = Ds("COLUMN", !0), Lv = Ds("INDEX", !0), lb = Ds("FULLTEXT", !0), Pb = Ds("SPATIAL", !0), Ib = Ds("COMMENT", !0), cb = Ds("CONSTRAINT", !0), fb = Ds("REFERENCES", !0), Fv = Ds("SQL_CALC_FOUND_ROWS", !0), Nb = Ds("SQL_CACHE", !0), Rb = Ds("SQL_NO_CACHE", !0), db = Ds("SQL_SMALL_RESULT", !0), Ob = Ds("SQL_BIG_RESULT", !0), pb = Ds("SQL_BUFFER_RESULT", !0), Uv = Ds(",", !1), q = Ds("[", !1), as = Ds("]", !1), hm = Ds(";", !1), xf = Ds("->", !1), nv = Ds("->>", !1), $r = Ds("||", !1), Gs = Ds("&&", !1), kd = Ds("/*", !1), Mm = Ds("*/", !1), sv = Ds("--", !1), ws = Ds("#", !1), Bv = { type: "any" }, hb = /^[ \t\n\r]/, jb = fd([" ", "	", `
+      }, Lp = /^[^"\\\0-\x1F\x7F]/, Nc = dd(['"', "\\", ["\0", ""], ""], !0, !1), xp = /^[^'\\]/, hv = dd(["'", "\\"], !0, !1), om = Ds("\\'", !1), Lh = Ds('\\"', !1), gf = Ds("\\\\", !1), Uf = Ds("\\/", !1), sh = Ds("\\b", !1), im = Ds("\\f", !1), ju = Ds("\\n", !1), Bf = Ds("\\r", !1), zf = Ds("\\t", !1), Qm = Ds("\\u", !1), xh = Ds("\\", !1), oh = Ds("''", !1), Bp = Ds('""', !1), am = Ds("``", !1), Km = /^[\n\r]/, _m = dd([`
+`, "\r"], !1, !1), tf = Ds(".", !1), qf = /^[0-9]/, ld = dd([["0", "9"]], !1, !1), Bh = /^[0-9a-fA-F]/, ih = dd([["0", "9"], ["a", "f"], ["A", "F"]], !1, !1), Eh = /^[eE]/, Ep = dd(["e", "E"], !1, !1), Sh = /^[+\-]/, zh = dd(["+", "-"], !1, !1), Tm = Ds("NULL", !0), Sp = Ds("NOT NULL", !0), yf = Ds("TRUE", !0), zp = Ds("TO", !0), _t = Ds("FALSE", !0), Or = Ds("DROP", !0), cn = Ds("USE", !0), Wr = Ds("ALTER", !0), bs = Ds("SELECT", !0), cs = Ds("UPDATE", !0), Ns = Ds("CREATE", !0), fo = Ds("TEMPORARY", !0), io = Ds("DELETE", !0), Uo = Ds("INSERT", !0), Ko = Ds("RECURSIVE", !0), fi = Ds("REPLACE", !0), Bi = Ds("RENAME", !0), Di = Ds("IGNORE", !0), ba = Ds("PARTITION", !0), Pa = Ds("INTO", !0), Ki = Ds("FROM", !0), ja = Ds("UNLOCK", !0), Ta = Ds("AS", !0), vu = Ds("TABLE", !0), cu = Ds("TABLES", !0), ul = Ds("DATABASE", !0), Ou = Ds("SCHEMA", !0), ec = Ds("ON", !0), Eu = Ds("LEFT", !0), uc = Ds("RIGHT", !0), Td = Ds("FULL", !0), Gf = Ds("INNER", !0), Cc = Ds("JOIN", !0), ah = Ds("OUTER", !0), qp = Ds("OVER", !0), ll = Ds("UNION", !0), zc = Ds("MINUS", !0), Id = Ds("INTERSECT", !0), cd = Ds("EXCEPT", !0), um = Ds("VALUES", !0), Xm = Ds("USING", !0), Cd = Ds("WHERE", !0), Hf = Ds("GROUP", !0), Nd = Ds("BY", !0), Yd = Ds("ORDER", !0), Qd = Ds("HAVING", !0), uh = Ds("FETCH", !0), Qv = Ds("OFFSET", !0), Zm = Ds("ASC", !0), Kv = Ds("DESC", !0), Xv = Ds("ALL", !0), Vf = Ds("DISTINCT", !0), wf = Ds("BETWEEN", !0), Im = Ds("IN", !0), Gp = Ds("IS", !0), mv = Ds("LIKE", !0), Jm = Ds("EXISTS", !0), vv = Ds("AND", !0), Zv = Ds("OR", !0), lm = Ds("COUNT", !0), ev = Ds("MAX", !0), bv = Ds("MIN", !0), tv = Ds("SUM", !0), cm = Ds("AVG", !0), Av = Ds("CALL", !0), _v = Ds("CASE", !0), Nm = Ds("WHEN", !0), Jv = Ds("THEN", !0), Lb = Ds("ELSE", !0), gv = Ds("END", !0), xb = Ds("CAST", !0), Tv = Ds("CHAR", !0), Eb = Ds("VARCHAR", !0), Db = Ds("NUMERIC", !0), Iv = Ds("DECIMAL", !0), Nv = Ds("SIGNED", !0), eb = Ds("UNSIGNED", !0), fm = Ds("INT", !0), Ap = Ds("ZEROFILL", !0), Kd = Ds("INTEGER", !0), fd = Ds("JSON", !0), Ah = Ds("SMALLINT", !0), qh = Ds("TINYINT", !0), Rv = Ds("TINYTEXT", !0), tb = Ds("TEXT", !0), dm = Ds("MEDIUMTEXT", !0), Ov = Ds("LONGTEXT", !0), kv = Ds("BIGINT", !0), Mv = Ds("FLOAT", !0), Rm = Ds("DOUBLE", !0), _h = Ds("DATE", !0), Gh = Ds("DATETIME", !0), rv = Ds("TIME", !0), rb = Ds("TIMESTAMP", !0), Dv = Ds("TRUNCATE", !0), nb = Ds("USER", !0), sb = Ds("CURRENT_DATE", !0), Om = Ds("INTERVAL", !0), ob = Ds("YEAR", !0), ib = Ds("MONTH", !0), Pv = Ds("DAY", !0), Sb = Ds("HOUR", !0), Ab = Ds("MINUTE", !0), jv = Ds("SECOND", !0), $v = Ds("CURRENT_TIME", !0), Hh = Ds("CURRENT_TIMESTAMP", !0), rf = Ds("CURRENT_USER", !0), Rd = Ds("SESSION_USER", !0), pm = Ds("SYSTEM_USER", !0), Wf = Ds("GLOBAL", !0), Cf = Ds("SESSION", !0), yv = Ds("PERSIST", !0), km = Ds("PERSIST_ONLY", !0), Lf = Ds("@", !1), Od = Ds("@@", !1), _b = Ds("$", !1), ab = Ds("return", !0), Tb = Ds(":=", !1), ub = Ds("DUAL", !0), wv = Ds("ADD", !0), Cv = Ds("COLUMN", !0), Lv = Ds("INDEX", !0), lb = Ds("FULLTEXT", !0), Pb = Ds("SPATIAL", !0), Ib = Ds("COMMENT", !0), cb = Ds("CONSTRAINT", !0), fb = Ds("REFERENCES", !0), Fv = Ds("SQL_CALC_FOUND_ROWS", !0), Nb = Ds("SQL_CACHE", !0), Rb = Ds("SQL_NO_CACHE", !0), db = Ds("SQL_SMALL_RESULT", !0), Ob = Ds("SQL_BIG_RESULT", !0), pb = Ds("SQL_BUFFER_RESULT", !0), Uv = Ds(",", !1), q = Ds("[", !1), as = Ds("]", !1), hm = Ds(";", !1), xf = Ds("->", !1), nv = Ds("->>", !1), $r = Ds("||", !1), Gs = Ds("&&", !1), kd = Ds("/*", !1), Mm = Ds("*/", !1), sv = Ds("--", !1), ws = Ds("#", !1), Bv = { type: "any" }, hb = /^[ \t\n\r]/, jb = dd([" ", "	", `
 `, "\r"], !1, !1), mm = function(ne) {
         return { dataType: ne };
       }, B = 0, is = 0, Dm = [{ line: 1, column: 1 }], _p = 0, Pm = [], Ir = 0;
@@ -91623,7 +91647,7 @@ function aEt() {
       function Ds(ne, de) {
         return { type: "literal", text: ne, ignoreCase: de };
       }
-      function fd(ne, de, Pe) {
+      function dd(ne, de, Pe) {
         return { type: "class", parts: ne, inverted: de, ignoreCase: Pe };
       }
       function xv(ne) {
@@ -91662,7 +91686,7 @@ function aEt() {
         var ne;
         return (ne = function() {
           var de, Pe, K, De, Ft, tr;
-          de = B, (Pe = uf()) !== e && zr() !== e && (K = kc()) !== e && zr() !== e && (De = dd()) !== e ? (is = de, Rr = Pe, l = K, (dt = De) && dt.forEach((Nn) => vn.add(`${Rr}::${Nn.db}::${Nn.table}`)), Pe = { tableList: Array.from(vn), columnList: nr(h), ast: { type: Rr.toLowerCase(), keyword: l.toLowerCase(), name: dt } }, de = Pe) : (B = de, de = e);
+          de = B, (Pe = uf()) !== e && zr() !== e && (K = kc()) !== e && zr() !== e && (De = pd()) !== e ? (is = de, Rr = Pe, l = K, (dt = De) && dt.forEach((Nn) => vn.add(`${Rr}::${Nn.db}::${Nn.table}`)), Pe = { tableList: Array.from(vn), columnList: nr(h), ast: { type: Rr.toLowerCase(), keyword: l.toLowerCase(), name: dt } }, de = Pe) : (B = de, de = e);
           var Rr, l, dt;
           return de === e && (de = B, (Pe = uf()) !== e && zr() !== e && (K = If()) !== e && zr() !== e && (De = nf()) !== e && zr() !== e && Mc() !== e && zr() !== e && (Ft = up()) !== e && zr() !== e ? ((tr = function() {
             var Nn, Ot, Ms, Qe, Fr, Xo;
@@ -91678,7 +91702,7 @@ function aEt() {
           var de;
           return (de = function() {
             var Pe, K, De, Ft, tr, Rr, l, dt, Nn, Ot;
-            Pe = B, (K = bh()) !== e && zr() !== e ? ((De = kp()) === e && (De = null), De !== e && zr() !== e && kc() !== e && zr() !== e ? ((Ft = $m()) === e && (Ft = null), Ft !== e && zr() !== e && (tr = dd()) !== e && zr() !== e && (Rr = function() {
+            Pe = B, (K = bh()) !== e && zr() !== e ? ((De = kp()) === e && (De = null), De !== e && zr() !== e && kc() !== e && zr() !== e ? ((Ft = $m()) === e && (Ft = null), Ft !== e && zr() !== e && (tr = pd()) !== e && zr() !== e && (Rr = function() {
               var mi, er, Ai, Qo, Ti, wi, Hi, Vi, ka;
               if (mi = B, (er = lu()) !== e) if (zr() !== e) if ((Ai = Fm()) !== e) {
                 for (Qo = [], Ti = B, (wi = zr()) !== e && (Hi = ga()) !== e && (Vi = zr()) !== e && (ka = Fm()) !== e ? Ti = wi = [wi, Hi, Vi, ka] : (B = Ti, Ti = e); Ti !== e; ) Qo.push(Ti), Ti = B, (wi = zr()) !== e && (Hi = ga()) !== e && (Vi = zr()) !== e && (ka = Fm()) !== e ? Ti = wi = [wi, Hi, Vi, ka] : (B = Ti, Ti = e);
@@ -91694,13 +91718,13 @@ function aEt() {
                 Ai !== e ? (is = mi, er = nt(er, Ai), mi = er) : (B = mi, mi = e);
               } else B = mi, mi = e;
               return mi;
-            }()) === e && (l = null), l !== e && zr() !== e ? ((dt = zl()) === e && (dt = md()), dt === e && (dt = null), dt !== e && zr() !== e ? ((Nn = Kf()) === e && (Nn = null), Nn !== e && zr() !== e ? ((Ot = Hp()) === e && (Ot = null), Ot !== e ? (is = Pe, K = function(mi, er, Ai, Qo, Ti, wi, Hi, Vi, ka) {
+            }()) === e && (l = null), l !== e && zr() !== e ? ((dt = zl()) === e && (dt = vd()), dt === e && (dt = null), dt !== e && zr() !== e ? ((Nn = Kf()) === e && (Nn = null), Nn !== e && zr() !== e ? ((Ot = Hp()) === e && (Ot = null), Ot !== e ? (is = Pe, K = function(mi, er, Ai, Qo, Ti, wi, Hi, Vi, ka) {
               return Qo && Qo.forEach((wu) => vn.add(`create::${wu.db}::${wu.table}`)), { tableList: Array.from(vn), columnList: nr(h), ast: { type: mi[0].toLowerCase(), keyword: "table", temporary: er && er[0].toLowerCase(), if_not_exists: Ai, table: Qo, ignore_replace: Hi && Hi[0].toLowerCase(), as: Vi && Vi[0].toLowerCase(), query_expr: ka && ka.ast, create_definitions: Ti, table_options: wi } };
-            }(K, De, Ft, tr, Rr, l, dt, Nn, Ot), Pe = K) : (B = Pe, Pe = e)) : (B = Pe, Pe = e)) : (B = Pe, Pe = e)) : (B = Pe, Pe = e)) : (B = Pe, Pe = e)) : (B = Pe, Pe = e)) : (B = Pe, Pe = e), Pe === e && (Pe = B, (K = bh()) !== e && zr() !== e ? ((De = kp()) === e && (De = null), De !== e && zr() !== e && kc() !== e && zr() !== e ? ((Ft = $m()) === e && (Ft = null), Ft !== e && zr() !== e && (tr = dd()) !== e && zr() !== e && (Rr = function mi() {
+            }(K, De, Ft, tr, Rr, l, dt, Nn, Ot), Pe = K) : (B = Pe, Pe = e)) : (B = Pe, Pe = e)) : (B = Pe, Pe = e)) : (B = Pe, Pe = e)) : (B = Pe, Pe = e)) : (B = Pe, Pe = e)) : (B = Pe, Pe = e), Pe === e && (Pe = B, (K = bh()) !== e && zr() !== e ? ((De = kp()) === e && (De = null), De !== e && zr() !== e && kc() !== e && zr() !== e ? ((Ft = $m()) === e && (Ft = null), Ft !== e && zr() !== e && (tr = pd()) !== e && zr() !== e && (Rr = function mi() {
               var er, Ai;
               (er = function() {
                 var Ti, wi;
-                return Ti = B, Xf() !== e && zr() !== e && (wi = dd()) !== e ? (is = Ti, Ti = { type: "like", table: wi }) : (B = Ti, Ti = e), Ti;
+                return Ti = B, Xf() !== e && zr() !== e && (wi = pd()) !== e ? (is = Ti, Ti = { type: "like", table: wi }) : (B = Ti, Ti = e), Ti;
               }()) === e && (er = B, lu() !== e && zr() !== e && (Ai = mi()) !== e && zr() !== e && Qa() !== e ? (is = er, (Qo = Ai).parentheses = !0, er = Qo) : (B = er, er = e));
               var Qo;
               return er;
@@ -91732,12 +91756,12 @@ function aEt() {
           de = B, (Pe = function() {
             var l, dt, Nn, Ot;
             return l = B, r.substr(B, 8).toLowerCase() === "truncate" ? (dt = r.substr(B, 8), B += 8) : (dt = e, Ir === 0 && ls(Dv)), dt !== e ? (Nn = B, Ir++, Ot = zo(), Ir--, Ot === e ? Nn = void 0 : (B = Nn, Nn = e), Nn !== e ? (is = l, l = dt = "TRUNCATE") : (B = l, l = e)) : (B = l, l = e), l;
-          }()) !== e && zr() !== e ? ((K = kc()) === e && (K = null), K !== e && zr() !== e && (De = dd()) !== e ? (is = de, Ft = Pe, tr = K, (Rr = De) && Rr.forEach((l) => vn.add(`${Ft}::${l.db}::${l.table}`)), Pe = { tableList: Array.from(vn), columnList: nr(h), ast: { type: Ft.toLowerCase(), keyword: tr && tr.toLowerCase() || "table", name: Rr } }, de = Pe) : (B = de, de = e)) : (B = de, de = e);
+          }()) !== e && zr() !== e ? ((K = kc()) === e && (K = null), K !== e && zr() !== e && (De = pd()) !== e ? (is = de, Ft = Pe, tr = K, (Rr = De) && Rr.forEach((l) => vn.add(`${Ft}::${l.db}::${l.table}`)), Pe = { tableList: Array.from(vn), columnList: nr(h), ast: { type: Ft.toLowerCase(), keyword: tr && tr.toLowerCase() || "table", name: Rr } }, de = Pe) : (B = de, de = e)) : (B = de, de = e);
           var Ft, tr, Rr;
           return de;
         }()) === e && (ne = function() {
           var de, Pe, K;
-          de = B, (Pe = vd()) !== e && zr() !== e && kc() !== e && zr() !== e && (K = function() {
+          de = B, (Pe = bd()) !== e && zr() !== e && kc() !== e && zr() !== e && (K = function() {
             var Ft, tr, Rr, l, dt, Nn, Ot, Ms;
             if (Ft = B, (tr = ym()) !== e) {
               for (Rr = [], l = B, (dt = zr()) !== e && (Nn = ga()) !== e && (Ot = zr()) !== e && (Ms = ym()) !== e ? l = dt = [dt, Nn, Ot, Ms] : (B = l, l = e); l !== e; ) Rr.push(l), l = B, (dt = zr()) !== e && (Nn = ga()) !== e && (Ot = zr()) !== e && (Ms = ym()) !== e ? l = dt = [dt, Nn, Ot, Ms] : (B = l, l = e);
@@ -91768,7 +91792,7 @@ function aEt() {
           de = B, (Pe = function() {
             var Rr, l, dt, Nn;
             return Rr = B, r.substr(B, 5).toLowerCase() === "alter" ? (l = r.substr(B, 5), B += 5) : (l = e, Ir === 0 && ls(Wr)), l !== e ? (dt = B, Ir++, Nn = zo(), Ir--, Nn === e ? dt = void 0 : (B = dt, dt = e), dt !== e ? Rr = l = [l, dt] : (B = Rr, Rr = e)) : (B = Rr, Rr = e), Rr;
-          }()) !== e && zr() !== e && kc() !== e && zr() !== e && (K = dd()) !== e && zr() !== e && (De = function() {
+          }()) !== e && zr() !== e && kc() !== e && zr() !== e && (K = pd()) !== e && zr() !== e && (De = function() {
             var Rr, l, dt, Nn, Ot, Ms, Qe, Fr;
             if (Rr = B, (l = Zn()) !== e) {
               for (dt = [], Nn = B, (Ot = zr()) !== e && (Ms = ga()) !== e && (Qe = zr()) !== e && (Fr = Zn()) !== e ? Nn = Ot = [Ot, Ms, Qe, Fr] : (B = Nn, Nn = e); Nn !== e; ) dt.push(Nn), Nn = B, (Ot = zr()) !== e && (Ms = ga()) !== e && (Qe = zr()) !== e && (Fr = Zn()) !== e ? Nn = Ot = [Ot, Ms, Qe, Fr] : (B = Nn, Nn = e);
@@ -91832,7 +91856,7 @@ function aEt() {
         var ne;
         return (ne = Hp()) === e && (ne = function() {
           var de, Pe, K, De, Ft;
-          return de = B, (Pe = Ol()) !== e && zr() !== e && (K = dd()) !== e && zr() !== e && Oc() !== e && zr() !== e && (De = Ls()) !== e && zr() !== e ? ((Ft = N()) === e && (Ft = null), Ft !== e ? (is = de, Pe = function(tr, Rr, l) {
+          return de = B, (Pe = Ol()) !== e && zr() !== e && (K = pd()) !== e && zr() !== e && Oc() !== e && zr() !== e && (De = Ls()) !== e && zr() !== e ? ((Ft = N()) === e && (Ft = null), Ft !== e ? (is = de, Pe = function(tr, Rr, l) {
             const dt = {};
             return tr && tr.forEach((Nn) => {
               const { server: Ot, db: Ms, schema: Qe, as: Fr, table: Xo, join: gi } = Nn, mi = gi ? "select" : "update", er = [Ot, Ms, Qe].filter(Boolean).join(".") || null;
@@ -91877,7 +91901,7 @@ function aEt() {
           return de;
         }()) === e && (ne = function() {
           var de, Pe, K, De, Ft;
-          return de = B, (Pe = jd()) !== e && zr() !== e ? ((K = dd()) === e && (K = null), K !== e && zr() !== e && (De = vb()) !== e && zr() !== e ? ((Ft = N()) === e && (Ft = null), Ft !== e ? (is = de, Pe = function(tr, Rr, l) {
+          return de = B, (Pe = jd()) !== e && zr() !== e ? ((K = pd()) === e && (K = null), K !== e && zr() !== e && (De = vb()) !== e && zr() !== e ? ((Ft = N()) === e && (Ft = null), Ft !== e ? (is = de, Pe = function(tr, Rr, l) {
             if (Rr && Rr.forEach((dt) => {
               const { db: Nn, as: Ot, table: Ms, join: Qe } = dt, Fr = Qe ? "select" : "delete";
               Ms && vn.add(`${Fr}::${Nn}::${Ms}`), Qe || h.add(`delete::${Ms}::(.*)`);
@@ -91903,7 +91927,7 @@ function aEt() {
           return Ft = B, r.substr(B, 9).toLowerCase() === "intersect" ? (tr = r.substr(B, 9), B += 9) : (tr = e, Ir === 0 && ls(Id)), tr !== e ? (Rr = B, Ir++, l = zo(), Ir--, l === e ? Rr = void 0 : (B = Rr, Rr = e), Rr !== e ? (is = Ft, Ft = tr = "INTERSECT") : (B = Ft, Ft = e)) : (B = Ft, Ft = e), Ft;
         }()) === e && (de = function() {
           var Ft, tr, Rr, l;
-          return Ft = B, r.substr(B, 6).toLowerCase() === "except" ? (tr = r.substr(B, 6), B += 6) : (tr = e, Ir === 0 && ls(ld)), tr !== e ? (Rr = B, Ir++, l = zo(), Ir--, l === e ? Rr = void 0 : (B = Rr, Rr = e), Rr !== e ? (is = Ft, Ft = tr = "EXCEPT") : (B = Ft, Ft = e)) : (B = Ft, Ft = e), Ft;
+          return Ft = B, r.substr(B, 6).toLowerCase() === "except" ? (tr = r.substr(B, 6), B += 6) : (tr = e, Ir === 0 && ls(cd)), tr !== e ? (Rr = B, Ir++, l = zo(), Ir--, l === e ? Rr = void 0 : (B = Rr, Rr = e), Rr !== e ? (is = Ft, Ft = tr = "EXCEPT") : (B = Ft, Ft = e)) : (B = Ft, Ft = e), Ft;
         }()), de !== e && zr() !== e ? ((Pe = zn()) === e && (Pe = zu()), Pe === e && (Pe = null), Pe !== e ? (is = ne, K = de, ne = de = (De = Pe) ? `${K.toLowerCase()} ${De.toLowerCase()}` : "" + K.toLowerCase()) : (B = ne, ne = e)) : (B = ne, ne = e), ne === e && (ne = B, (de = function() {
           var Ft, tr, Rr, l;
           return Ft = B, r.substr(B, 5).toLowerCase() === "minus" ? (tr = r.substr(B, 5), B += 5) : (tr = e, Ir === 0 && ls(zc)), tr !== e ? (Rr = B, Ir++, l = zo(), Ir--, l === e ? Rr = void 0 : (B = Rr, Rr = e), Rr !== e ? (is = Ft, Ft = tr = "MINUS") : (B = Ft, Ft = e)) : (B = Ft, Ft = e), Ft;
@@ -92023,7 +92047,7 @@ function aEt() {
           return de;
         }()) === e && (ne = function() {
           var de, Pe, K, De;
-          de = B, (Pe = vd()) !== e && zr() !== e ? ((K = Pd()) === e && (K = Kf()), K === e && (K = null), K !== e && zr() !== e && (De = Ro()) !== e ? (is = de, tr = De, Pe = { action: "rename", type: "alter", resource: "table", keyword: (Ft = K) && Ft[0].toLowerCase(), table: tr }, de = Pe) : (B = de, de = e)) : (B = de, de = e);
+          de = B, (Pe = bd()) !== e && zr() !== e ? ((K = Pd()) === e && (K = Kf()), K === e && (K = null), K !== e && zr() !== e && (De = Ro()) !== e ? (is = de, tr = De, Pe = { action: "rename", type: "alter", resource: "table", keyword: (Ft = K) && Ft[0].toLowerCase(), table: tr }, de = Pe) : (B = de, de = e)) : (B = de, de = e);
           var Ft, tr;
           return de;
         }()) === e && (ne = Vh()) === e && (ne = Ef()), ne;
@@ -92092,7 +92116,7 @@ function aEt() {
         return ne = B, (de = function() {
           var Nn, Ot, Ms, Qe;
           return Nn = B, r.substr(B, 10).toLowerCase() === "references" ? (Ot = r.substr(B, 10), B += 10) : (Ot = e, Ir === 0 && ls(fb)), Ot !== e ? (Ms = B, Ir++, Qe = zo(), Ir--, Qe === e ? Ms = void 0 : (B = Ms, Ms = e), Ms !== e ? (is = Nn, Nn = Ot = "REFERENCES") : (B = Nn, Nn = e)) : (B = Nn, Nn = e), Nn;
-        }()) !== e && zr() !== e && (Pe = dd()) !== e && zr() !== e && (K = ap()) !== e && zr() !== e ? (r.substr(B, 10).toLowerCase() === "match full" ? (De = r.substr(B, 10), B += 10) : (De = e, Ir === 0 && ls(Hs)), De === e && (r.substr(B, 13).toLowerCase() === "match partial" ? (De = r.substr(B, 13), B += 13) : (De = e, Ir === 0 && ls(yo)), De === e && (r.substr(B, 12).toLowerCase() === "match simple" ? (De = r.substr(B, 12), B += 12) : (De = e, Ir === 0 && ls(Ks)))), De === e && (De = null), De !== e && zr() !== e ? ((Ft = Wh()) === e && (Ft = null), Ft !== e && zr() !== e ? ((tr = Wh()) === e && (tr = null), tr !== e ? (is = ne, Rr = De, l = Ft, dt = tr, ne = de = { definition: K, table: Pe, keyword: de.toLowerCase(), match: Rr && Rr.toLowerCase(), on_action: [l, dt].filter((Nn) => Nn) }) : (B = ne, ne = e)) : (B = ne, ne = e)) : (B = ne, ne = e)) : (B = ne, ne = e), ne === e && (ne = B, (de = Wh()) !== e && (is = ne, de = { on_action: [de] }), ne = de), ne;
+        }()) !== e && zr() !== e && (Pe = pd()) !== e && zr() !== e && (K = ap()) !== e && zr() !== e ? (r.substr(B, 10).toLowerCase() === "match full" ? (De = r.substr(B, 10), B += 10) : (De = e, Ir === 0 && ls(Hs)), De === e && (r.substr(B, 13).toLowerCase() === "match partial" ? (De = r.substr(B, 13), B += 13) : (De = e, Ir === 0 && ls(yo)), De === e && (r.substr(B, 12).toLowerCase() === "match simple" ? (De = r.substr(B, 12), B += 12) : (De = e, Ir === 0 && ls(Ks)))), De === e && (De = null), De !== e && zr() !== e ? ((Ft = Wh()) === e && (Ft = null), Ft !== e && zr() !== e ? ((tr = Wh()) === e && (tr = null), tr !== e ? (is = ne, Rr = De, l = Ft, dt = tr, ne = de = { definition: K, table: Pe, keyword: de.toLowerCase(), match: Rr && Rr.toLowerCase(), on_action: [l, dt].filter((Nn) => Nn) }) : (B = ne, ne = e)) : (B = ne, ne = e)) : (B = ne, ne = e)) : (B = ne, ne = e), ne === e && (ne = B, (de = Wh()) !== e && (is = ne, de = { on_action: [de] }), ne = de), ne;
       }
       function Wh() {
         var ne, de, Pe, K;
@@ -92273,7 +92297,7 @@ function aEt() {
         return ne = B, function() {
           var Pe, K, De, Ft;
           return Pe = B, r.substr(B, 4).toLowerCase() === "from" ? (K = r.substr(B, 4), B += 4) : (K = e, Ir === 0 && ls(Ki)), K !== e ? (De = B, Ir++, Ft = zo(), Ir--, Ft === e ? De = void 0 : (B = De, De = e), De !== e ? Pe = K = [K, De] : (B = Pe, Pe = e)) : (B = Pe, Pe = e), Pe;
-        }() !== e && zr() !== e && (de = dd()) !== e ? (is = ne, ne = de) : (B = ne, ne = e), ne;
+        }() !== e && zr() !== e && (de = pd()) !== e ? (is = ne, ne = de) : (B = ne, ne = e), ne;
       }
       function ym() {
         var ne, de, Pe;
@@ -92304,7 +92328,7 @@ function aEt() {
           return { type: tr.toLowerCase(), expr: tr.toLowerCase() };
         }(de)), (ne = de) === e && (ne = Io()))), ne;
       }
-      function dd() {
+      function pd() {
         var ne, de, Pe, K;
         if (ne = B, (de = Qh()) !== e) {
           for (Pe = [], K = zv(); K !== e; ) Pe.push(K), K = zv();
@@ -92489,7 +92513,7 @@ function aEt() {
         return ne = B, (de = function() {
           var Pe, K, De, Ft;
           return Pe = B, r.substr(B, 6).toLowerCase() === "insert" ? (K = r.substr(B, 6), B += 6) : (K = e, Ir === 0 && ls(Uo)), K !== e ? (De = B, Ir++, Ft = zo(), Ir--, Ft === e ? De = void 0 : (B = De, De = e), De !== e ? Pe = K = [K, De] : (B = Pe, Pe = e)) : (B = Pe, Pe = e), Pe;
-        }()) !== e && (is = ne, de = "insert"), (ne = de) === e && (ne = B, (de = md()) !== e && (is = ne, de = "replace"), ne = de), ne;
+        }()) !== e && (is = ne, de = "insert"), (ne = de) === e && (ne = B, (de = vd()) !== e && (is = ne, de = "replace"), ne = de), ne;
       }
       function dh() {
         var ne, de;
@@ -92566,13 +92590,13 @@ function aEt() {
           var de, Pe, K, De, Ft, tr, Rr, l;
           if (de = B, (Pe = tc()) !== e) {
             for (K = [], De = B, (Ft = sc()) !== e && (tr = uu()) !== e && (Rr = zr()) !== e && (l = tc()) !== e ? De = Ft = [Ft, tr, Rr, l] : (B = De, De = e); De !== e; ) K.push(De), De = B, (Ft = sc()) !== e && (tr = uu()) !== e && (Rr = zr()) !== e && (l = tc()) !== e ? De = Ft = [Ft, tr, Rr, l] : (B = De, De = e);
-            K !== e ? (is = de, Pe = od(Pe, K), de = Pe) : (B = de, de = e);
+            K !== e ? (is = de, Pe = id(Pe, K), de = Pe) : (B = de, de = e);
           } else B = de, de = e;
           return de;
         }()) === e && (ne = function() {
           var de, Pe, K, De, Ft, tr;
           if (de = B, (Pe = ph()) !== e) {
-            if (K = [], De = B, (Ft = zr()) !== e && (tr = pd()) !== e ? De = Ft = [Ft, tr] : (B = De, De = e), De !== e) for (; De !== e; ) K.push(De), De = B, (Ft = zr()) !== e && (tr = pd()) !== e ? De = Ft = [Ft, tr] : (B = De, De = e);
+            if (K = [], De = B, (Ft = zr()) !== e && (tr = hd()) !== e ? De = Ft = [Ft, tr] : (B = De, De = e), De !== e) for (; De !== e; ) K.push(De), De = B, (Ft = zr()) !== e && (tr = hd()) !== e ? De = Ft = [Ft, tr] : (B = De, De = e);
             else K = e;
             K !== e ? (is = de, Pe = Y(Pe, K[0][1]), de = Pe) : (B = de, de = e);
           } else B = de, de = e;
@@ -92604,7 +92628,7 @@ function aEt() {
         var ne, de, Pe, K, De, Ft, tr, Rr;
         if (ne = B, (de = rc()) !== e) {
           for (Pe = [], K = B, (De = sc()) !== e && (Ft = Ku()) !== e && (tr = zr()) !== e && (Rr = rc()) !== e ? K = De = [De, Ft, tr, Rr] : (B = K, K = e); K !== e; ) Pe.push(K), K = B, (De = sc()) !== e && (Ft = Ku()) !== e && (tr = zr()) !== e && (Rr = rc()) !== e ? K = De = [De, Ft, tr, Rr] : (B = K, K = e);
-          Pe !== e ? (is = ne, ne = de = od(de, Pe)) : (B = ne, ne = e);
+          Pe !== e ? (is = ne, ne = de = id(de, Pe)) : (B = ne, ne = e);
         } else B = ne, ne = e;
         return ne;
       }
@@ -92650,7 +92674,7 @@ function aEt() {
             return tr = B, (Rr = function() {
               var dt, Nn, Ot, Ms, Qe;
               return dt = B, Nn = B, (Ot = Mp()) !== e && (Ms = zr()) !== e && (Qe = Xf()) !== e ? Nn = Ot = [Ot, Ms, Qe] : (B = Nn, Nn = e), Nn !== e && (is = dt, Nn = Fl(Nn)), (dt = Nn) === e && (dt = Xf()), dt;
-            }()) !== e && zr() !== e ? ((l = hd()) === e && (l = Yp()), l !== e ? (is = tr, tr = Rr = { op: Rr, right: l }) : (B = tr, tr = e)) : (B = tr, tr = e), tr;
+            }()) !== e && zr() !== e ? ((l = md()) === e && (l = Yp()), l !== e ? (is = tr, tr = Rr = { op: Rr, right: l }) : (B = tr, tr = e)) : (B = tr, tr = e), tr;
           }()), Ft;
         }()) === e && (Pe = null), Pe !== e ? (is = ne, K = de, ne = de = (De = Pe) === null ? K : De.type === "arithmetic" ? Se(K, De.tail) : _e(De.op, K, De.right)) : (B = ne, ne = e)) : (B = ne, ne = e), ne === e && (ne = ep()) === e && (ne = nf()), ne;
       }
@@ -92689,7 +92713,7 @@ function aEt() {
         var ne;
         return r.charCodeAt(B) === 42 ? (ne = "*", B++) : (ne = e, Ir === 0 && ls($h)), ne === e && (r.charCodeAt(B) === 47 ? (ne = "/", B++) : (ne = e, Ir === 0 && ls(xl)), ne === e && (r.charCodeAt(B) === 37 ? (ne = "%", B++) : (ne = e, Ir === 0 && ls(rm)))), ne;
       }
-      function pd() {
+      function hd() {
         var ne, de, Pe;
         return (ne = function() {
           var K, De, Ft, tr, Rr, l, dt;
@@ -92708,7 +92732,7 @@ function aEt() {
           }()) !== e && zr() !== e ? ((Rr = Oo()) === e && (Rr = null), Rr !== e && zr() !== e && (l = Qa()) !== e ? (is = K, De = function(Nn, Ot, Ms, Qe) {
             return { type: "cast", keyword: Nn.toLowerCase(), expr: Ot, symbol: "as", target: [{ dataType: Ms + (Qe ? " " + Qe : "") }] };
           }(De, Ft, tr, Rr), K = De) : (B = K, K = e)) : (B = K, K = e)))), K;
-        }()) === e && (ne = hd()) === e && (ne = A()) === e && (ne = function() {
+        }()) === e && (ne = md()) === e && (ne = A()) === e && (ne = function() {
           var K;
           return (K = function() {
             var De, Ft, tr, Rr;
@@ -92777,8 +92801,8 @@ function aEt() {
         var ne, de, Pe, K, De;
         return (ne = function() {
           var Ft, tr, Rr, l, dt, Nn, Ot, Ms;
-          if (Ft = B, (tr = pd()) !== e) if (zr() !== e) {
-            for (Rr = [], l = B, (dt = zr()) !== e ? (r.substr(B, 2) === "?|" ? (Nn = "?|", B += 2) : (Nn = e, Ir === 0 && ls(nm)), Nn === e && (r.substr(B, 2) === "?&" ? (Nn = "?&", B += 2) : (Nn = e, Ir === 0 && ls(op)), Nn === e && (r.charCodeAt(B) === 63 ? (Nn = "?", B++) : (Nn = e, Ir === 0 && ls($f)), Nn === e && (r.substr(B, 2) === "#-" ? (Nn = "#-", B += 2) : (Nn = e, Ir === 0 && ls(Bc)), Nn === e && (r.substr(B, 3) === "#>>" ? (Nn = "#>>", B += 3) : (Nn = e, Ir === 0 && ls(id)), Nn === e && (r.substr(B, 2) === "#>" ? (Nn = "#>", B += 2) : (Nn = e, Ir === 0 && ls(Vm)), Nn === e && (Nn = ff()) === e && (Nn = cf()) === e && (r.substr(B, 2) === "@>" ? (Nn = "@>", B += 2) : (Nn = e, Ir === 0 && ls(ad)), Nn === e && (r.substr(B, 2) === "<@" ? (Nn = "<@", B += 2) : (Nn = e, Ir === 0 && ls(rh))))))))), Nn !== e && (Ot = zr()) !== e && (Ms = pd()) !== e ? l = dt = [dt, Nn, Ot, Ms] : (B = l, l = e)) : (B = l, l = e); l !== e; ) Rr.push(l), l = B, (dt = zr()) !== e ? (r.substr(B, 2) === "?|" ? (Nn = "?|", B += 2) : (Nn = e, Ir === 0 && ls(nm)), Nn === e && (r.substr(B, 2) === "?&" ? (Nn = "?&", B += 2) : (Nn = e, Ir === 0 && ls(op)), Nn === e && (r.charCodeAt(B) === 63 ? (Nn = "?", B++) : (Nn = e, Ir === 0 && ls($f)), Nn === e && (r.substr(B, 2) === "#-" ? (Nn = "#-", B += 2) : (Nn = e, Ir === 0 && ls(Bc)), Nn === e && (r.substr(B, 3) === "#>>" ? (Nn = "#>>", B += 3) : (Nn = e, Ir === 0 && ls(id)), Nn === e && (r.substr(B, 2) === "#>" ? (Nn = "#>", B += 2) : (Nn = e, Ir === 0 && ls(Vm)), Nn === e && (Nn = ff()) === e && (Nn = cf()) === e && (r.substr(B, 2) === "@>" ? (Nn = "@>", B += 2) : (Nn = e, Ir === 0 && ls(ad)), Nn === e && (r.substr(B, 2) === "<@" ? (Nn = "<@", B += 2) : (Nn = e, Ir === 0 && ls(rh))))))))), Nn !== e && (Ot = zr()) !== e && (Ms = pd()) !== e ? l = dt = [dt, Nn, Ot, Ms] : (B = l, l = e)) : (B = l, l = e);
+          if (Ft = B, (tr = hd()) !== e) if (zr() !== e) {
+            for (Rr = [], l = B, (dt = zr()) !== e ? (r.substr(B, 2) === "?|" ? (Nn = "?|", B += 2) : (Nn = e, Ir === 0 && ls(nm)), Nn === e && (r.substr(B, 2) === "?&" ? (Nn = "?&", B += 2) : (Nn = e, Ir === 0 && ls(op)), Nn === e && (r.charCodeAt(B) === 63 ? (Nn = "?", B++) : (Nn = e, Ir === 0 && ls($f)), Nn === e && (r.substr(B, 2) === "#-" ? (Nn = "#-", B += 2) : (Nn = e, Ir === 0 && ls(Bc)), Nn === e && (r.substr(B, 3) === "#>>" ? (Nn = "#>>", B += 3) : (Nn = e, Ir === 0 && ls(ad)), Nn === e && (r.substr(B, 2) === "#>" ? (Nn = "#>", B += 2) : (Nn = e, Ir === 0 && ls(Vm)), Nn === e && (Nn = ff()) === e && (Nn = cf()) === e && (r.substr(B, 2) === "@>" ? (Nn = "@>", B += 2) : (Nn = e, Ir === 0 && ls(ud)), Nn === e && (r.substr(B, 2) === "<@" ? (Nn = "<@", B += 2) : (Nn = e, Ir === 0 && ls(rh))))))))), Nn !== e && (Ot = zr()) !== e && (Ms = hd()) !== e ? l = dt = [dt, Nn, Ot, Ms] : (B = l, l = e)) : (B = l, l = e); l !== e; ) Rr.push(l), l = B, (dt = zr()) !== e ? (r.substr(B, 2) === "?|" ? (Nn = "?|", B += 2) : (Nn = e, Ir === 0 && ls(nm)), Nn === e && (r.substr(B, 2) === "?&" ? (Nn = "?&", B += 2) : (Nn = e, Ir === 0 && ls(op)), Nn === e && (r.charCodeAt(B) === 63 ? (Nn = "?", B++) : (Nn = e, Ir === 0 && ls($f)), Nn === e && (r.substr(B, 2) === "#-" ? (Nn = "#-", B += 2) : (Nn = e, Ir === 0 && ls(Bc)), Nn === e && (r.substr(B, 3) === "#>>" ? (Nn = "#>>", B += 3) : (Nn = e, Ir === 0 && ls(ad)), Nn === e && (r.substr(B, 2) === "#>" ? (Nn = "#>", B += 2) : (Nn = e, Ir === 0 && ls(Vm)), Nn === e && (Nn = ff()) === e && (Nn = cf()) === e && (r.substr(B, 2) === "@>" ? (Nn = "@>", B += 2) : (Nn = e, Ir === 0 && ls(ud)), Nn === e && (r.substr(B, 2) === "<@" ? (Nn = "<@", B += 2) : (Nn = e, Ir === 0 && ls(rh))))))))), Nn !== e && (Ot = zr()) !== e && (Ms = hd()) !== e ? l = dt = [dt, Nn, Ot, Ms] : (B = l, l = e)) : (B = l, l = e);
             Rr !== e ? (is = Ft, Qe = tr, tr = (Fr = Rr) && Fr.length !== 0 ? Se(Qe, Fr) : Qe, Ft = tr) : (B = Ft, Ft = e);
           } else B = Ft, Ft = e;
           else B = Ft, Ft = e;
@@ -92924,7 +92948,7 @@ function aEt() {
           return de = B, r.substr(B, 12).toLowerCase() === "current_time" ? (Pe = r.substr(B, 12), B += 12) : (Pe = e, Ir === 0 && ls($v)), Pe !== e ? (K = B, Ir++, De = zo(), Ir--, De === e ? K = void 0 : (B = K, K = e), K !== e ? (is = de, de = Pe = "CURRENT_TIME") : (B = de, de = e)) : (B = de, de = e), de;
         }()) === e && (ne = $a()), ne;
       }
-      function hd() {
+      function md() {
         var ne;
         return (ne = ep()) === e && (ne = Qf()) === e && (ne = function() {
           var de, Pe;
@@ -93034,7 +93058,7 @@ function aEt() {
       }
       function _f() {
         var ne;
-        return qf.test(r.charAt(B)) ? (ne = r.charAt(B), B++) : (ne = e, Ir === 0 && ls(ud)), ne;
+        return qf.test(r.charAt(B)) ? (ne = r.charAt(B), B++) : (ne = e, Ir === 0 && ls(ld)), ne;
       }
       function Sl() {
         var ne;
@@ -93068,11 +93092,11 @@ function aEt() {
         var ne, de, Pe, K;
         return ne = B, r.substr(B, 6).toLowerCase() === "delete" ? (de = r.substr(B, 6), B += 6) : (de = e, Ir === 0 && ls(io)), de !== e ? (Pe = B, Ir++, K = zo(), Ir--, K === e ? Pe = void 0 : (B = Pe, Pe = e), Pe !== e ? ne = de = [de, Pe] : (B = ne, ne = e)) : (B = ne, ne = e), ne;
       }
-      function md() {
+      function vd() {
         var ne, de, Pe, K;
         return ne = B, r.substr(B, 7).toLowerCase() === "replace" ? (de = r.substr(B, 7), B += 7) : (de = e, Ir === 0 && ls(fi)), de !== e ? (Pe = B, Ir++, K = zo(), Ir--, K === e ? Pe = void 0 : (B = Pe, Pe = e), Pe !== e ? ne = de = [de, Pe] : (B = ne, ne = e)) : (B = ne, ne = e), ne;
       }
-      function vd() {
+      function bd() {
         var ne, de, Pe, K;
         return ne = B, r.substr(B, 6).toLowerCase() === "rename" ? (de = r.substr(B, 6), B += 6) : (de = e, Ir === 0 && ls(Bi)), de !== e ? (Pe = B, Ir++, K = zo(), Ir--, K === e ? Pe = void 0 : (B = Pe, Pe = e), Pe !== e ? ne = de = [de, Pe] : (B = ne, ne = e)) : (B = ne, ne = e), ne;
       }
@@ -93435,7 +93459,7 @@ function aEt() {
         var ne, de, Pe, K, De, Ft, tr, Rr;
         if (ne = B, (de = Br()) !== e) {
           for (Pe = [], K = B, (De = zr()) !== e && (Ft = ph()) !== e && (tr = zr()) !== e && (Rr = Br()) !== e ? K = De = [De, Ft, tr, Rr] : (B = K, K = e); K !== e; ) Pe.push(K), K = B, (De = zr()) !== e && (Ft = ph()) !== e && (tr = zr()) !== e && (Rr = Br()) !== e ? K = De = [De, Ft, tr, Rr] : (B = K, K = e);
-          Pe !== e ? (is = ne, ne = de = od(de, Pe)) : (B = ne, ne = e);
+          Pe !== e ? (is = ne, ne = de = id(de, Pe)) : (B = ne, ne = e);
         } else B = ne, ne = e;
         return ne;
       }
@@ -93443,13 +93467,13 @@ function aEt() {
         var ne, de, Pe, K, De, Ft, tr, Rr;
         if (ne = B, (de = Hl()) !== e) {
           for (Pe = [], K = B, (De = zr()) !== e && (Ft = Qp()) !== e && (tr = zr()) !== e && (Rr = Hl()) !== e ? K = De = [De, Ft, tr, Rr] : (B = K, K = e); K !== e; ) Pe.push(K), K = B, (De = zr()) !== e && (Ft = Qp()) !== e && (tr = zr()) !== e && (Rr = Hl()) !== e ? K = De = [De, Ft, tr, Rr] : (B = K, K = e);
-          Pe !== e ? (is = ne, ne = de = od(de, Pe)) : (B = ne, ne = e);
+          Pe !== e ? (is = ne, ne = de = id(de, Pe)) : (B = ne, ne = e);
         } else B = ne, ne = e;
         return ne;
       }
       function Hl() {
         var ne, de, Pe;
-        return (ne = hd()) === e && (ne = d()) === e && (ne = rl()) === e && (ne = Np()) === e && (ne = B, lu() !== e && zr() !== e && (de = m()) !== e && zr() !== e && Qa() !== e ? (is = ne, (Pe = de).parentheses = !0, ne = Pe) : (B = ne, ne = e)), ne;
+        return (ne = md()) === e && (ne = d()) === e && (ne = rl()) === e && (ne = Np()) === e && (ne = B, lu() !== e && zr() !== e && (de = m()) !== e && zr() !== e && Qa() !== e ? (is = ne, (Pe = de).parentheses = !0, ne = Pe) : (B = ne, ne = e)), ne;
       }
       function Ul() {
         var ne, de, Pe, K, De, Ft, tr;
@@ -93497,7 +93521,7 @@ function aEt() {
         return (ne = function() {
           var de, Pe, K, De;
           if (de = B, (Pe = Dp()) === e && (Pe = ou()), Pe !== e) if (zr() !== e) if (lu() !== e) if (zr() !== e) {
-            if (K = [], qf.test(r.charAt(B)) ? (De = r.charAt(B), B++) : (De = e, Ir === 0 && ls(ud)), De !== e) for (; De !== e; ) K.push(De), qf.test(r.charAt(B)) ? (De = r.charAt(B), B++) : (De = e, Ir === 0 && ls(ud));
+            if (K = [], qf.test(r.charAt(B)) ? (De = r.charAt(B), B++) : (De = e, Ir === 0 && ls(ld)), De !== e) for (; De !== e; ) K.push(De), qf.test(r.charAt(B)) ? (De = r.charAt(B), B++) : (De = e, Ir === 0 && ls(ld));
             else K = e;
             K !== e && (De = zr()) !== e && Qa() !== e ? (is = de, Pe = { dataType: Pe, length: parseInt(K.join(""), 10), parentheses: !0 }, de = Pe) : (B = de, de = e);
           } else B = de, de = e;
@@ -93508,11 +93532,11 @@ function aEt() {
         }()) === e && (ne = function() {
           var de, Pe, K, De, Ft, tr, Rr, l, dt, Nn, Ot, Ms;
           if (de = B, (Pe = Zf()) === e && (Pe = nc()) === e && (Pe = qu()) === e && (Pe = Oo()) === e && (Pe = Al()) === e && (Pe = Pc()) === e && (Pe = g()) === e && (Pe = Qr()) === e && (Pe = Hc()), Pe !== e) if ((K = zr()) !== e) if ((De = lu()) !== e) if ((Ft = zr()) !== e) {
-            if (tr = [], qf.test(r.charAt(B)) ? (Rr = r.charAt(B), B++) : (Rr = e, Ir === 0 && ls(ud)), Rr !== e) for (; Rr !== e; ) tr.push(Rr), qf.test(r.charAt(B)) ? (Rr = r.charAt(B), B++) : (Rr = e, Ir === 0 && ls(ud));
+            if (tr = [], qf.test(r.charAt(B)) ? (Rr = r.charAt(B), B++) : (Rr = e, Ir === 0 && ls(ld)), Rr !== e) for (; Rr !== e; ) tr.push(Rr), qf.test(r.charAt(B)) ? (Rr = r.charAt(B), B++) : (Rr = e, Ir === 0 && ls(ld));
             else tr = e;
             if (tr !== e) if ((Rr = zr()) !== e) {
               if (l = B, (dt = ga()) !== e) if ((Nn = zr()) !== e) {
-                if (Ot = [], qf.test(r.charAt(B)) ? (Ms = r.charAt(B), B++) : (Ms = e, Ir === 0 && ls(ud)), Ms !== e) for (; Ms !== e; ) Ot.push(Ms), qf.test(r.charAt(B)) ? (Ms = r.charAt(B), B++) : (Ms = e, Ir === 0 && ls(ud));
+                if (Ot = [], qf.test(r.charAt(B)) ? (Ms = r.charAt(B), B++) : (Ms = e, Ir === 0 && ls(ld)), Ms !== e) for (; Ms !== e; ) Ot.push(Ms), qf.test(r.charAt(B)) ? (Ms = r.charAt(B), B++) : (Ms = e, Ir === 0 && ls(ld));
                 else Ot = e;
                 Ot !== e ? l = dt = [dt, Nn, Ot] : (B = l, l = e);
               } else B = l, l = e;
@@ -93527,7 +93551,7 @@ function aEt() {
           var Qe, Fr;
           if (de === e) {
             if (de = B, (Pe = Zf()) === e && (Pe = nc()) === e && (Pe = qu()) === e && (Pe = Oo()) === e && (Pe = Al()) === e && (Pe = Pc()) === e && (Pe = g()) === e && (Pe = Qr()) === e && (Pe = Hc()), Pe !== e) {
-              if (K = [], qf.test(r.charAt(B)) ? (De = r.charAt(B), B++) : (De = e, Ir === 0 && ls(ud)), De !== e) for (; De !== e; ) K.push(De), qf.test(r.charAt(B)) ? (De = r.charAt(B), B++) : (De = e, Ir === 0 && ls(ud));
+              if (K = [], qf.test(r.charAt(B)) ? (De = r.charAt(B), B++) : (De = e, Ir === 0 && ls(ld)), De !== e) for (; De !== e; ) K.push(De), qf.test(r.charAt(B)) ? (De = r.charAt(B), B++) : (De = e, Ir === 0 && ls(ld));
               else K = e;
               K !== e && (De = zr()) !== e ? ((Ft = za()) === e && (Ft = null), Ft !== e ? (is = de, Pe = function(Xo, gi, mi) {
                 return { dataType: Xo, length: parseInt(gi.join(""), 10), suffix: mi };
@@ -93541,7 +93565,7 @@ function aEt() {
         }()) === e && (ne = function() {
           var de, Pe, K, De;
           if (de = B, (Pe = bl()) === e && (Pe = lf()) === e && (Pe = At()) === e && (Pe = Ln()), Pe !== e) if (zr() !== e) if (lu() !== e) if (zr() !== e) {
-            if (K = [], qf.test(r.charAt(B)) ? (De = r.charAt(B), B++) : (De = e, Ir === 0 && ls(ud)), De !== e) for (; De !== e; ) K.push(De), qf.test(r.charAt(B)) ? (De = r.charAt(B), B++) : (De = e, Ir === 0 && ls(ud));
+            if (K = [], qf.test(r.charAt(B)) ? (De = r.charAt(B), B++) : (De = e, Ir === 0 && ls(ld)), De !== e) for (; De !== e; ) K.push(De), qf.test(r.charAt(B)) ? (De = r.charAt(B), B++) : (De = e, Ir === 0 && ls(ld));
             else K = e;
             K !== e && (De = zr()) !== e && Qa() !== e ? (is = de, Pe = { dataType: Pe, length: parseInt(K.join(""), 10), parentheses: !0 }, de = Pe) : (B = de, de = e);
           } else B = de, de = e;
@@ -93553,7 +93577,7 @@ function aEt() {
           var de, Pe;
           return de = B, (Pe = function() {
             var K, De, Ft, tr;
-            return K = B, r.substr(B, 4).toLowerCase() === "json" ? (De = r.substr(B, 4), B += 4) : (De = e, Ir === 0 && ls(cd)), De !== e ? (Ft = B, Ir++, tr = zo(), Ir--, tr === e ? Ft = void 0 : (B = Ft, Ft = e), Ft !== e ? (is = K, K = De = "JSON") : (B = K, K = e)) : (B = K, K = e), K;
+            return K = B, r.substr(B, 4).toLowerCase() === "json" ? (De = r.substr(B, 4), B += 4) : (De = e, Ir === 0 && ls(fd)), De !== e ? (Ft = B, Ir++, tr = zo(), Ir--, tr === e ? Ft = void 0 : (B = Ft, Ft = e), Ft !== e ? (is = K, K = De = "JSON") : (B = K, K = e)) : (B = K, K = e), K;
           }()) !== e && (is = de, Pe = mm(Pe)), de = Pe;
         }()) === e && (ne = function() {
           var de, Pe;
@@ -93689,7 +93713,7 @@ function aEt() {
       f = f !== void 0 ? f : {};
       var b, e = {}, P = { start: Zd }, $ = Zd, V = fs("IF", !0), oe = fs("EXTENSION", !0), Ae = fs("SCHEMA", !0), Ue = fs("VERSION", !0), Fe = function(H, ie) {
         return Re(H, ie, 1);
-      }, tt = fs("NULLS", !0), Ie = fs("FIRST", !0), ut = fs("LAST", !0), Vt = fs("AUTO_INCREMENT", !0), gr = fs("UNIQUE", !0), ur = fs("KEY", !0), cr = fs("PRIMARY", !0), Gt = fs("COLUMN_FORMAT", !0), Cr = fs("FIXED", !0), Nr = fs("DYNAMIC", !0), ln = fs("DEFAULT", !0), Lr = fs("STORAGE", !0), Sn = fs("DISK", !0), xn = fs("MEMORY", !0), pn = fs("ALGORITHM", !0), bn = fs("INSTANT", !0), ts = fs("INPLACE", !0), kn = fs("COPY", !0), Jn = fs("LOCK", !0), Cs = fs("NONE", !0), js = fs("SHARED", !0), os = fs("EXCLUSIVE", !0), Es = fs("PRIMARY KEY", !0), Fs = fs("FOREIGN KEY", !0), Hs = fs("MATCH FULL", !0), yo = fs("MATCH PARTIAL", !0), Ks = fs("MATCH SIMPLE", !0), To = fs("RESTRICT", !0), to = fs("CASCADE", !0), So = fs("SET NULL", !0), Fo = fs("NO ACTION", !0), wo = fs("SET DEFAULT", !0), yi = fs("TRIGGER", !0), Si = fs("BEFORE", !0), fa = fs("AFTER", !0), Ga = fs("INSTEAD OF", !0), Ya = fs("ON", !0), yu = fs("EXECUTE", !0), ia = fs("PROCEDURE", !0), ru = fs("FUNCTION", !0), zs = fs("OF", !0), ao = fs("NOT", !0), ko = fs("DEFERRABLE", !0), qo = fs("INITIALLY IMMEDIATE", !0), Eo = fs("INITIALLY DEFERRED", !0), rn = fs("FOR", !0), Pn = fs("EACH", !0), Rs = fs("ROW", !0), Us = fs("STATEMENT", !0), ho = fs("CHARACTER", !0), co = fs("SET", !0), Bo = fs("CHARSET", !0), Vo = fs("COLLATE", !0), di = fs("AVG_ROW_LENGTH", !0), wa = fs("KEY_BLOCK_SIZE", !0), Ba = fs("MAX_ROWS", !0), Oa = fs("MIN_ROWS", !0), Ma = fs("STATS_SAMPLE_PAGES", !0), Za = fs("CONNECTION", !0), Ja = fs("COMPRESSION", !0), wc = fs("'", !1), Cl = fs("ZLIB", !0), Nl = fs("LZ4", !0), va = fs("ENGINE", !0), Nu = fs("IN", !0), mu = fs("ACCESS SHARE", !0), Ru = fs("ROW SHARE", !0), Ll = fs("ROW EXCLUSIVE", !0), Rl = fs("SHARE UPDATE EXCLUSIVE", !0), Ju = fs("SHARE ROW EXCLUSIVE", !0), ef = fs("ACCESS EXCLUSIVE", !0), el = fs("SHARE", !0), tl = fs("MODE", !0), od = fs("NOWAIT", !0), Kl = fs("(", !1), Fl = fs(")", !1), vf = fs("BTREE", !0), Gd = fs("HASH", !0), tm = fs("GIST", !0), Hm = fs("GIN", !0), yp = fs("WITH", !0), Hd = fs("PARSER", !0), wp = fs("VISIBLE", !0), jp = fs("INVISIBLE", !0), $h = function(H, ie) {
+      }, tt = fs("NULLS", !0), Ie = fs("FIRST", !0), ut = fs("LAST", !0), Vt = fs("AUTO_INCREMENT", !0), gr = fs("UNIQUE", !0), ur = fs("KEY", !0), cr = fs("PRIMARY", !0), Gt = fs("COLUMN_FORMAT", !0), Cr = fs("FIXED", !0), Nr = fs("DYNAMIC", !0), ln = fs("DEFAULT", !0), Lr = fs("STORAGE", !0), Sn = fs("DISK", !0), xn = fs("MEMORY", !0), pn = fs("ALGORITHM", !0), bn = fs("INSTANT", !0), ts = fs("INPLACE", !0), kn = fs("COPY", !0), Jn = fs("LOCK", !0), Cs = fs("NONE", !0), js = fs("SHARED", !0), os = fs("EXCLUSIVE", !0), Es = fs("PRIMARY KEY", !0), Fs = fs("FOREIGN KEY", !0), Hs = fs("MATCH FULL", !0), yo = fs("MATCH PARTIAL", !0), Ks = fs("MATCH SIMPLE", !0), To = fs("RESTRICT", !0), to = fs("CASCADE", !0), So = fs("SET NULL", !0), Fo = fs("NO ACTION", !0), wo = fs("SET DEFAULT", !0), yi = fs("TRIGGER", !0), Si = fs("BEFORE", !0), fa = fs("AFTER", !0), Ga = fs("INSTEAD OF", !0), Ya = fs("ON", !0), yu = fs("EXECUTE", !0), ia = fs("PROCEDURE", !0), ru = fs("FUNCTION", !0), zs = fs("OF", !0), ao = fs("NOT", !0), ko = fs("DEFERRABLE", !0), qo = fs("INITIALLY IMMEDIATE", !0), Eo = fs("INITIALLY DEFERRED", !0), rn = fs("FOR", !0), Pn = fs("EACH", !0), Rs = fs("ROW", !0), Us = fs("STATEMENT", !0), ho = fs("CHARACTER", !0), co = fs("SET", !0), Bo = fs("CHARSET", !0), Vo = fs("COLLATE", !0), di = fs("AVG_ROW_LENGTH", !0), wa = fs("KEY_BLOCK_SIZE", !0), Ba = fs("MAX_ROWS", !0), Oa = fs("MIN_ROWS", !0), Ma = fs("STATS_SAMPLE_PAGES", !0), Za = fs("CONNECTION", !0), Ja = fs("COMPRESSION", !0), wc = fs("'", !1), Cl = fs("ZLIB", !0), Nl = fs("LZ4", !0), va = fs("ENGINE", !0), Nu = fs("IN", !0), mu = fs("ACCESS SHARE", !0), Ru = fs("ROW SHARE", !0), Ll = fs("ROW EXCLUSIVE", !0), Rl = fs("SHARE UPDATE EXCLUSIVE", !0), Ju = fs("SHARE ROW EXCLUSIVE", !0), ef = fs("ACCESS EXCLUSIVE", !0), el = fs("SHARE", !0), tl = fs("MODE", !0), id = fs("NOWAIT", !0), Kl = fs("(", !1), Fl = fs(")", !1), vf = fs("BTREE", !0), Gd = fs("HASH", !0), tm = fs("GIST", !0), Hm = fs("GIN", !0), yp = fs("WITH", !0), Hd = fs("PARSER", !0), wp = fs("VISIBLE", !0), jp = fs("INVISIBLE", !0), $h = function(H, ie) {
         return ie.unshift(H), ie.forEach((we) => {
           const { table: Oe, as: mt } = we;
           Kn[Oe] = Oe, mt && (Kn[mt] = Oe), function(yt) {
@@ -93699,10 +93723,10 @@ function aEt() {
         }), ie;
       }, xl = fs("DATA", !0), rm = fs("TIMECOL", !0), th = fs("DESCRIPTOR", !0), nm = fs("SIZE", !0), op = fs("OFFSET", !0), $f = fs("=", !1), Bc = function(H, ie) {
         return wt(H, ie);
-      }, id = fs("!", !1), Vm = fs(">=", !1), ad = fs(">", !1), rh = fs("<=", !1), Wm = fs("<>", !1), Cp = fs("<", !1), Am = fs("!=", !1), nh = fs("ESCAPE", !0), ip = fs("+", !1), Vd = fs("-", !1), Do = fs("*", !1), bf = fs("/", !1), Ff = fs("%", !1), Wd = fs("$", !1), $p = fs("~", !1), Fh = fs("?|", !1), Ym = fs("?&", !1), Fp = fs("?", !1), Uh = fs("#-", !1), Ch = fs("#>>", !1), sm = fs("#>", !1), Up = fs("@>", !1), Lp = fs("<@", !1), Nc = function(H) {
+      }, ad = fs("!", !1), Vm = fs(">=", !1), ud = fs(">", !1), rh = fs("<=", !1), Wm = fs("<>", !1), Cp = fs("<", !1), Am = fs("!=", !1), nh = fs("ESCAPE", !0), ip = fs("+", !1), Vd = fs("-", !1), Do = fs("*", !1), bf = fs("/", !1), Ff = fs("%", !1), Wd = fs("$", !1), $p = fs("~", !1), Fh = fs("?|", !1), Ym = fs("?&", !1), Fp = fs("?", !1), Uh = fs("#-", !1), Ch = fs("#>>", !1), sm = fs("#>", !1), Up = fs("@>", !1), Lp = fs("<@", !1), Nc = function(H) {
         return vo[H.toUpperCase()] === !0;
-      }, xp = fs('"', !1), hv = /^[^"]/, om = tc(['"'], !0, !1), Lh = /^[^']/, gf = tc(["'"], !0, !1), Uf = fs("`", !1), sh = /^[^`]/, im = tc(["`"], !0, !1), ju = /^[A-Za-z_\u4E00-\u9FA5\xC0-\u017F]/, Bf = tc([["A", "Z"], ["a", "z"], "_", ["一", "龥"], ["À", "ſ"]], !1, !1), zf = /^[A-Za-z0-9_\-$\u4E00-\u9FA5\xC0-\u017F]/, Qm = tc([["A", "Z"], ["a", "z"], ["0", "9"], "_", "-", "$", ["一", "龥"], ["À", "ſ"]], !1, !1), xh = /^[A-Za-z0-9_]/, oh = tc([["A", "Z"], ["a", "z"], ["0", "9"], "_"], !1, !1), Bp = fs(":", !1), am = fs("OVER", !0), Km = fs("POSITION", !0), _m = fs("VALUE", !0), tf = fs("NULL", !0), qf = fs("ABSENT", !0), ud = fs("json_object", !0), Bh = fs("BOTH", !0), ih = fs("LEADING", !0), Eh = fs("TRAILING", !0), Ep = fs("trim", !0), Sh = fs("placing", !0), zh = fs("for", !0), Tm = fs("overlay", !0), Sp = fs("SUBSTRING", !0), yf = fs("CENTURY", !0), zp = fs("DAY", !0), _t = fs("DATE", !0), Or = fs("DECADE", !0), cn = fs("DOW", !0), Wr = fs("DOY", !0), bs = fs("EPOCH", !0), cs = fs("HOUR", !0), Ns = fs("ISODOW", !0), fo = fs("ISOYEAR", !0), io = fs("MICROSECONDS", !0), Uo = fs("MILLENNIUM", !0), Ko = fs("MILLISECONDS", !0), fi = fs("MINUTE", !0), Bi = fs("MONTH", !0), Di = fs("QUARTER", !0), ba = fs("SECOND", !0), Pa = fs("TIMEZONE", !0), Ki = fs("TIMEZONE_HOUR", !0), ja = fs("TIMEZONE_MINUTE", !0), Ta = fs("WEEK", !0), vu = fs("YEAR", !0), cu = /^[^"\\\0-\x1F\x7F]/, ul = tc(['"', "\\", ["\0", ""], ""], !0, !1), Ou = /^[^'\\]/, ec = tc(["'", "\\"], !0, !1), Eu = fs("\\'", !1), uc = fs('\\"', !1), Td = fs("\\\\", !1), Gf = fs("\\/", !1), Cc = fs("\\b", !1), ah = fs("\\f", !1), qp = fs("\\n", !1), ll = fs("\\r", !1), zc = fs("\\t", !1), Id = fs("\\u", !1), ld = fs("\\", !1), um = fs("''", !1), Xm = fs('""', !1), Cd = fs("``", !1), Hf = /^[\n\r]/, Nd = tc([`
-`, "\r"], !1, !1), Yd = fs(".", !1), Qd = /^[0-9]/, uh = tc([["0", "9"]], !1, !1), Qv = /^[0-9a-fA-F]/, Zm = tc([["0", "9"], ["a", "f"], ["A", "F"]], !1, !1), Kv = /^[eE]/, Xv = tc(["e", "E"], !1, !1), Vf = /^[+\-]/, wf = tc(["+", "-"], !1, !1), Im = fs("NOT NULL", !0), Gp = fs("TRUE", !0), mv = fs("TO", !0), Jm = fs("FALSE", !0), vv = fs("DROP", !0), Zv = fs("USE", !0), lm = fs("ALTER", !0), ev = fs("SELECT", !0), bv = fs("UPDATE", !0), tv = fs("CREATE", !0), cm = fs("TEMPORARY", !0), Av = fs("DELETE", !0), _v = fs("INSERT", !0), Nm = fs("RECURSIVE", !0), Jv = fs("REPLACE", !0), Lb = fs("RETURNING", !0), gv = fs("RENAME", !0), xb = fs("IGNORE", !0), Tv = fs("PARTITION", !0), Eb = fs("INTO", !0), Db = fs("FROM", !0), Iv = fs("AS", !0), Nv = fs("TABLE", !0), eb = fs("TABLESPACE", !0), fm = fs("DATABASE", !0), Ap = fs("NATURAL", !0), Kd = fs("LEFT", !0), cd = fs("RIGHT", !0), Ah = fs("FULL", !0), qh = fs("INNER", !0), Rv = fs("JOIN", !0), tb = fs("CROSS", !0), dm = fs("APPLY", !0), Ov = fs("OUTER", !0), kv = fs("UNION", !0), Mv = fs("INTERSECT", !0), Rm = fs("EXCEPT", !0), _h = fs("VALUES", !0), Gh = fs("USING", !0), rv = fs("WHERE", !0), rb = fs("GROUP", !0), Dv = fs("BY", !0), nb = fs("ORDER", !0), sb = fs("HAVING", !0), Om = fs("LIMIT", !0), ob = fs("ASC", !0), ib = fs("DESC", !0), Pv = fs("ALL", !0), Sb = fs("DISTINCT", !0), Ab = fs("BETWEEN", !0), jv = fs("IS", !0), $v = fs("LIKE", !0), Hh = fs("SIMILAR", !0), rf = fs("EXISTS", !0), Rd = fs("AND", !0), pm = fs("OR", !0), Wf = fs("COUNT", !0), Cf = fs("MAX", !0), yv = fs("MIN", !0), km = fs("SUM", !0), Lf = fs("AVG", !0), Od = fs("COLLECT", !0), _b = fs("RANK", !0), ab = fs("DENSE_RANK", !0), Tb = fs("LISTAGG", !0), ub = fs("ROW_NUMBER", !0), wv = fs("TUMBLE", !0), Cv = fs("EXTRACT", !0), Lv = fs("CALL", !0), lb = fs("CASE", !0), Pb = fs("WHEN", !0), Ib = fs("THEN", !0), cb = fs("ELSE", !0), fb = fs("END", !0), Fv = fs("CAST", !0), Nb = fs("TRY_CAST", !0), Rb = fs("BOOL", !0), db = fs("BOOLEAN", !0), Ob = fs("CHAR", !0), pb = fs("VARCHAR", !0), Uv = fs("STRING", !0), q = fs("NUMERIC", !0), as = fs("DECIMAL", !0), hm = fs("SIGNED", !0), xf = fs("UNSIGNED", !0), nv = fs("INT", !0), $r = fs("ZEROFILL", !0), Gs = fs("INTEGER", !0), kd = fs("JSON", !0), Mm = fs("JSONB", !0), sv = fs("GEOMETRY", !0), ws = fs("SMALLINT", !0), Bv = fs("TINYINT", !0), hb = fs("TINYTEXT", !0), jb = fs("TEXT", !0), mm = fs("MEDIUMTEXT", !0), B = fs("LONGTEXT", !0), is = fs("BIGINT", !0), Dm = fs("FLOAT", !0), _p = fs("DOUBLE", !0), Pm = fs("DATETIME", !0), Ir = fs("TIME", !0), Ds = fs("TIMESTAMP", !0), fd = fs("TRUNCATE", !0), xv = fs("USER", !0), vm = fs("UUID", !0), ls = fs("ARRAY", !0), mb = fs("MAP", !0), ov = fs("CURRENT_DATE", !0), bm = fs("INTERVAL", !0), iv = fs("CURRENT_TIME", !0), jm = fs("CURRENT_TIMESTAMP", !0), Hp = fs("CURRENT_USER", !0), $m = fs("SESSION_USER", !0), Fm = fs("SYSTEM_USER", !0), Th = fs("GLOBAL", !0), Ih = fs("SESSION", !0), D = fs("LOCAL", !0), Zn = fs("PERSIST", !0), Vh = fs("PERSIST_ONLY", !0), Ef = fs("@", !1), Nh = fs("@@", !1), wr = fs("return", !0), _s = fs(":=", !1), El = fs("::", !1), lh = fs("DUAL", !0), Wh = fs("ADD", !0), es = fs("COLUMN", !0), qc = fs("INDEX", !0), lc = fs("FULLTEXT", !0), av = fs("SPATIAL", !0), Vp = fs("COMMENT", !0), ap = fs("CONSTRAINT", !0), Xd = fs("CONCURRENTLY", !0), Ev = fs("REFERENCES", !0), ch = fs("SQL_CALC_FOUND_ROWS", !0), gm = fs("SQL_CACHE", !0), vb = fs("SQL_NO_CACHE", !0), ym = fs("SQL_SMALL_RESULT", !0), wm = fs("SQL_BIG_RESULT", !0), Yh = fs("SQL_BUFFER_RESULT", !0), Um = fs(",", !1), dd = fs("[", !1), zv = fs("]", !1), Qh = fs(";", !1), Cm = fs("->", !1), up = fs("->>", !1), Bm = fs("=>", !1), fh = fs("||", !1), N = fs("&&", !1), Hn = fs("/*", !1), Sf = fs("*/", !1), T = fs("--", !1), Vn = { type: "any" }, fr = fs("years", !0), Ls = fs("months", !0), Rc = fs("days", !0), mr = fs("hours", !0), ms = fs("minutes", !0), On = fs("seconds", !0), Wp = /^[ \t\n\r]/, dh = tc([" ", "	", `
+      }, xp = fs('"', !1), hv = /^[^"]/, om = tc(['"'], !0, !1), Lh = /^[^']/, gf = tc(["'"], !0, !1), Uf = fs("`", !1), sh = /^[^`]/, im = tc(["`"], !0, !1), ju = /^[A-Za-z_\u4E00-\u9FA5\xC0-\u017F]/, Bf = tc([["A", "Z"], ["a", "z"], "_", ["一", "龥"], ["À", "ſ"]], !1, !1), zf = /^[A-Za-z0-9_\-$\u4E00-\u9FA5\xC0-\u017F]/, Qm = tc([["A", "Z"], ["a", "z"], ["0", "9"], "_", "-", "$", ["一", "龥"], ["À", "ſ"]], !1, !1), xh = /^[A-Za-z0-9_]/, oh = tc([["A", "Z"], ["a", "z"], ["0", "9"], "_"], !1, !1), Bp = fs(":", !1), am = fs("OVER", !0), Km = fs("POSITION", !0), _m = fs("VALUE", !0), tf = fs("NULL", !0), qf = fs("ABSENT", !0), ld = fs("json_object", !0), Bh = fs("BOTH", !0), ih = fs("LEADING", !0), Eh = fs("TRAILING", !0), Ep = fs("trim", !0), Sh = fs("placing", !0), zh = fs("for", !0), Tm = fs("overlay", !0), Sp = fs("SUBSTRING", !0), yf = fs("CENTURY", !0), zp = fs("DAY", !0), _t = fs("DATE", !0), Or = fs("DECADE", !0), cn = fs("DOW", !0), Wr = fs("DOY", !0), bs = fs("EPOCH", !0), cs = fs("HOUR", !0), Ns = fs("ISODOW", !0), fo = fs("ISOYEAR", !0), io = fs("MICROSECONDS", !0), Uo = fs("MILLENNIUM", !0), Ko = fs("MILLISECONDS", !0), fi = fs("MINUTE", !0), Bi = fs("MONTH", !0), Di = fs("QUARTER", !0), ba = fs("SECOND", !0), Pa = fs("TIMEZONE", !0), Ki = fs("TIMEZONE_HOUR", !0), ja = fs("TIMEZONE_MINUTE", !0), Ta = fs("WEEK", !0), vu = fs("YEAR", !0), cu = /^[^"\\\0-\x1F\x7F]/, ul = tc(['"', "\\", ["\0", ""], ""], !0, !1), Ou = /^[^'\\]/, ec = tc(["'", "\\"], !0, !1), Eu = fs("\\'", !1), uc = fs('\\"', !1), Td = fs("\\\\", !1), Gf = fs("\\/", !1), Cc = fs("\\b", !1), ah = fs("\\f", !1), qp = fs("\\n", !1), ll = fs("\\r", !1), zc = fs("\\t", !1), Id = fs("\\u", !1), cd = fs("\\", !1), um = fs("''", !1), Xm = fs('""', !1), Cd = fs("``", !1), Hf = /^[\n\r]/, Nd = tc([`
+`, "\r"], !1, !1), Yd = fs(".", !1), Qd = /^[0-9]/, uh = tc([["0", "9"]], !1, !1), Qv = /^[0-9a-fA-F]/, Zm = tc([["0", "9"], ["a", "f"], ["A", "F"]], !1, !1), Kv = /^[eE]/, Xv = tc(["e", "E"], !1, !1), Vf = /^[+\-]/, wf = tc(["+", "-"], !1, !1), Im = fs("NOT NULL", !0), Gp = fs("TRUE", !0), mv = fs("TO", !0), Jm = fs("FALSE", !0), vv = fs("DROP", !0), Zv = fs("USE", !0), lm = fs("ALTER", !0), ev = fs("SELECT", !0), bv = fs("UPDATE", !0), tv = fs("CREATE", !0), cm = fs("TEMPORARY", !0), Av = fs("DELETE", !0), _v = fs("INSERT", !0), Nm = fs("RECURSIVE", !0), Jv = fs("REPLACE", !0), Lb = fs("RETURNING", !0), gv = fs("RENAME", !0), xb = fs("IGNORE", !0), Tv = fs("PARTITION", !0), Eb = fs("INTO", !0), Db = fs("FROM", !0), Iv = fs("AS", !0), Nv = fs("TABLE", !0), eb = fs("TABLESPACE", !0), fm = fs("DATABASE", !0), Ap = fs("NATURAL", !0), Kd = fs("LEFT", !0), fd = fs("RIGHT", !0), Ah = fs("FULL", !0), qh = fs("INNER", !0), Rv = fs("JOIN", !0), tb = fs("CROSS", !0), dm = fs("APPLY", !0), Ov = fs("OUTER", !0), kv = fs("UNION", !0), Mv = fs("INTERSECT", !0), Rm = fs("EXCEPT", !0), _h = fs("VALUES", !0), Gh = fs("USING", !0), rv = fs("WHERE", !0), rb = fs("GROUP", !0), Dv = fs("BY", !0), nb = fs("ORDER", !0), sb = fs("HAVING", !0), Om = fs("LIMIT", !0), ob = fs("ASC", !0), ib = fs("DESC", !0), Pv = fs("ALL", !0), Sb = fs("DISTINCT", !0), Ab = fs("BETWEEN", !0), jv = fs("IS", !0), $v = fs("LIKE", !0), Hh = fs("SIMILAR", !0), rf = fs("EXISTS", !0), Rd = fs("AND", !0), pm = fs("OR", !0), Wf = fs("COUNT", !0), Cf = fs("MAX", !0), yv = fs("MIN", !0), km = fs("SUM", !0), Lf = fs("AVG", !0), Od = fs("COLLECT", !0), _b = fs("RANK", !0), ab = fs("DENSE_RANK", !0), Tb = fs("LISTAGG", !0), ub = fs("ROW_NUMBER", !0), wv = fs("TUMBLE", !0), Cv = fs("EXTRACT", !0), Lv = fs("CALL", !0), lb = fs("CASE", !0), Pb = fs("WHEN", !0), Ib = fs("THEN", !0), cb = fs("ELSE", !0), fb = fs("END", !0), Fv = fs("CAST", !0), Nb = fs("TRY_CAST", !0), Rb = fs("BOOL", !0), db = fs("BOOLEAN", !0), Ob = fs("CHAR", !0), pb = fs("VARCHAR", !0), Uv = fs("STRING", !0), q = fs("NUMERIC", !0), as = fs("DECIMAL", !0), hm = fs("SIGNED", !0), xf = fs("UNSIGNED", !0), nv = fs("INT", !0), $r = fs("ZEROFILL", !0), Gs = fs("INTEGER", !0), kd = fs("JSON", !0), Mm = fs("JSONB", !0), sv = fs("GEOMETRY", !0), ws = fs("SMALLINT", !0), Bv = fs("TINYINT", !0), hb = fs("TINYTEXT", !0), jb = fs("TEXT", !0), mm = fs("MEDIUMTEXT", !0), B = fs("LONGTEXT", !0), is = fs("BIGINT", !0), Dm = fs("FLOAT", !0), _p = fs("DOUBLE", !0), Pm = fs("DATETIME", !0), Ir = fs("TIME", !0), Ds = fs("TIMESTAMP", !0), dd = fs("TRUNCATE", !0), xv = fs("USER", !0), vm = fs("UUID", !0), ls = fs("ARRAY", !0), mb = fs("MAP", !0), ov = fs("CURRENT_DATE", !0), bm = fs("INTERVAL", !0), iv = fs("CURRENT_TIME", !0), jm = fs("CURRENT_TIMESTAMP", !0), Hp = fs("CURRENT_USER", !0), $m = fs("SESSION_USER", !0), Fm = fs("SYSTEM_USER", !0), Th = fs("GLOBAL", !0), Ih = fs("SESSION", !0), D = fs("LOCAL", !0), Zn = fs("PERSIST", !0), Vh = fs("PERSIST_ONLY", !0), Ef = fs("@", !1), Nh = fs("@@", !1), wr = fs("return", !0), _s = fs(":=", !1), El = fs("::", !1), lh = fs("DUAL", !0), Wh = fs("ADD", !0), es = fs("COLUMN", !0), qc = fs("INDEX", !0), lc = fs("FULLTEXT", !0), av = fs("SPATIAL", !0), Vp = fs("COMMENT", !0), ap = fs("CONSTRAINT", !0), Xd = fs("CONCURRENTLY", !0), Ev = fs("REFERENCES", !0), ch = fs("SQL_CALC_FOUND_ROWS", !0), gm = fs("SQL_CACHE", !0), vb = fs("SQL_NO_CACHE", !0), ym = fs("SQL_SMALL_RESULT", !0), wm = fs("SQL_BIG_RESULT", !0), Yh = fs("SQL_BUFFER_RESULT", !0), Um = fs(",", !1), pd = fs("[", !1), zv = fs("]", !1), Qh = fs(";", !1), Cm = fs("->", !1), up = fs("->>", !1), Bm = fs("=>", !1), fh = fs("||", !1), N = fs("&&", !1), Hn = fs("/*", !1), Sf = fs("*/", !1), T = fs("--", !1), Vn = { type: "any" }, fr = fs("years", !0), Ls = fs("months", !0), Rc = fs("days", !0), mr = fs("hours", !0), ms = fs("minutes", !0), On = fs("seconds", !0), Wp = /^[ \t\n\r]/, dh = tc([" ", "	", `
 `, "\r"], !1, !1), $n = function(H) {
         return { dataType: H };
       }, A = 0, Dn = 0, Af = [{ line: 1, column: 1 }], Lc = 0, xc = [], rr = 0;
@@ -93784,7 +93808,7 @@ function aEt() {
                 Qi !== e ? (Dn = ri, Ts = Re(Ts, Qi), ri = Ts) : (A = ri, ri = e);
               } else A = ri, ri = e;
               return ri;
-            }()) === e && (Zr = null), Zr !== e && (Er = Wt()) !== e ? (Mn = A, (jn = De()) !== e && (rs = Wt()) !== e && (ds = Te()) !== e && (po = Wt()) !== e && (Yo = $u()) !== e && (_i = Wt()) !== e && (Gi = Jt()) !== e ? Mn = jn = [jn, rs, ds, po, Yo, _i, Gi] : (A = Mn, Mn = e), Mn === e && (Mn = null), Mn !== e && (jn = Wt()) !== e ? ((rs = He()) === e && (rs = Y()), rs === e && (rs = null), rs !== e && (ds = Wt()) !== e ? ((po = Yr()) === e && (po = null), po !== e && (Yo = Wt()) !== e ? ((_i = pd()) === e && (_i = null), _i !== e ? (Dn = we, Oe = function(ri, Ts, Qi, ta, Wi, Fu, su, ya, Ha, ol) {
+            }()) === e && (Zr = null), Zr !== e && (Er = Wt()) !== e ? (Mn = A, (jn = De()) !== e && (rs = Wt()) !== e && (ds = Te()) !== e && (po = Wt()) !== e && (Yo = $u()) !== e && (_i = Wt()) !== e && (Gi = Jt()) !== e ? Mn = jn = [jn, rs, ds, po, Yo, _i, Gi] : (A = Mn, Mn = e), Mn === e && (Mn = null), Mn !== e && (jn = Wt()) !== e ? ((rs = He()) === e && (rs = Y()), rs === e && (rs = null), rs !== e && (ds = Wt()) !== e ? ((po = Yr()) === e && (po = null), po !== e && (Yo = Wt()) !== e ? ((_i = hd()) === e && (_i = null), _i !== e ? (Dn = we, Oe = function(ri, Ts, Qi, ta, Wi, Fu, su, ya, Ha, ol) {
               return ta && ta.forEach((Pi) => qr.add(`create::${[Pi.db, Pi.schema].filter(Boolean).join(".") || null}::${Pi.table}`)), { tableList: Array.from(qr), columnList: Xt(wn), ast: { type: ri[0].toLowerCase(), keyword: "table", temporary: Ts && Ts[0].toLowerCase(), if_not_exists: Qi, table: ta, ignore_replace: ya && ya[0].toLowerCase(), as: Ha && Ha[0].toLowerCase(), query_expr: ol && ol.ast, create_definitions: Wi, table_options: Fu, with: su && su[4] } };
             }(Oe, mt, yt, Ut, dr, Zr, Mn, rs, po, _i), we = Oe) : (A = we, we = e)) : (A = we, we = e)) : (A = we, we = e)) : (A = we, we = e)) : (A = we, we = e)) : (A = we, we = e)) : (A = we, we = e)) : (A = we, we = e), we === e && (we = A, (Oe = ku()) !== e && Wt() !== e ? ((mt = za()) === e && (mt = null), mt !== e && Wt() !== e && vn() !== e && Wt() !== e ? ((yt = cc()) === e && (yt = null), yt !== e && Wt() !== e && (Ut = Sl()) !== e && Wt() !== e ? (dr = A, (kr = De()) !== e && (Zr = Wt()) !== e && (Er = Te()) !== e && (Mn = Wt()) !== e && (jn = $u()) !== e && (rs = Wt()) !== e && (ds = Jt()) !== e ? dr = kr = [kr, Zr, Er, Mn, jn, rs, ds] : (A = dr, dr = e), dr === e && (dr = null), dr !== e && (kr = Wt()) !== e && (Zr = function ri() {
               var Ts, Qi;
@@ -93874,7 +93898,7 @@ function aEt() {
           }()), ie;
         }()) === e && (H = function() {
           var ie, we, Oe, mt;
-          ie = A, (we = bd()) !== e && Wt() !== e ? ((Oe = vn()) === e && (Oe = null), Oe !== e && Wt() !== e && (mt = Sl()) !== e ? (Dn = ie, yt = we, Ut = Oe, (dr = mt) && dr.forEach((kr) => qr.add(`${yt}::${[kr.db, kr.schema].filter(Boolean).join(".") || null}::${kr.table}`)), we = { tableList: Array.from(qr), columnList: Xt(wn), ast: { type: yt.toLowerCase(), keyword: Ut && Ut.toLowerCase() || "table", name: dr } }, ie = we) : (A = ie, ie = e)) : (A = ie, ie = e);
+          ie = A, (we = gd()) !== e && Wt() !== e ? ((Oe = vn()) === e && (Oe = null), Oe !== e && Wt() !== e && (mt = Sl()) !== e ? (Dn = ie, yt = we, Ut = Oe, (dr = mt) && dr.forEach((kr) => qr.add(`${yt}::${[kr.db, kr.schema].filter(Boolean).join(".") || null}::${kr.table}`)), we = { tableList: Array.from(qr), columnList: Xt(wn), ast: { type: yt.toLowerCase(), keyword: Ut && Ut.toLowerCase() || "table", name: dr } }, ie = we) : (A = ie, ie = e)) : (A = ie, ie = e);
           var yt, Ut, dr;
           return ie;
         }()) === e && (H = function() {
@@ -93955,14 +93979,14 @@ function aEt() {
           }()) !== e && Wt() !== e ? ((Oe = vn()) === e && (Oe = null), Oe !== e && Wt() !== e && (mt = Sl()) !== e && Wt() !== e ? ((yt = function() {
             var Mn, jn, rs, ds;
             return Mn = A, r.substr(A, 2).toLowerCase() === "in" ? (jn = r.substr(A, 2), A += 2) : (jn = e, rr === 0 && Rn(Nu)), jn !== e && Wt() !== e ? (r.substr(A, 12).toLowerCase() === "access share" ? (rs = r.substr(A, 12), A += 12) : (rs = e, rr === 0 && Rn(mu)), rs === e && (r.substr(A, 9).toLowerCase() === "row share" ? (rs = r.substr(A, 9), A += 9) : (rs = e, rr === 0 && Rn(Ru)), rs === e && (r.substr(A, 13).toLowerCase() === "row exclusive" ? (rs = r.substr(A, 13), A += 13) : (rs = e, rr === 0 && Rn(Ll)), rs === e && (r.substr(A, 22).toLowerCase() === "share update exclusive" ? (rs = r.substr(A, 22), A += 22) : (rs = e, rr === 0 && Rn(Rl)), rs === e && (r.substr(A, 19).toLowerCase() === "share row exclusive" ? (rs = r.substr(A, 19), A += 19) : (rs = e, rr === 0 && Rn(Ju)), rs === e && (r.substr(A, 9).toLowerCase() === "exclusive" ? (rs = r.substr(A, 9), A += 9) : (rs = e, rr === 0 && Rn(os)), rs === e && (r.substr(A, 16).toLowerCase() === "access exclusive" ? (rs = r.substr(A, 16), A += 16) : (rs = e, rr === 0 && Rn(ef)), rs === e && (r.substr(A, 5).toLowerCase() === "share" ? (rs = r.substr(A, 5), A += 5) : (rs = e, rr === 0 && Rn(el))))))))), rs !== e && Wt() !== e ? (r.substr(A, 4).toLowerCase() === "mode" ? (ds = r.substr(A, 4), A += 4) : (ds = e, rr === 0 && Rn(tl)), ds !== e ? (Dn = Mn, jn = { mode: `in ${rs.toLowerCase()} mode` }, Mn = jn) : (A = Mn, Mn = e)) : (A = Mn, Mn = e)) : (A = Mn, Mn = e), Mn;
-          }()) === e && (yt = null), yt !== e && Wt() !== e ? (r.substr(A, 6).toLowerCase() === "nowait" ? (Ut = r.substr(A, 6), A += 6) : (Ut = e, rr === 0 && Rn(od)), Ut === e && (Ut = null), Ut !== e ? (Dn = ie, dr = Oe, Zr = yt, Er = Ut, (kr = mt) && kr.forEach((Mn) => qr.add(`lock::${[Mn.db, Mn.schema].filter(Boolean).join(".") || null}::${Mn.table}`)), we = { tableList: Array.from(qr), columnList: Xt(wn), ast: { type: "lock", keyword: dr && dr.toLowerCase(), tables: kr.map((Mn) => ({ table: Mn })), lock_mode: Zr, nowait: Er } }, ie = we) : (A = ie, ie = e)) : (A = ie, ie = e)) : (A = ie, ie = e)) : (A = ie, ie = e);
+          }()) === e && (yt = null), yt !== e && Wt() !== e ? (r.substr(A, 6).toLowerCase() === "nowait" ? (Ut = r.substr(A, 6), A += 6) : (Ut = e, rr === 0 && Rn(id)), Ut === e && (Ut = null), Ut !== e ? (Dn = ie, dr = Oe, Zr = yt, Er = Ut, (kr = mt) && kr.forEach((Mn) => qr.add(`lock::${[Mn.db, Mn.schema].filter(Boolean).join(".") || null}::${Mn.table}`)), we = { tableList: Array.from(qr), columnList: Xt(wn), ast: { type: "lock", keyword: dr && dr.toLowerCase(), tables: kr.map((Mn) => ({ table: Mn })), lock_mode: Zr, nowait: Er } }, ie = we) : (A = ie, ie = e)) : (A = ie, ie = e)) : (A = ie, ie = e)) : (A = ie, ie = e);
           var dr, kr, Zr, Er;
           return ie;
         }()), H;
       }
       function Tp() {
         var H;
-        return (H = pd()) === e && (H = function() {
+        return (H = hd()) === e && (H = function() {
           var ie, we, Oe, mt, yt, Ut;
           return ie = A, (we = Tr()) !== e && Wt() !== e && (Oe = Sl()) !== e && Wt() !== e && nr() !== e && Wt() !== e && (mt = function() {
             var dr, kr, Zr, Er, Mn, jn, rs, ds;
@@ -94040,11 +94064,11 @@ function aEt() {
           return yt = A, r.substr(A, 6).toLowerCase() === "except" ? (Ut = r.substr(A, 6), A += 6) : (Ut = e, rr === 0 && Rn(Rm)), Ut !== e ? (dr = A, rr++, kr = uo(), rr--, kr === e ? dr = void 0 : (A = dr, dr = e), dr !== e ? (Dn = yt, yt = Ut = "EXCEPT") : (A = yt, yt = e)) : (A = yt, yt = e), yt;
         }()), ie !== e && Wt() !== e ? ((we = l()) === e && (we = dt()), we === e && (we = null), we !== e ? (Dn = H, Oe = ie, H = ie = (mt = we) ? `${Oe.toLowerCase()} ${mt.toLowerCase()}` : "" + Oe.toLowerCase()) : (A = H, H = e)) : (A = H, H = e), H;
       }
-      function pd() {
+      function hd() {
         var H, ie, we, Oe, mt, yt, Ut, dr;
         if (H = A, (ie = Md()) !== e) {
           for (we = [], Oe = A, (mt = Wt()) !== e && (yt = Qp()) !== e && (Ut = Wt()) !== e && (dr = Md()) !== e ? Oe = mt = [mt, yt, Ut, dr] : (A = Oe, Oe = e); Oe !== e; ) we.push(Oe), Oe = A, (mt = Wt()) !== e && (yt = Qp()) !== e && (Ut = Wt()) !== e && (dr = Md()) !== e ? Oe = mt = [mt, yt, Ut, dr] : (A = Oe, Oe = e);
-          we !== e && (Oe = Wt()) !== e ? ((mt = vd()) === e && (mt = null), mt !== e && (yt = Wt()) !== e ? ((Ut = rp()) === e && (Ut = null), Ut !== e ? (Dn = H, H = ie = function(kr, Zr, Er, Mn) {
+          we !== e && (Oe = Wt()) !== e ? ((mt = bd()) === e && (mt = null), mt !== e && (yt = Wt()) !== e ? ((Ut = rp()) === e && (Ut = null), Ut !== e ? (Dn = H, H = ie = function(kr, Zr, Er, Mn) {
             let jn = kr;
             for (let rs = 0; rs < Zr.length; rs++) jn._next = Zr[rs][3], jn.set_op = Zr[rs][1], jn = jn._next;
             return Er && (kr._orderby = Er), Mn && (kr._limit = Mn), { tableList: Array.from(qr), columnList: Xt(wn), ast: kr };
@@ -94080,17 +94104,17 @@ function aEt() {
           var ie;
           return (ie = function() {
             var we, Oe, mt, yt, Ut, dr;
-            we = A, (Oe = zo()) === e && (Oe = null), Oe !== e && Wt() !== e ? (r.substr(A, 11).toLowerCase() === "primary key" ? (mt = r.substr(A, 11), A += 11) : (mt = e, rr === 0 && Rn(Es)), mt !== e && Wt() !== e ? ((yt = Op()) === e && (yt = null), yt !== e && Wt() !== e && (Ut = hd()) !== e && Wt() !== e ? ((dr = fc()) === e && (dr = null), dr !== e ? (Dn = we, Zr = mt, Er = yt, Mn = Ut, jn = dr, Oe = { constraint: (kr = Oe) && kr.constraint, definition: Mn, constraint_type: Zr.toLowerCase(), keyword: kr && kr.keyword, index_type: Er, resource: "constraint", index_options: jn }, we = Oe) : (A = we, we = e)) : (A = we, we = e)) : (A = we, we = e)) : (A = we, we = e);
+            we = A, (Oe = zo()) === e && (Oe = null), Oe !== e && Wt() !== e ? (r.substr(A, 11).toLowerCase() === "primary key" ? (mt = r.substr(A, 11), A += 11) : (mt = e, rr === 0 && Rn(Es)), mt !== e && Wt() !== e ? ((yt = Op()) === e && (yt = null), yt !== e && Wt() !== e && (Ut = md()) !== e && Wt() !== e ? ((dr = fc()) === e && (dr = null), dr !== e ? (Dn = we, Zr = mt, Er = yt, Mn = Ut, jn = dr, Oe = { constraint: (kr = Oe) && kr.constraint, definition: Mn, constraint_type: Zr.toLowerCase(), keyword: kr && kr.keyword, index_type: Er, resource: "constraint", index_options: jn }, we = Oe) : (A = we, we = e)) : (A = we, we = e)) : (A = we, we = e)) : (A = we, we = e);
             var kr, Zr, Er, Mn, jn;
             return we;
           }()) === e && (ie = function() {
             var we, Oe, mt, yt, Ut, dr, kr, Zr;
-            we = A, (Oe = zo()) === e && (Oe = null), Oe !== e && Wt() !== e && (mt = ft()) !== e && Wt() !== e ? ((yt = Ze()) === e && (yt = St()), yt === e && (yt = null), yt !== e && Wt() !== e ? ((Ut = At()) === e && (Ut = null), Ut !== e && Wt() !== e ? ((dr = Op()) === e && (dr = null), dr !== e && Wt() !== e && (kr = hd()) !== e && Wt() !== e ? ((Zr = fc()) === e && (Zr = null), Zr !== e ? (Dn = we, Mn = mt, jn = yt, rs = Ut, ds = dr, po = kr, Yo = Zr, Oe = { constraint: (Er = Oe) && Er.constraint, definition: po, constraint_type: jn && `${Mn.toLowerCase()} ${jn.toLowerCase()}` || Mn.toLowerCase(), keyword: Er && Er.keyword, index_type: ds, index: rs, resource: "constraint", index_options: Yo }, we = Oe) : (A = we, we = e)) : (A = we, we = e)) : (A = we, we = e)) : (A = we, we = e)) : (A = we, we = e);
+            we = A, (Oe = zo()) === e && (Oe = null), Oe !== e && Wt() !== e && (mt = ft()) !== e && Wt() !== e ? ((yt = Ze()) === e && (yt = St()), yt === e && (yt = null), yt !== e && Wt() !== e ? ((Ut = At()) === e && (Ut = null), Ut !== e && Wt() !== e ? ((dr = Op()) === e && (dr = null), dr !== e && Wt() !== e && (kr = md()) !== e && Wt() !== e ? ((Zr = fc()) === e && (Zr = null), Zr !== e ? (Dn = we, Mn = mt, jn = yt, rs = Ut, ds = dr, po = kr, Yo = Zr, Oe = { constraint: (Er = Oe) && Er.constraint, definition: po, constraint_type: jn && `${Mn.toLowerCase()} ${jn.toLowerCase()}` || Mn.toLowerCase(), keyword: Er && Er.keyword, index_type: ds, index: rs, resource: "constraint", index_options: Yo }, we = Oe) : (A = we, we = e)) : (A = we, we = e)) : (A = we, we = e)) : (A = we, we = e)) : (A = we, we = e);
             var Er, Mn, jn, rs, ds, po, Yo;
             return we;
           }()) === e && (ie = function() {
             var we, Oe, mt, yt, Ut, dr;
-            we = A, (Oe = zo()) === e && (Oe = null), Oe !== e && Wt() !== e ? (r.substr(A, 11).toLowerCase() === "foreign key" ? (mt = r.substr(A, 11), A += 11) : (mt = e, rr === 0 && Rn(Fs)), mt !== e && Wt() !== e ? ((yt = At()) === e && (yt = null), yt !== e && Wt() !== e && (Ut = hd()) !== e && Wt() !== e ? ((dr = Kp()) === e && (dr = null), dr !== e ? (Dn = we, Zr = mt, Er = yt, Mn = Ut, jn = dr, Oe = { constraint: (kr = Oe) && kr.constraint, definition: Mn, constraint_type: Zr, keyword: kr && kr.keyword, index: Er, resource: "constraint", reference_definition: jn }, we = Oe) : (A = we, we = e)) : (A = we, we = e)) : (A = we, we = e)) : (A = we, we = e);
+            we = A, (Oe = zo()) === e && (Oe = null), Oe !== e && Wt() !== e ? (r.substr(A, 11).toLowerCase() === "foreign key" ? (mt = r.substr(A, 11), A += 11) : (mt = e, rr === 0 && Rn(Fs)), mt !== e && Wt() !== e ? ((yt = At()) === e && (yt = null), yt !== e && Wt() !== e && (Ut = md()) !== e && Wt() !== e ? ((dr = Kp()) === e && (dr = null), dr !== e ? (Dn = we, Zr = mt, Er = yt, Mn = Ut, jn = dr, Oe = { constraint: (kr = Oe) && kr.constraint, definition: Mn, constraint_type: Zr, keyword: kr && kr.keyword, index: Er, resource: "constraint", reference_definition: jn }, we = Oe) : (A = we, we = e)) : (A = we, we = e)) : (A = we, we = e)) : (A = we, we = e);
             var kr, Zr, Er, Mn, jn;
             return we;
           }()), ie;
@@ -94185,7 +94209,7 @@ function aEt() {
       }
       function Yf() {
         var H, ie, we, Oe, mt, yt;
-        return H = A, (ie = Ze()) === e && (ie = St()), ie !== e && Wt() !== e ? ((we = At()) === e && (we = null), we !== e && Wt() !== e ? ((Oe = Op()) === e && (Oe = null), Oe !== e && Wt() !== e && (mt = hd()) !== e && Wt() !== e ? ((yt = fc()) === e && (yt = null), yt !== e && Wt() !== e ? (Dn = H, H = ie = function(Ut, dr, kr, Zr, Er) {
+        return H = A, (ie = Ze()) === e && (ie = St()), ie !== e && Wt() !== e ? ((we = At()) === e && (we = null), we !== e && Wt() !== e ? ((Oe = Op()) === e && (Oe = null), Oe !== e && Wt() !== e && (mt = md()) !== e && Wt() !== e ? ((yt = fc()) === e && (yt = null), yt !== e && Wt() !== e ? (Dn = H, H = ie = function(Ut, dr, kr, Zr, Er) {
           return { index: dr, definition: Zr, keyword: Ut.toLowerCase(), index_type: kr, resource: "index", index_options: Er };
         }(ie, we, Oe, mt, yt)) : (A = H, H = e)) : (A = H, H = e)) : (A = H, H = e)) : (A = H, H = e), H;
       }
@@ -94197,7 +94221,7 @@ function aEt() {
         }()) === e && (ie = function() {
           var Ut, dr, kr, Zr;
           return Ut = A, r.substr(A, 7).toLowerCase() === "spatial" ? (dr = r.substr(A, 7), A += 7) : (dr = e, rr === 0 && Rn(av)), dr !== e ? (kr = A, rr++, Zr = uo(), rr--, Zr === e ? kr = void 0 : (A = kr, kr = e), kr !== e ? (Dn = Ut, Ut = dr = "SPATIAL") : (A = Ut, Ut = e)) : (A = Ut, Ut = e), Ut;
-        }()), ie !== e && Wt() !== e ? ((we = Ze()) === e && (we = St()), we === e && (we = null), we !== e && Wt() !== e ? ((Oe = At()) === e && (Oe = null), Oe !== e && Wt() !== e && (mt = hd()) !== e && Wt() !== e ? ((yt = fc()) === e && (yt = null), yt !== e && Wt() !== e ? (Dn = H, H = ie = function(Ut, dr, kr, Zr, Er) {
+        }()), ie !== e && Wt() !== e ? ((we = Ze()) === e && (we = St()), we === e && (we = null), we !== e && Wt() !== e ? ((Oe = At()) === e && (Oe = null), Oe !== e && Wt() !== e && (mt = md()) !== e && Wt() !== e ? ((yt = fc()) === e && (yt = null), yt !== e && Wt() !== e ? (Dn = H, H = ie = function(Ut, dr, kr, Zr, Er) {
           return { index: kr, definition: Zr, keyword: dr && `${Ut.toLowerCase()} ${dr.toLowerCase()}` || Ut.toLowerCase(), index_options: Er, resource: "index" };
         }(ie, we, Oe, mt, yt)) : (A = H, H = e)) : (A = H, H = e)) : (A = H, H = e)) : (A = H, H = e), H;
       }
@@ -94212,7 +94236,7 @@ function aEt() {
         return H = A, (ie = function() {
           var Er, Mn, jn, rs;
           return Er = A, r.substr(A, 10).toLowerCase() === "references" ? (Mn = r.substr(A, 10), A += 10) : (Mn = e, rr === 0 && Rn(Ev)), Mn !== e ? (jn = A, rr++, rs = uo(), rr--, rs === e ? jn = void 0 : (A = jn, jn = e), jn !== e ? (Dn = Er, Er = Mn = "REFERENCES") : (A = Er, Er = e)) : (A = Er, Er = e), Er;
-        }()) !== e && Wt() !== e && (we = Sl()) !== e && Wt() !== e && (Oe = hd()) !== e && Wt() !== e ? (r.substr(A, 10).toLowerCase() === "match full" ? (mt = r.substr(A, 10), A += 10) : (mt = e, rr === 0 && Rn(Hs)), mt === e && (r.substr(A, 13).toLowerCase() === "match partial" ? (mt = r.substr(A, 13), A += 13) : (mt = e, rr === 0 && Rn(yo)), mt === e && (r.substr(A, 12).toLowerCase() === "match simple" ? (mt = r.substr(A, 12), A += 12) : (mt = e, rr === 0 && Rn(Ks)))), mt === e && (mt = null), mt !== e && Wt() !== e ? ((yt = Ip()) === e && (yt = null), yt !== e && Wt() !== e ? ((Ut = Ip()) === e && (Ut = null), Ut !== e ? (Dn = H, dr = mt, kr = yt, Zr = Ut, H = ie = { definition: Oe, table: we, keyword: ie.toLowerCase(), match: dr && dr.toLowerCase(), on_action: [kr, Zr].filter((Er) => Er) }) : (A = H, H = e)) : (A = H, H = e)) : (A = H, H = e)) : (A = H, H = e), H;
+        }()) !== e && Wt() !== e && (we = Sl()) !== e && Wt() !== e && (Oe = md()) !== e && Wt() !== e ? (r.substr(A, 10).toLowerCase() === "match full" ? (mt = r.substr(A, 10), A += 10) : (mt = e, rr === 0 && Rn(Hs)), mt === e && (r.substr(A, 13).toLowerCase() === "match partial" ? (mt = r.substr(A, 13), A += 13) : (mt = e, rr === 0 && Rn(yo)), mt === e && (r.substr(A, 12).toLowerCase() === "match simple" ? (mt = r.substr(A, 12), A += 12) : (mt = e, rr === 0 && Rn(Ks)))), mt === e && (mt = null), mt !== e && Wt() !== e ? ((yt = Ip()) === e && (yt = null), yt !== e && Wt() !== e ? ((Ut = Ip()) === e && (Ut = null), Ut !== e ? (Dn = H, dr = mt, kr = yt, Zr = Ut, H = ie = { definition: Oe, table: we, keyword: ie.toLowerCase(), match: dr && dr.toLowerCase(), on_action: [kr, Zr].filter((Er) => Er) }) : (A = H, H = e)) : (A = H, H = e)) : (A = H, H = e)) : (A = H, H = e), H;
       }
       function Ip() {
         var H, ie, we, Oe;
@@ -94223,7 +94247,7 @@ function aEt() {
       }
       function Np() {
         var H, ie, we, Oe, mt, yt, Ut;
-        return H = A, (ie = Ct()) === e && (ie = br()) === e && (ie = bd()), ie !== e && (Dn = H, Ut = ie, ie = { keyword: Array.isArray(Ut) ? Ut[0].toLowerCase() : Ut.toLowerCase() }), (H = ie) === e && (H = A, (ie = Tr()) !== e && Wt() !== e ? (we = A, r.substr(A, 2).toLowerCase() === "of" ? (Oe = r.substr(A, 2), A += 2) : (Oe = e, rr === 0 && Rn(zs)), Oe !== e && (mt = Wt()) !== e && (yt = md()) !== e ? we = Oe = [Oe, mt, yt] : (A = we, we = e), we === e && (we = null), we !== e ? (Dn = H, H = ie = function(dr, kr) {
+        return H = A, (ie = Ct()) === e && (ie = br()) === e && (ie = gd()), ie !== e && (Dn = H, Ut = ie, ie = { keyword: Array.isArray(Ut) ? Ut[0].toLowerCase() : Ut.toLowerCase() }), (H = ie) === e && (H = A, (ie = Tr()) !== e && Wt() !== e ? (we = A, r.substr(A, 2).toLowerCase() === "of" ? (Oe = r.substr(A, 2), A += 2) : (Oe = e, rr === 0 && Rn(zs)), Oe !== e && (mt = Wt()) !== e && (yt = vd()) !== e ? we = Oe = [Oe, mt, yt] : (A = we, we = e), we === e && (we = null), we !== e ? (Dn = H, H = ie = function(dr, kr) {
           return { keyword: dr && dr[0] && dr[0].toLowerCase(), args: kr && { keyword: kr[0], columns: kr[2] } || null };
         }(ie, we)) : (A = H, H = e)) : (A = H, H = e)), H;
       }
@@ -94297,20 +94321,20 @@ function aEt() {
               var Mi, Ia, _o, Bs;
               return Mi = A, r.substr(A, 6).toLowerCase() === "having" ? (Ia = r.substr(A, 6), A += 6) : (Ia = e, rr === 0 && Rn(sb)), Ia !== e ? (_o = A, rr++, Bs = uo(), rr--, Bs === e ? _o = void 0 : (A = _o, _o = e), _o !== e ? Mi = Ia = [Ia, _o] : (A = Mi, Mi = e)) : (A = Mi, Mi = e), Mi;
             }() !== e && Wt() !== e && (da = zu()) !== e ? (Dn = ii, ii = da) : (A = ii, ii = e), ii;
-          }()) === e && (Yo = null), Yo !== e && Wt() !== e ? ((_i = vd()) === e && (_i = null), _i !== e && Wt() !== e ? ((Gi = rp()) === e && (Gi = null), Gi !== e ? (Dn = dr, kr = function(ii, da, Mi, Ia, _o, Bs, ri, Ts, Qi, ta) {
+          }()) === e && (Yo = null), Yo !== e && Wt() !== e ? ((_i = bd()) === e && (_i = null), _i !== e && Wt() !== e ? ((Gi = rp()) === e && (Gi = null), Gi !== e ? (Dn = dr, kr = function(ii, da, Mi, Ia, _o, Bs, ri, Ts, Qi, ta) {
             return _o && _o.forEach((Wi) => Wi.table && qr.add(`select::${[Wi.db, Wi.schema].filter(Boolean).join(".") || null}::${Wi.table}`)), { with: ii, type: "select", options: da, distinct: Mi, columns: Ia, from: _o, where: Bs, groupby: ri, having: Ts, orderby: Qi, limit: ta };
           }(Zr, Er, Mn, jn, rs, ds, po, Yo, _i, Gi), dr = kr) : (A = dr, dr = e)) : (A = dr, dr = e)) : (A = dr, dr = e)) : (A = dr, dr = e)) : (A = dr, dr = e)) : (A = dr, dr = e)) : (A = dr, dr = e)) : (A = dr, dr = e)) : (A = dr, dr = e)) : (A = dr, dr = e), dr;
         }()) === e && (H = A, ie = A, r.charCodeAt(A) === 40 ? (we = "(", A++) : (we = e, rr === 0 && Rn(Kl)), we !== e && (Oe = Wt()) !== e && (mt = Md()) !== e && (yt = Wt()) !== e ? (r.charCodeAt(A) === 41 ? (Ut = ")", A++) : (Ut = e, rr === 0 && Rn(Fl)), Ut !== e ? ie = we = [we, Oe, mt, yt, Ut] : (A = ie, ie = e)) : (A = ie, ie = e), ie !== e && (Dn = H, ie = { ...ie[2], parentheses_symbol: !0 }), H = ie), H;
       }
       function Jd() {
         var H, ie, we, Oe;
-        return H = A, (ie = Io()) === e && (ie = $a()), ie !== e && Wt() !== e ? ((we = hd()) === e && (we = null), we !== e && Wt() !== e && Yr() !== e && Wt() !== e && Te() !== e && Wt() !== e && (Oe = pd()) !== e && Wt() !== e && Jt() !== e ? (Dn = H, H = ie = function(mt, yt, Ut) {
+        return H = A, (ie = Io()) === e && (ie = $a()), ie !== e && Wt() !== e ? ((we = md()) === e && (we = null), we !== e && Wt() !== e && Yr() !== e && Wt() !== e && Te() !== e && Wt() !== e && (Oe = hd()) !== e && Wt() !== e && Jt() !== e ? (Dn = H, H = ie = function(mt, yt, Ut) {
           return typeof mt == "string" && (mt = { type: "default", value: mt }), { name: mt, stmt: Ut, columns: yt };
         }(ie, we, Oe)) : (A = H, H = e)) : (A = H, H = e), H;
       }
-      function hd() {
+      function md() {
         var H, ie;
-        return H = A, Te() !== e && Wt() !== e && (ie = md()) !== e && Wt() !== e && Jt() !== e ? (Dn = H, H = ie) : (A = H, H = e), H;
+        return H = A, Te() !== e && Wt() !== e && (ie = vd()) !== e && Wt() !== e && Jt() !== e ? (Dn = H, H = ie) : (A = H, H = e), H;
       }
       function Dd() {
         var H, ie;
@@ -94443,7 +94467,7 @@ function aEt() {
           var ds, po, Yo, _i;
           return Oe === e && (Oe = A, (mt = uf()) !== e && Wt() !== e && (yt = Pd()) !== e && Wt() !== e ? ((Ut = kp()) === e && (Ut = null), Ut !== e ? (Dn = Oe, mt = function(Gi, ii, da) {
             return ii.join = Gi, ii.on = da, ii;
-          }(mt, yt, Ut), Oe = mt) : (A = Oe, Oe = e)) : (A = Oe, Oe = e), Oe === e && (Oe = A, (mt = uf()) === e && (mt = Qp()), mt !== e && Wt() !== e && (yt = Te()) !== e && Wt() !== e && (Ut = pd()) !== e && Wt() !== e && Jt() !== e && Wt() !== e ? ((dr = Qf()) === e && (dr = null), dr !== e && (kr = Wt()) !== e ? ((Zr = kp()) === e && (Zr = null), Zr !== e ? (Dn = Oe, mt = function(Gi, ii, da, Mi) {
+          }(mt, yt, Ut), Oe = mt) : (A = Oe, Oe = e)) : (A = Oe, Oe = e), Oe === e && (Oe = A, (mt = uf()) === e && (mt = Qp()), mt !== e && Wt() !== e && (yt = Te()) !== e && Wt() !== e && (Ut = hd()) !== e && Wt() !== e && Jt() !== e && Wt() !== e ? ((dr = Qf()) === e && (dr = null), dr !== e && (kr = Wt()) !== e ? ((Zr = kp()) === e && (Zr = null), Zr !== e ? (Dn = Oe, mt = function(Gi, ii, da, Mi) {
             return ii.parentheses = !0, { expr: ii, as: da, join: Gi, on: Mi };
           }(mt, Ut, dr, Zr), Oe = mt) : (A = Oe, Oe = e)) : (A = Oe, Oe = e)) : (A = Oe, Oe = e))), Oe;
         }()) !== e ? (Dn = H, H = ie) : (A = H, H = e)), H;
@@ -94453,7 +94477,7 @@ function aEt() {
         return H = A, (ie = function() {
           var Qi;
           return r.substr(A, 4).toLowerCase() === "dual" ? (Qi = r.substr(A, 4), A += 4) : (Qi = e, rr === 0 && Rn(lh)), Qi;
-        }()) !== e && (Dn = H, ie = { type: "dual" }), (H = ie) === e && (H = A, (ie = Ol()) !== e && Wt() !== e ? ((we = Qf()) === e && (we = null), we !== e ? (Dn = H, Ts = we, H = ie = (ri = ie).type === "var" ? (ri.as = Ts, ri) : { db: ri.db, table: ri.table, as: Ts }) : (A = H, H = e)) : (A = H, H = e), H === e && (H = A, (ie = Te()) !== e && Wt() !== e && (we = pd()) !== e && Wt() !== e && Jt() !== e && Wt() !== e ? ((Oe = Qf()) === e && (Oe = null), Oe !== e ? (Dn = H, H = ie = function(Qi, ta) {
+        }()) !== e && (Dn = H, ie = { type: "dual" }), (H = ie) === e && (H = A, (ie = Ol()) !== e && Wt() !== e ? ((we = Qf()) === e && (we = null), we !== e ? (Dn = H, Ts = we, H = ie = (ri = ie).type === "var" ? (ri.as = Ts, ri) : { db: ri.db, table: ri.table, as: Ts }) : (A = H, H = e)) : (A = H, H = e), H === e && (H = A, (ie = Te()) !== e && Wt() !== e && (we = hd()) !== e && Wt() !== e && Jt() !== e && Wt() !== e ? ((Oe = Qf()) === e && (Oe = null), Oe !== e ? (Dn = H, H = ie = function(Qi, ta) {
           return Qi.parentheses = !0, { expr: Qi, as: ta };
         }(we, Oe)) : (A = H, H = e)) : (A = H, H = e), H === e && (H = A, (ie = vn()) !== e && Wt() !== e && (we = Te()) !== e && Wt() !== e && function() {
           var Qi, ta, Wi, Fu;
@@ -94473,7 +94497,7 @@ function aEt() {
           return Ut = A, r.substr(A, 4).toLowerCase() === "left" ? (dr = r.substr(A, 4), A += 4) : (dr = e, rr === 0 && Rn(Kd)), dr !== e ? (kr = A, rr++, Zr = uo(), rr--, Zr === e ? kr = void 0 : (A = kr, kr = e), kr !== e ? (Dn = Ut, Ut = dr = "LEFT") : (A = Ut, Ut = e)) : (A = Ut, Ut = e), Ut;
         }()) === e && (Oe = function() {
           var Ut, dr, kr, Zr;
-          return Ut = A, r.substr(A, 5).toLowerCase() === "right" ? (dr = r.substr(A, 5), A += 5) : (dr = e, rr === 0 && Rn(cd)), dr !== e ? (kr = A, rr++, Zr = uo(), rr--, Zr === e ? kr = void 0 : (A = kr, kr = e), kr !== e ? (Dn = Ut, Ut = dr = "RIGHT") : (A = Ut, Ut = e)) : (A = Ut, Ut = e), Ut;
+          return Ut = A, r.substr(A, 5).toLowerCase() === "right" ? (dr = r.substr(A, 5), A += 5) : (dr = e, rr === 0 && Rn(fd)), dr !== e ? (kr = A, rr++, Zr = uo(), rr--, Zr === e ? kr = void 0 : (A = kr, kr = e), kr !== e ? (Dn = Ut, Ut = dr = "RIGHT") : (A = Ut, Ut = e)) : (A = Ut, Ut = e), Ut;
         }()) === e && (Oe = function() {
           var Ut, dr, kr, Zr;
           return Ut = A, r.substr(A, 4).toLowerCase() === "full" ? (dr = r.substr(A, 4), A += 4) : (dr = e, rr === 0 && Rn(Ah)), dr !== e ? (kr = A, rr++, Zr = uo(), rr--, Zr === e ? kr = void 0 : (A = kr, kr = e), kr !== e ? (Dn = Ut, Ut = dr = "FULL") : (A = Ut, Ut = e)) : (A = Ut, Ut = e), Ut;
@@ -94519,7 +94543,7 @@ function aEt() {
           return we = A, r.substr(A, 5).toLowerCase() === "where" ? (Oe = r.substr(A, 5), A += 5) : (Oe = e, rr === 0 && Rn(rv)), Oe !== e ? (mt = A, rr++, yt = uo(), rr--, yt === e ? mt = void 0 : (A = mt, mt = e), mt !== e ? we = Oe = [Oe, mt] : (A = we, we = e)) : (A = we, we = e), we;
         }() !== e && Wt() !== e ? ((ie = zu()) === e && (ie = qe()), ie !== e ? (Dn = H, H = ie) : (A = H, H = e)) : (A = H, H = e), H;
       }
-      function md() {
+      function vd() {
         var H, ie, we, Oe, mt, yt, Ut, dr;
         if (H = A, (ie = qu()) !== e) {
           for (we = [], Oe = A, (mt = Wt()) !== e && (yt = yn()) !== e && (Ut = Wt()) !== e && (dr = qu()) !== e ? Oe = mt = [mt, yt, Ut, dr] : (A = Oe, Oe = e); Oe !== e; ) we.push(Oe), Oe = A, (mt = Wt()) !== e && (yt = yn()) !== e && (Ut = Wt()) !== e && (dr = qu()) !== e ? Oe = mt = [mt, yt, Ut, dr] : (A = Oe, Oe = e);
@@ -94527,7 +94551,7 @@ function aEt() {
         } else A = H, H = e;
         return H;
       }
-      function vd() {
+      function bd() {
         var H, ie;
         return H = A, function() {
           var we, Oe, mt, yt;
@@ -94591,7 +94615,7 @@ function aEt() {
             } else A = mt, mt = e;
             return mt;
           }()) !== e ? (Dn = we, we = { type: "values", values: Oe }) : (A = we, we = e), we;
-        }()) === e && (H = A, (ie = pd()) !== e && (Dn = H, ie = ie.ast), H = ie), H;
+        }()) === e && (H = A, (ie = hd()) !== e && (Dn = H, ie = ie.ast), H = ie), H;
       }
       function Su() {
         var H, ie, we, Oe, mt, yt, Ut, dr, kr;
@@ -94703,7 +94727,7 @@ function aEt() {
       }
       function qe() {
         var H;
-        return (H = Kt()) === e && (H = pd()), H;
+        return (H = Kt()) === e && (H = hd()), H;
       }
       function zn() {
         var H, ie, we, Oe, mt, yt, Ut, dr;
@@ -94753,10 +94777,10 @@ function aEt() {
         var H, ie, we, Oe, mt;
         return (H = Vr()) === e && (H = function() {
           var yt, Ut, dr;
-          yt = A, (Ut = Xf()) !== e && Wt() !== e && Te() !== e && Wt() !== e && (dr = pd()) !== e && Wt() !== e && Jt() !== e ? (Dn = yt, kr = Ut, (Zr = dr).parentheses = !0, Ut = Q(kr, Zr), yt = Ut) : (A = yt, yt = e);
+          yt = A, (Ut = Xf()) !== e && Wt() !== e && Te() !== e && Wt() !== e && (dr = hd()) !== e && Wt() !== e && Jt() !== e ? (Dn = yt, kr = Ut, (Zr = dr).parentheses = !0, Ut = Q(kr, Zr), yt = Ut) : (A = yt, yt = e);
           var kr, Zr;
           return yt;
-        }()) === e && (H = A, (ie = gi()) === e && (ie = A, r.charCodeAt(A) === 33 ? (we = "!", A++) : (we = e, rr === 0 && Rn(id)), we !== e ? (Oe = A, rr++, r.charCodeAt(A) === 61 ? (mt = "=", A++) : (mt = e, rr === 0 && Rn($f)), rr--, mt === e ? Oe = void 0 : (A = Oe, Oe = e), Oe !== e ? ie = we = [we, Oe] : (A = ie, ie = e)) : (A = ie, ie = e)), ie !== e && (we = Wt()) !== e && (Oe = hn()) !== e ? (Dn = H, H = ie = Q("NOT", Oe)) : (A = H, H = e)), H;
+        }()) === e && (H = A, (ie = gi()) === e && (ie = A, r.charCodeAt(A) === 33 ? (we = "!", A++) : (we = e, rr === 0 && Rn(ad)), we !== e ? (Oe = A, rr++, r.charCodeAt(A) === 61 ? (mt = "=", A++) : (mt = e, rr === 0 && Rn($f)), rr--, mt === e ? Oe = void 0 : (A = Oe, Oe = e), Oe !== e ? ie = we = [we, Oe] : (A = ie, ie = e)) : (A = ie, ie = e)), ie !== e && (we = Wt()) !== e && (Oe = hn()) !== e ? (Dn = H, H = ie = Q("NOT", Oe)) : (A = H, H = e)), H;
       }
       function Vr() {
         var H, ie, we, Oe, mt;
@@ -94824,7 +94848,7 @@ function aEt() {
       }
       function Wl() {
         var H;
-        return r.substr(A, 2) === ">=" ? (H = ">=", A += 2) : (H = e, rr === 0 && Rn(Vm)), H === e && (r.charCodeAt(A) === 62 ? (H = ">", A++) : (H = e, rr === 0 && Rn(ad)), H === e && (r.substr(A, 2) === "<=" ? (H = "<=", A += 2) : (H = e, rr === 0 && Rn(rh)), H === e && (r.substr(A, 2) === "<>" ? (H = "<>", A += 2) : (H = e, rr === 0 && Rn(Wm)), H === e && (r.charCodeAt(A) === 60 ? (H = "<", A++) : (H = e, rr === 0 && Rn(Cp)), H === e && (r.charCodeAt(A) === 61 ? (H = "=", A++) : (H = e, rr === 0 && Rn($f)), H === e && (r.substr(A, 2) === "!=" ? (H = "!=", A += 2) : (H = e, rr === 0 && Rn(Am)))))))), H;
+        return r.substr(A, 2) === ">=" ? (H = ">=", A += 2) : (H = e, rr === 0 && Rn(Vm)), H === e && (r.charCodeAt(A) === 62 ? (H = ">", A++) : (H = e, rr === 0 && Rn(ud)), H === e && (r.substr(A, 2) === "<=" ? (H = "<=", A += 2) : (H = e, rr === 0 && Rn(rh)), H === e && (r.substr(A, 2) === "<>" ? (H = "<>", A += 2) : (H = e, rr === 0 && Rn(Wm)), H === e && (r.charCodeAt(A) === 60 ? (H = "<", A++) : (H = e, rr === 0 && Rn(Cp)), H === e && (r.charCodeAt(A) === 61 ? (H = "=", A++) : (H = e, rr === 0 && Rn($f)), H === e && (r.substr(A, 2) === "!=" ? (H = "!=", A += 2) : (H = e, rr === 0 && Rn(Am)))))))), H;
       }
       function Mp() {
         var H, ie, we;
@@ -94897,7 +94921,7 @@ function aEt() {
           return yt;
         }()) === e && (H = A, (ie = function() {
           var yt;
-          return r.charCodeAt(A) === 33 ? (yt = "!", A++) : (yt = e, rr === 0 && Rn(id)), yt === e && (r.charCodeAt(A) === 45 ? (yt = "-", A++) : (yt = e, rr === 0 && Rn(Vd)), yt === e && (r.charCodeAt(A) === 43 ? (yt = "+", A++) : (yt = e, rr === 0 && Rn(ip)), yt === e && (r.charCodeAt(A) === 126 ? (yt = "~", A++) : (yt = e, rr === 0 && Rn($p))))), yt;
+          return r.charCodeAt(A) === 33 ? (yt = "!", A++) : (yt = e, rr === 0 && Rn(ad)), yt === e && (r.charCodeAt(A) === 45 ? (yt = "-", A++) : (yt = e, rr === 0 && Rn(Vd)), yt === e && (r.charCodeAt(A) === 43 ? (yt = "+", A++) : (yt = e, rr === 0 && Rn(ip)), yt === e && (r.charCodeAt(A) === 126 ? (yt = "~", A++) : (yt = e, rr === 0 && Rn($p))))), yt;
         }()) !== e ? (we = A, (Oe = Wt()) !== e && (mt = ou()) !== e ? we = Oe = [Oe, mt] : (A = we, we = e), we !== e ? (Dn = H, H = ie = Q(ie, we[1])) : (A = H, H = e)) : (A = H, H = e)), H;
       }
       function Zf() {
@@ -95026,7 +95050,7 @@ function aEt() {
             }()) !== e && (Dn = mt, yt = { expr: yt }), (mt = yt) === e) {
               if (mt = A, (yt = dt()) === e && (yt = null), yt !== e) if (Wt() !== e) if ((Ut = Te()) !== e) if (Wt() !== e) if ((dr = qe()) !== e) if (Wt() !== e) if (Jt() !== e) {
                 for (kr = [], Zr = A, (Er = Wt()) !== e ? ((Mn = mi()) === e && (Mn = er()), Mn !== e && (jn = Wt()) !== e && (rs = qe()) !== e ? Zr = Er = [Er, Mn, jn, rs] : (A = Zr, Zr = e)) : (A = Zr, Zr = e); Zr !== e; ) kr.push(Zr), Zr = A, (Er = Wt()) !== e ? ((Mn = mi()) === e && (Mn = er()), Mn !== e && (jn = Wt()) !== e && (rs = qe()) !== e ? Zr = Er = [Er, Mn, jn, rs] : (A = Zr, Zr = e)) : (A = Zr, Zr = e);
-                kr !== e && (Zr = Wt()) !== e ? ((Er = vd()) === e && (Er = null), Er !== e ? (Dn = mt, yt = function(ds, po, Yo, _i) {
+                kr !== e && (Zr = Wt()) !== e ? ((Er = bd()) === e && (Er = null), Er !== e ? (Dn = mt, yt = function(ds, po, Yo, _i) {
                   const Gi = Yo.length;
                   let ii = po;
                   ii.parentheses = !0;
@@ -95040,7 +95064,7 @@ function aEt() {
               else A = mt, mt = e;
               else A = mt, mt = e;
               else A = mt, mt = e;
-              mt === e && (mt = A, (yt = dt()) === e && (yt = null), yt !== e && Wt() !== e && (Ut = bh()) !== e && Wt() !== e ? ((dr = vd()) === e && (dr = null), dr !== e ? (Dn = mt, yt = /* @__PURE__ */ function(ds, po, Yo) {
+              mt === e && (mt = A, (yt = dt()) === e && (yt = null), yt !== e && Wt() !== e && (Ut = bh()) !== e && Wt() !== e ? ((dr = bd()) === e && (dr = null), dr !== e ? (Dn = mt, yt = /* @__PURE__ */ function(ds, po, Yo) {
                 return { distinct: ds, expr: po, orderby: Yo };
               }(yt, Ut, dr), mt = yt) : (A = mt, mt = e)) : (A = mt, mt = e));
             }
@@ -95100,7 +95124,7 @@ function aEt() {
       }
       function Jr() {
         var H, ie, we, Oe;
-        return H = A, r.substr(A, 4).toLowerCase() === "over" ? (ie = r.substr(A, 4), A += 4) : (ie = e, rr === 0 && Rn(am)), ie !== e && Wt() !== e && Te() !== e && Wt() !== e && nt() !== e && Wt() !== e && Ft() !== e && Wt() !== e && (we = ep()) !== e && Wt() !== e ? ((Oe = vd()) === e && (Oe = null), Oe !== e && Wt() !== e && Jt() !== e ? (Dn = H, H = ie = { partitionby: we, orderby: Oe }) : (A = H, H = e)) : (A = H, H = e), H === e && (H = xd()), H;
+        return H = A, r.substr(A, 4).toLowerCase() === "over" ? (ie = r.substr(A, 4), A += 4) : (ie = e, rr === 0 && Rn(am)), ie !== e && Wt() !== e && Te() !== e && Wt() !== e && nt() !== e && Wt() !== e && Ft() !== e && Wt() !== e && (we = ep()) !== e && Wt() !== e ? ((Oe = bd()) === e && (Oe = null), Oe !== e && Wt() !== e && Jt() !== e ? (Dn = H, H = ie = { partitionby: we, orderby: Oe }) : (A = H, H = e)) : (A = H, H = e), H === e && (H = xd()), H;
       }
       function Ec() {
         var H, ie, we;
@@ -95126,7 +95150,7 @@ function aEt() {
       }
       function cl() {
         var H, ie, we;
-        return H = A, r.substr(A, 11).toLowerCase() === "json_object" ? (ie = r.substr(A, 11), A += 11) : (ie = e, rr === 0 && Rn(ud)), ie !== e && Wt() !== e && Te() !== e && Wt() !== e && (we = ga()) !== e && Wt() !== e && Jt() !== e ? (Dn = H, H = ie = { type: "function", name: { name: [{ type: "origin", value: "json_object" }] }, args: we, ...$o() }) : (A = H, H = e), H;
+        return H = A, r.substr(A, 11).toLowerCase() === "json_object" ? (ie = r.substr(A, 11), A += 11) : (ie = e, rr === 0 && Rn(ld)), ie !== e && Wt() !== e && Te() !== e && Wt() !== e && (we = ga()) !== e && Wt() !== e && Jt() !== e ? (Dn = H, H = ie = { type: "function", name: { name: [{ type: "origin", value: "json_object" }] }, args: we, ...$o() }) : (A = H, H = e), H;
       }
       function lu() {
         var H, ie, we;
@@ -95279,7 +95303,7 @@ function aEt() {
       function Vc() {
         var H, ie, we, Oe, mt, yt, Ut, dr, kr, Zr;
         return H = A, r.substr(A, 2) === "\\'" ? (ie = "\\'", A += 2) : (ie = e, rr === 0 && Rn(Eu)), ie !== e && (Dn = H, ie = "\\'"), (H = ie) === e && (H = A, r.substr(A, 2) === '\\"' ? (ie = '\\"', A += 2) : (ie = e, rr === 0 && Rn(uc)), ie !== e && (Dn = H, ie = '\\"'), (H = ie) === e && (H = A, r.substr(A, 2) === "\\\\" ? (ie = "\\\\", A += 2) : (ie = e, rr === 0 && Rn(Td)), ie !== e && (Dn = H, ie = "\\\\"), (H = ie) === e && (H = A, r.substr(A, 2) === "\\/" ? (ie = "\\/", A += 2) : (ie = e, rr === 0 && Rn(Gf)), ie !== e && (Dn = H, ie = "\\/"), (H = ie) === e && (H = A, r.substr(A, 2) === "\\b" ? (ie = "\\b", A += 2) : (ie = e, rr === 0 && Rn(Cc)), ie !== e && (Dn = H, ie = "\b"), (H = ie) === e && (H = A, r.substr(A, 2) === "\\f" ? (ie = "\\f", A += 2) : (ie = e, rr === 0 && Rn(ah)), ie !== e && (Dn = H, ie = "\f"), (H = ie) === e && (H = A, r.substr(A, 2) === "\\n" ? (ie = "\\n", A += 2) : (ie = e, rr === 0 && Rn(qp)), ie !== e && (Dn = H, ie = `
-`), (H = ie) === e && (H = A, r.substr(A, 2) === "\\r" ? (ie = "\\r", A += 2) : (ie = e, rr === 0 && Rn(ll)), ie !== e && (Dn = H, ie = "\r"), (H = ie) === e && (H = A, r.substr(A, 2) === "\\t" ? (ie = "\\t", A += 2) : (ie = e, rr === 0 && Rn(zc)), ie !== e && (Dn = H, ie = "	"), (H = ie) === e && (H = A, r.substr(A, 2) === "\\u" ? (ie = "\\u", A += 2) : (ie = e, rr === 0 && Rn(Id)), ie !== e && (we = Ul()) !== e && (Oe = Ul()) !== e && (mt = Ul()) !== e && (yt = Ul()) !== e ? (Dn = H, Ut = we, dr = Oe, kr = mt, Zr = yt, H = ie = String.fromCharCode(parseInt("0x" + Ut + dr + kr + Zr))) : (A = H, H = e), H === e && (H = A, r.charCodeAt(A) === 92 ? (ie = "\\", A++) : (ie = e, rr === 0 && Rn(ld)), ie !== e && (Dn = H, ie = "\\"), (H = ie) === e && (H = A, r.substr(A, 2) === "''" ? (ie = "''", A += 2) : (ie = e, rr === 0 && Rn(um)), ie !== e && (Dn = H, ie = "''"), (H = ie) === e && (H = A, r.substr(A, 2) === '""' ? (ie = '""', A += 2) : (ie = e, rr === 0 && Rn(Xm)), ie !== e && (Dn = H, ie = '""'), (H = ie) === e && (H = A, r.substr(A, 2) === "``" ? (ie = "``", A += 2) : (ie = e, rr === 0 && Rn(Cd)), ie !== e && (Dn = H, ie = "``"), H = ie))))))))))))), H;
+`), (H = ie) === e && (H = A, r.substr(A, 2) === "\\r" ? (ie = "\\r", A += 2) : (ie = e, rr === 0 && Rn(ll)), ie !== e && (Dn = H, ie = "\r"), (H = ie) === e && (H = A, r.substr(A, 2) === "\\t" ? (ie = "\\t", A += 2) : (ie = e, rr === 0 && Rn(zc)), ie !== e && (Dn = H, ie = "	"), (H = ie) === e && (H = A, r.substr(A, 2) === "\\u" ? (ie = "\\u", A += 2) : (ie = e, rr === 0 && Rn(Id)), ie !== e && (we = Ul()) !== e && (Oe = Ul()) !== e && (mt = Ul()) !== e && (yt = Ul()) !== e ? (Dn = H, Ut = we, dr = Oe, kr = mt, Zr = yt, H = ie = String.fromCharCode(parseInt("0x" + Ut + dr + kr + Zr))) : (A = H, H = e), H === e && (H = A, r.charCodeAt(A) === 92 ? (ie = "\\", A++) : (ie = e, rr === 0 && Rn(cd)), ie !== e && (Dn = H, ie = "\\"), (H = ie) === e && (H = A, r.substr(A, 2) === "''" ? (ie = "''", A += 2) : (ie = e, rr === 0 && Rn(um)), ie !== e && (Dn = H, ie = "''"), (H = ie) === e && (H = A, r.substr(A, 2) === '""' ? (ie = '""', A += 2) : (ie = e, rr === 0 && Rn(Xm)), ie !== e && (Dn = H, ie = '""'), (H = ie) === e && (H = A, r.substr(A, 2) === "``" ? (ie = "``", A += 2) : (ie = e, rr === 0 && Rn(Cd)), ie !== e && (Dn = H, ie = "``"), H = ie))))))))))))), H;
       }
       function Au() {
         var H, ie, we;
@@ -95564,9 +95588,9 @@ function aEt() {
         var H, ie, we, Oe;
         return H = A, r.substr(A, 9).toLowerCase() === "timestamp" ? (ie = r.substr(A, 9), A += 9) : (ie = e, rr === 0 && Rn(Ds)), ie !== e ? (we = A, rr++, Oe = uo(), rr--, Oe === e ? we = void 0 : (A = we, we = e), we !== e ? (Dn = H, H = ie = "TIMESTAMP") : (A = H, H = e)) : (A = H, H = e), H;
       }
-      function bd() {
+      function gd() {
         var H, ie, we, Oe;
-        return H = A, r.substr(A, 8).toLowerCase() === "truncate" ? (ie = r.substr(A, 8), A += 8) : (ie = e, rr === 0 && Rn(fd)), ie !== e ? (we = A, rr++, Oe = uo(), rr--, Oe === e ? we = void 0 : (A = we, we = e), we !== e ? (Dn = H, H = ie = "TRUNCATE") : (A = H, H = e)) : (A = H, H = e), H;
+        return H = A, r.substr(A, 8).toLowerCase() === "truncate" ? (ie = r.substr(A, 8), A += 8) : (ie = e, rr === 0 && Rn(dd)), ie !== e ? (we = A, rr++, Oe = uo(), rr--, Oe === e ? we = void 0 : (A = we, we = e), we !== e ? (Dn = H, H = ie = "TRUNCATE") : (A = H, H = e)) : (A = H, H = e), H;
       }
       function Tl() {
         var H, ie, we, Oe;
@@ -95651,7 +95675,7 @@ function aEt() {
       }
       function Qs() {
         var H;
-        return r.charCodeAt(A) === 91 ? (H = "[", A++) : (H = e, rr === 0 && Rn(dd)), H;
+        return r.charCodeAt(A) === 91 ? (H = "[", A++) : (H = e, rr === 0 && Rn(pd)), H;
       }
       function ei() {
         var H;
@@ -95663,7 +95687,7 @@ function aEt() {
       }
       function Qt() {
         var H;
-        return r.charCodeAt(A) === 62 ? (H = ">", A++) : (H = e, rr === 0 && Rn(ad)), H;
+        return r.charCodeAt(A) === 62 ? (H = ">", A++) : (H = e, rr === 0 && Rn(ud)), H;
       }
       function zi() {
         var H;
@@ -96093,16 +96117,16 @@ function aEt() {
         return xt(Y, _e);
       }, Nu = Gs("!", !1), mu = function(Y) {
         return Y[0] + " " + Y[2];
-      }, Ru = Gs(">=", !1), Ll = Gs(">", !1), Rl = Gs("<=", !1), Ju = Gs("<>", !1), ef = Gs("<", !1), el = Gs("==", !1), tl = Gs("!=", !1), od = function(Y, _e) {
+      }, Ru = Gs(">=", !1), Ll = Gs(">", !1), Rl = Gs("<=", !1), Ju = Gs("<>", !1), ef = Gs("<", !1), el = Gs("==", !1), tl = Gs("!=", !1), id = function(Y, _e) {
         return { op: Y, right: _e };
       }, Kl = Gs("+", !1), Fl = Gs("-", !1), vf = Gs("*", !1), Gd = Gs("/", !1), tm = Gs("%", !1), Hm = Gs("~", !1), yp = function(Y) {
         return Rf[Y.toUpperCase()] === !0;
       }, Hd = Gs('"', !1), wp = /^[^"]/, jp = kd(['"'], !0, !1), $h = /^[^']/, xl = kd(["'"], !0, !1), rm = Gs("`", !1), th = /^[^`]/, nm = kd(["`"], !0, !1), op = function(Y, _e) {
         return Y + _e.join("");
-      }, $f = /^[A-Za-z_\u4E00-\u9FA5\xC0-\u017F]/, Bc = kd([["A", "Z"], ["a", "z"], "_", ["一", "龥"], ["À", "ſ"]], !1, !1), id = /^[A-Za-z0-9_$\u4E00-\u9FA5\xC0-\u017F]/, Vm = kd([["A", "Z"], ["a", "z"], ["0", "9"], "_", "$", ["一", "龥"], ["À", "ſ"]], !1, !1), ad = /^[A-Za-z0-9_:\u4E00-\u9FA5\xC0-\u017F]/, rh = kd([["A", "Z"], ["a", "z"], ["0", "9"], "_", ":", ["一", "龥"], ["À", "ſ"]], !1, !1), Wm = Gs(":", !1), Cp = Gs("OVER", !0), Am = Gs("AT TIME ZONE", !0), nh = function(Y, _e) {
+      }, $f = /^[A-Za-z_\u4E00-\u9FA5\xC0-\u017F]/, Bc = kd([["A", "Z"], ["a", "z"], "_", ["一", "龥"], ["À", "ſ"]], !1, !1), ad = /^[A-Za-z0-9_$\u4E00-\u9FA5\xC0-\u017F]/, Vm = kd([["A", "Z"], ["a", "z"], ["0", "9"], "_", "$", ["一", "龥"], ["À", "ſ"]], !1, !1), ud = /^[A-Za-z0-9_:\u4E00-\u9FA5\xC0-\u017F]/, rh = kd([["A", "Z"], ["a", "z"], ["0", "9"], "_", ":", ["一", "龥"], ["À", "ſ"]], !1, !1), Wm = Gs(":", !1), Cp = Gs("OVER", !0), Am = Gs("AT TIME ZONE", !0), nh = function(Y, _e) {
         return { type: Y.toLowerCase(), value: _e[1].join("") };
       }, ip = /^[^"\\\0-\x1F\x7F]/, Vd = kd(['"', "\\", ["\0", ""], ""], !0, !1), Do = /^[^'\\]/, bf = kd(["'", "\\"], !0, !1), Ff = Gs("\\'", !1), Wd = Gs('\\"', !1), $p = Gs("\\\\", !1), Fh = Gs("\\/", !1), Ym = Gs("\\b", !1), Fp = Gs("\\f", !1), Uh = Gs("\\n", !1), Ch = Gs("\\r", !1), sm = Gs("\\t", !1), Up = Gs("\\u", !1), Lp = Gs("\\", !1), Nc = Gs("''", !1), xp = Gs('""', !1), hv = Gs("``", !1), om = /^[\n\r]/, Lh = kd([`
-`, "\r"], !1, !1), gf = /^[0-9]/, Uf = kd([["0", "9"]], !1, !1), sh = /^[0-9a-fA-F]/, im = kd([["0", "9"], ["a", "f"], ["A", "F"]], !1, !1), ju = /^[eE]/, Bf = kd(["e", "E"], !1, !1), zf = /^[+\-]/, Qm = kd(["+", "-"], !1, !1), xh = Gs("NULL", !0), oh = Gs("NOT NULL", !0), Bp = Gs("TRUE", !0), am = Gs("TO", !0), Km = Gs("FALSE", !0), _m = Gs("DROP", !0), tf = Gs("USE", !0), qf = Gs("ALTER", !0), ud = Gs("SELECT", !0), Bh = Gs("UPDATE", !0), ih = Gs("CREATE", !0), Eh = Gs("TEMPORARY", !0), Ep = Gs("DELETE", !0), Sh = Gs("INSERT", !0), zh = Gs("RECURSIVE", !0), Tm = Gs("REPLACE", !0), Sp = Gs("RENAME", !0), yf = Gs("IGNORE", !0), zp = Gs("PARTITION", !0), _t = Gs("INTO", !0), Or = Gs("OVERWRITE", !0), cn = Gs("FROM", !0), Wr = Gs("UNLOCK", !0), bs = Gs("AS", !0), cs = Gs("TABLE", !0), Ns = Gs("TABLES", !0), fo = Gs("DATABASE", !0), io = Gs("SCHEMA", !0), Uo = Gs("ON", !0), Ko = Gs("LEFT", !0), fi = Gs("RIGHT", !0), Bi = Gs("FULL", !0), Di = Gs("CROSS", !0), ba = Gs("INNER", !0), Pa = Gs("JOIN", !0), Ki = Gs("OUTER", !0), ja = Gs("UNION", !0), Ta = Gs("VALUES", !0), vu = Gs("USING", !0), cu = Gs("WHERE", !0), ul = Gs("GROUP", !0), Ou = Gs("BY", !0), ec = Gs("ORDER", !0), Eu = Gs("HAVING", !0), uc = Gs("LIMIT", !0), Td = Gs("OFFSET", !0), Gf = Gs("ASC", !0), Cc = Gs("DESC", !0), ah = Gs("ALL", !0), qp = Gs("DISTINCT", !0), ll = Gs("BETWEEN", !0), zc = Gs("IN", !0), Id = Gs("IS", !0), ld = Gs("LIKE", !0), um = Gs("RLIKE", !0), Xm = Gs("EXISTS", !0), Cd = Gs("NOT", !0), Hf = Gs("AND", !0), Nd = Gs("OR", !0), Yd = Gs("COUNT", !0), Qd = Gs("MAX", !0), uh = Gs("MIN", !0), Qv = Gs("SUM", !0), Zm = Gs("AVG", !0), Kv = Gs("CALL", !0), Xv = Gs("CASE", !0), Vf = Gs("WHEN", !0), wf = Gs("THEN", !0), Im = Gs("ELSE", !0), Gp = Gs("END", !0), mv = Gs("CAST", !0), Jm = Gs("CHAR", !0), vv = Gs("VARCHAR", !0), Zv = Gs("NUMERIC", !0), lm = Gs("DECIMAL", !0), ev = Gs("SIGNED", !0), bv = Gs("STRING", !0), tv = Gs("UNSIGNED", !0), cm = Gs("INT", !0), Av = Gs("ZEROFILL", !0), _v = Gs("INTEGER", !0), Nm = Gs("JSON", !0), Jv = Gs("SMALLINT", !0), Lb = Gs("TINYINT", !0), gv = Gs("TINYTEXT", !0), xb = Gs("TEXT", !0), Tv = Gs("MEDIUMTEXT", !0), Eb = Gs("LONGTEXT", !0), Db = Gs("BIGINT", !0), Iv = Gs("FLOAT", !0), Nv = Gs("DOUBLE", !0), eb = Gs("DATE", !0), fm = Gs("DATETIME", !0), Ap = Gs("ROWS", !0), Kd = Gs("TIME", !0), cd = Gs("TIMESTAMP", !0), Ah = Gs("TRUNCATE", !0), qh = Gs("USER", !0), Rv = Gs("CURRENT_DATE", !0), tb = Gs("INTERVAL", !0), dm = Gs("YEAR", !0), Ov = Gs("MONTH", !0), kv = Gs("DAY", !0), Mv = Gs("HOUR", !0), Rm = Gs("MINUTE", !0), _h = Gs("SECOND", !0), Gh = Gs("CURRENT_TIME", !0), rv = Gs("CURRENT_TIMESTAMP", !0), rb = Gs("CURRENT_USER", !0), Dv = Gs("SESSION_USER", !0), nb = Gs("SYSTEM_USER", !0), sb = Gs("GLOBAL", !0), Om = Gs("SESSION", !0), ob = Gs("PERSIST", !0), ib = Gs("PERSIST_ONLY", !0), Pv = Gs("@", !1), Sb = Gs("@@", !1), Ab = Gs("$", !1), jv = Gs("return", !0), $v = Gs(":=", !1), Hh = Gs("DUAL", !0), rf = Gs("ADD", !0), Rd = Gs("COLUMN", !0), pm = Gs("INDEX", !0), Wf = Gs("FULLTEXT", !0), Cf = Gs("SPATIAL", !0), yv = Gs("COMMENT", !0), km = Gs("CONSTRAINT", !0), Lf = Gs("REFERENCES", !0), Od = Gs("SQL_CALC_FOUND_ROWS", !0), _b = Gs("SQL_CACHE", !0), ab = Gs("SQL_NO_CACHE", !0), Tb = Gs("SQL_SMALL_RESULT", !0), ub = Gs("SQL_BIG_RESULT", !0), wv = Gs("SQL_BUFFER_RESULT", !0), Cv = Gs(",", !1), Lv = Gs("[", !1), lb = Gs("]", !1), Pb = Gs(";", !1), Ib = Gs("||", !1), cb = Gs("&&", !1), fb = Gs("/*", !1), Fv = Gs("*/", !1), Nb = Gs("--", !1), Rb = Gs("#", !1), db = { type: "any" }, Ob = /^[ \t\n\r]/, pb = kd([" ", "	", `
+`, "\r"], !1, !1), gf = /^[0-9]/, Uf = kd([["0", "9"]], !1, !1), sh = /^[0-9a-fA-F]/, im = kd([["0", "9"], ["a", "f"], ["A", "F"]], !1, !1), ju = /^[eE]/, Bf = kd(["e", "E"], !1, !1), zf = /^[+\-]/, Qm = kd(["+", "-"], !1, !1), xh = Gs("NULL", !0), oh = Gs("NOT NULL", !0), Bp = Gs("TRUE", !0), am = Gs("TO", !0), Km = Gs("FALSE", !0), _m = Gs("DROP", !0), tf = Gs("USE", !0), qf = Gs("ALTER", !0), ld = Gs("SELECT", !0), Bh = Gs("UPDATE", !0), ih = Gs("CREATE", !0), Eh = Gs("TEMPORARY", !0), Ep = Gs("DELETE", !0), Sh = Gs("INSERT", !0), zh = Gs("RECURSIVE", !0), Tm = Gs("REPLACE", !0), Sp = Gs("RENAME", !0), yf = Gs("IGNORE", !0), zp = Gs("PARTITION", !0), _t = Gs("INTO", !0), Or = Gs("OVERWRITE", !0), cn = Gs("FROM", !0), Wr = Gs("UNLOCK", !0), bs = Gs("AS", !0), cs = Gs("TABLE", !0), Ns = Gs("TABLES", !0), fo = Gs("DATABASE", !0), io = Gs("SCHEMA", !0), Uo = Gs("ON", !0), Ko = Gs("LEFT", !0), fi = Gs("RIGHT", !0), Bi = Gs("FULL", !0), Di = Gs("CROSS", !0), ba = Gs("INNER", !0), Pa = Gs("JOIN", !0), Ki = Gs("OUTER", !0), ja = Gs("UNION", !0), Ta = Gs("VALUES", !0), vu = Gs("USING", !0), cu = Gs("WHERE", !0), ul = Gs("GROUP", !0), Ou = Gs("BY", !0), ec = Gs("ORDER", !0), Eu = Gs("HAVING", !0), uc = Gs("LIMIT", !0), Td = Gs("OFFSET", !0), Gf = Gs("ASC", !0), Cc = Gs("DESC", !0), ah = Gs("ALL", !0), qp = Gs("DISTINCT", !0), ll = Gs("BETWEEN", !0), zc = Gs("IN", !0), Id = Gs("IS", !0), cd = Gs("LIKE", !0), um = Gs("RLIKE", !0), Xm = Gs("EXISTS", !0), Cd = Gs("NOT", !0), Hf = Gs("AND", !0), Nd = Gs("OR", !0), Yd = Gs("COUNT", !0), Qd = Gs("MAX", !0), uh = Gs("MIN", !0), Qv = Gs("SUM", !0), Zm = Gs("AVG", !0), Kv = Gs("CALL", !0), Xv = Gs("CASE", !0), Vf = Gs("WHEN", !0), wf = Gs("THEN", !0), Im = Gs("ELSE", !0), Gp = Gs("END", !0), mv = Gs("CAST", !0), Jm = Gs("CHAR", !0), vv = Gs("VARCHAR", !0), Zv = Gs("NUMERIC", !0), lm = Gs("DECIMAL", !0), ev = Gs("SIGNED", !0), bv = Gs("STRING", !0), tv = Gs("UNSIGNED", !0), cm = Gs("INT", !0), Av = Gs("ZEROFILL", !0), _v = Gs("INTEGER", !0), Nm = Gs("JSON", !0), Jv = Gs("SMALLINT", !0), Lb = Gs("TINYINT", !0), gv = Gs("TINYTEXT", !0), xb = Gs("TEXT", !0), Tv = Gs("MEDIUMTEXT", !0), Eb = Gs("LONGTEXT", !0), Db = Gs("BIGINT", !0), Iv = Gs("FLOAT", !0), Nv = Gs("DOUBLE", !0), eb = Gs("DATE", !0), fm = Gs("DATETIME", !0), Ap = Gs("ROWS", !0), Kd = Gs("TIME", !0), fd = Gs("TIMESTAMP", !0), Ah = Gs("TRUNCATE", !0), qh = Gs("USER", !0), Rv = Gs("CURRENT_DATE", !0), tb = Gs("INTERVAL", !0), dm = Gs("YEAR", !0), Ov = Gs("MONTH", !0), kv = Gs("DAY", !0), Mv = Gs("HOUR", !0), Rm = Gs("MINUTE", !0), _h = Gs("SECOND", !0), Gh = Gs("CURRENT_TIME", !0), rv = Gs("CURRENT_TIMESTAMP", !0), rb = Gs("CURRENT_USER", !0), Dv = Gs("SESSION_USER", !0), nb = Gs("SYSTEM_USER", !0), sb = Gs("GLOBAL", !0), Om = Gs("SESSION", !0), ob = Gs("PERSIST", !0), ib = Gs("PERSIST_ONLY", !0), Pv = Gs("@", !1), Sb = Gs("@@", !1), Ab = Gs("$", !1), jv = Gs("return", !0), $v = Gs(":=", !1), Hh = Gs("DUAL", !0), rf = Gs("ADD", !0), Rd = Gs("COLUMN", !0), pm = Gs("INDEX", !0), Wf = Gs("FULLTEXT", !0), Cf = Gs("SPATIAL", !0), yv = Gs("COMMENT", !0), km = Gs("CONSTRAINT", !0), Lf = Gs("REFERENCES", !0), Od = Gs("SQL_CALC_FOUND_ROWS", !0), _b = Gs("SQL_CACHE", !0), ab = Gs("SQL_NO_CACHE", !0), Tb = Gs("SQL_SMALL_RESULT", !0), ub = Gs("SQL_BIG_RESULT", !0), wv = Gs("SQL_BUFFER_RESULT", !0), Cv = Gs(",", !1), Lv = Gs("[", !1), lb = Gs("]", !1), Pb = Gs(";", !1), Ib = Gs("||", !1), cb = Gs("&&", !1), fb = Gs("/*", !1), Fv = Gs("*/", !1), Nb = Gs("--", !1), Rb = Gs("#", !1), db = { type: "any" }, Ob = /^[ \t\n\r]/, pb = kd([" ", "	", `
 `, "\r"], !1, !1), Uv = function(Y) {
         return { dataType: Y };
       }, q = 0, as = 0, hm = [{ line: 1, column: 1 }], xf = 0, nv = [], $r = 0;
@@ -96263,8 +96287,8 @@ function aEt() {
             return Yr = q, r.substr(q, 5).toLowerCase() === "alter" ? (vn = r.substr(q, 5), q += 5) : (vn = e, $r === 0 && ws(qf)), vn !== e ? (h = q, $r++, $t = Ro(), $r--, $t === e ? h = void 0 : (q = h, h = e), h !== e ? Yr = vn = [vn, h] : (q = Yr, Yr = e)) : (q = Yr, Yr = e), Yr;
           }()) !== e && Jr() !== e && Ol() !== e && Jr() !== e && (nt = lc()) !== e && Jr() !== e && (Se = function() {
             var Yr, vn, h, $t, ne, de, Pe, K;
-            if (Yr = q, (vn = fd()) !== e) {
-              for (h = [], $t = q, (ne = Jr()) !== e && (de = Ln()) !== e && (Pe = Jr()) !== e && (K = fd()) !== e ? $t = ne = [ne, de, Pe, K] : (q = $t, $t = e); $t !== e; ) h.push($t), $t = q, (ne = Jr()) !== e && (de = Ln()) !== e && (Pe = Jr()) !== e && (K = fd()) !== e ? $t = ne = [ne, de, Pe, K] : (q = $t, $t = e);
+            if (Yr = q, (vn = dd()) !== e) {
+              for (h = [], $t = q, (ne = Jr()) !== e && (de = Ln()) !== e && (Pe = Jr()) !== e && (K = dd()) !== e ? $t = ne = [ne, de, Pe, K] : (q = $t, $t = e); $t !== e; ) h.push($t), $t = q, (ne = Jr()) !== e && (de = Ln()) !== e && (Pe = Jr()) !== e && (K = dd()) !== e ? $t = ne = [ne, de, Pe, K] : (q = $t, $t = e);
               h !== e ? (as = Yr, vn = Ae(vn, h), Yr = vn) : (q = Yr, Yr = e);
             } else q = Yr, Yr = e;
             return Yr;
@@ -96403,7 +96427,7 @@ function aEt() {
         var Y, _e, He, nt, Se, qt, nr, Yr;
         if (Y = q, (_e = Fm()) !== e) {
           for (He = [], nt = q, (Se = Jr()) !== e && (qt = B()) !== e && (nr = Jr()) !== e && (Yr = Fm()) !== e ? nt = Se = [Se, qt, nr, Yr] : (q = nt, nt = e); nt !== e; ) He.push(nt), nt = q, (Se = Jr()) !== e && (qt = B()) !== e && (nr = Jr()) !== e && (Yr = Fm()) !== e ? nt = Se = [Se, qt, nr, Yr] : (q = nt, nt = e);
-          He !== e && (nt = Jr()) !== e ? ((Se = dd()) === e && (Se = null), Se !== e && (qt = Jr()) !== e ? ((nr = up()) === e && (nr = null), nr !== e ? (as = Y, Y = _e = function(vn, h, $t, ne) {
+          He !== e && (nt = Jr()) !== e ? ((Se = pd()) === e && (Se = null), Se !== e && (qt = Jr()) !== e ? ((nr = up()) === e && (nr = null), nr !== e ? (as = Y, Y = _e = function(vn, h, $t, ne) {
             h.forEach((Pe) => Pe.slice(1, 1));
             let de = vn;
             for (let Pe = 0; Pe < h.length; Pe++) de._next = h[Pe][3], de.set_op = h[Pe][1], de = de._next;
@@ -96491,7 +96515,7 @@ function aEt() {
           return nt = q, r.substr(q, 7).toLowerCase() === "collate" ? (Se = r.substr(q, 7), q += 7) : (Se = e, $r === 0 && ws(Fo)), Se !== e ? (qt = q, $r++, nr = Ro(), $r--, nr === e ? qt = void 0 : (q = qt, qt = e), qt !== e ? (as = nt, nt = Se = "COLLATE") : (q = nt, nt = e)) : (q = nt, nt = e), nt;
         }() !== e && Jr() !== e ? ((_e = Pc()) === e && (_e = null), _e !== e && Jr() !== e && (He = Rn()) !== e ? (as = Y, Y = { type: "collate", keyword: "collate", collate: { name: He, symbol: _e } }) : (q = Y, Y = e)) : (q = Y, Y = e), Y;
       }
-      function fd() {
+      function dd() {
         var Y;
         return (Y = function() {
           var _e, He, nt, Se;
@@ -96621,7 +96645,7 @@ function aEt() {
             return l;
           }()) === e && (h = null), h !== e && Jr() !== e && function() {
             var l, dt, Nn, Ot;
-            return l = q, r.substr(q, 6).toLowerCase() === "select" ? (dt = r.substr(q, 6), q += 6) : (dt = e, $r === 0 && ws(ud)), dt !== e ? (Nn = q, $r++, Ot = Ro(), $r--, Ot === e ? Nn = void 0 : (q = Nn, Nn = e), Nn !== e ? l = dt = [dt, Nn] : (q = l, l = e)) : (q = l, l = e), l;
+            return l = q, r.substr(q, 6).toLowerCase() === "select" ? (dt = r.substr(q, 6), q += 6) : (dt = e, $r === 0 && ws(ld)), dt !== e ? (Nn = q, $r++, Ot = Ro(), $r--, Ot === e ? Nn = void 0 : (q = Nn, Nn = e), Nn !== e ? l = dt = [dt, Nn] : (q = l, l = e)) : (q = l, l = e), l;
           }() !== e && Ec() !== e ? (($t = function() {
             var l, dt, Nn, Ot, Ms, Qe;
             if (l = q, (dt = D()) !== e) {
@@ -96645,7 +96669,7 @@ function aEt() {
               var Nn, Ot, Ms, Qe;
               return Nn = q, r.substr(q, 6).toLowerCase() === "having" ? (Ot = r.substr(q, 6), q += 6) : (Ot = e, $r === 0 && ws(Eu)), Ot !== e ? (Ms = q, $r++, Qe = Ro(), $r--, Qe === e ? Ms = void 0 : (q = Ms, Ms = e), Ms !== e ? Nn = Ot = [Ot, Ms] : (q = Nn, Nn = e)) : (q = Nn, Nn = e), Nn;
             }() !== e && Jr() !== e && (dt = On()) !== e ? (as = l, l = dt) : (q = l, l = e), l;
-          }()) === e && (Ft = null), Ft !== e && Jr() !== e ? ((tr = dd()) === e && (tr = null), tr !== e && Jr() !== e ? ((Rr = up()) === e && (Rr = null), Rr !== e ? (as = Yr, vn = function(l, dt, Nn, Ot, Ms, Qe, Fr, Xo, gi, mi) {
+          }()) === e && (Ft = null), Ft !== e && Jr() !== e ? ((tr = pd()) === e && (tr = null), tr !== e && Jr() !== e ? ((Rr = up()) === e && (Rr = null), Rr !== e ? (as = Yr, vn = function(l, dt, Nn, Ot, Ms, Qe, Fr, Xo, gi, mi) {
             return Ms && Ms.forEach((er) => er.table && za.add(`select::${er.db}::${er.table}`)), { with: l, type: "select", options: dt, distinct: Nn, columns: Ot, from: Ms, where: Qe, groupby: Fr, having: Xo, orderby: gi, limit: mi };
           }(h, $t, ne, de, Pe, K, De, Ft, tr, Rr), Yr = vn) : (q = Yr, Yr = e)) : (q = Yr, Yr = e)) : (q = Yr, Yr = e)) : (q = Yr, Yr = e)) : (q = Yr, Yr = e)) : (q = Yr, Yr = e)) : (q = Yr, Yr = e)) : (q = Yr, Yr = e)) : (q = Yr, Yr = e)) : (q = Yr, Yr = e), Yr;
         }()) === e && (Y = q, _e = q, r.charCodeAt(q) === 40 ? (He = "(", q++) : (He = e, $r === 0 && ws(Rs)), He !== e && (nt = Jr()) !== e && (Se = Fm()) !== e && (qt = Jr()) !== e ? (r.charCodeAt(q) === 41 ? (nr = ")", q++) : (nr = e, $r === 0 && ws(Us)), nr !== e ? _e = He = [He, nt, Se, qt, nr] : (q = _e, _e = e)) : (q = _e, _e = e), _e !== e && (as = Y, _e = { ..._e[2], parentheses_symbol: !0 }), Y = _e), Y;
@@ -96841,13 +96865,13 @@ function aEt() {
         return Y = q, (_e = function() {
           var Se, qt, nr, Yr;
           return Se = q, r.substr(q, 4).toLowerCase() === "left" ? (qt = r.substr(q, 4), q += 4) : (qt = e, $r === 0 && ws(Ko)), qt !== e ? (nr = q, $r++, Yr = Ro(), $r--, Yr === e ? nr = void 0 : (q = nr, nr = e), nr !== e ? Se = qt = [qt, nr] : (q = Se, Se = e)) : (q = Se, Se = e), Se;
-        }()) !== e && (He = Jr()) !== e ? ((nt = md()) === e && (nt = null), nt !== e && Jr() !== e && jd() !== e ? (as = Y, Y = _e = "LEFT JOIN") : (q = Y, Y = e)) : (q = Y, Y = e), Y === e && (Y = q, (_e = function() {
+        }()) !== e && (He = Jr()) !== e ? ((nt = vd()) === e && (nt = null), nt !== e && Jr() !== e && jd() !== e ? (as = Y, Y = _e = "LEFT JOIN") : (q = Y, Y = e)) : (q = Y, Y = e), Y === e && (Y = q, (_e = function() {
           var Se, qt, nr, Yr;
           return Se = q, r.substr(q, 5).toLowerCase() === "right" ? (qt = r.substr(q, 5), q += 5) : (qt = e, $r === 0 && ws(fi)), qt !== e ? (nr = q, $r++, Yr = Ro(), $r--, Yr === e ? nr = void 0 : (q = nr, nr = e), nr !== e ? Se = qt = [qt, nr] : (q = Se, Se = e)) : (q = Se, Se = e), Se;
-        }()) !== e && (He = Jr()) !== e ? ((nt = md()) === e && (nt = null), nt !== e && Jr() !== e && jd() !== e ? (as = Y, Y = _e = "RIGHT JOIN") : (q = Y, Y = e)) : (q = Y, Y = e), Y === e && (Y = q, (_e = function() {
+        }()) !== e && (He = Jr()) !== e ? ((nt = vd()) === e && (nt = null), nt !== e && Jr() !== e && jd() !== e ? (as = Y, Y = _e = "RIGHT JOIN") : (q = Y, Y = e)) : (q = Y, Y = e), Y === e && (Y = q, (_e = function() {
           var Se, qt, nr, Yr;
           return Se = q, r.substr(q, 4).toLowerCase() === "full" ? (qt = r.substr(q, 4), q += 4) : (qt = e, $r === 0 && ws(Bi)), qt !== e ? (nr = q, $r++, Yr = Ro(), $r--, Yr === e ? nr = void 0 : (q = nr, nr = e), nr !== e ? Se = qt = [qt, nr] : (q = Se, Se = e)) : (q = Se, Se = e), Se;
-        }()) !== e && (He = Jr()) !== e ? ((nt = md()) === e && (nt = null), nt !== e && Jr() !== e && jd() !== e ? (as = Y, Y = _e = "FULL JOIN") : (q = Y, Y = e)) : (q = Y, Y = e), Y === e && (Y = q, _e = q, (He = function() {
+        }()) !== e && (He = Jr()) !== e ? ((nt = vd()) === e && (nt = null), nt !== e && Jr() !== e && jd() !== e ? (as = Y, Y = _e = "FULL JOIN") : (q = Y, Y = e)) : (q = Y, Y = e), Y === e && (Y = q, _e = q, (He = function() {
           var Se, qt, nr, Yr;
           return Se = q, r.substr(q, 5).toLowerCase() === "inner" ? (qt = r.substr(q, 5), q += 5) : (qt = e, $r === 0 && ws(ba)), qt !== e ? (nr = q, $r++, Yr = Ro(), $r--, Yr === e ? nr = void 0 : (q = nr, nr = e), nr !== e ? Se = qt = [qt, nr] : (q = Se, Se = e)) : (q = Se, Se = e), Se;
         }()) !== e && (nt = Jr()) !== e ? _e = He = [He, nt] : (q = _e, _e = e), _e === e && (_e = null), _e !== e && (He = jd()) !== e ? (as = Y, Y = _e = "INNER JOIN") : (q = Y, Y = e), Y === e && (Y = q, (_e = function() {
@@ -96890,7 +96914,7 @@ function aEt() {
         var Y, _e;
         return (Y = $u()) === e && (Y = q, uo() !== e && Jr() !== e ? ((_e = function() {
           var He, nt, Se, qt;
-          return He = q, (nt = zv()) === e && (nt = null), nt !== e && Jr() !== e ? ((Se = dd()) === e && (Se = null), Se !== e && Jr() !== e ? ((qt = function() {
+          return He = q, (nt = zv()) === e && (nt = null), nt !== e && Jr() !== e ? ((Se = pd()) === e && (Se = null), Se !== e && Jr() !== e ? ((qt = function() {
             var nr, Yr, vn, h, $t;
             return nr = q, (Yr = nc()) !== e && Jr() !== e ? ((vn = ym()) === e && (vn = wm()), vn !== e ? (as = nr, nr = Yr = { type: "rows", expr: vn }) : (q = nr, nr = e)) : (q = nr, nr = e), nr === e && (nr = q, (Yr = nc()) !== e && Jr() !== e && (vn = kc()) !== e && Jr() !== e && (h = wm()) !== e && Jr() !== e && Qu() !== e && Jr() !== e && ($t = ym()) !== e ? (as = nr, Yr = Hl(vn, { type: "origin", value: "rows" }, { type: "expr_list", value: [h, $t] }), nr = Yr) : (q = nr, nr = e)), nr;
           }()) === e && (qt = null), qt !== e ? (as = He, He = nt = { name: null, partitionby: nt, orderby: Se, window_frame_clause: qt }) : (q = He, He = e)) : (q = He, He = e)) : (q = He, He = e), He;
@@ -96912,7 +96936,7 @@ function aEt() {
         var Y, _e;
         return Y = q, r.substr(q, 9).toLowerCase() === "unbounded" ? (_e = r.substr(q, 9), q += 9) : (_e = e, $r === 0 && ws(Cl)), _e !== e && (as = Y, _e = { type: "origin", value: _e.toUpperCase() }), (Y = _e) === e && (Y = fu()), Y;
       }
-      function dd() {
+      function pd() {
         var Y, _e;
         return Y = q, function() {
           var He, nt, Se, qt;
@@ -96959,9 +96983,9 @@ function aEt() {
       }
       function Bm() {
         var Y, _e, He, nt, Se, qt, nr, Yr;
-        return Y = q, _e = q, (He = Rn()) !== e && (nt = Jr()) !== e && (Se = At()) !== e ? _e = He = [He, nt, Se] : (q = _e, _e = e), _e === e && (_e = null), _e !== e && (He = Jr()) !== e && (nt = pd()) !== e && (Se = Jr()) !== e ? (r.charCodeAt(q) === 61 ? (qt = "=", q++) : (qt = e, $r === 0 && ws(Nl)), qt !== e && Jr() !== e && (nr = ms()) !== e ? (as = Y, Y = _e = function(vn, h, $t) {
+        return Y = q, _e = q, (He = Rn()) !== e && (nt = Jr()) !== e && (Se = At()) !== e ? _e = He = [He, nt, Se] : (q = _e, _e = e), _e === e && (_e = null), _e !== e && (He = Jr()) !== e && (nt = hd()) !== e && (Se = Jr()) !== e ? (r.charCodeAt(q) === 61 ? (qt = "=", q++) : (qt = e, $r === 0 && ws(Nl)), qt !== e && Jr() !== e && (nr = ms()) !== e ? (as = Y, Y = _e = function(vn, h, $t) {
           return { column: h, value: $t, table: vn && vn[0] };
-        }(_e, nt, nr)) : (q = Y, Y = e)) : (q = Y, Y = e), Y === e && (Y = q, _e = q, (He = Rn()) !== e && (nt = Jr()) !== e && (Se = At()) !== e ? _e = He = [He, nt, Se] : (q = _e, _e = e), _e === e && (_e = null), _e !== e && (He = Jr()) !== e && (nt = pd()) !== e && (Se = Jr()) !== e ? (r.charCodeAt(q) === 61 ? (qt = "=", q++) : (qt = e, $r === 0 && ws(Nl)), qt !== e && Jr() !== e && (nr = vd()) !== e && Jr() !== e && uo() !== e && Jr() !== e && (Yr = rc()) !== e && Jr() !== e && Va() !== e ? (as = Y, Y = _e = function(vn, h, $t) {
+        }(_e, nt, nr)) : (q = Y, Y = e)) : (q = Y, Y = e), Y === e && (Y = q, _e = q, (He = Rn()) !== e && (nt = Jr()) !== e && (Se = At()) !== e ? _e = He = [He, nt, Se] : (q = _e, _e = e), _e === e && (_e = null), _e !== e && (He = Jr()) !== e && (nt = hd()) !== e && (Se = Jr()) !== e ? (r.charCodeAt(q) === 61 ? (qt = "=", q++) : (qt = e, $r === 0 && ws(Nl)), qt !== e && Jr() !== e && (nr = bd()) !== e && Jr() !== e && uo() !== e && Jr() !== e && (Yr = rc()) !== e && Jr() !== e && Va() !== e ? (as = Y, Y = _e = function(vn, h, $t) {
           return { column: h, value: $t, table: vn && vn[0], keyword: "values" };
         }(_e, nt, Yr)) : (q = Y, Y = e)) : (q = Y, Y = e)), Y;
       }
@@ -96969,7 +96993,7 @@ function aEt() {
         var Y, _e;
         return (Y = function() {
           var He, nt;
-          return He = q, vd() !== e && Jr() !== e && (nt = function() {
+          return He = q, bd() !== e && Jr() !== e && (nt = function() {
             var Se, qt, nr, Yr, vn, h, $t, ne;
             if (Se = q, (qt = Sf()) !== e) {
               for (nr = [], Yr = q, (vn = Jr()) !== e && (h = Ln()) !== e && ($t = Jr()) !== e && (ne = Sf()) !== e ? Yr = vn = [vn, h, $t, ne] : (q = Yr, Yr = e); Yr !== e; ) nr.push(Yr), Yr = q, (vn = Jr()) !== e && (h = Ln()) !== e && ($t = Jr()) !== e && (ne = Sf()) !== e ? Yr = vn = [vn, h, $t, ne] : (q = Yr, Yr = e);
@@ -97157,13 +97181,13 @@ function aEt() {
             return nr = q, (Yr = function() {
               var h, $t, ne, de, Pe;
               return h = q, $t = q, (ne = Pl()) !== e && (de = Jr()) !== e && (Pe = L()) !== e ? $t = ne = [ne, de, Pe] : (q = $t, $t = e), $t !== e && (as = h, $t = mu($t)), (h = $t) === e && (h = L()), h;
-            }()) !== e && Jr() !== e ? ((vn = Yf()) === e && (vn = $n()), vn !== e ? (as = nr, Yr = od(Yr, vn), nr = Yr) : (q = nr, nr = e)) : (q = nr, nr = e), nr;
+            }()) !== e && Jr() !== e ? ((vn = Yf()) === e && (vn = $n()), vn !== e ? (as = nr, Yr = id(Yr, vn), nr = Yr) : (q = nr, nr = e)) : (q = nr, nr = e), nr;
           }()) === e && (qt = function() {
             var nr, Yr, vn;
             return nr = q, (Yr = function() {
               var h, $t, ne, de, Pe;
               return h = q, $t = q, (ne = Pl()) !== e && (de = Jr()) !== e && (Pe = v()) !== e ? $t = ne = [ne, de, Pe] : (q = $t, $t = e), $t !== e && (as = h, $t = mu($t)), (h = $t) === e && (h = v()), h;
-            }()) !== e && Jr() !== e ? ((vn = Yf()) === e && (vn = $n()), vn !== e ? (as = nr, Yr = od(Yr, vn), nr = Yr) : (q = nr, nr = e)) : (q = nr, nr = e), nr;
+            }()) !== e && Jr() !== e ? ((vn = Yf()) === e && (vn = $n()), vn !== e ? (as = nr, Yr = id(Yr, vn), nr = Yr) : (q = nr, nr = e)) : (q = nr, nr = e), nr;
           }()), qt;
         }()) === e && (He = null), He !== e ? (as = Y, nt = _e, Y = _e = (Se = He) === null ? nt : Se.type === "arithmetic" ? xt(nt, Se.tail) : Hl(Se.op, nt, Se.right)) : (q = Y, Y = e)) : (q = Y, Y = e), Y === e && (Y = zo()) === e && (Y = rc()), Y;
       }
@@ -97236,7 +97260,7 @@ function aEt() {
               }()) !== e && (as = h, $t = { expr: $t }), (h = $t) === e) {
                 if (h = q, ($t = Kf()) === e && ($t = null), $t !== e) if (Jr() !== e) if ((ne = uo()) !== e) if (Jr() !== e) if ((de = ms()) !== e) if (Jr() !== e) if (Va() !== e) {
                   for (Pe = [], K = q, (De = Jr()) !== e ? ((Ft = Qu()) === e && (Ft = Kt()), Ft !== e && (tr = Jr()) !== e && (Rr = ms()) !== e ? K = De = [De, Ft, tr, Rr] : (q = K, K = e)) : (q = K, K = e); K !== e; ) Pe.push(K), K = q, (De = Jr()) !== e ? ((Ft = Qu()) === e && (Ft = Kt()), Ft !== e && (tr = Jr()) !== e && (Rr = ms()) !== e ? K = De = [De, Ft, tr, Rr] : (q = K, K = e)) : (q = K, K = e);
-                  Pe !== e && (K = Jr()) !== e ? ((De = dd()) === e && (De = null), De !== e ? (as = h, $t = function(l, dt, Nn, Ot) {
+                  Pe !== e && (K = Jr()) !== e ? ((De = pd()) === e && (De = null), De !== e ? (as = h, $t = function(l, dt, Nn, Ot) {
                     const Ms = Nn.length;
                     let Qe = dt;
                     Qe.parentheses = !0;
@@ -97250,7 +97274,7 @@ function aEt() {
                 else q = h, h = e;
                 else q = h, h = e;
                 else q = h, h = e;
-                h === e && (h = q, ($t = Kf()) === e && ($t = null), $t !== e && Jr() !== e && (ne = Ev()) !== e && Jr() !== e ? ((de = dd()) === e && (de = null), de !== e ? (as = h, $t = /* @__PURE__ */ function(l, dt, Nn) {
+                h === e && (h = q, ($t = Kf()) === e && ($t = null), $t !== e && Jr() !== e && (ne = Ev()) !== e && Jr() !== e ? ((de = pd()) === e && (de = null), de !== e ? (as = h, $t = /* @__PURE__ */ function(l, dt, Nn) {
                   return { distinct: l, expr: dt, orderby: Nn };
                 }($t, ne, de), h = $t) : (q = h, h = e)) : (q = h, h = e));
               }
@@ -97344,7 +97368,7 @@ function aEt() {
         } else q = Y, Y = e;
         return Y;
       }
-      function pd() {
+      function hd() {
         var Y, _e;
         return Y = q, (_e = nf()) !== e && (as = Y, _e = _e), (Y = _e) === e && (Y = Zd()), Y;
       }
@@ -97374,11 +97398,11 @@ function aEt() {
       }
       function Kh() {
         var Y;
-        return id.test(r.charAt(q)) ? (Y = r.charAt(q), q++) : (Y = e, $r === 0 && ws(Vm)), Y;
+        return ad.test(r.charAt(q)) ? (Y = r.charAt(q), q++) : (Y = e, $r === 0 && ws(Vm)), Y;
       }
       function lp() {
         var Y;
-        return ad.test(r.charAt(q)) ? (Y = r.charAt(q), q++) : (Y = e, $r === 0 && ws(rh)), Y;
+        return ud.test(r.charAt(q)) ? (Y = r.charAt(q), q++) : (Y = e, $r === 0 && ws(rh)), Y;
       }
       function hh() {
         var Y, _e, He, nt;
@@ -97392,7 +97416,7 @@ function aEt() {
       }
       function Ld() {
         var Y, _e, He, nt, Se;
-        return Y = q, r.substr(q, 4).toLowerCase() === "over" ? (_e = r.substr(q, 4), q += 4) : (_e = e, $r === 0 && ws(Cp)), _e !== e && Jr() !== e && (He = vb()) !== e ? (as = Y, Y = _e = { type: "window", as_window_specification: He }) : (q = Y, Y = e), Y === e && (Y = q, r.substr(q, 4).toLowerCase() === "over" ? (_e = r.substr(q, 4), q += 4) : (_e = e, $r === 0 && ws(Cp)), _e !== e && Jr() !== e && (He = uo()) !== e && Jr() !== e ? ((nt = zv()) === e && (nt = null), nt !== e && Jr() !== e ? ((Se = dd()) === e && (Se = null), Se !== e && Jr() !== e && Va() !== e ? (as = Y, Y = _e = { partitionby: nt, orderby: Se }) : (q = Y, Y = e)) : (q = Y, Y = e)) : (q = Y, Y = e), Y === e && (Y = mh())), Y;
+        return Y = q, r.substr(q, 4).toLowerCase() === "over" ? (_e = r.substr(q, 4), q += 4) : (_e = e, $r === 0 && ws(Cp)), _e !== e && Jr() !== e && (He = vb()) !== e ? (as = Y, Y = _e = { type: "window", as_window_specification: He }) : (q = Y, Y = e), Y === e && (Y = q, r.substr(q, 4).toLowerCase() === "over" ? (_e = r.substr(q, 4), q += 4) : (_e = e, $r === 0 && ws(Cp)), _e !== e && Jr() !== e && (He = uo()) !== e && Jr() !== e ? ((nt = zv()) === e && (nt = null), nt !== e && Jr() !== e ? ((Se = pd()) === e && (Se = null), Se !== e && Jr() !== e && Va() !== e ? (as = Y, Y = _e = { partitionby: nt, orderby: Se }) : (q = Y, Y = e)) : (q = Y, Y = e)) : (q = Y, Y = e), Y === e && (Y = mh())), Y;
       }
       function Oh() {
         var Y, _e, He, nt, Se;
@@ -97514,13 +97538,13 @@ function aEt() {
       }
       function of() {
         var Y, _e, He;
-        return (Y = hd()) === e && (Y = Dd()) === e && (Y = q, r.charCodeAt(q) === 45 ? (_e = "-", q++) : (_e = e, $r === 0 && ws(Fl)), _e === e && (r.charCodeAt(q) === 43 ? (_e = "+", q++) : (_e = e, $r === 0 && ws(Kl))), _e !== e && (He = hd()) !== e ? (as = Y, Y = _e = _e + He) : (q = Y, Y = e), Y === e && (Y = q, r.charCodeAt(q) === 45 ? (_e = "-", q++) : (_e = e, $r === 0 && ws(Fl)), _e === e && (r.charCodeAt(q) === 43 ? (_e = "+", q++) : (_e = e, $r === 0 && ws(Kl))), _e !== e && (He = Dd()) !== e ? (as = Y, Y = _e = function(nt, Se) {
+        return (Y = md()) === e && (Y = Dd()) === e && (Y = q, r.charCodeAt(q) === 45 ? (_e = "-", q++) : (_e = e, $r === 0 && ws(Fl)), _e === e && (r.charCodeAt(q) === 43 ? (_e = "+", q++) : (_e = e, $r === 0 && ws(Kl))), _e !== e && (He = md()) !== e ? (as = Y, Y = _e = _e + He) : (q = Y, Y = e), Y === e && (Y = q, r.charCodeAt(q) === 45 ? (_e = "-", q++) : (_e = e, $r === 0 && ws(Fl)), _e === e && (r.charCodeAt(q) === 43 ? (_e = "+", q++) : (_e = e, $r === 0 && ws(Kl))), _e !== e && (He = Dd()) !== e ? (as = Y, Y = _e = function(nt, Se) {
           return nt + Se;
         }(_e, He)) : (q = Y, Y = e))), Y;
       }
       function Md() {
         var Y, _e, He;
-        return Y = q, r.charCodeAt(q) === 46 ? (_e = ".", q++) : (_e = e, $r === 0 && ws(ho)), _e !== e && (He = hd()) !== e ? (as = Y, Y = _e = "." + He) : (q = Y, Y = e), Y;
+        return Y = q, r.charCodeAt(q) === 46 ? (_e = ".", q++) : (_e = e, $r === 0 && ws(ho)), _e !== e && (He = md()) !== e ? (as = Y, Y = _e = "." + He) : (q = Y, Y = e), Y;
       }
       function Jd() {
         var Y, _e, He;
@@ -97529,9 +97553,9 @@ function aEt() {
           nt = q, ju.test(r.charAt(q)) ? (Se = r.charAt(q), q++) : (Se = e, $r === 0 && ws(Bf)), Se !== e ? (zf.test(r.charAt(q)) ? (qt = r.charAt(q), q++) : (qt = e, $r === 0 && ws(Qm)), qt === e && (qt = null), qt !== e ? (as = nt, nt = Se = Se + ((nr = qt) !== null ? nr : "")) : (q = nt, nt = e)) : (q = nt, nt = e);
           var nr;
           return nt;
-        }()) !== e && (He = hd()) !== e ? (as = Y, Y = _e = _e + He) : (q = Y, Y = e), Y;
+        }()) !== e && (He = md()) !== e ? (as = Y, Y = _e = _e + He) : (q = Y, Y = e), Y;
       }
-      function hd() {
+      function md() {
         var Y, _e, He;
         if (Y = q, _e = [], (He = Dd()) !== e) for (; He !== e; ) _e.push(He), He = Dd();
         else _e = e;
@@ -97613,11 +97637,11 @@ function aEt() {
         var Y, _e, He, nt;
         return Y = q, r.substr(q, 4).toLowerCase() === "join" ? (_e = r.substr(q, 4), q += 4) : (_e = e, $r === 0 && ws(Pa)), _e !== e ? (He = q, $r++, nt = Ro(), $r--, nt === e ? He = void 0 : (q = He, He = e), He !== e ? Y = _e = [_e, He] : (q = Y, Y = e)) : (q = Y, Y = e), Y;
       }
-      function md() {
+      function vd() {
         var Y, _e, He, nt;
         return Y = q, r.substr(q, 5).toLowerCase() === "outer" ? (_e = r.substr(q, 5), q += 5) : (_e = e, $r === 0 && ws(Ki)), _e !== e ? (He = q, $r++, nt = Ro(), $r--, nt === e ? He = void 0 : (q = He, He = e), He !== e ? Y = _e = [_e, He] : (q = Y, Y = e)) : (q = Y, Y = e), Y;
       }
-      function vd() {
+      function bd() {
         var Y, _e, He, nt;
         return Y = q, r.substr(q, 6).toLowerCase() === "values" ? (_e = r.substr(q, 6), q += 6) : (_e = e, $r === 0 && ws(Ta)), _e !== e ? (He = q, $r++, nt = Ro(), $r--, nt === e ? He = void 0 : (q = He, He = e), He !== e ? Y = _e = [_e, He] : (q = Y, Y = e)) : (q = Y, Y = e), Y;
       }
@@ -97655,7 +97679,7 @@ function aEt() {
       }
       function L() {
         var Y, _e, He, nt;
-        return Y = q, r.substr(q, 4).toLowerCase() === "like" ? (_e = r.substr(q, 4), q += 4) : (_e = e, $r === 0 && ws(ld)), _e !== e ? (He = q, $r++, nt = Ro(), $r--, nt === e ? He = void 0 : (q = He, He = e), He !== e ? (as = Y, Y = _e = "LIKE") : (q = Y, Y = e)) : (q = Y, Y = e), Y;
+        return Y = q, r.substr(q, 4).toLowerCase() === "like" ? (_e = r.substr(q, 4), q += 4) : (_e = e, $r === 0 && ws(cd)), _e !== e ? (He = q, $r++, nt = Ro(), $r--, nt === e ? He = void 0 : (q = He, He = e), He !== e ? (as = Y, Y = _e = "LIKE") : (q = Y, Y = e)) : (q = Y, Y = e), Y;
       }
       function v() {
         var Y, _e, He, nt;
@@ -97755,7 +97779,7 @@ function aEt() {
       }
       function qu() {
         var Y, _e, He, nt;
-        return Y = q, r.substr(q, 9).toLowerCase() === "timestamp" ? (_e = r.substr(q, 9), q += 9) : (_e = e, $r === 0 && ws(cd)), _e !== e ? (He = q, $r++, nt = Ro(), $r--, nt === e ? He = void 0 : (q = He, He = e), He !== e ? (as = Y, Y = _e = "TIMESTAMP") : (q = Y, Y = e)) : (q = Y, Y = e), Y;
+        return Y = q, r.substr(q, 9).toLowerCase() === "timestamp" ? (_e = r.substr(q, 9), q += 9) : (_e = e, $r === 0 && ws(fd)), _e !== e ? (He = q, $r++, nt = Ro(), $r--, nt === e ? He = void 0 : (q = He, He = e), He !== e ? (as = Y, Y = _e = "TIMESTAMP") : (q = Y, Y = e)) : (q = Y, Y = e), Y;
       }
       function Oo() {
         var Y, _e, He, nt;
@@ -98201,15 +98225,15 @@ function aEt() {
         return jt(S, j);
       }, Rs = Fr("AUTO_INCREMENT", !0), Us = Fr("UNIQUE", !0), ho = Fr("KEY", !0), co = Fr("PRIMARY", !0), Bo = Fr("@", !1), Vo = function() {
         return Ye("=", { type: "origin", value: "definer" }, { type: "function", name: { name: [{ type: "default", value: "current_user" }] }, args: { type: "expr_list", value: [] } });
-      }, di = Fr("BEFORE", !0), wa = Fr("AFTER", !0), Ba = Fr("FOR", !0), Oa = Fr("EACH", !0), Ma = Fr("ROW", !0), Za = Fr("STATEMENT", !0), Ja = Fr("FOLLOWS", !0), wc = Fr("PRECEDES", !0), Cl = Fr("COLUMN_FORMAT", !0), Nl = Fr("FIXED", !0), va = Fr("DYNAMIC", !0), Nu = Fr("STORAGE", !0), mu = Fr("DISK", !0), Ru = Fr("MEMORY", !0), Ll = Fr("GENERATED", !0), Rl = Fr("ALWAYS", !0), Ju = Fr("STORED", !0), ef = Fr("VIRTUAL", !0), el = Fr("if", !0), tl = Fr("exists", !0), od = Fr("first", !0), Kl = Fr("after", !0), Fl = Fr("LESS", !0), vf = Fr("THAN", !0), Gd = Fr("DROP", !0), tm = Fr("TRUNCATE", !0), Hm = Fr("DISCARD", !0), yp = Fr("IMPORT", !0), Hd = Fr("COALESCE", !0), wp = Fr("ANALYZE", !0), jp = Fr("TABLESPACE", !0), $h = Fr("INSTANT", !0), xl = Fr("INPLACE", !0), rm = Fr("COPY", !0), th = Fr("SHARED", !0), nm = Fr("EXCLUSIVE", !0), op = Fr("CHANGE", !0), $f = Fr("FOREIGN", !0), Bc = Fr("CONSTRAINT", !0), id = Fr("NOCHECK", !0), Vm = Fr("NOT", !0), ad = Fr("REPLICATION", !0), rh = Fr("FOREIGN KEY", !0), Wm = Fr("ENFORCED", !0), Cp = Fr("MATCH FULL", !0), Am = Fr("MATCH PARTIAL", !0), nh = Fr("MATCH SIMPLE", !0), ip = Fr("RESTRICT", !0), Vd = Fr("CASCADE", !0), Do = Fr("SET NULL", !0), bf = Fr("NO ACTION", !0), Ff = Fr("SET DEFAULT", !0), Wd = Fr("CHARACTER", !0), $p = Fr("SET", !0), Fh = Fr("CHARSET", !0), Ym = Fr("COLLATE", !0), Fp = Fr("AVG_ROW_LENGTH", !0), Uh = Fr("KEY_BLOCK_SIZE", !0), Ch = Fr("MAX_ROWS", !0), sm = Fr("MIN_ROWS", !0), Up = Fr("STATS_SAMPLE_PAGES", !0), Lp = Fr("CHECKSUM", !1), Nc = Fr("DELAY_KEY_WRITE", !1), xp = /^[01]/, hv = Xo(["0", "1"], !1, !1), om = Fr("CONNECTION", !0), Lh = Fr("ENGINE_ATTRIBUTE", !0), gf = Fr("SECONDARY_ENGINE_ATTRIBUTE", !0), Uf = Fr("DATA", !0), sh = Fr("INDEX", !0), im = Fr("DIRECTORY", !0), ju = Fr("COMPRESSION", !0), Bf = Fr("'", !1), zf = Fr("ZLIB", !0), Qm = Fr("LZ4", !0), xh = Fr("ENGINE", !0), oh = function(S, j, re) {
+      }, di = Fr("BEFORE", !0), wa = Fr("AFTER", !0), Ba = Fr("FOR", !0), Oa = Fr("EACH", !0), Ma = Fr("ROW", !0), Za = Fr("STATEMENT", !0), Ja = Fr("FOLLOWS", !0), wc = Fr("PRECEDES", !0), Cl = Fr("COLUMN_FORMAT", !0), Nl = Fr("FIXED", !0), va = Fr("DYNAMIC", !0), Nu = Fr("STORAGE", !0), mu = Fr("DISK", !0), Ru = Fr("MEMORY", !0), Ll = Fr("GENERATED", !0), Rl = Fr("ALWAYS", !0), Ju = Fr("STORED", !0), ef = Fr("VIRTUAL", !0), el = Fr("if", !0), tl = Fr("exists", !0), id = Fr("first", !0), Kl = Fr("after", !0), Fl = Fr("LESS", !0), vf = Fr("THAN", !0), Gd = Fr("DROP", !0), tm = Fr("TRUNCATE", !0), Hm = Fr("DISCARD", !0), yp = Fr("IMPORT", !0), Hd = Fr("COALESCE", !0), wp = Fr("ANALYZE", !0), jp = Fr("TABLESPACE", !0), $h = Fr("INSTANT", !0), xl = Fr("INPLACE", !0), rm = Fr("COPY", !0), th = Fr("SHARED", !0), nm = Fr("EXCLUSIVE", !0), op = Fr("CHANGE", !0), $f = Fr("FOREIGN", !0), Bc = Fr("CONSTRAINT", !0), ad = Fr("NOCHECK", !0), Vm = Fr("NOT", !0), ud = Fr("REPLICATION", !0), rh = Fr("FOREIGN KEY", !0), Wm = Fr("ENFORCED", !0), Cp = Fr("MATCH FULL", !0), Am = Fr("MATCH PARTIAL", !0), nh = Fr("MATCH SIMPLE", !0), ip = Fr("RESTRICT", !0), Vd = Fr("CASCADE", !0), Do = Fr("SET NULL", !0), bf = Fr("NO ACTION", !0), Ff = Fr("SET DEFAULT", !0), Wd = Fr("CHARACTER", !0), $p = Fr("SET", !0), Fh = Fr("CHARSET", !0), Ym = Fr("COLLATE", !0), Fp = Fr("AVG_ROW_LENGTH", !0), Uh = Fr("KEY_BLOCK_SIZE", !0), Ch = Fr("MAX_ROWS", !0), sm = Fr("MIN_ROWS", !0), Up = Fr("STATS_SAMPLE_PAGES", !0), Lp = Fr("CHECKSUM", !1), Nc = Fr("DELAY_KEY_WRITE", !1), xp = /^[01]/, hv = Xo(["0", "1"], !1, !1), om = Fr("CONNECTION", !0), Lh = Fr("ENGINE_ATTRIBUTE", !0), gf = Fr("SECONDARY_ENGINE_ATTRIBUTE", !0), Uf = Fr("DATA", !0), sh = Fr("INDEX", !0), im = Fr("DIRECTORY", !0), ju = Fr("COMPRESSION", !0), Bf = Fr("'", !1), zf = Fr("ZLIB", !0), Qm = Fr("LZ4", !0), xh = Fr("ENGINE", !0), oh = function(S, j, re) {
         return { keyword: S.toLowerCase(), symbol: j, value: re.toUpperCase() };
-      }, Bp = Fr("ROW_FORMAT", !0), am = Fr("COMPRESSED", !0), Km = Fr("REDUNDANT", !0), _m = Fr("COMPACT", !0), tf = Fr("READ", !0), qf = Fr("LOW_PRIORITY", !0), ud = Fr("WRITE", !0), Bh = function(S, j) {
+      }, Bp = Fr("ROW_FORMAT", !0), am = Fr("COMPRESSED", !0), Km = Fr("REDUNDANT", !0), _m = Fr("COMPACT", !0), tf = Fr("READ", !0), qf = Fr("LOW_PRIORITY", !0), ld = Fr("WRITE", !0), Bh = function(S, j) {
         return jt(S, j);
       }, ih = Fr("BINARY", !0), Eh = Fr("MASTER", !0), Ep = Fr("LOGS", !0), Sh = Fr("TRIGGERS", !0), zh = Fr("STATUS", !0), Tm = Fr("PROCESSLIST", !0), Sp = Fr("PROCEDURE", !0), yf = Fr("FUNCTION", !0), zp = Fr("BINLOG", !0), _t = Fr("EVENTS", !0), Or = Fr("COLLATION", !0), cn = Fr("DATABASES", !0), Wr = Fr("COLUMNS", !0), bs = Fr("INDEXES", !0), cs = Fr("EVENT", !0), Ns = Fr("GRANTS", !0), fo = Fr("SERIALIZABLE", !0), io = Fr("REPEATABLE", !0), Uo = Fr("COMMITTED", !0), Ko = Fr("UNCOMMITTED", !0), fi = function(S) {
         return { type: "origin", value: "read " + S.toLowerCase() };
-      }, Bi = Fr("ISOLATION", !0), Di = Fr("LEVEL", !0), ba = Fr("ONLY", !0), Pa = Fr("DEFERRABLE", !0), Ki = Fr("commit", !0), ja = Fr("rollback", !0), Ta = Fr("begin", !0), vu = Fr("WORK", !0), cu = Fr("TRANSACTION", !0), ul = Fr("start", !0), Ou = Fr("transaction", !0), ec = Fr("FIELDS", !0), Eu = Fr("TERMINATED", !0), uc = Fr("OPTIONALLY", !0), Td = Fr("ENCLOSED", !0), Gf = Fr("ESCAPED", !0), Cc = Fr("STARTING", !0), ah = Fr("LINES", !0), qp = Fr("LOAD", !0), ll = Fr("CONCURRENT", !0), zc = Fr("INFILE", !0), Id = Fr("INTO", !0), ld = Fr("TABLE", !0), um = Fr("ROWS", !0), Xm = Fr("VIEW", !0), Cd = Fr("GRANT", !0), Hf = Fr("OPTION", !0), Nd = function(S) {
+      }, Bi = Fr("ISOLATION", !0), Di = Fr("LEVEL", !0), ba = Fr("ONLY", !0), Pa = Fr("DEFERRABLE", !0), Ki = Fr("commit", !0), ja = Fr("rollback", !0), Ta = Fr("begin", !0), vu = Fr("WORK", !0), cu = Fr("TRANSACTION", !0), ul = Fr("start", !0), Ou = Fr("transaction", !0), ec = Fr("FIELDS", !0), Eu = Fr("TERMINATED", !0), uc = Fr("OPTIONALLY", !0), Td = Fr("ENCLOSED", !0), Gf = Fr("ESCAPED", !0), Cc = Fr("STARTING", !0), ah = Fr("LINES", !0), qp = Fr("LOAD", !0), ll = Fr("CONCURRENT", !0), zc = Fr("INFILE", !0), Id = Fr("INTO", !0), cd = Fr("TABLE", !0), um = Fr("ROWS", !0), Xm = Fr("VIEW", !0), Cd = Fr("GRANT", !0), Hf = Fr("OPTION", !0), Nd = function(S) {
         return { type: "origin", value: Array.isArray(S) ? S[0] : S };
-      }, Yd = Fr("ROUTINE", !0), Qd = Fr("EXECUTE", !0), uh = Fr("ADMIN", !0), Qv = Fr("GRANT", !1), Zm = Fr("PROXY", !1), Kv = Fr("(", !1), Xv = Fr(")", !1), Vf = /^[0-9]/, wf = Xo([["0", "9"]], !1, !1), Im = Fr("IN", !0), Gp = Fr("SHARE", !0), mv = Fr("MODE", !0), Jm = Fr("WAIT", !0), vv = Fr("NOWAIT", !0), Zv = Fr("SKIP", !0), lm = Fr("LOCKED", !0), ev = Fr("NATURAL", !0), bv = Fr("LANGUAGE", !0), tv = Fr("QUERY", !0), cm = Fr("EXPANSION", !0), Av = Fr("BOOLEAN", !0), _v = Fr("MATCH", !0), Nm = Fr("AGAINST", !1), Jv = Fr("OUTFILE", !0), Lb = Fr("DUMPFILE", !0), gv = Fr("BTREE", !0), xb = Fr("HASH", !0), Tv = Fr("PARSER", !0), Eb = Fr("VISIBLE", !0), Db = Fr("INVISIBLE", !0), Iv = Fr("LATERAL", !0), Nv = /^[_0-9]/, eb = Xo(["_", ["0", "9"]], !1, !1), fm = Fr("ROLLUP", !0), Ap = Fr("?", !1), Kd = Fr("=", !1), cd = Fr("DUPLICATE", !0), Ah = function(S, j) {
+      }, Yd = Fr("ROUTINE", !0), Qd = Fr("EXECUTE", !0), uh = Fr("ADMIN", !0), Qv = Fr("GRANT", !1), Zm = Fr("PROXY", !1), Kv = Fr("(", !1), Xv = Fr(")", !1), Vf = /^[0-9]/, wf = Xo([["0", "9"]], !1, !1), Im = Fr("IN", !0), Gp = Fr("SHARE", !0), mv = Fr("MODE", !0), Jm = Fr("WAIT", !0), vv = Fr("NOWAIT", !0), Zv = Fr("SKIP", !0), lm = Fr("LOCKED", !0), ev = Fr("NATURAL", !0), bv = Fr("LANGUAGE", !0), tv = Fr("QUERY", !0), cm = Fr("EXPANSION", !0), Av = Fr("BOOLEAN", !0), _v = Fr("MATCH", !0), Nm = Fr("AGAINST", !1), Jv = Fr("OUTFILE", !0), Lb = Fr("DUMPFILE", !0), gv = Fr("BTREE", !0), xb = Fr("HASH", !0), Tv = Fr("PARSER", !0), Eb = Fr("VISIBLE", !0), Db = Fr("INVISIBLE", !0), Iv = Fr("LATERAL", !0), Nv = /^[_0-9]/, eb = Xo(["_", ["0", "9"]], !1, !1), fm = Fr("ROLLUP", !0), Ap = Fr("?", !1), Kd = Fr("=", !1), fd = Fr("DUPLICATE", !0), Ah = function(S, j) {
         return xr(S, j);
       }, qh = function(S) {
         return S[0] + " " + S[2];
@@ -98217,11 +98241,11 @@ function aEt() {
         return z[S.toUpperCase()] === !0;
       }, Lf = Fr('"', !1), Od = /^[^"]/, _b = Xo(['"'], !0, !1), ab = /^[^']/, Tb = Xo(["'"], !0, !1), ub = Fr("`", !1), wv = /^[^`\\]/, Cv = Xo(["`", "\\"], !0, !1), Lv = function(S, j) {
         return S + j.join("");
-      }, lb = /^[A-Za-z_\u4E00-\u9FA5\xC0-\u017F]/, Pb = Xo([["A", "Z"], ["a", "z"], "_", ["一", "龥"], ["À", "ſ"]], !1, !1), Ib = /^[A-Za-z0-9_$\x80-\uFFFF]/, cb = Xo([["A", "Z"], ["a", "z"], ["0", "9"], "_", "$", ["", "￿"]], !1, !1), fb = /^[A-Za-z0-9_:\u4E00-\u9FA5\xC0-\u017F]/, Fv = Xo([["A", "Z"], ["a", "z"], ["0", "9"], "_", ":", ["一", "龥"], ["À", "ſ"]], !1, !1), Nb = Fr(":", !1), Rb = Fr("NOW", !0), db = Fr("OVER", !0), Ob = Fr("WINDOW", !0), pb = Fr("FOLLOWING", !0), Uv = Fr("PRECEDING", !0), q = Fr("SEPARATOR", !0), as = Fr("YEAR_MONTH", !0), hm = Fr("DAY_HOUR", !0), xf = Fr("DAY_MINUTE", !0), nv = Fr("DAY_SECOND", !0), $r = Fr("DAY_MICROSECOND", !0), Gs = Fr("HOUR_MINUTE", !0), kd = Fr("HOUR_SECOND", !0), Mm = Fr("HOUR_MICROSECOND", !0), sv = Fr("MINUTE_SECOND", !0), ws = Fr("MINUTE_MICROSECOND", !0), Bv = Fr("SECOND_MICROSECOND", !0), hb = Fr("TIMEZONE_HOUR", !0), jb = Fr("TIMEZONE_MINUTE", !0), mm = Fr("CENTURY", !0), B = Fr("DAY", !0), is = Fr("DATE", !0), Dm = Fr("DECADE", !0), _p = Fr("DOW", !0), Pm = Fr("DOY", !0), Ir = Fr("EPOCH", !0), Ds = Fr("HOUR", !0), fd = Fr("ISODOW", !0), xv = Fr("ISOWEEK", !0), vm = Fr("ISOYEAR", !0), ls = Fr("MICROSECONDS", !0), mb = Fr("MILLENNIUM", !0), ov = Fr("MILLISECONDS", !0), bm = Fr("MINUTE", !0), iv = Fr("MONTH", !0), jm = Fr("QUARTER", !0), Hp = Fr("SECOND", !0), $m = Fr("TIME", !0), Fm = Fr("TIMEZONE", !0), Th = Fr("WEEK", !0), Ih = Fr("YEAR", !0), D = Fr("DATE_TRUNC", !0), Zn = Fr("BOTH", !0), Vh = Fr("LEADING", !0), Ef = Fr("TRAILING", !0), Nh = Fr("trim", !0), wr = Fr("convert", !0), _s = Fr("binary", !0), El = Fr("_binary", !0), lh = Fr("_latin1", !0), Wh = Fr("X", !0), es = /^[0-9A-Fa-f]/, qc = Xo([["0", "9"], ["A", "F"], ["a", "f"]], !1, !1), lc = Fr("b", !0), av = Fr("0x", !0), Vp = Fr("N", !0), ap = function(S, j) {
+      }, lb = /^[A-Za-z_\u4E00-\u9FA5\xC0-\u017F]/, Pb = Xo([["A", "Z"], ["a", "z"], "_", ["一", "龥"], ["À", "ſ"]], !1, !1), Ib = /^[A-Za-z0-9_$\x80-\uFFFF]/, cb = Xo([["A", "Z"], ["a", "z"], ["0", "9"], "_", "$", ["", "￿"]], !1, !1), fb = /^[A-Za-z0-9_:\u4E00-\u9FA5\xC0-\u017F]/, Fv = Xo([["A", "Z"], ["a", "z"], ["0", "9"], "_", ":", ["一", "龥"], ["À", "ſ"]], !1, !1), Nb = Fr(":", !1), Rb = Fr("NOW", !0), db = Fr("OVER", !0), Ob = Fr("WINDOW", !0), pb = Fr("FOLLOWING", !0), Uv = Fr("PRECEDING", !0), q = Fr("SEPARATOR", !0), as = Fr("YEAR_MONTH", !0), hm = Fr("DAY_HOUR", !0), xf = Fr("DAY_MINUTE", !0), nv = Fr("DAY_SECOND", !0), $r = Fr("DAY_MICROSECOND", !0), Gs = Fr("HOUR_MINUTE", !0), kd = Fr("HOUR_SECOND", !0), Mm = Fr("HOUR_MICROSECOND", !0), sv = Fr("MINUTE_SECOND", !0), ws = Fr("MINUTE_MICROSECOND", !0), Bv = Fr("SECOND_MICROSECOND", !0), hb = Fr("TIMEZONE_HOUR", !0), jb = Fr("TIMEZONE_MINUTE", !0), mm = Fr("CENTURY", !0), B = Fr("DAY", !0), is = Fr("DATE", !0), Dm = Fr("DECADE", !0), _p = Fr("DOW", !0), Pm = Fr("DOY", !0), Ir = Fr("EPOCH", !0), Ds = Fr("HOUR", !0), dd = Fr("ISODOW", !0), xv = Fr("ISOWEEK", !0), vm = Fr("ISOYEAR", !0), ls = Fr("MICROSECONDS", !0), mb = Fr("MILLENNIUM", !0), ov = Fr("MILLISECONDS", !0), bm = Fr("MINUTE", !0), iv = Fr("MONTH", !0), jm = Fr("QUARTER", !0), Hp = Fr("SECOND", !0), $m = Fr("TIME", !0), Fm = Fr("TIMEZONE", !0), Th = Fr("WEEK", !0), Ih = Fr("YEAR", !0), D = Fr("DATE_TRUNC", !0), Zn = Fr("BOTH", !0), Vh = Fr("LEADING", !0), Ef = Fr("TRAILING", !0), Nh = Fr("trim", !0), wr = Fr("convert", !0), _s = Fr("binary", !0), El = Fr("_binary", !0), lh = Fr("_latin1", !0), Wh = Fr("X", !0), es = /^[0-9A-Fa-f]/, qc = Xo([["0", "9"], ["A", "F"], ["a", "f"]], !1, !1), lc = Fr("b", !0), av = Fr("0x", !0), Vp = Fr("N", !0), ap = function(S, j) {
         return { type: S.toLowerCase(), value: j[1].join("") };
       }, Xd = /^[^"\\\0-\x1F\x7F]/, Ev = Xo(['"', "\\", ["\0", ""], ""], !0, !1), ch = /^[\n]/, gm = Xo([`
-`], !1, !1), vb = /^[^'\\]/, ym = Xo(["'", "\\"], !0, !1), wm = Fr("\\'", !1), Yh = Fr('\\"', !1), Um = Fr("\\\\", !1), dd = Fr("\\/", !1), zv = Fr("\\b", !1), Qh = Fr("\\f", !1), Cm = Fr("\\n", !1), up = Fr("\\r", !1), Bm = Fr("\\t", !1), fh = Fr("\\u", !1), N = Fr("\\", !1), Hn = Fr("''", !1), Sf = Fr('""', !1), T = Fr("``", !1), Vn = /^[\n\r]/, fr = Xo([`
-`, "\r"], !1, !1), Ls = Fr(".", !1), Rc = /^[0-9a-fA-F]/, mr = Xo([["0", "9"], ["a", "f"], ["A", "F"]], !1, !1), ms = /^[eE]/, On = Xo(["e", "E"], !1, !1), Wp = /^[+\-]/, dh = Xo(["+", "-"], !1, !1), $n = Fr("NULL", !0), A = Fr("NOT NULL", !0), Dn = Fr("TRUE", !0), Af = Fr("TO", !0), Lc = Fr("FALSE", !0), xc = Fr("SHOW", !0), rr = Fr("USE", !0), fs = Fr("ALTER", !0), tc = Fr("SELECT", !0), rc = Fr("UPDATE", !0), Yp = Fr("CREATE", !0), Rn = Fr("TEMPORARY", !0), Rh = Fr("DELETE", !0), Zd = Fr("INSERT", !0), ph = Fr("RECURSIVE", !0), Tp = Fr("REPLACE", !0), Qp = Fr("RENAME", !0), pd = Fr("IGNORE", !0), cc = Fr("EXPLAIN", !0), nf = Fr("PARTITION", !0), $u = Fr("FROM", !0), Ro = Fr("TRIGGER", !0), Kh = Fr("TABLES", !0), lp = Fr("DATABASE", !0), hh = Fr("SCHEMA", !0), mh = Fr("ON", !0), Ld = Fr("LEFT", !0), Oh = Fr("RIGHT", !0), Gc = Fr("FULL", !0), Yf = Fr("INNER", !0), sf = Fr("CROSS", !0), zo = Fr("STRAIGHT_JOIN", !0), Kp = Fr("JOIN", !0), Ip = Fr("OUTER", !0), Np = Fr("UNION", !0), fu = Fr("MINUS", !0), of = Fr("INTERSECT", !0), Md = Fr("EXCEPT", !0), Jd = Fr("VALUES", !0), hd = Fr("USING", !0), Dd = Fr("WHERE", !0), ep = Fr("GO", !0), af = Fr("GROUP", !0), cp = Fr("ORDER", !0), Yu = Fr("HAVING", !0), Qf = Fr("LIMIT", !0), tp = Fr("OFFSET", !0), Rp = Fr("ASC", !0), Op = Fr("DESC", !0), fc = Fr("DESCRIBE", !0), _f = Fr("ALL", !0), Sl = Fr("DISTINCT", !0), vh = Fr("BETWEEN", !0), Pd = Fr("IS", !0), uf = Fr("LIKE", !0), Ol = Fr("RLIKE", !0), bh = Fr("REGEXP", !0), kp = Fr("EXISTS", !0), jd = Fr("AND", !0), md = Fr("OR", !0), vd = Fr("COUNT", !0), zl = Fr("GROUP_CONCAT", !0), Go = Fr("MAX", !0), rp = Fr("MIN", !0), Oc = Fr("SUM", !0), Kf = Fr("AVG", !0), kc = Fr("EXTRACT", !0), Su = Fr("CALL", !0), Mc = Fr("CASE", !0), L = Fr("WHEN", !0), v = Fr("THEN", !0), Xr = Fr("ELSE", !0), Pl = Fr("END", !0), Qu = Fr("CAST", !0), Kt = Fr("VARBINARY", !0), qe = Fr("BIT", !0), zn = Fr("CHAR", !0), zu = Fr("VARCHAR", !0), fp = Fr("NUMERIC", !0), hn = Fr("DECIMAL", !0), Vr = Fr("SIGNED", !0), Xf = Fr("UNSIGNED", !0), Wl = Fr("INT", !0), Mp = Fr("ZEROFILL", !0), Ku = Fr("INTEGER", !0), uu = Fr("JSON", !0), ql = Fr("SMALLINT", !0), Dc = Fr("MEDIUMINT", !0), Tf = Fr("TINYINT", !0), Dp = Fr("TINYTEXT", !0), ou = Fr("TEXT", !0), Zf = Fr("MEDIUMTEXT", !0), nc = Fr("LONGTEXT", !0), dp = Fr("BIGINT", !0), qu = Fr("ENUM", !0), Oo = Fr("FLOAT", !0), Al = Fr("DOUBLE", !0), Pc = Fr("DATETIME", !0), g = Fr("TIMESTAMP", !0), Qr = Fr("USER", !0), Hc = Fr("VECTOR", !0), bl = Fr("CURRENT_DATE", !0), lf = Fr("INTERVAL", !0), At = Fr("MICROSECOND", !0), Ln = Fr("CURRENT_TIME", !0), $a = Fr("CURRENT_TIMESTAMP", !0), uo = Fr("CURRENT_USER", !0), Va = Fr("SESSION_USER", !0), jr = Fr("SYSTEM_USER", !0), $d = Fr("GLOBAL", !0), If = Fr("SESSION", !0), xd = Fr("PERSIST", !0), Jr = Fr("PERSIST_ONLY", !0), Ec = Fr("GEOMETRY", !0), Gl = Fr("POINT", !0), ga = Fr("LINESTRING", !0), cl = Fr("POLYGON", !0), lu = Fr("MULTIPOINT", !0), Qa = Fr("MULTILINESTRING", !0), Nf = Fr("MULTIPOLYGON", !0), cf = Fr("GEOMETRYCOLLECTION", !0), ff = Fr("@@", !1), Gu = Fr("$", !1), zr = Fr("return", !0), sc = Fr(":=", !1), gl = Fr("DUAL", !0), Io = Fr("ADD", !0), Xl = Fr("COLUMN", !0), _l = Fr("MODIFY", !0), Vc = Fr("FULLTEXT", !0), Au = Fr("SPATIAL", !0), dc = Fr("COMMENT", !0), Rf = Fr("REFERENCES", !0), m = Fr("SQL_CALC_FOUND_ROWS", !0), Br = Fr("SQL_CACHE", !0), Hl = Fr("SQL_NO_CACHE", !0), Ul = Fr("SQL_SMALL_RESULT", !0), rl = Fr("SQL_BIG_RESULT", !0), xt = Fr("SQL_BUFFER_RESULT", !0), d = Fr(",", !1), Tr = Fr("[", !1), ku = Fr("]", !1), za = Fr(";", !1), br = Fr("->", !1), Ct = Fr("->>", !1), Y = Fr("&&", !1), _e = Fr("XOR", !0), He = Fr("/*", !1), nt = Fr("*/", !1), Se = Fr("--", !1), qt = Fr("#", !1), nr = { type: "any" }, Yr = /^[ \t\n\r]/, vn = Xo([" ", "	", `
+`], !1, !1), vb = /^[^'\\]/, ym = Xo(["'", "\\"], !0, !1), wm = Fr("\\'", !1), Yh = Fr('\\"', !1), Um = Fr("\\\\", !1), pd = Fr("\\/", !1), zv = Fr("\\b", !1), Qh = Fr("\\f", !1), Cm = Fr("\\n", !1), up = Fr("\\r", !1), Bm = Fr("\\t", !1), fh = Fr("\\u", !1), N = Fr("\\", !1), Hn = Fr("''", !1), Sf = Fr('""', !1), T = Fr("``", !1), Vn = /^[\n\r]/, fr = Xo([`
+`, "\r"], !1, !1), Ls = Fr(".", !1), Rc = /^[0-9a-fA-F]/, mr = Xo([["0", "9"], ["a", "f"], ["A", "F"]], !1, !1), ms = /^[eE]/, On = Xo(["e", "E"], !1, !1), Wp = /^[+\-]/, dh = Xo(["+", "-"], !1, !1), $n = Fr("NULL", !0), A = Fr("NOT NULL", !0), Dn = Fr("TRUE", !0), Af = Fr("TO", !0), Lc = Fr("FALSE", !0), xc = Fr("SHOW", !0), rr = Fr("USE", !0), fs = Fr("ALTER", !0), tc = Fr("SELECT", !0), rc = Fr("UPDATE", !0), Yp = Fr("CREATE", !0), Rn = Fr("TEMPORARY", !0), Rh = Fr("DELETE", !0), Zd = Fr("INSERT", !0), ph = Fr("RECURSIVE", !0), Tp = Fr("REPLACE", !0), Qp = Fr("RENAME", !0), hd = Fr("IGNORE", !0), cc = Fr("EXPLAIN", !0), nf = Fr("PARTITION", !0), $u = Fr("FROM", !0), Ro = Fr("TRIGGER", !0), Kh = Fr("TABLES", !0), lp = Fr("DATABASE", !0), hh = Fr("SCHEMA", !0), mh = Fr("ON", !0), Ld = Fr("LEFT", !0), Oh = Fr("RIGHT", !0), Gc = Fr("FULL", !0), Yf = Fr("INNER", !0), sf = Fr("CROSS", !0), zo = Fr("STRAIGHT_JOIN", !0), Kp = Fr("JOIN", !0), Ip = Fr("OUTER", !0), Np = Fr("UNION", !0), fu = Fr("MINUS", !0), of = Fr("INTERSECT", !0), Md = Fr("EXCEPT", !0), Jd = Fr("VALUES", !0), md = Fr("USING", !0), Dd = Fr("WHERE", !0), ep = Fr("GO", !0), af = Fr("GROUP", !0), cp = Fr("ORDER", !0), Yu = Fr("HAVING", !0), Qf = Fr("LIMIT", !0), tp = Fr("OFFSET", !0), Rp = Fr("ASC", !0), Op = Fr("DESC", !0), fc = Fr("DESCRIBE", !0), _f = Fr("ALL", !0), Sl = Fr("DISTINCT", !0), vh = Fr("BETWEEN", !0), Pd = Fr("IS", !0), uf = Fr("LIKE", !0), Ol = Fr("RLIKE", !0), bh = Fr("REGEXP", !0), kp = Fr("EXISTS", !0), jd = Fr("AND", !0), vd = Fr("OR", !0), bd = Fr("COUNT", !0), zl = Fr("GROUP_CONCAT", !0), Go = Fr("MAX", !0), rp = Fr("MIN", !0), Oc = Fr("SUM", !0), Kf = Fr("AVG", !0), kc = Fr("EXTRACT", !0), Su = Fr("CALL", !0), Mc = Fr("CASE", !0), L = Fr("WHEN", !0), v = Fr("THEN", !0), Xr = Fr("ELSE", !0), Pl = Fr("END", !0), Qu = Fr("CAST", !0), Kt = Fr("VARBINARY", !0), qe = Fr("BIT", !0), zn = Fr("CHAR", !0), zu = Fr("VARCHAR", !0), fp = Fr("NUMERIC", !0), hn = Fr("DECIMAL", !0), Vr = Fr("SIGNED", !0), Xf = Fr("UNSIGNED", !0), Wl = Fr("INT", !0), Mp = Fr("ZEROFILL", !0), Ku = Fr("INTEGER", !0), uu = Fr("JSON", !0), ql = Fr("SMALLINT", !0), Dc = Fr("MEDIUMINT", !0), Tf = Fr("TINYINT", !0), Dp = Fr("TINYTEXT", !0), ou = Fr("TEXT", !0), Zf = Fr("MEDIUMTEXT", !0), nc = Fr("LONGTEXT", !0), dp = Fr("BIGINT", !0), qu = Fr("ENUM", !0), Oo = Fr("FLOAT", !0), Al = Fr("DOUBLE", !0), Pc = Fr("DATETIME", !0), g = Fr("TIMESTAMP", !0), Qr = Fr("USER", !0), Hc = Fr("VECTOR", !0), bl = Fr("CURRENT_DATE", !0), lf = Fr("INTERVAL", !0), At = Fr("MICROSECOND", !0), Ln = Fr("CURRENT_TIME", !0), $a = Fr("CURRENT_TIMESTAMP", !0), uo = Fr("CURRENT_USER", !0), Va = Fr("SESSION_USER", !0), jr = Fr("SYSTEM_USER", !0), $d = Fr("GLOBAL", !0), If = Fr("SESSION", !0), xd = Fr("PERSIST", !0), Jr = Fr("PERSIST_ONLY", !0), Ec = Fr("GEOMETRY", !0), Gl = Fr("POINT", !0), ga = Fr("LINESTRING", !0), cl = Fr("POLYGON", !0), lu = Fr("MULTIPOINT", !0), Qa = Fr("MULTILINESTRING", !0), Nf = Fr("MULTIPOLYGON", !0), cf = Fr("GEOMETRYCOLLECTION", !0), ff = Fr("@@", !1), Gu = Fr("$", !1), zr = Fr("return", !0), sc = Fr(":=", !1), gl = Fr("DUAL", !0), Io = Fr("ADD", !0), Xl = Fr("COLUMN", !0), _l = Fr("MODIFY", !0), Vc = Fr("FULLTEXT", !0), Au = Fr("SPATIAL", !0), dc = Fr("COMMENT", !0), Rf = Fr("REFERENCES", !0), m = Fr("SQL_CALC_FOUND_ROWS", !0), Br = Fr("SQL_CACHE", !0), Hl = Fr("SQL_NO_CACHE", !0), Ul = Fr("SQL_SMALL_RESULT", !0), rl = Fr("SQL_BIG_RESULT", !0), xt = Fr("SQL_BUFFER_RESULT", !0), d = Fr(",", !1), Tr = Fr("[", !1), ku = Fr("]", !1), za = Fr(";", !1), br = Fr("->", !1), Ct = Fr("->>", !1), Y = Fr("&&", !1), _e = Fr("XOR", !0), He = Fr("/*", !1), nt = Fr("*/", !1), Se = Fr("--", !1), qt = Fr("#", !1), nr = { type: "any" }, Yr = /^[ \t\n\r]/, vn = Xo([" ", "	", `
 `, "\r"], !1, !1), h = function(S, j, re) {
         return { type: "assign", left: S, symbol: j, right: re };
       }, $t = Fr("boolean", !0), ne = Fr("blob", !0), de = Fr("tinyblob", !0), Pe = Fr("mediumblob", !0), K = Fr("longblob", !0), De = function(S, j) {
@@ -98647,7 +98671,7 @@ function aEt() {
           }(le, p), j = re) : (l = j, j = e)) : (l = j, j = e)) : (l = j, j = e))), j;
         }()) === e && (S = function() {
           var j, re, le, p, y, x, M, ce, Le, xe, rt, kt, Tt, lr, Mr, nn, w, I, U, te, Ee, ze, We, bt, Zt;
-          j = l, r.substr(l, 4).toLowerCase() === "load" ? (re = r.substr(l, 4), l += 4) : (re = e, Qe === 0 && er(qp)), re !== e && ht() !== e ? (r.substr(l, 4).toLowerCase() === "data" ? (le = r.substr(l, 4), l += 4) : (le = e, Qe === 0 && er(Uf)), le !== e && ht() !== e ? (r.substr(l, 12).toLowerCase() === "low_priority" ? (p = r.substr(l, 12), l += 12) : (p = e, Qe === 0 && er(qf)), p === e && (r.substr(l, 10).toLowerCase() === "concurrent" ? (p = r.substr(l, 10), l += 10) : (p = e, Qe === 0 && er(ll))), p === e && (p = null), p !== e && ht() !== e ? (r.substr(l, 5).toLowerCase() === "local" ? (y = r.substr(l, 5), l += 5) : (y = e, Qe === 0 && er(Ga)), y === e && (y = null), y !== e && ht() !== e ? (r.substr(l, 6).toLowerCase() === "infile" ? (x = r.substr(l, 6), l += 6) : (x = e, Qe === 0 && er(zc)), x !== e && ht() !== e && (M = Bs()) !== e && ht() !== e ? ((ce = qr()) === e && (ce = null), ce !== e && ht() !== e ? (r.substr(l, 4).toLowerCase() === "into" ? (Le = r.substr(l, 4), l += 4) : (Le = e, Qe === 0 && er(Id)), Le !== e && ht() !== e ? (r.substr(l, 5).toLowerCase() === "table" ? (xe = r.substr(l, 5), l += 5) : (xe = e, Qe === 0 && er(ld)), xe !== e && ht() !== e && (rt = Js()) !== e && ht() !== e ? ((kt = Ar()) === e && (kt = null), kt !== e && ht() !== e ? (Tt = l, (lr = St()) !== e && (Mr = ht()) !== e && (nn = Bs()) !== e ? Tt = lr = [lr, Mr, nn] : (l = Tt, Tt = e), Tt === e && (Tt = null), Tt !== e && (lr = ht()) !== e ? ((Mr = function() {
+          j = l, r.substr(l, 4).toLowerCase() === "load" ? (re = r.substr(l, 4), l += 4) : (re = e, Qe === 0 && er(qp)), re !== e && ht() !== e ? (r.substr(l, 4).toLowerCase() === "data" ? (le = r.substr(l, 4), l += 4) : (le = e, Qe === 0 && er(Uf)), le !== e && ht() !== e ? (r.substr(l, 12).toLowerCase() === "low_priority" ? (p = r.substr(l, 12), l += 12) : (p = e, Qe === 0 && er(qf)), p === e && (r.substr(l, 10).toLowerCase() === "concurrent" ? (p = r.substr(l, 10), l += 10) : (p = e, Qe === 0 && er(ll))), p === e && (p = null), p !== e && ht() !== e ? (r.substr(l, 5).toLowerCase() === "local" ? (y = r.substr(l, 5), l += 5) : (y = e, Qe === 0 && er(Ga)), y === e && (y = null), y !== e && ht() !== e ? (r.substr(l, 6).toLowerCase() === "infile" ? (x = r.substr(l, 6), l += 6) : (x = e, Qe === 0 && er(zc)), x !== e && ht() !== e && (M = Bs()) !== e && ht() !== e ? ((ce = qr()) === e && (ce = null), ce !== e && ht() !== e ? (r.substr(l, 4).toLowerCase() === "into" ? (Le = r.substr(l, 4), l += 4) : (Le = e, Qe === 0 && er(Id)), Le !== e && ht() !== e ? (r.substr(l, 5).toLowerCase() === "table" ? (xe = r.substr(l, 5), l += 5) : (xe = e, Qe === 0 && er(cd)), xe !== e && ht() !== e && (rt = Js()) !== e && ht() !== e ? ((kt = Ar()) === e && (kt = null), kt !== e && ht() !== e ? (Tt = l, (lr = St()) !== e && (Mr = ht()) !== e && (nn = Bs()) !== e ? Tt = lr = [lr, Mr, nn] : (l = Tt, Tt = e), Tt === e && (Tt = null), Tt !== e && (lr = ht()) !== e ? ((Mr = function() {
             var In, En, Xn, ys, Ss, ks, Vs, Lo, Ys, go, ai, Jo;
             In = l, r.substr(l, 6).toLowerCase() === "fields" ? (En = r.substr(l, 6), l += 6) : (En = e, Qe === 0 && er(ec)), En === e && (r.substr(l, 7).toLowerCase() === "columns" ? (En = r.substr(l, 7), l += 7) : (En = e, Qe === 0 && er(Wr))), En !== e && ht() !== e ? (Xn = l, r.substr(l, 10).toLowerCase() === "terminated" ? (ys = r.substr(l, 10), l += 10) : (ys = e, Qe === 0 && er(Eu)), ys !== e && (Ss = ht()) !== e ? (r.substr(l, 2).toLowerCase() === "by" ? (ks = r.substr(l, 2), l += 2) : (ks = e, Qe === 0 && er(ut)), ks !== e && (Vs = ht()) !== e && (Lo = Bs()) !== e ? Xn = ys = [ys, Ss, ks, Vs, Lo] : (l = Xn, Xn = e)) : (l = Xn, Xn = e), Xn === e && (Xn = null), Xn !== e && (ys = ht()) !== e ? (Ss = l, r.substr(l, 10).toLowerCase() === "optionally" ? (ks = r.substr(l, 10), l += 10) : (ks = e, Qe === 0 && er(uc)), ks === e && (ks = null), ks !== e && (Vs = ht()) !== e ? (r.substr(l, 8).toLowerCase() === "enclosed" ? (Lo = r.substr(l, 8), l += 8) : (Lo = e, Qe === 0 && er(Td)), Lo !== e && (Ys = ht()) !== e ? (r.substr(l, 2).toLowerCase() === "by" ? (go = r.substr(l, 2), l += 2) : (go = e, Qe === 0 && er(ut)), go !== e && (ai = ht()) !== e && (Jo = Bs()) !== e ? Ss = ks = [ks, Vs, Lo, Ys, go, ai, Jo] : (l = Ss, Ss = e)) : (l = Ss, Ss = e)) : (l = Ss, Ss = e), Ss === e && (Ss = null), Ss !== e && (ks = ht()) !== e ? (Vs = l, r.substr(l, 7).toLowerCase() === "escaped" ? (Lo = r.substr(l, 7), l += 7) : (Lo = e, Qe === 0 && er(Gf)), Lo !== e && (Ys = ht()) !== e ? (r.substr(l, 2).toLowerCase() === "by" ? (go = r.substr(l, 2), l += 2) : (go = e, Qe === 0 && er(ut)), go !== e && (ai = ht()) !== e && (Jo = Bs()) !== e ? Vs = Lo = [Lo, Ys, go, ai, Jo] : (l = Vs, Vs = e)) : (l = Vs, Vs = e), Vs === e && (Vs = null), Vs !== e ? (dt = In, Ei = En, Ii = Ss, Da = Vs, (si = Xn) && (si[4].prefix = "TERMINATED BY"), Ii && (Ii[6].prefix = (Ii[0] && Ii[0].toUpperCase() === "OPTIONALLY" ? "OPTIONALLY " : "") + "ENCLOSED BY"), Da && (Da[4].prefix = "ESCAPED BY"), En = { keyword: Ei, terminated: si && si[4], enclosed: Ii && Ii[6], escaped: Da && Da[4] }, In = En) : (l = In, In = e)) : (l = In, In = e)) : (l = In, In = e)) : (l = In, In = e);
             var Ei, si, Ii, Da;
@@ -98889,7 +98913,7 @@ function aEt() {
       }
       function vr() {
         var S, j, re;
-        return S = l, r.substr(l, 5).toLowerCase() === "first" ? (j = r.substr(l, 5), l += 5) : (j = e, Qe === 0 && er(od)), j !== e && (dt = S, j = { keyword: j }), (S = j) === e && (S = l, r.substr(l, 5).toLowerCase() === "after" ? (j = r.substr(l, 5), l += 5) : (j = e, Qe === 0 && er(Kl)), j !== e && ht() !== e && (re = Mi()) !== e ? (dt = S, S = j = /* @__PURE__ */ function(le, p) {
+        return S = l, r.substr(l, 5).toLowerCase() === "first" ? (j = r.substr(l, 5), l += 5) : (j = e, Qe === 0 && er(id)), j !== e && (dt = S, j = { keyword: j }), (S = j) === e && (S = l, r.substr(l, 5).toLowerCase() === "after" ? (j = r.substr(l, 5), l += 5) : (j = e, Qe === 0 && er(Kl)), j !== e && ht() !== e && (re = Mi()) !== e ? (dt = S, S = j = /* @__PURE__ */ function(le, p) {
           return { keyword: le, expr: p };
         }(j, re)) : (l = S, S = e)), S;
       }
@@ -98920,7 +98944,7 @@ function aEt() {
           }(M), le = p) : (l = le, le = e)) : (l = le, le = e)) : (l = le, le = e), le;
         }()) === e && (S = function() {
           var le, p, y;
-          return le = l, r.substr(l, 7).toLowerCase() === "nocheck" ? (p = r.substr(l, 7), l += 7) : (p = e, Qe === 0 && er(id)), p !== e && ht() !== e && Ra() !== e && ht() !== e && (y = Pi()) !== e ? (dt = le, p = /* @__PURE__ */ function(x) {
+          return le = l, r.substr(l, 7).toLowerCase() === "nocheck" ? (p = r.substr(l, 7), l += 7) : (p = e, Qe === 0 && er(ad)), p !== e && ht() !== e && Ra() !== e && ht() !== e && (y = Pi()) !== e ? (dt = le, p = /* @__PURE__ */ function(x) {
             return { action: "nocheck", constraint: x, resource: "constraint", type: "alter" };
           }(y), le = p) : (l = le, le = e), le;
         }()) === e && (S = function() {
@@ -98977,15 +99001,15 @@ function aEt() {
             return rt && (kt.suffix = { keyword: rt }), kt;
           }(p, y, x, M), le = p) : (l = le, le = e)) : (l = le, le = e), le === e && (le = l, (p = As()) !== e && ht() !== e && (y = Ji()) !== e && ht() !== e && (x = oo()) !== e && ht() !== e && (M = function() {
             var ce, Le, xe, rt, kt, Tt, lr, Mr;
-            if (ce = l, (Le = bd()) !== e) {
-              for (xe = [], rt = l, (kt = ht()) !== e && (Tt = li()) !== e && (lr = ht()) !== e && (Mr = bd()) !== e ? rt = kt = [kt, Tt, lr, Mr] : (l = rt, rt = e); rt !== e; ) xe.push(rt), rt = l, (kt = ht()) !== e && (Tt = li()) !== e && (lr = ht()) !== e && (Mr = bd()) !== e ? rt = kt = [kt, Tt, lr, Mr] : (l = rt, rt = e);
+            if (ce = l, (Le = gd()) !== e) {
+              for (xe = [], rt = l, (kt = ht()) !== e && (Tt = li()) !== e && (lr = ht()) !== e && (Mr = gd()) !== e ? rt = kt = [kt, Tt, lr, Mr] : (l = rt, rt = e); rt !== e; ) xe.push(rt), rt = l, (kt = ht()) !== e && (Tt = li()) !== e && (lr = ht()) !== e && (Mr = gd()) !== e ? rt = kt = [kt, Tt, lr, Mr] : (l = rt, rt = e);
               xe !== e ? (dt = ce, Le = V(Le, xe), ce = Le) : (l = ce, ce = e);
             } else l = ce, ce = e;
             return ce;
           }()) !== e && ht() !== e && Ci() !== e ? (dt = le, le = p = { action: "add", keyword: y, resource: "partition", type: "alter", partitions: M }) : (l = le, le = e)), le;
         }()) === e && (S = l, (j = u()) !== e && (dt = S, (re = j).resource = re.keyword, re[re.keyword] = re.value, delete re.value, j = { type: "alter", ...re }), S = j), S;
       }
-      function bd() {
+      function gd() {
         var S, j, re, le, p;
         return S = l, Ji() !== e && ht() !== e && (j = Bs()) !== e && ht() !== e && It() !== e && ht() !== e ? (r.substr(l, 4).toLowerCase() === "less" ? (re = r.substr(l, 4), l += 4) : (re = e, Qe === 0 && er(Fl)), re !== e && ht() !== e ? (r.substr(l, 4).toLowerCase() === "than" ? (le = r.substr(l, 4), l += 4) : (le = e, Qe === 0 && er(vf)), le !== e && ht() !== e && oo() !== e && ht() !== e && (p = ic()) !== e && ht() !== e && Ci() !== e ? (dt = S, S = { name: j, value: { type: "less than", expr: p, parentheses: !0 } }) : (l = S, S = e)) : (l = S, S = e)) : (l = S, S = e), S;
       }
@@ -99028,7 +99052,7 @@ function aEt() {
           return j;
         }()) === e && (S = function() {
           var j, re, le, p, y, x, M, ce, Le, xe;
-          return j = l, (re = J()) === e && (re = null), re !== e && ht() !== e ? (r.substr(l, 5).toLowerCase() === "check" ? (le = r.substr(l, 5), l += 5) : (le = e, Qe === 0 && er(Ya)), le !== e && ht() !== e ? (p = l, r.substr(l, 3).toLowerCase() === "not" ? (y = r.substr(l, 3), l += 3) : (y = e, Qe === 0 && er(Vm)), y !== e && (x = ht()) !== e ? (r.substr(l, 3).toLowerCase() === "for" ? (M = r.substr(l, 3), l += 3) : (M = e, Qe === 0 && er(Ba)), M !== e && (ce = ht()) !== e ? (r.substr(l, 11).toLowerCase() === "replication" ? (Le = r.substr(l, 11), l += 11) : (Le = e, Qe === 0 && er(ad)), Le !== e && (xe = ht()) !== e ? p = y = [y, x, M, ce, Le, xe] : (l = p, p = e)) : (l = p, p = e)) : (l = p, p = e), p === e && (p = null), p !== e && (y = oo()) !== e && (x = ht()) !== e && (M = Ut()) !== e && (ce = ht()) !== e && (Le = Ci()) !== e ? (dt = j, re = function(rt, kt, Tt, lr) {
+          return j = l, (re = J()) === e && (re = null), re !== e && ht() !== e ? (r.substr(l, 5).toLowerCase() === "check" ? (le = r.substr(l, 5), l += 5) : (le = e, Qe === 0 && er(Ya)), le !== e && ht() !== e ? (p = l, r.substr(l, 3).toLowerCase() === "not" ? (y = r.substr(l, 3), l += 3) : (y = e, Qe === 0 && er(Vm)), y !== e && (x = ht()) !== e ? (r.substr(l, 3).toLowerCase() === "for" ? (M = r.substr(l, 3), l += 3) : (M = e, Qe === 0 && er(Ba)), M !== e && (ce = ht()) !== e ? (r.substr(l, 11).toLowerCase() === "replication" ? (Le = r.substr(l, 11), l += 11) : (Le = e, Qe === 0 && er(ud)), Le !== e && (xe = ht()) !== e ? p = y = [y, x, M, ce, Le, xe] : (l = p, p = e)) : (l = p, p = e)) : (l = p, p = e), p === e && (p = null), p !== e && (y = oo()) !== e && (x = ht()) !== e && (M = Ut()) !== e && (ce = ht()) !== e && (Le = Ci()) !== e ? (dt = j, re = function(rt, kt, Tt, lr) {
             return { constraint_type: kt.toLowerCase(), keyword: rt && rt.keyword, constraint: rt && rt.constraint, index_type: Tt && { keyword: "not for replication" }, definition: [lr], resource: "constraint" };
           }(re, le, p, M), j = re) : (l = j, j = e)) : (l = j, j = e)) : (l = j, j = e), j;
         }()), S;
@@ -99078,7 +99102,7 @@ function aEt() {
         var S, j, re, le, p;
         return S = l, (j = xs()) !== e && ht() !== e && (re = function() {
           var y, x, M;
-          return y = l, r.substr(l, 4).toLowerCase() === "read" ? (x = r.substr(l, 4), l += 4) : (x = e, Qe === 0 && er(tf)), x !== e && ht() !== e ? (r.substr(l, 5).toLowerCase() === "local" ? (M = r.substr(l, 5), l += 5) : (M = e, Qe === 0 && er(Ga)), M === e && (M = null), M !== e ? (dt = y, y = x = { type: "read", suffix: M && "local" }) : (l = y, y = e)) : (l = y, y = e), y === e && (y = l, r.substr(l, 12).toLowerCase() === "low_priority" ? (x = r.substr(l, 12), l += 12) : (x = e, Qe === 0 && er(qf)), x === e && (x = null), x !== e && ht() !== e ? (r.substr(l, 5).toLowerCase() === "write" ? (M = r.substr(l, 5), l += 5) : (M = e, Qe === 0 && er(ud)), M !== e ? (dt = y, y = x = { type: "write", prefix: x && "low_priority" }) : (l = y, y = e)) : (l = y, y = e)), y;
+          return y = l, r.substr(l, 4).toLowerCase() === "read" ? (x = r.substr(l, 4), l += 4) : (x = e, Qe === 0 && er(tf)), x !== e && ht() !== e ? (r.substr(l, 5).toLowerCase() === "local" ? (M = r.substr(l, 5), l += 5) : (M = e, Qe === 0 && er(Ga)), M === e && (M = null), M !== e ? (dt = y, y = x = { type: "read", suffix: M && "local" }) : (l = y, y = e)) : (l = y, y = e), y === e && (y = l, r.substr(l, 12).toLowerCase() === "low_priority" ? (x = r.substr(l, 12), l += 12) : (x = e, Qe === 0 && er(qf)), x === e && (x = null), x !== e && ht() !== e ? (r.substr(l, 5).toLowerCase() === "write" ? (M = r.substr(l, 5), l += 5) : (M = e, Qe === 0 && er(ld)), M !== e ? (dt = y, y = x = { type: "write", prefix: x && "low_priority" }) : (l = y, y = e)) : (l = y, y = e)), y;
         }()) !== e ? (dt = S, le = j, p = re, Cn.add(`lock::${le.db}::${le.table}`), S = j = { table: le, lock_type: p }) : (l = S, S = e), S;
       }
       function Gr() {
@@ -99086,7 +99110,7 @@ function aEt() {
         return S = l, r.substr(l, 9).toLowerCase() === "isolation" ? (j = r.substr(l, 9), l += 9) : (j = e, Qe === 0 && er(Bi)), j !== e && ht() !== e ? (r.substr(l, 5).toLowerCase() === "level" ? (re = r.substr(l, 5), l += 5) : (re = e, Qe === 0 && er(Di)), re !== e && ht() !== e && (le = function() {
           var p, y, x;
           return p = l, r.substr(l, 12).toLowerCase() === "serializable" ? (y = r.substr(l, 12), l += 12) : (y = e, Qe === 0 && er(fo)), y !== e && (dt = p, y = { type: "origin", value: "serializable" }), (p = y) === e && (p = l, r.substr(l, 10).toLowerCase() === "repeatable" ? (y = r.substr(l, 10), l += 10) : (y = e, Qe === 0 && er(io)), y !== e && ht() !== e ? (r.substr(l, 4).toLowerCase() === "read" ? (x = r.substr(l, 4), l += 4) : (x = e, Qe === 0 && er(tf)), x !== e ? (dt = p, p = y = { type: "origin", value: "repeatable read" }) : (l = p, p = e)) : (l = p, p = e), p === e && (p = l, r.substr(l, 4).toLowerCase() === "read" ? (y = r.substr(l, 4), l += 4) : (y = e, Qe === 0 && er(tf)), y !== e && ht() !== e ? (r.substr(l, 9).toLowerCase() === "committed" ? (x = r.substr(l, 9), l += 9) : (x = e, Qe === 0 && er(Uo)), x === e && (r.substr(l, 11).toLowerCase() === "uncommitted" ? (x = r.substr(l, 11), l += 11) : (x = e, Qe === 0 && er(Ko))), x !== e ? (dt = p, p = y = fi(x)) : (l = p, p = e)) : (l = p, p = e))), p;
-        }()) !== e ? (dt = S, S = j = { type: "origin", value: "isolation level " + le.value }) : (l = S, S = e)) : (l = S, S = e), S === e && (S = l, r.substr(l, 4).toLowerCase() === "read" ? (j = r.substr(l, 4), l += 4) : (j = e, Qe === 0 && er(tf)), j !== e && ht() !== e ? (r.substr(l, 5).toLowerCase() === "write" ? (re = r.substr(l, 5), l += 5) : (re = e, Qe === 0 && er(ud)), re === e && (r.substr(l, 4).toLowerCase() === "only" ? (re = r.substr(l, 4), l += 4) : (re = e, Qe === 0 && er(ba))), re !== e ? (dt = S, S = j = fi(re)) : (l = S, S = e)) : (l = S, S = e), S === e && (S = l, (j = ea()) === e && (j = null), j !== e && ht() !== e ? (r.substr(l, 10).toLowerCase() === "deferrable" ? (re = r.substr(l, 10), l += 10) : (re = e, Qe === 0 && er(Pa)), re !== e ? (dt = S, S = j = { type: "origin", value: j ? "not deferrable" : "deferrable" }) : (l = S, S = e)) : (l = S, S = e))), S;
+        }()) !== e ? (dt = S, S = j = { type: "origin", value: "isolation level " + le.value }) : (l = S, S = e)) : (l = S, S = e), S === e && (S = l, r.substr(l, 4).toLowerCase() === "read" ? (j = r.substr(l, 4), l += 4) : (j = e, Qe === 0 && er(tf)), j !== e && ht() !== e ? (r.substr(l, 5).toLowerCase() === "write" ? (re = r.substr(l, 5), l += 5) : (re = e, Qe === 0 && er(ld)), re === e && (r.substr(l, 4).toLowerCase() === "only" ? (re = r.substr(l, 4), l += 4) : (re = e, Qe === 0 && er(ba))), re !== e ? (dt = S, S = j = fi(re)) : (l = S, S = e)) : (l = S, S = e), S === e && (S = l, (j = ea()) === e && (j = null), j !== e && ht() !== e ? (r.substr(l, 10).toLowerCase() === "deferrable" ? (re = r.substr(l, 10), l += 10) : (re = e, Qe === 0 && er(Pa)), re !== e ? (dt = S, S = j = { type: "origin", value: j ? "not deferrable" : "deferrable" }) : (l = S, S = e)) : (l = S, S = e))), S;
       }
       function yn() {
         var S, j, re, le, p, y, x, M;
@@ -99599,7 +99623,7 @@ function aEt() {
       }
       function an() {
         var S, j, re;
-        return S = l, Ce() !== e && ht() !== e ? (r.substr(l, 9).toLowerCase() === "duplicate" ? (j = r.substr(l, 9), l += 9) : (j = e, Qe === 0 && er(cd)), j !== e && ht() !== e && No() !== e && ht() !== e && rd() !== e && ht() !== e && (re = wt()) !== e ? (dt = S, S = { keyword: "on duplicate key update", set: re }) : (l = S, S = e)) : (l = S, S = e), S;
+        return S = l, Ce() !== e && ht() !== e ? (r.substr(l, 9).toLowerCase() === "duplicate" ? (j = r.substr(l, 9), l += 9) : (j = e, Qe === 0 && er(fd)), j !== e && ht() !== e && No() !== e && ht() !== e && rd() !== e && ht() !== e && (re = wt()) !== e ? (dt = S, S = { keyword: "on duplicate key update", set: re }) : (l = S, S = e)) : (l = S, S = e), S;
       }
       function qr() {
         var S, j;
@@ -99911,7 +99935,7 @@ function aEt() {
             var y, x, M, ce;
             return y = l, (x = function() {
               var Le, xe, rt, kt;
-              return Le = l, r.substr(l, 5).toLowerCase() === "count" ? (xe = r.substr(l, 5), l += 5) : (xe = e, Qe === 0 && er(vd)), xe !== e ? (rt = l, Qe++, kt = ss(), Qe--, kt === e ? rt = void 0 : (l = rt, rt = e), rt !== e ? (dt = Le, Le = xe = "COUNT") : (l = Le, Le = e)) : (l = Le, Le = e), Le;
+              return Le = l, r.substr(l, 5).toLowerCase() === "count" ? (xe = r.substr(l, 5), l += 5) : (xe = e, Qe === 0 && er(bd)), xe !== e ? (rt = l, Qe++, kt = ss(), Qe--, kt === e ? rt = void 0 : (l = rt, rt = e), rt !== e ? (dt = Le, Le = xe = "COUNT") : (l = Le, Le = e)) : (l = Le, Le = e), Le;
             }()) === e && (x = function() {
               var Le, xe, rt, kt;
               return Le = l, r.substr(l, 12).toLowerCase() === "group_concat" ? (xe = r.substr(l, 12), l += 12) : (xe = e, Qe === 0 && er(zl)), xe !== e ? (rt = l, Qe++, kt = ss(), Qe--, kt === e ? rt = void 0 : (l = rt, rt = e), rt !== e ? (dt = Le, Le = xe = "GROUP_CONCAT") : (l = Le, Le = e)) : (l = Le, Le = e), Le;
@@ -100128,7 +100152,7 @@ function aEt() {
       }
       function gh() {
         var S, j;
-        return S = l, r.substr(l, 10).toLowerCase() === "year_month" ? (j = r.substr(l, 10), l += 10) : (j = e, Qe === 0 && er(as)), j === e && (r.substr(l, 8).toLowerCase() === "day_hour" ? (j = r.substr(l, 8), l += 8) : (j = e, Qe === 0 && er(hm)), j === e && (r.substr(l, 10).toLowerCase() === "day_minute" ? (j = r.substr(l, 10), l += 10) : (j = e, Qe === 0 && er(xf)), j === e && (r.substr(l, 10).toLowerCase() === "day_second" ? (j = r.substr(l, 10), l += 10) : (j = e, Qe === 0 && er(nv)), j === e && (r.substr(l, 15).toLowerCase() === "day_microsecond" ? (j = r.substr(l, 15), l += 15) : (j = e, Qe === 0 && er($r)), j === e && (r.substr(l, 11).toLowerCase() === "hour_minute" ? (j = r.substr(l, 11), l += 11) : (j = e, Qe === 0 && er(Gs)), j === e && (r.substr(l, 11).toLowerCase() === "hour_second" ? (j = r.substr(l, 11), l += 11) : (j = e, Qe === 0 && er(kd)), j === e && (r.substr(l, 16).toLowerCase() === "hour_microsecond" ? (j = r.substr(l, 16), l += 16) : (j = e, Qe === 0 && er(Mm)), j === e && (r.substr(l, 13).toLowerCase() === "minute_second" ? (j = r.substr(l, 13), l += 13) : (j = e, Qe === 0 && er(sv)), j === e && (r.substr(l, 18).toLowerCase() === "minute_microsecond" ? (j = r.substr(l, 18), l += 18) : (j = e, Qe === 0 && er(ws)), j === e && (r.substr(l, 18).toLowerCase() === "second_microsecond" ? (j = r.substr(l, 18), l += 18) : (j = e, Qe === 0 && er(Bv)), j === e && (r.substr(l, 13).toLowerCase() === "timezone_hour" ? (j = r.substr(l, 13), l += 13) : (j = e, Qe === 0 && er(hb)), j === e && (r.substr(l, 15).toLowerCase() === "timezone_minute" ? (j = r.substr(l, 15), l += 15) : (j = e, Qe === 0 && er(jb)), j === e && (r.substr(l, 7).toLowerCase() === "century" ? (j = r.substr(l, 7), l += 7) : (j = e, Qe === 0 && er(mm)), j === e && (r.substr(l, 3).toLowerCase() === "day" ? (j = r.substr(l, 3), l += 3) : (j = e, Qe === 0 && er(B)), j === e && (r.substr(l, 4).toLowerCase() === "date" ? (j = r.substr(l, 4), l += 4) : (j = e, Qe === 0 && er(is)), j === e && (r.substr(l, 6).toLowerCase() === "decade" ? (j = r.substr(l, 6), l += 6) : (j = e, Qe === 0 && er(Dm)), j === e && (r.substr(l, 3).toLowerCase() === "dow" ? (j = r.substr(l, 3), l += 3) : (j = e, Qe === 0 && er(_p)), j === e && (r.substr(l, 3).toLowerCase() === "doy" ? (j = r.substr(l, 3), l += 3) : (j = e, Qe === 0 && er(Pm)), j === e && (r.substr(l, 5).toLowerCase() === "epoch" ? (j = r.substr(l, 5), l += 5) : (j = e, Qe === 0 && er(Ir)), j === e && (r.substr(l, 4).toLowerCase() === "hour" ? (j = r.substr(l, 4), l += 4) : (j = e, Qe === 0 && er(Ds)), j === e && (r.substr(l, 6).toLowerCase() === "isodow" ? (j = r.substr(l, 6), l += 6) : (j = e, Qe === 0 && er(fd)), j === e && (r.substr(l, 7).toLowerCase() === "isoweek" ? (j = r.substr(l, 7), l += 7) : (j = e, Qe === 0 && er(xv)), j === e && (r.substr(l, 7).toLowerCase() === "isoyear" ? (j = r.substr(l, 7), l += 7) : (j = e, Qe === 0 && er(vm)), j === e && (r.substr(l, 12).toLowerCase() === "microseconds" ? (j = r.substr(l, 12), l += 12) : (j = e, Qe === 0 && er(ls)), j === e && (r.substr(l, 10).toLowerCase() === "millennium" ? (j = r.substr(l, 10), l += 10) : (j = e, Qe === 0 && er(mb)), j === e && (r.substr(l, 12).toLowerCase() === "milliseconds" ? (j = r.substr(l, 12), l += 12) : (j = e, Qe === 0 && er(ov)), j === e && (r.substr(l, 6).toLowerCase() === "minute" ? (j = r.substr(l, 6), l += 6) : (j = e, Qe === 0 && er(bm)), j === e && (r.substr(l, 5).toLowerCase() === "month" ? (j = r.substr(l, 5), l += 5) : (j = e, Qe === 0 && er(iv)), j === e && (r.substr(l, 7).toLowerCase() === "quarter" ? (j = r.substr(l, 7), l += 7) : (j = e, Qe === 0 && er(jm)), j === e && (r.substr(l, 6).toLowerCase() === "second" ? (j = r.substr(l, 6), l += 6) : (j = e, Qe === 0 && er(Hp)), j === e && (r.substr(l, 4).toLowerCase() === "time" ? (j = r.substr(l, 4), l += 4) : (j = e, Qe === 0 && er($m)), j === e && (r.substr(l, 8).toLowerCase() === "timezone" ? (j = r.substr(l, 8), l += 8) : (j = e, Qe === 0 && er(Fm)), j === e && (r.substr(l, 4).toLowerCase() === "week" ? (j = r.substr(l, 4), l += 4) : (j = e, Qe === 0 && er(Th)), j === e && (r.substr(l, 4).toLowerCase() === "year" ? (j = r.substr(l, 4), l += 4) : (j = e, Qe === 0 && er(Ih)))))))))))))))))))))))))))))))))))), j !== e && (dt = S, j = j), S = j;
+        return S = l, r.substr(l, 10).toLowerCase() === "year_month" ? (j = r.substr(l, 10), l += 10) : (j = e, Qe === 0 && er(as)), j === e && (r.substr(l, 8).toLowerCase() === "day_hour" ? (j = r.substr(l, 8), l += 8) : (j = e, Qe === 0 && er(hm)), j === e && (r.substr(l, 10).toLowerCase() === "day_minute" ? (j = r.substr(l, 10), l += 10) : (j = e, Qe === 0 && er(xf)), j === e && (r.substr(l, 10).toLowerCase() === "day_second" ? (j = r.substr(l, 10), l += 10) : (j = e, Qe === 0 && er(nv)), j === e && (r.substr(l, 15).toLowerCase() === "day_microsecond" ? (j = r.substr(l, 15), l += 15) : (j = e, Qe === 0 && er($r)), j === e && (r.substr(l, 11).toLowerCase() === "hour_minute" ? (j = r.substr(l, 11), l += 11) : (j = e, Qe === 0 && er(Gs)), j === e && (r.substr(l, 11).toLowerCase() === "hour_second" ? (j = r.substr(l, 11), l += 11) : (j = e, Qe === 0 && er(kd)), j === e && (r.substr(l, 16).toLowerCase() === "hour_microsecond" ? (j = r.substr(l, 16), l += 16) : (j = e, Qe === 0 && er(Mm)), j === e && (r.substr(l, 13).toLowerCase() === "minute_second" ? (j = r.substr(l, 13), l += 13) : (j = e, Qe === 0 && er(sv)), j === e && (r.substr(l, 18).toLowerCase() === "minute_microsecond" ? (j = r.substr(l, 18), l += 18) : (j = e, Qe === 0 && er(ws)), j === e && (r.substr(l, 18).toLowerCase() === "second_microsecond" ? (j = r.substr(l, 18), l += 18) : (j = e, Qe === 0 && er(Bv)), j === e && (r.substr(l, 13).toLowerCase() === "timezone_hour" ? (j = r.substr(l, 13), l += 13) : (j = e, Qe === 0 && er(hb)), j === e && (r.substr(l, 15).toLowerCase() === "timezone_minute" ? (j = r.substr(l, 15), l += 15) : (j = e, Qe === 0 && er(jb)), j === e && (r.substr(l, 7).toLowerCase() === "century" ? (j = r.substr(l, 7), l += 7) : (j = e, Qe === 0 && er(mm)), j === e && (r.substr(l, 3).toLowerCase() === "day" ? (j = r.substr(l, 3), l += 3) : (j = e, Qe === 0 && er(B)), j === e && (r.substr(l, 4).toLowerCase() === "date" ? (j = r.substr(l, 4), l += 4) : (j = e, Qe === 0 && er(is)), j === e && (r.substr(l, 6).toLowerCase() === "decade" ? (j = r.substr(l, 6), l += 6) : (j = e, Qe === 0 && er(Dm)), j === e && (r.substr(l, 3).toLowerCase() === "dow" ? (j = r.substr(l, 3), l += 3) : (j = e, Qe === 0 && er(_p)), j === e && (r.substr(l, 3).toLowerCase() === "doy" ? (j = r.substr(l, 3), l += 3) : (j = e, Qe === 0 && er(Pm)), j === e && (r.substr(l, 5).toLowerCase() === "epoch" ? (j = r.substr(l, 5), l += 5) : (j = e, Qe === 0 && er(Ir)), j === e && (r.substr(l, 4).toLowerCase() === "hour" ? (j = r.substr(l, 4), l += 4) : (j = e, Qe === 0 && er(Ds)), j === e && (r.substr(l, 6).toLowerCase() === "isodow" ? (j = r.substr(l, 6), l += 6) : (j = e, Qe === 0 && er(dd)), j === e && (r.substr(l, 7).toLowerCase() === "isoweek" ? (j = r.substr(l, 7), l += 7) : (j = e, Qe === 0 && er(xv)), j === e && (r.substr(l, 7).toLowerCase() === "isoyear" ? (j = r.substr(l, 7), l += 7) : (j = e, Qe === 0 && er(vm)), j === e && (r.substr(l, 12).toLowerCase() === "microseconds" ? (j = r.substr(l, 12), l += 12) : (j = e, Qe === 0 && er(ls)), j === e && (r.substr(l, 10).toLowerCase() === "millennium" ? (j = r.substr(l, 10), l += 10) : (j = e, Qe === 0 && er(mb)), j === e && (r.substr(l, 12).toLowerCase() === "milliseconds" ? (j = r.substr(l, 12), l += 12) : (j = e, Qe === 0 && er(ov)), j === e && (r.substr(l, 6).toLowerCase() === "minute" ? (j = r.substr(l, 6), l += 6) : (j = e, Qe === 0 && er(bm)), j === e && (r.substr(l, 5).toLowerCase() === "month" ? (j = r.substr(l, 5), l += 5) : (j = e, Qe === 0 && er(iv)), j === e && (r.substr(l, 7).toLowerCase() === "quarter" ? (j = r.substr(l, 7), l += 7) : (j = e, Qe === 0 && er(jm)), j === e && (r.substr(l, 6).toLowerCase() === "second" ? (j = r.substr(l, 6), l += 6) : (j = e, Qe === 0 && er(Hp)), j === e && (r.substr(l, 4).toLowerCase() === "time" ? (j = r.substr(l, 4), l += 4) : (j = e, Qe === 0 && er($m)), j === e && (r.substr(l, 8).toLowerCase() === "timezone" ? (j = r.substr(l, 8), l += 8) : (j = e, Qe === 0 && er(Fm)), j === e && (r.substr(l, 4).toLowerCase() === "week" ? (j = r.substr(l, 4), l += 4) : (j = e, Qe === 0 && er(Th)), j === e && (r.substr(l, 4).toLowerCase() === "year" ? (j = r.substr(l, 4), l += 4) : (j = e, Qe === 0 && er(Ih)))))))))))))))))))))))))))))))))))), j !== e && (dt = S, j = j), S = j;
       }
       function Wc() {
         var S, j, re, le, p, y, x, M;
@@ -100322,7 +100346,7 @@ function aEt() {
       }
       function kf() {
         var S, j, re, le, p, y, x, M, ce, Le;
-        return S = l, r.substr(l, 2) === "\\'" ? (j = "\\'", l += 2) : (j = e, Qe === 0 && er(wm)), j !== e && (dt = S, j = "\\'"), (S = j) === e && (S = l, r.substr(l, 2) === '\\"' ? (j = '\\"', l += 2) : (j = e, Qe === 0 && er(Yh)), j !== e && (dt = S, j = '\\"'), (S = j) === e && (S = l, r.substr(l, 2) === "\\\\" ? (j = "\\\\", l += 2) : (j = e, Qe === 0 && er(Um)), j !== e && (dt = S, j = "\\\\"), (S = j) === e && (S = l, r.substr(l, 2) === "\\/" ? (j = "\\/", l += 2) : (j = e, Qe === 0 && er(dd)), j !== e && (dt = S, j = "\\/"), (S = j) === e && (S = l, r.substr(l, 2) === "\\b" ? (j = "\\b", l += 2) : (j = e, Qe === 0 && er(zv)), j !== e && (dt = S, j = "\b"), (S = j) === e && (S = l, r.substr(l, 2) === "\\f" ? (j = "\\f", l += 2) : (j = e, Qe === 0 && er(Qh)), j !== e && (dt = S, j = "\f"), (S = j) === e && (S = l, r.substr(l, 2) === "\\n" ? (j = "\\n", l += 2) : (j = e, Qe === 0 && er(Cm)), j !== e && (dt = S, j = `
+        return S = l, r.substr(l, 2) === "\\'" ? (j = "\\'", l += 2) : (j = e, Qe === 0 && er(wm)), j !== e && (dt = S, j = "\\'"), (S = j) === e && (S = l, r.substr(l, 2) === '\\"' ? (j = '\\"', l += 2) : (j = e, Qe === 0 && er(Yh)), j !== e && (dt = S, j = '\\"'), (S = j) === e && (S = l, r.substr(l, 2) === "\\\\" ? (j = "\\\\", l += 2) : (j = e, Qe === 0 && er(Um)), j !== e && (dt = S, j = "\\\\"), (S = j) === e && (S = l, r.substr(l, 2) === "\\/" ? (j = "\\/", l += 2) : (j = e, Qe === 0 && er(pd)), j !== e && (dt = S, j = "\\/"), (S = j) === e && (S = l, r.substr(l, 2) === "\\b" ? (j = "\\b", l += 2) : (j = e, Qe === 0 && er(zv)), j !== e && (dt = S, j = "\b"), (S = j) === e && (S = l, r.substr(l, 2) === "\\f" ? (j = "\\f", l += 2) : (j = e, Qe === 0 && er(Qh)), j !== e && (dt = S, j = "\f"), (S = j) === e && (S = l, r.substr(l, 2) === "\\n" ? (j = "\\n", l += 2) : (j = e, Qe === 0 && er(Cm)), j !== e && (dt = S, j = `
 `), (S = j) === e && (S = l, r.substr(l, 2) === "\\r" ? (j = "\\r", l += 2) : (j = e, Qe === 0 && er(up)), j !== e && (dt = S, j = "\r"), (S = j) === e && (S = l, r.substr(l, 2) === "\\t" ? (j = "\\t", l += 2) : (j = e, Qe === 0 && er(Bm)), j !== e && (dt = S, j = "	"), (S = j) === e && (S = l, r.substr(l, 2) === "\\u" ? (j = "\\u", l += 2) : (j = e, Qe === 0 && er(fh)), j !== e && (re = kb()) !== e && (le = kb()) !== e && (p = kb()) !== e && (y = kb()) !== e ? (dt = S, x = re, M = le, ce = p, Le = y, S = j = String.fromCharCode(parseInt("0x" + x + M + ce + Le))) : (l = S, S = e), S === e && (S = l, r.charCodeAt(l) === 92 ? (j = "\\", l++) : (j = e, Qe === 0 && er(N)), j !== e && (dt = S, j = "\\"), (S = j) === e && (S = l, r.substr(l, 2) === "''" ? (j = "''", l += 2) : (j = e, Qe === 0 && er(Hn)), j !== e && (dt = S, j = "''"), (S = j) === e && (S = l, r.substr(l, 2) === '""' ? (j = '""', l += 2) : (j = e, Qe === 0 && er(Sf)), j !== e && (dt = S, j = '""'), (S = j) === e && (S = l, r.substr(l, 2) === "``" ? (j = "``", l += 2) : (j = e, Qe === 0 && er(T)), j !== e && (dt = S, j = "``"), S = j))))))))))))), S;
       }
       function ic() {
@@ -100428,7 +100452,7 @@ function aEt() {
       }
       function Zi() {
         var S, j, re, le;
-        return S = l, r.substr(l, 6).toLowerCase() === "ignore" ? (j = r.substr(l, 6), l += 6) : (j = e, Qe === 0 && er(pd)), j !== e ? (re = l, Qe++, le = ss(), Qe--, le === e ? re = void 0 : (l = re, re = e), re !== e ? S = j = [j, re] : (l = S, S = e)) : (l = S, S = e), S;
+        return S = l, r.substr(l, 6).toLowerCase() === "ignore" ? (j = r.substr(l, 6), l += 6) : (j = e, Qe === 0 && er(hd)), j !== e ? (re = l, Qe++, le = ss(), Qe--, le === e ? re = void 0 : (l = re, re = e), re !== e ? S = j = [j, re] : (l = S, S = e)) : (l = S, S = e), S;
       }
       function Ji() {
         var S, j, re, le;
@@ -100452,7 +100476,7 @@ function aEt() {
       }
       function Wa() {
         var S, j, re, le;
-        return S = l, r.substr(l, 5).toLowerCase() === "table" ? (j = r.substr(l, 5), l += 5) : (j = e, Qe === 0 && er(ld)), j !== e ? (re = l, Qe++, le = ss(), Qe--, le === e ? re = void 0 : (l = re, re = e), re !== e ? (dt = S, S = j = "TABLE") : (l = S, S = e)) : (l = S, S = e), S;
+        return S = l, r.substr(l, 5).toLowerCase() === "table" ? (j = r.substr(l, 5), l += 5) : (j = e, Qe === 0 && er(cd)), j !== e ? (re = l, Qe++, le = ss(), Qe--, le === e ? re = void 0 : (l = re, re = e), re !== e ? (dt = S, S = j = "TABLE") : (l = S, S = e)) : (l = S, S = e), S;
       }
       function qa() {
         var S, j, re, le;
@@ -100488,7 +100512,7 @@ function aEt() {
       }
       function Bt() {
         var S, j, re, le;
-        return S = l, r.substr(l, 5).toLowerCase() === "using" ? (j = r.substr(l, 5), l += 5) : (j = e, Qe === 0 && er(hd)), j !== e ? (re = l, Qe++, le = ss(), Qe--, le === e ? re = void 0 : (l = re, re = e), re !== e ? S = j = [j, re] : (l = S, S = e)) : (l = S, S = e), S;
+        return S = l, r.substr(l, 5).toLowerCase() === "using" ? (j = r.substr(l, 5), l += 5) : (j = e, Qe === 0 && er(md)), j !== e ? (re = l, Qe++, le = ss(), Qe--, le === e ? re = void 0 : (l = re, re = e), re !== e ? S = j = [j, re] : (l = S, S = e)) : (l = S, S = e), S;
       }
       function or() {
         var S, j, re, le;
@@ -100548,7 +100572,7 @@ function aEt() {
       }
       function $s() {
         var S, j, re, le;
-        return S = l, r.substr(l, 2).toLowerCase() === "or" ? (j = r.substr(l, 2), l += 2) : (j = e, Qe === 0 && er(md)), j !== e ? (re = l, Qe++, le = ss(), Qe--, le === e ? re = void 0 : (l = re, re = e), re !== e ? (dt = S, S = j = "OR") : (l = S, S = e)) : (l = S, S = e), S;
+        return S = l, r.substr(l, 2).toLowerCase() === "or" ? (j = r.substr(l, 2), l += 2) : (j = e, Qe === 0 && er(vd)), j !== e ? (re = l, Qe++, le = ss(), Qe--, le === e ? re = void 0 : (l = re, re = e), re !== e ? (dt = S, S = j = "OR") : (l = S, S = e)) : (l = S, S = e), S;
       }
       function Vu() {
         var S, j, re, le;
@@ -101211,15 +101235,15 @@ function aEt() {
         return lt(_, z);
       }, Rs = De("AUTO_INCREMENT", !0), Us = De("UNIQUE", !0), ho = De("KEY", !0), co = De("PRIMARY", !0), Bo = De("@", !1), Vo = function() {
         return ge("=", { type: "origin", value: "definer" }, { type: "function", name: { name: [{ type: "default", value: "current_user" }] }, args: { type: "expr_list", value: [] } });
-      }, di = De("BEFORE", !0), wa = De("AFTER", !0), Ba = De("FOR", !0), Oa = De("EACH", !0), Ma = De("ROW", !0), Za = De("STATEMENT", !0), Ja = De("FOLLOWS", !0), wc = De("PRECEDES", !0), Cl = De("COLUMN_FORMAT", !0), Nl = De("FIXED", !0), va = De("DYNAMIC", !0), Nu = De("STORAGE", !0), mu = De("DISK", !0), Ru = De("MEMORY", !0), Ll = De("GENERATED", !0), Rl = De("ALWAYS", !0), Ju = De("STORED", !0), ef = De("VIRTUAL", !0), el = De("if", !0), tl = De("exists", !0), od = De("first", !0), Kl = De("after", !0), Fl = De("LESS", !0), vf = De("THAN", !0), Gd = De("DROP", !0), tm = De("TRUNCATE", !0), Hm = De("DISCARD", !0), yp = De("IMPORT", !0), Hd = De("COALESCE", !0), wp = De("ANALYZE", !0), jp = De("TABLESPACE", !0), $h = De("FOREIGN", !0), xl = De("INSTANT", !0), rm = De("INPLACE", !0), th = De("COPY", !0), nm = De("SHARED", !0), op = De("EXCLUSIVE", !0), $f = De("CHANGE", !0), Bc = /^[0-9]/, id = Ft([["0", "9"]], !1, !1), Vm = De("PRIMARY KEY", !0), ad = De("NOT", !0), rh = De("REPLICATION", !0), Wm = De("FOREIGN KEY", !0), Cp = De("ENFORCED", !0), Am = De("MATCH FULL", !0), nh = De("MATCH PARTIAL", !0), ip = De("MATCH SIMPLE", !0), Vd = De("RESTRICT", !0), Do = De("CASCADE", !0), bf = De("SET NULL", !0), Ff = De("NO ACTION", !0), Wd = De("SET DEFAULT", !0), $p = De("CHARACTER", !0), Fh = De("SET", !0), Ym = De("CHARSET", !0), Fp = De("COLLATE", !0), Uh = De("AVG_ROW_LENGTH", !0), Ch = De("KEY_BLOCK_SIZE", !0), sm = De("MAX_ROWS", !0), Up = De("MIN_ROWS", !0), Lp = De("STATS_SAMPLE_PAGES", !0), Nc = De("CHECKSUM", !1), xp = De("DELAY_KEY_WRITE", !1), hv = /^[01]/, om = Ft(["0", "1"], !1, !1), Lh = De("CONNECTION", !0), gf = De("ENGINE_ATTRIBUTE", !0), Uf = De("SECONDARY_ENGINE_ATTRIBUTE", !0), sh = De("DATA", !0), im = De("INDEX", !0), ju = De("DIRECTORY", !0), Bf = De("COMPRESSION", !0), zf = De("'", !1), Qm = De("ZLIB", !0), xh = De("LZ4", !0), oh = De("ENGINE", !0), Bp = function(_, z, ae) {
+      }, di = De("BEFORE", !0), wa = De("AFTER", !0), Ba = De("FOR", !0), Oa = De("EACH", !0), Ma = De("ROW", !0), Za = De("STATEMENT", !0), Ja = De("FOLLOWS", !0), wc = De("PRECEDES", !0), Cl = De("COLUMN_FORMAT", !0), Nl = De("FIXED", !0), va = De("DYNAMIC", !0), Nu = De("STORAGE", !0), mu = De("DISK", !0), Ru = De("MEMORY", !0), Ll = De("GENERATED", !0), Rl = De("ALWAYS", !0), Ju = De("STORED", !0), ef = De("VIRTUAL", !0), el = De("if", !0), tl = De("exists", !0), id = De("first", !0), Kl = De("after", !0), Fl = De("LESS", !0), vf = De("THAN", !0), Gd = De("DROP", !0), tm = De("TRUNCATE", !0), Hm = De("DISCARD", !0), yp = De("IMPORT", !0), Hd = De("COALESCE", !0), wp = De("ANALYZE", !0), jp = De("TABLESPACE", !0), $h = De("FOREIGN", !0), xl = De("INSTANT", !0), rm = De("INPLACE", !0), th = De("COPY", !0), nm = De("SHARED", !0), op = De("EXCLUSIVE", !0), $f = De("CHANGE", !0), Bc = /^[0-9]/, ad = Ft([["0", "9"]], !1, !1), Vm = De("PRIMARY KEY", !0), ud = De("NOT", !0), rh = De("REPLICATION", !0), Wm = De("FOREIGN KEY", !0), Cp = De("ENFORCED", !0), Am = De("MATCH FULL", !0), nh = De("MATCH PARTIAL", !0), ip = De("MATCH SIMPLE", !0), Vd = De("RESTRICT", !0), Do = De("CASCADE", !0), bf = De("SET NULL", !0), Ff = De("NO ACTION", !0), Wd = De("SET DEFAULT", !0), $p = De("CHARACTER", !0), Fh = De("SET", !0), Ym = De("CHARSET", !0), Fp = De("COLLATE", !0), Uh = De("AVG_ROW_LENGTH", !0), Ch = De("KEY_BLOCK_SIZE", !0), sm = De("MAX_ROWS", !0), Up = De("MIN_ROWS", !0), Lp = De("STATS_SAMPLE_PAGES", !0), Nc = De("CHECKSUM", !1), xp = De("DELAY_KEY_WRITE", !1), hv = /^[01]/, om = Ft(["0", "1"], !1, !1), Lh = De("CONNECTION", !0), gf = De("ENGINE_ATTRIBUTE", !0), Uf = De("SECONDARY_ENGINE_ATTRIBUTE", !0), sh = De("DATA", !0), im = De("INDEX", !0), ju = De("DIRECTORY", !0), Bf = De("COMPRESSION", !0), zf = De("'", !1), Qm = De("ZLIB", !0), xh = De("LZ4", !0), oh = De("ENGINE", !0), Bp = function(_, z, ae) {
         return { keyword: _.toLowerCase(), symbol: z, value: ae.toUpperCase() };
-      }, am = De("ROW_FORMAT", !0), Km = De("COMPRESSED", !0), _m = De("REDUNDANT", !0), tf = De("COMPACT", !0), qf = De("BINARY", !0), ud = De("MASTER", !0), Bh = De("LOGS", !0), ih = De("TRIGGERS", !0), Eh = De("STATUS", !0), Ep = De("PROCESSLIST", !0), Sh = De("PROCEDURE", !0), zh = De("FUNCTION", !0), Tm = De("BINLOG", !0), Sp = De("EVENTS", !0), yf = De("COLLATION", !0), zp = De("DATABASES", !0), _t = De("COLUMNS", !0), Or = De("INDEXES", !0), cn = De("EVENT", !0), Wr = De("GRANTS", !0), bs = function(_, z) {
+      }, am = De("ROW_FORMAT", !0), Km = De("COMPRESSED", !0), _m = De("REDUNDANT", !0), tf = De("COMPACT", !0), qf = De("BINARY", !0), ld = De("MASTER", !0), Bh = De("LOGS", !0), ih = De("TRIGGERS", !0), Eh = De("STATUS", !0), Ep = De("PROCESSLIST", !0), Sh = De("PROCEDURE", !0), zh = De("FUNCTION", !0), Tm = De("BINLOG", !0), Sp = De("EVENTS", !0), yf = De("COLLATION", !0), zp = De("DATABASES", !0), _t = De("COLUMNS", !0), Or = De("INDEXES", !0), cn = De("EVENT", !0), Wr = De("GRANTS", !0), bs = function(_, z) {
         return lt(_, z);
       }, cs = De("SERIALIZABLE", !0), Ns = De("REPEATABLE", !0), fo = De("READ", !0), io = De("COMMITTED", !0), Uo = De("UNCOMMITTED", !0), Ko = function(_) {
         return { type: "origin", value: "read " + _.toLowerCase() };
-      }, fi = De("ISOLATION", !0), Bi = De("LEVEL", !0), Di = De("WRITE", !0), ba = De("ONLY", !0), Pa = De("DEFERRABLE", !0), Ki = De("commit", !0), ja = De("rollback", !0), Ta = De("begin", !0), vu = De("WORK", !0), cu = De("TRANSACTION", !0), ul = De("start", !0), Ou = De("transaction", !0), ec = De("FIELDS", !0), Eu = De("TERMINATED", !0), uc = De("OPTIONALLY", !0), Td = De("ENCLOSED", !0), Gf = De("ESCAPED", !0), Cc = De("STARTING", !0), ah = De("LINES", !0), qp = De("LOAD", !0), ll = De("LOW_PRIORITY", !0), zc = De("CONCURRENT", !0), Id = De("INFILE", !0), ld = De("INTO", !0), um = De("TABLE", !0), Xm = De("ROWS", !0), Cd = De("VIEW", !0), Hf = De("GRANT", !0), Nd = De("OPTION", !0), Yd = function(_) {
+      }, fi = De("ISOLATION", !0), Bi = De("LEVEL", !0), Di = De("WRITE", !0), ba = De("ONLY", !0), Pa = De("DEFERRABLE", !0), Ki = De("commit", !0), ja = De("rollback", !0), Ta = De("begin", !0), vu = De("WORK", !0), cu = De("TRANSACTION", !0), ul = De("start", !0), Ou = De("transaction", !0), ec = De("FIELDS", !0), Eu = De("TERMINATED", !0), uc = De("OPTIONALLY", !0), Td = De("ENCLOSED", !0), Gf = De("ESCAPED", !0), Cc = De("STARTING", !0), ah = De("LINES", !0), qp = De("LOAD", !0), ll = De("LOW_PRIORITY", !0), zc = De("CONCURRENT", !0), Id = De("INFILE", !0), cd = De("INTO", !0), um = De("TABLE", !0), Xm = De("ROWS", !0), Cd = De("VIEW", !0), Hf = De("GRANT", !0), Nd = De("OPTION", !0), Yd = function(_) {
         return { type: "origin", value: Array.isArray(_) ? _[0] : _ };
-      }, Qd = De("ROUTINE", !0), uh = De("EXECUTE", !0), Qv = De("ADMIN", !0), Zm = De("GRANT", !1), Kv = De("PROXY", !1), Xv = De("(", !1), Vf = De(")", !1), wf = De("IN", !0), Im = De("SHARE", !0), Gp = De("MODE", !0), mv = De("WAIT", !0), Jm = De("NOWAIT", !0), vv = De("SKIP", !0), Zv = De("LOCKED", !0), lm = De("NATURAL", !0), ev = De("LANGUAGE", !0), bv = De("QUERY", !0), tv = De("EXPANSION", !0), cm = De("BOOLEAN", !0), Av = De("MATCH", !0), _v = De("AGAINST", !1), Nm = De("OUTFILE", !0), Jv = De("DUMPFILE", !0), Lb = De("BTREE", !0), gv = De("HASH", !0), xb = De("PARSER", !0), Tv = De("VISIBLE", !0), Eb = De("INVISIBLE", !0), Db = De("LATERAL", !0), Iv = /^[_0-9]/, Nv = Ft(["_", ["0", "9"]], !1, !1), eb = De("ROLLUP", !0), fm = De("?", !1), Ap = De("=", !1), Kd = De("DUPLICATE", !0), cd = function(_, z) {
+      }, Qd = De("ROUTINE", !0), uh = De("EXECUTE", !0), Qv = De("ADMIN", !0), Zm = De("GRANT", !1), Kv = De("PROXY", !1), Xv = De("(", !1), Vf = De(")", !1), wf = De("IN", !0), Im = De("SHARE", !0), Gp = De("MODE", !0), mv = De("WAIT", !0), Jm = De("NOWAIT", !0), vv = De("SKIP", !0), Zv = De("LOCKED", !0), lm = De("NATURAL", !0), ev = De("LANGUAGE", !0), bv = De("QUERY", !0), tv = De("EXPANSION", !0), cm = De("BOOLEAN", !0), Av = De("MATCH", !0), _v = De("AGAINST", !1), Nm = De("OUTFILE", !0), Jv = De("DUMPFILE", !0), Lb = De("BTREE", !0), gv = De("HASH", !0), xb = De("PARSER", !0), Tv = De("VISIBLE", !0), Eb = De("INVISIBLE", !0), Db = De("LATERAL", !0), Iv = /^[_0-9]/, Nv = Ft(["_", ["0", "9"]], !1, !1), eb = De("ROLLUP", !0), fm = De("?", !1), Ap = De("=", !1), Kd = De("DUPLICATE", !0), fd = function(_, z) {
         return vt(_, z);
       }, Ah = function(_) {
         return _[0] + " " + _[2];
@@ -101229,11 +101253,11 @@ function aEt() {
         return Qb[_.toUpperCase()] === !0;
       }, rf = De('"', !1), Rd = /^[^"]/, pm = Ft(['"'], !0, !1), Wf = /^[^']/, Cf = Ft(["'"], !0, !1), yv = De("`", !1), km = /^[^`\\]/, Lf = Ft(["`", "\\"], !0, !1), Od = function(_, z) {
         return _ + z.join("");
-      }, _b = /^[A-Za-z_\u4E00-\u9FA5\xC0-\u017F]/, ab = Ft([["A", "Z"], ["a", "z"], "_", ["一", "龥"], ["À", "ſ"]], !1, !1), Tb = /^[A-Za-z0-9_$$\u4E00-\u9FA5\xC0-\u017F]/, ub = Ft([["A", "Z"], ["a", "z"], ["0", "9"], "_", "$", "$", ["一", "龥"], ["À", "ſ"]], !1, !1), wv = /^[A-Za-z0-9_:\u4E00-\u9FA5\xC0-\u017F]/, Cv = Ft([["A", "Z"], ["a", "z"], ["0", "9"], "_", ":", ["一", "龥"], ["À", "ſ"]], !1, !1), Lv = De(":", !1), lb = De("NOW", !0), Pb = De("OVER", !0), Ib = De("WINDOW", !0), cb = De("FOLLOWING", !0), fb = De("PRECEDING", !0), Fv = De("SEPARATOR", !0), Nb = De("YEAR_MONTH", !0), Rb = De("DAY_HOUR", !0), db = De("DAY_MINUTE", !0), Ob = De("DAY_SECOND", !0), pb = De("DAY_MICROSECOND", !0), Uv = De("HOUR_MINUTE", !0), q = De("HOUR_SECOND", !0), as = De("HOUR_MICROSECOND", !0), hm = De("MINUTE_SECOND", !0), xf = De("MINUTE_MICROSECOND", !0), nv = De("SECOND_MICROSECOND", !0), $r = De("TIMEZONE_HOUR", !0), Gs = De("TIMEZONE_MINUTE", !0), kd = De("CENTURY", !0), Mm = De("DAY", !0), sv = De("DATE", !0), ws = De("DECADE", !0), Bv = De("DOW", !0), hb = De("DOY", !0), jb = De("EPOCH", !0), mm = De("HOUR", !0), B = De("ISODOW", !0), is = De("ISOWEEK", !0), Dm = De("ISOYEAR", !0), _p = De("MICROSECONDS", !0), Pm = De("MILLENNIUM", !0), Ir = De("MILLISECONDS", !0), Ds = De("MINUTE", !0), fd = De("MONTH", !0), xv = De("QUARTER", !0), vm = De("SECOND", !0), ls = De("TIME", !0), mb = De("TIMEZONE", !0), ov = De("WEEK", !0), bm = De("YEAR", !0), iv = De("DATE_TRUNC", !0), jm = De("BOTH", !0), Hp = De("LEADING", !0), $m = De("TRAILING", !0), Fm = De("trim", !0), Th = De("convert", !0), Ih = De("binary", !0), D = De("_binary", !0), Zn = De("_latin1", !0), Vh = De("X", !0), Ef = /^[0-9A-Fa-f]/, Nh = Ft([["0", "9"], ["A", "F"], ["a", "f"]], !1, !1), wr = De("b", !0), _s = De("0x", !0), El = De("N", !0), lh = function(_, z) {
+      }, _b = /^[A-Za-z_\u4E00-\u9FA5\xC0-\u017F]/, ab = Ft([["A", "Z"], ["a", "z"], "_", ["一", "龥"], ["À", "ſ"]], !1, !1), Tb = /^[A-Za-z0-9_$$\u4E00-\u9FA5\xC0-\u017F]/, ub = Ft([["A", "Z"], ["a", "z"], ["0", "9"], "_", "$", "$", ["一", "龥"], ["À", "ſ"]], !1, !1), wv = /^[A-Za-z0-9_:\u4E00-\u9FA5\xC0-\u017F]/, Cv = Ft([["A", "Z"], ["a", "z"], ["0", "9"], "_", ":", ["一", "龥"], ["À", "ſ"]], !1, !1), Lv = De(":", !1), lb = De("NOW", !0), Pb = De("OVER", !0), Ib = De("WINDOW", !0), cb = De("FOLLOWING", !0), fb = De("PRECEDING", !0), Fv = De("SEPARATOR", !0), Nb = De("YEAR_MONTH", !0), Rb = De("DAY_HOUR", !0), db = De("DAY_MINUTE", !0), Ob = De("DAY_SECOND", !0), pb = De("DAY_MICROSECOND", !0), Uv = De("HOUR_MINUTE", !0), q = De("HOUR_SECOND", !0), as = De("HOUR_MICROSECOND", !0), hm = De("MINUTE_SECOND", !0), xf = De("MINUTE_MICROSECOND", !0), nv = De("SECOND_MICROSECOND", !0), $r = De("TIMEZONE_HOUR", !0), Gs = De("TIMEZONE_MINUTE", !0), kd = De("CENTURY", !0), Mm = De("DAY", !0), sv = De("DATE", !0), ws = De("DECADE", !0), Bv = De("DOW", !0), hb = De("DOY", !0), jb = De("EPOCH", !0), mm = De("HOUR", !0), B = De("ISODOW", !0), is = De("ISOWEEK", !0), Dm = De("ISOYEAR", !0), _p = De("MICROSECONDS", !0), Pm = De("MILLENNIUM", !0), Ir = De("MILLISECONDS", !0), Ds = De("MINUTE", !0), dd = De("MONTH", !0), xv = De("QUARTER", !0), vm = De("SECOND", !0), ls = De("TIME", !0), mb = De("TIMEZONE", !0), ov = De("WEEK", !0), bm = De("YEAR", !0), iv = De("DATE_TRUNC", !0), jm = De("BOTH", !0), Hp = De("LEADING", !0), $m = De("TRAILING", !0), Fm = De("trim", !0), Th = De("convert", !0), Ih = De("binary", !0), D = De("_binary", !0), Zn = De("_latin1", !0), Vh = De("X", !0), Ef = /^[0-9A-Fa-f]/, Nh = Ft([["0", "9"], ["A", "F"], ["a", "f"]], !1, !1), wr = De("b", !0), _s = De("0x", !0), El = De("N", !0), lh = function(_, z) {
         return { type: _.toLowerCase(), value: z[1].join("") };
       }, Wh = /^[^"\\\0-\x1F\x7F]/, es = Ft(['"', "\\", ["\0", ""], ""], !0, !1), qc = /^[\n]/, lc = Ft([`
-`], !1, !1), av = /^[^'\\]/, Vp = Ft(["'", "\\"], !0, !1), ap = De("\\'", !1), Xd = De('\\"', !1), Ev = De("\\\\", !1), ch = De("\\/", !1), gm = De("\\b", !1), vb = De("\\f", !1), ym = De("\\n", !1), wm = De("\\r", !1), Yh = De("\\t", !1), Um = De("\\u", !1), dd = De("\\", !1), zv = De("''", !1), Qh = De('""', !1), Cm = De("``", !1), up = /^[\n\r]/, Bm = Ft([`
-`, "\r"], !1, !1), fh = De(".", !1), N = /^[0-9a-fA-F]/, Hn = Ft([["0", "9"], ["a", "f"], ["A", "F"]], !1, !1), Sf = /^[eE]/, T = Ft(["e", "E"], !1, !1), Vn = /^[+\-]/, fr = Ft(["+", "-"], !1, !1), Ls = De("NULL", !0), Rc = De("NOT NULL", !0), mr = De("TRUE", !0), ms = De("TO", !0), On = De("FALSE", !0), Wp = De("SHOW", !0), dh = De("USE", !0), $n = De("ALTER", !0), A = De("SELECT", !0), Dn = De("UPDATE", !0), Af = De("CREATE", !0), Lc = De("TEMPORARY", !0), xc = De("DELETE", !0), rr = De("INSERT", !0), fs = De("RECURSIVE", !0), tc = De("REPLACE", !0), rc = De("RETURNING", !0), Yp = De("RENAME", !0), Rn = De("IGNORE", !0), Rh = De("EXPLAIN", !0), Zd = De("PARTITION", !0), ph = De("FROM", !0), Tp = De("TRIGGER", !0), Qp = De("TABLES", !0), pd = De("DATABASE", !0), cc = De("SCHEMA", !0), nf = De("ON", !0), $u = De("LEFT", !0), Ro = De("RIGHT", !0), Kh = De("FULL", !0), lp = De("INNER", !0), hh = De("CROSS", !0), mh = De("JOIN", !0), Ld = De("OUTER", !0), Oh = De("UNION", !0), Gc = De("MINUS", !0), Yf = De("INTERSECT", !0), sf = De("EXCEPT", !0), zo = De("VALUES", !0), Kp = De("USING", !0), Ip = De("WHERE", !0), Np = De("GROUP", !0), fu = De("ORDER", !0), of = De("HAVING", !0), Md = De("LIMIT", !0), Jd = De("OFFSET", !0), hd = De("ASC", !0), Dd = De("DESC", !0), ep = De("DESCRIBE", !0), af = De("ALL", !0), cp = De("DISTINCT", !0), Yu = De("BETWEEN", !0), Qf = De("IS", !0), tp = De("LIKE", !0), Rp = De("RLIKE", !0), Op = De("REGEXP", !0), fc = De("EXISTS", !0), _f = De("AND", !0), Sl = De("OR", !0), vh = De("COUNT", !0), Pd = De("GROUP_CONCAT", !0), uf = De("MAX", !0), Ol = De("MIN", !0), bh = De("SUM", !0), kp = De("AVG", !0), jd = De("EXTRACT", !0), md = De("CALL", !0), vd = De("CASE", !0), zl = De("WHEN", !0), Go = De("THEN", !0), rp = De("ELSE", !0), Oc = De("END", !0), Kf = De("CAST", !0), kc = De("VARBINARY", !0), Su = De("BIT", !0), Mc = De("CHAR", !0), L = De("VARCHAR", !0), v = De("NUMERIC", !0), Xr = De("DECIMAL", !0), Pl = De("SIGNED", !0), Qu = De("UNSIGNED", !0), Kt = De("INT", !0), qe = De("ZEROFILL", !0), zn = De("INTEGER", !0), zu = De("JSON", !0), fp = De("SMALLINT", !0), hn = De("MEDIUMINT", !0), Vr = De("TINYINT", !0), Xf = De("TINYTEXT", !0), Wl = De("TEXT", !0), Mp = De("MEDIUMTEXT", !0), Ku = De("LONGTEXT", !0), uu = De("BIGINT", !0), ql = De("ENUM", !0), Dc = De("FLOAT", !0), Tf = De("DOUBLE", !0), Dp = De("DATETIME", !0), ou = De("TIMESTAMP", !0), Zf = De("USER", !0), nc = De("UUID", !0), dp = De("CURRENT_DATE", !0), qu = De("INTERVAL", !0), Oo = De("CURRENT_TIME", !0), Al = De("CURRENT_TIMESTAMP", !0), Pc = De("CURRENT_USER", !0), g = De("SESSION_USER", !0), Qr = De("SYSTEM_USER", !0), Hc = De("GLOBAL", !0), bl = De("SESSION", !0), lf = De("PERSIST", !0), At = De("PERSIST_ONLY", !0), Ln = De("GEOMETRY", !0), $a = De("POINT", !0), uo = De("LINESTRING", !0), Va = De("POLYGON", !0), jr = De("MULTIPOINT", !0), $d = De("MULTILINESTRING", !0), If = De("MULTIPOLYGON", !0), xd = De("GEOMETRYCOLLECTION", !0), Jr = De("@@", !1), Ec = De("$", !1), Gl = De("return", !0), ga = De(":=", !1), cl = De("DUAL", !0), lu = De("ADD", !0), Qa = De("COLUMN", !0), Nf = De("MODIFY", !0), cf = De("FULLTEXT", !0), ff = De("SPATIAL", !0), Gu = De("COMMENT", !0), zr = De("CONSTRAINT", !0), sc = De("REFERENCES", !0), gl = De("SQL_CALC_FOUND_ROWS", !0), Io = De("SQL_CACHE", !0), Xl = De("SQL_NO_CACHE", !0), _l = De("SQL_SMALL_RESULT", !0), Vc = De("SQL_BIG_RESULT", !0), Au = De("SQL_BUFFER_RESULT", !0), dc = De(",", !1), Rf = De("[", !1), m = De("]", !1), Br = De(";", !1), Hl = De("&&", !1), Ul = De("XOR", !0), rl = De("/*", !1), xt = De("*/", !1), d = De("--", !1), Tr = De("#", !1), ku = { type: "any" }, za = /^[ \t\n\r]/, br = Ft([" ", "	", `
+`], !1, !1), av = /^[^'\\]/, Vp = Ft(["'", "\\"], !0, !1), ap = De("\\'", !1), Xd = De('\\"', !1), Ev = De("\\\\", !1), ch = De("\\/", !1), gm = De("\\b", !1), vb = De("\\f", !1), ym = De("\\n", !1), wm = De("\\r", !1), Yh = De("\\t", !1), Um = De("\\u", !1), pd = De("\\", !1), zv = De("''", !1), Qh = De('""', !1), Cm = De("``", !1), up = /^[\n\r]/, Bm = Ft([`
+`, "\r"], !1, !1), fh = De(".", !1), N = /^[0-9a-fA-F]/, Hn = Ft([["0", "9"], ["a", "f"], ["A", "F"]], !1, !1), Sf = /^[eE]/, T = Ft(["e", "E"], !1, !1), Vn = /^[+\-]/, fr = Ft(["+", "-"], !1, !1), Ls = De("NULL", !0), Rc = De("NOT NULL", !0), mr = De("TRUE", !0), ms = De("TO", !0), On = De("FALSE", !0), Wp = De("SHOW", !0), dh = De("USE", !0), $n = De("ALTER", !0), A = De("SELECT", !0), Dn = De("UPDATE", !0), Af = De("CREATE", !0), Lc = De("TEMPORARY", !0), xc = De("DELETE", !0), rr = De("INSERT", !0), fs = De("RECURSIVE", !0), tc = De("REPLACE", !0), rc = De("RETURNING", !0), Yp = De("RENAME", !0), Rn = De("IGNORE", !0), Rh = De("EXPLAIN", !0), Zd = De("PARTITION", !0), ph = De("FROM", !0), Tp = De("TRIGGER", !0), Qp = De("TABLES", !0), hd = De("DATABASE", !0), cc = De("SCHEMA", !0), nf = De("ON", !0), $u = De("LEFT", !0), Ro = De("RIGHT", !0), Kh = De("FULL", !0), lp = De("INNER", !0), hh = De("CROSS", !0), mh = De("JOIN", !0), Ld = De("OUTER", !0), Oh = De("UNION", !0), Gc = De("MINUS", !0), Yf = De("INTERSECT", !0), sf = De("EXCEPT", !0), zo = De("VALUES", !0), Kp = De("USING", !0), Ip = De("WHERE", !0), Np = De("GROUP", !0), fu = De("ORDER", !0), of = De("HAVING", !0), Md = De("LIMIT", !0), Jd = De("OFFSET", !0), md = De("ASC", !0), Dd = De("DESC", !0), ep = De("DESCRIBE", !0), af = De("ALL", !0), cp = De("DISTINCT", !0), Yu = De("BETWEEN", !0), Qf = De("IS", !0), tp = De("LIKE", !0), Rp = De("RLIKE", !0), Op = De("REGEXP", !0), fc = De("EXISTS", !0), _f = De("AND", !0), Sl = De("OR", !0), vh = De("COUNT", !0), Pd = De("GROUP_CONCAT", !0), uf = De("MAX", !0), Ol = De("MIN", !0), bh = De("SUM", !0), kp = De("AVG", !0), jd = De("EXTRACT", !0), vd = De("CALL", !0), bd = De("CASE", !0), zl = De("WHEN", !0), Go = De("THEN", !0), rp = De("ELSE", !0), Oc = De("END", !0), Kf = De("CAST", !0), kc = De("VARBINARY", !0), Su = De("BIT", !0), Mc = De("CHAR", !0), L = De("VARCHAR", !0), v = De("NUMERIC", !0), Xr = De("DECIMAL", !0), Pl = De("SIGNED", !0), Qu = De("UNSIGNED", !0), Kt = De("INT", !0), qe = De("ZEROFILL", !0), zn = De("INTEGER", !0), zu = De("JSON", !0), fp = De("SMALLINT", !0), hn = De("MEDIUMINT", !0), Vr = De("TINYINT", !0), Xf = De("TINYTEXT", !0), Wl = De("TEXT", !0), Mp = De("MEDIUMTEXT", !0), Ku = De("LONGTEXT", !0), uu = De("BIGINT", !0), ql = De("ENUM", !0), Dc = De("FLOAT", !0), Tf = De("DOUBLE", !0), Dp = De("DATETIME", !0), ou = De("TIMESTAMP", !0), Zf = De("USER", !0), nc = De("UUID", !0), dp = De("CURRENT_DATE", !0), qu = De("INTERVAL", !0), Oo = De("CURRENT_TIME", !0), Al = De("CURRENT_TIMESTAMP", !0), Pc = De("CURRENT_USER", !0), g = De("SESSION_USER", !0), Qr = De("SYSTEM_USER", !0), Hc = De("GLOBAL", !0), bl = De("SESSION", !0), lf = De("PERSIST", !0), At = De("PERSIST_ONLY", !0), Ln = De("GEOMETRY", !0), $a = De("POINT", !0), uo = De("LINESTRING", !0), Va = De("POLYGON", !0), jr = De("MULTIPOINT", !0), $d = De("MULTILINESTRING", !0), If = De("MULTIPOLYGON", !0), xd = De("GEOMETRYCOLLECTION", !0), Jr = De("@@", !1), Ec = De("$", !1), Gl = De("return", !0), ga = De(":=", !1), cl = De("DUAL", !0), lu = De("ADD", !0), Qa = De("COLUMN", !0), Nf = De("MODIFY", !0), cf = De("FULLTEXT", !0), ff = De("SPATIAL", !0), Gu = De("COMMENT", !0), zr = De("CONSTRAINT", !0), sc = De("REFERENCES", !0), gl = De("SQL_CALC_FOUND_ROWS", !0), Io = De("SQL_CACHE", !0), Xl = De("SQL_NO_CACHE", !0), _l = De("SQL_SMALL_RESULT", !0), Vc = De("SQL_BIG_RESULT", !0), Au = De("SQL_BUFFER_RESULT", !0), dc = De(",", !1), Rf = De("[", !1), m = De("]", !1), Br = De(";", !1), Hl = De("&&", !1), Ul = De("XOR", !0), rl = De("/*", !1), xt = De("*/", !1), d = De("--", !1), Tr = De("#", !1), ku = { type: "any" }, za = /^[ \t\n\r]/, br = Ft([" ", "	", `
 `, "\r"], !1, !1), Ct = function(_, z, ae) {
         return { type: "assign", left: _, symbol: z, right: ae };
       }, Y = De("boolean", !0), _e = De("blob", !0), He = De("tinyblob", !0), nt = De("mediumblob", !0), Se = De("longblob", !0), qt = function(_, z) {
@@ -101473,7 +101497,7 @@ function aEt() {
           var z, ae, fe;
           z = h, (ae = function() {
             var Ye, Lt, jt, xr;
-            return Ye = h, r.substr(h, 4).toLowerCase() === "call" ? (Lt = r.substr(h, 4), h += 4) : (Lt = e, K === 0 && l(md)), Lt !== e ? (jt = h, K++, xr = Bs(), K--, xr === e ? jt = void 0 : (h = jt, jt = e), jt !== e ? ($t = Ye, Ye = Lt = "CALL") : (h = Ye, Ye = e)) : (h = Ye, Ye = e), Ye;
+            return Ye = h, r.substr(h, 4).toLowerCase() === "call" ? (Lt = r.substr(h, 4), h += 4) : (Lt = e, K === 0 && l(vd)), Lt !== e ? (jt = h, K++, xr = Bs(), K--, xr === e ? jt = void 0 : (h = jt, jt = e), jt !== e ? ($t = Ye, Ye = Lt = "CALL") : (h = Ye, Ye = e)) : (h = Ye, Ye = e), Ye;
           }()) !== e && it() !== e && (fe = function() {
             var Ye;
             return (Ye = oa()) === e && (Ye = Du()), Ye;
@@ -101550,7 +101574,7 @@ function aEt() {
           }()) !== e && it() !== e && nd() !== e ? ($t = z, ae = { tableList: Array.from(Tn), columnList: ve(Yn), ast: { type: "unlock", keyword: "tables" } }, z = ae) : (h = z, z = e), z;
         }()) === e && (_ = function() {
           var z, ae, fe, Ge, Ye, Lt, jt, xr, Sr;
-          z = h, (ae = Qc()) !== e && it() !== e ? (r.substr(h, 6).toLowerCase() === "binary" ? (fe = r.substr(h, 6), h += 6) : (fe = e, K === 0 && l(qf)), fe === e && (r.substr(h, 6).toLowerCase() === "master" ? (fe = r.substr(h, 6), h += 6) : (fe = e, K === 0 && l(ud))), fe !== e && (Ge = it()) !== e ? (r.substr(h, 4).toLowerCase() === "logs" ? (Ye = r.substr(h, 4), h += 4) : (Ye = e, K === 0 && l(Bh)), Ye !== e ? ($t = z, Kr = fe, ae = { tableList: Array.from(Tn), columnList: ve(Yn), ast: { type: "show", suffix: "logs", keyword: Kr.toLowerCase() } }, z = ae) : (h = z, z = e)) : (h = z, z = e)) : (h = z, z = e);
+          z = h, (ae = Qc()) !== e && it() !== e ? (r.substr(h, 6).toLowerCase() === "binary" ? (fe = r.substr(h, 6), h += 6) : (fe = e, K === 0 && l(qf)), fe === e && (r.substr(h, 6).toLowerCase() === "master" ? (fe = r.substr(h, 6), h += 6) : (fe = e, K === 0 && l(ld))), fe !== e && (Ge = it()) !== e ? (r.substr(h, 4).toLowerCase() === "logs" ? (Ye = r.substr(h, 4), h += 4) : (Ye = e, K === 0 && l(Bh)), Ye !== e ? ($t = z, Kr = fe, ae = { tableList: Array.from(Tn), columnList: ve(Yn), ast: { type: "show", suffix: "logs", keyword: Kr.toLowerCase() } }, z = ae) : (h = z, z = e)) : (h = z, z = e)) : (h = z, z = e);
           var Kr;
           z === e && (z = h, (ae = Qc()) !== e && it() !== e && (fe = nd()) !== e ? ($t = z, Tn.add("show::null::null"), ae = { tableList: Array.from(Tn), columnList: ve(Yn), ast: { type: "show", keyword: "tables" } }, z = ae) : (h = z, z = e), z === e && (z = h, (ae = Qc()) !== e && it() !== e ? (r.substr(h, 8).toLowerCase() === "triggers" ? (fe = r.substr(h, 8), h += 8) : (fe = e, K === 0 && l(ih)), fe === e && (r.substr(h, 6).toLowerCase() === "status" ? (fe = r.substr(h, 6), h += 6) : (fe = e, K === 0 && l(Eh)), fe === e && (r.substr(h, 11).toLowerCase() === "processlist" ? (fe = r.substr(h, 11), h += 11) : (fe = e, K === 0 && l(Ep)))), fe !== e ? ($t = z, Un = fe, ae = { tableList: Array.from(Tn), columnList: ve(Yn), ast: { type: "show", keyword: Un.toLowerCase() } }, z = ae) : (h = z, z = e)) : (h = z, z = e), z === e && (z = h, (ae = Qc()) !== e && it() !== e ? (r.substr(h, 9).toLowerCase() === "procedure" ? (fe = r.substr(h, 9), h += 9) : (fe = e, K === 0 && l(Sh)), fe === e && (r.substr(h, 8).toLowerCase() === "function" ? (fe = r.substr(h, 8), h += 8) : (fe = e, K === 0 && l(zh))), fe !== e && (Ge = it()) !== e ? (r.substr(h, 6).toLowerCase() === "status" ? (Ye = r.substr(h, 6), h += 6) : (Ye = e, K === 0 && l(Eh)), Ye !== e ? ($t = z, ae = function(gs) {
             return { tableList: Array.from(Tn), columnList: ve(Yn), ast: { type: "show", keyword: gs.toLowerCase(), suffix: "status" } };
@@ -101644,7 +101668,7 @@ function aEt() {
           }(fe, Ge), z = ae) : (h = z, z = e)) : (h = z, z = e)) : (h = z, z = e))), z;
         }()) === e && (_ = function() {
           var z, ae, fe, Ge, Ye, Lt, jt, xr, Sr, Kr, sn, Gn, Cn, Un, gs, S, j, re, le, p, y, x, M, ce, Le;
-          z = h, r.substr(h, 4).toLowerCase() === "load" ? (ae = r.substr(h, 4), h += 4) : (ae = e, K === 0 && l(qp)), ae !== e && it() !== e ? (r.substr(h, 4).toLowerCase() === "data" ? (fe = r.substr(h, 4), h += 4) : (fe = e, K === 0 && l(sh)), fe !== e && it() !== e ? (r.substr(h, 12).toLowerCase() === "low_priority" ? (Ge = r.substr(h, 12), h += 12) : (Ge = e, K === 0 && l(ll)), Ge === e && (r.substr(h, 10).toLowerCase() === "concurrent" ? (Ge = r.substr(h, 10), h += 10) : (Ge = e, K === 0 && l(zc))), Ge === e && (Ge = null), Ge !== e && it() !== e ? (r.substr(h, 5).toLowerCase() === "local" ? (Ye = r.substr(h, 5), h += 5) : (Ye = e, K === 0 && l(Ga)), Ye === e && (Ye = null), Ye !== e && it() !== e ? (r.substr(h, 6).toLowerCase() === "infile" ? (Lt = r.substr(h, 6), h += 6) : (Lt = e, K === 0 && l(Id)), Lt !== e && it() !== e && (jt = jn()) !== e && it() !== e ? ((xr = vo()) === e && (xr = null), xr !== e && it() !== e ? (r.substr(h, 4).toLowerCase() === "into" ? (Sr = r.substr(h, 4), h += 4) : (Sr = e, K === 0 && l(ld)), Sr !== e && it() !== e ? (r.substr(h, 5).toLowerCase() === "table" ? (Kr = r.substr(h, 5), h += 5) : (Kr = e, K === 0 && l(um)), Kr !== e && it() !== e && (sn = Ne()) !== e && it() !== e ? ((Gn = Zs()) === e && (Gn = null), Gn !== e && it() !== e ? (Cn = h, (Un = bd()) !== e && (gs = it()) !== e && (S = jn()) !== e ? Cn = Un = [Un, gs, S] : (h = Cn, Cn = e), Cn === e && (Cn = null), Cn !== e && (Un = it()) !== e ? ((gs = function() {
+          z = h, r.substr(h, 4).toLowerCase() === "load" ? (ae = r.substr(h, 4), h += 4) : (ae = e, K === 0 && l(qp)), ae !== e && it() !== e ? (r.substr(h, 4).toLowerCase() === "data" ? (fe = r.substr(h, 4), h += 4) : (fe = e, K === 0 && l(sh)), fe !== e && it() !== e ? (r.substr(h, 12).toLowerCase() === "low_priority" ? (Ge = r.substr(h, 12), h += 12) : (Ge = e, K === 0 && l(ll)), Ge === e && (r.substr(h, 10).toLowerCase() === "concurrent" ? (Ge = r.substr(h, 10), h += 10) : (Ge = e, K === 0 && l(zc))), Ge === e && (Ge = null), Ge !== e && it() !== e ? (r.substr(h, 5).toLowerCase() === "local" ? (Ye = r.substr(h, 5), h += 5) : (Ye = e, K === 0 && l(Ga)), Ye === e && (Ye = null), Ye !== e && it() !== e ? (r.substr(h, 6).toLowerCase() === "infile" ? (Lt = r.substr(h, 6), h += 6) : (Lt = e, K === 0 && l(Id)), Lt !== e && it() !== e && (jt = jn()) !== e && it() !== e ? ((xr = vo()) === e && (xr = null), xr !== e && it() !== e ? (r.substr(h, 4).toLowerCase() === "into" ? (Sr = r.substr(h, 4), h += 4) : (Sr = e, K === 0 && l(cd)), Sr !== e && it() !== e ? (r.substr(h, 5).toLowerCase() === "table" ? (Kr = r.substr(h, 5), h += 5) : (Kr = e, K === 0 && l(um)), Kr !== e && it() !== e && (sn = Ne()) !== e && it() !== e ? ((Gn = Zs()) === e && (Gn = null), Gn !== e && it() !== e ? (Cn = h, (Un = gd()) !== e && (gs = it()) !== e && (S = jn()) !== e ? Cn = Un = [Un, gs, S] : (h = Cn, Cn = e), Cn === e && (Cn = null), Cn !== e && (Un = it()) !== e ? ((gs = function() {
             var Tt, lr, Mr, nn, w, I, U, te, Ee, ze, We, bt;
             Tt = h, r.substr(h, 6).toLowerCase() === "fields" ? (lr = r.substr(h, 6), h += 6) : (lr = e, K === 0 && l(ec)), lr === e && (r.substr(h, 7).toLowerCase() === "columns" ? (lr = r.substr(h, 7), h += 7) : (lr = e, K === 0 && l(_t))), lr !== e && it() !== e ? (Mr = h, r.substr(h, 10).toLowerCase() === "terminated" ? (nn = r.substr(h, 10), h += 10) : (nn = e, K === 0 && l(Eu)), nn !== e && (w = it()) !== e ? (r.substr(h, 2).toLowerCase() === "by" ? (I = r.substr(h, 2), h += 2) : (I = e, K === 0 && l(ut)), I !== e && (U = it()) !== e && (te = jn()) !== e ? Mr = nn = [nn, w, I, U, te] : (h = Mr, Mr = e)) : (h = Mr, Mr = e), Mr === e && (Mr = null), Mr !== e && (nn = it()) !== e ? (w = h, r.substr(h, 10).toLowerCase() === "optionally" ? (I = r.substr(h, 10), h += 10) : (I = e, K === 0 && l(uc)), I === e && (I = null), I !== e && (U = it()) !== e ? (r.substr(h, 8).toLowerCase() === "enclosed" ? (te = r.substr(h, 8), h += 8) : (te = e, K === 0 && l(Td)), te !== e && (Ee = it()) !== e ? (r.substr(h, 2).toLowerCase() === "by" ? (ze = r.substr(h, 2), h += 2) : (ze = e, K === 0 && l(ut)), ze !== e && (We = it()) !== e && (bt = jn()) !== e ? w = I = [I, U, te, Ee, ze, We, bt] : (h = w, w = e)) : (h = w, w = e)) : (h = w, w = e), w === e && (w = null), w !== e && (I = it()) !== e ? (U = h, r.substr(h, 7).toLowerCase() === "escaped" ? (te = r.substr(h, 7), h += 7) : (te = e, K === 0 && l(Gf)), te !== e && (Ee = it()) !== e ? (r.substr(h, 2).toLowerCase() === "by" ? (ze = r.substr(h, 2), h += 2) : (ze = e, K === 0 && l(ut)), ze !== e && (We = it()) !== e && (bt = jn()) !== e ? U = te = [te, Ee, ze, We, bt] : (h = U, U = e)) : (h = U, U = e), U === e && (U = null), U !== e ? ($t = Tt, Zt = lr, Pr = w, un = U, (yr = Mr) && (yr[4].prefix = "TERMINATED BY"), Pr && (Pr[6].prefix = (Pr[0] && Pr[0].toUpperCase() === "OPTIONALLY" ? "OPTIONALLY " : "") + "ENCLOSED BY"), un && (un[4].prefix = "ESCAPED BY"), lr = { keyword: Zt, terminated: yr && yr[4], enclosed: Pr && Pr[6], escaped: un && un[4] }, Tt = lr) : (h = Tt, Tt = e)) : (h = Tt, Tt = e)) : (h = Tt, Tt = e)) : (h = Tt, Tt = e);
             var Zt, yr, Pr, un;
@@ -101814,7 +101838,7 @@ function aEt() {
             return ae;
           }()) === e && (z = function() {
             var ae, fe, Ge, Ye, Lt, jt, xr, Sr, Kr, sn;
-            return ae = h, (fe = Mu()) === e && (fe = null), fe !== e && it() !== e ? (r.substr(h, 5).toLowerCase() === "check" ? (Ge = r.substr(h, 5), h += 5) : (Ge = e, K === 0 && l(Ya)), Ge !== e && it() !== e ? (Ye = h, r.substr(h, 3).toLowerCase() === "not" ? (Lt = r.substr(h, 3), h += 3) : (Lt = e, K === 0 && l(ad)), Lt !== e && (jt = it()) !== e ? (r.substr(h, 3).toLowerCase() === "for" ? (xr = r.substr(h, 3), h += 3) : (xr = e, K === 0 && l(Ba)), xr !== e && (Sr = it()) !== e ? (r.substr(h, 11).toLowerCase() === "replication" ? (Kr = r.substr(h, 11), h += 11) : (Kr = e, K === 0 && l(rh)), Kr !== e && (sn = it()) !== e ? Ye = Lt = [Lt, jt, xr, Sr, Kr, sn] : (h = Ye, Ye = e)) : (h = Ye, Ye = e)) : (h = Ye, Ye = e), Ye === e && (Ye = null), Ye !== e && (Lt = Bn()) !== e && (jt = it()) !== e && (xr = Ar()) !== e && (Sr = it()) !== e && (Kr = Qn()) !== e ? ($t = ae, fe = function(Gn, Cn, Un, gs) {
+            return ae = h, (fe = Mu()) === e && (fe = null), fe !== e && it() !== e ? (r.substr(h, 5).toLowerCase() === "check" ? (Ge = r.substr(h, 5), h += 5) : (Ge = e, K === 0 && l(Ya)), Ge !== e && it() !== e ? (Ye = h, r.substr(h, 3).toLowerCase() === "not" ? (Lt = r.substr(h, 3), h += 3) : (Lt = e, K === 0 && l(ud)), Lt !== e && (jt = it()) !== e ? (r.substr(h, 3).toLowerCase() === "for" ? (xr = r.substr(h, 3), h += 3) : (xr = e, K === 0 && l(Ba)), xr !== e && (Sr = it()) !== e ? (r.substr(h, 11).toLowerCase() === "replication" ? (Kr = r.substr(h, 11), h += 11) : (Kr = e, K === 0 && l(rh)), Kr !== e && (sn = it()) !== e ? Ye = Lt = [Lt, jt, xr, Sr, Kr, sn] : (h = Ye, Ye = e)) : (h = Ye, Ye = e)) : (h = Ye, Ye = e), Ye === e && (Ye = null), Ye !== e && (Lt = Bn()) !== e && (jt = it()) !== e && (xr = Ar()) !== e && (Sr = it()) !== e && (Kr = Qn()) !== e ? ($t = ae, fe = function(Gn, Cn, Un, gs) {
               return { constraint_type: Cn.toLowerCase(), keyword: Gn && Gn.keyword, constraint: Gn && Gn.constraint, index_type: Un && { keyword: "not for replication" }, definition: [gs], resource: "constraint" };
             }(fe, Ge, Ye, xr), ae = fe) : (h = ae, ae = e)) : (h = ae, ae = e)) : (h = ae, ae = e), ae;
           }()), z;
@@ -101849,7 +101873,7 @@ function aEt() {
             const j = [];
             return S && j.push(S[0], S[2]), { constraint_type: Un.toLowerCase(), keyword: Cn && Cn.keyword, constraint: Cn && Cn.constraint, definition: [gs], enforced: j.filter((re) => re).join(" ").toLowerCase(), resource: "constraint" };
           }(Lt, jt, xr, Sr), Ye = Lt) : (h = Ye, Ye = e)) : (h = Ye, Ye = e)) : (h = Ye, Ye = e), Ye;
-        }()) !== e && ($t = _, z = { check: z }), (_ = z) === e && (_ = h, (z = bd()) !== e && it() !== e ? ((ae = jc()) === e && (ae = null), ae !== e && it() !== e && (fe = jn()) !== e ? ($t = _, _ = z = /* @__PURE__ */ function(Ye, Lt, jt) {
+        }()) !== e && ($t = _, z = { check: z }), (_ = z) === e && (_ = h, (z = gd()) !== e && it() !== e ? ((ae = jc()) === e && (ae = null), ae !== e && it() !== e && (fe = jn()) !== e ? ($t = _, _ = z = /* @__PURE__ */ function(Ye, Lt, jt) {
           return { character_set: { type: Ye, value: jt, symbol: Lt } };
         }(z, ae, fe)) : (h = _, _ = e)) : (h = _, _ = e)))))))))))), _;
       }
@@ -101909,7 +101933,7 @@ function aEt() {
       }
       function bu() {
         var _, z, ae;
-        return _ = h, r.substr(h, 5).toLowerCase() === "first" ? (z = r.substr(h, 5), h += 5) : (z = e, K === 0 && l(od)), z !== e && ($t = _, z = { keyword: z }), (_ = z) === e && (_ = h, r.substr(h, 5).toLowerCase() === "after" ? (z = r.substr(h, 5), h += 5) : (z = e, K === 0 && l(Kl)), z !== e && it() !== e && (ae = Zr()) !== e ? ($t = _, _ = z = /* @__PURE__ */ function(fe, Ge) {
+        return _ = h, r.substr(h, 5).toLowerCase() === "first" ? (z = r.substr(h, 5), h += 5) : (z = e, K === 0 && l(id)), z !== e && ($t = _, z = { keyword: z }), (_ = z) === e && (_ = h, r.substr(h, 5).toLowerCase() === "after" ? (z = r.substr(h, 5), h += 5) : (z = e, K === 0 && l(Kl)), z !== e && it() !== e && (ae = Zr()) !== e ? ($t = _, _ = z = /* @__PURE__ */ function(fe, Ge) {
           return { keyword: fe, expr: Ge };
         }(z, ae)) : (h = _, _ = e)), _;
       }
@@ -101998,7 +102022,7 @@ function aEt() {
       function $i() {
         var _, z, ae, fe, Ge, Ye, Lt;
         if (_ = h, (z = da()) !== e) if (it() !== e) if ((ae = Bn()) !== e) if (it() !== e) {
-          if (fe = [], Bc.test(r.charAt(h)) ? (Ge = r.charAt(h), h++) : (Ge = e, K === 0 && l(id)), Ge !== e) for (; Ge !== e; ) fe.push(Ge), Bc.test(r.charAt(h)) ? (Ge = r.charAt(h), h++) : (Ge = e, K === 0 && l(id));
+          if (fe = [], Bc.test(r.charAt(h)) ? (Ge = r.charAt(h), h++) : (Ge = e, K === 0 && l(ad)), Ge !== e) for (; Ge !== e; ) fe.push(Ge), Bc.test(r.charAt(h)) ? (Ge = r.charAt(h), h++) : (Ge = e, K === 0 && l(ad));
           else fe = e;
           fe !== e && (Ge = it()) !== e && Qn() !== e && it() !== e ? ((Ye = Wa()) === e && (Ye = qa()), Ye === e && (Ye = null), Ye !== e ? ($t = _, Lt = Ye, _ = z = { type: "column_ref", column: z, suffix: `(${parseInt(fe.join(""), 10)})`, order_by: Lt }) : (h = _, _ = e)) : (h = _, _ = e);
         } else h = _, _ = e;
@@ -102056,13 +102080,13 @@ function aEt() {
         var _, z;
         return _ = h, r.substr(h, 8).toLowerCase() === "restrict" ? (z = r.substr(h, 8), h += 8) : (z = e, K === 0 && l(Vd)), z === e && (r.substr(h, 7).toLowerCase() === "cascade" ? (z = r.substr(h, 7), h += 7) : (z = e, K === 0 && l(Do))), z !== e && ($t = _, z = z.toLowerCase()), _ = z;
       }
-      function bd() {
+      function gd() {
         var _, z, ae;
         return _ = h, r.substr(h, 9).toLowerCase() === "character" ? (z = r.substr(h, 9), h += 9) : (z = e, K === 0 && l($p)), z !== e && it() !== e ? (r.substr(h, 3).toLowerCase() === "set" ? (ae = r.substr(h, 3), h += 3) : (ae = e, K === 0 && l(Fh)), ae !== e ? ($t = _, _ = z = "CHARACTER SET") : (h = _, _ = e)) : (h = _, _ = e), _;
       }
       function Tl() {
         var _, z, ae, fe, Ge, Ye, Lt, jt, xr;
-        return _ = h, (z = Hv()) === e && (z = null), z !== e && it() !== e ? ((ae = bd()) === e && (r.substr(h, 7).toLowerCase() === "charset" ? (ae = r.substr(h, 7), h += 7) : (ae = e, K === 0 && l(Ym)), ae === e && (r.substr(h, 7).toLowerCase() === "collate" ? (ae = r.substr(h, 7), h += 7) : (ae = e, K === 0 && l(Fp)))), ae !== e && it() !== e ? ((fe = jc()) === e && (fe = null), fe !== e && it() !== e && (Ge = jn()) !== e ? ($t = _, Lt = ae, jt = fe, xr = Ge, _ = z = { keyword: (Ye = z) && `${Ye[0].toLowerCase()} ${Lt.toLowerCase()}` || Lt.toLowerCase(), symbol: jt, value: xr }) : (h = _, _ = e)) : (h = _, _ = e)) : (h = _, _ = e), _;
+        return _ = h, (z = Hv()) === e && (z = null), z !== e && it() !== e ? ((ae = gd()) === e && (r.substr(h, 7).toLowerCase() === "charset" ? (ae = r.substr(h, 7), h += 7) : (ae = e, K === 0 && l(Ym)), ae === e && (r.substr(h, 7).toLowerCase() === "collate" ? (ae = r.substr(h, 7), h += 7) : (ae = e, K === 0 && l(Fp)))), ae !== e && it() !== e ? ((fe = jc()) === e && (fe = null), fe !== e && it() !== e && (Ge = jn()) !== e ? ($t = _, Lt = ae, jt = fe, xr = Ge, _ = z = { keyword: (Ye = z) && `${Ye[0].toLowerCase()} ${Lt.toLowerCase()}` || Lt.toLowerCase(), symbol: jt, value: xr }) : (h = _, _ = e)) : (h = _, _ = e)) : (h = _, _ = e), _;
       }
       function Ql() {
         var _, z, ae, fe, Ge, Ye, Lt, jt, xr;
@@ -102622,7 +102646,7 @@ function aEt() {
             return Ge = h, r.substr(h, 4).toLowerCase() === "year" ? (Ye = r.substr(h, 4), h += 4) : (Ye = e, K === 0 && l(bm)), Ye !== e ? (Lt = h, K++, jt = Bs(), K--, jt === e ? Lt = void 0 : (h = Lt, Lt = e), Lt !== e ? ($t = Ge, Ge = Ye = "YEAR") : (h = Ge, Ge = e)) : (h = Ge, Ge = e), Ge;
           }()) === e && (fe = function() {
             var Ge, Ye, Lt, jt;
-            return Ge = h, r.substr(h, 5).toLowerCase() === "month" ? (Ye = r.substr(h, 5), h += 5) : (Ye = e, K === 0 && l(fd)), Ye !== e ? (Lt = h, K++, jt = Bs(), K--, jt === e ? Lt = void 0 : (h = Lt, Lt = e), Lt !== e ? ($t = Ge, Ge = Ye = "MONTH") : (h = Ge, Ge = e)) : (h = Ge, Ge = e), Ge;
+            return Ge = h, r.substr(h, 5).toLowerCase() === "month" ? (Ye = r.substr(h, 5), h += 5) : (Ye = e, K === 0 && l(dd)), Ye !== e ? (Lt = h, K++, jt = Bs(), K--, jt === e ? Lt = void 0 : (h = Lt, Lt = e), Lt !== e ? ($t = Ge, Ge = Ye = "MONTH") : (h = Ge, Ge = e)) : (h = Ge, Ge = e), Ge;
           }()) === e && (fe = function() {
             var Ge, Ye, Lt, jt;
             return Ge = h, r.substr(h, 4).toLowerCase() === "week" ? (Ye = r.substr(h, 4), h += 4) : (Ye = e, K === 0 && l(ov)), Ye !== e ? (Lt = h, K++, jt = Bs(), K--, jt === e ? Lt = void 0 : (h = Lt, Lt = e), Lt !== e ? ($t = Ge, Ge = Ye = "WEEK") : (h = Ge, Ge = e)) : (h = Ge, Ge = e), Ge;
@@ -102673,7 +102697,7 @@ function aEt() {
           var z, ae, fe, Ge, Ye, Lt, jt, xr;
           if (z = h, (ae = qr()) !== e) {
             for (fe = [], Ge = h, (Ye = No()) !== e && (Lt = _r()) !== e && (jt = it()) !== e && (xr = qr()) !== e ? Ge = Ye = [Ye, Lt, jt, xr] : (h = Ge, Ge = e); Ge !== e; ) fe.push(Ge), Ge = h, (Ye = No()) !== e && (Lt = _r()) !== e && (jt = it()) !== e && (xr = qr()) !== e ? Ge = Ye = [Ye, Lt, jt, xr] : (h = Ge, Ge = e);
-            fe !== e ? ($t = z, ae = cd(ae, fe), z = ae) : (h = z, z = e);
+            fe !== e ? ($t = z, ae = fd(ae, fe), z = ae) : (h = z, z = e);
           } else h = z, z = e;
           return z;
         }()) === e && (_ = Fr()), _;
@@ -102712,7 +102736,7 @@ function aEt() {
         var _, z, ae, fe, Ge, Ye, Lt, jt;
         if (_ = h, (z = wn()) !== e) {
           for (ae = [], fe = h, (Ge = No()) !== e && (Ye = or()) !== e && (Lt = it()) !== e && (jt = wn()) !== e ? fe = Ge = [Ge, Ye, Lt, jt] : (h = fe, fe = e); fe !== e; ) ae.push(fe), fe = h, (Ge = No()) !== e && (Ye = or()) !== e && (Lt = it()) !== e && (jt = wn()) !== e ? fe = Ge = [Ge, Ye, Lt, jt] : (h = fe, fe = e);
-          ae !== e ? ($t = _, _ = z = cd(z, ae)) : (h = _, _ = e);
+          ae !== e ? ($t = _, _ = z = fd(z, ae)) : (h = _, _ = e);
         } else h = _, _ = e;
         return _;
       }
@@ -102879,7 +102903,7 @@ function aEt() {
             }()), Sr;
           }()) === e && (Ye = ei()) === e && (Ye = qv()) === e && (Ye = function() {
             var Sr, Kr, sn, Gn, Cn, Un, gs;
-            return Sr = h, (Kr = Is()) !== e && it() !== e && Bn() !== e && it() !== e && (sn = Xt()) !== e && it() !== e && rd() !== e && it() !== e && (Gn = at()) !== e && it() !== e && (Cn = bd()) !== e && it() !== e && (Un = jn()) !== e && it() !== e && Qn() !== e ? ($t = Sr, Kr = function(S, j, re, le, p) {
+            return Sr = h, (Kr = Is()) !== e && it() !== e && Bn() !== e && it() !== e && (sn = Xt()) !== e && it() !== e && rd() !== e && it() !== e && (Gn = at()) !== e && it() !== e && (Cn = gd()) !== e && it() !== e && (Un = jn()) !== e && it() !== e && Qn() !== e ? ($t = Sr, Kr = function(S, j, re, le, p) {
               const { dataType: y, length: x } = re;
               let M = y;
               return x !== void 0 && (M = `${M}(${x})`), { type: "cast", keyword: S.toLowerCase(), expr: j, symbol: "as", target: [{ dataType: M, suffix: [{ type: "origin", value: le }, p] }] };
@@ -103058,7 +103082,7 @@ function aEt() {
       }
       function ss() {
         var _, z;
-        return _ = h, r.substr(h, 10).toLowerCase() === "year_month" ? (z = r.substr(h, 10), h += 10) : (z = e, K === 0 && l(Nb)), z === e && (r.substr(h, 8).toLowerCase() === "day_hour" ? (z = r.substr(h, 8), h += 8) : (z = e, K === 0 && l(Rb)), z === e && (r.substr(h, 10).toLowerCase() === "day_minute" ? (z = r.substr(h, 10), h += 10) : (z = e, K === 0 && l(db)), z === e && (r.substr(h, 10).toLowerCase() === "day_second" ? (z = r.substr(h, 10), h += 10) : (z = e, K === 0 && l(Ob)), z === e && (r.substr(h, 15).toLowerCase() === "day_microsecond" ? (z = r.substr(h, 15), h += 15) : (z = e, K === 0 && l(pb)), z === e && (r.substr(h, 11).toLowerCase() === "hour_minute" ? (z = r.substr(h, 11), h += 11) : (z = e, K === 0 && l(Uv)), z === e && (r.substr(h, 11).toLowerCase() === "hour_second" ? (z = r.substr(h, 11), h += 11) : (z = e, K === 0 && l(q)), z === e && (r.substr(h, 16).toLowerCase() === "hour_microsecond" ? (z = r.substr(h, 16), h += 16) : (z = e, K === 0 && l(as)), z === e && (r.substr(h, 13).toLowerCase() === "minute_second" ? (z = r.substr(h, 13), h += 13) : (z = e, K === 0 && l(hm)), z === e && (r.substr(h, 18).toLowerCase() === "minute_microsecond" ? (z = r.substr(h, 18), h += 18) : (z = e, K === 0 && l(xf)), z === e && (r.substr(h, 18).toLowerCase() === "second_microsecond" ? (z = r.substr(h, 18), h += 18) : (z = e, K === 0 && l(nv)), z === e && (r.substr(h, 13).toLowerCase() === "timezone_hour" ? (z = r.substr(h, 13), h += 13) : (z = e, K === 0 && l($r)), z === e && (r.substr(h, 15).toLowerCase() === "timezone_minute" ? (z = r.substr(h, 15), h += 15) : (z = e, K === 0 && l(Gs)), z === e && (r.substr(h, 7).toLowerCase() === "century" ? (z = r.substr(h, 7), h += 7) : (z = e, K === 0 && l(kd)), z === e && (r.substr(h, 3).toLowerCase() === "day" ? (z = r.substr(h, 3), h += 3) : (z = e, K === 0 && l(Mm)), z === e && (r.substr(h, 4).toLowerCase() === "date" ? (z = r.substr(h, 4), h += 4) : (z = e, K === 0 && l(sv)), z === e && (r.substr(h, 6).toLowerCase() === "decade" ? (z = r.substr(h, 6), h += 6) : (z = e, K === 0 && l(ws)), z === e && (r.substr(h, 3).toLowerCase() === "dow" ? (z = r.substr(h, 3), h += 3) : (z = e, K === 0 && l(Bv)), z === e && (r.substr(h, 3).toLowerCase() === "doy" ? (z = r.substr(h, 3), h += 3) : (z = e, K === 0 && l(hb)), z === e && (r.substr(h, 5).toLowerCase() === "epoch" ? (z = r.substr(h, 5), h += 5) : (z = e, K === 0 && l(jb)), z === e && (r.substr(h, 4).toLowerCase() === "hour" ? (z = r.substr(h, 4), h += 4) : (z = e, K === 0 && l(mm)), z === e && (r.substr(h, 6).toLowerCase() === "isodow" ? (z = r.substr(h, 6), h += 6) : (z = e, K === 0 && l(B)), z === e && (r.substr(h, 7).toLowerCase() === "isoweek" ? (z = r.substr(h, 7), h += 7) : (z = e, K === 0 && l(is)), z === e && (r.substr(h, 7).toLowerCase() === "isoyear" ? (z = r.substr(h, 7), h += 7) : (z = e, K === 0 && l(Dm)), z === e && (r.substr(h, 12).toLowerCase() === "microseconds" ? (z = r.substr(h, 12), h += 12) : (z = e, K === 0 && l(_p)), z === e && (r.substr(h, 10).toLowerCase() === "millennium" ? (z = r.substr(h, 10), h += 10) : (z = e, K === 0 && l(Pm)), z === e && (r.substr(h, 12).toLowerCase() === "milliseconds" ? (z = r.substr(h, 12), h += 12) : (z = e, K === 0 && l(Ir)), z === e && (r.substr(h, 6).toLowerCase() === "minute" ? (z = r.substr(h, 6), h += 6) : (z = e, K === 0 && l(Ds)), z === e && (r.substr(h, 5).toLowerCase() === "month" ? (z = r.substr(h, 5), h += 5) : (z = e, K === 0 && l(fd)), z === e && (r.substr(h, 7).toLowerCase() === "quarter" ? (z = r.substr(h, 7), h += 7) : (z = e, K === 0 && l(xv)), z === e && (r.substr(h, 6).toLowerCase() === "second" ? (z = r.substr(h, 6), h += 6) : (z = e, K === 0 && l(vm)), z === e && (r.substr(h, 4).toLowerCase() === "time" ? (z = r.substr(h, 4), h += 4) : (z = e, K === 0 && l(ls)), z === e && (r.substr(h, 8).toLowerCase() === "timezone" ? (z = r.substr(h, 8), h += 8) : (z = e, K === 0 && l(mb)), z === e && (r.substr(h, 4).toLowerCase() === "week" ? (z = r.substr(h, 4), h += 4) : (z = e, K === 0 && l(ov)), z === e && (r.substr(h, 4).toLowerCase() === "year" ? (z = r.substr(h, 4), h += 4) : (z = e, K === 0 && l(bm)))))))))))))))))))))))))))))))))))), z !== e && ($t = _, z = z), _ = z;
+        return _ = h, r.substr(h, 10).toLowerCase() === "year_month" ? (z = r.substr(h, 10), h += 10) : (z = e, K === 0 && l(Nb)), z === e && (r.substr(h, 8).toLowerCase() === "day_hour" ? (z = r.substr(h, 8), h += 8) : (z = e, K === 0 && l(Rb)), z === e && (r.substr(h, 10).toLowerCase() === "day_minute" ? (z = r.substr(h, 10), h += 10) : (z = e, K === 0 && l(db)), z === e && (r.substr(h, 10).toLowerCase() === "day_second" ? (z = r.substr(h, 10), h += 10) : (z = e, K === 0 && l(Ob)), z === e && (r.substr(h, 15).toLowerCase() === "day_microsecond" ? (z = r.substr(h, 15), h += 15) : (z = e, K === 0 && l(pb)), z === e && (r.substr(h, 11).toLowerCase() === "hour_minute" ? (z = r.substr(h, 11), h += 11) : (z = e, K === 0 && l(Uv)), z === e && (r.substr(h, 11).toLowerCase() === "hour_second" ? (z = r.substr(h, 11), h += 11) : (z = e, K === 0 && l(q)), z === e && (r.substr(h, 16).toLowerCase() === "hour_microsecond" ? (z = r.substr(h, 16), h += 16) : (z = e, K === 0 && l(as)), z === e && (r.substr(h, 13).toLowerCase() === "minute_second" ? (z = r.substr(h, 13), h += 13) : (z = e, K === 0 && l(hm)), z === e && (r.substr(h, 18).toLowerCase() === "minute_microsecond" ? (z = r.substr(h, 18), h += 18) : (z = e, K === 0 && l(xf)), z === e && (r.substr(h, 18).toLowerCase() === "second_microsecond" ? (z = r.substr(h, 18), h += 18) : (z = e, K === 0 && l(nv)), z === e && (r.substr(h, 13).toLowerCase() === "timezone_hour" ? (z = r.substr(h, 13), h += 13) : (z = e, K === 0 && l($r)), z === e && (r.substr(h, 15).toLowerCase() === "timezone_minute" ? (z = r.substr(h, 15), h += 15) : (z = e, K === 0 && l(Gs)), z === e && (r.substr(h, 7).toLowerCase() === "century" ? (z = r.substr(h, 7), h += 7) : (z = e, K === 0 && l(kd)), z === e && (r.substr(h, 3).toLowerCase() === "day" ? (z = r.substr(h, 3), h += 3) : (z = e, K === 0 && l(Mm)), z === e && (r.substr(h, 4).toLowerCase() === "date" ? (z = r.substr(h, 4), h += 4) : (z = e, K === 0 && l(sv)), z === e && (r.substr(h, 6).toLowerCase() === "decade" ? (z = r.substr(h, 6), h += 6) : (z = e, K === 0 && l(ws)), z === e && (r.substr(h, 3).toLowerCase() === "dow" ? (z = r.substr(h, 3), h += 3) : (z = e, K === 0 && l(Bv)), z === e && (r.substr(h, 3).toLowerCase() === "doy" ? (z = r.substr(h, 3), h += 3) : (z = e, K === 0 && l(hb)), z === e && (r.substr(h, 5).toLowerCase() === "epoch" ? (z = r.substr(h, 5), h += 5) : (z = e, K === 0 && l(jb)), z === e && (r.substr(h, 4).toLowerCase() === "hour" ? (z = r.substr(h, 4), h += 4) : (z = e, K === 0 && l(mm)), z === e && (r.substr(h, 6).toLowerCase() === "isodow" ? (z = r.substr(h, 6), h += 6) : (z = e, K === 0 && l(B)), z === e && (r.substr(h, 7).toLowerCase() === "isoweek" ? (z = r.substr(h, 7), h += 7) : (z = e, K === 0 && l(is)), z === e && (r.substr(h, 7).toLowerCase() === "isoyear" ? (z = r.substr(h, 7), h += 7) : (z = e, K === 0 && l(Dm)), z === e && (r.substr(h, 12).toLowerCase() === "microseconds" ? (z = r.substr(h, 12), h += 12) : (z = e, K === 0 && l(_p)), z === e && (r.substr(h, 10).toLowerCase() === "millennium" ? (z = r.substr(h, 10), h += 10) : (z = e, K === 0 && l(Pm)), z === e && (r.substr(h, 12).toLowerCase() === "milliseconds" ? (z = r.substr(h, 12), h += 12) : (z = e, K === 0 && l(Ir)), z === e && (r.substr(h, 6).toLowerCase() === "minute" ? (z = r.substr(h, 6), h += 6) : (z = e, K === 0 && l(Ds)), z === e && (r.substr(h, 5).toLowerCase() === "month" ? (z = r.substr(h, 5), h += 5) : (z = e, K === 0 && l(dd)), z === e && (r.substr(h, 7).toLowerCase() === "quarter" ? (z = r.substr(h, 7), h += 7) : (z = e, K === 0 && l(xv)), z === e && (r.substr(h, 6).toLowerCase() === "second" ? (z = r.substr(h, 6), h += 6) : (z = e, K === 0 && l(vm)), z === e && (r.substr(h, 4).toLowerCase() === "time" ? (z = r.substr(h, 4), h += 4) : (z = e, K === 0 && l(ls)), z === e && (r.substr(h, 8).toLowerCase() === "timezone" ? (z = r.substr(h, 8), h += 8) : (z = e, K === 0 && l(mb)), z === e && (r.substr(h, 4).toLowerCase() === "week" ? (z = r.substr(h, 4), h += 4) : (z = e, K === 0 && l(ov)), z === e && (r.substr(h, 4).toLowerCase() === "year" ? (z = r.substr(h, 4), h += 4) : (z = e, K === 0 && l(bm)))))))))))))))))))))))))))))))))))), z !== e && ($t = _, z = z), _ = z;
       }
       function pp() {
         var _, z, ae, fe, Ge, Ye, Lt, jt;
@@ -103089,7 +103113,7 @@ function aEt() {
         var _, z, ae, fe, Ge, Ye, Lt;
         return (_ = pp()) === e && (_ = yl()) === e && (_ = h, r.substr(h, 7).toLowerCase() === "convert" ? (z = r.substr(h, 7), h += 7) : (z = e, K === 0 && l(Th)), z !== e && it() !== e && (ae = Bn()) !== e && it() !== e && (fe = function() {
           var jt, xr, Sr, Kr, sn;
-          return jt = h, (xr = Sa()) !== e && it() !== e && Ur() !== e && it() !== e ? ((Sr = at()) === e && (Sr = hi()), Sr !== e && it() !== e && (Kr = bd()) !== e && it() !== e && (sn = jn()) !== e ? ($t = jt, jt = xr = function(Gn, Cn, Un, gs) {
+          return jt = h, (xr = Sa()) !== e && it() !== e && Ur() !== e && it() !== e ? ((Sr = at()) === e && (Sr = hi()), Sr !== e && it() !== e && (Kr = gd()) !== e && it() !== e && (sn = jn()) !== e ? ($t = jt, jt = xr = function(Gn, Cn, Un, gs) {
             const { dataType: S, length: j } = Cn;
             let re = S;
             return j !== void 0 && (re = `${re}(${j})`), { type: "expr_list", value: [Gn, { type: "origin", value: re, suffix: { prefix: Un, ...gs } }] };
@@ -103253,7 +103277,7 @@ function aEt() {
       function Wc() {
         var _, z, ae, fe, Ge, Ye, Lt, jt, xr, Sr;
         return _ = h, r.substr(h, 2) === "\\'" ? (z = "\\'", h += 2) : (z = e, K === 0 && l(ap)), z !== e && ($t = _, z = "\\'"), (_ = z) === e && (_ = h, r.substr(h, 2) === '\\"' ? (z = '\\"', h += 2) : (z = e, K === 0 && l(Xd)), z !== e && ($t = _, z = '\\"'), (_ = z) === e && (_ = h, r.substr(h, 2) === "\\\\" ? (z = "\\\\", h += 2) : (z = e, K === 0 && l(Ev)), z !== e && ($t = _, z = "\\\\"), (_ = z) === e && (_ = h, r.substr(h, 2) === "\\/" ? (z = "\\/", h += 2) : (z = e, K === 0 && l(ch)), z !== e && ($t = _, z = "\\/"), (_ = z) === e && (_ = h, r.substr(h, 2) === "\\b" ? (z = "\\b", h += 2) : (z = e, K === 0 && l(gm)), z !== e && ($t = _, z = "\b"), (_ = z) === e && (_ = h, r.substr(h, 2) === "\\f" ? (z = "\\f", h += 2) : (z = e, K === 0 && l(vb)), z !== e && ($t = _, z = "\f"), (_ = z) === e && (_ = h, r.substr(h, 2) === "\\n" ? (z = "\\n", h += 2) : (z = e, K === 0 && l(ym)), z !== e && ($t = _, z = `
-`), (_ = z) === e && (_ = h, r.substr(h, 2) === "\\r" ? (z = "\\r", h += 2) : (z = e, K === 0 && l(wm)), z !== e && ($t = _, z = "\r"), (_ = z) === e && (_ = h, r.substr(h, 2) === "\\t" ? (z = "\\t", h += 2) : (z = e, K === 0 && l(Yh)), z !== e && ($t = _, z = "	"), (_ = z) === e && (_ = h, r.substr(h, 2) === "\\u" ? (z = "\\u", h += 2) : (z = e, K === 0 && l(Um)), z !== e && (ae = Mh()) !== e && (fe = Mh()) !== e && (Ge = Mh()) !== e && (Ye = Mh()) !== e ? ($t = _, Lt = ae, jt = fe, xr = Ge, Sr = Ye, _ = z = String.fromCharCode(parseInt("0x" + Lt + jt + xr + Sr))) : (h = _, _ = e), _ === e && (_ = h, r.charCodeAt(h) === 92 ? (z = "\\", h++) : (z = e, K === 0 && l(dd)), z !== e && ($t = _, z = "\\"), (_ = z) === e && (_ = h, r.substr(h, 2) === "''" ? (z = "''", h += 2) : (z = e, K === 0 && l(zv)), z !== e && ($t = _, z = "''"), (_ = z) === e && (_ = h, r.substr(h, 2) === '""' ? (z = '""', h += 2) : (z = e, K === 0 && l(Qh)), z !== e && ($t = _, z = '""'), (_ = z) === e && (_ = h, r.substr(h, 2) === "``" ? (z = "``", h += 2) : (z = e, K === 0 && l(Cm)), z !== e && ($t = _, z = "``"), _ = z))))))))))))), _;
+`), (_ = z) === e && (_ = h, r.substr(h, 2) === "\\r" ? (z = "\\r", h += 2) : (z = e, K === 0 && l(wm)), z !== e && ($t = _, z = "\r"), (_ = z) === e && (_ = h, r.substr(h, 2) === "\\t" ? (z = "\\t", h += 2) : (z = e, K === 0 && l(Yh)), z !== e && ($t = _, z = "	"), (_ = z) === e && (_ = h, r.substr(h, 2) === "\\u" ? (z = "\\u", h += 2) : (z = e, K === 0 && l(Um)), z !== e && (ae = Mh()) !== e && (fe = Mh()) !== e && (Ge = Mh()) !== e && (Ye = Mh()) !== e ? ($t = _, Lt = ae, jt = fe, xr = Ge, Sr = Ye, _ = z = String.fromCharCode(parseInt("0x" + Lt + jt + xr + Sr))) : (h = _, _ = e), _ === e && (_ = h, r.charCodeAt(h) === 92 ? (z = "\\", h++) : (z = e, K === 0 && l(pd)), z !== e && ($t = _, z = "\\"), (_ = z) === e && (_ = h, r.substr(h, 2) === "''" ? (z = "''", h += 2) : (z = e, K === 0 && l(zv)), z !== e && ($t = _, z = "''"), (_ = z) === e && (_ = h, r.substr(h, 2) === '""' ? (z = '""', h += 2) : (z = e, K === 0 && l(Qh)), z !== e && ($t = _, z = '""'), (_ = z) === e && (_ = h, r.substr(h, 2) === "``" ? (z = "``", h += 2) : (z = e, K === 0 && l(Cm)), z !== e && ($t = _, z = "``"), _ = z))))))))))))), _;
       }
       function Ca() {
         var _, z, ae;
@@ -103298,7 +103322,7 @@ function aEt() {
       }
       function Of() {
         var _;
-        return Bc.test(r.charAt(h)) ? (_ = r.charAt(h), h++) : (_ = e, K === 0 && l(id)), _;
+        return Bc.test(r.charAt(h)) ? (_ = r.charAt(h), h++) : (_ = e, K === 0 && l(ad)), _;
       }
       function Mh() {
         var _;
@@ -103366,7 +103390,7 @@ function aEt() {
       }
       function Mf() {
         var _, z, ae, fe;
-        return _ = h, r.substr(h, 4).toLowerCase() === "into" ? (z = r.substr(h, 4), h += 4) : (z = e, K === 0 && l(ld)), z !== e ? (ae = h, K++, fe = Bs(), K--, fe === e ? ae = void 0 : (h = ae, ae = e), ae !== e ? _ = z = [z, ae] : (h = _, _ = e)) : (h = _, _ = e), _;
+        return _ = h, r.substr(h, 4).toLowerCase() === "into" ? (z = r.substr(h, 4), h += 4) : (z = e, K === 0 && l(cd)), z !== e ? (ae = h, K++, fe = Bs(), K--, fe === e ? ae = void 0 : (h = ae, ae = e), ae !== e ? _ = z = [z, ae] : (h = _, _ = e)) : (h = _, _ = e), _;
       }
       function bb() {
         var _, z, ae, fe;
@@ -103394,7 +103418,7 @@ function aEt() {
       }
       function sl() {
         var _, z, ae, fe;
-        return _ = h, r.substr(h, 8).toLowerCase() === "database" ? (z = r.substr(h, 8), h += 8) : (z = e, K === 0 && l(pd)), z !== e ? (ae = h, K++, fe = Bs(), K--, fe === e ? ae = void 0 : (h = ae, ae = e), ae !== e ? ($t = _, _ = z = "DATABASE") : (h = _, _ = e)) : (h = _, _ = e), _;
+        return _ = h, r.substr(h, 8).toLowerCase() === "database" ? (z = r.substr(h, 8), h += 8) : (z = e, K === 0 && l(hd)), z !== e ? (ae = h, K++, fe = Bs(), K--, fe === e ? ae = void 0 : (h = ae, ae = e), ae !== e ? ($t = _, _ = z = "DATABASE") : (h = _, _ = e)) : (h = _, _ = e), _;
       }
       function La() {
         var _, z, ae, fe;
@@ -103430,7 +103454,7 @@ function aEt() {
       }
       function Wa() {
         var _, z, ae, fe;
-        return _ = h, r.substr(h, 3).toLowerCase() === "asc" ? (z = r.substr(h, 3), h += 3) : (z = e, K === 0 && l(hd)), z !== e ? (ae = h, K++, fe = Bs(), K--, fe === e ? ae = void 0 : (h = ae, ae = e), ae !== e ? ($t = _, _ = z = "ASC") : (h = _, _ = e)) : (h = _, _ = e), _;
+        return _ = h, r.substr(h, 3).toLowerCase() === "asc" ? (z = r.substr(h, 3), h += 3) : (z = e, K === 0 && l(md)), z !== e ? (ae = h, K++, fe = Bs(), K--, fe === e ? ae = void 0 : (h = ae, ae = e), ae !== e ? ($t = _, _ = z = "ASC") : (h = _, _ = e)) : (h = _, _ = e), _;
       }
       function qa() {
         var _, z, ae, fe;
@@ -103466,7 +103490,7 @@ function aEt() {
       }
       function Bt() {
         var _, z, ae, fe;
-        return _ = h, r.substr(h, 3).toLowerCase() === "not" ? (z = r.substr(h, 3), h += 3) : (z = e, K === 0 && l(ad)), z !== e ? (ae = h, K++, fe = Bs(), K--, fe === e ? ae = void 0 : (h = ae, ae = e), ae !== e ? ($t = _, _ = z = "NOT") : (h = _, _ = e)) : (h = _, _ = e), _;
+        return _ = h, r.substr(h, 3).toLowerCase() === "not" ? (z = r.substr(h, 3), h += 3) : (z = e, K === 0 && l(ud)), z !== e ? (ae = h, K++, fe = Bs(), K--, fe === e ? ae = void 0 : (h = ae, ae = e), ae !== e ? ($t = _, _ = z = "NOT") : (h = _, _ = e)) : (h = _, _ = e), _;
       }
       function or() {
         var _, z, ae, fe;
@@ -103482,7 +103506,7 @@ function aEt() {
       }
       function ns() {
         var _, z, ae, fe;
-        return _ = h, r.substr(h, 4).toLowerCase() === "case" ? (z = r.substr(h, 4), h += 4) : (z = e, K === 0 && l(vd)), z !== e ? (ae = h, K++, fe = Bs(), K--, fe === e ? ae = void 0 : (h = ae, ae = e), ae !== e ? _ = z = [z, ae] : (h = _, _ = e)) : (h = _, _ = e), _;
+        return _ = h, r.substr(h, 4).toLowerCase() === "case" ? (z = r.substr(h, 4), h += 4) : (z = e, K === 0 && l(bd)), z !== e ? (ae = h, K++, fe = Bs(), K--, fe === e ? ae = void 0 : (h = ae, ae = e), ae !== e ? _ = z = [z, ae] : (h = _, _ = e)) : (h = _, _ = e), _;
       }
       function vs() {
         var _, z, ae, fe;
@@ -103764,7 +103788,7 @@ function aEt() {
         var _, z, ae, fe, Ge, Ye, Lt, jt;
         if (_ = h, (z = oo()) !== e) {
           for (ae = [], fe = h, (Ge = it()) !== e && (Ye = yt()) !== e && (Lt = it()) !== e && (jt = oo()) !== e ? fe = Ge = [Ge, Ye, Lt, jt] : (h = fe, fe = e); fe !== e; ) ae.push(fe), fe = h, (Ge = it()) !== e && (Ye = yt()) !== e && (Lt = it()) !== e && (jt = oo()) !== e ? fe = Ge = [Ge, Ye, Lt, jt] : (h = fe, fe = e);
-          ae !== e ? ($t = _, _ = z = cd(z, ae)) : (h = _, _ = e);
+          ae !== e ? ($t = _, _ = z = fd(z, ae)) : (h = _, _ = e);
         } else h = _, _ = e;
         return _;
       }
@@ -103772,7 +103796,7 @@ function aEt() {
         var _, z, ae, fe, Ge, Ye, Lt, jt;
         if (_ = h, (z = Ci()) !== e) {
           for (ae = [], fe = h, (Ge = it()) !== e && (Ye = dr()) !== e && (Lt = it()) !== e && (jt = Ci()) !== e ? fe = Ge = [Ge, Ye, Lt, jt] : (h = fe, fe = e); fe !== e; ) ae.push(fe), fe = h, (Ge = it()) !== e && (Ye = dr()) !== e && (Lt = it()) !== e && (jt = Ci()) !== e ? fe = Ge = [Ge, Ye, Lt, jt] : (h = fe, fe = e);
-          ae !== e ? ($t = _, _ = z = cd(z, ae)) : (h = _, _ = e);
+          ae !== e ? ($t = _, _ = z = fd(z, ae)) : (h = _, _ = e);
         } else h = _, _ = e;
         return _;
       }
@@ -103830,11 +103854,11 @@ function aEt() {
         return (_ = at()) === e && (_ = function() {
           var z, ae, fe, Ge, Ye, Lt, jt, xr, Sr, Kr, sn, Gn;
           if (z = h, (ae = no()) === e && (ae = eo()) === e && (ae = ni()) === e && (ae = ui()) === e && (ae = bi()) === e && (ae = ea()) === e && (ae = Ho()) === e && (ae = $s()) === e && (ae = Vu()) === e && (ae = dl()) === e && (ae = Xs()), ae !== e) if ((fe = it()) !== e) if ((Ge = Bn()) !== e) if ((Ye = it()) !== e) {
-            if (Lt = [], Bc.test(r.charAt(h)) ? (jt = r.charAt(h), h++) : (jt = e, K === 0 && l(id)), jt !== e) for (; jt !== e; ) Lt.push(jt), Bc.test(r.charAt(h)) ? (jt = r.charAt(h), h++) : (jt = e, K === 0 && l(id));
+            if (Lt = [], Bc.test(r.charAt(h)) ? (jt = r.charAt(h), h++) : (jt = e, K === 0 && l(ad)), jt !== e) for (; jt !== e; ) Lt.push(jt), Bc.test(r.charAt(h)) ? (jt = r.charAt(h), h++) : (jt = e, K === 0 && l(ad));
             else Lt = e;
             if (Lt !== e) if ((jt = it()) !== e) {
               if (xr = h, (Sr = Ur()) !== e) if ((Kr = it()) !== e) {
-                if (sn = [], Bc.test(r.charAt(h)) ? (Gn = r.charAt(h), h++) : (Gn = e, K === 0 && l(id)), Gn !== e) for (; Gn !== e; ) sn.push(Gn), Bc.test(r.charAt(h)) ? (Gn = r.charAt(h), h++) : (Gn = e, K === 0 && l(id));
+                if (sn = [], Bc.test(r.charAt(h)) ? (Gn = r.charAt(h), h++) : (Gn = e, K === 0 && l(ad)), Gn !== e) for (; Gn !== e; ) sn.push(Gn), Bc.test(r.charAt(h)) ? (Gn = r.charAt(h), h++) : (Gn = e, K === 0 && l(ad));
                 else sn = e;
                 sn !== e ? xr = Sr = [Sr, Kr, sn] : (h = xr, xr = e);
               } else h = xr, xr = e;
@@ -103849,7 +103873,7 @@ function aEt() {
           var Cn, Un;
           if (z === e) {
             if (z = h, (ae = no()) === e && (ae = eo()) === e && (ae = ni()) === e && (ae = ui()) === e && (ae = bi()) === e && (ae = ea()) === e && (ae = Ho()) === e && (ae = $s()) === e && (ae = Vu()) === e && (ae = dl()) === e && (ae = Xs()), ae !== e) {
-              if (fe = [], Bc.test(r.charAt(h)) ? (Ge = r.charAt(h), h++) : (Ge = e, K === 0 && l(id)), Ge !== e) for (; Ge !== e; ) fe.push(Ge), Bc.test(r.charAt(h)) ? (Ge = r.charAt(h), h++) : (Ge = e, K === 0 && l(id));
+              if (fe = [], Bc.test(r.charAt(h)) ? (Ge = r.charAt(h), h++) : (Ge = e, K === 0 && l(ad)), Ge !== e) for (; Ge !== e; ) fe.push(Ge), Bc.test(r.charAt(h)) ? (Ge = r.charAt(h), h++) : (Ge = e, K === 0 && l(ad));
               else fe = e;
               fe !== e && (Ge = it()) !== e ? ((Ye = pa()) === e && (Ye = null), Ye !== e ? ($t = z, ae = function(gs, S, j) {
                 return { dataType: gs, length: parseInt(S.join(""), 10), suffix: j };
@@ -103942,7 +103966,7 @@ function aEt() {
       function vp() {
         var _, z, ae, fe, Ge;
         if (_ = h, Bn() !== e) if (it() !== e) {
-          if (z = [], Bc.test(r.charAt(h)) ? (ae = r.charAt(h), h++) : (ae = e, K === 0 && l(id)), ae !== e) for (; ae !== e; ) z.push(ae), Bc.test(r.charAt(h)) ? (ae = r.charAt(h), h++) : (ae = e, K === 0 && l(id));
+          if (z = [], Bc.test(r.charAt(h)) ? (ae = r.charAt(h), h++) : (ae = e, K === 0 && l(ad)), ae !== e) for (; ae !== e; ) z.push(ae), Bc.test(r.charAt(h)) ? (ae = r.charAt(h), h++) : (ae = e, K === 0 && l(ad));
           else z = e;
           z !== e && (ae = it()) !== e && Qn() !== e && it() !== e ? ((fe = pa()) === e && (fe = null), fe !== e ? ($t = _, Ge = fe, _ = { length: parseInt(z.join(""), 10), parentheses: !0, suffix: Ge }) : (h = _, _ = e)) : (h = _, _ = e);
         } else h = _, _ = e;
@@ -103959,7 +103983,7 @@ function aEt() {
           return sn = h, r.substr(h, 7).toLowerCase() === "varchar" ? (Gn = r.substr(h, 7), h += 7) : (Gn = e, K === 0 && l(L)), Gn !== e ? (Cn = h, K++, Un = Bs(), K--, Un === e ? Cn = void 0 : (h = Cn, Cn = e), Cn !== e ? ($t = sn, sn = Gn = "VARCHAR") : (h = sn, sn = e)) : (h = sn, sn = e), sn;
         }()), z !== e) {
           if (ae = h, (fe = it()) !== e) if ((Ge = Bn()) !== e) if ((Ye = it()) !== e) {
-            if (Lt = [], Bc.test(r.charAt(h)) ? (jt = r.charAt(h), h++) : (jt = e, K === 0 && l(id)), jt !== e) for (; jt !== e; ) Lt.push(jt), Bc.test(r.charAt(h)) ? (jt = r.charAt(h), h++) : (jt = e, K === 0 && l(id));
+            if (Lt = [], Bc.test(r.charAt(h)) ? (jt = r.charAt(h), h++) : (jt = e, K === 0 && l(ad)), jt !== e) for (; jt !== e; ) Lt.push(jt), Bc.test(r.charAt(h)) ? (jt = r.charAt(h), h++) : (jt = e, K === 0 && l(ad));
             else Lt = e;
             Lt !== e && (jt = it()) !== e && (xr = Qn()) !== e && (Sr = it()) !== e ? (r.substr(h, 5).toLowerCase() === "array" ? (Kr = r.substr(h, 5), h += 5) : (Kr = e, K === 0 && l(nr)), Kr === e && (Kr = null), Kr !== e ? ae = fe = [fe, Ge, Ye, Lt, jt, xr, Sr, Kr] : (h = ae, ae = e)) : (h = ae, ae = e);
           } else h = ae, ae = e;
@@ -104105,11 +104129,11 @@ function aEt() {
 `, "\r"], !0, !1), zs = /^[^ s\t\n\r;]/, ao = Tr([" ", "s", "	", `
 `, "\r", ";"], !0, !1), ko = d("COST", !0), qo = d("ROWS", !0), Eo = d("SUPPORT", !0), rn = d("TO", !0), Pn = d("=", !1), Rs = d("CURRENT", !0), Us = d("FUNCTION", !0), ho = d("TYPE", !0), co = d("DOMAIN", !0), Bo = d("INCREMENT", !0), Vo = d("MINVALUE", !0), di = function(p, y) {
         return { resource: "sequence", prefix: p.toLowerCase(), value: y };
-      }, wa = d("NO", !0), Ba = d("MAXVALUE", !0), Oa = d("START", !0), Ma = d("CACHE", !0), Za = d("CYCLE", !0), Ja = d("OWNED", !0), wc = d("NONE", !0), Cl = d("NULLS", !0), Nl = d("FIRST", !0), va = d("LAST", !0), Nu = d("AUTO_INCREMENT", !0), mu = d("UNIQUE", !0), Ru = d("KEY", !0), Ll = d("PRIMARY", !0), Rl = d("COLUMN_FORMAT", !0), Ju = d("FIXED", !0), ef = d("DYNAMIC", !0), el = d("DEFAULT", !0), tl = d("STORAGE", !0), od = d("DISK", !0), Kl = d("MEMORY", !0), Fl = d("CASCADE", !0), vf = d("RESTRICT", !0), Gd = d("OUT", !0), tm = d("VARIADIC", !0), Hm = d("INOUT", !0), yp = d("OWNER", !0), Hd = d("CURRENT_ROLE", !0), wp = d("CURRENT_USER", !0), jp = d("SESSION_USER", !0), $h = d("ALGORITHM", !0), xl = d("INSTANT", !0), rm = d("INPLACE", !0), th = d("COPY", !0), nm = d("LOCK", !0), op = d("SHARED", !0), $f = d("EXCLUSIVE", !0), Bc = d("PRIMARY KEY", !0), id = d("FOREIGN KEY", !0), Vm = d("MATCH FULL", !0), ad = d("MATCH PARTIAL", !0), rh = d("MATCH SIMPLE", !0), Wm = d("SET NULL", !0), Cp = d("NO ACTION", !0), Am = d("SET DEFAULT", !0), nh = d("TRIGGER", !0), ip = d("BEFORE", !0), Vd = d("AFTER", !0), Do = d("INSTEAD OF", !0), bf = d("EXECUTE", !0), Ff = d("PROCEDURE", !0), Wd = d("OF", !0), $p = d("DEFERRABLE", !0), Fh = d("INITIALLY IMMEDIATE", !0), Ym = d("INITIALLY DEFERRED", !0), Fp = d("FOR", !0), Uh = d("EACH", !0), Ch = d("ROW", !0), sm = d("STATEMENT", !0), Up = d("CHARACTER", !0), Lp = d("SET", !0), Nc = d("CHARSET", !0), xp = d("COLLATE", !0), hv = d("AVG_ROW_LENGTH", !0), om = d("KEY_BLOCK_SIZE", !0), Lh = d("MAX_ROWS", !0), gf = d("MIN_ROWS", !0), Uf = d("STATS_SAMPLE_PAGES", !0), sh = d("CONNECTION", !0), im = d("COMPRESSION", !0), ju = d("'", !1), Bf = d("ZLIB", !0), zf = d("LZ4", !0), Qm = d("ENGINE", !0), xh = d("IN", !0), oh = d("ACCESS SHARE", !0), Bp = d("ROW SHARE", !0), am = d("ROW EXCLUSIVE", !0), Km = d("SHARE UPDATE EXCLUSIVE", !0), _m = d("SHARE ROW EXCLUSIVE", !0), tf = d("ACCESS EXCLUSIVE", !0), qf = d("SHARE", !0), ud = d("MODE", !0), Bh = d("NOWAIT", !0), ih = d("TABLES", !0), Eh = d("PREPARE", !0), Ep = d("USAGE", !0), Sh = function(p) {
+      }, wa = d("NO", !0), Ba = d("MAXVALUE", !0), Oa = d("START", !0), Ma = d("CACHE", !0), Za = d("CYCLE", !0), Ja = d("OWNED", !0), wc = d("NONE", !0), Cl = d("NULLS", !0), Nl = d("FIRST", !0), va = d("LAST", !0), Nu = d("AUTO_INCREMENT", !0), mu = d("UNIQUE", !0), Ru = d("KEY", !0), Ll = d("PRIMARY", !0), Rl = d("COLUMN_FORMAT", !0), Ju = d("FIXED", !0), ef = d("DYNAMIC", !0), el = d("DEFAULT", !0), tl = d("STORAGE", !0), id = d("DISK", !0), Kl = d("MEMORY", !0), Fl = d("CASCADE", !0), vf = d("RESTRICT", !0), Gd = d("OUT", !0), tm = d("VARIADIC", !0), Hm = d("INOUT", !0), yp = d("OWNER", !0), Hd = d("CURRENT_ROLE", !0), wp = d("CURRENT_USER", !0), jp = d("SESSION_USER", !0), $h = d("ALGORITHM", !0), xl = d("INSTANT", !0), rm = d("INPLACE", !0), th = d("COPY", !0), nm = d("LOCK", !0), op = d("SHARED", !0), $f = d("EXCLUSIVE", !0), Bc = d("PRIMARY KEY", !0), ad = d("FOREIGN KEY", !0), Vm = d("MATCH FULL", !0), ud = d("MATCH PARTIAL", !0), rh = d("MATCH SIMPLE", !0), Wm = d("SET NULL", !0), Cp = d("NO ACTION", !0), Am = d("SET DEFAULT", !0), nh = d("TRIGGER", !0), ip = d("BEFORE", !0), Vd = d("AFTER", !0), Do = d("INSTEAD OF", !0), bf = d("EXECUTE", !0), Ff = d("PROCEDURE", !0), Wd = d("OF", !0), $p = d("DEFERRABLE", !0), Fh = d("INITIALLY IMMEDIATE", !0), Ym = d("INITIALLY DEFERRED", !0), Fp = d("FOR", !0), Uh = d("EACH", !0), Ch = d("ROW", !0), sm = d("STATEMENT", !0), Up = d("CHARACTER", !0), Lp = d("SET", !0), Nc = d("CHARSET", !0), xp = d("COLLATE", !0), hv = d("AVG_ROW_LENGTH", !0), om = d("KEY_BLOCK_SIZE", !0), Lh = d("MAX_ROWS", !0), gf = d("MIN_ROWS", !0), Uf = d("STATS_SAMPLE_PAGES", !0), sh = d("CONNECTION", !0), im = d("COMPRESSION", !0), ju = d("'", !1), Bf = d("ZLIB", !0), zf = d("LZ4", !0), Qm = d("ENGINE", !0), xh = d("IN", !0), oh = d("ACCESS SHARE", !0), Bp = d("ROW SHARE", !0), am = d("ROW EXCLUSIVE", !0), Km = d("SHARE UPDATE EXCLUSIVE", !0), _m = d("SHARE ROW EXCLUSIVE", !0), tf = d("ACCESS EXCLUSIVE", !0), qf = d("SHARE", !0), ld = d("MODE", !0), Bh = d("NOWAIT", !0), ih = d("TABLES", !0), Eh = d("PREPARE", !0), Ep = d("USAGE", !0), Sh = function(p) {
         return { type: "origin", value: Array.isArray(p) ? p[0] : p };
       }, zh = d("CONNECT", !0), Tm = d("PRIVILEGES", !0), Sp = function(p) {
         return { type: "origin", value: p };
-      }, yf = d("SEQUENCE", !0), zp = d("DATABASE", !0), _t = d("DOMAIN", !1), Or = d("FUNCTION", !1), cn = d("ROUTINE", !0), Wr = d("LANGUAGE", !0), bs = d("LARGE", !0), cs = d("SCHEMA", !1), Ns = d("FUNCTIONS", !0), fo = d("PROCEDURES", !0), io = d("ROUTINES", !0), Uo = d("PUBLIC", !0), Ko = d("GRANT", !0), fi = d("OPTION", !0), Bi = d("ADMIN", !0), Di = d("REVOKE", !0), ba = d("ELSEIF", !0), Pa = d("THEN", !0), Ki = d("END", !0), ja = d("DEBUG", !0), Ta = d("LOG", !0), vu = d("INFO", !0), cu = d("NOTICE", !0), ul = d("WARNING", !0), Ou = d("EXCEPTION", !0), ec = d("MESSAGE", !0), Eu = d("DETAIL", !0), uc = d("HINT", !0), Td = d("ERRCODE", !0), Gf = d("COLUMN", !0), Cc = d("CONSTRAINT", !0), ah = d("DATATYPE", !0), qp = d("TABLE", !0), ll = d("SQLSTATE", !0), zc = d("RAISE", !0), Id = d("LOOP", !0), ld = d(";", !1), um = d("(", !1), Xm = d(")", !1), Cd = d('"', !1), Hf = d("OUTFILE", !0), Nd = d("DUMPFILE", !0), Yd = d("BTREE", !0), Qd = d("HASH", !0), uh = d("GIST", !0), Qv = d("GIN", !0), Zm = d("WITH", !0), Kv = d("PARSER", !0), Xv = d("VISIBLE", !0), Vf = d("INVISIBLE", !0), wf = function(p, y) {
+      }, yf = d("SEQUENCE", !0), zp = d("DATABASE", !0), _t = d("DOMAIN", !1), Or = d("FUNCTION", !1), cn = d("ROUTINE", !0), Wr = d("LANGUAGE", !0), bs = d("LARGE", !0), cs = d("SCHEMA", !1), Ns = d("FUNCTIONS", !0), fo = d("PROCEDURES", !0), io = d("ROUTINES", !0), Uo = d("PUBLIC", !0), Ko = d("GRANT", !0), fi = d("OPTION", !0), Bi = d("ADMIN", !0), Di = d("REVOKE", !0), ba = d("ELSEIF", !0), Pa = d("THEN", !0), Ki = d("END", !0), ja = d("DEBUG", !0), Ta = d("LOG", !0), vu = d("INFO", !0), cu = d("NOTICE", !0), ul = d("WARNING", !0), Ou = d("EXCEPTION", !0), ec = d("MESSAGE", !0), Eu = d("DETAIL", !0), uc = d("HINT", !0), Td = d("ERRCODE", !0), Gf = d("COLUMN", !0), Cc = d("CONSTRAINT", !0), ah = d("DATATYPE", !0), qp = d("TABLE", !0), ll = d("SQLSTATE", !0), zc = d("RAISE", !0), Id = d("LOOP", !0), cd = d(";", !1), um = d("(", !1), Xm = d(")", !1), Cd = d('"', !1), Hf = d("OUTFILE", !0), Nd = d("DUMPFILE", !0), Yd = d("BTREE", !0), Qd = d("HASH", !0), uh = d("GIST", !0), Qv = d("GIN", !0), Zm = d("WITH", !0), Kv = d("PARSER", !0), Xv = d("VISIBLE", !0), Vf = d("INVISIBLE", !0), wf = function(p, y) {
         return y.unshift(p), y.forEach((x) => {
           const { table: M, as: ce } = x;
           le[M] = M, ce && (le[ce] = M), function(Le) {
@@ -104119,11 +104143,11 @@ function aEt() {
         }), y;
       }, Im = d("LATERAL", !0), Gp = d("TABLESAMPLE", !0), mv = d("REPEATABLE", !0), Jm = d("CROSS", !0), vv = d("FOLLOWING", !0), Zv = d("PRECEDING", !0), lm = d("UNBOUNDED", !0), ev = d("DO", !0), bv = d("NOTHING", !0), tv = d("CONFLICT", !0), cm = function(p, y) {
         return Gn(p, y);
-      }, Av = d("!", !1), _v = d(">=", !1), Nm = d(">", !1), Jv = d("<=", !1), Lb = d("<>", !1), gv = d("<", !1), xb = d("!=", !1), Tv = d("SIMILAR", !0), Eb = d("!~*", !1), Db = d("~*", !1), Iv = d("~", !1), Nv = d("!~", !1), eb = d("ESCAPE", !0), fm = d("+", !1), Ap = d("-", !1), Kd = d("*", !1), cd = d("/", !1), Ah = d("%", !1), qh = d("||", !1), Rv = d("$", !1), tb = d("?|", !1), dm = d("?&", !1), Ov = d("?", !1), kv = d("#-", !1), Mv = d("#>>", !1), Rm = d("#>", !1), _h = d("@>", !1), Gh = d("<@", !1), rv = d("E", !0), rb = function(p) {
+      }, Av = d("!", !1), _v = d(">=", !1), Nm = d(">", !1), Jv = d("<=", !1), Lb = d("<>", !1), gv = d("<", !1), xb = d("!=", !1), Tv = d("SIMILAR", !0), Eb = d("!~*", !1), Db = d("~*", !1), Iv = d("~", !1), Nv = d("!~", !1), eb = d("ESCAPE", !0), fm = d("+", !1), Ap = d("-", !1), Kd = d("*", !1), fd = d("/", !1), Ah = d("%", !1), qh = d("||", !1), Rv = d("$", !1), tb = d("?|", !1), dm = d("?&", !1), Ov = d("?", !1), kv = d("#-", !1), Mv = d("#>>", !1), Rm = d("#>", !1), _h = d("@>", !1), Gh = d("<@", !1), rv = d("E", !0), rb = function(p) {
         return Lt[p.toUpperCase()] === !0;
-      }, Dv = /^[^"]/, nb = Tr(['"'], !0, !1), sb = /^[^']/, Om = Tr(["'"], !0, !1), ob = d("`", !1), ib = /^[^`]/, Pv = Tr(["`"], !0, !1), Sb = /^[A-Za-z_\u4E00-\u9FA5\xC0-\u017F]/, Ab = Tr([["A", "Z"], ["a", "z"], "_", ["一", "龥"], ["À", "ſ"]], !1, !1), jv = /^[A-Za-z0-9_\-$\u4E00-\u9FA5\xC0-\u017F]/, $v = Tr([["A", "Z"], ["a", "z"], ["0", "9"], "_", "-", "$", ["一", "龥"], ["À", "ſ"]], !1, !1), Hh = /^[A-Za-z0-9_\u4E00-\u9FA5\xC0-\u017F]/, rf = Tr([["A", "Z"], ["a", "z"], ["0", "9"], "_", ["一", "龥"], ["À", "ſ"]], !1, !1), Rd = d(":", !1), pm = d("OVER", !0), Wf = d("FILTER", !0), Cf = d("FIRST_VALUE", !0), yv = d("LAST_VALUE", !0), km = d("ROW_NUMBER", !0), Lf = d("DENSE_RANK", !0), Od = d("RANK", !0), _b = d("LAG", !0), ab = d("LEAD", !0), Tb = d("NTH_VALUE", !0), ub = d("IGNORE", !0), wv = d("RESPECT", !0), Cv = d("percentile_cont", !0), Lv = d("percentile_disc", !0), lb = d("within", !0), Pb = d("mode", !0), Ib = d("BOTH", !0), cb = d("LEADING", !0), fb = d("TRAILING", !0), Fv = d("trim", !0), Nb = d("crosstab", !0), Rb = d("now", !0), db = d("at", !0), Ob = d("zone", !0), pb = d("CENTURY", !0), Uv = d("DAY", !0), q = d("DATE", !0), as = d("DECADE", !0), hm = d("DOW", !0), xf = d("DOY", !0), nv = d("EPOCH", !0), $r = d("HOUR", !0), Gs = d("ISODOW", !0), kd = d("ISOYEAR", !0), Mm = d("MICROSECONDS", !0), sv = d("MILLENNIUM", !0), ws = d("MILLISECONDS", !0), Bv = d("MINUTE", !0), hb = d("MONTH", !0), jb = d("QUARTER", !0), mm = d("SECOND", !0), B = d("TIMEZONE", !0), is = d("TIMEZONE_HOUR", !0), Dm = d("TIMEZONE_MINUTE", !0), _p = d("WEEK", !0), Pm = d("YEAR", !0), Ir = d("NTILE", !0), Ds = /^[\n]/, fd = Tr([`
+      }, Dv = /^[^"]/, nb = Tr(['"'], !0, !1), sb = /^[^']/, Om = Tr(["'"], !0, !1), ob = d("`", !1), ib = /^[^`]/, Pv = Tr(["`"], !0, !1), Sb = /^[A-Za-z_\u4E00-\u9FA5\xC0-\u017F]/, Ab = Tr([["A", "Z"], ["a", "z"], "_", ["一", "龥"], ["À", "ſ"]], !1, !1), jv = /^[A-Za-z0-9_\-$\u4E00-\u9FA5\xC0-\u017F]/, $v = Tr([["A", "Z"], ["a", "z"], ["0", "9"], "_", "-", "$", ["一", "龥"], ["À", "ſ"]], !1, !1), Hh = /^[A-Za-z0-9_\u4E00-\u9FA5\xC0-\u017F]/, rf = Tr([["A", "Z"], ["a", "z"], ["0", "9"], "_", ["一", "龥"], ["À", "ſ"]], !1, !1), Rd = d(":", !1), pm = d("OVER", !0), Wf = d("FILTER", !0), Cf = d("FIRST_VALUE", !0), yv = d("LAST_VALUE", !0), km = d("ROW_NUMBER", !0), Lf = d("DENSE_RANK", !0), Od = d("RANK", !0), _b = d("LAG", !0), ab = d("LEAD", !0), Tb = d("NTH_VALUE", !0), ub = d("IGNORE", !0), wv = d("RESPECT", !0), Cv = d("percentile_cont", !0), Lv = d("percentile_disc", !0), lb = d("within", !0), Pb = d("mode", !0), Ib = d("BOTH", !0), cb = d("LEADING", !0), fb = d("TRAILING", !0), Fv = d("trim", !0), Nb = d("crosstab", !0), Rb = d("now", !0), db = d("at", !0), Ob = d("zone", !0), pb = d("CENTURY", !0), Uv = d("DAY", !0), q = d("DATE", !0), as = d("DECADE", !0), hm = d("DOW", !0), xf = d("DOY", !0), nv = d("EPOCH", !0), $r = d("HOUR", !0), Gs = d("ISODOW", !0), kd = d("ISOYEAR", !0), Mm = d("MICROSECONDS", !0), sv = d("MILLENNIUM", !0), ws = d("MILLISECONDS", !0), Bv = d("MINUTE", !0), hb = d("MONTH", !0), jb = d("QUARTER", !0), mm = d("SECOND", !0), B = d("TIMEZONE", !0), is = d("TIMEZONE_HOUR", !0), Dm = d("TIMEZONE_MINUTE", !0), _p = d("WEEK", !0), Pm = d("YEAR", !0), Ir = d("NTILE", !0), Ds = /^[\n]/, dd = Tr([`
 `], !1, !1), xv = /^[^"\\\0-\x1F\x7F]/, vm = Tr(['"', "\\", ["\0", ""], ""], !0, !1), ls = /^[^'\\]/, mb = Tr(["'", "\\"], !0, !1), ov = d("\\'", !1), bm = d('\\"', !1), iv = d("\\\\", !1), jm = d("\\/", !1), Hp = d("\\b", !1), $m = d("\\f", !1), Fm = d("\\n", !1), Th = d("\\r", !1), Ih = d("\\t", !1), D = d("\\u", !1), Zn = d("\\", !1), Vh = d("''", !1), Ef = /^[\n\r]/, Nh = Tr([`
-`, "\r"], !1, !1), wr = d(".", !1), _s = /^[0-9]/, El = Tr([["0", "9"]], !1, !1), lh = /^[0-9a-fA-F]/, Wh = Tr([["0", "9"], ["a", "f"], ["A", "F"]], !1, !1), es = /^[eE]/, qc = Tr(["e", "E"], !1, !1), lc = /^[+\-]/, av = Tr(["+", "-"], !1, !1), Vp = d("NOT NULL", !0), ap = d("TRUE", !0), Xd = d("FALSE", !0), Ev = d("SHOW", !0), ch = d("DROP", !0), gm = d("USE", !0), vb = d("ALTER", !0), ym = d("SELECT", !0), wm = d("UPDATE", !0), Yh = d("CREATE", !0), Um = d("TEMPORARY", !0), dd = d("TEMP", !0), zv = d("DELETE", !0), Qh = d("INSERT", !0), Cm = d("RECURSIVE", !0), up = d("REPLACE", !0), Bm = d("RETURNING", !0), fh = d("RENAME", !0), N = d("PARTITION", !0), Hn = d("INTO", !0), Sf = d("FROM", !0), T = d("AS", !0), Vn = d("TABLESPACE", !0), fr = d("DEALLOCATE", !0), Ls = d("LEFT", !0), Rc = d("RIGHT", !0), mr = d("FULL", !0), ms = d("INNER", !0), On = d("JOIN", !0), Wp = d("OUTER", !0), dh = d("UNION", !0), $n = d("INTERSECT", !0), A = d("EXCEPT", !0), Dn = d("VALUES", !0), Af = d("USING", !0), Lc = d("WHERE", !0), xc = d("GROUP", !0), rr = d("BY", !0), fs = d("ORDER", !0), tc = d("HAVING", !0), rc = d("LIMIT", !0), Yp = d("OFFSET", !0), Rn = d("ASC", !0), Rh = d("DESC", !0), Zd = d("ALL", !0), ph = d("DISTINCT", !0), Tp = d("BETWEEN", !0), Qp = d("IS", !0), pd = d("LIKE", !0), cc = d("ILIKE", !0), nf = d("EXISTS", !0), $u = d("AND", !0), Ro = d("OR", !0), Kh = d("ARRAY", !0), lp = d("ARRAY_AGG", !0), hh = d("STRING_AGG", !0), mh = d("COUNT", !0), Ld = d("GROUP_CONCAT", !0), Oh = d("MAX", !0), Gc = d("MIN", !0), Yf = d("SUM", !0), sf = d("AVG", !0), zo = d("EXTRACT", !0), Kp = d("CALL", !0), Ip = d("CASE", !0), Np = d("WHEN", !0), fu = d("ELSE", !0), of = d("CAST", !0), Md = d("BOOL", !0), Jd = d("BOOLEAN", !0), hd = d("CHAR", !0), Dd = d("VARCHAR", !0), ep = d("NUMERIC", !0), af = d("DECIMAL", !0), cp = d("SIGNED", !0), Yu = d("UNSIGNED", !0), Qf = d("INT", !0), tp = d("ZEROFILL", !0), Rp = d("INTEGER", !0), Op = d("JSON", !0), fc = d("JSONB", !0), _f = d("GEOMETRY", !0), Sl = d("SMALLINT", !0), vh = d("SERIAL", !0), Pd = d("TINYINT", !0), uf = d("TINYTEXT", !0), Ol = d("TEXT", !0), bh = d("MEDIUMTEXT", !0), kp = d("LONGTEXT", !0), jd = d("BIGINT", !0), md = d("ENUM", !0), vd = d("FLOAT", !0), zl = d("DOUBLE", !0), Go = d("BIGSERIAL", !0), rp = d("REAL", !0), Oc = d("DATETIME", !0), Kf = d("TIME", !0), kc = d("TIMESTAMP", !0), Su = d("TRUNCATE", !0), Mc = d("USER", !0), L = d("UUID", !0), v = d("OID", !0), Xr = d("REGCLASS", !0), Pl = d("REGCOLLATION", !0), Qu = d("REGCONFIG", !0), Kt = d("REGDICTIONARY", !0), qe = d("REGNAMESPACE", !0), zn = d("REGOPER", !0), zu = d("REGOPERATOR", !0), fp = d("REGPROC", !0), hn = d("REGPROCEDURE", !0), Vr = d("REGROLE", !0), Xf = d("REGTYPE", !0), Wl = d("CURRENT_DATE", !0), Mp = d("INTERVAL", !0), Ku = d("CURRENT_TIME", !0), uu = d("CURRENT_TIMESTAMP", !0), ql = d("SYSTEM_USER", !0), Dc = d("GLOBAL", !0), Tf = d("SESSION", !0), Dp = d("PERSIST", !0), ou = d("PERSIST_ONLY", !0), Zf = d("VIEW", !0), nc = d("@", !1), dp = d("@@", !1), qu = d("$$", !1), Oo = d("return", !0), Al = d("::", !1), Pc = d("DUAL", !0), g = d("ADD", !0), Qr = d("INDEX", !0), Hc = d("FULLTEXT", !0), bl = d("SPATIAL", !0), lf = d("COMMENT", !0), At = d("CONCURRENTLY", !0), Ln = d("REFERENCES", !0), $a = d("SQL_CALC_FOUND_ROWS", !0), uo = d("SQL_CACHE", !0), Va = d("SQL_NO_CACHE", !0), jr = d("SQL_SMALL_RESULT", !0), $d = d("SQL_BIG_RESULT", !0), If = d("SQL_BUFFER_RESULT", !0), xd = d(",", !1), Jr = d("[", !1), Ec = d("]", !1), Gl = d("->", !1), ga = d("->>", !1), cl = d("&&", !1), lu = d("/*", !1), Qa = d("*/", !1), Nf = d("--", !1), cf = { type: "any" }, ff = /^[ \t\n\r]/, Gu = Tr([" ", "	", `
+`, "\r"], !1, !1), wr = d(".", !1), _s = /^[0-9]/, El = Tr([["0", "9"]], !1, !1), lh = /^[0-9a-fA-F]/, Wh = Tr([["0", "9"], ["a", "f"], ["A", "F"]], !1, !1), es = /^[eE]/, qc = Tr(["e", "E"], !1, !1), lc = /^[+\-]/, av = Tr(["+", "-"], !1, !1), Vp = d("NOT NULL", !0), ap = d("TRUE", !0), Xd = d("FALSE", !0), Ev = d("SHOW", !0), ch = d("DROP", !0), gm = d("USE", !0), vb = d("ALTER", !0), ym = d("SELECT", !0), wm = d("UPDATE", !0), Yh = d("CREATE", !0), Um = d("TEMPORARY", !0), pd = d("TEMP", !0), zv = d("DELETE", !0), Qh = d("INSERT", !0), Cm = d("RECURSIVE", !0), up = d("REPLACE", !0), Bm = d("RETURNING", !0), fh = d("RENAME", !0), N = d("PARTITION", !0), Hn = d("INTO", !0), Sf = d("FROM", !0), T = d("AS", !0), Vn = d("TABLESPACE", !0), fr = d("DEALLOCATE", !0), Ls = d("LEFT", !0), Rc = d("RIGHT", !0), mr = d("FULL", !0), ms = d("INNER", !0), On = d("JOIN", !0), Wp = d("OUTER", !0), dh = d("UNION", !0), $n = d("INTERSECT", !0), A = d("EXCEPT", !0), Dn = d("VALUES", !0), Af = d("USING", !0), Lc = d("WHERE", !0), xc = d("GROUP", !0), rr = d("BY", !0), fs = d("ORDER", !0), tc = d("HAVING", !0), rc = d("LIMIT", !0), Yp = d("OFFSET", !0), Rn = d("ASC", !0), Rh = d("DESC", !0), Zd = d("ALL", !0), ph = d("DISTINCT", !0), Tp = d("BETWEEN", !0), Qp = d("IS", !0), hd = d("LIKE", !0), cc = d("ILIKE", !0), nf = d("EXISTS", !0), $u = d("AND", !0), Ro = d("OR", !0), Kh = d("ARRAY", !0), lp = d("ARRAY_AGG", !0), hh = d("STRING_AGG", !0), mh = d("COUNT", !0), Ld = d("GROUP_CONCAT", !0), Oh = d("MAX", !0), Gc = d("MIN", !0), Yf = d("SUM", !0), sf = d("AVG", !0), zo = d("EXTRACT", !0), Kp = d("CALL", !0), Ip = d("CASE", !0), Np = d("WHEN", !0), fu = d("ELSE", !0), of = d("CAST", !0), Md = d("BOOL", !0), Jd = d("BOOLEAN", !0), md = d("CHAR", !0), Dd = d("VARCHAR", !0), ep = d("NUMERIC", !0), af = d("DECIMAL", !0), cp = d("SIGNED", !0), Yu = d("UNSIGNED", !0), Qf = d("INT", !0), tp = d("ZEROFILL", !0), Rp = d("INTEGER", !0), Op = d("JSON", !0), fc = d("JSONB", !0), _f = d("GEOMETRY", !0), Sl = d("SMALLINT", !0), vh = d("SERIAL", !0), Pd = d("TINYINT", !0), uf = d("TINYTEXT", !0), Ol = d("TEXT", !0), bh = d("MEDIUMTEXT", !0), kp = d("LONGTEXT", !0), jd = d("BIGINT", !0), vd = d("ENUM", !0), bd = d("FLOAT", !0), zl = d("DOUBLE", !0), Go = d("BIGSERIAL", !0), rp = d("REAL", !0), Oc = d("DATETIME", !0), Kf = d("TIME", !0), kc = d("TIMESTAMP", !0), Su = d("TRUNCATE", !0), Mc = d("USER", !0), L = d("UUID", !0), v = d("OID", !0), Xr = d("REGCLASS", !0), Pl = d("REGCOLLATION", !0), Qu = d("REGCONFIG", !0), Kt = d("REGDICTIONARY", !0), qe = d("REGNAMESPACE", !0), zn = d("REGOPER", !0), zu = d("REGOPERATOR", !0), fp = d("REGPROC", !0), hn = d("REGPROCEDURE", !0), Vr = d("REGROLE", !0), Xf = d("REGTYPE", !0), Wl = d("CURRENT_DATE", !0), Mp = d("INTERVAL", !0), Ku = d("CURRENT_TIME", !0), uu = d("CURRENT_TIMESTAMP", !0), ql = d("SYSTEM_USER", !0), Dc = d("GLOBAL", !0), Tf = d("SESSION", !0), Dp = d("PERSIST", !0), ou = d("PERSIST_ONLY", !0), Zf = d("VIEW", !0), nc = d("@", !1), dp = d("@@", !1), qu = d("$$", !1), Oo = d("return", !0), Al = d("::", !1), Pc = d("DUAL", !0), g = d("ADD", !0), Qr = d("INDEX", !0), Hc = d("FULLTEXT", !0), bl = d("SPATIAL", !0), lf = d("COMMENT", !0), At = d("CONCURRENTLY", !0), Ln = d("REFERENCES", !0), $a = d("SQL_CALC_FOUND_ROWS", !0), uo = d("SQL_CACHE", !0), Va = d("SQL_NO_CACHE", !0), jr = d("SQL_SMALL_RESULT", !0), $d = d("SQL_BIG_RESULT", !0), If = d("SQL_BUFFER_RESULT", !0), xd = d(",", !1), Jr = d("[", !1), Ec = d("]", !1), Gl = d("->", !1), ga = d("->>", !1), cl = d("&&", !1), lu = d("/*", !1), Qa = d("*/", !1), Nf = d("--", !1), cf = { type: "any" }, ff = /^[ \t\n\r]/, Gu = Tr([" ", "	", `
 `, "\r"], !1, !1), zr = /^[^$]/, sc = Tr(["$"], !0, !1), gl = function(p) {
         return { dataType: p };
       }, Io = d("bytea", !0), Xl = d("varying", !0), _l = d("PRECISION", !0), Vc = d("WITHOUT", !0), Au = d("ZONE", !0), dc = function(p) {
@@ -104472,7 +104496,7 @@ function aEt() {
             return Mr = m, r.substr(m, 4).toLowerCase() === "lock" ? (nn = r.substr(m, 4), m += 4) : (nn = e, xt === 0 && br(nm)), nn !== e ? (w = m, xt++, I = Ts(), xt--, I === e ? w = void 0 : (m = w, w = e), w !== e ? Mr = nn = [nn, w] : (m = Mr, Mr = e)) : (m = Mr, Mr = e), Mr;
           }()) !== e && at() !== e ? ((M = La()) === e && (M = null), M !== e && at() !== e && (ce = Qt()) !== e && at() !== e ? ((Le = function() {
             var Mr, nn, w, I;
-            return Mr = m, r.substr(m, 2).toLowerCase() === "in" ? (nn = r.substr(m, 2), m += 2) : (nn = e, xt === 0 && br(xh)), nn !== e && at() !== e ? (r.substr(m, 12).toLowerCase() === "access share" ? (w = r.substr(m, 12), m += 12) : (w = e, xt === 0 && br(oh)), w === e && (r.substr(m, 9).toLowerCase() === "row share" ? (w = r.substr(m, 9), m += 9) : (w = e, xt === 0 && br(Bp)), w === e && (r.substr(m, 13).toLowerCase() === "row exclusive" ? (w = r.substr(m, 13), m += 13) : (w = e, xt === 0 && br(am)), w === e && (r.substr(m, 22).toLowerCase() === "share update exclusive" ? (w = r.substr(m, 22), m += 22) : (w = e, xt === 0 && br(Km)), w === e && (r.substr(m, 19).toLowerCase() === "share row exclusive" ? (w = r.substr(m, 19), m += 19) : (w = e, xt === 0 && br(_m)), w === e && (r.substr(m, 9).toLowerCase() === "exclusive" ? (w = r.substr(m, 9), m += 9) : (w = e, xt === 0 && br($f)), w === e && (r.substr(m, 16).toLowerCase() === "access exclusive" ? (w = r.substr(m, 16), m += 16) : (w = e, xt === 0 && br(tf)), w === e && (r.substr(m, 5).toLowerCase() === "share" ? (w = r.substr(m, 5), m += 5) : (w = e, xt === 0 && br(qf))))))))), w !== e && at() !== e ? (r.substr(m, 4).toLowerCase() === "mode" ? (I = r.substr(m, 4), m += 4) : (I = e, xt === 0 && br(ud)), I !== e ? (Br = Mr, nn = { mode: `in ${w.toLowerCase()} mode` }, Mr = nn) : (m = Mr, Mr = e)) : (m = Mr, Mr = e)) : (m = Mr, Mr = e), Mr;
+            return Mr = m, r.substr(m, 2).toLowerCase() === "in" ? (nn = r.substr(m, 2), m += 2) : (nn = e, xt === 0 && br(xh)), nn !== e && at() !== e ? (r.substr(m, 12).toLowerCase() === "access share" ? (w = r.substr(m, 12), m += 12) : (w = e, xt === 0 && br(oh)), w === e && (r.substr(m, 9).toLowerCase() === "row share" ? (w = r.substr(m, 9), m += 9) : (w = e, xt === 0 && br(Bp)), w === e && (r.substr(m, 13).toLowerCase() === "row exclusive" ? (w = r.substr(m, 13), m += 13) : (w = e, xt === 0 && br(am)), w === e && (r.substr(m, 22).toLowerCase() === "share update exclusive" ? (w = r.substr(m, 22), m += 22) : (w = e, xt === 0 && br(Km)), w === e && (r.substr(m, 19).toLowerCase() === "share row exclusive" ? (w = r.substr(m, 19), m += 19) : (w = e, xt === 0 && br(_m)), w === e && (r.substr(m, 9).toLowerCase() === "exclusive" ? (w = r.substr(m, 9), m += 9) : (w = e, xt === 0 && br($f)), w === e && (r.substr(m, 16).toLowerCase() === "access exclusive" ? (w = r.substr(m, 16), m += 16) : (w = e, xt === 0 && br(tf)), w === e && (r.substr(m, 5).toLowerCase() === "share" ? (w = r.substr(m, 5), m += 5) : (w = e, xt === 0 && br(qf))))))))), w !== e && at() !== e ? (r.substr(m, 4).toLowerCase() === "mode" ? (I = r.substr(m, 4), m += 4) : (I = e, xt === 0 && br(ld)), I !== e ? (Br = Mr, nn = { mode: `in ${w.toLowerCase()} mode` }, Mr = nn) : (m = Mr, Mr = e)) : (m = Mr, Mr = e)) : (m = Mr, Mr = e), Mr;
           }()) === e && (Le = null), Le !== e && at() !== e ? (r.substr(m, 6).toLowerCase() === "nowait" ? (xe = r.substr(m, 6), m += 6) : (xe = e, xt === 0 && br(Bh)), xe === e && (xe = null), xe !== e ? (Br = y, rt = M, Tt = Le, lr = xe, (kt = ce) && kt.forEach((Mr) => j.add(`lock::${[Mr.db, Mr.schema].filter(Boolean).join(".") || null}::${Mr.table}`)), x = { tableList: Array.from(j), columnList: Un(re), ast: { type: "lock", keyword: rt && rt.toLowerCase(), tables: kt.map((Mr) => ({ table: Mr })), lock_mode: Tt, nowait: lr } }, y = x) : (m = y, y = e)) : (m = y, y = e)) : (m = y, y = e)) : (m = y, y = e);
           var rt, kt, Tt, lr;
           return y;
@@ -104491,7 +104515,7 @@ function aEt() {
           return y;
         }()) === e && (p = function() {
           var y, x, M, ce, Le, xe, rt, kt, Tt, lr, Mr;
-          y = m, (x = bd()) !== e && at() !== e && (M = function() {
+          y = m, (x = gd()) !== e && at() !== e && (M = function() {
             var w, I, U, te, Ee, ze, We, bt;
             if (w = m, (I = Mu()) !== e) {
               for (U = [], te = m, (Ee = at()) !== e && (ze = oo()) !== e && (We = at()) !== e && (bt = Mu()) !== e ? te = Ee = [Ee, ze, We, bt] : (m = te, te = e); te !== e; ) U.push(te), te = m, (Ee = at()) !== e && (ze = oo()) !== e && (We = at()) !== e && (bt = Mu()) !== e ? te = Ee = [Ee, ze, We, bt] : (m = te, te = e);
@@ -104515,7 +104539,7 @@ function aEt() {
             return { tableList: Array.from(j), columnList: Un(re), ast: { ...w, keyword: "priv", objects: I, on: { object_type: U, priv_level: te }, to_from: Ee[0], user_or_roles: ze, with: We } };
           }(x, M, Le, rt, Tt, lr, Mr), y = x) : (m = y, y = e)) : (m = y, y = e)) : (m = y, y = e)) : (m = y, y = e)) : (m = y, y = e);
           var nn;
-          return y === e && (y = m, (x = bd()) !== e && at() !== e && (M = po()) !== e && at() !== e ? ((ce = ed()) === e && (ce = Ua()), ce !== e ? (Br = m, (function(w, I, U) {
+          return y === e && (y = m, (x = gd()) !== e && at() !== e && (M = po()) !== e && at() !== e ? ((ce = ed()) === e && (ce = Ua()), ce !== e ? (Br = m, (function(w, I, U) {
             return { revoke: "from", grant: "to" }[w.type].toLowerCase() === U[0].toLowerCase();
           }(x, 0, ce) ? void 0 : e) !== e && (Le = at()) !== e && (xe = oc()) !== e && (rt = at()) !== e ? ((kt = function() {
             var w, I, U;
@@ -104836,7 +104860,7 @@ function aEt() {
           return ce = m, r.substr(m, 13).toLowerCase() === "column_format" ? (Le = r.substr(m, 13), m += 13) : (Le = e, xt === 0 && br(Rl)), Le !== e && at() !== e ? (r.substr(m, 5).toLowerCase() === "fixed" ? (xe = r.substr(m, 5), m += 5) : (xe = e, xt === 0 && br(Ju)), xe === e && (r.substr(m, 7).toLowerCase() === "dynamic" ? (xe = r.substr(m, 7), m += 7) : (xe = e, xt === 0 && br(ef)), xe === e && (r.substr(m, 7).toLowerCase() === "default" ? (xe = r.substr(m, 7), m += 7) : (xe = e, xt === 0 && br(el)))), xe !== e ? (Br = ce, Le = { type: "column_format", value: xe.toLowerCase() }, ce = Le) : (m = ce, ce = e)) : (m = ce, ce = e), ce;
         }()) !== e && (Br = p, y = { column_format: y }), (p = y) === e && (p = m, (y = function() {
           var ce, Le, xe;
-          return ce = m, r.substr(m, 7).toLowerCase() === "storage" ? (Le = r.substr(m, 7), m += 7) : (Le = e, xt === 0 && br(tl)), Le !== e && at() !== e ? (r.substr(m, 4).toLowerCase() === "disk" ? (xe = r.substr(m, 4), m += 4) : (xe = e, xt === 0 && br(od)), xe === e && (r.substr(m, 6).toLowerCase() === "memory" ? (xe = r.substr(m, 6), m += 6) : (xe = e, xt === 0 && br(Kl))), xe !== e ? (Br = ce, Le = { type: "storage", value: xe.toLowerCase() }, ce = Le) : (m = ce, ce = e)) : (m = ce, ce = e), ce;
+          return ce = m, r.substr(m, 7).toLowerCase() === "storage" ? (Le = r.substr(m, 7), m += 7) : (Le = e, xt === 0 && br(tl)), Le !== e && at() !== e ? (r.substr(m, 4).toLowerCase() === "disk" ? (xe = r.substr(m, 4), m += 4) : (xe = e, xt === 0 && br(id)), xe === e && (r.substr(m, 6).toLowerCase() === "memory" ? (xe = r.substr(m, 6), m += 6) : (xe = e, xt === 0 && br(Kl))), xe !== e ? (Br = ce, Le = { type: "storage", value: xe.toLowerCase() }, ce = Le) : (m = ce, ce = e)) : (m = ce, ce = e), ce;
         }()) !== e && (Br = p, y = { storage: y }), (p = y) === e && (p = m, (y = bu()) !== e && (Br = p, y = { reference_definition: y }), (p = y) === e && (p = m, (y = qi()) !== e && at() !== e ? ((x = it()) === e && (x = null), x !== e && at() !== e && (M = rs()) !== e ? (Br = p, p = y = /* @__PURE__ */ function(ce, Le, xe) {
           return { character_set: { type: ce, value: xe, symbol: Le } };
         }(y, x, M)) : (m = p, p = e)) : (m = p, p = e)))))))))), p;
@@ -104980,7 +105004,7 @@ function aEt() {
           return y;
         }()) === e && (p = function() {
           var y, x, M, ce, Le, xe;
-          y = m, (x = ka()) === e && (x = null), x !== e && at() !== e ? (r.substr(m, 11).toLowerCase() === "foreign key" ? (M = r.substr(m, 11), m += 11) : (M = e, xt === 0 && br(id)), M !== e && at() !== e ? ((ce = _o()) === e && (ce = null), ce !== e && at() !== e && (Le = eu()) !== e && at() !== e ? ((xe = bu()) === e && (xe = null), xe !== e ? (Br = y, kt = M, Tt = ce, lr = Le, Mr = xe, x = { constraint: (rt = x) && rt.constraint, definition: lr, constraint_type: kt, keyword: rt && rt.keyword, index: Tt, resource: "constraint", reference_definition: Mr }, y = x) : (m = y, y = e)) : (m = y, y = e)) : (m = y, y = e)) : (m = y, y = e);
+          y = m, (x = ka()) === e && (x = null), x !== e && at() !== e ? (r.substr(m, 11).toLowerCase() === "foreign key" ? (M = r.substr(m, 11), m += 11) : (M = e, xt === 0 && br(ad)), M !== e && at() !== e ? ((ce = _o()) === e && (ce = null), ce !== e && at() !== e && (Le = eu()) !== e && at() !== e ? ((xe = bu()) === e && (xe = null), xe !== e ? (Br = y, kt = M, Tt = ce, lr = Le, Mr = xe, x = { constraint: (rt = x) && rt.constraint, definition: lr, constraint_type: kt, keyword: rt && rt.keyword, index: Tt, resource: "constraint", reference_definition: Mr }, y = x) : (m = y, y = e)) : (m = y, y = e)) : (m = y, y = e)) : (m = y, y = e);
           var rt, kt, Tt, lr, Mr;
           return y;
         }()) === e && (p = wu()), p;
@@ -104997,7 +105021,7 @@ function aEt() {
       }
       function bu() {
         var p, y, x, M, ce, Le, xe, rt, kt, Tt;
-        return p = m, (y = li()) !== e && at() !== e && (x = jo()) !== e && at() !== e && (M = eu()) !== e && at() !== e ? (r.substr(m, 10).toLowerCase() === "match full" ? (ce = r.substr(m, 10), m += 10) : (ce = e, xt === 0 && br(Vm)), ce === e && (r.substr(m, 13).toLowerCase() === "match partial" ? (ce = r.substr(m, 13), m += 13) : (ce = e, xt === 0 && br(ad)), ce === e && (r.substr(m, 12).toLowerCase() === "match simple" ? (ce = r.substr(m, 12), m += 12) : (ce = e, xt === 0 && br(rh)))), ce === e && (ce = null), ce !== e && at() !== e ? ((Le = Bl()) === e && (Le = null), Le !== e && at() !== e ? ((xe = Bl()) === e && (xe = null), xe !== e ? (Br = p, rt = ce, kt = Le, Tt = xe, p = y = { definition: M, table: [x], keyword: y.toLowerCase(), match: rt && rt.toLowerCase(), on_action: [kt, Tt].filter((lr) => lr) }) : (m = p, p = e)) : (m = p, p = e)) : (m = p, p = e)) : (m = p, p = e), p === e && (p = m, (y = Bl()) !== e && (Br = p, y = { on_action: [y] }), p = y), p;
+        return p = m, (y = li()) !== e && at() !== e && (x = jo()) !== e && at() !== e && (M = eu()) !== e && at() !== e ? (r.substr(m, 10).toLowerCase() === "match full" ? (ce = r.substr(m, 10), m += 10) : (ce = e, xt === 0 && br(Vm)), ce === e && (r.substr(m, 13).toLowerCase() === "match partial" ? (ce = r.substr(m, 13), m += 13) : (ce = e, xt === 0 && br(ud)), ce === e && (r.substr(m, 12).toLowerCase() === "match simple" ? (ce = r.substr(m, 12), m += 12) : (ce = e, xt === 0 && br(rh)))), ce === e && (ce = null), ce !== e && at() !== e ? ((Le = Bl()) === e && (Le = null), Le !== e && at() !== e ? ((xe = Bl()) === e && (xe = null), xe !== e ? (Br = p, rt = ce, kt = Le, Tt = xe, p = y = { definition: M, table: [x], keyword: y.toLowerCase(), match: rt && rt.toLowerCase(), on_action: [kt, Tt].filter((lr) => lr) }) : (m = p, p = e)) : (m = p, p = e)) : (m = p, p = e)) : (m = p, p = e), p === e && (p = m, (y = Bl()) !== e && (Br = p, y = { on_action: [y] }), p = y), p;
       }
       function Bl() {
         var p, y, x, M;
@@ -105083,7 +105107,7 @@ function aEt() {
         } else m = p, p = e;
         return p;
       }
-      function bd() {
+      function gd() {
         var p, y, x, M, ce, Le, xe, rt;
         return p = m, r.substr(m, 5).toLowerCase() === "grant" ? (y = r.substr(m, 5), m += 5) : (y = e, xt === 0 && br(Ko)), y !== e && (Br = p, y = { type: "grant" }), (p = y) === e && (p = m, r.substr(m, 6).toLowerCase() === "revoke" ? (y = r.substr(m, 6), m += 6) : (y = e, xt === 0 && br(Di)), y !== e && at() !== e ? (x = m, r.substr(m, 5).toLowerCase() === "grant" ? (M = r.substr(m, 5), m += 5) : (M = e, xt === 0 && br(Ko)), M !== e && (ce = at()) !== e ? (r.substr(m, 6).toLowerCase() === "option" ? (Le = r.substr(m, 6), m += 6) : (Le = e, xt === 0 && br(fi)), Le !== e && (xe = at()) !== e ? (r.substr(m, 3).toLowerCase() === "for" ? (rt = r.substr(m, 3), m += 3) : (rt = e, xt === 0 && br(Fp)), rt !== e ? x = M = [M, ce, Le, xe, rt] : (m = x, x = e)) : (m = x, x = e)) : (m = x, x = e), x === e && (x = null), x !== e ? (Br = p, p = y = { type: "revoke", grant_option_for: x && { type: "origin", value: "grant option for" } }) : (m = p, p = e)) : (m = p, p = e)), p;
       }
@@ -105093,7 +105117,7 @@ function aEt() {
       }
       function Ql() {
         var p, y, x, M, ce, Le, xe;
-        return p = m, (y = Ud()) !== e && (x = at()) !== e ? (r.charCodeAt(m) === 59 ? (M = ";", m++) : (M = e, xt === 0 && br(ld)), M !== e ? (Br = p, p = y = { type: "select" }) : (m = p, p = e)) : (m = p, p = e), p === e && (p = be()) === e && (p = m, y = m, r.charCodeAt(m) === 40 ? (x = "(", m++) : (x = e, xt === 0 && br(um)), x !== e && (M = at()) !== e && (ce = Ql()) !== e && (Le = at()) !== e ? (r.charCodeAt(m) === 41 ? (xe = ")", m++) : (xe = e, xt === 0 && br(Xm)), xe !== e ? y = x = [x, M, ce, Le, xe] : (m = y, y = e)) : (m = y, y = e), y !== e && (Br = p, y = { ...y[2], parentheses_symbol: !0 }), p = y), p;
+        return p = m, (y = Ud()) !== e && (x = at()) !== e ? (r.charCodeAt(m) === 59 ? (M = ";", m++) : (M = e, xt === 0 && br(cd)), M !== e ? (Br = p, p = y = { type: "select" }) : (m = p, p = e)) : (m = p, p = e), p === e && (p = be()) === e && (p = m, y = m, r.charCodeAt(m) === 40 ? (x = "(", m++) : (x = e, xt === 0 && br(um)), x !== e && (M = at()) !== e && (ce = Ql()) !== e && (Le = at()) !== e ? (r.charCodeAt(m) === 41 ? (xe = ")", m++) : (xe = e, xt === 0 && br(Xm)), xe !== e ? y = x = [x, M, ce, Le, xe] : (m = y, y = e)) : (m = y, y = e), y !== e && (Br = p, y = { ...y[2], parentheses_symbol: !0 }), p = y), p;
       }
       function du() {
         var p, y, x, M, ce, Le, xe, rt, kt, Tt, lr;
@@ -105766,7 +105790,7 @@ function aEt() {
       }
       function yt() {
         var p;
-        return r.charCodeAt(m) === 42 ? (p = "*", m++) : (p = e, xt === 0 && br(Kd)), p === e && (r.charCodeAt(m) === 47 ? (p = "/", m++) : (p = e, xt === 0 && br(cd)), p === e && (r.charCodeAt(m) === 37 ? (p = "%", m++) : (p = e, xt === 0 && br(Ah)), p === e && (r.substr(m, 2) === "||" ? (p = "||", m += 2) : (p = e, xt === 0 && br(qh))))), p;
+        return r.charCodeAt(m) === 42 ? (p = "*", m++) : (p = e, xt === 0 && br(Kd)), p === e && (r.charCodeAt(m) === 47 ? (p = "/", m++) : (p = e, xt === 0 && br(fd)), p === e && (r.charCodeAt(m) === 37 ? (p = "%", m++) : (p = e, xt === 0 && br(Ah)), p === e && (r.substr(m, 2) === "||" ? (p = "||", m += 2) : (p = e, xt === 0 && br(qh))))), p;
       }
       function Ut() {
         var p, y, x;
@@ -106216,7 +106240,7 @@ function aEt() {
           M !== e ? (r.charCodeAt(m) === 39 ? (ce = "'", m++) : (ce = e, xt === 0 && br(ju)), ce !== e ? y = x = [x, M, ce] : (m = y, y = e)) : (m = y, y = e);
         } else m = y, y = e;
         if (y !== e) {
-          if (x = [], Ds.test(r.charAt(m)) ? (M = r.charAt(m), m++) : (M = e, xt === 0 && br(fd)), M !== e) for (; M !== e; ) x.push(M), Ds.test(r.charAt(m)) ? (M = r.charAt(m), m++) : (M = e, xt === 0 && br(fd));
+          if (x = [], Ds.test(r.charAt(m)) ? (M = r.charAt(m), m++) : (M = e, xt === 0 && br(dd)), M !== e) for (; M !== e; ) x.push(M), Ds.test(r.charAt(m)) ? (M = r.charAt(m), m++) : (M = e, xt === 0 && br(dd));
           else x = e;
           if (x !== e) if ((M = at()) !== e) {
             if (ce = m, r.charCodeAt(m) === 39 ? (Le = "'", m++) : (Le = e, xt === 0 && br(ju)), Le !== e) {
@@ -106348,7 +106372,7 @@ function aEt() {
       }
       function kb() {
         var p, y, x, M;
-        return p = m, r.substr(m, 4).toLowerCase() === "temp" ? (y = r.substr(m, 4), m += 4) : (y = e, xt === 0 && br(dd)), y !== e ? (x = m, xt++, M = Ts(), xt--, M === e ? x = void 0 : (m = x, x = e), x !== e ? p = y = [y, x] : (m = p, p = e)) : (m = p, p = e), p;
+        return p = m, r.substr(m, 4).toLowerCase() === "temp" ? (y = r.substr(m, 4), m += 4) : (y = e, xt === 0 && br(pd)), y !== e ? (x = m, xt++, M = Ts(), xt--, M === e ? x = void 0 : (m = x, x = e), x !== e ? p = y = [y, x] : (m = p, p = e)) : (m = p, p = e), p;
       }
       function zm() {
         var p, y, x, M;
@@ -106468,7 +106492,7 @@ function aEt() {
       }
       function or() {
         var p, y, x, M;
-        return p = m, r.substr(m, 4).toLowerCase() === "like" ? (y = r.substr(m, 4), m += 4) : (y = e, xt === 0 && br(pd)), y !== e ? (x = m, xt++, M = Ts(), xt--, M === e ? x = void 0 : (m = x, x = e), x !== e ? (Br = p, p = y = "LIKE") : (m = p, p = e)) : (m = p, p = e), p;
+        return p = m, r.substr(m, 4).toLowerCase() === "like" ? (y = r.substr(m, 4), m += 4) : (y = e, xt === 0 && br(hd)), y !== e ? (x = m, xt++, M = Ts(), xt--, M === e ? x = void 0 : (m = x, x = e), x !== e ? (Br = p, p = y = "LIKE") : (m = p, p = e)) : (m = p, p = e), p;
       }
       function _r() {
         var p, y, x, M;
@@ -106520,7 +106544,7 @@ function aEt() {
       }
       function Ho() {
         var p, y, x, M;
-        return p = m, r.substr(m, 4).toLowerCase() === "char" ? (y = r.substr(m, 4), m += 4) : (y = e, xt === 0 && br(hd)), y !== e ? (x = m, xt++, M = Ts(), xt--, M === e ? x = void 0 : (m = x, x = e), x !== e ? (Br = p, p = y = "CHAR") : (m = p, p = e)) : (m = p, p = e), p;
+        return p = m, r.substr(m, 4).toLowerCase() === "char" ? (y = r.substr(m, 4), m += 4) : (y = e, xt === 0 && br(md)), y !== e ? (x = m, xt++, M = Ts(), xt--, M === e ? x = void 0 : (m = x, x = e), x !== e ? (Br = p, p = y = "CHAR") : (m = p, p = e)) : (m = p, p = e), p;
       }
       function $s() {
         var p, y, x, M;
@@ -106580,11 +106604,11 @@ function aEt() {
       }
       function pu() {
         var p, y, x, M;
-        return p = m, r.substr(m, 4).toLowerCase() === "enum" ? (y = r.substr(m, 4), m += 4) : (y = e, xt === 0 && br(md)), y !== e ? (x = m, xt++, M = Ts(), xt--, M === e ? x = void 0 : (m = x, x = e), x !== e ? (Br = p, p = y = "ENUM") : (m = p, p = e)) : (m = p, p = e), p;
+        return p = m, r.substr(m, 4).toLowerCase() === "enum" ? (y = r.substr(m, 4), m += 4) : (y = e, xt === 0 && br(vd)), y !== e ? (x = m, xt++, M = Ts(), xt--, M === e ? x = void 0 : (m = x, x = e), x !== e ? (Br = p, p = y = "ENUM") : (m = p, p = e)) : (m = p, p = e), p;
       }
       function Bu() {
         var p, y, x, M;
-        return p = m, r.substr(m, 5).toLowerCase() === "float" ? (y = r.substr(m, 5), m += 5) : (y = e, xt === 0 && br(vd)), y !== e ? (x = m, xt++, M = Ts(), xt--, M === e ? x = void 0 : (m = x, x = e), x !== e ? (Br = p, p = y = "FLOAT") : (m = p, p = e)) : (m = p, p = e), p;
+        return p = m, r.substr(m, 5).toLowerCase() === "float" ? (y = r.substr(m, 5), m += 5) : (y = e, xt === 0 && br(bd)), y !== e ? (x = m, xt++, M = Ts(), xt--, M === e ? x = void 0 : (m = x, x = e), x !== e ? (Br = p, p = y = "FLOAT") : (m = p, p = e)) : (m = p, p = e), p;
       }
       function jc() {
         var p, y, x, M;
@@ -106730,7 +106754,7 @@ function aEt() {
       }
       function ht() {
         var p;
-        return r.charCodeAt(m) === 59 ? (p = ";", m++) : (p = e, xt === 0 && br(ld)), p;
+        return r.charCodeAt(m) === 59 ? (p = ";", m++) : (p = e, xt === 0 && br(cd)), p;
       }
       function gu() {
         var p;
@@ -107217,17 +107241,17 @@ function aEt() {
         return { resource: "sequence", prefix: C.toLowerCase(), value: k };
       }, Ma = Jt("NO", !0), Za = Jt("MAXVALUE", !0), Ja = Jt("START", !0), wc = function(C, k, W) {
         return { resource: "sequence", prefix: k ? C.toLowerCase() + " with" : C.toLowerCase(), value: W };
-      }, Cl = Jt("RESTART", !0), Nl = Jt("CACHE", !0), va = Jt("CYCLE", !0), Nu = Jt("OWNED", !0), mu = Jt("NONE", !0), Ru = Jt("INCLUDE", !0), Ll = Jt("NULLS", !0), Rl = Jt("FIRST", !0), Ju = Jt("LAST", !0), ef = Jt("MODULUS", !0), el = Jt("REMAINDER", !0), tl = Jt("FOR", !0), od = Jt("OF", !0), Kl = Jt("AUTO_INCREMENT", !0), Fl = Jt("UNIQUE", !0), vf = Jt("KEY", !0), Gd = Jt("PRIMARY", !0), tm = Jt("GENERATED", !0), Hm = Jt("BY", !0), yp = Jt("DEFAULT", !0), Hd = Jt("AS", !0), wp = Jt("IDENTITY", !0), jp = Jt("COLUMN_FORMAT", !0), $h = Jt("FIXED", !0), xl = Jt("DYNAMIC", !0), rm = Jt("STORAGE", !0), th = Jt("DISK", !0), nm = Jt("MEMORY", !0), op = Jt("CASCADE", !0), $f = Jt("RESTRICT", !0), Bc = Jt("ONLY", !0), id = Jt("CONTINUE", !0), Vm = Jt("OUT", !0), ad = Jt("VARIADIC", !0), rh = Jt("OWNER", !0), Wm = Jt("LOGGED", !0), Cp = Jt("UNLOGGED", !0), Am = Jt("only", !0), nh = Jt("CONSTRAINT", !0), ip = Jt("CURRENT_ROLE", !0), Vd = Jt("CURRENT_USER", !0), Do = Jt("SESSION_USER", !0), bf = Jt("ALGORITHM", !0), Ff = Jt("INSTANT", !0), Wd = Jt("INPLACE", !0), $p = Jt("COPY", !0), Fh = Jt("LOCK", !0), Ym = Jt("SHARED", !0), Fp = Jt("EXCLUSIVE", !0), Uh = Jt("data", !0), Ch = Jt("type", !0), sm = Jt("REPLICA", !0), Up = Jt("FULL", !0), Lp = Jt("NOTHING", !0), Nc = Jt("PRIMARY KEY", !0), xp = Jt("FOREIGN KEY", !0), hv = Jt("ENFORCED", !0), om = Jt("MATCH FULL", !0), Lh = Jt("MATCH PARTIAL", !0), gf = Jt("MATCH SIMPLE", !0), Uf = Jt("SET NULL", !0), sh = Jt("NO ACTION", !0), im = Jt("SET DEFAULT", !0), ju = Jt("TRIGGER", !0), Bf = Jt("BEFORE", !0), zf = Jt("AFTER", !0), Qm = Jt("INSTEAD OF", !0), xh = Jt("EXECUTE", !0), oh = Jt("PROCEDURE", !0), Bp = Jt("DEFERRABLE", !0), am = Jt("INITIALLY IMMEDIATE", !0), Km = Jt("INITIALLY DEFERRED", !0), _m = Jt("EACH", !0), tf = Jt("ROW", !0), qf = Jt("STATEMENT", !0), ud = Jt("CHARACTER", !0), Bh = Jt("SET", !0), ih = Jt("CHARSET", !0), Eh = Jt("COLLATE", !0), Ep = Jt("AVG_ROW_LENGTH", !0), Sh = Jt("KEY_BLOCK_SIZE", !0), zh = Jt("MAX_ROWS", !0), Tm = Jt("MIN_ROWS", !0), Sp = Jt("STATS_SAMPLE_PAGES", !0), yf = Jt("CONNECTION", !0), zp = Jt("COMPRESSION", !0), _t = Jt("'", !1), Or = Jt("ZLIB", !0), cn = Jt("LZ4", !0), Wr = Jt("ENGINE", !0), bs = Jt("IN", !0), cs = Jt("ACCESS SHARE", !0), Ns = Jt("ROW SHARE", !0), fo = Jt("ROW EXCLUSIVE", !0), io = Jt("SHARE UPDATE EXCLUSIVE", !0), Uo = Jt("SHARE ROW EXCLUSIVE", !0), Ko = Jt("ACCESS EXCLUSIVE", !0), fi = Jt("SHARE", !0), Bi = Jt("MODE", !0), Di = Jt("NOWAIT", !0), ba = Jt("TABLES", !0), Pa = Jt("PREPARE", !0), Ki = Jt("USAGE", !0), ja = function(C) {
+      }, Cl = Jt("RESTART", !0), Nl = Jt("CACHE", !0), va = Jt("CYCLE", !0), Nu = Jt("OWNED", !0), mu = Jt("NONE", !0), Ru = Jt("INCLUDE", !0), Ll = Jt("NULLS", !0), Rl = Jt("FIRST", !0), Ju = Jt("LAST", !0), ef = Jt("MODULUS", !0), el = Jt("REMAINDER", !0), tl = Jt("FOR", !0), id = Jt("OF", !0), Kl = Jt("AUTO_INCREMENT", !0), Fl = Jt("UNIQUE", !0), vf = Jt("KEY", !0), Gd = Jt("PRIMARY", !0), tm = Jt("GENERATED", !0), Hm = Jt("BY", !0), yp = Jt("DEFAULT", !0), Hd = Jt("AS", !0), wp = Jt("IDENTITY", !0), jp = Jt("COLUMN_FORMAT", !0), $h = Jt("FIXED", !0), xl = Jt("DYNAMIC", !0), rm = Jt("STORAGE", !0), th = Jt("DISK", !0), nm = Jt("MEMORY", !0), op = Jt("CASCADE", !0), $f = Jt("RESTRICT", !0), Bc = Jt("ONLY", !0), ad = Jt("CONTINUE", !0), Vm = Jt("OUT", !0), ud = Jt("VARIADIC", !0), rh = Jt("OWNER", !0), Wm = Jt("LOGGED", !0), Cp = Jt("UNLOGGED", !0), Am = Jt("only", !0), nh = Jt("CONSTRAINT", !0), ip = Jt("CURRENT_ROLE", !0), Vd = Jt("CURRENT_USER", !0), Do = Jt("SESSION_USER", !0), bf = Jt("ALGORITHM", !0), Ff = Jt("INSTANT", !0), Wd = Jt("INPLACE", !0), $p = Jt("COPY", !0), Fh = Jt("LOCK", !0), Ym = Jt("SHARED", !0), Fp = Jt("EXCLUSIVE", !0), Uh = Jt("data", !0), Ch = Jt("type", !0), sm = Jt("REPLICA", !0), Up = Jt("FULL", !0), Lp = Jt("NOTHING", !0), Nc = Jt("PRIMARY KEY", !0), xp = Jt("FOREIGN KEY", !0), hv = Jt("ENFORCED", !0), om = Jt("MATCH FULL", !0), Lh = Jt("MATCH PARTIAL", !0), gf = Jt("MATCH SIMPLE", !0), Uf = Jt("SET NULL", !0), sh = Jt("NO ACTION", !0), im = Jt("SET DEFAULT", !0), ju = Jt("TRIGGER", !0), Bf = Jt("BEFORE", !0), zf = Jt("AFTER", !0), Qm = Jt("INSTEAD OF", !0), xh = Jt("EXECUTE", !0), oh = Jt("PROCEDURE", !0), Bp = Jt("DEFERRABLE", !0), am = Jt("INITIALLY IMMEDIATE", !0), Km = Jt("INITIALLY DEFERRED", !0), _m = Jt("EACH", !0), tf = Jt("ROW", !0), qf = Jt("STATEMENT", !0), ld = Jt("CHARACTER", !0), Bh = Jt("SET", !0), ih = Jt("CHARSET", !0), Eh = Jt("COLLATE", !0), Ep = Jt("AVG_ROW_LENGTH", !0), Sh = Jt("KEY_BLOCK_SIZE", !0), zh = Jt("MAX_ROWS", !0), Tm = Jt("MIN_ROWS", !0), Sp = Jt("STATS_SAMPLE_PAGES", !0), yf = Jt("CONNECTION", !0), zp = Jt("COMPRESSION", !0), _t = Jt("'", !1), Or = Jt("ZLIB", !0), cn = Jt("LZ4", !0), Wr = Jt("ENGINE", !0), bs = Jt("IN", !0), cs = Jt("ACCESS SHARE", !0), Ns = Jt("ROW SHARE", !0), fo = Jt("ROW EXCLUSIVE", !0), io = Jt("SHARE UPDATE EXCLUSIVE", !0), Uo = Jt("SHARE ROW EXCLUSIVE", !0), Ko = Jt("ACCESS EXCLUSIVE", !0), fi = Jt("SHARE", !0), Bi = Jt("MODE", !0), Di = Jt("NOWAIT", !0), ba = Jt("TABLES", !0), Pa = Jt("PREPARE", !0), Ki = Jt("USAGE", !0), ja = function(C) {
         return { type: "origin", value: Array.isArray(C) ? C[0] : C };
       }, Ta = Jt("CONNECT", !0), vu = Jt("PRIVILEGES", !0), cu = function(C) {
         return { type: "origin", value: C };
-      }, ul = Jt("SEQUENCE", !0), Ou = Jt("DATABASE", !0), ec = Jt("DOMAIN", !1), Eu = Jt("FUNCTION", !1), uc = Jt("ROUTINE", !0), Td = Jt("LANGUAGE", !0), Gf = Jt("LARGE", !0), Cc = Jt("SCHEMA", !1), ah = Jt("FUNCTIONS", !0), qp = Jt("PROCEDURES", !0), ll = Jt("ROUTINES", !0), zc = Jt("PUBLIC", !0), Id = Jt("GRANT", !0), ld = Jt("OPTION", !0), um = Jt("ADMIN", !0), Xm = Jt("REVOKE", !0), Cd = Jt("ELSEIF", !0), Hf = Jt("THEN", !0), Nd = Jt("END", !0), Yd = Jt("DEBUG", !0), Qd = Jt("LOG", !0), uh = Jt("INFO", !0), Qv = Jt("NOTICE", !0), Zm = Jt("WARNING", !0), Kv = Jt("EXCEPTION", !0), Xv = Jt("MESSAGE", !0), Vf = Jt("DETAIL", !0), wf = Jt("HINT", !0), Im = Jt("ERRCODE", !0), Gp = Jt("COLUMN", !0), mv = Jt("DATATYPE", !0), Jm = Jt("TABLE", !0), vv = Jt("SQLSTATE", !0), Zv = Jt("RAISE", !0), lm = Jt("LOOP", !0), ev = Jt("SERIALIZABLE", !0), bv = Jt("REPEATABLE", !0), tv = Jt("READ", !0), cm = Jt("COMMITTED", !0), Av = Jt("UNCOMMITTED", !0), _v = function(C) {
+      }, ul = Jt("SEQUENCE", !0), Ou = Jt("DATABASE", !0), ec = Jt("DOMAIN", !1), Eu = Jt("FUNCTION", !1), uc = Jt("ROUTINE", !0), Td = Jt("LANGUAGE", !0), Gf = Jt("LARGE", !0), Cc = Jt("SCHEMA", !1), ah = Jt("FUNCTIONS", !0), qp = Jt("PROCEDURES", !0), ll = Jt("ROUTINES", !0), zc = Jt("PUBLIC", !0), Id = Jt("GRANT", !0), cd = Jt("OPTION", !0), um = Jt("ADMIN", !0), Xm = Jt("REVOKE", !0), Cd = Jt("ELSEIF", !0), Hf = Jt("THEN", !0), Nd = Jt("END", !0), Yd = Jt("DEBUG", !0), Qd = Jt("LOG", !0), uh = Jt("INFO", !0), Qv = Jt("NOTICE", !0), Zm = Jt("WARNING", !0), Kv = Jt("EXCEPTION", !0), Xv = Jt("MESSAGE", !0), Vf = Jt("DETAIL", !0), wf = Jt("HINT", !0), Im = Jt("ERRCODE", !0), Gp = Jt("COLUMN", !0), mv = Jt("DATATYPE", !0), Jm = Jt("TABLE", !0), vv = Jt("SQLSTATE", !0), Zv = Jt("RAISE", !0), lm = Jt("LOOP", !0), ev = Jt("SERIALIZABLE", !0), bv = Jt("REPEATABLE", !0), tv = Jt("READ", !0), cm = Jt("COMMITTED", !0), Av = Jt("UNCOMMITTED", !0), _v = function(C) {
         return { type: "origin", value: "read " + C.toLowerCase() };
-      }, Nm = Jt("ISOLATION", !0), Jv = Jt("LEVEL", !0), Lb = Jt("WRITE", !0), gv = Jt("commit", !0), xb = Jt("rollback", !0), Tv = Jt("begin", !0), Eb = Jt("WORK", !0), Db = Jt("TRANSACTION", !0), Iv = Jt("start", !0), Nv = Jt("transaction", !0), eb = Jt("ROLE", !0), fm = Jt("SERVER", !0), Ap = Jt("SUBSCRIPTION", !0), Kd = Jt("IS", !0), cd = Jt("COMMENT", !0), Ah = Jt("(", !1), qh = Jt(")", !1), Rv = Jt(";", !1), tb = Jt("AT", !0), dm = Jt("ZONE", !0), Ov = Jt("OUTFILE", !0), kv = Jt("DUMPFILE", !0), Mv = Jt("BTREE", !0), Rm = Jt("HASH", !0), _h = Jt("GIST", !0), Gh = Jt("GIN", !0), rv = Jt("WITH", !0), rb = Jt("PARSER", !0), Dv = Jt("VISIBLE", !0), nb = Jt("INVISIBLE", !0), sb = function(C, k) {
+      }, Nm = Jt("ISOLATION", !0), Jv = Jt("LEVEL", !0), Lb = Jt("WRITE", !0), gv = Jt("commit", !0), xb = Jt("rollback", !0), Tv = Jt("begin", !0), Eb = Jt("WORK", !0), Db = Jt("TRANSACTION", !0), Iv = Jt("start", !0), Nv = Jt("transaction", !0), eb = Jt("ROLE", !0), fm = Jt("SERVER", !0), Ap = Jt("SUBSCRIPTION", !0), Kd = Jt("IS", !0), fd = Jt("COMMENT", !0), Ah = Jt("(", !1), qh = Jt(")", !1), Rv = Jt(";", !1), tb = Jt("AT", !0), dm = Jt("ZONE", !0), Ov = Jt("OUTFILE", !0), kv = Jt("DUMPFILE", !0), Mv = Jt("BTREE", !0), Rm = Jt("HASH", !0), _h = Jt("GIST", !0), Gh = Jt("GIN", !0), rv = Jt("WITH", !0), rb = Jt("PARSER", !0), Dv = Jt("VISIBLE", !0), nb = Jt("INVISIBLE", !0), sb = function(C, k) {
         return k.unshift(C), k.forEach((W) => {
           const { table: ue, as: Ve } = W;
           O3[ue] = ue, Ve && (O3[Ve] = ue), function(pt) {
-            const st = yd(pt);
+            const st = wd(pt);
             pt.clear(), st.forEach((Pt) => pt.add(Pt));
           }(Ml);
         }), k;
@@ -107237,12 +107261,12 @@ function aEt() {
         return { type: "default", value: C };
       }, hm = function(C) {
         return mH[C.toUpperCase()] === !0;
-      }, xf = Jt('"', !1), nv = /^[^"]/, $r = Qs(['"'], !0, !1), Gs = /^[^']/, kd = Qs(["'"], !0, !1), Mm = Jt("`", !1), sv = /^[^`]/, ws = Qs(["`"], !0, !1), Bv = /^[A-Za-z_\u4E00-\u9FA5\xC0-\u017F]/, hb = Qs([["A", "Z"], ["a", "z"], "_", ["一", "龥"], ["À", "ſ"]], !1, !1), jb = /^[A-Za-z0-9_\-$\u4E00-\u9FA5\xC0-\u017F]/, mm = Qs([["A", "Z"], ["a", "z"], ["0", "9"], "_", "-", "$", ["一", "龥"], ["À", "ſ"]], !1, !1), B = /^[A-Za-z0-9_\u4E00-\u9FA5\xC0-\u017F]/, is = Qs([["A", "Z"], ["a", "z"], ["0", "9"], "_", ["一", "龥"], ["À", "ſ"]], !1, !1), Dm = Jt(":", !1), _p = Jt("OVER", !0), Pm = Jt("FILTER", !0), Ir = Jt("FIRST_VALUE", !0), Ds = Jt("LAST_VALUE", !0), fd = Jt("ROW_NUMBER", !0), xv = Jt("DENSE_RANK", !0), vm = Jt("RANK", !0), ls = Jt("LAG", !0), mb = Jt("LEAD", !0), ov = Jt("NTH_VALUE", !0), bm = Jt("IGNORE", !0), iv = Jt("RESPECT", !0), jm = Jt("percentile_cont", !0), Hp = Jt("percentile_disc", !0), $m = Jt("within", !0), Fm = Jt("mode", !0), Th = Jt("POSITION", !0), Ih = Jt("BOTH", !0), D = Jt("LEADING", !0), Zn = Jt("TRAILING", !0), Vh = Jt("trim", !0), Ef = Jt("crosstab", !0), Nh = Jt("jsonb_to_recordset", !0), wr = Jt("jsonb_to_record", !0), _s = Jt("json_to_recordset", !0), El = Jt("json_to_record", !0), lh = Jt("substring", !0), Wh = Jt("years", !0), es = Jt("months", !0), qc = Jt("weeks", !0), lc = Jt("days", !0), av = Jt("hours", !0), Vp = Jt("mins", !0), ap = Jt("=>", !1), Xd = Jt("secs", !0), Ev = Jt("make_interval", !0), ch = Jt("now", !0), gm = Jt("at", !0), vb = Jt("zone", !0), ym = Jt("CENTURY", !0), wm = Jt("DAY", !0), Yh = Jt("DATE", !0), Um = Jt("DECADE", !0), dd = Jt("DOW", !0), zv = Jt("DOY", !0), Qh = Jt("EPOCH", !0), Cm = Jt("HOUR", !0), up = Jt("ISODOW", !0), Bm = Jt("ISOYEAR", !0), fh = Jt("MICROSECONDS", !0), N = Jt("MILLENNIUM", !0), Hn = Jt("MILLISECONDS", !0), Sf = Jt("MINUTE", !0), T = Jt("MONTH", !0), Vn = Jt("QUARTER", !0), fr = Jt("SECOND", !0), Ls = Jt("TIMEZONE", !0), Rc = Jt("TIMEZONE_HOUR", !0), mr = Jt("TIMEZONE_MINUTE", !0), ms = Jt("WEEK", !0), On = Jt("YEAR", !0), Wp = Jt("NTILE", !0), dh = /^[\n]/, $n = Qs([`
-`], !1, !1), A = /^[^"\\\0-\x1F\x7F]/, Dn = Qs(['"', "\\", ["\0", ""], ""], !0, !1), Af = /^[^'\\]/, Lc = Qs(["'", "\\"], !0, !1), xc = Jt("\\'", !1), rr = Jt('\\"', !1), fs = Jt("\\\\", !1), tc = Jt("\\/", !1), rc = Jt("\\b", !1), Yp = Jt("\\f", !1), Rn = Jt("\\n", !1), Rh = Jt("\\r", !1), Zd = Jt("\\t", !1), ph = Jt("\\u", !1), Tp = Jt("\\", !1), Qp = Jt("''", !1), pd = /^[\n\r]/, cc = Qs([`
-`, "\r"], !1, !1), nf = Jt(".", !1), $u = /^[0-9]/, Ro = Qs([["0", "9"]], !1, !1), Kh = /^[0-9a-fA-F]/, lp = Qs([["0", "9"], ["a", "f"], ["A", "F"]], !1, !1), hh = /^[eE]/, mh = Qs(["e", "E"], !1, !1), Ld = /^[+\-]/, Oh = Qs(["+", "-"], !1, !1), Gc = Jt("NOT NULL", !0), Yf = Jt("TRUE", !0), sf = Jt("FALSE", !0), zo = Jt("SHOW", !0), Kp = Jt("DROP", !0), Ip = Jt("USE", !0), Np = Jt("ALTER", !0), fu = Jt("SELECT", !0), of = Jt("UPDATE", !0), Md = Jt("CREATE", !0), Jd = Jt("TEMPORARY", !0), hd = Jt("UNLOGGED", !1), Dd = Jt("TEMP", !0), ep = Jt("DELETE", !0), af = Jt("INSERT", !0), cp = Jt("RECURSIVE", !0), Yu = Jt("REPLACE", !0), Qf = Jt("RETURN", !0), tp = Jt("RETURNING", !0), Rp = Jt("RENAME", !0), Op = Jt("PARTITION", !0), fc = Jt("INTO", !0), _f = Jt("FROM", !0), Sl = Jt("TABLESPACE", !0), vh = Jt("COLLATION", !0), Pd = Jt("DEALLOCATE", !0), uf = Jt("LEFT", !0), Ol = Jt("RIGHT", !0), bh = Jt("INNER", !0), kp = Jt("JOIN", !0), jd = Jt("OUTER", !0), md = Jt("UNION", !0), vd = Jt("INTERSECT", !0), zl = Jt("EXCEPT", !0), Go = Jt("VALUES", !0), rp = Jt("USING", !0), Oc = Jt("WHERE", !0), Kf = Jt("GROUP", !0), kc = Jt("ORDER", !0), Su = Jt("HAVING", !0), Mc = Jt("LIMIT", !0), L = Jt("OFFSET", !0), v = Jt("ASC", !0), Xr = Jt("DESC", !0), Pl = Jt("ALL", !0), Qu = Jt("DISTINCT", !0), Kt = Jt("BETWEEN", !0), qe = Jt("LIKE", !0), zn = Jt("ILIKE", !0), zu = Jt("EXISTS", !0), fp = Jt("AND", !0), hn = Jt("OR", !0), Vr = Jt("ARRAY", !0), Xf = Jt("ARRAY_AGG", !0), Wl = Jt("STRING_AGG", !0), Mp = Jt("COUNT", !0), Ku = Jt("GROUP_CONCAT", !0), uu = Jt("MAX", !0), ql = Jt("MIN", !0), Dc = Jt("SUM", !0), Tf = Jt("AVG", !0), Dp = Jt("EXTRACT", !0), ou = Jt("CALL", !0), Zf = Jt("CASE", !0), nc = Jt("WHEN", !0), dp = Jt("ELSE", !0), qu = Jt("CAST", !0), Oo = Jt("BOOL", !0), Al = Jt("BOOLEAN", !0), Pc = Jt("CHAR", !0), g = Jt("VARCHAR", !0), Qr = Jt("NUMERIC", !0), Hc = Jt("DECIMAL", !0), bl = Jt("SIGNED", !0), lf = Jt("UNSIGNED", !0), At = Jt("INT", !0), Ln = Jt("ZEROFILL", !0), $a = Jt("INTEGER", !0), uo = Jt("JSON", !0), Va = Jt("JSONB", !0), jr = Jt("GEOMETRY", !0), $d = Jt("SMALLINT", !0), If = Jt("SERIAL", !0), xd = Jt("SMALLSERIAL", !0), Jr = Jt("TINYINT", !0), Ec = Jt("TINYTEXT", !0), Gl = Jt("TEXT", !0), ga = Jt("MEDIUMTEXT", !0), cl = Jt("LONGTEXT", !0), lu = Jt("MEDIUMINT", !0), Qa = Jt("TSVECTOR", !0), Nf = Jt("TSQUERY", !0), cf = Jt("BIGINT", !0), ff = Jt("ENUM", !0), Gu = Jt("FLOAT", !0), zr = Jt("DOUBLE", !0), sc = Jt("BIGSERIAL", !0), gl = Jt("REAL", !0), Io = Jt("DATETIME", !0), Xl = Jt("TIME", !0), _l = Jt("TIMESTAMP", !0), Vc = Jt("TIMESTAMPTZ", !0), Au = Jt("TRUNCATE", !0), dc = Jt("USER", !0), Rf = Jt("UUID", !0), m = Jt("OID", !0), Br = Jt("REGCLASS", !0), Hl = Jt("REGCOLLATION", !0), Ul = Jt("REGCONFIG", !0), rl = Jt("REGDICTIONARY", !0), xt = Jt("REGNAMESPACE", !0), d = Jt("REGOPER", !0), Tr = Jt("REGOPERATOR", !0), ku = Jt("REGPROC", !0), za = Jt("REGPROCEDURE", !0), br = Jt("REGROLE", !0), Ct = Jt("REGTYPE", !0), Y = Jt("CIDR", !0), _e = Jt("INET", !0), He = Jt("MACADDR", !0), nt = Jt("MACADDR8", !0), Se = Jt("BIT", !0), qt = Jt("MONEY", !0), nr = Jt("CURRENT_DATE", !0), Yr = Jt("INTERVAL", !0), vn = Jt("CURRENT_TIME", !0), h = Jt("CURRENT_TIMESTAMP", !0), $t = Jt("SYSTEM_USER", !0), ne = Jt("GLOBAL", !0), de = Jt("SESSION", !0), Pe = Jt("PERSIST", !0), K = Jt("PERSIST_ONLY", !0), De = Jt("VIEW", !0), Ft = Jt("@", !1), tr = Jt("@@", !1), Rr = Jt("$$", !1), l = Jt("::", !1), dt = Jt("DUAL", !0), Nn = Jt("ADD", !0), Ot = Jt("INDEX", !0), Ms = Jt("FULLTEXT", !0), Qe = Jt("SPATIAL", !0), Fr = Jt("CONCURRENTLY", !0), Xo = Jt("REFERENCES", !0), gi = Jt("SQL_CALC_FOUND_ROWS", !0), mi = Jt("SQL_CACHE", !0), er = Jt("SQL_NO_CACHE", !0), Ai = Jt("SQL_SMALL_RESULT", !0), Qo = Jt("SQL_BIG_RESULT", !0), Ti = Jt("SQL_BUFFER_RESULT", !0), wi = Jt(",", !1), Hi = Jt("[", !1), Vi = Jt("]", !1), ka = Jt("->", !1), wu = Jt("->>", !1), bu = Jt("&&", !1), Bl = Jt("/*", !1), fl = Jt("*/", !1), qi = Jt("--", !1), nl = { type: "any" }, $i = /^[ \t\n\r]/, nu = Qs([" ", "	", `
+      }, xf = Jt('"', !1), nv = /^[^"]/, $r = Qs(['"'], !0, !1), Gs = /^[^']/, kd = Qs(["'"], !0, !1), Mm = Jt("`", !1), sv = /^[^`]/, ws = Qs(["`"], !0, !1), Bv = /^[A-Za-z_\u4E00-\u9FA5\xC0-\u017F]/, hb = Qs([["A", "Z"], ["a", "z"], "_", ["一", "龥"], ["À", "ſ"]], !1, !1), jb = /^[A-Za-z0-9_\-$\u4E00-\u9FA5\xC0-\u017F]/, mm = Qs([["A", "Z"], ["a", "z"], ["0", "9"], "_", "-", "$", ["一", "龥"], ["À", "ſ"]], !1, !1), B = /^[A-Za-z0-9_\u4E00-\u9FA5\xC0-\u017F]/, is = Qs([["A", "Z"], ["a", "z"], ["0", "9"], "_", ["一", "龥"], ["À", "ſ"]], !1, !1), Dm = Jt(":", !1), _p = Jt("OVER", !0), Pm = Jt("FILTER", !0), Ir = Jt("FIRST_VALUE", !0), Ds = Jt("LAST_VALUE", !0), dd = Jt("ROW_NUMBER", !0), xv = Jt("DENSE_RANK", !0), vm = Jt("RANK", !0), ls = Jt("LAG", !0), mb = Jt("LEAD", !0), ov = Jt("NTH_VALUE", !0), bm = Jt("IGNORE", !0), iv = Jt("RESPECT", !0), jm = Jt("percentile_cont", !0), Hp = Jt("percentile_disc", !0), $m = Jt("within", !0), Fm = Jt("mode", !0), Th = Jt("POSITION", !0), Ih = Jt("BOTH", !0), D = Jt("LEADING", !0), Zn = Jt("TRAILING", !0), Vh = Jt("trim", !0), Ef = Jt("crosstab", !0), Nh = Jt("jsonb_to_recordset", !0), wr = Jt("jsonb_to_record", !0), _s = Jt("json_to_recordset", !0), El = Jt("json_to_record", !0), lh = Jt("substring", !0), Wh = Jt("years", !0), es = Jt("months", !0), qc = Jt("weeks", !0), lc = Jt("days", !0), av = Jt("hours", !0), Vp = Jt("mins", !0), ap = Jt("=>", !1), Xd = Jt("secs", !0), Ev = Jt("make_interval", !0), ch = Jt("now", !0), gm = Jt("at", !0), vb = Jt("zone", !0), ym = Jt("CENTURY", !0), wm = Jt("DAY", !0), Yh = Jt("DATE", !0), Um = Jt("DECADE", !0), pd = Jt("DOW", !0), zv = Jt("DOY", !0), Qh = Jt("EPOCH", !0), Cm = Jt("HOUR", !0), up = Jt("ISODOW", !0), Bm = Jt("ISOYEAR", !0), fh = Jt("MICROSECONDS", !0), N = Jt("MILLENNIUM", !0), Hn = Jt("MILLISECONDS", !0), Sf = Jt("MINUTE", !0), T = Jt("MONTH", !0), Vn = Jt("QUARTER", !0), fr = Jt("SECOND", !0), Ls = Jt("TIMEZONE", !0), Rc = Jt("TIMEZONE_HOUR", !0), mr = Jt("TIMEZONE_MINUTE", !0), ms = Jt("WEEK", !0), On = Jt("YEAR", !0), Wp = Jt("NTILE", !0), dh = /^[\n]/, $n = Qs([`
+`], !1, !1), A = /^[^"\\\0-\x1F\x7F]/, Dn = Qs(['"', "\\", ["\0", ""], ""], !0, !1), Af = /^[^'\\]/, Lc = Qs(["'", "\\"], !0, !1), xc = Jt("\\'", !1), rr = Jt('\\"', !1), fs = Jt("\\\\", !1), tc = Jt("\\/", !1), rc = Jt("\\b", !1), Yp = Jt("\\f", !1), Rn = Jt("\\n", !1), Rh = Jt("\\r", !1), Zd = Jt("\\t", !1), ph = Jt("\\u", !1), Tp = Jt("\\", !1), Qp = Jt("''", !1), hd = /^[\n\r]/, cc = Qs([`
+`, "\r"], !1, !1), nf = Jt(".", !1), $u = /^[0-9]/, Ro = Qs([["0", "9"]], !1, !1), Kh = /^[0-9a-fA-F]/, lp = Qs([["0", "9"], ["a", "f"], ["A", "F"]], !1, !1), hh = /^[eE]/, mh = Qs(["e", "E"], !1, !1), Ld = /^[+\-]/, Oh = Qs(["+", "-"], !1, !1), Gc = Jt("NOT NULL", !0), Yf = Jt("TRUE", !0), sf = Jt("FALSE", !0), zo = Jt("SHOW", !0), Kp = Jt("DROP", !0), Ip = Jt("USE", !0), Np = Jt("ALTER", !0), fu = Jt("SELECT", !0), of = Jt("UPDATE", !0), Md = Jt("CREATE", !0), Jd = Jt("TEMPORARY", !0), md = Jt("UNLOGGED", !1), Dd = Jt("TEMP", !0), ep = Jt("DELETE", !0), af = Jt("INSERT", !0), cp = Jt("RECURSIVE", !0), Yu = Jt("REPLACE", !0), Qf = Jt("RETURN", !0), tp = Jt("RETURNING", !0), Rp = Jt("RENAME", !0), Op = Jt("PARTITION", !0), fc = Jt("INTO", !0), _f = Jt("FROM", !0), Sl = Jt("TABLESPACE", !0), vh = Jt("COLLATION", !0), Pd = Jt("DEALLOCATE", !0), uf = Jt("LEFT", !0), Ol = Jt("RIGHT", !0), bh = Jt("INNER", !0), kp = Jt("JOIN", !0), jd = Jt("OUTER", !0), vd = Jt("UNION", !0), bd = Jt("INTERSECT", !0), zl = Jt("EXCEPT", !0), Go = Jt("VALUES", !0), rp = Jt("USING", !0), Oc = Jt("WHERE", !0), Kf = Jt("GROUP", !0), kc = Jt("ORDER", !0), Su = Jt("HAVING", !0), Mc = Jt("LIMIT", !0), L = Jt("OFFSET", !0), v = Jt("ASC", !0), Xr = Jt("DESC", !0), Pl = Jt("ALL", !0), Qu = Jt("DISTINCT", !0), Kt = Jt("BETWEEN", !0), qe = Jt("LIKE", !0), zn = Jt("ILIKE", !0), zu = Jt("EXISTS", !0), fp = Jt("AND", !0), hn = Jt("OR", !0), Vr = Jt("ARRAY", !0), Xf = Jt("ARRAY_AGG", !0), Wl = Jt("STRING_AGG", !0), Mp = Jt("COUNT", !0), Ku = Jt("GROUP_CONCAT", !0), uu = Jt("MAX", !0), ql = Jt("MIN", !0), Dc = Jt("SUM", !0), Tf = Jt("AVG", !0), Dp = Jt("EXTRACT", !0), ou = Jt("CALL", !0), Zf = Jt("CASE", !0), nc = Jt("WHEN", !0), dp = Jt("ELSE", !0), qu = Jt("CAST", !0), Oo = Jt("BOOL", !0), Al = Jt("BOOLEAN", !0), Pc = Jt("CHAR", !0), g = Jt("VARCHAR", !0), Qr = Jt("NUMERIC", !0), Hc = Jt("DECIMAL", !0), bl = Jt("SIGNED", !0), lf = Jt("UNSIGNED", !0), At = Jt("INT", !0), Ln = Jt("ZEROFILL", !0), $a = Jt("INTEGER", !0), uo = Jt("JSON", !0), Va = Jt("JSONB", !0), jr = Jt("GEOMETRY", !0), $d = Jt("SMALLINT", !0), If = Jt("SERIAL", !0), xd = Jt("SMALLSERIAL", !0), Jr = Jt("TINYINT", !0), Ec = Jt("TINYTEXT", !0), Gl = Jt("TEXT", !0), ga = Jt("MEDIUMTEXT", !0), cl = Jt("LONGTEXT", !0), lu = Jt("MEDIUMINT", !0), Qa = Jt("TSVECTOR", !0), Nf = Jt("TSQUERY", !0), cf = Jt("BIGINT", !0), ff = Jt("ENUM", !0), Gu = Jt("FLOAT", !0), zr = Jt("DOUBLE", !0), sc = Jt("BIGSERIAL", !0), gl = Jt("REAL", !0), Io = Jt("DATETIME", !0), Xl = Jt("TIME", !0), _l = Jt("TIMESTAMP", !0), Vc = Jt("TIMESTAMPTZ", !0), Au = Jt("TRUNCATE", !0), dc = Jt("USER", !0), Rf = Jt("UUID", !0), m = Jt("OID", !0), Br = Jt("REGCLASS", !0), Hl = Jt("REGCOLLATION", !0), Ul = Jt("REGCONFIG", !0), rl = Jt("REGDICTIONARY", !0), xt = Jt("REGNAMESPACE", !0), d = Jt("REGOPER", !0), Tr = Jt("REGOPERATOR", !0), ku = Jt("REGPROC", !0), za = Jt("REGPROCEDURE", !0), br = Jt("REGROLE", !0), Ct = Jt("REGTYPE", !0), Y = Jt("CIDR", !0), _e = Jt("INET", !0), He = Jt("MACADDR", !0), nt = Jt("MACADDR8", !0), Se = Jt("BIT", !0), qt = Jt("MONEY", !0), nr = Jt("CURRENT_DATE", !0), Yr = Jt("INTERVAL", !0), vn = Jt("CURRENT_TIME", !0), h = Jt("CURRENT_TIMESTAMP", !0), $t = Jt("SYSTEM_USER", !0), ne = Jt("GLOBAL", !0), de = Jt("SESSION", !0), Pe = Jt("PERSIST", !0), K = Jt("PERSIST_ONLY", !0), De = Jt("VIEW", !0), Ft = Jt("@", !1), tr = Jt("@@", !1), Rr = Jt("$$", !1), l = Jt("::", !1), dt = Jt("DUAL", !0), Nn = Jt("ADD", !0), Ot = Jt("INDEX", !0), Ms = Jt("FULLTEXT", !0), Qe = Jt("SPATIAL", !0), Fr = Jt("CONCURRENTLY", !0), Xo = Jt("REFERENCES", !0), gi = Jt("SQL_CALC_FOUND_ROWS", !0), mi = Jt("SQL_CACHE", !0), er = Jt("SQL_NO_CACHE", !0), Ai = Jt("SQL_SMALL_RESULT", !0), Qo = Jt("SQL_BIG_RESULT", !0), Ti = Jt("SQL_BUFFER_RESULT", !0), wi = Jt(",", !1), Hi = Jt("[", !1), Vi = Jt("]", !1), ka = Jt("->", !1), wu = Jt("->>", !1), bu = Jt("&&", !1), Bl = Jt("/*", !1), fl = Jt("*/", !1), qi = Jt("--", !1), nl = { type: "any" }, $i = /^[ \t\n\r]/, nu = Qs([" ", "	", `
 `, "\r"], !1, !1), xo = Jt("default", !0), Yl = /^[^$]/, Mu = Qs(["$"], !0, !1), Cu = function(C) {
         return { dataType: C };
-      }, vr = Jt("bytea", !0), oc = Jt("varying", !0), bd = Jt("PRECISION", !0), Tl = Jt("WITHOUT", !0), Ql = function(C) {
+      }, vr = Jt("bytea", !0), oc = Jt("varying", !0), gd = Jt("PRECISION", !0), Tl = Jt("WITHOUT", !0), Ql = function(C) {
         return { dataType: C };
       }, du = Jt("POINT", !0), iu = Jt("LINESTRING", !0), eu = Jt("POLYGON", !0), J = Jt("MULTIPOINT", !0), be = Jt("MULTILINESTRING", !0), je = Jt("MULTIPOLYGON", !0), Ze = Jt("GEOMETRYCOLLECTION", !0), St = function(C) {
         return { dataType: C };
@@ -107282,20 +107306,20 @@ function aEt() {
         var C;
         return (C = function() {
           var k, W, ue, Ve, pt, st, Pt;
-          k = u, (W = oo()) !== e && Xe() !== e && (ue = lt()) !== e && Xe() !== e ? ((Ve = Z()) === e && (Ve = null), Ve !== e && Xe() !== e && (pt = kh()) !== e ? (Je = k, pr = W, Dr = ue, fn = Ve, (An = pt) && An.forEach((Wn) => kl.add(`${pr}::${[Wn.db, Wn.schema].filter(Boolean).join(".") || null}::${Wn.table}`)), W = { tableList: Array.from(kl), columnList: yd(Ml), ast: { type: pr.toLowerCase(), keyword: Dr.toLowerCase(), prefix: fn, name: An } }, k = W) : (u = k, k = e)) : (u = k, k = e);
+          k = u, (W = oo()) !== e && Xe() !== e && (ue = lt()) !== e && Xe() !== e ? ((Ve = Z()) === e && (Ve = null), Ve !== e && Xe() !== e && (pt = kh()) !== e ? (Je = k, pr = W, Dr = ue, fn = Ve, (An = pt) && An.forEach((Wn) => kl.add(`${pr}::${[Wn.db, Wn.schema].filter(Boolean).join(".") || null}::${Wn.table}`)), W = { tableList: Array.from(kl), columnList: wd(Ml), ast: { type: pr.toLowerCase(), keyword: Dr.toLowerCase(), prefix: fn, name: An } }, k = W) : (u = k, k = e)) : (u = k, k = e);
           var pr, Dr, fn, An;
           return k === e && (k = u, (W = oo()) !== e && Xe() !== e && (ue = ml()) !== e && Xe() !== e ? ((Ve = zg()) === e && (Ve = null), Ve !== e && Xe() !== e ? ((pt = Z()) === e && (pt = null), pt !== e && Xe() !== e && (st = Me()) !== e && Xe() !== e ? (r.substr(u, 7).toLowerCase() === "cascade" ? (Pt = r.substr(u, 7), u += 7) : (Pt = e, Te === 0 && Qt(op)), Pt === e && (r.substr(u, 8).toLowerCase() === "restrict" ? (Pt = r.substr(u, 8), u += 8) : (Pt = e, Te === 0 && Qt($f))), Pt === e && (Pt = null), Pt !== e ? (Je = k, W = function(Wn, Fn, hs, Os, qs, ro) {
-            return { tableList: Array.from(kl), columnList: yd(Ml), ast: { type: Wn.toLowerCase(), keyword: Fn.toLowerCase(), prefix: [hs, Os].filter((so) => so).join(" "), name: qs, options: ro && [{ type: "origin", value: ro }] } };
+            return { tableList: Array.from(kl), columnList: wd(Ml), ast: { type: Wn.toLowerCase(), keyword: Fn.toLowerCase(), prefix: [hs, Os].filter((so) => so).join(" "), name: qs, options: ro && [{ type: "origin", value: ro }] } };
           }(W, ue, Ve, pt, st, Pt), k = W) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e), k === e && (k = u, (W = oo()) !== e && Xe() !== e && (ue = function() {
             var Wn, Fn, hs, Os;
             return Wn = u, r.substr(u, 4).toLowerCase() === "type" ? (Fn = r.substr(u, 4), u += 4) : (Fn = e, Te === 0 && Qt(Vo)), Fn !== e ? (hs = u, Te++, Os = $s(), Te--, Os === e ? hs = void 0 : (u = hs, hs = e), hs !== e ? (Je = Wn, Wn = Fn = "TYPE") : (u = Wn, Wn = e)) : (u = Wn, Wn = e), Wn;
           }()) !== e && Xe() !== e ? ((Ve = Z()) === e && (Ve = null), Ve !== e && Xe() !== e && (pt = Yc()) !== e && Xe() !== e ? (r.substr(u, 7).toLowerCase() === "cascade" ? (st = r.substr(u, 7), u += 7) : (st = e, Te === 0 && Qt(op)), st === e && (r.substr(u, 8).toLowerCase() === "restrict" ? (st = r.substr(u, 8), u += 8) : (st = e, Te === 0 && Qt($f))), st === e && (st = null), st !== e ? (Je = k, W = function(Wn, Fn, hs, Os, qs) {
-            return { tableList: Array.from(kl), columnList: yd(Ml), ast: { type: Wn.toLowerCase(), keyword: Fn.toLowerCase(), prefix: [hs].filter((ro) => ro).join(" "), name: Os, options: qs && [{ type: "origin", value: qs }] } };
+            return { tableList: Array.from(kl), columnList: wd(Ml), ast: { type: Wn.toLowerCase(), keyword: Fn.toLowerCase(), prefix: [hs].filter((ro) => ro).join(" "), name: Os, options: qs && [{ type: "origin", value: qs }] } };
           }(W, ue, Ve, pt, st), k = W) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e), k === e && (k = u, (W = oo()) !== e && Xe() !== e && (ue = Ys()) !== e && Xe() !== e ? ((Ve = Z()) === e && (Ve = null), Ve !== e && Xe() !== e && (pt = kh()) !== e && Xe() !== e ? ((st = function() {
             var Wn, Fn;
             return Wn = u, r.substr(u, 8).toLowerCase() === "restrict" ? (Fn = r.substr(u, 8), u += 8) : (Fn = e, Te === 0 && Qt($f)), Fn === e && (r.substr(u, 7).toLowerCase() === "cascade" ? (Fn = r.substr(u, 7), u += 7) : (Fn = e, Te === 0 && Qt(op))), Fn !== e && (Je = Wn, Fn = Fn.toLowerCase()), Wn = Fn;
           }()) === e && (st = null), st !== e ? (Je = k, W = function(Wn, Fn, hs, Os, qs) {
-            return { tableList: Array.from(kl), columnList: yd(Ml), ast: { type: Wn.toLowerCase(), keyword: Fn.toLowerCase(), prefix: hs, name: Os, options: qs && [{ type: "origin", value: qs }] } };
+            return { tableList: Array.from(kl), columnList: wd(Ml), ast: { type: Wn.toLowerCase(), keyword: Fn.toLowerCase(), prefix: hs, name: Os, options: qs && [{ type: "origin", value: qs }] } };
           }(W, ue, Ve, pt, st), k = W) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e)))), k;
         }()) === e && (C = function() {
           var k;
@@ -107303,7 +107327,7 @@ function aEt() {
             var W, ue, Ve, pt, st, Pt, pr, Dr, fn, An, Wn;
             W = u, (ue = Du()) !== e && Xe() !== e ? ((Ve = gu()) === e && (Ve = Xu()), Ve === e && (Ve = null), Ve !== e && Xe() !== e ? ((pt = ht()) === e && (pt = null), pt !== e && Xe() !== e && lt() !== e && Xe() !== e ? ((st = Aa()) === e && (st = null), st !== e && Xe() !== e && (Pt = kh()) !== e && Xe() !== e && (pr = function() {
               var bo, Ws, Ao, Wo, Mo, vi, Li, ki, Ea;
-              bo = u, (Ws = E()) !== e && Xe() !== e ? (r.substr(u, 2).toLowerCase() === "of" ? (Ao = r.substr(u, 2), u += 2) : (Ao = e, Te === 0 && Qt(od)), Ao !== e && Xe() !== e && (Wo = Hu()) !== e && Xe() !== e && (Mo = function() {
+              bo = u, (Ws = E()) !== e && Xe() !== e ? (r.substr(u, 2).toLowerCase() === "of" ? (Ao = r.substr(u, 2), u += 2) : (Ao = e, Te === 0 && Qt(id)), Ao !== e && Xe() !== e && (Wo = Hu()) !== e && Xe() !== e && (Mo = function() {
                 var Zu, Dh, Zh;
                 return Zu = u, r.substr(u, 3).toLowerCase() === "for" ? (Dh = r.substr(u, 3), u += 3) : (Dh = e, Te === 0 && Qt(tl)), Dh !== e && Xe() !== e && ps() !== e && Xe() !== e && (Zh = function() {
                   var hf, _y, gC, pL, Vv;
@@ -107312,7 +107336,7 @@ function aEt() {
               }()) !== e && Xe() !== e ? (vi = u, (Li = mn()) !== e && (ki = Xe()) !== e && (Ea = Bt()) !== e ? vi = Li = [Li, ki, Ea] : (u = vi, vi = e), vi === e && (vi = null), vi !== e ? (Je = bo, Ws = { type: "partition_of", keyword: "partition of", table: Wo, for_values: Mo, tablespace: (il = vi) && il[2] }, bo = Ws) : (u = bo, bo = e)) : (u = bo, bo = e)) : (u = bo, bo = e);
               var il;
               return bo;
-            }()) !== e ? (Je = W, Fn = ue, hs = Ve, Os = pt, qs = st, so = pr, (ro = Pt) && ro.forEach((bo) => kl.add(`create::${[bo.db, bo.schema].filter(Boolean).join(".") || null}::${bo.table}`)), ue = { tableList: Array.from(kl), columnList: yd(Ml), ast: { type: Fn[0].toLowerCase(), keyword: "table", temporary: hs && hs[0].toLowerCase(), unlogged: Os, if_not_exists: qs, table: ro, partition_of: so } }, W = ue) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e);
+            }()) !== e ? (Je = W, Fn = ue, hs = Ve, Os = pt, qs = st, so = pr, (ro = Pt) && ro.forEach((bo) => kl.add(`create::${[bo.db, bo.schema].filter(Boolean).join(".") || null}::${bo.table}`)), ue = { tableList: Array.from(kl), columnList: wd(Ml), ast: { type: Fn[0].toLowerCase(), keyword: "table", temporary: hs && hs[0].toLowerCase(), unlogged: Os, if_not_exists: qs, table: ro, partition_of: so } }, W = ue) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e);
             var Fn, hs, Os, qs, ro, so;
             return W === e && (W = u, (ue = Du()) !== e && Xe() !== e ? ((Ve = gu()) === e && (Ve = Xu()), Ve === e && (Ve = null), Ve !== e && Xe() !== e ? ((pt = ht()) === e && (pt = null), pt !== e && Xe() !== e && lt() !== e && Xe() !== e ? ((st = Aa()) === e && (st = null), st !== e && Xe() !== e && (Pt = kh()) !== e && Xe() !== e ? ((pr = function() {
               var bo, Ws, Ao, Wo, Mo, vi, Li, ki, Ea;
@@ -107331,7 +107355,7 @@ function aEt() {
               } else u = bo, bo = e;
               return bo;
             }()) === e && (Dr = null), Dr !== e && Xe() !== e ? ((fn = Qb()) === e && (fn = pa()), fn === e && (fn = null), fn !== e && Xe() !== e ? ((An = Ke()) === e && (An = null), An !== e && Xe() !== e ? ((Wn = Zo()) === e && (Wn = null), Wn !== e ? (Je = W, ue = function(bo, Ws, Ao, Wo, Mo, vi, Li, ki, Ea, il) {
-              return Mo && Mo.forEach((Zu) => kl.add(`create::${[Zu.db, Zu.schema].filter(Boolean).join(".") || null}::${Zu.table}`)), { tableList: Array.from(kl), columnList: yd(Ml), ast: { type: bo[0].toLowerCase(), keyword: "table", temporary: Ws && Ws[0].toLowerCase(), unlogged: Ao, if_not_exists: Wo, table: Mo, ignore_replace: ki && ki[0].toLowerCase(), as: Ea && Ea[0].toLowerCase(), query_expr: il && il.ast, create_definitions: vi, table_options: Li } };
+              return Mo && Mo.forEach((Zu) => kl.add(`create::${[Zu.db, Zu.schema].filter(Boolean).join(".") || null}::${Zu.table}`)), { tableList: Array.from(kl), columnList: wd(Ml), ast: { type: bo[0].toLowerCase(), keyword: "table", temporary: Ws && Ws[0].toLowerCase(), unlogged: Ao, if_not_exists: Wo, table: Mo, ignore_replace: ki && ki[0].toLowerCase(), as: Ea && Ea[0].toLowerCase(), query_expr: il && il.ast, create_definitions: vi, table_options: Li } };
             }(ue, Ve, pt, st, Pt, pr, Dr, fn, An, Wn), W = ue) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e), W === e && (W = u, (ue = Du()) !== e && Xe() !== e ? ((Ve = gu()) === e && (Ve = Xu()), Ve === e && (Ve = null), Ve !== e && Xe() !== e ? ((pt = ht()) === e && (pt = null), pt !== e && Xe() !== e && lt() !== e && Xe() !== e ? ((st = Aa()) === e && (st = null), st !== e && Xe() !== e && (Pt = kh()) !== e && Xe() !== e && (pr = function bo() {
               var Ws, Ao;
               (Ws = function() {
@@ -107341,7 +107365,7 @@ function aEt() {
               var Wo;
               return Ws;
             }()) !== e ? (Je = W, ue = function(bo, Ws, Ao, Wo, Mo, vi) {
-              return Mo && Mo.forEach((Li) => kl.add(`create::${[Li.db, Li.schema].filter(Boolean).join(".") || null}::${Li.table}`)), { tableList: Array.from(kl), columnList: yd(Ml), ast: { type: bo[0].toLowerCase(), keyword: "table", temporary: Ws && Ws[0].toLowerCase(), unlogged: Ao, if_not_exists: Wo, table: Mo, like: vi } };
+              return Mo && Mo.forEach((Li) => kl.add(`create::${[Li.db, Li.schema].filter(Boolean).join(".") || null}::${Li.table}`)), { tableList: Array.from(kl), columnList: wd(Ml), ast: { type: bo[0].toLowerCase(), keyword: "table", temporary: Ws && Ws[0].toLowerCase(), unlogged: Ao, if_not_exists: Wo, table: Mo, like: vi } };
             }(ue, Ve, pt, st, Pt, pr), W = ue) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e))), W;
           }()) === e && (k = function() {
             var W, ue, Ve, pt, st, Pt, pr, Dr, fn, An, Wn, Fn, hs, Os, qs, ro, so, bo, Ws, Ao, Wo;
@@ -107394,13 +107418,13 @@ function aEt() {
                 ty !== e ? (Je = Vv, Xg = qd(Xg, ty), Vv = Xg) : (u = Vv, Vv = e);
               } else u = Vv, Vv = e;
               return Vv;
-            }()) !== e && (Ws = Xe()) !== e && (Ao = xa()) !== e ? hs = Os = [Os, qs, ro, so, bo, Ws, Ao] : (u = hs, hs = e), hs === e && (hs = null), hs !== e && (Os = Xe()) !== e ? (qs = u, (ro = mn()) !== e && (so = Xe()) !== e && (bo = Ho()) !== e ? qs = ro = [ro, so, bo] : (u = qs, qs = e), qs === e && (qs = null), qs !== e && (ro = Xe()) !== e ? ((so = Ca()) === e && (so = null), so !== e && (bo = Xe()) !== e ? (Je = W, Wo = ue, Mo = Ve, vi = pt, Li = st, ki = Pt, Ea = pr, il = Dr, Zu = fn, Dh = An, Zh = Wn, hf = Fn, _y = hs, gC = qs, pL = so, ue = { tableList: Array.from(kl), columnList: yd(Ml), ast: { type: Wo[0].toLowerCase(), index_type: Mo && Mo.toLowerCase(), keyword: vi.toLowerCase(), concurrently: ki && ki.toLowerCase(), index: Ea, if_not_exists: Li, on_kw: il[0].toLowerCase(), table: Zu, index_using: Dh, index_columns: Zh, include: hf, with: _y && _y[4], with_before_where: !0, tablespace: gC && { type: "origin", value: gC[2] }, where: pL } }, W = ue) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e);
+            }()) !== e && (Ws = Xe()) !== e && (Ao = xa()) !== e ? hs = Os = [Os, qs, ro, so, bo, Ws, Ao] : (u = hs, hs = e), hs === e && (hs = null), hs !== e && (Os = Xe()) !== e ? (qs = u, (ro = mn()) !== e && (so = Xe()) !== e && (bo = Ho()) !== e ? qs = ro = [ro, so, bo] : (u = qs, qs = e), qs === e && (qs = null), qs !== e && (ro = Xe()) !== e ? ((so = Ca()) === e && (so = null), so !== e && (bo = Xe()) !== e ? (Je = W, Wo = ue, Mo = Ve, vi = pt, Li = st, ki = Pt, Ea = pr, il = Dr, Zu = fn, Dh = An, Zh = Wn, hf = Fn, _y = hs, gC = qs, pL = so, ue = { tableList: Array.from(kl), columnList: wd(Ml), ast: { type: Wo[0].toLowerCase(), index_type: Mo && Mo.toLowerCase(), keyword: vi.toLowerCase(), concurrently: ki && ki.toLowerCase(), index: Ea, if_not_exists: Li, on_kw: il[0].toLowerCase(), table: Zu, index_using: Dh, index_columns: Zh, include: hf, with: _y && _y[4], with_before_where: !0, tablespace: gC && { type: "origin", value: gC[2] }, where: pL } }, W = ue) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e);
             var Wo, Mo, vi, Li, ki, Ea, il, Zu, Dh, Zh, hf, _y, gC, pL;
             return W;
           }()) === e && (k = function() {
             var W, ue, Ve, pt, st, Pt, pr, Dr, fn;
             return W = u, (ue = Du()) !== e && Xe() !== e ? ((Ve = Xu()) === e && (Ve = gu()), Ve === e && (Ve = null), Ve !== e && Xe() !== e && ve() !== e && Xe() !== e ? ((pt = Aa()) === e && (pt = null), pt !== e && Xe() !== e && (st = Hu()) !== e && Xe() !== e ? (Pt = u, (pr = Ke()) !== e && (Dr = Xe()) !== e && (fn = ns()) !== e ? Pt = pr = [pr, Dr, fn] : (u = Pt, Pt = e), Pt === e && (Pt = null), Pt !== e && (pr = Xe()) !== e ? ((Dr = us()) === e && (Dr = null), Dr !== e ? (Je = W, ue = function(An, Wn, Fn, hs, Os, qs) {
-              return hs.as = Os && Os[2], { tableList: Array.from(kl), columnList: yd(Ml), ast: { type: An[0].toLowerCase(), keyword: "sequence", temporary: Wn && Wn[0].toLowerCase(), if_not_exists: Fn, sequence: [hs], create_definitions: qs } };
+              return hs.as = Os && Os[2], { tableList: Array.from(kl), columnList: wd(Ml), ast: { type: An[0].toLowerCase(), keyword: "sequence", temporary: Wn && Wn[0].toLowerCase(), if_not_exists: Fn, sequence: [hs], create_definitions: qs } };
             }(ue, Ve, pt, st, Pt, Dr), W = ue) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e), W;
           }()) === e && (k = function() {
             var W, ue, Ve, pt, st, Pt;
@@ -107413,14 +107437,14 @@ function aEt() {
               return pr;
             }()) === e && (Pt = null), Pt !== e ? (Je = W, ue = function(pr, Dr, fn, An, Wn) {
               const Fn = Dr.toLowerCase();
-              return { tableList: Array.from(kl), columnList: yd(Ml), ast: { type: pr[0].toLowerCase(), keyword: Fn, if_not_exists: fn, [Fn]: { db: An.schema, schema: An.name }, create_definitions: Wn } };
+              return { tableList: Array.from(kl), columnList: wd(Ml), ast: { type: pr[0].toLowerCase(), keyword: Fn, if_not_exists: fn, [Fn]: { db: An.schema, schema: An.name }, create_definitions: Wn } };
             }(ue, Ve, pt, st, Pt), W = ue) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e), W;
           }()) === e && (k = function() {
             var W, ue, Ve, pt, st, Pt, pr, Dr, fn;
             return W = u, (ue = Du()) !== e && Xe() !== e ? (r.substr(u, 6).toLowerCase() === "domain" ? (Ve = r.substr(u, 6), u += 6) : (Ve = e, Te === 0 && Qt(di)), Ve !== e && Xe() !== e && (pt = Hu()) !== e && Xe() !== e ? ((st = Ke()) === e && (st = null), st !== e && Xe() !== e && (Pt = rw()) !== e && Xe() !== e ? ((pr = mo()) === e && (pr = null), pr !== e && Xe() !== e ? ((Dr = $o()) === e && (Dr = null), Dr !== e && Xe() !== e ? ((fn = mt()) === e && (fn = null), fn !== e ? (Je = W, ue = function(An, Wn, Fn, hs, Os, qs, ro, so) {
               so && (so.type = "constraint");
               const bo = [qs, ro, so].filter((Ws) => Ws);
-              return { tableList: Array.from(kl), columnList: yd(Ml), ast: { type: An[0].toLowerCase(), keyword: Wn.toLowerCase(), domain: { schema: Fn.db, name: Fn.table }, as: hs && hs[0] && hs[0].toLowerCase(), target: Os, create_definitions: bo } };
+              return { tableList: Array.from(kl), columnList: wd(Ml), ast: { type: An[0].toLowerCase(), keyword: Wn.toLowerCase(), domain: { schema: Fn.db, name: Fn.table }, as: hs && hs[0] && hs[0].toLowerCase(), target: Os, create_definitions: bo } };
             }(ue, Ve, pt, st, Pt, pr, Dr, fn), W = ue) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e), W;
           }()) === e && (k = function() {
             var W, ue, Ve, pt, st;
@@ -107438,7 +107462,7 @@ function aEt() {
               }()) === e && (hs = null), hs !== e && Xe() !== e && (Os = xa()) !== e ? (Je = An, Wn = /* @__PURE__ */ function(so) {
                 return { as: "as", create_definitions: so };
               }(hs), An = Wn) : (u = An, An = e)) : (u = An, An = e)), An;
-            }()) === e && (st = null), st !== e ? (Je = W, Pt = ue, pr = Ve, Dr = pt, fn = st, R3.add([Dr.db, Dr.table].filter((An) => An).join(".")), ue = { tableList: Array.from(kl), columnList: yd(Ml), ast: { type: Pt[0].toLowerCase(), keyword: pr.toLowerCase(), name: { schema: Dr.db, name: Dr.table }, ...fn } }, W = ue) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e);
+            }()) === e && (st = null), st !== e ? (Je = W, Pt = ue, pr = Ve, Dr = pt, fn = st, R3.add([Dr.db, Dr.table].filter((An) => An).join(".")), ue = { tableList: Array.from(kl), columnList: wd(Ml), ast: { type: Pt[0].toLowerCase(), keyword: pr.toLowerCase(), name: { schema: Dr.db, name: Dr.table }, ...fn } }, W = ue) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e);
             var Pt, pr, Dr, fn;
             return W;
           }()) === e && (k = function() {
@@ -107456,7 +107480,7 @@ function aEt() {
                 return `with ${Li.toLowerCase()} check option`;
               }(Wo), Ws = Ao) : (u = Ws, Ws = e)) : (u = Ws, Ws = e)) : (u = Ws, Ws = e)) : (u = Ws, Ws = e), Ws === e && (Ws = u, (Ao = z()) !== e && Xe() !== e ? (r.substr(u, 5).toLowerCase() === "check" ? (Wo = r.substr(u, 5), u += 5) : (Wo = e, Te === 0 && Qt(Vt)), Wo !== e && Xe() !== e ? (r.substr(u, 6) === "OPTION" ? (Mo = "OPTION", u += 6) : (Mo = e, Te === 0 && Qt(gr)), Mo !== e ? (Je = Ws, Ws = Ao = "with check option") : (u = Ws, Ws = e)) : (u = Ws, Ws = e)) : (u = Ws, Ws = e)), Ws;
             }()) === e && (so = null), so !== e ? (Je = W, ue = function(Ws, Ao, Wo, Mo, vi, Li, ki, Ea, il) {
-              return vi.view = vi.table, delete vi.table, { tableList: Array.from(kl), columnList: yd(Ml), ast: { type: Ws[0].toLowerCase(), keyword: "view", replace: Ao && "or replace", temporary: Wo && Wo[0].toLowerCase(), recursive: Mo && Mo.toLowerCase(), columns: Li && Li[2], select: Ea, view: vi, with_options: ki && ki[4], with: il } };
+              return vi.view = vi.table, delete vi.table, { tableList: Array.from(kl), columnList: wd(Ml), ast: { type: Ws[0].toLowerCase(), keyword: "view", replace: Ao && "or replace", temporary: Wo && Wo[0].toLowerCase(), recursive: Mo && Mo.toLowerCase(), columns: Li && Li[2], select: Ea, view: vi, with_options: ki && ki[4], with: il } };
             }(ue, Ve, st, pr, Dr, fn, Wn, qs, so), W = ue) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e), W;
           }()) === e && (k = function() {
             var W, ue, Ve, pt, st, Pt, pr, Dr, fn;
@@ -107472,7 +107496,7 @@ function aEt() {
                 qs !== e ? (Je = hs, Os = qd(Os, qs), hs = Os) : (u = hs, hs = e);
               } else u = hs, hs = e;
               return hs;
-            }()) !== e && Xe() !== e && xa() !== e ? (Je = W, An = pr, Wn = Dr, Fn = fn, ue = { tableList: Array.from(kl), columnList: yd(Ml), ast: { type: "create", keyword: "aggregate", name: { schema: An.db, name: An.table }, args: { parentheses: !0, expr: Wn, orderby: Wn.orderby }, options: Fn } }, W = ue) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e);
+            }()) !== e && Xe() !== e && xa() !== e ? (Je = W, An = pr, Wn = Dr, Fn = fn, ue = { tableList: Array.from(kl), columnList: wd(Ml), ast: { type: "create", keyword: "aggregate", name: { schema: An.db, name: An.table }, args: { parentheses: !0, expr: Wn, orderby: Wn.orderby }, options: Fn } }, W = ue) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e);
             var An, Wn, Fn;
             return W;
           }()), k;
@@ -107485,7 +107509,7 @@ function aEt() {
               so !== e ? (Je = qs, ro = qd(ro, so), qs = ro) : (u = qs, qs = e);
             } else u = qs, qs = e;
             return qs;
-          }()) !== e && Xe() !== e ? (st = u, r.substr(u, 7).toLowerCase() === "restart" ? (Pt = r.substr(u, 7), u += 7) : (Pt = e, Te === 0 && Qt(Cl)), Pt === e && (r.substr(u, 8).toLowerCase() === "continue" ? (Pt = r.substr(u, 8), u += 8) : (Pt = e, Te === 0 && Qt(id))), Pt !== e && (pr = Xe()) !== e ? (r.substr(u, 8).toLowerCase() === "identity" ? (Dr = r.substr(u, 8), u += 8) : (Dr = e, Te === 0 && Qt(wp)), Dr !== e ? st = Pt = [Pt, pr, Dr] : (u = st, st = e)) : (u = st, st = e), st === e && (st = null), st !== e && (Pt = Xe()) !== e ? (r.substr(u, 7).toLowerCase() === "cascade" ? (pr = r.substr(u, 7), u += 7) : (pr = e, Te === 0 && Qt(op)), pr === e && (r.substr(u, 8).toLowerCase() === "restrict" ? (pr = r.substr(u, 8), u += 8) : (pr = e, Te === 0 && Qt($f))), pr === e && (pr = null), pr !== e ? (Je = k, fn = W, An = ue, Wn = Ve, Fn = pt, hs = st, Os = pr, W = { tableList: Array.from(kl), columnList: yd(Ml), ast: { type: fn.toLowerCase(), keyword: An && An.toLowerCase() || "table", prefix: Wn, name: Fn, suffix: [hs && [hs[0], hs[2]].join(" "), Os].filter((qs) => qs).map((qs) => ({ type: "origin", value: qs })) } }, k = W) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e);
+          }()) !== e && Xe() !== e ? (st = u, r.substr(u, 7).toLowerCase() === "restart" ? (Pt = r.substr(u, 7), u += 7) : (Pt = e, Te === 0 && Qt(Cl)), Pt === e && (r.substr(u, 8).toLowerCase() === "continue" ? (Pt = r.substr(u, 8), u += 8) : (Pt = e, Te === 0 && Qt(ad))), Pt !== e && (pr = Xe()) !== e ? (r.substr(u, 8).toLowerCase() === "identity" ? (Dr = r.substr(u, 8), u += 8) : (Dr = e, Te === 0 && Qt(wp)), Dr !== e ? st = Pt = [Pt, pr, Dr] : (u = st, st = e)) : (u = st, st = e), st === e && (st = null), st !== e && (Pt = Xe()) !== e ? (r.substr(u, 7).toLowerCase() === "cascade" ? (pr = r.substr(u, 7), u += 7) : (pr = e, Te === 0 && Qt(op)), pr === e && (r.substr(u, 8).toLowerCase() === "restrict" ? (pr = r.substr(u, 8), u += 8) : (pr = e, Te === 0 && Qt($f))), pr === e && (pr = null), pr !== e ? (Je = k, fn = W, An = ue, Wn = Ve, Fn = pt, hs = st, Os = pr, W = { tableList: Array.from(kl), columnList: wd(Ml), ast: { type: fn.toLowerCase(), keyword: An && An.toLowerCase() || "table", prefix: Wn, name: Fn, suffix: [hs && [hs[0], hs[2]].join(" "), Os].filter((qs) => qs).map((qs) => ({ type: "origin", value: qs })) } }, k = W) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e);
           var fn, An, Wn, Fn, hs, Os;
           return k;
         }()) === e && (C = function() {
@@ -107497,7 +107521,7 @@ function aEt() {
               Pt !== e ? (Je = pt, st = qd(st, Pt), pt = st) : (u = pt, pt = e);
             } else u = pt, pt = e;
             return pt;
-          }()) !== e ? (Je = k, (Ve = ue).forEach((pt) => pt.forEach((st) => st.table && kl.add(`rename::${[st.db, st.schema].filter(Boolean).join(".") || null}::${st.table}`))), W = { tableList: Array.from(kl), columnList: yd(Ml), ast: { type: "rename", table: Ve } }, k = W) : (u = k, k = e);
+          }()) !== e ? (Je = k, (Ve = ue).forEach((pt) => pt.forEach((st) => st.table && kl.add(`rename::${[st.db, st.schema].filter(Boolean).join(".") || null}::${st.table}`))), W = { tableList: Array.from(kl), columnList: wd(Ml), ast: { type: "rename", table: Ve } }, k = W) : (u = k, k = e);
           var Ve;
           return k;
         }()) === e && (C = function() {
@@ -107505,7 +107529,7 @@ function aEt() {
           k = u, (W = function() {
             var pt, st, Pt, pr;
             return pt = u, r.substr(u, 4).toLowerCase() === "call" ? (st = r.substr(u, 4), u += 4) : (st = e, Te === 0 && Qt(ou)), st !== e ? (Pt = u, Te++, pr = $s(), Te--, pr === e ? Pt = void 0 : (u = Pt, Pt = e), Pt !== e ? (Je = pt, pt = st = "CALL") : (u = pt, pt = e)) : (u = pt, pt = e), pt;
-          }()) !== e && Xe() !== e && (ue = A3()) !== e ? (Je = k, Ve = ue, W = { tableList: Array.from(kl), columnList: yd(Ml), ast: { type: "call", expr: Ve } }, k = W) : (u = k, k = e);
+          }()) !== e && Xe() !== e && (ue = A3()) !== e ? (Je = k, Ve = ue, W = { tableList: Array.from(kl), columnList: wd(Ml), ast: { type: "call", expr: Ve } }, k = W) : (u = k, k = e);
           var Ve;
           return k;
         }()) === e && (C = function() {
@@ -107513,7 +107537,7 @@ function aEt() {
           k = u, (W = function() {
             var pt, st, Pt, pr;
             return pt = u, r.substr(u, 3).toLowerCase() === "use" ? (st = r.substr(u, 3), u += 3) : (st = e, Te === 0 && Qt(Ip)), st !== e ? (Pt = u, Te++, pr = $s(), Te--, pr === e ? Pt = void 0 : (u = Pt, Pt = e), Pt !== e ? pt = st = [st, Pt] : (u = pt, pt = e)) : (u = pt, pt = e), pt;
-          }()) !== e && Xe() !== e && (ue = _r()) !== e ? (Je = k, Ve = ue, kl.add(`use::${Ve}::null`), W = { tableList: Array.from(kl), columnList: yd(Ml), ast: { type: "use", db: Ve } }, k = W) : (u = k, k = e);
+          }()) !== e && Xe() !== e && (ue = _r()) !== e ? (Je = k, Ve = ue, kl.add(`use::${Ve}::null`), W = { tableList: Array.from(kl), columnList: wd(Ml), ast: { type: "use", db: Ve } }, k = W) : (u = k, k = e);
           var Ve;
           return k;
         }()) === e && (C = function() {
@@ -107527,20 +107551,20 @@ function aEt() {
                 Os !== e ? (Je = Fn, hs = qd(hs, Os), Fn = hs) : (u = Fn, Fn = e);
               } else u = Fn, Fn = e;
               return Fn;
-            }()) !== e ? (Je = W, Dr = pt, fn = st, Wn = pr, (An = Pt) && An.length > 0 && An.forEach((Fn) => kl.add(`alter::${[Fn.db, Fn.schema].filter(Boolean).join(".") || null}::${Fn.table}`)), ue = { tableList: Array.from(kl), columnList: yd(Ml), ast: { type: "alter", keyword: "table", if_exists: Dr, prefix: fn && { type: "origin", value: fn }, table: [An], expr: Wn } }, W = ue) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e);
+            }()) !== e ? (Je = W, Dr = pt, fn = st, Wn = pr, (An = Pt) && An.length > 0 && An.forEach((Fn) => kl.add(`alter::${[Fn.db, Fn.schema].filter(Boolean).join(".") || null}::${Fn.table}`)), ue = { tableList: Array.from(kl), columnList: wd(Ml), ast: { type: "alter", keyword: "table", if_exists: Dr, prefix: fn && { type: "origin", value: fn }, table: [An], expr: Wn } }, W = ue) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e);
             var Dr, fn, An, Wn;
             return W;
           }()) === e && (k = function() {
             var W, ue, Ve, pt, st;
             return W = u, (ue = Ci()) !== e && Xe() !== e && (Ve = sr()) !== e && Xe() !== e && (pt = Ho()) !== e && Xe() !== e ? ((st = Ar()) === e && (st = an()) === e && (st = qr()), st !== e ? (Je = W, ue = function(Pt, pr, Dr) {
               const fn = Pt.toLowerCase();
-              return Dr.resource = fn, Dr[fn] = Dr.table, delete Dr.table, { tableList: Array.from(kl), columnList: yd(Ml), ast: { type: "alter", keyword: fn, schema: pr, expr: Dr } };
+              return Dr.resource = fn, Dr[fn] = Dr.table, delete Dr.table, { tableList: Array.from(kl), columnList: wd(Ml), ast: { type: "alter", keyword: fn, schema: pr, expr: Dr } };
             }(Ve, pt, st), W = ue) : (u = W, W = e)) : (u = W, W = e), W;
           }()) === e && (k = function() {
             var W, ue, Ve, pt, st;
             return W = u, (ue = Ci()) !== e && Xe() !== e ? (r.substr(u, 6).toLowerCase() === "domain" ? (Ve = r.substr(u, 6), u += 6) : (Ve = e, Te === 0 && Qt(di)), Ve === e && (r.substr(u, 4).toLowerCase() === "type" ? (Ve = r.substr(u, 4), u += 4) : (Ve = e, Te === 0 && Qt(Vo))), Ve !== e && Xe() !== e && (pt = Hu()) !== e && Xe() !== e ? ((st = Ar()) === e && (st = an()) === e && (st = qr()), st !== e ? (Je = W, ue = function(Pt, pr, Dr) {
               const fn = Pt.toLowerCase();
-              return Dr.resource = fn, Dr[fn] = Dr.table, delete Dr.table, { tableList: Array.from(kl), columnList: yd(Ml), ast: { type: "alter", keyword: fn, name: { schema: pr.db, name: pr.table }, expr: Dr } };
+              return Dr.resource = fn, Dr[fn] = Dr.table, delete Dr.table, { tableList: Array.from(kl), columnList: wd(Ml), ast: { type: "alter", keyword: fn, name: { schema: pr.db, name: pr.table }, expr: Dr } };
             }(Ve, pt, st), W = ue) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e), W;
           }()) === e && (k = function() {
             var W, ue, Ve, pt, st, Pt, pr, Dr, fn, An;
@@ -107548,13 +107572,13 @@ function aEt() {
               const qs = Wn.toLowerCase();
               Os.resource = qs, Os[qs] = Os.table, delete Os.table;
               const ro = {};
-              return hs && hs[0] && (ro.parentheses = !0), ro.expr = hs && hs[2], { tableList: Array.from(kl), columnList: yd(Ml), ast: { type: "alter", keyword: qs, name: { schema: Fn.db, name: Fn.table }, args: ro, expr: Os } };
+              return hs && hs[0] && (ro.parentheses = !0), ro.expr = hs && hs[2], { tableList: Array.from(kl), columnList: wd(Ml), ast: { type: "alter", keyword: qs, name: { schema: Fn.db, name: Fn.table }, args: ro, expr: Os } };
             }(Ve, pt, st, pr), W = ue) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e), W;
           }()) === e && (k = function() {
             var W, ue, Ve, pt, st, Pt;
             return W = u, (ue = Ci()) !== e && Xe() !== e ? (r.substr(u, 9).toLowerCase() === "aggregate" ? (Ve = r.substr(u, 9), u += 9) : (Ve = e, Te === 0 && Qt(ln)), Ve !== e && Xe() !== e && (pt = Hu()) !== e && Xe() !== e && ma() !== e && Xe() !== e && (st = he()) !== e && Xe() !== e && xa() !== e && Xe() !== e ? ((Pt = Ar()) === e && (Pt = an()) === e && (Pt = qr()), Pt !== e ? (Je = W, ue = function(pr, Dr, fn, An) {
               const Wn = pr.toLowerCase();
-              return An.resource = Wn, An[Wn] = An.table, delete An.table, { tableList: Array.from(kl), columnList: yd(Ml), ast: { type: "alter", keyword: Wn, name: { schema: Dr.db, name: Dr.table }, args: { parentheses: !0, expr: fn, orderby: fn.orderby }, expr: An } };
+              return An.resource = Wn, An[Wn] = An.table, delete An.table, { tableList: Array.from(kl), columnList: wd(Ml), ast: { type: "alter", keyword: Wn, name: { schema: Dr.db, name: Dr.table }, args: { parentheses: !0, expr: fn, orderby: fn.orderby }, expr: An } };
             }(Ve, pt, st, Pt), W = ue) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e), W;
           }()) === e && (k = function() {
             var W, ue, Ve, pt, st, Pt, pr, Dr;
@@ -107566,7 +107590,7 @@ function aEt() {
               } else u = fn, fn = e;
               return fn;
             }()), pr === e && (pr = null), pr !== e ? (Je = W, ue = function(fn, An, Wn, Fn) {
-              return An.as = Wn && Wn[2], { tableList: Array.from(kl), columnList: yd(Ml), ast: { type: "alter", keyword: "sequence", if_exists: fn, sequence: [An], expr: Fn } };
+              return An.as = Wn && Wn[2], { tableList: Array.from(kl), columnList: wd(Ml), ast: { type: "alter", keyword: "sequence", if_exists: fn, sequence: [An], expr: Fn } };
             }(Ve, pt, st, pr), W = ue) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e), W;
           }()), k;
         }()) === e && (C = function() {
@@ -107590,7 +107614,7 @@ function aEt() {
               Dr !== e ? (Je = Pt, pr = qd(pr, Dr), Pt = pr) : (u = Pt, Pt = e);
             } else u = Pt, Pt = e;
             return Pt;
-          }()) !== e ? (Je = k, pt = ue, st = Ve, W = { tableList: Array.from(kl), columnList: yd(Ml), ast: { type: "set", keyword: pt, expr: st } }, k = W) : (u = k, k = e)) : (u = k, k = e);
+          }()) !== e ? (Je = k, pt = ue, st = Ve, W = { tableList: Array.from(kl), columnList: wd(Ml), ast: { type: "set", keyword: pt, expr: st } }, k = W) : (u = k, k = e)) : (u = k, k = e);
           var pt, st;
           return k;
         }()) === e && (C = function() {
@@ -107601,20 +107625,20 @@ function aEt() {
           }()) !== e && Xe() !== e ? ((ue = lt()) === e && (ue = null), ue !== e && Xe() !== e && (Ve = kh()) !== e && Xe() !== e ? ((pt = function() {
             var An, Wn, Fn, hs;
             return An = u, r.substr(u, 2).toLowerCase() === "in" ? (Wn = r.substr(u, 2), u += 2) : (Wn = e, Te === 0 && Qt(bs)), Wn !== e && Xe() !== e ? (r.substr(u, 12).toLowerCase() === "access share" ? (Fn = r.substr(u, 12), u += 12) : (Fn = e, Te === 0 && Qt(cs)), Fn === e && (r.substr(u, 9).toLowerCase() === "row share" ? (Fn = r.substr(u, 9), u += 9) : (Fn = e, Te === 0 && Qt(Ns)), Fn === e && (r.substr(u, 13).toLowerCase() === "row exclusive" ? (Fn = r.substr(u, 13), u += 13) : (Fn = e, Te === 0 && Qt(fo)), Fn === e && (r.substr(u, 22).toLowerCase() === "share update exclusive" ? (Fn = r.substr(u, 22), u += 22) : (Fn = e, Te === 0 && Qt(io)), Fn === e && (r.substr(u, 19).toLowerCase() === "share row exclusive" ? (Fn = r.substr(u, 19), u += 19) : (Fn = e, Te === 0 && Qt(Uo)), Fn === e && (r.substr(u, 9).toLowerCase() === "exclusive" ? (Fn = r.substr(u, 9), u += 9) : (Fn = e, Te === 0 && Qt(Fp)), Fn === e && (r.substr(u, 16).toLowerCase() === "access exclusive" ? (Fn = r.substr(u, 16), u += 16) : (Fn = e, Te === 0 && Qt(Ko)), Fn === e && (r.substr(u, 5).toLowerCase() === "share" ? (Fn = r.substr(u, 5), u += 5) : (Fn = e, Te === 0 && Qt(fi))))))))), Fn !== e && Xe() !== e ? (r.substr(u, 4).toLowerCase() === "mode" ? (hs = r.substr(u, 4), u += 4) : (hs = e, Te === 0 && Qt(Bi)), hs !== e ? (Je = An, Wn = { mode: `in ${Fn.toLowerCase()} mode` }, An = Wn) : (u = An, An = e)) : (u = An, An = e)) : (u = An, An = e), An;
-          }()) === e && (pt = null), pt !== e && Xe() !== e ? (r.substr(u, 6).toLowerCase() === "nowait" ? (st = r.substr(u, 6), u += 6) : (st = e, Te === 0 && Qt(Di)), st === e && (st = null), st !== e ? (Je = k, Pt = ue, Dr = pt, fn = st, (pr = Ve) && pr.forEach((An) => kl.add(`lock::${[An.db, An.schema].filter(Boolean).join(".") || null}::${An.table}`)), W = { tableList: Array.from(kl), columnList: yd(Ml), ast: { type: "lock", keyword: Pt && Pt.toLowerCase(), tables: pr.map((An) => ({ table: An })), lock_mode: Dr, nowait: fn } }, k = W) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e);
+          }()) === e && (pt = null), pt !== e && Xe() !== e ? (r.substr(u, 6).toLowerCase() === "nowait" ? (st = r.substr(u, 6), u += 6) : (st = e, Te === 0 && Qt(Di)), st === e && (st = null), st !== e ? (Je = k, Pt = ue, Dr = pt, fn = st, (pr = Ve) && pr.forEach((An) => kl.add(`lock::${[An.db, An.schema].filter(Boolean).join(".") || null}::${An.table}`)), W = { tableList: Array.from(kl), columnList: wd(Ml), ast: { type: "lock", keyword: Pt && Pt.toLowerCase(), tables: pr.map((An) => ({ table: An })), lock_mode: Dr, nowait: fn } }, k = W) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e);
           var Pt, pr, Dr, fn;
           return k;
         }()) === e && (C = function() {
           var k, W, ue;
-          return k = u, (W = Sa()) !== e && Xe() !== e ? (r.substr(u, 6).toLowerCase() === "tables" ? (ue = r.substr(u, 6), u += 6) : (ue = e, Te === 0 && Qt(ba)), ue !== e ? (Je = k, W = { tableList: Array.from(kl), columnList: yd(Ml), ast: { type: "show", keyword: "tables" } }, k = W) : (u = k, k = e)) : (u = k, k = e), k === e && (k = u, (W = Sa()) !== e && Xe() !== e && (ue = T3()) !== e ? (Je = k, W = function(Ve) {
-            return { tableList: Array.from(kl), columnList: yd(Ml), ast: { type: "show", keyword: "var", var: Ve } };
+          return k = u, (W = Sa()) !== e && Xe() !== e ? (r.substr(u, 6).toLowerCase() === "tables" ? (ue = r.substr(u, 6), u += 6) : (ue = e, Te === 0 && Qt(ba)), ue !== e ? (Je = k, W = { tableList: Array.from(kl), columnList: wd(Ml), ast: { type: "show", keyword: "tables" } }, k = W) : (u = k, k = e)) : (u = k, k = e), k === e && (k = u, (W = Sa()) !== e && Xe() !== e && (ue = T3()) !== e ? (Je = k, W = function(Ve) {
+            return { tableList: Array.from(kl), columnList: wd(Ml), ast: { type: "show", keyword: "var", var: Ve } };
           }(ue), k = W) : (u = k, k = e)), k;
         }()) === e && (C = function() {
           var k, W, ue, Ve;
           k = u, (W = function() {
             var Pt, pr, Dr, fn;
             return Pt = u, r.substr(u, 10).toLowerCase() === "deallocate" ? (pr = r.substr(u, 10), u += 10) : (pr = e, Te === 0 && Qt(Pd)), pr !== e ? (Dr = u, Te++, fn = $s(), Te--, fn === e ? Dr = void 0 : (u = Dr, Dr = e), Dr !== e ? (Je = Pt, Pt = pr = "DEALLOCATE") : (u = Pt, Pt = e)) : (u = Pt, Pt = e), Pt;
-          }()) !== e && Xe() !== e ? (r.substr(u, 7).toLowerCase() === "prepare" ? (ue = r.substr(u, 7), u += 7) : (ue = e, Te === 0 && Qt(Pa)), ue === e && (ue = null), ue !== e && Xe() !== e ? ((Ve = Ho()) === e && (Ve = jt()), Ve !== e ? (Je = k, pt = ue, st = Ve, W = { tableList: Array.from(kl), columnList: yd(Ml), ast: { type: "deallocate", keyword: pt, expr: { type: "default", value: st } } }, k = W) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e);
+          }()) !== e && Xe() !== e ? (r.substr(u, 7).toLowerCase() === "prepare" ? (ue = r.substr(u, 7), u += 7) : (ue = e, Te === 0 && Qt(Pa)), ue === e && (ue = null), ue !== e && Xe() !== e ? ((Ve = Ho()) === e && (Ve = jt()), Ve !== e ? (Je = k, pt = ue, st = Ve, W = { tableList: Array.from(kl), columnList: wd(Ml), ast: { type: "deallocate", keyword: pt, expr: { type: "default", value: st } } }, k = W) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e);
           var pt, st;
           return k;
         }()) === e && (C = function() {
@@ -107638,18 +107662,18 @@ function aEt() {
             return Fn;
           }()) !== e && (pr = Xe()) !== e ? ((Dr = li()) === e && (Dr = se()), Dr !== e ? (Je = u, Wn = Dr, ({ revoke: "from", grant: "to" }[W.type].toLowerCase() === Wn[0].toLowerCase() ? void 0 : e) !== e && Xe() !== e && (fn = _i()) !== e && Xe() !== e ? ((An = function() {
             var Fn, hs, Os;
-            return Fn = u, z() !== e && Xe() !== e ? (r.substr(u, 5).toLowerCase() === "grant" ? (hs = r.substr(u, 5), u += 5) : (hs = e, Te === 0 && Qt(Id)), hs !== e && Xe() !== e ? (r.substr(u, 6).toLowerCase() === "option" ? (Os = r.substr(u, 6), u += 6) : (Os = e, Te === 0 && Qt(ld)), Os !== e ? (Je = Fn, Fn = { type: "origin", value: "with grant option" }) : (u = Fn, Fn = e)) : (u = Fn, Fn = e)) : (u = Fn, Fn = e), Fn;
+            return Fn = u, z() !== e && Xe() !== e ? (r.substr(u, 5).toLowerCase() === "grant" ? (hs = r.substr(u, 5), u += 5) : (hs = e, Te === 0 && Qt(Id)), hs !== e && Xe() !== e ? (r.substr(u, 6).toLowerCase() === "option" ? (Os = r.substr(u, 6), u += 6) : (Os = e, Te === 0 && Qt(cd)), Os !== e ? (Je = Fn, Fn = { type: "origin", value: "with grant option" }) : (u = Fn, Fn = e)) : (u = Fn, Fn = e)) : (u = Fn, Fn = e), Fn;
           }()) === e && (An = null), An !== e ? (Je = k, W = function(Fn, hs, Os, qs, ro, so, bo) {
-            return { tableList: Array.from(kl), columnList: yd(Ml), ast: { ...Fn, keyword: "priv", objects: hs, on: { object_type: Os, priv_level: qs }, to_from: ro[0], user_or_roles: so, with: bo } };
+            return { tableList: Array.from(kl), columnList: wd(Ml), ast: { ...Fn, keyword: "priv", objects: hs, on: { object_type: Os, priv_level: qs }, to_from: ro[0], user_or_roles: so, with: bo } };
           }(W, ue, pt, Pt, Dr, fn, An), k = W) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e);
           var Wn;
           return k === e && (k = u, (W = Gi()) !== e && Xe() !== e && (ue = tn()) !== e && Xe() !== e ? ((Ve = li()) === e && (Ve = se()), Ve !== e ? (Je = u, (function(Fn, hs, Os) {
             return { revoke: "from", grant: "to" }[Fn.type].toLowerCase() === Os[0].toLowerCase();
           }(W, 0, Ve) ? void 0 : e) !== e && (pt = Xe()) !== e && (st = _i()) !== e && (Pt = Xe()) !== e ? ((pr = function() {
             var Fn, hs, Os;
-            return Fn = u, z() !== e && Xe() !== e ? (r.substr(u, 5).toLowerCase() === "admin" ? (hs = r.substr(u, 5), u += 5) : (hs = e, Te === 0 && Qt(um)), hs !== e && Xe() !== e ? (r.substr(u, 6).toLowerCase() === "option" ? (Os = r.substr(u, 6), u += 6) : (Os = e, Te === 0 && Qt(ld)), Os !== e ? (Je = Fn, Fn = { type: "origin", value: "with admin option" }) : (u = Fn, Fn = e)) : (u = Fn, Fn = e)) : (u = Fn, Fn = e), Fn;
+            return Fn = u, z() !== e && Xe() !== e ? (r.substr(u, 5).toLowerCase() === "admin" ? (hs = r.substr(u, 5), u += 5) : (hs = e, Te === 0 && Qt(um)), hs !== e && Xe() !== e ? (r.substr(u, 6).toLowerCase() === "option" ? (Os = r.substr(u, 6), u += 6) : (Os = e, Te === 0 && Qt(cd)), Os !== e ? (Je = Fn, Fn = { type: "origin", value: "with admin option" }) : (u = Fn, Fn = e)) : (u = Fn, Fn = e)) : (u = Fn, Fn = e), Fn;
           }()) === e && (pr = null), pr !== e ? (Je = k, W = function(Fn, hs, Os, qs, ro) {
-            return { tableList: Array.from(kl), columnList: yd(Ml), ast: { ...Fn, keyword: "role", objects: hs.map((so) => ({ priv: { type: "string", value: so } })), to_from: Os[0], user_or_roles: qs, with: ro } };
+            return { tableList: Array.from(kl), columnList: wd(Ml), ast: { ...Fn, keyword: "role", objects: hs.map((so) => ({ priv: { type: "string", value: so } })), to_from: Os[0], user_or_roles: qs, with: ro } };
           }(W, ue, Ve, st, pr), k = W) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e)), k;
         }()) === e && (C = function() {
           var k, W, ue, Ve, pt, st, Pt, pr, Dr, fn, An, Wn, Fn;
@@ -107660,7 +107684,7 @@ function aEt() {
               Wo !== e ? (Je = Ws, Ao = qd(Ao, Wo, 1), Ws = Ao) : (u = Ws, Ws = e);
             } else u = Ws, Ws = e;
             return Ws;
-          }()) === e && (Pt = null), Pt !== e && Xe() !== e ? (pr = u, (Dr = x()) !== e && (fn = Xe()) !== e && (An = jo()) !== e ? pr = Dr = [Dr, fn, An] : (u = pr, pr = e), pr === e && (pr = null), pr !== e && (Dr = Xe()) !== e ? ((fn = px()) === e && (fn = null), fn !== e && (An = Xe()) !== e ? (r.substr(u, 3).toLowerCase() === "end" ? (Wn = r.substr(u, 3), u += 3) : (Wn = e, Te === 0 && Qt(Nd)), Wn !== e && Xe() !== e ? (r.substr(u, 2).toLowerCase() === "if" ? (Fn = r.substr(u, 2), u += 2) : (Fn = e, Te === 0 && Qt(V)), Fn !== e ? (Je = k, hs = ue, Os = pt, qs = st, ro = Pt, so = pr, bo = fn, W = { tableList: Array.from(kl), columnList: yd(Ml), ast: { type: "if", keyword: "if", boolean_expr: hs, semicolons: [qs || "", bo || ""], prefix: { type: "origin", value: "then" }, if_expr: Os, elseif_expr: ro, else_expr: so && so[2], suffix: { type: "origin", value: "end if" } } }, k = W) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e);
+          }()) === e && (Pt = null), Pt !== e && Xe() !== e ? (pr = u, (Dr = x()) !== e && (fn = Xe()) !== e && (An = jo()) !== e ? pr = Dr = [Dr, fn, An] : (u = pr, pr = e), pr === e && (pr = null), pr !== e && (Dr = Xe()) !== e ? ((fn = px()) === e && (fn = null), fn !== e && (An = Xe()) !== e ? (r.substr(u, 3).toLowerCase() === "end" ? (Wn = r.substr(u, 3), u += 3) : (Wn = e, Te === 0 && Qt(Nd)), Wn !== e && Xe() !== e ? (r.substr(u, 2).toLowerCase() === "if" ? (Fn = r.substr(u, 2), u += 2) : (Fn = e, Te === 0 && Qt(V)), Fn !== e ? (Je = k, hs = ue, Os = pt, qs = st, ro = Pt, so = pr, bo = fn, W = { tableList: Array.from(kl), columnList: wd(Ml), ast: { type: "if", keyword: "if", boolean_expr: hs, semicolons: [qs || "", bo || ""], prefix: { type: "origin", value: "then" }, if_expr: Os, elseif_expr: ro, else_expr: so && so[2], suffix: { type: "origin", value: "end if" } } }, k = W) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e);
           var hs, Os, qs, ro, so, bo;
           return k;
         }()) === e && (C = function() {
@@ -107692,13 +107716,13 @@ function aEt() {
             else u = Dr, Dr = e;
             else u = Dr, Dr = e;
             return Dr;
-          }()) === e && (pt = null), pt !== e ? (Je = k, st = ue, Pt = Ve, pr = pt, W = { tableList: Array.from(kl), columnList: yd(Ml), ast: { type: "raise", level: st, using: pr, raise: Pt } }, k = W) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e);
+          }()) === e && (pt = null), pt !== e ? (Je = k, st = ue, Pt = Ve, pr = pt, W = { tableList: Array.from(kl), columnList: wd(Ml), ast: { type: "raise", level: st, using: pr, raise: Pt } }, k = W) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e);
           var st, Pt, pr;
           return k;
         }()) === e && (C = function() {
           var k, W, ue, Ve, pt, st, Pt, pr, Dr;
           return k = u, r.substr(u, 7).toLowerCase() === "execute" ? (W = r.substr(u, 7), u += 7) : (W = e, Te === 0 && Qt(xh)), W !== e && Xe() !== e && (ue = _r()) !== e && Xe() !== e ? (Ve = u, (pt = ma()) !== e && (st = Xe()) !== e && (Pt = _3()) !== e && (pr = Xe()) !== e && (Dr = xa()) !== e ? Ve = pt = [pt, st, Pt, pr, Dr] : (u = Ve, Ve = e), Ve === e && (Ve = null), Ve !== e ? (Je = k, W = function(fn, An) {
-            return { tableList: Array.from(kl), columnList: yd(Ml), ast: { type: "execute", name: fn, args: An && { type: "expr_list", value: An[2] } } };
+            return { tableList: Array.from(kl), columnList: wd(Ml), ast: { type: "execute", name: fn, args: An && { type: "expr_list", value: An[2] } } };
           }(ue, Ve), k = W) : (u = k, k = e)) : (u = k, k = e), k;
         }()) === e && (C = function() {
           var k, W, ue, Ve, pt, st, Pt, pr;
@@ -107706,7 +107730,7 @@ function aEt() {
             var An, Wn, Fn;
             return An = u, r.substr(u, 3).toLowerCase() === "for" ? (Wn = r.substr(u, 3), u += 3) : (Wn = e, Te === 0 && Qt(tl)), Wn !== e && (Je = An, Wn = { label: null, keyword: "for" }), (An = Wn) === e && (An = u, (Wn = _r()) !== e && Xe() !== e ? (r.substr(u, 3).toLowerCase() === "for" ? (Fn = r.substr(u, 3), u += 3) : (Fn = e, Te === 0 && Qt(tl)), Fn !== e ? (Je = An, An = Wn = { label: Wn, keyword: "for" }) : (u = An, An = e)) : (u = An, An = e)), An;
           }()) !== e && Xe() !== e && (ue = _r()) !== e && Xe() !== e && Kr() !== e && Xe() !== e && (Ve = _o()) !== e && Xe() !== e ? (r.substr(u, 4).toLowerCase() === "loop" ? (pt = r.substr(u, 4), u += 4) : (pt = e, Te === 0 && Qt(lm)), pt !== e && Xe() !== e && (st = Ni()) !== e && Xe() !== e && M() !== e && Xe() !== e ? (r.substr(u, 4).toLowerCase() === "loop" ? (Pt = r.substr(u, 4), u += 4) : (Pt = e, Te === 0 && Qt(lm)), Pt !== e && Xe() !== e ? ((pr = _r()) === e && (pr = null), pr !== e ? (Je = u, fn = pr, (!(!(Dr = W).label || !fn || Dr.label !== fn) || !Dr.label && !fn ? void 0 : e) !== e ? (Je = k, W = function(An, Wn, Fn, hs, Os) {
-            return { tableList: Array.from(kl), columnList: yd(Ml), ast: { type: "for", label: Os, target: Wn, query: Fn, stmts: hs.ast } };
+            return { tableList: Array.from(kl), columnList: wd(Ml), ast: { type: "for", label: Os, target: Wn, query: Fn, stmts: hs.ast } };
           }(0, ue, Ve, st, pr), k = W) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e);
           var Dr, fn;
           return k;
@@ -107719,7 +107743,7 @@ function aEt() {
           }(ue, Ve), k = W) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e))), k;
         }()) === e && (C = function() {
           var k, W, ue, Ve, pt;
-          return k = u, r.substr(u, 7).toLowerCase() === "comment" ? (W = r.substr(u, 7), u += 7) : (W = e, Te === 0 && Qt(cd)), W !== e && Xe() !== e ? (r.substr(u, 2).toLowerCase() === "on" ? (ue = r.substr(u, 2), u += 2) : (ue = e, Te === 0 && Qt(Fo)), ue !== e && Xe() !== e && (Ve = function() {
+          return k = u, r.substr(u, 7).toLowerCase() === "comment" ? (W = r.substr(u, 7), u += 7) : (W = e, Te === 0 && Qt(fd)), W !== e && Xe() !== e ? (r.substr(u, 2).toLowerCase() === "on" ? (ue = r.substr(u, 2), u += 2) : (ue = e, Te === 0 && Qt(Fo)), ue !== e && Xe() !== e && (Ve = function() {
             var st, Pt, pr;
             return st = u, (Pt = lt()) === e && (Pt = Ys()) === e && (Pt = mn()), Pt !== e && Xe() !== e && (pr = Hu()) !== e ? (Je = st, Pt = function(Dr, fn) {
               return { type: Dr.toLowerCase(), name: fn };
@@ -107752,7 +107776,7 @@ function aEt() {
                 kl.add(`update::${Os[so] || null}::${so}`);
               }
               Ml.add(`update::${ro.table}::${ro.column.expr.value}`);
-            }), { tableList: Array.from(kl), columnList: yd(Ml), ast: { with: Dr, type: "update", table: fn, set: An, from: Wn, where: Fn, returning: hs } };
+            }), { tableList: Array.from(kl), columnList: wd(Ml), ast: { with: Dr, type: "update", table: fn, set: An, from: Wn, where: Fn, returning: hs } };
           }(ue, Ve, pt, st, Pt, pr), k = W) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e), k;
         }()) === e && (C = function() {
           var k, W, ue, Ve, pt, st, Pt, pr, Dr;
@@ -107774,14 +107798,14 @@ function aEt() {
                 if (so.value.length != Fn.length) throw new Error("Error: column count doesn't match value count at row " + (bo + 1));
               }), Fn.forEach((so) => Ml.add(`insert::${ro}::${so.value}`));
             }
-            return { tableList: Array.from(kl), columnList: yd(Ml), ast: { type: fn, table: [An], columns: Fn, values: hs, partition: Wn, conflict: Os, returning: qs } };
+            return { tableList: Array.from(kl), columnList: wd(Ml), ast: { type: fn, table: [An], columns: Fn, values: hs, partition: Wn, conflict: Os, returning: qs } };
           }(W, Ve, pt, st, Pt, pr, Dr), k = W) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e), k;
         }()) === e && (C = function() {
           var k, W, ue, Ve, pt, st, Pt, pr;
           return k = u, (W = kb()) !== e && Xe() !== e ? ((ue = Qb()) === e && (ue = null), ue !== e && Xe() !== e ? ((Ve = G()) === e && (Ve = null), Ve !== e && Xe() !== e && (pt = Hu()) !== e && Xe() !== e ? ((st = uv()) === e && (st = null), st !== e && Xe() !== e && (Pt = td()) !== e && Xe() !== e ? ((pr = Lm()) === e && (pr = null), pr !== e ? (Je = k, W = function(Dr, fn, An, Wn, Fn, hs, Os) {
             Wn && (kl.add(`insert::${[Wn.db, Wn.schema].filter(Boolean).join(".") || null}::${Wn.table}`), Ml.add(`insert::${Wn.table}::(.*)`), Wn.as = null);
             const qs = [fn, An].filter((ro) => ro).map((ro) => ro[0] && ro[0].toLowerCase()).join(" ");
-            return { tableList: Array.from(kl), columnList: yd(Ml), ast: { type: Dr, table: [Wn], columns: null, values: hs, partition: Fn, prefix: qs, returning: Os } };
+            return { tableList: Array.from(kl), columnList: wd(Ml), ast: { type: Dr, table: [Wn], columns: null, values: hs, partition: Fn, prefix: qs, returning: Os } };
           }(W, ue, Ve, pt, st, Pt, pr), k = W) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e), k;
         }()) === e && (C = function() {
           var k, W, ue, Ve, pt, st;
@@ -107793,7 +107817,7 @@ function aEt() {
               const An = pr[0];
               Pt = [{ db: An.db, schema: An.schema, table: An.table, as: An.as, addition: !0 }];
             }
-            return { tableList: Array.from(kl), columnList: yd(Ml), ast: { type: "delete", table: Pt, from: pr, where: Dr, returning: fn } };
+            return { tableList: Array.from(kl), columnList: wd(Ml), ast: { type: "delete", table: Pt, from: pr, where: Dr, returning: fn } };
           }(ue, Ve, pt, st), k = W) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e)) : (u = k, k = e), k;
         }()) === e && (C = oi()) === e && (C = function() {
           var k, W;
@@ -107808,7 +107832,7 @@ function aEt() {
           W !== e ? (Je = C, C = k = function(pr, Dr) {
             const fn = pr && pr.ast || pr, An = Dr && Dr.length && Dr[0].length >= 4 ? [fn] : fn;
             for (let Wn = 0; Wn < Dr.length; Wn++) Dr[Wn][3] && Dr[Wn][3].length !== 0 && An.push(Dr[Wn][3] && Dr[Wn][3].ast || Dr[Wn][3]);
-            return { tableList: Array.from(kl), columnList: yd(Ml), ast: An };
+            return { tableList: Array.from(kl), columnList: wd(Ml), ast: An };
           }(k, W)) : (u = C, C = e);
         } else u = C, C = e;
         return C;
@@ -107817,10 +107841,10 @@ function aEt() {
         var C, k, W, ue;
         return C = u, (k = function() {
           var Ve, pt, st, Pt;
-          return Ve = u, r.substr(u, 5).toLowerCase() === "union" ? (pt = r.substr(u, 5), u += 5) : (pt = e, Te === 0 && Qt(md)), pt !== e ? (st = u, Te++, Pt = $s(), Te--, Pt === e ? st = void 0 : (u = st, st = e), st !== e ? Ve = pt = [pt, st] : (u = Ve, Ve = e)) : (u = Ve, Ve = e), Ve;
+          return Ve = u, r.substr(u, 5).toLowerCase() === "union" ? (pt = r.substr(u, 5), u += 5) : (pt = e, Te === 0 && Qt(vd)), pt !== e ? (st = u, Te++, Pt = $s(), Te--, Pt === e ? st = void 0 : (u = st, st = e), st !== e ? Ve = pt = [pt, st] : (u = Ve, Ve = e)) : (u = Ve, Ve = e), Ve;
         }()) !== e && Xe() !== e ? ((W = jt()) === e && (W = xr()), W === e && (W = null), W !== e ? (Je = C, C = k = (ue = W) ? "union " + ue.toLowerCase() : "union") : (u = C, C = e)) : (u = C, C = e), C === e && (C = u, (k = function() {
           var Ve, pt, st, Pt;
-          return Ve = u, r.substr(u, 9).toLowerCase() === "intersect" ? (pt = r.substr(u, 9), u += 9) : (pt = e, Te === 0 && Qt(vd)), pt !== e ? (st = u, Te++, Pt = $s(), Te--, Pt === e ? st = void 0 : (u = st, st = e), st !== e ? Ve = pt = [pt, st] : (u = Ve, Ve = e)) : (u = Ve, Ve = e), Ve;
+          return Ve = u, r.substr(u, 9).toLowerCase() === "intersect" ? (pt = r.substr(u, 9), u += 9) : (pt = e, Te === 0 && Qt(bd)), pt !== e ? (st = u, Te++, Pt = $s(), Te--, Pt === e ? st = void 0 : (u = st, st = e), st !== e ? Ve = pt = [pt, st] : (u = Ve, Ve = e)) : (u = Ve, Ve = e), Ve;
         }()) !== e && (Je = C, k = "intersect"), (C = k) === e && (C = u, (k = function() {
           var Ve, pt, st, Pt;
           return Ve = u, r.substr(u, 6).toLowerCase() === "except" ? (pt = r.substr(u, 6), u += 6) : (pt = e, Te === 0 && Qt(zl)), pt !== e ? (st = u, Te++, Pt = $s(), Te--, Pt === e ? st = void 0 : (u = st, st = e), st !== e ? Ve = pt = [pt, st] : (u = Ve, Ve = e)) : (u = Ve, Ve = e), Ve;
@@ -107833,7 +107857,7 @@ function aEt() {
           W !== e && (ue = Xe()) !== e ? ((Ve = Qc()) === e && (Ve = null), Ve !== e && (pt = Xe()) !== e ? ((st = ic()) === e && (st = null), st !== e ? (Je = C, C = k = function(pr, Dr, fn, An) {
             let Wn = pr;
             for (let Fn = 0; Fn < Dr.length; Fn++) Wn._next = Dr[Fn][3], Wn.set_op = Dr[Fn][1], Wn = Wn._next;
-            return fn && (pr._orderby = fn), An && An.value && An.value.length > 0 && (pr._limit = An), { tableList: Array.from(kl), columnList: yd(Ml), ast: pr };
+            return fn && (pr._orderby = fn), An && An.value && An.value.length > 0 && (pr._limit = An), { tableList: Array.from(kl), columnList: wd(Ml), ast: pr };
           }(k, W, Ve, st)) : (u = C, C = e)) : (u = C, C = e)) : (u = C, C = e);
         } else u = C, C = e;
         return C;
@@ -107886,7 +107910,7 @@ function aEt() {
       }
       function ir() {
         var C, k, W, ue;
-        return C = u, r.substr(u, 7).toLowerCase() === "declare" ? (k = r.substr(u, 7), u += 7) : (k = e, Te === 0 && Qt(ts)), k !== e && Xe() !== e && (W = Ht()) !== e ? (Je = C, ue = W, C = k = { tableList: Array.from(kl), columnList: yd(Ml), ast: { type: "declare", declare: ue, symbol: ";" } }) : (u = C, C = e), C;
+        return C = u, r.substr(u, 7).toLowerCase() === "declare" ? (k = r.substr(u, 7), u += 7) : (k = e, Te === 0 && Qt(ts)), k !== e && Xe() !== e && (W = Ht()) !== e ? (Je = C, ue = W, C = k = { tableList: Array.from(kl), columnList: wd(Ml), ast: { type: "declare", declare: ue, symbol: ";" } }) : (u = C, C = e), C;
       }
       function ar() {
         var C, k, W, ue, Ve, pt, st, Pt, pr, Dr, fn, An, Wn, Fn, hs, Os, qs;
@@ -107946,7 +107970,7 @@ function aEt() {
         }()) === e && (Pt = null), Pt !== e) if (Xe() !== e) {
           for (pr = [], Dr = ar(); Dr !== e; ) pr.push(Dr), Dr = ar();
           pr !== e && (Dr = Xe()) !== e ? ((fn = px()) === e && (fn = null), fn !== e && Xe() !== e ? (Je = C, C = function(An, Wn, Fn, hs, Os, qs, ro) {
-            return { tableList: Array.from(kl), columnList: yd(Ml), ast: { args: Os || [], type: "create", replace: Wn && "or replace", name: hs, returns: qs, keyword: Fn && Fn.toLowerCase(), options: ro || [] } };
+            return { tableList: Array.from(kl), columnList: wd(Ml), ast: { args: Os || [], type: "create", replace: Wn && "or replace", name: hs, returns: qs, keyword: Fn && Fn.toLowerCase(), options: ro || [] } };
           }(0, k, ue, pt, st, Pt, pr)) : (u = C, C = e)) : (u = C, C = e);
         } else u = C, C = e;
         else u = C, C = e;
@@ -108066,7 +108090,7 @@ function aEt() {
         return C = u, function() {
           var fn, An, Wn, Fn;
           return fn = u, r.substr(u, 7).toLowerCase() === "collate" ? (An = r.substr(u, 7), u += 7) : (An = e, Te === 0 && Qt(Eh)), An !== e ? (Wn = u, Te++, Fn = $s(), Te--, Fn === e ? Wn = void 0 : (u = Wn, Wn = e), Wn !== e ? (Je = fn, fn = An = "COLLATE") : (u = fn, fn = e)) : (u = fn, fn = e), fn;
-        }() !== e && Xe() !== e ? ((k = si()) === e && (k = null), k !== e && Xe() !== e ? (W = u, (ue = or()) !== e && (Ve = Xe()) !== e && (pt = gd()) !== e && (st = Xe()) !== e ? W = ue = [ue, Ve, pt, st] : (u = W, W = e), W === e && (W = null), W !== e && (ue = or()) !== e ? (Je = C, Pt = k, Dr = ue, C = { type: "collate", keyword: "collate", collate: { name: (pr = W) ? [pr[0], Dr] : Dr, symbol: Pt } }) : (u = C, C = e)) : (u = C, C = e)) : (u = C, C = e), C;
+        }() !== e && Xe() !== e ? ((k = si()) === e && (k = null), k !== e && Xe() !== e ? (W = u, (ue = or()) !== e && (Ve = Xe()) !== e && (pt = yd()) !== e && (st = Xe()) !== e ? W = ue = [ue, Ve, pt, st] : (u = W, W = e), W === e && (W = null), W !== e && (ue = or()) !== e ? (Je = C, Pt = k, Dr = ue, C = { type: "collate", keyword: "collate", collate: { name: (pr = W) ? [pr[0], Dr] : Dr, symbol: Pt } }) : (u = C, C = e)) : (u = C, C = e)) : (u = C, C = e), C;
       }
       function vo() {
         var C, k, W, ue, Ve;
@@ -108089,7 +108113,7 @@ function aEt() {
       }
       function $e() {
         var C, k;
-        return C = u, (k = Kr()) === e && (r.substr(u, 3).toLowerCase() === "out" ? (k = r.substr(u, 3), u += 3) : (k = e, Te === 0 && Qt(Vm)), k === e && (r.substr(u, 8).toLowerCase() === "variadic" ? (k = r.substr(u, 8), u += 8) : (k = e, Te === 0 && Qt(ad)))), k !== e && (Je = C, k = k.toUpperCase()), C = k;
+        return C = u, (k = Kr()) === e && (r.substr(u, 3).toLowerCase() === "out" ? (k = r.substr(u, 3), u += 3) : (k = e, Te === 0 && Qt(Vm)), k === e && (r.substr(u, 8).toLowerCase() === "variadic" ? (k = r.substr(u, 8), u += 8) : (k = e, Te === 0 && Qt(ud)))), k !== e && (Je = C, k = k.toUpperCase()), C = k;
       }
       function Re() {
         var C, k, W, ue, Ve;
@@ -108254,13 +108278,13 @@ function aEt() {
       }
       function dr() {
         var C, k, W, ue, Ve, pt, st;
-        return C = u, (k = vp()) === e && (k = hc()) === e && (k = En()), k !== e && (Je = C, st = k, k = { keyword: Array.isArray(st) ? st[0].toLowerCase() : st.toLowerCase() }), (C = k) === e && (C = u, (k = oa()) !== e && Xe() !== e ? (W = u, r.substr(u, 2).toLowerCase() === "of" ? (ue = r.substr(u, 2), u += 2) : (ue = e, Te === 0 && Qt(od)), ue !== e && (Ve = Xe()) !== e && (pt = Yc()) !== e ? W = ue = [ue, Ve, pt] : (u = W, W = e), W === e && (W = null), W !== e ? (Je = C, C = k = function(Pt, pr) {
+        return C = u, (k = vp()) === e && (k = hc()) === e && (k = En()), k !== e && (Je = C, st = k, k = { keyword: Array.isArray(st) ? st[0].toLowerCase() : st.toLowerCase() }), (C = k) === e && (C = u, (k = oa()) !== e && Xe() !== e ? (W = u, r.substr(u, 2).toLowerCase() === "of" ? (ue = r.substr(u, 2), u += 2) : (ue = e, Te === 0 && Qt(id)), ue !== e && (Ve = Xe()) !== e && (pt = Yc()) !== e ? W = ue = [ue, Ve, pt] : (u = W, W = e), W === e && (W = null), W !== e ? (Je = C, C = k = function(Pt, pr) {
           return { keyword: Pt && Pt[0] && Pt[0].toLowerCase(), args: pr && { keyword: pr[0], columns: pr[2] } || null };
         }(k, W)) : (u = C, C = e)) : (u = C, C = e)), C;
       }
       function kr() {
         var C, k, W;
-        return C = u, r.substr(u, 9).toLowerCase() === "character" ? (k = r.substr(u, 9), u += 9) : (k = e, Te === 0 && Qt(ud)), k !== e && Xe() !== e ? (r.substr(u, 3).toLowerCase() === "set" ? (W = r.substr(u, 3), u += 3) : (W = e, Te === 0 && Qt(Bh)), W !== e ? (Je = C, C = k = "CHARACTER SET") : (u = C, C = e)) : (u = C, C = e), C;
+        return C = u, r.substr(u, 9).toLowerCase() === "character" ? (k = r.substr(u, 9), u += 9) : (k = e, Te === 0 && Qt(ld)), k !== e && Xe() !== e ? (r.substr(u, 3).toLowerCase() === "set" ? (W = r.substr(u, 3), u += 3) : (W = e, Te === 0 && Qt(Bh)), W !== e ? (Je = C, C = k = "CHARACTER SET") : (u = C, C = e)) : (u = C, C = e), C;
       }
       function Zr() {
         var C, k, W, ue, Ve, pt, st, Pt, pr;
@@ -108310,7 +108334,7 @@ function aEt() {
       }
       function po() {
         var C, k, W, ue, Ve;
-        return C = u, k = u, (W = _r()) !== e && (ue = Xe()) !== e && (Ve = gd()) !== e ? k = W = [W, ue, Ve] : (u = k, k = e), k === e && (k = null), k !== e && (W = Xe()) !== e ? ((ue = _r()) === e && (ue = Lg()), ue !== e ? (Je = C, C = k = function(pt, st) {
+        return C = u, k = u, (W = _r()) !== e && (ue = Xe()) !== e && (Ve = yd()) !== e ? k = W = [W, ue, Ve] : (u = k, k = e), k === e && (k = null), k !== e && (W = Xe()) !== e ? ((ue = _r()) === e && (ue = Lg()), ue !== e ? (Je = C, C = k = function(pt, st) {
           return { prefix: pt && pt[0], name: st };
         }(k, ue)) : (u = C, C = e)) : (u = C, C = e), C;
       }
@@ -108330,7 +108354,7 @@ function aEt() {
       }
       function Gi() {
         var C, k, W, ue, Ve, pt, st, Pt;
-        return C = u, r.substr(u, 5).toLowerCase() === "grant" ? (k = r.substr(u, 5), u += 5) : (k = e, Te === 0 && Qt(Id)), k !== e && (Je = C, k = { type: "grant" }), (C = k) === e && (C = u, r.substr(u, 6).toLowerCase() === "revoke" ? (k = r.substr(u, 6), u += 6) : (k = e, Te === 0 && Qt(Xm)), k !== e && Xe() !== e ? (W = u, r.substr(u, 5).toLowerCase() === "grant" ? (ue = r.substr(u, 5), u += 5) : (ue = e, Te === 0 && Qt(Id)), ue !== e && (Ve = Xe()) !== e ? (r.substr(u, 6).toLowerCase() === "option" ? (pt = r.substr(u, 6), u += 6) : (pt = e, Te === 0 && Qt(ld)), pt !== e && (st = Xe()) !== e ? (r.substr(u, 3).toLowerCase() === "for" ? (Pt = r.substr(u, 3), u += 3) : (Pt = e, Te === 0 && Qt(tl)), Pt !== e ? W = ue = [ue, Ve, pt, st, Pt] : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e), W === e && (W = null), W !== e ? (Je = C, C = k = { type: "revoke", grant_option_for: W && { type: "origin", value: "grant option for" } }) : (u = C, C = e)) : (u = C, C = e)), C;
+        return C = u, r.substr(u, 5).toLowerCase() === "grant" ? (k = r.substr(u, 5), u += 5) : (k = e, Te === 0 && Qt(Id)), k !== e && (Je = C, k = { type: "grant" }), (C = k) === e && (C = u, r.substr(u, 6).toLowerCase() === "revoke" ? (k = r.substr(u, 6), u += 6) : (k = e, Te === 0 && Qt(Xm)), k !== e && Xe() !== e ? (W = u, r.substr(u, 5).toLowerCase() === "grant" ? (ue = r.substr(u, 5), u += 5) : (ue = e, Te === 0 && Qt(Id)), ue !== e && (Ve = Xe()) !== e ? (r.substr(u, 6).toLowerCase() === "option" ? (pt = r.substr(u, 6), u += 6) : (pt = e, Te === 0 && Qt(cd)), pt !== e && (st = Xe()) !== e ? (r.substr(u, 3).toLowerCase() === "for" ? (Pt = r.substr(u, 3), u += 3) : (Pt = e, Te === 0 && Qt(tl)), Pt !== e ? W = ue = [ue, Ve, pt, st, Pt] : (u = W, W = e)) : (u = W, W = e)) : (u = W, W = e), W === e && (W = null), W !== e ? (Je = C, C = k = { type: "revoke", grant_option_for: W && { type: "origin", value: "grant option for" } }) : (u = C, C = e)) : (u = C, C = e)), C;
       }
       function ii() {
         var C, k, W, ue, Ve, pt;
@@ -108543,11 +108567,11 @@ function aEt() {
             else u = C, C = e;
             else u = C, C = e;
             else u = C, C = e;
-            C === e && (C = u, (k = or()) !== e && (W = Xe()) !== e && (ue = gd()) !== e ? (Ve = u, (pt = Bt()) !== e && (st = Xe()) !== e && (Pt = gd()) !== e ? Ve = pt = [pt, st, Pt] : (u = Ve, Ve = e), Ve === e && (Ve = null), Ve !== e && (pt = Xe()) !== e && (st = Lg()) !== e ? (Je = C, C = k = function(Fn, hs) {
+            C === e && (C = u, (k = or()) !== e && (W = Xe()) !== e && (ue = yd()) !== e ? (Ve = u, (pt = Bt()) !== e && (st = Xe()) !== e && (Pt = yd()) !== e ? Ve = pt = [pt, st, Pt] : (u = Ve, Ve = e), Ve === e && (Ve = null), Ve !== e && (pt = Xe()) !== e && (st = Lg()) !== e ? (Je = C, C = k = function(Fn, hs) {
               const Os = hs && hs[0];
               let qs;
               return Os && (qs = Fn, Fn = Os), Ml.add(`select::${Fn ? Fn.value : null}::(.*)`), { expr: { type: "column_ref", table: Fn, schema: qs, column: "*" }, as: null };
-            }(k, Ve)) : (u = C, C = e)) : (u = C, C = e), C === e && (C = u, k = u, (W = or()) !== e && (ue = Xe()) !== e && (Ve = gd()) !== e ? k = W = [W, ue, Ve] : (u = k, k = e), k === e && (k = null), k !== e && (W = Xe()) !== e && (ue = Lg()) !== e ? (Je = C, C = k = function(Fn) {
+            }(k, Ve)) : (u = C, C = e)) : (u = C, C = e), C === e && (C = u, k = u, (W = or()) !== e && (ue = Xe()) !== e && (Ve = yd()) !== e ? k = W = [W, ue, Ve] : (u = k, k = e), k === e && (k = null), k !== e && (W = Xe()) !== e && (ue = Lg()) !== e ? (Je = C, C = k = function(Fn) {
               const hs = Fn && Fn[0] || null;
               return Ml.add(`select::${hs ? hs.value : null}::(.*)`), { expr: { type: "column_ref", table: hs, column: "*" }, as: null };
             }(k)) : (u = C, C = e), C === e && (C = u, (k = ya()) !== e && (W = Xe()) !== e ? ((ue = ss()) === e && (ue = null), ue !== e ? (Je = C, Wn = ue, (An = k).type !== "double_quote_string" && An.type !== "single_quote_string" || Ml.add("select::null::" + An.value), C = k = { type: "expr", expr: An, as: Wn }) : (u = C, C = e)) : (u = C, C = e))));
@@ -108676,7 +108700,7 @@ function aEt() {
       }
       function Hu() {
         var C, k, W, ue, Ve, pt, st, Pt, pr;
-        return C = u, (k = _r()) !== e ? (W = u, (ue = Xe()) !== e && (Ve = gd()) !== e && (pt = Xe()) !== e ? ((st = _r()) === e && (st = Lg()), st !== e ? W = ue = [ue, Ve, pt, st] : (u = W, W = e)) : (u = W, W = e), W === e && (W = null), W !== e ? (ue = u, (Ve = Xe()) !== e && (pt = gd()) !== e && (st = Xe()) !== e ? ((Pt = _r()) === e && (Pt = Lg()), Pt !== e ? ue = Ve = [Ve, pt, st, Pt] : (u = ue, ue = e)) : (u = ue, ue = e), ue === e && (ue = null), ue !== e ? (Je = C, C = k = function(Dr, fn, An) {
+        return C = u, (k = _r()) !== e ? (W = u, (ue = Xe()) !== e && (Ve = yd()) !== e && (pt = Xe()) !== e ? ((st = _r()) === e && (st = Lg()), st !== e ? W = ue = [ue, Ve, pt, st] : (u = W, W = e)) : (u = W, W = e), W === e && (W = null), W !== e ? (ue = u, (Ve = Xe()) !== e && (pt = yd()) !== e && (st = Xe()) !== e ? ((Pt = _r()) === e && (Pt = Lg()), Pt !== e ? ue = Ve = [Ve, pt, st, Pt] : (u = ue, ue = e)) : (u = ue, ue = e), ue === e && (ue = null), ue !== e ? (Je = C, C = k = function(Dr, fn, An) {
           const Wn = { db: null, table: Dr };
           return An !== null ? (Wn.db = Dr, Wn.schema = fn[3], Wn.table = An[3], Wn) : (fn !== null && (Wn.db = Dr, Wn.table = fn[3]), Wn);
         }(k, W, ue)) : (u = C, C = e)) : (u = C, C = e)) : (u = C, C = e), C === e && (C = u, (k = jw()) !== e && (Je = C, (pr = k).db = null, pr.table = pr.name, k = pr), C = k), C;
@@ -109107,7 +109131,7 @@ function aEt() {
               }(Ao, Wo, Mo), Ws = Ao) : (u = Ws, Ws = e)) : (u = Ws, Ws = e), Ws;
             }()) === e && (qs = function() {
               var Ws, Ao, Wo, Mo, vi, Li;
-              return Ws = u, Ao = u, (Wo = _r()) !== e && (Mo = Xe()) !== e && (vi = gd()) !== e ? Ao = Wo = [Wo, Mo, vi] : (u = Ao, Ao = e), Ao === e && (Ao = null), Ao !== e && (Wo = Xe()) !== e ? ((Mo = function() {
+              return Ws = u, Ao = u, (Wo = _r()) !== e && (Mo = Xe()) !== e && (vi = yd()) !== e ? Ao = Wo = [Wo, Mo, vi] : (u = Ao, Ao = e), Ao === e && (Ao = null), Ao !== e && (Wo = Xe()) !== e ? ((Mo = function() {
                 var ki, Ea, il, Zu;
                 return ki = u, r.substr(u, 9).toLowerCase() === "array_agg" ? (Ea = r.substr(u, 9), u += 9) : (Ea = e, Te === 0 && Qt(Xf)), Ea !== e ? (il = u, Te++, Zu = $s(), Te--, Zu === e ? il = void 0 : (u = il, il = e), il !== e ? (Je = ki, ki = Ea = "ARRAY_AGG") : (u = ki, ki = e)) : (u = ki, ki = e), ki;
               }()) === e && (Mo = function() {
@@ -109128,7 +109152,7 @@ function aEt() {
               var qs, ro, so;
               return qs = u, (ro = function() {
                 var bo;
-                return r.substr(u, 10).toLowerCase() === "row_number" ? (bo = r.substr(u, 10), u += 10) : (bo = e, Te === 0 && Qt(fd)), bo === e && (r.substr(u, 10).toLowerCase() === "dense_rank" ? (bo = r.substr(u, 10), u += 10) : (bo = e, Te === 0 && Qt(xv)), bo === e && (r.substr(u, 4).toLowerCase() === "rank" ? (bo = r.substr(u, 4), u += 4) : (bo = e, Te === 0 && Qt(vm)))), bo;
+                return r.substr(u, 10).toLowerCase() === "row_number" ? (bo = r.substr(u, 10), u += 10) : (bo = e, Te === 0 && Qt(dd)), bo === e && (r.substr(u, 10).toLowerCase() === "dense_rank" ? (bo = r.substr(u, 10), u += 10) : (bo = e, Te === 0 && Qt(xv)), bo === e && (r.substr(u, 4).toLowerCase() === "rank" ? (bo = r.substr(u, 4), u += 4) : (bo = e, Te === 0 && Qt(vm)))), bo;
               }()) !== e && Xe() !== e && ma() !== e && Xe() !== e && xa() !== e && Xe() !== e && (so = Kc()) !== e ? (Je = qs, ro = /* @__PURE__ */ function(bo, Ws) {
                 return { type: "window_func", name: bo, over: Ws };
               }(ro, so), qs = ro) : (u = qs, qs = e), qs;
@@ -109191,19 +109215,19 @@ function aEt() {
       }
       function Me() {
         var C, k, W, ue, Ve, pt, st, Pt, pr, Dr, fn, An;
-        if ((C = Ce()) === e && (C = u, k = u, (W = _r()) !== e && (ue = Xe()) !== e && (Ve = gd()) !== e ? k = W = [W, ue, Ve] : (u = k, k = e), k === e && (k = null), k !== e && (W = Xe()) !== e && (ue = Lg()) !== e ? (Je = C, C = k = function(Wn) {
+        if ((C = Ce()) === e && (C = u, k = u, (W = _r()) !== e && (ue = Xe()) !== e && (Ve = yd()) !== e ? k = W = [W, ue, Ve] : (u = k, k = e), k === e && (k = null), k !== e && (W = Xe()) !== e && (ue = Lg()) !== e ? (Je = C, C = k = function(Wn) {
           const Fn = Wn && Wn[0] || null;
           return Ml.add(`select::${Fn}::(.*)`), { type: "column_ref", table: Fn, column: "*" };
         }(k)) : (u = C, C = e), C === e)) {
-          if (C = u, (k = _r()) !== e) if (W = u, (ue = Xe()) !== e && (Ve = gd()) !== e && (pt = Xe()) !== e && (st = _r()) !== e ? W = ue = [ue, Ve, pt, st] : (u = W, W = e), W !== e) {
-            if (ue = [], Ve = u, (pt = Xe()) !== e && (st = gd()) !== e && (Pt = Xe()) !== e && (pr = ni()) !== e ? Ve = pt = [pt, st, Pt, pr] : (u = Ve, Ve = e), Ve !== e) for (; Ve !== e; ) ue.push(Ve), Ve = u, (pt = Xe()) !== e && (st = gd()) !== e && (Pt = Xe()) !== e && (pr = ni()) !== e ? Ve = pt = [pt, st, Pt, pr] : (u = Ve, Ve = e);
+          if (C = u, (k = _r()) !== e) if (W = u, (ue = Xe()) !== e && (Ve = yd()) !== e && (pt = Xe()) !== e && (st = _r()) !== e ? W = ue = [ue, Ve, pt, st] : (u = W, W = e), W !== e) {
+            if (ue = [], Ve = u, (pt = Xe()) !== e && (st = yd()) !== e && (Pt = Xe()) !== e && (pr = ni()) !== e ? Ve = pt = [pt, st, Pt, pr] : (u = Ve, Ve = e), Ve !== e) for (; Ve !== e; ) ue.push(Ve), Ve = u, (pt = Xe()) !== e && (st = yd()) !== e && (Pt = Xe()) !== e && (pr = ni()) !== e ? Ve = pt = [pt, st, Pt, pr] : (u = Ve, Ve = e);
             else ue = e;
             ue !== e ? (Ve = u, (pt = Xe()) !== e && (st = mo()) !== e ? Ve = pt = [pt, st] : (u = Ve, Ve = e), Ve === e && (Ve = null), Ve !== e ? (Je = C, C = k = function(Wn, Fn, hs, Os) {
               return hs.length === 1 ? (Ml.add(`select::${Wn}.${Fn[3]}::${hs[0][3].value}`), { type: "column_ref", schema: Wn, table: Fn[3], column: { expr: hs[0][3] }, collate: Os && Os[1] }) : { type: "column_ref", column: { expr: b1(mx(".", Wn, Fn[3]), hs) }, collate: Os && Os[1] };
             }(k, W, ue, Ve)) : (u = C, C = e)) : (u = C, C = e);
           } else u = C, C = e;
           else u = C, C = e;
-          C === e && (C = u, (k = _r()) !== e && (W = Xe()) !== e && (ue = gd()) !== e && (Ve = Xe()) !== e && (pt = ni()) !== e ? (st = u, (Pt = Xe()) !== e && (pr = mo()) !== e ? st = Pt = [Pt, pr] : (u = st, st = e), st === e && (st = null), st !== e ? (Je = C, Dr = k, fn = pt, An = st, Ml.add(`select::${Dr}::${fn.value}`), C = k = { type: "column_ref", table: Dr, column: { expr: fn }, collate: An && An[1] }) : (u = C, C = e)) : (u = C, C = e), C === e && (C = u, (k = ui()) !== e ? (W = u, Te++, ue = ma(), Te--, ue === e ? W = void 0 : (u = W, W = e), W !== e ? (ue = u, (Ve = Xe()) !== e && (pt = mo()) !== e ? ue = Ve = [Ve, pt] : (u = ue, ue = e), ue === e && (ue = null), ue !== e ? (Je = C, C = k = function(Wn, Fn) {
+          C === e && (C = u, (k = _r()) !== e && (W = Xe()) !== e && (ue = yd()) !== e && (Ve = Xe()) !== e && (pt = ni()) !== e ? (st = u, (Pt = Xe()) !== e && (pr = mo()) !== e ? st = Pt = [Pt, pr] : (u = st, st = e), st === e && (st = null), st !== e ? (Je = C, Dr = k, fn = pt, An = st, Ml.add(`select::${Dr}::${fn.value}`), C = k = { type: "column_ref", table: Dr, column: { expr: fn }, collate: An && An[1] }) : (u = C, C = e)) : (u = C, C = e), C === e && (C = u, (k = ui()) !== e ? (W = u, Te++, ue = ma(), Te--, ue === e ? W = void 0 : (u = W, W = e), W !== e ? (ue = u, (Ve = Xe()) !== e && (pt = mo()) !== e ? ue = Ve = [Ve, pt] : (u = ue, ue = e), ue === e && (ue = null), ue !== e ? (Je = C, C = k = function(Wn, Fn) {
             return Ml.add("select::null::" + Wn.value), { type: "column_ref", table: null, column: { expr: Wn }, collate: Fn && Fn[1] };
           }(k, ue)) : (u = C, C = e)) : (u = C, C = e)) : (u = C, C = e)));
         }
@@ -109468,7 +109492,7 @@ function aEt() {
       }
       function R() {
         var C, k;
-        return C = u, r.substr(u, 7).toLowerCase() === "century" ? (k = r.substr(u, 7), u += 7) : (k = e, Te === 0 && Qt(ym)), k === e && (r.substr(u, 3).toLowerCase() === "day" ? (k = r.substr(u, 3), u += 3) : (k = e, Te === 0 && Qt(wm)), k === e && (r.substr(u, 4).toLowerCase() === "date" ? (k = r.substr(u, 4), u += 4) : (k = e, Te === 0 && Qt(Yh)), k === e && (r.substr(u, 6).toLowerCase() === "decade" ? (k = r.substr(u, 6), u += 6) : (k = e, Te === 0 && Qt(Um)), k === e && (r.substr(u, 3).toLowerCase() === "dow" ? (k = r.substr(u, 3), u += 3) : (k = e, Te === 0 && Qt(dd)), k === e && (r.substr(u, 3).toLowerCase() === "doy" ? (k = r.substr(u, 3), u += 3) : (k = e, Te === 0 && Qt(zv)), k === e && (r.substr(u, 5).toLowerCase() === "epoch" ? (k = r.substr(u, 5), u += 5) : (k = e, Te === 0 && Qt(Qh)), k === e && (r.substr(u, 4).toLowerCase() === "hour" ? (k = r.substr(u, 4), u += 4) : (k = e, Te === 0 && Qt(Cm)), k === e && (r.substr(u, 6).toLowerCase() === "isodow" ? (k = r.substr(u, 6), u += 6) : (k = e, Te === 0 && Qt(up)), k === e && (r.substr(u, 7).toLowerCase() === "isoyear" ? (k = r.substr(u, 7), u += 7) : (k = e, Te === 0 && Qt(Bm)), k === e && (r.substr(u, 12).toLowerCase() === "microseconds" ? (k = r.substr(u, 12), u += 12) : (k = e, Te === 0 && Qt(fh)), k === e && (r.substr(u, 10).toLowerCase() === "millennium" ? (k = r.substr(u, 10), u += 10) : (k = e, Te === 0 && Qt(N)), k === e && (r.substr(u, 12).toLowerCase() === "milliseconds" ? (k = r.substr(u, 12), u += 12) : (k = e, Te === 0 && Qt(Hn)), k === e && (r.substr(u, 6).toLowerCase() === "minute" ? (k = r.substr(u, 6), u += 6) : (k = e, Te === 0 && Qt(Sf)), k === e && (r.substr(u, 5).toLowerCase() === "month" ? (k = r.substr(u, 5), u += 5) : (k = e, Te === 0 && Qt(T)), k === e && (r.substr(u, 7).toLowerCase() === "quarter" ? (k = r.substr(u, 7), u += 7) : (k = e, Te === 0 && Qt(Vn)), k === e && (r.substr(u, 6).toLowerCase() === "second" ? (k = r.substr(u, 6), u += 6) : (k = e, Te === 0 && Qt(fr)), k === e && (r.substr(u, 8).toLowerCase() === "timezone" ? (k = r.substr(u, 8), u += 8) : (k = e, Te === 0 && Qt(Ls)), k === e && (r.substr(u, 13).toLowerCase() === "timezone_hour" ? (k = r.substr(u, 13), u += 13) : (k = e, Te === 0 && Qt(Rc)), k === e && (r.substr(u, 15).toLowerCase() === "timezone_minute" ? (k = r.substr(u, 15), u += 15) : (k = e, Te === 0 && Qt(mr)), k === e && (r.substr(u, 4).toLowerCase() === "week" ? (k = r.substr(u, 4), u += 4) : (k = e, Te === 0 && Qt(ms)), k === e && (r.substr(u, 4).toLowerCase() === "year" ? (k = r.substr(u, 4), u += 4) : (k = e, Te === 0 && Qt(On))))))))))))))))))))))), k !== e && (Je = C, k = k), C = k;
+        return C = u, r.substr(u, 7).toLowerCase() === "century" ? (k = r.substr(u, 7), u += 7) : (k = e, Te === 0 && Qt(ym)), k === e && (r.substr(u, 3).toLowerCase() === "day" ? (k = r.substr(u, 3), u += 3) : (k = e, Te === 0 && Qt(wm)), k === e && (r.substr(u, 4).toLowerCase() === "date" ? (k = r.substr(u, 4), u += 4) : (k = e, Te === 0 && Qt(Yh)), k === e && (r.substr(u, 6).toLowerCase() === "decade" ? (k = r.substr(u, 6), u += 6) : (k = e, Te === 0 && Qt(Um)), k === e && (r.substr(u, 3).toLowerCase() === "dow" ? (k = r.substr(u, 3), u += 3) : (k = e, Te === 0 && Qt(pd)), k === e && (r.substr(u, 3).toLowerCase() === "doy" ? (k = r.substr(u, 3), u += 3) : (k = e, Te === 0 && Qt(zv)), k === e && (r.substr(u, 5).toLowerCase() === "epoch" ? (k = r.substr(u, 5), u += 5) : (k = e, Te === 0 && Qt(Qh)), k === e && (r.substr(u, 4).toLowerCase() === "hour" ? (k = r.substr(u, 4), u += 4) : (k = e, Te === 0 && Qt(Cm)), k === e && (r.substr(u, 6).toLowerCase() === "isodow" ? (k = r.substr(u, 6), u += 6) : (k = e, Te === 0 && Qt(up)), k === e && (r.substr(u, 7).toLowerCase() === "isoyear" ? (k = r.substr(u, 7), u += 7) : (k = e, Te === 0 && Qt(Bm)), k === e && (r.substr(u, 12).toLowerCase() === "microseconds" ? (k = r.substr(u, 12), u += 12) : (k = e, Te === 0 && Qt(fh)), k === e && (r.substr(u, 10).toLowerCase() === "millennium" ? (k = r.substr(u, 10), u += 10) : (k = e, Te === 0 && Qt(N)), k === e && (r.substr(u, 12).toLowerCase() === "milliseconds" ? (k = r.substr(u, 12), u += 12) : (k = e, Te === 0 && Qt(Hn)), k === e && (r.substr(u, 6).toLowerCase() === "minute" ? (k = r.substr(u, 6), u += 6) : (k = e, Te === 0 && Qt(Sf)), k === e && (r.substr(u, 5).toLowerCase() === "month" ? (k = r.substr(u, 5), u += 5) : (k = e, Te === 0 && Qt(T)), k === e && (r.substr(u, 7).toLowerCase() === "quarter" ? (k = r.substr(u, 7), u += 7) : (k = e, Te === 0 && Qt(Vn)), k === e && (r.substr(u, 6).toLowerCase() === "second" ? (k = r.substr(u, 6), u += 6) : (k = e, Te === 0 && Qt(fr)), k === e && (r.substr(u, 8).toLowerCase() === "timezone" ? (k = r.substr(u, 8), u += 8) : (k = e, Te === 0 && Qt(Ls)), k === e && (r.substr(u, 13).toLowerCase() === "timezone_hour" ? (k = r.substr(u, 13), u += 13) : (k = e, Te === 0 && Qt(Rc)), k === e && (r.substr(u, 15).toLowerCase() === "timezone_minute" ? (k = r.substr(u, 15), u += 15) : (k = e, Te === 0 && Qt(mr)), k === e && (r.substr(u, 4).toLowerCase() === "week" ? (k = r.substr(u, 4), u += 4) : (k = e, Te === 0 && Qt(ms)), k === e && (r.substr(u, 4).toLowerCase() === "year" ? (k = r.substr(u, 4), u += 4) : (k = e, Te === 0 && Qt(On))))))))))))))))))))))), k !== e && (Je = C, k = k), C = k;
       }
       function X() {
         var C;
@@ -109581,7 +109605,7 @@ function aEt() {
           for (ue = [], Ve = qn(); Ve !== e; ) ue.push(Ve), Ve = qn();
           ue !== e ? (r.charCodeAt(u) === 34 ? (Ve = '"', u++) : (Ve = e, Te === 0 && Qt(xf)), Ve !== e ? k = W = [W, ue, Ve] : (u = k, k = e)) : (u = k, k = e);
         } else u = k, k = e;
-        return k !== e ? (W = u, Te++, ue = gd(), Te--, ue === e ? W = void 0 : (u = W, W = e), W !== e ? (Je = C, C = k = { type: "double_quote_string", value: k[1].join("") }) : (u = C, C = e)) : (u = C, C = e), C;
+        return k !== e ? (W = u, Te++, ue = yd(), Te--, ue === e ? W = void 0 : (u = W, W = e), W !== e ? (Je = C, C = k = { type: "double_quote_string", value: k[1].join("") }) : (u = C, C = e)) : (u = C, C = e), C;
       }
       function qn() {
         var C;
@@ -109691,7 +109715,7 @@ function aEt() {
       }
       function ht() {
         var C, k, W, ue;
-        return C = u, r.substr(u, 8) === "UNLOGGED" ? (k = "UNLOGGED", u += 8) : (k = e, Te === 0 && Qt(hd)), k !== e ? (W = u, Te++, ue = $s(), Te--, ue === e ? W = void 0 : (u = W, W = e), W !== e ? (Je = C, C = k = "UNLOGGED") : (u = C, C = e)) : (u = C, C = e), C;
+        return C = u, r.substr(u, 8) === "UNLOGGED" ? (k = "UNLOGGED", u += 8) : (k = e, Te === 0 && Qt(md)), k !== e ? (W = u, Te++, ue = $s(), Te--, ue === e ? W = void 0 : (u = W, W = e), W !== e ? (Je = C, C = k = "UNLOGGED") : (u = C, C = e)) : (u = C, C = e), C;
       }
       function gu() {
         var C, k, W, ue;
@@ -110041,7 +110065,7 @@ function aEt() {
       }
       function xm() {
         var C, k, W, ue;
-        return C = u, r.substr(u, 7).toLowerCase() === "comment" ? (k = r.substr(u, 7), u += 7) : (k = e, Te === 0 && Qt(cd)), k !== e ? (W = u, Te++, ue = $s(), Te--, ue === e ? W = void 0 : (u = W, W = e), W !== e ? (Je = C, C = k = "COMMENT") : (u = C, C = e)) : (u = C, C = e), C;
+        return C = u, r.substr(u, 7).toLowerCase() === "comment" ? (k = r.substr(u, 7), u += 7) : (k = e, Te === 0 && Qt(fd)), k !== e ? (W = u, Te++, ue = $s(), Te--, ue === e ? W = void 0 : (u = W, W = e), W !== e ? (Je = C, C = k = "COMMENT") : (u = C, C = e)) : (u = C, C = e), C;
       }
       function Df() {
         var C, k, W, ue;
@@ -110055,7 +110079,7 @@ function aEt() {
         var C, k, W, ue;
         return C = u, r.substr(u, 10).toLowerCase() === "references" ? (k = r.substr(u, 10), u += 10) : (k = e, Te === 0 && Qt(Xo)), k !== e ? (W = u, Te++, ue = $s(), Te--, ue === e ? W = void 0 : (u = W, W = e), W !== e ? (Je = C, C = k = "REFERENCES") : (u = C, C = e)) : (u = C, C = e), C;
       }
-      function gd() {
+      function yd() {
         var C;
         return r.charCodeAt(u) === 46 ? (C = ".", u++) : (C = e, Te === 0 && Qt(nf)), C;
       }
@@ -110175,7 +110199,7 @@ function aEt() {
         if ((C = function() {
           var W, ue;
           return W = u, Te++, r.length > u ? (ue = r.charAt(u), u++) : (ue = e, Te === 0 && Qt(nl)), Te--, ue === e ? W = void 0 : (u = W, W = e), W;
-        }()) === e) if (C = [], pd.test(r.charAt(u)) ? (k = r.charAt(u), u++) : (k = e, Te === 0 && Qt(cc)), k !== e) for (; k !== e; ) C.push(k), pd.test(r.charAt(u)) ? (k = r.charAt(u), u++) : (k = e, Te === 0 && Qt(cc));
+        }()) === e) if (C = [], hd.test(r.charAt(u)) ? (k = r.charAt(u), u++) : (k = e, Te === 0 && Qt(cc)), k !== e) for (; k !== e; ) C.push(k), hd.test(r.charAt(u)) ? (k = r.charAt(u), u++) : (k = e, Te === 0 && Qt(cc));
         else C = e;
         return C;
       }
@@ -110230,11 +110254,11 @@ function aEt() {
       }
       function hx() {
         var C, k, W, ue, Ve, pt, st, Pt, pr;
-        return (C = ot()) === e && (C = jw()) === e && (C = A3()) === e && (C = ra()) === e && (C = u, (k = ma()) !== e && (W = Xe()) !== e && (ue = hH()) !== e && (Ve = Xe()) !== e && (pt = xa()) !== e ? (Je = C, (pr = ue).parentheses = !0, C = k = pr) : (u = C, C = e), C === e && (C = u, (k = Ho()) !== e ? (W = u, (ue = gd()) !== e && (Ve = Xe()) !== e && (pt = Ho()) !== e ? W = ue = [ue, Ve, pt] : (u = W, W = e), W === e && (W = null), W !== e ? (Je = C, st = k, C = k = (Pt = W) ? { type: "column_ref", table: st, column: Pt[2] } : { type: "var", name: st, prefix: null }) : (u = C, C = e)) : (u = C, C = e))), C;
+        return (C = ot()) === e && (C = jw()) === e && (C = A3()) === e && (C = ra()) === e && (C = u, (k = ma()) !== e && (W = Xe()) !== e && (ue = hH()) !== e && (Ve = Xe()) !== e && (pt = xa()) !== e ? (Je = C, (pr = ue).parentheses = !0, C = k = pr) : (u = C, C = e), C === e && (C = u, (k = Ho()) !== e ? (W = u, (ue = yd()) !== e && (Ve = Xe()) !== e && (pt = Ho()) !== e ? W = ue = [ue, Ve, pt] : (u = W, W = e), W === e && (W = null), W !== e ? (Je = C, st = k, C = k = (Pt = W) ? { type: "column_ref", table: st, column: Pt[2] } : { type: "var", name: st, prefix: null }) : (u = C, C = e)) : (u = C, C = e))), C;
       }
       function oT() {
         var C, k, W, ue, Ve, pt, st;
-        return C = u, (k = Bt()) !== e ? (W = u, (ue = Xe()) !== e && (Ve = gd()) !== e && (pt = Xe()) !== e && (st = Bt()) !== e ? W = ue = [ue, Ve, pt, st] : (u = W, W = e), W === e && (W = null), W !== e ? (Je = C, C = k = function(Pt, pr) {
+        return C = u, (k = Bt()) !== e ? (W = u, (ue = Xe()) !== e && (Ve = yd()) !== e && (pt = Xe()) !== e && (st = Bt()) !== e ? W = ue = [ue, Ve, pt, st] : (u = W, W = e), W === e && (W = null), W !== e ? (Je = C, C = k = function(Pt, pr) {
           const Dr = { name: [Pt] };
           return pr !== null && (Dr.schema = Pt, Dr.name = [pr[3]]), Dr;
         }(k, W)) : (u = C, C = e)) : (u = C, C = e), C;
@@ -110486,7 +110510,7 @@ function aEt() {
           }()) !== e && (Je = k, W = { dataType: W }), k = W;
         }()) === e && (C = function() {
           var k, W, ue;
-          return k = u, (W = Ho()) !== e && Xe() !== e && gd() !== e && Xe() !== e && (ue = function() {
+          return k = u, (W = Ho()) !== e && Xe() !== e && yd() !== e && Xe() !== e && (ue = function() {
             var Ve;
             return (Ve = Ho()) === e && (Ve = Is()), Ve;
           }()) !== e ? (Je = u, (function(Ve, pt) {
@@ -110504,7 +110528,7 @@ function aEt() {
         var C, k;
         return C = u, function() {
           var W, ue, Ve, pt;
-          return W = u, r.substr(u, 9).toLowerCase() === "character" ? (ue = r.substr(u, 9), u += 9) : (ue = e, Te === 0 && Qt(ud)), ue !== e ? (Ve = u, Te++, pt = $s(), Te--, pt === e ? Ve = void 0 : (u = Ve, Ve = e), Ve !== e ? (Je = W, W = ue = "CHARACTER") : (u = W, W = e)) : (u = W, W = e), W;
+          return W = u, r.substr(u, 9).toLowerCase() === "character" ? (ue = r.substr(u, 9), u += 9) : (ue = e, Te === 0 && Qt(ld)), ue !== e ? (Ve = u, Te++, pt = $s(), Te--, pt === e ? Ve = void 0 : (u = Ve, Ve = e), Ve !== e ? (Je = W, W = ue = "CHARACTER") : (u = W, W = e)) : (u = W, W = e), W;
         }() !== e && Xe() !== e ? (r.substr(u, 7).toLowerCase() === "varying" ? (k = r.substr(u, 7), u += 7) : (k = e, Te === 0 && Qt(oc)), k === e && (k = null), k !== e ? (Je = C, C = "CHARACTER VARYING") : (u = C, C = e)) : (u = C, C = e), C;
       }
       function yO() {
@@ -110542,7 +110566,7 @@ function aEt() {
       }
       function wO() {
         var C, k, W, ue, Ve, pt, st, Pt, pr, Dr, fn, An, Wn, Fn, hs, Os;
-        if (C = u, (k = Le()) === e && (k = xe()) === e && (k = kt()) === e && (k = Tt()) === e && (k = lr()) === e && (k = w()) === e && (k = I()) === e && (k = U()) === e && (k = Ee()) === e && (k = u, (W = ze()) !== e && (ue = Xe()) !== e ? (r.substr(u, 9).toLowerCase() === "precision" ? (Ve = r.substr(u, 9), u += 9) : (Ve = e, Te === 0 && Qt(bd)), Ve !== e ? k = W = [W, ue, Ve] : (u = k, k = e)) : (u = k, k = e), k === e && (k = ze()) === e && (k = Mr()) === e && (k = nn()) === e && (k = We()) === e && (k = bt())), k !== e) if ((W = Xe()) !== e) if ((ue = ma()) !== e) if ((Ve = Xe()) !== e) {
+        if (C = u, (k = Le()) === e && (k = xe()) === e && (k = kt()) === e && (k = Tt()) === e && (k = lr()) === e && (k = w()) === e && (k = I()) === e && (k = U()) === e && (k = Ee()) === e && (k = u, (W = ze()) !== e && (ue = Xe()) !== e ? (r.substr(u, 9).toLowerCase() === "precision" ? (Ve = r.substr(u, 9), u += 9) : (Ve = e, Te === 0 && Qt(gd)), Ve !== e ? k = W = [W, ue, Ve] : (u = k, k = e)) : (u = k, k = e), k === e && (k = ze()) === e && (k = Mr()) === e && (k = nn()) === e && (k = We()) === e && (k = bt())), k !== e) if ((W = Xe()) !== e) if ((ue = ma()) !== e) if ((Ve = Xe()) !== e) {
           if (pt = [], $u.test(r.charAt(u)) ? (st = r.charAt(u), u++) : (st = e, Te === 0 && Qt(Ro)), st !== e) for (; st !== e; ) pt.push(st), $u.test(r.charAt(u)) ? (st = r.charAt(u), u++) : (st = e, Te === 0 && Qt(Ro));
           else pt = e;
           if (pt !== e) if ((st = Xe()) !== e) {
@@ -110560,14 +110584,14 @@ function aEt() {
         else u = C, C = e;
         else u = C, C = e;
         if (C === e) {
-          if (C = u, (k = Le()) === e && (k = xe()) === e && (k = kt()) === e && (k = Tt()) === e && (k = lr()) === e && (k = w()) === e && (k = I()) === e && (k = U()) === e && (k = Ee()) === e && (k = u, (W = ze()) !== e && (ue = Xe()) !== e ? (r.substr(u, 9).toLowerCase() === "precision" ? (Ve = r.substr(u, 9), u += 9) : (Ve = e, Te === 0 && Qt(bd)), Ve !== e ? k = W = [W, ue, Ve] : (u = k, k = e)) : (u = k, k = e), k === e && (k = ze()) === e && (k = Mr()) === e && (k = nn()) === e && (k = We()) === e && (k = bt())), k !== e) {
+          if (C = u, (k = Le()) === e && (k = xe()) === e && (k = kt()) === e && (k = Tt()) === e && (k = lr()) === e && (k = w()) === e && (k = I()) === e && (k = U()) === e && (k = Ee()) === e && (k = u, (W = ze()) !== e && (ue = Xe()) !== e ? (r.substr(u, 9).toLowerCase() === "precision" ? (Ve = r.substr(u, 9), u += 9) : (Ve = e, Te === 0 && Qt(gd)), Ve !== e ? k = W = [W, ue, Ve] : (u = k, k = e)) : (u = k, k = e), k === e && (k = ze()) === e && (k = Mr()) === e && (k = nn()) === e && (k = We()) === e && (k = bt())), k !== e) {
             if (W = [], $u.test(r.charAt(u)) ? (ue = r.charAt(u), u++) : (ue = e, Te === 0 && Qt(Ro)), ue !== e) for (; ue !== e; ) W.push(ue), $u.test(r.charAt(u)) ? (ue = r.charAt(u), u++) : (ue = e, Te === 0 && Qt(Ro));
             else W = e;
             W !== e && (ue = Xe()) !== e ? ((Ve = I3()) === e && (Ve = null), Ve !== e ? (Je = C, C = k = function(qs, ro, so) {
               return { dataType: Array.isArray(qs) ? `${qs[0].toUpperCase()} ${qs[2].toUpperCase()}` : qs, length: parseInt(ro.join(""), 10), suffix: so };
             }(k, W, Ve)) : (u = C, C = e)) : (u = C, C = e);
           } else u = C, C = e;
-          C === e && (C = u, (k = Le()) === e && (k = xe()) === e && (k = kt()) === e && (k = Tt()) === e && (k = lr()) === e && (k = w()) === e && (k = I()) === e && (k = U()) === e && (k = Ee()) === e && (k = u, (W = ze()) !== e && (ue = Xe()) !== e ? (r.substr(u, 9).toLowerCase() === "precision" ? (Ve = r.substr(u, 9), u += 9) : (Ve = e, Te === 0 && Qt(bd)), Ve !== e ? k = W = [W, ue, Ve] : (u = k, k = e)) : (u = k, k = e), k === e && (k = ze()) === e && (k = Mr()) === e && (k = nn()) === e && (k = We()) === e && (k = bt())), k !== e && (W = Xe()) !== e ? ((ue = I3()) === e && (ue = null), ue !== e && (Ve = Xe()) !== e ? (Je = C, C = k = function(qs, ro) {
+          C === e && (C = u, (k = Le()) === e && (k = xe()) === e && (k = kt()) === e && (k = Tt()) === e && (k = lr()) === e && (k = w()) === e && (k = I()) === e && (k = U()) === e && (k = Ee()) === e && (k = u, (W = ze()) !== e && (ue = Xe()) !== e ? (r.substr(u, 9).toLowerCase() === "precision" ? (Ve = r.substr(u, 9), u += 9) : (Ve = e, Te === 0 && Qt(gd)), Ve !== e ? k = W = [W, ue, Ve] : (u = k, k = e)) : (u = k, k = e), k === e && (k = ze()) === e && (k = Mr()) === e && (k = nn()) === e && (k = We()) === e && (k = bt())), k !== e && (W = Xe()) !== e ? ((ue = I3()) === e && (ue = null), ue !== e && (Ve = Xe()) !== e ? (Je = C, C = k = function(qs, ro) {
             return { dataType: Array.isArray(qs) ? `${qs[0].toUpperCase()} ${qs[2].toUpperCase()}` : qs, suffix: ro };
           }(k, ue)) : (u = C, C = e)) : (u = C, C = e));
         }
@@ -110624,7 +110648,7 @@ function aEt() {
       function bH(C) {
         return O3[C] || C || null;
       }
-      function yd(C) {
+      function wd(C) {
         const k = /* @__PURE__ */ new Set();
         for (let W of C.keys()) {
           const ue = W.split("::");
@@ -110709,11 +110733,11 @@ function aEt() {
 `, "\r"], !0, !1), zs = /^[^ s\t\n\r;]/, ao = _e([" ", "s", "	", `
 `, "\r", ";"], !0, !1), ko = Y("COST", !0), qo = Y("ROWS", !0), Eo = Y("SUPPORT", !0), rn = Y("TO", !0), Pn = Y("=", !1), Rs = Y("CURRENT", !0), Us = Y("FUNCTION", !0), ho = Y("TYPE", !0), co = Y("DOMAIN", !0), Bo = Y("INCREMENT", !0), Vo = Y("MINVALUE", !0), di = function(w, I) {
         return { resource: "sequence", prefix: w.toLowerCase(), value: I };
-      }, wa = Y("NO", !0), Ba = Y("MAXVALUE", !0), Oa = Y("START", !0), Ma = Y("CACHE", !0), Za = Y("CYCLE", !0), Ja = Y("OWNED", !0), wc = Y("NONE", !0), Cl = Y("NULLS", !0), Nl = Y("FIRST", !0), va = Y("LAST", !0), Nu = Y("AUTO_INCREMENT", !0), mu = Y("UNIQUE", !0), Ru = Y("KEY", !0), Ll = Y("PRIMARY", !0), Rl = Y("COLUMN_FORMAT", !0), Ju = Y("FIXED", !0), ef = Y("DYNAMIC", !0), el = Y("DEFAULT", !0), tl = Y("STORAGE", !0), od = Y("DISK", !0), Kl = Y("MEMORY", !0), Fl = Y("CASCADE", !0), vf = Y("RESTRICT", !0), Gd = Y("OUT", !0), tm = Y("VARIADIC", !0), Hm = Y("INOUT", !0), yp = Y("OWNER", !0), Hd = Y("CURRENT_ROLE", !0), wp = Y("CURRENT_USER", !0), jp = Y("SESSION_USER", !0), $h = Y("ALGORITHM", !0), xl = Y("INSTANT", !0), rm = Y("INPLACE", !0), th = Y("COPY", !0), nm = Y("LOCK", !0), op = Y("SHARED", !0), $f = Y("EXCLUSIVE", !0), Bc = Y("PRIMARY KEY", !0), id = Y("FOREIGN KEY", !0), Vm = Y("MATCH FULL", !0), ad = Y("MATCH PARTIAL", !0), rh = Y("MATCH SIMPLE", !0), Wm = Y("SET NULL", !0), Cp = Y("NO ACTION", !0), Am = Y("SET DEFAULT", !0), nh = Y("TRIGGER", !0), ip = Y("BEFORE", !0), Vd = Y("AFTER", !0), Do = Y("INSTEAD OF", !0), bf = Y("EXECUTE", !0), Ff = Y("PROCEDURE", !0), Wd = Y("OF", !0), $p = Y("DEFERRABLE", !0), Fh = Y("INITIALLY IMMEDIATE", !0), Ym = Y("INITIALLY DEFERRED", !0), Fp = Y("FOR", !0), Uh = Y("EACH", !0), Ch = Y("ROW", !0), sm = Y("STATEMENT", !0), Up = Y("CHARACTER", !0), Lp = Y("SET", !0), Nc = Y("CHARSET", !0), xp = Y("COLLATE", !0), hv = Y("AVG_ROW_LENGTH", !0), om = Y("KEY_BLOCK_SIZE", !0), Lh = Y("MAX_ROWS", !0), gf = Y("MIN_ROWS", !0), Uf = Y("STATS_SAMPLE_PAGES", !0), sh = Y("CONNECTION", !0), im = Y("COMPRESSION", !0), ju = Y("'", !1), Bf = Y("ZLIB", !0), zf = Y("LZ4", !0), Qm = Y("ENGINE", !0), xh = Y("IN", !0), oh = Y("ACCESS SHARE", !0), Bp = Y("ROW SHARE", !0), am = Y("ROW EXCLUSIVE", !0), Km = Y("SHARE UPDATE EXCLUSIVE", !0), _m = Y("SHARE ROW EXCLUSIVE", !0), tf = Y("ACCESS EXCLUSIVE", !0), qf = Y("SHARE", !0), ud = Y("MODE", !0), Bh = Y("NOWAIT", !0), ih = Y("TABLES", !0), Eh = Y("PREPARE", !0), Ep = Y("USAGE", !0), Sh = function(w) {
+      }, wa = Y("NO", !0), Ba = Y("MAXVALUE", !0), Oa = Y("START", !0), Ma = Y("CACHE", !0), Za = Y("CYCLE", !0), Ja = Y("OWNED", !0), wc = Y("NONE", !0), Cl = Y("NULLS", !0), Nl = Y("FIRST", !0), va = Y("LAST", !0), Nu = Y("AUTO_INCREMENT", !0), mu = Y("UNIQUE", !0), Ru = Y("KEY", !0), Ll = Y("PRIMARY", !0), Rl = Y("COLUMN_FORMAT", !0), Ju = Y("FIXED", !0), ef = Y("DYNAMIC", !0), el = Y("DEFAULT", !0), tl = Y("STORAGE", !0), id = Y("DISK", !0), Kl = Y("MEMORY", !0), Fl = Y("CASCADE", !0), vf = Y("RESTRICT", !0), Gd = Y("OUT", !0), tm = Y("VARIADIC", !0), Hm = Y("INOUT", !0), yp = Y("OWNER", !0), Hd = Y("CURRENT_ROLE", !0), wp = Y("CURRENT_USER", !0), jp = Y("SESSION_USER", !0), $h = Y("ALGORITHM", !0), xl = Y("INSTANT", !0), rm = Y("INPLACE", !0), th = Y("COPY", !0), nm = Y("LOCK", !0), op = Y("SHARED", !0), $f = Y("EXCLUSIVE", !0), Bc = Y("PRIMARY KEY", !0), ad = Y("FOREIGN KEY", !0), Vm = Y("MATCH FULL", !0), ud = Y("MATCH PARTIAL", !0), rh = Y("MATCH SIMPLE", !0), Wm = Y("SET NULL", !0), Cp = Y("NO ACTION", !0), Am = Y("SET DEFAULT", !0), nh = Y("TRIGGER", !0), ip = Y("BEFORE", !0), Vd = Y("AFTER", !0), Do = Y("INSTEAD OF", !0), bf = Y("EXECUTE", !0), Ff = Y("PROCEDURE", !0), Wd = Y("OF", !0), $p = Y("DEFERRABLE", !0), Fh = Y("INITIALLY IMMEDIATE", !0), Ym = Y("INITIALLY DEFERRED", !0), Fp = Y("FOR", !0), Uh = Y("EACH", !0), Ch = Y("ROW", !0), sm = Y("STATEMENT", !0), Up = Y("CHARACTER", !0), Lp = Y("SET", !0), Nc = Y("CHARSET", !0), xp = Y("COLLATE", !0), hv = Y("AVG_ROW_LENGTH", !0), om = Y("KEY_BLOCK_SIZE", !0), Lh = Y("MAX_ROWS", !0), gf = Y("MIN_ROWS", !0), Uf = Y("STATS_SAMPLE_PAGES", !0), sh = Y("CONNECTION", !0), im = Y("COMPRESSION", !0), ju = Y("'", !1), Bf = Y("ZLIB", !0), zf = Y("LZ4", !0), Qm = Y("ENGINE", !0), xh = Y("IN", !0), oh = Y("ACCESS SHARE", !0), Bp = Y("ROW SHARE", !0), am = Y("ROW EXCLUSIVE", !0), Km = Y("SHARE UPDATE EXCLUSIVE", !0), _m = Y("SHARE ROW EXCLUSIVE", !0), tf = Y("ACCESS EXCLUSIVE", !0), qf = Y("SHARE", !0), ld = Y("MODE", !0), Bh = Y("NOWAIT", !0), ih = Y("TABLES", !0), Eh = Y("PREPARE", !0), Ep = Y("USAGE", !0), Sh = function(w) {
         return { type: "origin", value: Array.isArray(w) ? w[0] : w };
       }, zh = Y("CONNECT", !0), Tm = Y("PRIVILEGES", !0), Sp = function(w) {
         return { type: "origin", value: w };
-      }, yf = Y("SEQUENCE", !0), zp = Y("DATABASE", !0), _t = Y("DOMAIN", !1), Or = Y("FUNCTION", !1), cn = Y("ROUTINE", !0), Wr = Y("LANGUAGE", !0), bs = Y("LARGE", !0), cs = Y("SCHEMA", !1), Ns = Y("FUNCTIONS", !0), fo = Y("PROCEDURES", !0), io = Y("ROUTINES", !0), Uo = Y("PUBLIC", !0), Ko = Y("GRANT", !0), fi = Y("OPTION", !0), Bi = Y("ADMIN", !0), Di = Y("REVOKE", !0), ba = Y("ELSEIF", !0), Pa = Y("THEN", !0), Ki = Y("END", !0), ja = Y("DEBUG", !0), Ta = Y("LOG", !0), vu = Y("INFO", !0), cu = Y("NOTICE", !0), ul = Y("WARNING", !0), Ou = Y("EXCEPTION", !0), ec = Y("MESSAGE", !0), Eu = Y("DETAIL", !0), uc = Y("HINT", !0), Td = Y("ERRCODE", !0), Gf = Y("COLUMN", !0), Cc = Y("CONSTRAINT", !0), ah = Y("DATATYPE", !0), qp = Y("TABLE", !0), ll = Y("SQLSTATE", !0), zc = Y("RAISE", !0), Id = Y("LOOP", !0), ld = Y("begin", !0), um = Y("commit", !0), Xm = Y("rollback", !0), Cd = Y(";", !1), Hf = Y("(", !1), Nd = Y(")", !1), Yd = Y('"', !1), Qd = Y("OUTFILE", !0), uh = Y("DUMPFILE", !0), Qv = Y("BTREE", !0), Zm = Y("HASH", !0), Kv = Y("GIST", !0), Xv = Y("GIN", !0), Vf = Y("WITH", !0), wf = Y("PARSER", !0), Im = Y("VISIBLE", !0), Gp = Y("INVISIBLE", !0), mv = function(w, I) {
+      }, yf = Y("SEQUENCE", !0), zp = Y("DATABASE", !0), _t = Y("DOMAIN", !1), Or = Y("FUNCTION", !1), cn = Y("ROUTINE", !0), Wr = Y("LANGUAGE", !0), bs = Y("LARGE", !0), cs = Y("SCHEMA", !1), Ns = Y("FUNCTIONS", !0), fo = Y("PROCEDURES", !0), io = Y("ROUTINES", !0), Uo = Y("PUBLIC", !0), Ko = Y("GRANT", !0), fi = Y("OPTION", !0), Bi = Y("ADMIN", !0), Di = Y("REVOKE", !0), ba = Y("ELSEIF", !0), Pa = Y("THEN", !0), Ki = Y("END", !0), ja = Y("DEBUG", !0), Ta = Y("LOG", !0), vu = Y("INFO", !0), cu = Y("NOTICE", !0), ul = Y("WARNING", !0), Ou = Y("EXCEPTION", !0), ec = Y("MESSAGE", !0), Eu = Y("DETAIL", !0), uc = Y("HINT", !0), Td = Y("ERRCODE", !0), Gf = Y("COLUMN", !0), Cc = Y("CONSTRAINT", !0), ah = Y("DATATYPE", !0), qp = Y("TABLE", !0), ll = Y("SQLSTATE", !0), zc = Y("RAISE", !0), Id = Y("LOOP", !0), cd = Y("begin", !0), um = Y("commit", !0), Xm = Y("rollback", !0), Cd = Y(";", !1), Hf = Y("(", !1), Nd = Y(")", !1), Yd = Y('"', !1), Qd = Y("OUTFILE", !0), uh = Y("DUMPFILE", !0), Qv = Y("BTREE", !0), Zm = Y("HASH", !0), Kv = Y("GIST", !0), Xv = Y("GIN", !0), Vf = Y("WITH", !0), wf = Y("PARSER", !0), Im = Y("VISIBLE", !0), Gp = Y("INVISIBLE", !0), mv = function(w, I) {
         return I.unshift(w), I.forEach((U) => {
           const { table: te, as: Ee } = U;
           nn[te] = te, Ee && (nn[Ee] = te), function(ze) {
@@ -110723,13 +110747,13 @@ function aEt() {
         }), I;
       }, Jm = Y("LATERAL", !0), vv = Y("TABLESAMPLE", !0), Zv = Y("REPEATABLE", !0), lm = Y("CROSS", !0), ev = Y("FOLLOWING", !0), bv = Y("PRECEDING", !0), tv = Y("UNBOUNDED", !0), cm = Y("DO", !0), Av = Y("NOTHING", !0), _v = Y("CONFLICT", !0), Nm = function(w, I) {
         return ce(w, I);
-      }, Jv = Y("!", !1), Lb = Y(">=", !1), gv = Y(">", !1), xb = Y("<=", !1), Tv = Y("<>", !1), Eb = Y("<", !1), Db = Y("!=", !1), Iv = Y("SIMILAR", !0), Nv = Y("!~*", !1), eb = Y("~*", !1), fm = Y("~", !1), Ap = Y("!~", !1), Kd = Y("ESCAPE", !0), cd = Y("+", !1), Ah = Y("-", !1), qh = Y("*", !1), Rv = Y("/", !1), tb = Y("%", !1), dm = Y("||", !1), Ov = Y("$", !1), kv = Y("?|", !1), Mv = Y("?&", !1), Rm = Y("?", !1), _h = Y("#-", !1), Gh = Y("#>>", !1), rv = Y("#>", !1), rb = Y("@>", !1), Dv = Y("<@", !1), nb = Y("E", !0), sb = function(w) {
+      }, Jv = Y("!", !1), Lb = Y(">=", !1), gv = Y(">", !1), xb = Y("<=", !1), Tv = Y("<>", !1), Eb = Y("<", !1), Db = Y("!=", !1), Iv = Y("SIMILAR", !0), Nv = Y("!~*", !1), eb = Y("~*", !1), fm = Y("~", !1), Ap = Y("!~", !1), Kd = Y("ESCAPE", !0), fd = Y("+", !1), Ah = Y("-", !1), qh = Y("*", !1), Rv = Y("/", !1), tb = Y("%", !1), dm = Y("||", !1), Ov = Y("$", !1), kv = Y("?|", !1), Mv = Y("?&", !1), Rm = Y("?", !1), _h = Y("#-", !1), Gh = Y("#>>", !1), rv = Y("#>", !1), rb = Y("@>", !1), Dv = Y("<@", !1), nb = Y("E", !0), sb = function(w) {
         return { type: "default", value: w };
       }, Om = function(w) {
         return re[w.toUpperCase()] === !0;
-      }, ob = /^[^"]/, ib = _e(['"'], !0, !1), Pv = /^[^']/, Sb = _e(["'"], !0, !1), Ab = Y("`", !1), jv = /^[^`]/, $v = _e(["`"], !0, !1), Hh = /^[A-Za-z_\u4E00-\u9FA5\xC0-\u017F]/, rf = _e([["A", "Z"], ["a", "z"], "_", ["一", "龥"], ["À", "ſ"]], !1, !1), Rd = /^[A-Za-z0-9_\-$\u4E00-\u9FA5\xC0-\u017F]/, pm = _e([["A", "Z"], ["a", "z"], ["0", "9"], "_", "-", "$", ["一", "龥"], ["À", "ſ"]], !1, !1), Wf = /^[A-Za-z0-9_\u4E00-\u9FA5\xC0-\u017F]/, Cf = _e([["A", "Z"], ["a", "z"], ["0", "9"], "_", ["一", "龥"], ["À", "ſ"]], !1, !1), yv = Y(":", !1), km = Y("OVER", !0), Lf = Y("FILTER", !0), Od = Y("FIRST_VALUE", !0), _b = Y("LAST_VALUE", !0), ab = Y("ROW_NUMBER", !0), Tb = Y("DENSE_RANK", !0), ub = Y("RANK", !0), wv = Y("LAG", !0), Cv = Y("LEAD", !0), Lv = Y("NTH_VALUE", !0), lb = Y("IGNORE", !0), Pb = Y("RESPECT", !0), Ib = Y("percentile_cont", !0), cb = Y("percentile_disc", !0), fb = Y("within", !0), Fv = Y("mode", !0), Nb = Y("BOTH", !0), Rb = Y("LEADING", !0), db = Y("TRAILING", !0), Ob = Y("trim", !0), pb = Y("crosstab", !0), Uv = Y("POSITION", !0), q = Y("now", !0), as = Y("at", !0), hm = Y("zone", !0), xf = Y("CENTURY", !0), nv = Y("DAY", !0), $r = Y("DATE", !0), Gs = Y("DECADE", !0), kd = Y("DOW", !0), Mm = Y("DOY", !0), sv = Y("EPOCH", !0), ws = Y("HOUR", !0), Bv = Y("ISODOW", !0), hb = Y("ISOYEAR", !0), jb = Y("MICROSECONDS", !0), mm = Y("MILLENNIUM", !0), B = Y("MILLISECONDS", !0), is = Y("MINUTE", !0), Dm = Y("MONTH", !0), _p = Y("QUARTER", !0), Pm = Y("SECOND", !0), Ir = Y("TIMEZONE", !0), Ds = Y("TIMEZONE_HOUR", !0), fd = Y("TIMEZONE_MINUTE", !0), xv = Y("WEEK", !0), vm = Y("YEAR", !0), ls = Y("NTILE", !0), mb = /^[\n]/, ov = _e([`
+      }, ob = /^[^"]/, ib = _e(['"'], !0, !1), Pv = /^[^']/, Sb = _e(["'"], !0, !1), Ab = Y("`", !1), jv = /^[^`]/, $v = _e(["`"], !0, !1), Hh = /^[A-Za-z_\u4E00-\u9FA5\xC0-\u017F]/, rf = _e([["A", "Z"], ["a", "z"], "_", ["一", "龥"], ["À", "ſ"]], !1, !1), Rd = /^[A-Za-z0-9_\-$\u4E00-\u9FA5\xC0-\u017F]/, pm = _e([["A", "Z"], ["a", "z"], ["0", "9"], "_", "-", "$", ["一", "龥"], ["À", "ſ"]], !1, !1), Wf = /^[A-Za-z0-9_\u4E00-\u9FA5\xC0-\u017F]/, Cf = _e([["A", "Z"], ["a", "z"], ["0", "9"], "_", ["一", "龥"], ["À", "ſ"]], !1, !1), yv = Y(":", !1), km = Y("OVER", !0), Lf = Y("FILTER", !0), Od = Y("FIRST_VALUE", !0), _b = Y("LAST_VALUE", !0), ab = Y("ROW_NUMBER", !0), Tb = Y("DENSE_RANK", !0), ub = Y("RANK", !0), wv = Y("LAG", !0), Cv = Y("LEAD", !0), Lv = Y("NTH_VALUE", !0), lb = Y("IGNORE", !0), Pb = Y("RESPECT", !0), Ib = Y("percentile_cont", !0), cb = Y("percentile_disc", !0), fb = Y("within", !0), Fv = Y("mode", !0), Nb = Y("BOTH", !0), Rb = Y("LEADING", !0), db = Y("TRAILING", !0), Ob = Y("trim", !0), pb = Y("crosstab", !0), Uv = Y("POSITION", !0), q = Y("now", !0), as = Y("at", !0), hm = Y("zone", !0), xf = Y("CENTURY", !0), nv = Y("DAY", !0), $r = Y("DATE", !0), Gs = Y("DECADE", !0), kd = Y("DOW", !0), Mm = Y("DOY", !0), sv = Y("EPOCH", !0), ws = Y("HOUR", !0), Bv = Y("ISODOW", !0), hb = Y("ISOYEAR", !0), jb = Y("MICROSECONDS", !0), mm = Y("MILLENNIUM", !0), B = Y("MILLISECONDS", !0), is = Y("MINUTE", !0), Dm = Y("MONTH", !0), _p = Y("QUARTER", !0), Pm = Y("SECOND", !0), Ir = Y("TIMEZONE", !0), Ds = Y("TIMEZONE_HOUR", !0), dd = Y("TIMEZONE_MINUTE", !0), xv = Y("WEEK", !0), vm = Y("YEAR", !0), ls = Y("NTILE", !0), mb = /^[\n]/, ov = _e([`
 `], !1, !1), bm = /^[^"\\\0-\x1F\x7F]/, iv = _e(['"', "\\", ["\0", ""], ""], !0, !1), jm = /^[^'\\]/, Hp = _e(["'", "\\"], !0, !1), $m = Y("\\'", !1), Fm = Y('\\"', !1), Th = Y("\\\\", !1), Ih = Y("\\/", !1), D = Y("\\b", !1), Zn = Y("\\f", !1), Vh = Y("\\n", !1), Ef = Y("\\r", !1), Nh = Y("\\t", !1), wr = Y("\\u", !1), _s = Y("\\", !1), El = Y("''", !1), lh = /^[\n\r]/, Wh = _e([`
-`, "\r"], !1, !1), es = Y(".", !1), qc = /^[0-9]/, lc = _e([["0", "9"]], !1, !1), av = /^[0-9a-fA-F]/, Vp = _e([["0", "9"], ["a", "f"], ["A", "F"]], !1, !1), ap = /^[eE]/, Xd = _e(["e", "E"], !1, !1), Ev = /^[+\-]/, ch = _e(["+", "-"], !1, !1), gm = Y("NOT NULL", !0), vb = Y("TRUE", !0), ym = Y("FALSE", !0), wm = Y("SHOW", !0), Yh = Y("DROP", !0), Um = Y("USE", !0), dd = Y("ALTER", !0), zv = Y("SELECT", !0), Qh = Y("UPDATE", !0), Cm = Y("CREATE", !0), up = Y("TEMPORARY", !0), Bm = Y("TEMP", !0), fh = Y("DELETE", !0), N = Y("INSERT", !0), Hn = Y("RECURSIVE", !0), Sf = Y("REPLACE", !0), T = Y("RETURNING", !0), Vn = Y("RENAME", !0), fr = Y("PARTITION", !0), Ls = Y("INTO", !0), Rc = Y("FROM", !0), mr = Y("AS", !0), ms = Y("TABLESPACE", !0), On = Y("DEALLOCATE", !0), Wp = Y("LEFT", !0), dh = Y("RIGHT", !0), $n = Y("FULL", !0), A = Y("INNER", !0), Dn = Y("JOIN", !0), Af = Y("OUTER", !0), Lc = Y("UNION", !0), xc = Y("INTERSECT", !0), rr = Y("EXCEPT", !0), fs = Y("VALUES", !0), tc = Y("USING", !0), rc = Y("WHERE", !0), Yp = Y("GROUP", !0), Rn = Y("BY", !0), Rh = Y("ORDER", !0), Zd = Y("HAVING", !0), ph = Y("QUALIFY", !0), Tp = Y("LIMIT", !0), Qp = Y("OFFSET", !0), pd = Y("ASC", !0), cc = Y("DESC", !0), nf = Y("ALL", !0), $u = Y("DISTINCT", !0), Ro = Y("BETWEEN", !0), Kh = Y("IS", !0), lp = Y("LIKE", !0), hh = Y("ILIKE", !0), mh = Y("EXISTS", !0), Ld = Y("AND", !0), Oh = Y("OR", !0), Gc = Y("ARRAY", !0), Yf = Y("ARRAY_AGG", !0), sf = Y("STRING_AGG", !0), zo = Y("COUNT", !0), Kp = Y("GROUP_CONCAT", !0), Ip = Y("MAX", !0), Np = Y("MIN", !0), fu = Y("SUM", !0), of = Y("AVG", !0), Md = Y("EXTRACT", !0), Jd = Y("CALL", !0), hd = Y("CASE", !0), Dd = Y("WHEN", !0), ep = Y("ELSE", !0), af = Y("CAST", !0), cp = Y("BOOL", !0), Yu = Y("BOOLEAN", !0), Qf = Y("CHAR", !0), tp = Y("VARCHAR", !0), Rp = Y("NUMERIC", !0), Op = Y("DECIMAL", !0), fc = Y("SIGNED", !0), _f = Y("UNSIGNED", !0), Sl = Y("INT", !0), vh = Y("ZEROFILL", !0), Pd = Y("INTEGER", !0), uf = Y("JSON", !0), Ol = Y("JSONB", !0), bh = Y("GEOMETRY", !0), kp = Y("SMALLINT", !0), jd = Y("SERIAL", !0), md = Y("TINYINT", !0), vd = Y("TINYTEXT", !0), zl = Y("TEXT", !0), Go = Y("MEDIUMTEXT", !0), rp = Y("LONGTEXT", !0), Oc = Y("BIGINT", !0), Kf = Y("ENUM", !0), kc = Y("FLOAT", !0), Su = Y("DOUBLE", !0), Mc = Y("BIGSERIAL", !0), L = Y("REAL", !0), v = Y("DATETIME", !0), Xr = Y("TIME", !0), Pl = Y("TIMESTAMP", !0), Qu = Y("TRUNCATE", !0), Kt = Y("USER", !0), qe = Y("UUID", !0), zn = Y("OID", !0), zu = Y("REGCLASS", !0), fp = Y("REGCOLLATION", !0), hn = Y("REGCONFIG", !0), Vr = Y("REGDICTIONARY", !0), Xf = Y("REGNAMESPACE", !0), Wl = Y("REGOPER", !0), Mp = Y("REGOPERATOR", !0), Ku = Y("REGPROC", !0), uu = Y("REGPROCEDURE", !0), ql = Y("REGROLE", !0), Dc = Y("REGTYPE", !0), Tf = Y("CURRENT_DATE", !0), Dp = Y("INTERVAL", !0), ou = Y("CURRENT_TIME", !0), Zf = Y("CURRENT_TIMESTAMP", !0), nc = Y("SYSTEM_USER", !0), dp = Y("GLOBAL", !0), qu = Y("SESSION", !0), Oo = Y("PERSIST", !0), Al = Y("PERSIST_ONLY", !0), Pc = Y("VIEW", !0), g = Y("@", !1), Qr = Y("@@", !1), Hc = Y("$$", !1), bl = Y("return", !0), lf = Y("::", !1), At = Y("DUAL", !0), Ln = Y("ADD", !0), $a = Y("INDEX", !0), uo = Y("FULLTEXT", !0), Va = Y("SPATIAL", !0), jr = Y("COMMENT", !0), $d = Y("CONCURRENTLY", !0), If = Y("REFERENCES", !0), xd = Y("SQL_CALC_FOUND_ROWS", !0), Jr = Y("SQL_CACHE", !0), Ec = Y("SQL_NO_CACHE", !0), Gl = Y("SQL_SMALL_RESULT", !0), ga = Y("SQL_BIG_RESULT", !0), cl = Y("SQL_BUFFER_RESULT", !0), lu = Y(",", !1), Qa = Y("[", !1), Nf = Y("]", !1), cf = Y("->", !1), ff = Y("->>", !1), Gu = Y("&&", !1), zr = Y("/*", !1), sc = Y("*/", !1), gl = Y("--", !1), Io = { type: "any" }, Xl = /^[ \t\n\r]/, _l = _e([" ", "	", `
+`, "\r"], !1, !1), es = Y(".", !1), qc = /^[0-9]/, lc = _e([["0", "9"]], !1, !1), av = /^[0-9a-fA-F]/, Vp = _e([["0", "9"], ["a", "f"], ["A", "F"]], !1, !1), ap = /^[eE]/, Xd = _e(["e", "E"], !1, !1), Ev = /^[+\-]/, ch = _e(["+", "-"], !1, !1), gm = Y("NOT NULL", !0), vb = Y("TRUE", !0), ym = Y("FALSE", !0), wm = Y("SHOW", !0), Yh = Y("DROP", !0), Um = Y("USE", !0), pd = Y("ALTER", !0), zv = Y("SELECT", !0), Qh = Y("UPDATE", !0), Cm = Y("CREATE", !0), up = Y("TEMPORARY", !0), Bm = Y("TEMP", !0), fh = Y("DELETE", !0), N = Y("INSERT", !0), Hn = Y("RECURSIVE", !0), Sf = Y("REPLACE", !0), T = Y("RETURNING", !0), Vn = Y("RENAME", !0), fr = Y("PARTITION", !0), Ls = Y("INTO", !0), Rc = Y("FROM", !0), mr = Y("AS", !0), ms = Y("TABLESPACE", !0), On = Y("DEALLOCATE", !0), Wp = Y("LEFT", !0), dh = Y("RIGHT", !0), $n = Y("FULL", !0), A = Y("INNER", !0), Dn = Y("JOIN", !0), Af = Y("OUTER", !0), Lc = Y("UNION", !0), xc = Y("INTERSECT", !0), rr = Y("EXCEPT", !0), fs = Y("VALUES", !0), tc = Y("USING", !0), rc = Y("WHERE", !0), Yp = Y("GROUP", !0), Rn = Y("BY", !0), Rh = Y("ORDER", !0), Zd = Y("HAVING", !0), ph = Y("QUALIFY", !0), Tp = Y("LIMIT", !0), Qp = Y("OFFSET", !0), hd = Y("ASC", !0), cc = Y("DESC", !0), nf = Y("ALL", !0), $u = Y("DISTINCT", !0), Ro = Y("BETWEEN", !0), Kh = Y("IS", !0), lp = Y("LIKE", !0), hh = Y("ILIKE", !0), mh = Y("EXISTS", !0), Ld = Y("AND", !0), Oh = Y("OR", !0), Gc = Y("ARRAY", !0), Yf = Y("ARRAY_AGG", !0), sf = Y("STRING_AGG", !0), zo = Y("COUNT", !0), Kp = Y("GROUP_CONCAT", !0), Ip = Y("MAX", !0), Np = Y("MIN", !0), fu = Y("SUM", !0), of = Y("AVG", !0), Md = Y("EXTRACT", !0), Jd = Y("CALL", !0), md = Y("CASE", !0), Dd = Y("WHEN", !0), ep = Y("ELSE", !0), af = Y("CAST", !0), cp = Y("BOOL", !0), Yu = Y("BOOLEAN", !0), Qf = Y("CHAR", !0), tp = Y("VARCHAR", !0), Rp = Y("NUMERIC", !0), Op = Y("DECIMAL", !0), fc = Y("SIGNED", !0), _f = Y("UNSIGNED", !0), Sl = Y("INT", !0), vh = Y("ZEROFILL", !0), Pd = Y("INTEGER", !0), uf = Y("JSON", !0), Ol = Y("JSONB", !0), bh = Y("GEOMETRY", !0), kp = Y("SMALLINT", !0), jd = Y("SERIAL", !0), vd = Y("TINYINT", !0), bd = Y("TINYTEXT", !0), zl = Y("TEXT", !0), Go = Y("MEDIUMTEXT", !0), rp = Y("LONGTEXT", !0), Oc = Y("BIGINT", !0), Kf = Y("ENUM", !0), kc = Y("FLOAT", !0), Su = Y("DOUBLE", !0), Mc = Y("BIGSERIAL", !0), L = Y("REAL", !0), v = Y("DATETIME", !0), Xr = Y("TIME", !0), Pl = Y("TIMESTAMP", !0), Qu = Y("TRUNCATE", !0), Kt = Y("USER", !0), qe = Y("UUID", !0), zn = Y("OID", !0), zu = Y("REGCLASS", !0), fp = Y("REGCOLLATION", !0), hn = Y("REGCONFIG", !0), Vr = Y("REGDICTIONARY", !0), Xf = Y("REGNAMESPACE", !0), Wl = Y("REGOPER", !0), Mp = Y("REGOPERATOR", !0), Ku = Y("REGPROC", !0), uu = Y("REGPROCEDURE", !0), ql = Y("REGROLE", !0), Dc = Y("REGTYPE", !0), Tf = Y("CURRENT_DATE", !0), Dp = Y("INTERVAL", !0), ou = Y("CURRENT_TIME", !0), Zf = Y("CURRENT_TIMESTAMP", !0), nc = Y("SYSTEM_USER", !0), dp = Y("GLOBAL", !0), qu = Y("SESSION", !0), Oo = Y("PERSIST", !0), Al = Y("PERSIST_ONLY", !0), Pc = Y("VIEW", !0), g = Y("@", !1), Qr = Y("@@", !1), Hc = Y("$$", !1), bl = Y("return", !0), lf = Y("::", !1), At = Y("DUAL", !0), Ln = Y("ADD", !0), $a = Y("INDEX", !0), uo = Y("FULLTEXT", !0), Va = Y("SPATIAL", !0), jr = Y("COMMENT", !0), $d = Y("CONCURRENTLY", !0), If = Y("REFERENCES", !0), xd = Y("SQL_CALC_FOUND_ROWS", !0), Jr = Y("SQL_CACHE", !0), Ec = Y("SQL_NO_CACHE", !0), Gl = Y("SQL_SMALL_RESULT", !0), ga = Y("SQL_BIG_RESULT", !0), cl = Y("SQL_BUFFER_RESULT", !0), lu = Y(",", !1), Qa = Y("[", !1), Nf = Y("]", !1), cf = Y("->", !1), ff = Y("->>", !1), Gu = Y("&&", !1), zr = Y("/*", !1), sc = Y("*/", !1), gl = Y("--", !1), Io = { type: "any" }, Xl = /^[ \t\n\r]/, _l = _e([" ", "	", `
 `, "\r"], !1, !1), Vc = /^[^$]/, Au = _e(["$"], !0, !1), dc = function(w) {
         return { dataType: w };
       }, Rf = Y("bytea", !0), m = Y("varying", !0), Br = Y("PRECISION", !0), Hl = Y("WITHOUT", !0), Ul = Y("ZONE", !0), rl = function(w) {
@@ -110830,8 +110854,8 @@ function aEt() {
             }()) === e && (Vs = null), Vs !== e && ve() !== e ? ((Lo = function() {
               var Jo, Ei;
               return Jo = d, pl() !== e && ve() !== e && E() !== e && ve() !== e && (Ei = ie()) !== e && ve() !== e && G() !== e ? (Tr = Jo, Jo = { type: "when", cond: Ei, parentheses: !0 }) : (d = Jo, Jo = e), Jo;
-            }()) === e && (Lo = null), Lo !== e && ve() !== e ? (r.substr(d, 7).toLowerCase() === "execute" ? (Ys = r.substr(d, 7), d += 7) : (Ys = e, Ct === 0 && Se(bf)), Ys !== e && ve() !== e ? (r.substr(d, 9).toLowerCase() === "procedure" ? (go = r.substr(d, 9), d += 9) : (go = e, Ct === 0 && Se(Ff)), go === e && (r.substr(d, 8).toLowerCase() === "function" ? (go = r.substr(d, 8), d += 8) : (go = e, Ct === 0 && Se(Us))), go !== e && ve() !== e && (ai = xr()) !== e ? (Tr = U, te = function(Jo, Ei, si, Ii, Da, ml, Il, Pp, xm, Df, zg, Mg, gd, ha, Lg, ma) {
-              return { type: "create", replace: Ei && "or replace", constraint: Da, location: ml && ml.toLowerCase(), events: Il, table: xm, from: Df && Df[2], deferrable: zg, for_each: Mg, when: gd, execute: { keyword: "execute " + Lg.toLowerCase(), expr: ma }, constraint_type: Ii && Ii.toLowerCase(), keyword: Ii && Ii.toLowerCase(), constraint_kw: si && si.toLowerCase(), resource: "constraint" };
+            }()) === e && (Lo = null), Lo !== e && ve() !== e ? (r.substr(d, 7).toLowerCase() === "execute" ? (Ys = r.substr(d, 7), d += 7) : (Ys = e, Ct === 0 && Se(bf)), Ys !== e && ve() !== e ? (r.substr(d, 9).toLowerCase() === "procedure" ? (go = r.substr(d, 9), d += 9) : (go = e, Ct === 0 && Se(Ff)), go === e && (r.substr(d, 8).toLowerCase() === "function" ? (go = r.substr(d, 8), d += 8) : (go = e, Ct === 0 && Se(Us))), go !== e && ve() !== e && (ai = xr()) !== e ? (Tr = U, te = function(Jo, Ei, si, Ii, Da, ml, Il, Pp, xm, Df, zg, Mg, yd, ha, Lg, ma) {
+              return { type: "create", replace: Ei && "or replace", constraint: Da, location: ml && ml.toLowerCase(), events: Il, table: xm, from: Df && Df[2], deferrable: zg, for_each: Mg, when: yd, execute: { keyword: "execute " + Lg.toLowerCase(), expr: ma }, constraint_type: Ii && Ii.toLowerCase(), keyword: Ii && Ii.toLowerCase(), constraint_kw: si && si.toLowerCase(), resource: "constraint" };
             }(0, Ee, We, Zt, yr, Pr, un, 0, En, Xn, Ss, Vs, Lo, 0, go, ai), U = te) : (d = U, U = e)) : (d = U, U = e)) : (d = U, U = e)) : (d = U, U = e)) : (d = U, U = e)) : (d = U, U = e)) : (d = U, U = e)) : (d = U, U = e)) : (d = U, U = e)) : (d = U, U = e)) : (d = U, U = e)) : (d = U, U = e), U;
           }()) === e && (I = function() {
             var U, te, Ee, ze, We, bt, Zt, yr, Pr, un, In, En, Xn, ys;
@@ -110841,22 +110865,22 @@ function aEt() {
           }()) === e && (I = function() {
             var U, te, Ee, ze, We, bt, Zt, yr, Pr, un, In, En, Xn, ys, Ss, ks, Vs, Lo;
             U = d, (te = nd()) !== e && ve() !== e ? ((Ee = ht()) === e && (Ee = null), Ee !== e && ve() !== e && (ze = Du()) !== e && ve() !== e ? ((We = vp()) === e && (We = null), We !== e && ve() !== e ? ((bt = _o()) === e && (bt = null), bt !== e && ve() !== e && (Zt = Me()) !== e && ve() !== e && (yr = Ne()) !== e && ve() !== e ? ((Pr = jo()) === e && (Pr = null), Pr !== e && ve() !== e && E() !== e && ve() !== e && (un = function() {
-              var Df, zg, Mg, gd, ha, Lg, ma, xa;
+              var Df, zg, Mg, yd, ha, Lg, ma, xa;
               if (Df = d, (zg = Ms()) !== e) {
-                for (Mg = [], gd = d, (ha = ve()) !== e && (Lg = hi()) !== e && (ma = ve()) !== e && (xa = Ms()) !== e ? gd = ha = [ha, Lg, ma, xa] : (d = gd, gd = e); gd !== e; ) Mg.push(gd), gd = d, (ha = ve()) !== e && (Lg = hi()) !== e && (ma = ve()) !== e && (xa = Ms()) !== e ? gd = ha = [ha, Lg, ma, xa] : (d = gd, gd = e);
+                for (Mg = [], yd = d, (ha = ve()) !== e && (Lg = hi()) !== e && (ma = ve()) !== e && (xa = Ms()) !== e ? yd = ha = [ha, Lg, ma, xa] : (d = yd, yd = e); yd !== e; ) Mg.push(yd), yd = d, (ha = ve()) !== e && (Lg = hi()) !== e && (ma = ve()) !== e && (xa = Ms()) !== e ? yd = ha = [ha, Lg, ma, xa] : (d = yd, yd = e);
                 Mg !== e ? (Tr = Df, zg = M(zg, Mg), Df = zg) : (d = Df, Df = e);
               } else d = Df, Df = e;
               return Df;
             }()) !== e && ve() !== e && G() !== e && ve() !== e ? (In = d, (En = _r()) !== e && (Xn = ve()) !== e && (ys = E()) !== e && (Ss = ve()) !== e && (ks = function() {
-              var Df, zg, Mg, gd, ha, Lg, ma, xa;
+              var Df, zg, Mg, yd, ha, Lg, ma, xa;
               if (Df = d, (zg = Wt()) !== e) {
-                for (Mg = [], gd = d, (ha = ve()) !== e && (Lg = hi()) !== e && (ma = ve()) !== e && (xa = Wt()) !== e ? gd = ha = [ha, Lg, ma, xa] : (d = gd, gd = e); gd !== e; ) Mg.push(gd), gd = d, (ha = ve()) !== e && (Lg = hi()) !== e && (ma = ve()) !== e && (xa = Wt()) !== e ? gd = ha = [ha, Lg, ma, xa] : (d = gd, gd = e);
+                for (Mg = [], yd = d, (ha = ve()) !== e && (Lg = hi()) !== e && (ma = ve()) !== e && (xa = Wt()) !== e ? yd = ha = [ha, Lg, ma, xa] : (d = yd, yd = e); yd !== e; ) Mg.push(yd), yd = d, (ha = ve()) !== e && (Lg = hi()) !== e && (ma = ve()) !== e && (xa = Wt()) !== e ? yd = ha = [ha, Lg, ma, xa] : (d = yd, yd = e);
                 Mg !== e ? (Tr = Df, zg = M(zg, Mg), Df = zg) : (d = Df, Df = e);
               } else d = Df, Df = e;
               return Df;
             }()) !== e && (Vs = ve()) !== e && (Lo = G()) !== e ? In = En = [En, Xn, ys, Ss, ks, Vs, Lo] : (d = In, In = e), In === e && (In = null), In !== e && (En = ve()) !== e ? (Xn = d, (ys = function() {
-              var Df, zg, Mg, gd;
-              return Df = d, r.substr(d, 10).toLowerCase() === "tablespace" ? (zg = r.substr(d, 10), d += 10) : (zg = e, Ct === 0 && Se(ms)), zg !== e ? (Mg = d, Ct++, gd = ss(), Ct--, gd === e ? Mg = void 0 : (d = Mg, Mg = e), Mg !== e ? (Tr = Df, Df = zg = "TABLESPACE") : (d = Df, Df = e)) : (d = Df, Df = e), Df;
+              var Df, zg, Mg, yd;
+              return Df = d, r.substr(d, 10).toLowerCase() === "tablespace" ? (zg = r.substr(d, 10), d += 10) : (zg = e, Ct === 0 && Se(ms)), zg !== e ? (Mg = d, Ct++, yd = ss(), Ct--, yd === e ? Mg = void 0 : (d = Mg, Mg = e), Mg !== e ? (Tr = Df, Df = zg = "TABLESPACE") : (d = Df, Df = e)) : (d = Df, Df = e), Df;
             }()) !== e && (Ss = ve()) !== e && (ks = Pi()) !== e ? Xn = ys = [ys, Ss, ks] : (d = Xn, Xn = e), Xn === e && (Xn = null), Xn !== e && (ys = ve()) !== e ? ((Ss = Nt()) === e && (Ss = null), Ss !== e && (ks = ve()) !== e ? (Tr = U, Ys = te, go = Ee, ai = ze, Jo = We, Ei = bt, si = Zt, Ii = yr, Da = Pr, ml = un, Il = In, Pp = Xn, xm = Ss, te = { tableList: Array.from(Tt), columnList: xe(lr), ast: { type: Ys[0].toLowerCase(), index_type: go && go.toLowerCase(), keyword: ai.toLowerCase(), concurrently: Jo && Jo.toLowerCase(), index: Ei, on_kw: si[0].toLowerCase(), table: Ii, index_using: Da, index_columns: ml, with: Il && Il[4], with_before_where: !0, tablespace: Pp && { type: "origin", value: Pp[2] }, where: xm } }, U = te) : (d = U, U = e)) : (d = U, U = e)) : (d = U, U = e)) : (d = U, U = e)) : (d = U, U = e)) : (d = U, U = e)) : (d = U, U = e)) : (d = U, U = e);
             var Ys, go, ai, Jo, Ei, si, Ii, Da, ml, Il, Pp, xm;
             return U;
@@ -111051,7 +111075,7 @@ function aEt() {
             return un = d, r.substr(d, 4).toLowerCase() === "lock" ? (In = r.substr(d, 4), d += 4) : (In = e, Ct === 0 && Se(nm)), In !== e ? (En = d, Ct++, Xn = ss(), Ct--, Xn === e ? En = void 0 : (d = En, En = e), En !== e ? un = In = [In, En] : (d = un, un = e)) : (d = un, un = e), un;
           }()) !== e && ve() !== e ? ((te = ee()) === e && (te = null), te !== e && ve() !== e && (Ee = Zo()) !== e && ve() !== e ? ((ze = function() {
             var un, In, En, Xn;
-            return un = d, r.substr(d, 2).toLowerCase() === "in" ? (In = r.substr(d, 2), d += 2) : (In = e, Ct === 0 && Se(xh)), In !== e && ve() !== e ? (r.substr(d, 12).toLowerCase() === "access share" ? (En = r.substr(d, 12), d += 12) : (En = e, Ct === 0 && Se(oh)), En === e && (r.substr(d, 9).toLowerCase() === "row share" ? (En = r.substr(d, 9), d += 9) : (En = e, Ct === 0 && Se(Bp)), En === e && (r.substr(d, 13).toLowerCase() === "row exclusive" ? (En = r.substr(d, 13), d += 13) : (En = e, Ct === 0 && Se(am)), En === e && (r.substr(d, 22).toLowerCase() === "share update exclusive" ? (En = r.substr(d, 22), d += 22) : (En = e, Ct === 0 && Se(Km)), En === e && (r.substr(d, 19).toLowerCase() === "share row exclusive" ? (En = r.substr(d, 19), d += 19) : (En = e, Ct === 0 && Se(_m)), En === e && (r.substr(d, 9).toLowerCase() === "exclusive" ? (En = r.substr(d, 9), d += 9) : (En = e, Ct === 0 && Se($f)), En === e && (r.substr(d, 16).toLowerCase() === "access exclusive" ? (En = r.substr(d, 16), d += 16) : (En = e, Ct === 0 && Se(tf)), En === e && (r.substr(d, 5).toLowerCase() === "share" ? (En = r.substr(d, 5), d += 5) : (En = e, Ct === 0 && Se(qf))))))))), En !== e && ve() !== e ? (r.substr(d, 4).toLowerCase() === "mode" ? (Xn = r.substr(d, 4), d += 4) : (Xn = e, Ct === 0 && Se(ud)), Xn !== e ? (Tr = un, In = { mode: `in ${En.toLowerCase()} mode` }, un = In) : (d = un, un = e)) : (d = un, un = e)) : (d = un, un = e), un;
+            return un = d, r.substr(d, 2).toLowerCase() === "in" ? (In = r.substr(d, 2), d += 2) : (In = e, Ct === 0 && Se(xh)), In !== e && ve() !== e ? (r.substr(d, 12).toLowerCase() === "access share" ? (En = r.substr(d, 12), d += 12) : (En = e, Ct === 0 && Se(oh)), En === e && (r.substr(d, 9).toLowerCase() === "row share" ? (En = r.substr(d, 9), d += 9) : (En = e, Ct === 0 && Se(Bp)), En === e && (r.substr(d, 13).toLowerCase() === "row exclusive" ? (En = r.substr(d, 13), d += 13) : (En = e, Ct === 0 && Se(am)), En === e && (r.substr(d, 22).toLowerCase() === "share update exclusive" ? (En = r.substr(d, 22), d += 22) : (En = e, Ct === 0 && Se(Km)), En === e && (r.substr(d, 19).toLowerCase() === "share row exclusive" ? (En = r.substr(d, 19), d += 19) : (En = e, Ct === 0 && Se(_m)), En === e && (r.substr(d, 9).toLowerCase() === "exclusive" ? (En = r.substr(d, 9), d += 9) : (En = e, Ct === 0 && Se($f)), En === e && (r.substr(d, 16).toLowerCase() === "access exclusive" ? (En = r.substr(d, 16), d += 16) : (En = e, Ct === 0 && Se(tf)), En === e && (r.substr(d, 5).toLowerCase() === "share" ? (En = r.substr(d, 5), d += 5) : (En = e, Ct === 0 && Se(qf))))))))), En !== e && ve() !== e ? (r.substr(d, 4).toLowerCase() === "mode" ? (Xn = r.substr(d, 4), d += 4) : (Xn = e, Ct === 0 && Se(ld)), Xn !== e ? (Tr = un, In = { mode: `in ${En.toLowerCase()} mode` }, un = In) : (d = un, un = e)) : (d = un, un = e)) : (d = un, un = e), un;
           }()) === e && (ze = null), ze !== e && ve() !== e ? (r.substr(d, 6).toLowerCase() === "nowait" ? (We = r.substr(d, 6), d += 6) : (We = e, Ct === 0 && Se(Bh)), We === e && (We = null), We !== e ? (Tr = I, bt = te, yr = ze, Pr = We, (Zt = Ee) && Zt.forEach((un) => Tt.add(`lock::${[un.db, un.schema].filter(Boolean).join(".") || null}::${un.table}`)), U = { tableList: Array.from(Tt), columnList: xe(lr), ast: { type: "lock", keyword: bt && bt.toLowerCase(), tables: Zt.map((un) => ({ table: un })), lock_mode: yr, nowait: Pr } }, I = U) : (d = I, I = e)) : (d = I, I = e)) : (d = I, I = e)) : (d = I, I = e);
           var bt, Zt, yr, Pr;
           return I;
@@ -111163,7 +111187,7 @@ function aEt() {
           return I;
         }()) === e && (w = function() {
           var I, U;
-          return I = d, r.substr(d, 5).toLowerCase() === "begin" ? (U = r.substr(d, 5), d += 5) : (U = e, Ct === 0 && Se(ld)), U === e && (r.substr(d, 6).toLowerCase() === "commit" ? (U = r.substr(d, 6), d += 6) : (U = e, Ct === 0 && Se(um)), U === e && (r.substr(d, 8).toLowerCase() === "rollback" ? (U = r.substr(d, 8), d += 8) : (U = e, Ct === 0 && Se(Xm)))), U !== e && (Tr = I, U = { type: "transaction", expr: { action: { type: "origin", value: U } } }), I = U;
+          return I = d, r.substr(d, 5).toLowerCase() === "begin" ? (U = r.substr(d, 5), d += 5) : (U = e, Ct === 0 && Se(cd)), U === e && (r.substr(d, 6).toLowerCase() === "commit" ? (U = r.substr(d, 6), d += 6) : (U = e, Ct === 0 && Se(um)), U === e && (r.substr(d, 8).toLowerCase() === "rollback" ? (U = r.substr(d, 8), d += 8) : (U = e, Ct === 0 && Se(Xm)))), U !== e && (Tr = I, U = { type: "transaction", expr: { action: { type: "origin", value: U } } }), I = U;
         }()), w;
       }
       function vn() {
@@ -111446,7 +111470,7 @@ function aEt() {
           return Ee = d, r.substr(d, 13).toLowerCase() === "column_format" ? (ze = r.substr(d, 13), d += 13) : (ze = e, Ct === 0 && Se(Rl)), ze !== e && ve() !== e ? (r.substr(d, 5).toLowerCase() === "fixed" ? (We = r.substr(d, 5), d += 5) : (We = e, Ct === 0 && Se(Ju)), We === e && (r.substr(d, 7).toLowerCase() === "dynamic" ? (We = r.substr(d, 7), d += 7) : (We = e, Ct === 0 && Se(ef)), We === e && (r.substr(d, 7).toLowerCase() === "default" ? (We = r.substr(d, 7), d += 7) : (We = e, Ct === 0 && Se(el)))), We !== e ? (Tr = Ee, ze = { type: "column_format", value: We.toLowerCase() }, Ee = ze) : (d = Ee, Ee = e)) : (d = Ee, Ee = e), Ee;
         }()) !== e && (Tr = w, I = { column_format: I }), (w = I) === e && (w = d, (I = function() {
           var Ee, ze, We;
-          return Ee = d, r.substr(d, 7).toLowerCase() === "storage" ? (ze = r.substr(d, 7), d += 7) : (ze = e, Ct === 0 && Se(tl)), ze !== e && ve() !== e ? (r.substr(d, 4).toLowerCase() === "disk" ? (We = r.substr(d, 4), d += 4) : (We = e, Ct === 0 && Se(od)), We === e && (r.substr(d, 6).toLowerCase() === "memory" ? (We = r.substr(d, 6), d += 6) : (We = e, Ct === 0 && Se(Kl))), We !== e ? (Tr = Ee, ze = { type: "storage", value: We.toLowerCase() }, Ee = ze) : (d = Ee, Ee = e)) : (d = Ee, Ee = e), Ee;
+          return Ee = d, r.substr(d, 7).toLowerCase() === "storage" ? (ze = r.substr(d, 7), d += 7) : (ze = e, Ct === 0 && Se(tl)), ze !== e && ve() !== e ? (r.substr(d, 4).toLowerCase() === "disk" ? (We = r.substr(d, 4), d += 4) : (We = e, Ct === 0 && Se(id)), We === e && (r.substr(d, 6).toLowerCase() === "memory" ? (We = r.substr(d, 6), d += 6) : (We = e, Ct === 0 && Se(Kl))), We !== e ? (Tr = Ee, ze = { type: "storage", value: We.toLowerCase() }, Ee = ze) : (d = Ee, Ee = e)) : (d = Ee, Ee = e), Ee;
         }()) !== e && (Tr = w, I = { storage: I }), (w = I) === e && (w = d, (I = xo()) !== e && (Tr = w, I = { reference_definition: I }), (w = I) === e && (w = d, (I = Cu()) !== e && ve() !== e ? ((U = Ci()) === e && (U = null), U !== e && ve() !== e && (te = Mi()) !== e ? (Tr = w, w = I = /* @__PURE__ */ function(Ee, ze, We) {
           return { character_set: { type: Ee, value: We, symbol: ze } };
         }(I, U, te)) : (d = w, w = e)) : (d = w, w = e)))))))))), w;
@@ -111590,7 +111614,7 @@ function aEt() {
           return I;
         }()) === e && (w = function() {
           var I, U, te, Ee, ze, We;
-          I = d, (U = $i()) === e && (U = null), U !== e && ve() !== e ? (r.substr(d, 11).toLowerCase() === "foreign key" ? (te = r.substr(d, 11), d += 11) : (te = e, Ct === 0 && Se(id)), te !== e && ve() !== e ? ((Ee = Ha()) === e && (Ee = null), Ee !== e && ve() !== e && (ze = u()) !== e && ve() !== e ? ((We = xo()) === e && (We = null), We !== e ? (Tr = I, Zt = te, yr = Ee, Pr = ze, un = We, U = { constraint: (bt = U) && bt.constraint, definition: Pr, constraint_type: Zt, keyword: bt && bt.keyword, index: yr, resource: "constraint", reference_definition: un }, I = U) : (d = I, I = e)) : (d = I, I = e)) : (d = I, I = e)) : (d = I, I = e);
+          I = d, (U = $i()) === e && (U = null), U !== e && ve() !== e ? (r.substr(d, 11).toLowerCase() === "foreign key" ? (te = r.substr(d, 11), d += 11) : (te = e, Ct === 0 && Se(ad)), te !== e && ve() !== e ? ((Ee = Ha()) === e && (Ee = null), Ee !== e && ve() !== e && (ze = u()) !== e && ve() !== e ? ((We = xo()) === e && (We = null), We !== e ? (Tr = I, Zt = te, yr = Ee, Pr = ze, un = We, U = { constraint: (bt = U) && bt.constraint, definition: Pr, constraint_type: Zt, keyword: bt && bt.keyword, index: yr, resource: "constraint", reference_definition: un }, I = U) : (d = I, I = e)) : (d = I, I = e)) : (d = I, I = e)) : (d = I, I = e);
           var bt, Zt, yr, Pr, un;
           return I;
         }()) === e && (w = nu()), w;
@@ -111607,7 +111631,7 @@ function aEt() {
       }
       function xo() {
         var w, I, U, te, Ee, ze, We, bt, Zt, yr;
-        return w = d, (I = at()) !== e && ve() !== e && (U = Ne()) !== e && ve() !== e && (te = u()) !== e && ve() !== e ? (r.substr(d, 10).toLowerCase() === "match full" ? (Ee = r.substr(d, 10), d += 10) : (Ee = e, Ct === 0 && Se(Vm)), Ee === e && (r.substr(d, 13).toLowerCase() === "match partial" ? (Ee = r.substr(d, 13), d += 13) : (Ee = e, Ct === 0 && Se(ad)), Ee === e && (r.substr(d, 12).toLowerCase() === "match simple" ? (Ee = r.substr(d, 12), d += 12) : (Ee = e, Ct === 0 && Se(rh)))), Ee === e && (Ee = null), Ee !== e && ve() !== e ? ((ze = Yl()) === e && (ze = null), ze !== e && ve() !== e ? ((We = Yl()) === e && (We = null), We !== e ? (Tr = w, bt = Ee, Zt = ze, yr = We, w = I = { definition: te, table: [U], keyword: I.toLowerCase(), match: bt && bt.toLowerCase(), on_action: [Zt, yr].filter((Pr) => Pr) }) : (d = w, w = e)) : (d = w, w = e)) : (d = w, w = e)) : (d = w, w = e), w === e && (w = d, (I = Yl()) !== e && (Tr = w, I = { on_action: [I] }), w = I), w;
+        return w = d, (I = at()) !== e && ve() !== e && (U = Ne()) !== e && ve() !== e && (te = u()) !== e && ve() !== e ? (r.substr(d, 10).toLowerCase() === "match full" ? (Ee = r.substr(d, 10), d += 10) : (Ee = e, Ct === 0 && Se(Vm)), Ee === e && (r.substr(d, 13).toLowerCase() === "match partial" ? (Ee = r.substr(d, 13), d += 13) : (Ee = e, Ct === 0 && Se(ud)), Ee === e && (r.substr(d, 12).toLowerCase() === "match simple" ? (Ee = r.substr(d, 12), d += 12) : (Ee = e, Ct === 0 && Se(rh)))), Ee === e && (Ee = null), Ee !== e && ve() !== e ? ((ze = Yl()) === e && (ze = null), ze !== e && ve() !== e ? ((We = Yl()) === e && (We = null), We !== e ? (Tr = w, bt = Ee, Zt = ze, yr = We, w = I = { definition: te, table: [U], keyword: I.toLowerCase(), match: bt && bt.toLowerCase(), on_action: [Zt, yr].filter((Pr) => Pr) }) : (d = w, w = e)) : (d = w, w = e)) : (d = w, w = e)) : (d = w, w = e), w === e && (w = d, (I = Yl()) !== e && (Tr = w, I = { on_action: [I] }), w = I), w;
       }
       function Yl() {
         var w, I, U, te;
@@ -111642,7 +111666,7 @@ function aEt() {
           return { keyword: "partition by", value: yr };
         }(te)) : (d = w, w = e))))), w;
       }
-      function bd() {
+      function gd() {
         var w, I, U;
         return w = d, (I = Ed()) === e && (I = Zi()) === e && (I = Ua()) === e && (I = Sc()) === e && (I = na()) === e && (I = at()) === e && (r.substr(d, 7).toLowerCase() === "trigger" ? (I = r.substr(d, 7), d += 7) : (I = e, Ct === 0 && Se(nh))), I !== e && (Tr = w, U = I, I = { type: "origin", value: Array.isArray(U) ? U[0] : U }), w = I;
       }
@@ -111652,7 +111676,7 @@ function aEt() {
       }
       function Ql() {
         var w;
-        return (w = bd()) === e && (w = function() {
+        return (w = gd()) === e && (w = function() {
           var I, U;
           return I = d, r.substr(d, 5).toLowerCase() === "usage" ? (U = r.substr(d, 5), d += 5) : (U = e, Ct === 0 && Se(Ep)), U === e && (U = Ed()) === e && (U = Ua()), U !== e && (Tr = I, U = Sh(U)), I = U;
         }()) === e && (w = function() {
@@ -112370,7 +112394,7 @@ function aEt() {
       }
       function Er() {
         var w;
-        return r.charCodeAt(d) === 43 ? (w = "+", d++) : (w = e, Ct === 0 && Se(cd)), w === e && (r.charCodeAt(d) === 45 ? (w = "-", d++) : (w = e, Ct === 0 && Se(Ah))), w;
+        return r.charCodeAt(d) === 43 ? (w = "+", d++) : (w = e, Ct === 0 && Se(fd)), w === e && (r.charCodeAt(d) === 45 ? (w = "-", d++) : (w = e, Ct === 0 && Se(Ah))), w;
       }
       function Mn() {
         var w, I, U, te, Ee, ze, We, bt;
@@ -112520,7 +112544,7 @@ function aEt() {
           return ze;
         }()) === e && (w = d, (I = function() {
           var ze;
-          return r.charCodeAt(d) === 33 ? (ze = "!", d++) : (ze = e, Ct === 0 && Se(Jv)), ze === e && (r.charCodeAt(d) === 45 ? (ze = "-", d++) : (ze = e, Ct === 0 && Se(Ah)), ze === e && (r.charCodeAt(d) === 43 ? (ze = "+", d++) : (ze = e, Ct === 0 && Se(cd)), ze === e && (r.charCodeAt(d) === 126 ? (ze = "~", d++) : (ze = e, Ct === 0 && Se(fm))))), ze;
+          return r.charCodeAt(d) === 33 ? (ze = "!", d++) : (ze = e, Ct === 0 && Se(Jv)), ze === e && (r.charCodeAt(d) === 45 ? (ze = "-", d++) : (ze = e, Ct === 0 && Se(Ah)), ze === e && (r.charCodeAt(d) === 43 ? (ze = "+", d++) : (ze = e, Ct === 0 && Se(fd)), ze === e && (r.charCodeAt(d) === 126 ? (ze = "~", d++) : (ze = e, Ct === 0 && Se(fm))))), ze;
         }()) !== e ? (U = d, (te = ve()) !== e && (Ee = po()) !== e ? U = te = [te, Ee] : (d = U, U = e), U !== e ? (Tr = w, w = I = p(I, U[1])) : (d = w, w = e)) : (d = w, w = e)), w;
       }
       function Yo() {
@@ -112782,7 +112806,7 @@ function aEt() {
       }
       function Ca() {
         var w, I;
-        return w = d, r.substr(d, 7).toLowerCase() === "century" ? (I = r.substr(d, 7), d += 7) : (I = e, Ct === 0 && Se(xf)), I === e && (r.substr(d, 3).toLowerCase() === "day" ? (I = r.substr(d, 3), d += 3) : (I = e, Ct === 0 && Se(nv)), I === e && (r.substr(d, 4).toLowerCase() === "date" ? (I = r.substr(d, 4), d += 4) : (I = e, Ct === 0 && Se($r)), I === e && (r.substr(d, 6).toLowerCase() === "decade" ? (I = r.substr(d, 6), d += 6) : (I = e, Ct === 0 && Se(Gs)), I === e && (r.substr(d, 3).toLowerCase() === "dow" ? (I = r.substr(d, 3), d += 3) : (I = e, Ct === 0 && Se(kd)), I === e && (r.substr(d, 3).toLowerCase() === "doy" ? (I = r.substr(d, 3), d += 3) : (I = e, Ct === 0 && Se(Mm)), I === e && (r.substr(d, 5).toLowerCase() === "epoch" ? (I = r.substr(d, 5), d += 5) : (I = e, Ct === 0 && Se(sv)), I === e && (r.substr(d, 4).toLowerCase() === "hour" ? (I = r.substr(d, 4), d += 4) : (I = e, Ct === 0 && Se(ws)), I === e && (r.substr(d, 6).toLowerCase() === "isodow" ? (I = r.substr(d, 6), d += 6) : (I = e, Ct === 0 && Se(Bv)), I === e && (r.substr(d, 7).toLowerCase() === "isoyear" ? (I = r.substr(d, 7), d += 7) : (I = e, Ct === 0 && Se(hb)), I === e && (r.substr(d, 12).toLowerCase() === "microseconds" ? (I = r.substr(d, 12), d += 12) : (I = e, Ct === 0 && Se(jb)), I === e && (r.substr(d, 10).toLowerCase() === "millennium" ? (I = r.substr(d, 10), d += 10) : (I = e, Ct === 0 && Se(mm)), I === e && (r.substr(d, 12).toLowerCase() === "milliseconds" ? (I = r.substr(d, 12), d += 12) : (I = e, Ct === 0 && Se(B)), I === e && (r.substr(d, 6).toLowerCase() === "minute" ? (I = r.substr(d, 6), d += 6) : (I = e, Ct === 0 && Se(is)), I === e && (r.substr(d, 5).toLowerCase() === "month" ? (I = r.substr(d, 5), d += 5) : (I = e, Ct === 0 && Se(Dm)), I === e && (r.substr(d, 7).toLowerCase() === "quarter" ? (I = r.substr(d, 7), d += 7) : (I = e, Ct === 0 && Se(_p)), I === e && (r.substr(d, 6).toLowerCase() === "second" ? (I = r.substr(d, 6), d += 6) : (I = e, Ct === 0 && Se(Pm)), I === e && (r.substr(d, 8).toLowerCase() === "timezone" ? (I = r.substr(d, 8), d += 8) : (I = e, Ct === 0 && Se(Ir)), I === e && (r.substr(d, 13).toLowerCase() === "timezone_hour" ? (I = r.substr(d, 13), d += 13) : (I = e, Ct === 0 && Se(Ds)), I === e && (r.substr(d, 15).toLowerCase() === "timezone_minute" ? (I = r.substr(d, 15), d += 15) : (I = e, Ct === 0 && Se(fd)), I === e && (r.substr(d, 4).toLowerCase() === "week" ? (I = r.substr(d, 4), d += 4) : (I = e, Ct === 0 && Se(xv)), I === e && (r.substr(d, 4).toLowerCase() === "year" ? (I = r.substr(d, 4), d += 4) : (I = e, Ct === 0 && Se(vm))))))))))))))))))))))), I !== e && (Tr = w, I = I), w = I;
+        return w = d, r.substr(d, 7).toLowerCase() === "century" ? (I = r.substr(d, 7), d += 7) : (I = e, Ct === 0 && Se(xf)), I === e && (r.substr(d, 3).toLowerCase() === "day" ? (I = r.substr(d, 3), d += 3) : (I = e, Ct === 0 && Se(nv)), I === e && (r.substr(d, 4).toLowerCase() === "date" ? (I = r.substr(d, 4), d += 4) : (I = e, Ct === 0 && Se($r)), I === e && (r.substr(d, 6).toLowerCase() === "decade" ? (I = r.substr(d, 6), d += 6) : (I = e, Ct === 0 && Se(Gs)), I === e && (r.substr(d, 3).toLowerCase() === "dow" ? (I = r.substr(d, 3), d += 3) : (I = e, Ct === 0 && Se(kd)), I === e && (r.substr(d, 3).toLowerCase() === "doy" ? (I = r.substr(d, 3), d += 3) : (I = e, Ct === 0 && Se(Mm)), I === e && (r.substr(d, 5).toLowerCase() === "epoch" ? (I = r.substr(d, 5), d += 5) : (I = e, Ct === 0 && Se(sv)), I === e && (r.substr(d, 4).toLowerCase() === "hour" ? (I = r.substr(d, 4), d += 4) : (I = e, Ct === 0 && Se(ws)), I === e && (r.substr(d, 6).toLowerCase() === "isodow" ? (I = r.substr(d, 6), d += 6) : (I = e, Ct === 0 && Se(Bv)), I === e && (r.substr(d, 7).toLowerCase() === "isoyear" ? (I = r.substr(d, 7), d += 7) : (I = e, Ct === 0 && Se(hb)), I === e && (r.substr(d, 12).toLowerCase() === "microseconds" ? (I = r.substr(d, 12), d += 12) : (I = e, Ct === 0 && Se(jb)), I === e && (r.substr(d, 10).toLowerCase() === "millennium" ? (I = r.substr(d, 10), d += 10) : (I = e, Ct === 0 && Se(mm)), I === e && (r.substr(d, 12).toLowerCase() === "milliseconds" ? (I = r.substr(d, 12), d += 12) : (I = e, Ct === 0 && Se(B)), I === e && (r.substr(d, 6).toLowerCase() === "minute" ? (I = r.substr(d, 6), d += 6) : (I = e, Ct === 0 && Se(is)), I === e && (r.substr(d, 5).toLowerCase() === "month" ? (I = r.substr(d, 5), d += 5) : (I = e, Ct === 0 && Se(Dm)), I === e && (r.substr(d, 7).toLowerCase() === "quarter" ? (I = r.substr(d, 7), d += 7) : (I = e, Ct === 0 && Se(_p)), I === e && (r.substr(d, 6).toLowerCase() === "second" ? (I = r.substr(d, 6), d += 6) : (I = e, Ct === 0 && Se(Pm)), I === e && (r.substr(d, 8).toLowerCase() === "timezone" ? (I = r.substr(d, 8), d += 8) : (I = e, Ct === 0 && Se(Ir)), I === e && (r.substr(d, 13).toLowerCase() === "timezone_hour" ? (I = r.substr(d, 13), d += 13) : (I = e, Ct === 0 && Se(Ds)), I === e && (r.substr(d, 15).toLowerCase() === "timezone_minute" ? (I = r.substr(d, 15), d += 15) : (I = e, Ct === 0 && Se(dd)), I === e && (r.substr(d, 4).toLowerCase() === "week" ? (I = r.substr(d, 4), d += 4) : (I = e, Ct === 0 && Se(xv)), I === e && (r.substr(d, 4).toLowerCase() === "year" ? (I = r.substr(d, 4), d += 4) : (I = e, Ct === 0 && Se(vm))))))))))))))))))))))), I !== e && (Tr = w, I = I), w = I;
       }
       function Yc() {
         var w;
@@ -112919,7 +112943,7 @@ function aEt() {
       }
       function Ud() {
         var w, I, U;
-        return (w = uv()) === e && (w = kb()) === e && (w = d, r.charCodeAt(d) === 45 ? (I = "-", d++) : (I = e, Ct === 0 && Se(Ah)), I === e && (r.charCodeAt(d) === 43 ? (I = "+", d++) : (I = e, Ct === 0 && Se(cd))), I !== e && (U = uv()) !== e ? (Tr = w, w = I = I + U) : (d = w, w = e), w === e && (w = d, r.charCodeAt(d) === 45 ? (I = "-", d++) : (I = e, Ct === 0 && Se(Ah)), I === e && (r.charCodeAt(d) === 43 ? (I = "+", d++) : (I = e, Ct === 0 && Se(cd))), I !== e && (U = kb()) !== e ? (Tr = w, w = I = function(te, Ee) {
+        return (w = uv()) === e && (w = kb()) === e && (w = d, r.charCodeAt(d) === 45 ? (I = "-", d++) : (I = e, Ct === 0 && Se(Ah)), I === e && (r.charCodeAt(d) === 43 ? (I = "+", d++) : (I = e, Ct === 0 && Se(fd))), I !== e && (U = uv()) !== e ? (Tr = w, w = I = I + U) : (d = w, w = e), w === e && (w = d, r.charCodeAt(d) === 45 ? (I = "-", d++) : (I = e, Ct === 0 && Se(Ah)), I === e && (r.charCodeAt(d) === 43 ? (I = "+", d++) : (I = e, Ct === 0 && Se(fd))), I !== e && (U = kb()) !== e ? (Tr = w, w = I = function(te, Ee) {
           return te + Ee;
         }(I, U)) : (d = w, w = e))), w;
       }
@@ -112972,7 +112996,7 @@ function aEt() {
       }
       function rd() {
         var w, I, U, te;
-        return w = d, r.substr(d, 5).toLowerCase() === "alter" ? (I = r.substr(d, 5), d += 5) : (I = e, Ct === 0 && Se(dd)), I !== e ? (U = d, Ct++, te = ss(), Ct--, te === e ? U = void 0 : (d = U, U = e), U !== e ? w = I = [I, U] : (d = w, w = e)) : (d = w, w = e), w;
+        return w = d, r.substr(d, 5).toLowerCase() === "alter" ? (I = r.substr(d, 5), d += 5) : (I = e, Ct === 0 && Se(pd)), I !== e ? (U = d, Ct++, te = ss(), Ct--, te === e ? U = void 0 : (d = U, U = e), U !== e ? w = I = [I, U] : (d = w, w = e)) : (d = w, w = e), w;
       }
       function Ed() {
         var w, I, U, te;
@@ -113084,7 +113108,7 @@ function aEt() {
       }
       function Is() {
         var w, I, U, te;
-        return w = d, r.substr(d, 3).toLowerCase() === "asc" ? (I = r.substr(d, 3), d += 3) : (I = e, Ct === 0 && Se(pd)), I !== e ? (U = d, Ct++, te = ss(), Ct--, te === e ? U = void 0 : (d = U, U = e), U !== e ? (Tr = w, w = I = "ASC") : (d = w, w = e)) : (d = w, w = e), w;
+        return w = d, r.substr(d, 3).toLowerCase() === "asc" ? (I = r.substr(d, 3), d += 3) : (I = e, Ct === 0 && Se(hd)), I !== e ? (U = d, Ct++, te = ss(), Ct--, te === e ? U = void 0 : (d = U, U = e), U !== e ? (Tr = w, w = I = "ASC") : (d = w, w = e)) : (d = w, w = e), w;
       }
       function Xs() {
         var w, I, U, te;
@@ -113144,7 +113168,7 @@ function aEt() {
       }
       function Zp() {
         var w, I, U, te;
-        return w = d, r.substr(d, 4).toLowerCase() === "case" ? (I = r.substr(d, 4), d += 4) : (I = e, Ct === 0 && Se(hd)), I !== e ? (U = d, Ct++, te = ss(), Ct--, te === e ? U = void 0 : (d = U, U = e), U !== e ? w = I = [I, U] : (d = w, w = e)) : (d = w, w = e), w;
+        return w = d, r.substr(d, 4).toLowerCase() === "case" ? (I = r.substr(d, 4), d += 4) : (I = e, Ct === 0 && Se(md)), I !== e ? (U = d, Ct++, te = ss(), Ct--, te === e ? U = void 0 : (d = U, U = e), U !== e ? w = I = [I, U] : (d = w, w = e)) : (d = w, w = e), w;
       }
       function pl() {
         var w, I, U, te;
@@ -113200,11 +113224,11 @@ function aEt() {
       }
       function ye() {
         var w, I, U, te;
-        return w = d, r.substr(d, 7).toLowerCase() === "tinyint" ? (I = r.substr(d, 7), d += 7) : (I = e, Ct === 0 && Se(md)), I !== e ? (U = d, Ct++, te = ss(), Ct--, te === e ? U = void 0 : (d = U, U = e), U !== e ? (Tr = w, w = I = "TINYINT") : (d = w, w = e)) : (d = w, w = e), w;
+        return w = d, r.substr(d, 7).toLowerCase() === "tinyint" ? (I = r.substr(d, 7), d += 7) : (I = e, Ct === 0 && Se(vd)), I !== e ? (U = d, Ct++, te = ss(), Ct--, te === e ? U = void 0 : (d = U, U = e), U !== e ? (Tr = w, w = I = "TINYINT") : (d = w, w = e)) : (d = w, w = e), w;
       }
       function ot() {
         var w, I, U, te;
-        return w = d, r.substr(d, 8).toLowerCase() === "tinytext" ? (I = r.substr(d, 8), d += 8) : (I = e, Ct === 0 && Se(vd)), I !== e ? (U = d, Ct++, te = ss(), Ct--, te === e ? U = void 0 : (d = U, U = e), U !== e ? (Tr = w, w = I = "TINYTEXT") : (d = w, w = e)) : (d = w, w = e), w;
+        return w = d, r.substr(d, 8).toLowerCase() === "tinytext" ? (I = r.substr(d, 8), d += 8) : (I = e, Ct === 0 && Se(bd)), I !== e ? (U = d, Ct++, te = ss(), Ct--, te === e ? U = void 0 : (d = U, U = e), U !== e ? (Tr = w, w = I = "TINYTEXT") : (d = w, w = e)) : (d = w, w = e), w;
       }
       function ct() {
         var w, I, U, te;
@@ -113868,9 +113892,9 @@ function aEt() {
         return zi(Z, me);
       }, cr = Ls("BEGIN", !0), Gt = Ls("END", !0), Cr = Ls("FOR", !0), Nr = Ls("EACH", !0), ln = Ls("ROW", !0), Lr = Ls("STATEMENT", !0), Sn = Ls("LOCAL", !0), xn = Ls("CHECK", !0), pn = function(Z, me) {
         return zi(Z, me);
-      }, bn = Ls("AUTO_INCREMENT", !0), ts = Ls("AUTOINCREMENT", !0), kn = Ls("UNIQUE", !0), Jn = Ls("KEY", !0), Cs = Ls("PRIMARY", !0), js = Ls("COLUMN_FORMAT", !0), os = Ls("FIXED", !0), Es = Ls("DYNAMIC", !0), Fs = Ls("DEFAULT", !0), Hs = Ls("STORAGE", !0), yo = Ls("DISK", !0), Ks = Ls("MEMORY", !0), To = Ls("GENERATED", !0), to = Ls("ALWAYS", !0), So = Ls("AS", !0), Fo = Ls("STORED", !0), wo = Ls("VIRTUAL", !0), yi = Ls("first", !0), Si = Ls("after", !0), fa = Ls("FOREIGN", !0), Ga = Ls("CHANGE", !0), Ya = Ls("ALGORITHM", !0), yu = Ls("INSTANT", !0), ia = Ls("INPLACE", !0), ru = Ls("COPY", !0), zs = Ls("LOCK", !0), ao = Ls("NONE", !0), ko = Ls("SHARED", !0), qo = Ls("EXCLUSIVE", !0), Eo = Ls("NOT", !0), rn = Ls("REPLICATION", !0), Pn = Ls("FOREIGN KEY", !0), Rs = Ls("ENFORCED", !0), Us = Ls("MATCH FULL", !0), ho = Ls("MATCH PARTIAL", !0), co = Ls("MATCH SIMPLE", !0), Bo = Ls("RESTRICT", !0), Vo = Ls("CASCADE", !0), di = Ls("SET NULL", !0), wa = Ls("NO ACTION", !0), Ba = Ls("SET DEFAULT", !0), Oa = Ls("CHARACTER", !0), Ma = Ls("SET", !0), Za = Ls("CHARSET", !0), Ja = Ls("COLLATE", !0), wc = Ls("AVG_ROW_LENGTH", !0), Cl = Ls("KEY_BLOCK_SIZE", !0), Nl = Ls("MAX_ROWS", !0), va = Ls("MIN_ROWS", !0), Nu = Ls("STATS_SAMPLE_PAGES", !0), mu = Ls("CONNECTION", !0), Ru = Ls("COMPRESSION", !0), Ll = Ls("'", !1), Rl = Ls("ZLIB", !0), Ju = Ls("LZ4", !0), ef = Ls("ENGINE", !0), el = Ls("WITHOUT", !0), tl = Ls("ROWID", !0), od = Ls("STRICT", !0), Kl = Ls("READ", !0), Fl = Ls("LOW_PRIORITY", !0), vf = Ls("WRITE", !0), Gd = function(Z, me) {
+      }, bn = Ls("AUTO_INCREMENT", !0), ts = Ls("AUTOINCREMENT", !0), kn = Ls("UNIQUE", !0), Jn = Ls("KEY", !0), Cs = Ls("PRIMARY", !0), js = Ls("COLUMN_FORMAT", !0), os = Ls("FIXED", !0), Es = Ls("DYNAMIC", !0), Fs = Ls("DEFAULT", !0), Hs = Ls("STORAGE", !0), yo = Ls("DISK", !0), Ks = Ls("MEMORY", !0), To = Ls("GENERATED", !0), to = Ls("ALWAYS", !0), So = Ls("AS", !0), Fo = Ls("STORED", !0), wo = Ls("VIRTUAL", !0), yi = Ls("first", !0), Si = Ls("after", !0), fa = Ls("FOREIGN", !0), Ga = Ls("CHANGE", !0), Ya = Ls("ALGORITHM", !0), yu = Ls("INSTANT", !0), ia = Ls("INPLACE", !0), ru = Ls("COPY", !0), zs = Ls("LOCK", !0), ao = Ls("NONE", !0), ko = Ls("SHARED", !0), qo = Ls("EXCLUSIVE", !0), Eo = Ls("NOT", !0), rn = Ls("REPLICATION", !0), Pn = Ls("FOREIGN KEY", !0), Rs = Ls("ENFORCED", !0), Us = Ls("MATCH FULL", !0), ho = Ls("MATCH PARTIAL", !0), co = Ls("MATCH SIMPLE", !0), Bo = Ls("RESTRICT", !0), Vo = Ls("CASCADE", !0), di = Ls("SET NULL", !0), wa = Ls("NO ACTION", !0), Ba = Ls("SET DEFAULT", !0), Oa = Ls("CHARACTER", !0), Ma = Ls("SET", !0), Za = Ls("CHARSET", !0), Ja = Ls("COLLATE", !0), wc = Ls("AVG_ROW_LENGTH", !0), Cl = Ls("KEY_BLOCK_SIZE", !0), Nl = Ls("MAX_ROWS", !0), va = Ls("MIN_ROWS", !0), Nu = Ls("STATS_SAMPLE_PAGES", !0), mu = Ls("CONNECTION", !0), Ru = Ls("COMPRESSION", !0), Ll = Ls("'", !1), Rl = Ls("ZLIB", !0), Ju = Ls("LZ4", !0), ef = Ls("ENGINE", !0), el = Ls("WITHOUT", !0), tl = Ls("ROWID", !0), id = Ls("STRICT", !0), Kl = Ls("READ", !0), Fl = Ls("LOW_PRIORITY", !0), vf = Ls("WRITE", !0), Gd = function(Z, me) {
         return zi(Z, me);
-      }, tm = Ls("BINARY", !0), Hm = Ls("MASTER", !0), yp = Ls("LOGS", !0), Hd = Ls("BINLOG", !0), wp = Ls("EVENTS", !0), jp = Ls("COLLATION", !0), $h = Ls("GRANTS", !0), xl = Ls("(", !1), rm = Ls(")", !1), th = Ls("BTREE", !0), nm = Ls("HASH", !0), op = Ls("WITH", !0), $f = Ls("PARSER", !0), Bc = Ls("VISIBLE", !0), id = Ls("INVISIBLE", !0), Vm = function(Z, me) {
+      }, tm = Ls("BINARY", !0), Hm = Ls("MASTER", !0), yp = Ls("LOGS", !0), Hd = Ls("BINLOG", !0), wp = Ls("EVENTS", !0), jp = Ls("COLLATION", !0), $h = Ls("GRANTS", !0), xl = Ls("(", !1), rm = Ls(")", !1), th = Ls("BTREE", !0), nm = Ls("HASH", !0), op = Ls("WITH", !0), $f = Ls("PARSER", !0), Bc = Ls("VISIBLE", !0), ad = Ls("INVISIBLE", !0), Vm = function(Z, me) {
         return me.unshift(Z), me.forEach((Ne) => {
           const { table: Be, as: Et } = Ne;
           Aa[Be] = Be, Et && (Aa[Et] = Be), function(Nt) {
@@ -113878,19 +113902,19 @@ function aEt() {
             Nt.clear(), Ht.forEach((ir) => Nt.add(ir));
           }(Zo);
         }), me;
-      }, ad = Ls("=", !1), rh = Ls("DUPLICATE", !0), Wm = Ls("ABORT", !0), Cp = Ls("FAIL", !0), Am = Ls("IGNORE", !0), nh = Ls("REPLACE", !0), ip = Ls("ROLLBACK", !0), Vd = function(Z, me) {
+      }, ud = Ls("=", !1), rh = Ls("DUPLICATE", !0), Wm = Ls("ABORT", !0), Cp = Ls("FAIL", !0), Am = Ls("IGNORE", !0), nh = Ls("REPLACE", !0), ip = Ls("ROLLBACK", !0), Vd = function(Z, me) {
         return Yt(Z, me);
       }, Do = Ls("!", !1), bf = function(Z) {
         return Z[0] + " " + Z[2];
       }, Ff = Ls(">=", !1), Wd = Ls(">", !1), $p = Ls("<=", !1), Fh = Ls("<>", !1), Ym = Ls("<", !1), Fp = Ls("==", !1), Uh = Ls("!=", !1), Ch = Ls("ESCAPE", !0), sm = Ls("glob", !0), Up = Ls("+", !1), Lp = Ls("-", !1), Nc = Ls("*", !1), xp = Ls("/", !1), hv = Ls("%", !1), om = Ls("||", !1), Lh = Ls("&", !1), gf = Ls(">>", !1), Uf = Ls("<<", !1), sh = Ls("^", !1), im = Ls("|", !1), ju = Ls("?", !1), Bf = Ls("~", !1), zf = Ls("?|", !1), Qm = Ls("?&", !1), xh = Ls("#-", !1), oh = Ls("#>>", !1), Bp = Ls("#>", !1), am = Ls("@>", !1), Km = Ls("<@", !1), _m = function(Z) {
         return Jt[Z.toUpperCase()] === !0;
-      }, tf = Ls('"', !1), qf = /^[^"]/, ud = Rc(['"'], !0, !1), Bh = /^[^']/, ih = Rc(["'"], !0, !1), Eh = Ls("`", !1), Ep = /^[^`]/, Sh = Rc(["`"], !0, !1), zh = function(Z, me) {
+      }, tf = Ls('"', !1), qf = /^[^"]/, ld = Rc(['"'], !0, !1), Bh = /^[^']/, ih = Rc(["'"], !0, !1), Eh = Ls("`", !1), Ep = /^[^`]/, Sh = Rc(["`"], !0, !1), zh = function(Z, me) {
         return Z + me.join("");
       }, Tm = /^[A-Za-z_]/, Sp = Rc([["A", "Z"], ["a", "z"], "_"], !1, !1), yf = /^[A-Za-z0-9_]/, zp = Rc([["A", "Z"], ["a", "z"], ["0", "9"], "_"], !1, !1), _t = /^[A-Za-z0-9_:\u4E00-\u9FA5\xC0-\u017F]/, Or = Rc([["A", "Z"], ["a", "z"], ["0", "9"], "_", ":", ["一", "龥"], ["À", "ſ"]], !1, !1), cn = Ls(":", !1), Wr = Ls("_binary", !0), bs = Ls("X", !0), cs = /^[0-9A-Fa-f]/, Ns = Rc([["0", "9"], ["A", "F"], ["a", "f"]], !1, !1), fo = Ls("b", !0), io = Ls("0x", !1), Uo = function(Z, me) {
         return { type: Z.toLowerCase(), value: me[1].join("") };
       }, Ko = /^[^"\\\0-\x1F\x7F]/, fi = Rc(['"', "\\", ["\0", ""], ""], !0, !1), Bi = /^[^'\\]/, Di = Rc(["'", "\\"], !0, !1), ba = Ls("\\'", !1), Pa = Ls('\\"', !1), Ki = Ls("\\\\", !1), ja = Ls("\\/", !1), Ta = Ls("\\b", !1), vu = Ls("\\f", !1), cu = Ls("\\n", !1), ul = Ls("\\r", !1), Ou = Ls("\\t", !1), ec = Ls("\\u", !1), Eu = Ls("\\", !1), uc = Ls("''", !1), Td = Ls('""', !1), Gf = Ls("``", !1), Cc = /^[\n\r]/, ah = Rc([`
-`, "\r"], !1, !1), qp = Ls(".", !1), ll = /^[0-9]/, zc = Rc([["0", "9"]], !1, !1), Id = /^[0-9a-fA-F]/, ld = Rc([["0", "9"], ["a", "f"], ["A", "F"]], !1, !1), um = /^[eE]/, Xm = Rc(["e", "E"], !1, !1), Cd = /^[+\-]/, Hf = Rc(["+", "-"], !1, !1), Nd = Ls("ANALYZE", !0), Yd = Ls("ATTACH", !0), Qd = Ls("NULL", !0), uh = Ls("NOT NULL", !0), Qv = Ls("TRUE", !0), Zm = Ls("TO", !0), Kv = Ls("FALSE", !0), Xv = Ls("SHOW", !0), Vf = Ls("DROP", !0), wf = Ls("USE", !0), Im = Ls("ALTER", !0), Gp = Ls("SELECT", !0), mv = Ls("UPDATE", !0), Jm = Ls("CREATE", !0), vv = Ls("TEMPORARY", !0), Zv = Ls("TEMP", !0), lm = Ls("DELETE", !0), ev = Ls("INSERT", !0), bv = Ls("RECURSIVE", !0), tv = Ls("RENAME", !0), cm = Ls("RETURNING", !0), Av = Ls("PARTITION", !0), _v = Ls("INTO", !0), Nm = Ls("FROM", !0), Jv = Ls("UNLOCK", !0), Lb = Ls("TABLE", !0), gv = Ls("TABLES", !0), xb = Ls("DATABASE", !0), Tv = Ls("SCHEMA", !0), Eb = Ls("LEFT", !0), Db = Ls("INNER", !0), Iv = Ls("JOIN", !0), Nv = Ls("OUTER", !0), eb = Ls("OVER", !0), fm = Ls("UNION", !0), Ap = Ls("VALUES", !0), Kd = Ls("USING", !0), cd = Ls("WHERE", !0), Ah = Ls("GROUP", !0), qh = Ls("BY", !0), Rv = Ls("ORDER", !0), tb = Ls("HAVING", !0), dm = Ls("LIMIT", !0), Ov = Ls("OFFSET", !0), kv = Ls("ASC", !0), Mv = Ls("DESC", !0), Rm = Ls("DESCRIBE", !0), _h = Ls("ALL", !0), Gh = Ls("DISTINCT", !0), rv = Ls("BETWEEN", !0), rb = Ls("IN", !0), Dv = Ls("IS", !0), nb = Ls("LIKE", !0), sb = Ls("RLIKE", !0), Om = Ls("REGEXP", !0), ob = Ls("EXISTS", !0), ib = Ls("AND", !0), Pv = Ls("OR", !0), Sb = Ls("COUNT", !0), Ab = Ls("GROUP_CONCAT", !0), jv = Ls("MAX", !0), $v = Ls("MIN", !0), Hh = Ls("SUM", !0), rf = Ls("AVG", !0), Rd = Ls("CALL", !0), pm = Ls("CASE", !0), Wf = Ls("WHEN", !0), Cf = Ls("THEN", !0), yv = Ls("ELSE", !0), km = Ls("CAST", !0), Lf = Ls("BIT", !0), Od = Ls("CHAR", !0), _b = Ls("VARCHAR", !0), ab = Ls("NUMERIC", !0), Tb = Ls("DECIMAL", !0), ub = Ls("SIGNED", !0), wv = Ls("UNSIGNED", !0), Cv = Ls("INT", !0), Lv = Ls("ZEROFILL", !0), lb = Ls("INTEGER", !0), Pb = Ls("JSON", !0), Ib = Ls("SMALLINT", !0), cb = Ls("TINYINT", !0), fb = Ls("TINYTEXT", !0), Fv = Ls("TEXT", !0), Nb = Ls("MEDIUMTEXT", !0), Rb = Ls("LONGTEXT", !0), db = Ls("BIGINT", !0), Ob = Ls("ENUM", !0), pb = Ls("FLOAT", !0), Uv = Ls("DOUBLE", !0), q = Ls("REAL", !0), as = Ls("DATE", !0), hm = Ls("DATETIME", !0), xf = Ls("TIME", !0), nv = Ls("TIMESTAMP", !0), $r = Ls("TRUNCATE", !0), Gs = Ls("USER", !0), kd = Ls("CURRENT_DATE", !0), Mm = Ls("INTERVAL", !0), sv = Ls("YEAR", !0), ws = Ls("MONTH", !0), Bv = Ls("DAY", !0), hb = Ls("HOUR", !0), jb = Ls("MINUTE", !0), mm = Ls("SECOND", !0), B = Ls("CURRENT_TIME", !0), is = Ls("CURRENT_TIMESTAMP", !0), Dm = Ls("CURRENT_USER", !0), _p = Ls("SESSION_USER", !0), Pm = Ls("SYSTEM_USER", !0), Ir = Ls("GLOBAL", !0), Ds = Ls("SESSION", !0), fd = Ls("PERSIST", !0), xv = Ls("PERSIST_ONLY", !0), vm = Ls("VIEW", !0), ls = Ls("@", !1), mb = Ls("@@", !1), ov = Ls("$", !1), bm = Ls("return", !0), iv = Ls(":=", !1), jm = Ls("DUAL", !0), Hp = Ls("ADD", !0), $m = Ls("COLUMN", !0), Fm = Ls("INDEX", !0), Th = Ls("MODIFY", !0), Ih = Ls("FULLTEXT", !0), D = Ls("SPATIAL", !0), Zn = Ls("COMMENT", !0), Vh = Ls("CONSTRAINT", !0), Ef = Ls("REFERENCES", !0), Nh = Ls("SQL_CALC_FOUND_ROWS", !0), wr = Ls("SQL_CACHE", !0), _s = Ls("SQL_NO_CACHE", !0), El = Ls("SQL_SMALL_RESULT", !0), lh = Ls("SQL_BIG_RESULT", !0), Wh = Ls("SQL_BUFFER_RESULT", !0), es = Ls(",", !1), qc = Ls("[", !1), lc = Ls("]", !1), av = Ls(";", !1), Vp = Ls("->", !1), ap = Ls("->>", !1), Xd = Ls("&&", !1), Ev = Ls("/*", !1), ch = Ls("*/", !1), gm = Ls("--", !1), vb = Ls("#", !1), ym = { type: "any" }, wm = /^[ \t\n\r]/, Yh = Rc([" ", "	", `
-`, "\r"], !1, !1), Um = Ls("blob", !0), dd = Ls("tinyblob", !0), zv = Ls("mediumblob", !0), Qh = Ls("longblob", !0), Cm = Ls("boolean", !0), up = function(Z) {
+`, "\r"], !1, !1), qp = Ls(".", !1), ll = /^[0-9]/, zc = Rc([["0", "9"]], !1, !1), Id = /^[0-9a-fA-F]/, cd = Rc([["0", "9"], ["a", "f"], ["A", "F"]], !1, !1), um = /^[eE]/, Xm = Rc(["e", "E"], !1, !1), Cd = /^[+\-]/, Hf = Rc(["+", "-"], !1, !1), Nd = Ls("ANALYZE", !0), Yd = Ls("ATTACH", !0), Qd = Ls("NULL", !0), uh = Ls("NOT NULL", !0), Qv = Ls("TRUE", !0), Zm = Ls("TO", !0), Kv = Ls("FALSE", !0), Xv = Ls("SHOW", !0), Vf = Ls("DROP", !0), wf = Ls("USE", !0), Im = Ls("ALTER", !0), Gp = Ls("SELECT", !0), mv = Ls("UPDATE", !0), Jm = Ls("CREATE", !0), vv = Ls("TEMPORARY", !0), Zv = Ls("TEMP", !0), lm = Ls("DELETE", !0), ev = Ls("INSERT", !0), bv = Ls("RECURSIVE", !0), tv = Ls("RENAME", !0), cm = Ls("RETURNING", !0), Av = Ls("PARTITION", !0), _v = Ls("INTO", !0), Nm = Ls("FROM", !0), Jv = Ls("UNLOCK", !0), Lb = Ls("TABLE", !0), gv = Ls("TABLES", !0), xb = Ls("DATABASE", !0), Tv = Ls("SCHEMA", !0), Eb = Ls("LEFT", !0), Db = Ls("INNER", !0), Iv = Ls("JOIN", !0), Nv = Ls("OUTER", !0), eb = Ls("OVER", !0), fm = Ls("UNION", !0), Ap = Ls("VALUES", !0), Kd = Ls("USING", !0), fd = Ls("WHERE", !0), Ah = Ls("GROUP", !0), qh = Ls("BY", !0), Rv = Ls("ORDER", !0), tb = Ls("HAVING", !0), dm = Ls("LIMIT", !0), Ov = Ls("OFFSET", !0), kv = Ls("ASC", !0), Mv = Ls("DESC", !0), Rm = Ls("DESCRIBE", !0), _h = Ls("ALL", !0), Gh = Ls("DISTINCT", !0), rv = Ls("BETWEEN", !0), rb = Ls("IN", !0), Dv = Ls("IS", !0), nb = Ls("LIKE", !0), sb = Ls("RLIKE", !0), Om = Ls("REGEXP", !0), ob = Ls("EXISTS", !0), ib = Ls("AND", !0), Pv = Ls("OR", !0), Sb = Ls("COUNT", !0), Ab = Ls("GROUP_CONCAT", !0), jv = Ls("MAX", !0), $v = Ls("MIN", !0), Hh = Ls("SUM", !0), rf = Ls("AVG", !0), Rd = Ls("CALL", !0), pm = Ls("CASE", !0), Wf = Ls("WHEN", !0), Cf = Ls("THEN", !0), yv = Ls("ELSE", !0), km = Ls("CAST", !0), Lf = Ls("BIT", !0), Od = Ls("CHAR", !0), _b = Ls("VARCHAR", !0), ab = Ls("NUMERIC", !0), Tb = Ls("DECIMAL", !0), ub = Ls("SIGNED", !0), wv = Ls("UNSIGNED", !0), Cv = Ls("INT", !0), Lv = Ls("ZEROFILL", !0), lb = Ls("INTEGER", !0), Pb = Ls("JSON", !0), Ib = Ls("SMALLINT", !0), cb = Ls("TINYINT", !0), fb = Ls("TINYTEXT", !0), Fv = Ls("TEXT", !0), Nb = Ls("MEDIUMTEXT", !0), Rb = Ls("LONGTEXT", !0), db = Ls("BIGINT", !0), Ob = Ls("ENUM", !0), pb = Ls("FLOAT", !0), Uv = Ls("DOUBLE", !0), q = Ls("REAL", !0), as = Ls("DATE", !0), hm = Ls("DATETIME", !0), xf = Ls("TIME", !0), nv = Ls("TIMESTAMP", !0), $r = Ls("TRUNCATE", !0), Gs = Ls("USER", !0), kd = Ls("CURRENT_DATE", !0), Mm = Ls("INTERVAL", !0), sv = Ls("YEAR", !0), ws = Ls("MONTH", !0), Bv = Ls("DAY", !0), hb = Ls("HOUR", !0), jb = Ls("MINUTE", !0), mm = Ls("SECOND", !0), B = Ls("CURRENT_TIME", !0), is = Ls("CURRENT_TIMESTAMP", !0), Dm = Ls("CURRENT_USER", !0), _p = Ls("SESSION_USER", !0), Pm = Ls("SYSTEM_USER", !0), Ir = Ls("GLOBAL", !0), Ds = Ls("SESSION", !0), dd = Ls("PERSIST", !0), xv = Ls("PERSIST_ONLY", !0), vm = Ls("VIEW", !0), ls = Ls("@", !1), mb = Ls("@@", !1), ov = Ls("$", !1), bm = Ls("return", !0), iv = Ls(":=", !1), jm = Ls("DUAL", !0), Hp = Ls("ADD", !0), $m = Ls("COLUMN", !0), Fm = Ls("INDEX", !0), Th = Ls("MODIFY", !0), Ih = Ls("FULLTEXT", !0), D = Ls("SPATIAL", !0), Zn = Ls("COMMENT", !0), Vh = Ls("CONSTRAINT", !0), Ef = Ls("REFERENCES", !0), Nh = Ls("SQL_CALC_FOUND_ROWS", !0), wr = Ls("SQL_CACHE", !0), _s = Ls("SQL_NO_CACHE", !0), El = Ls("SQL_SMALL_RESULT", !0), lh = Ls("SQL_BIG_RESULT", !0), Wh = Ls("SQL_BUFFER_RESULT", !0), es = Ls(",", !1), qc = Ls("[", !1), lc = Ls("]", !1), av = Ls(";", !1), Vp = Ls("->", !1), ap = Ls("->>", !1), Xd = Ls("&&", !1), Ev = Ls("/*", !1), ch = Ls("*/", !1), gm = Ls("--", !1), vb = Ls("#", !1), ym = { type: "any" }, wm = /^[ \t\n\r]/, Yh = Rc([" ", "	", `
+`, "\r"], !1, !1), Um = Ls("blob", !0), pd = Ls("tinyblob", !0), zv = Ls("mediumblob", !0), Qh = Ls("longblob", !0), Cm = Ls("boolean", !0), up = function(Z) {
         return { dataType: Z };
       }, Bm = /^[0-6]/, fh = Rc([["0", "6"]], !1, !1), N = 0, Hn = 0, Sf = [{ line: 1, column: 1 }], T = 0, Vn = [], fr = 0;
       if ("startRule" in f) {
@@ -114104,7 +114128,7 @@ function aEt() {
             return ir = N, r.substr(N, 5).toLowerCase() === "local" ? (ar = r.substr(N, 5), N += 5) : (ar = e, fr === 0 && On(Sn)), ar !== e ? (on = N, fr++, gn = Oo(), fr--, gn === e ? on = void 0 : (N = on, on = e), on !== e ? (Hn = ir, ir = ar = "LOCAL") : (N = ir, ir = e)) : (N = ir, ir = e), ir;
           }()) === e && (Be = function() {
             var ir, ar, on, gn;
-            return ir = N, r.substr(N, 7).toLowerCase() === "persist" ? (ar = r.substr(N, 7), N += 7) : (ar = e, fr === 0 && On(fd)), ar !== e ? (on = N, fr++, gn = Oo(), fr--, gn === e ? on = void 0 : (N = on, on = e), on !== e ? (Hn = ir, ir = ar = "PERSIST") : (N = ir, ir = e)) : (N = ir, ir = e), ir;
+            return ir = N, r.substr(N, 7).toLowerCase() === "persist" ? (ar = r.substr(N, 7), N += 7) : (ar = e, fr === 0 && On(dd)), ar !== e ? (on = N, fr++, gn = Oo(), fr--, gn === e ? on = void 0 : (N = on, on = e), on !== e ? (Hn = ir, ir = ar = "PERSIST") : (N = ir, ir = e)) : (N = ir, ir = e), ir;
           }()) === e && (Be = function() {
             var ir, ar, on, gn;
             return ir = N, r.substr(N, 12).toLowerCase() === "persist_only" ? (ar = r.substr(N, 12), N += 12) : (ar = e, fr === 0 && On(xv)), ar !== e ? (on = N, fr++, gn = Oo(), fr--, gn === e ? on = void 0 : (N = on, on = e), on !== e ? (Hn = ir, ir = ar = "PERSIST_ONLY") : (N = ir, ir = e)) : (N = ir, ir = e), ir;
@@ -114198,7 +114222,7 @@ function aEt() {
           }(Be, Et, Nt, Ht, ir, ar), me = Ne) : (N = me, me = e)) : (N = me, me = e)) : (N = me, me = e)) : (N = me, me = e)) : (N = me, me = e), me;
         }()) === e && (Z = function() {
           var me, Ne, Be, Et, Nt, Ht, ir, ar, on;
-          return me = N, (Ne = md()) !== e && vr() !== e ? ((Be = _l()) === e && (Be = null), Be !== e && vr() !== e && (Et = Yu()) !== e && vr() !== e ? ((Nt = kp()) === e && (Nt = null), Nt !== e && vr() !== e && $i() !== e && vr() !== e && (Ht = Mp()) !== e && vr() !== e && nu() !== e && vr() !== e && (ir = bh()) !== e && vr() !== e ? ((ar = jd()) === e && (ar = null), ar !== e && vr() !== e ? ((on = Ol()) === e && (on = null), on !== e ? (Hn = me, Ne = function(gn, us, xs, Ps, Js, Zs, mo) {
+          return me = N, (Ne = vd()) !== e && vr() !== e ? ((Be = _l()) === e && (Be = null), Be !== e && vr() !== e && (Et = Yu()) !== e && vr() !== e ? ((Nt = kp()) === e && (Nt = null), Nt !== e && vr() !== e && $i() !== e && vr() !== e && (Ht = Mp()) !== e && vr() !== e && nu() !== e && vr() !== e && (ir = bh()) !== e && vr() !== e ? ((ar = jd()) === e && (ar = null), ar !== e && vr() !== e ? ((on = Ol()) === e && (on = null), on !== e ? (Hn = me, Ne = function(gn, us, xs, Ps, Js, Zs, mo) {
             if (us && (Wt.add(`insert::${us.db}::${us.table}`), us.as = null), Ps) {
               let vo = us && us.table || null;
               Array.isArray(Js.values) && Js.values.forEach(($o, Q) => {
@@ -114209,7 +114233,7 @@ function aEt() {
           }(Ne, Et, Nt, Ht, ir, ar, on), me = Ne) : (N = me, me = e)) : (N = me, me = e)) : (N = me, me = e)) : (N = me, me = e)) : (N = me, me = e), me;
         }()) === e && (Z = function() {
           var me, Ne, Be, Et, Nt, Ht, ir, ar, on;
-          return me = N, (Ne = md()) !== e && vr() !== e ? ((Be = function() {
+          return me = N, (Ne = vd()) !== e && vr() !== e ? ((Be = function() {
             var gn, us, xs, Ps;
             return gn = N, r.substr(N, 6).toLowerCase() === "ignore" ? (us = r.substr(N, 6), N += 6) : (us = e, fr === 0 && On(Am)), us !== e ? (xs = N, fr++, Ps = Oo(), fr--, Ps === e ? xs = void 0 : (N = xs, xs = e), xs !== e ? gn = us = [us, xs] : (N = gn, gn = e)) : (N = gn, gn = e), gn;
           }()) === e && (Be = null), Be !== e && vr() !== e ? ((Et = _l()) === e && (Et = null), Et !== e && vr() !== e && (Nt = Yu()) !== e && vr() !== e ? ((Ht = kp()) === e && (Ht = null), Ht !== e && vr() !== e && (ir = bh()) !== e && vr() !== e ? ((ar = jd()) === e && (ar = null), ar !== e && vr() !== e ? ((on = Ol()) === e && (on = null), on !== e ? (Hn = me, Ne = function(gn, us, xs, Ps, Js, Zs, mo, vo) {
@@ -114219,7 +114243,7 @@ function aEt() {
           }(Ne, Be, Et, Nt, Ht, ir, ar, on), me = Ne) : (N = me, me = e)) : (N = me, me = e)) : (N = me, me = e)) : (N = me, me = e)) : (N = me, me = e)) : (N = me, me = e), me;
         }()) === e && (Z = function() {
           var me, Ne, Be, Et, Nt, Ht;
-          me = N, (Ne = md()) !== e && vr() !== e && _l() !== e && vr() !== e && (Be = Yu()) !== e && vr() !== e ? ((Et = kp()) === e && (Et = null), Et !== e && vr() !== e && Vc() !== e && vr() !== e && (Nt = Pd()) !== e && vr() !== e ? ((Ht = jd()) === e && (Ht = null), Ht !== e ? (Hn = me, ir = Ne, on = Et, gn = Nt, us = Ht, (ar = Be) && (Wt.add(`insert::${ar.db}::${ar.table}`), Zo.add(`insert::${ar.table}::(.*)`), ar.as = null), Ne = { tableList: Array.from(Wt), columnList: jo(Zo), ast: { ...ir, table: [ar], columns: null, partition: on, set: gn, on_duplicate_update: us } }, me = Ne) : (N = me, me = e)) : (N = me, me = e)) : (N = me, me = e);
+          me = N, (Ne = vd()) !== e && vr() !== e && _l() !== e && vr() !== e && (Be = Yu()) !== e && vr() !== e ? ((Et = kp()) === e && (Et = null), Et !== e && vr() !== e && Vc() !== e && vr() !== e && (Nt = Pd()) !== e && vr() !== e ? ((Ht = jd()) === e && (Ht = null), Ht !== e ? (Hn = me, ir = Ne, on = Et, gn = Nt, us = Ht, (ar = Be) && (Wt.add(`insert::${ar.db}::${ar.table}`), Zo.add(`insert::${ar.table}::(.*)`), ar.as = null), Ne = { tableList: Array.from(Wt), columnList: jo(Zo), ast: { ...ir, table: [ar], columns: null, partition: on, set: gn, on_duplicate_update: us } }, me = Ne) : (N = me, me = e)) : (N = me, me = e)) : (N = me, me = e);
           var ir, ar, on, gn, us;
           return me;
         }()) === e && (Z = function() {
@@ -114299,7 +114323,7 @@ function aEt() {
       }
       function rc() {
         var Z;
-        return (Z = cc()) === e && (Z = Rn()) === e && (Z = pd()) === e && (Z = function() {
+        return (Z = cc()) === e && (Z = Rn()) === e && (Z = hd()) === e && (Z = function() {
           var me, Ne, Be, Et, Nt, Ht;
           return me = N, (Ne = function() {
             var ir, ar, on, gn;
@@ -114434,7 +114458,7 @@ function aEt() {
           return Be;
         }()) === e && (Z = function() {
           var Be, Et, Nt;
-          Be = N, (Et = wi()) !== e && vr() !== e && (Nt = pd()) !== e ? (Hn = Be, Ht = Nt, Et = { action: "add", type: "alter", ...Ht }, Be = Et) : (N = Be, Be = e);
+          Be = N, (Et = wi()) !== e && vr() !== e && (Nt = hd()) !== e ? (Hn = Be, Ht = Nt, Et = { action: "add", type: "alter", ...Ht }, Be = Et) : (N = Be, Be = e);
           var Ht;
           return Be;
         }()) === e && (Z = function() {
@@ -114462,7 +114486,7 @@ function aEt() {
         var Z, me, Ne, Be;
         return Z = N, r.substr(N, 4).toLowerCase() === "lock" ? (me = r.substr(N, 4), N += 4) : (me = e, fr === 0 && On(zs)), me !== e && vr() !== e ? ((Ne = Ti()) === e && (Ne = null), Ne !== e && vr() !== e ? (r.substr(N, 7).toLowerCase() === "default" ? (Be = r.substr(N, 7), N += 7) : (Be = e, fr === 0 && On(Fs)), Be === e && (r.substr(N, 4).toLowerCase() === "none" ? (Be = r.substr(N, 4), N += 4) : (Be = e, fr === 0 && On(ao)), Be === e && (r.substr(N, 6).toLowerCase() === "shared" ? (Be = r.substr(N, 6), N += 6) : (Be = e, fr === 0 && On(ko)), Be === e && (r.substr(N, 9).toLowerCase() === "exclusive" ? (Be = r.substr(N, 9), N += 9) : (Be = e, fr === 0 && On(qo))))), Be !== e ? (Hn = Z, Z = me = { type: "alter", keyword: "lock", resource: "lock", symbol: Ne, lock: Be }) : (N = Z, Z = e)) : (N = Z, Z = e)) : (N = Z, Z = e), Z;
       }
-      function pd() {
+      function hd() {
         var Z, me, Ne, Be, Et, Nt;
         return Z = N, (me = Vi()) === e && (me = ka()), me !== e && vr() !== e ? ((Ne = nc()) === e && (Ne = null), Ne !== e && vr() !== e ? ((Be = Md()) === e && (Be = null), Be !== e && vr() !== e && (Et = Yf()) !== e && vr() !== e ? ((Nt = Jd()) === e && (Nt = null), Nt !== e && vr() !== e ? (Hn = Z, Z = me = function(Ht, ir, ar, on, gn) {
           return { index: ir, definition: on, keyword: Ht.toLowerCase(), index_type: ar, resource: "index", index_options: gn };
@@ -114528,7 +114552,7 @@ function aEt() {
           return { keyword: on.toLowerCase(), symbol: gn, value: us.join("").toUpperCase() };
         }(me, Ne, Be)) : (N = Z, Z = e)) : (N = Z, Z = e)) : (N = Z, Z = e), Z === e && (Z = N, r.substr(N, 6).toLowerCase() === "engine" ? (me = r.substr(N, 6), N += 6) : (me = e, fr === 0 && On(ef)), me !== e && vr() !== e ? ((Ne = Ti()) === e && (Ne = null), Ne !== e && vr() !== e && (Be = qu()) !== e ? (Hn = Z, Z = me = function(on, gn, us) {
           return { keyword: on.toLowerCase(), symbol: gn, value: us.toUpperCase() };
-        }(me, Ne, Be)) : (N = Z, Z = e)) : (N = Z, Z = e), Z === e && (Z = N, r.substr(N, 7).toLowerCase() === "without" ? (me = r.substr(N, 7), N += 7) : (me = e, fr === 0 && On(el)), me !== e && vr() !== e ? (r.substr(N, 5).toLowerCase() === "rowid" ? (Ne = r.substr(N, 5), N += 5) : (Ne = e, fr === 0 && On(tl)), Ne !== e ? (Hn = Z, Z = me = { keyword: "without rowid" }) : (N = Z, Z = e)) : (N = Z, Z = e), Z === e && (Z = N, r.substr(N, 6).toLowerCase() === "strict" ? (me = r.substr(N, 6), N += 6) : (me = e, fr === 0 && On(od)), me !== e && (Hn = Z, me = { keyword: "strict" }), Z = me))))), Z;
+        }(me, Ne, Be)) : (N = Z, Z = e)) : (N = Z, Z = e), Z === e && (Z = N, r.substr(N, 7).toLowerCase() === "without" ? (me = r.substr(N, 7), N += 7) : (me = e, fr === 0 && On(el)), me !== e && vr() !== e ? (r.substr(N, 5).toLowerCase() === "rowid" ? (Ne = r.substr(N, 5), N += 5) : (Ne = e, fr === 0 && On(tl)), Ne !== e ? (Hn = Z, Z = me = { keyword: "without rowid" }) : (N = Z, Z = e)) : (N = Z, Z = e), Z === e && (Z = N, r.substr(N, 6).toLowerCase() === "strict" ? (me = r.substr(N, 6), N += 6) : (me = e, fr === 0 && On(id)), me !== e && (Hn = Z, me = { keyword: "strict" }), Z = me))))), Z;
       }
       function mh() {
         var Z, me, Ne, Be, Et;
@@ -114705,8 +114729,8 @@ function aEt() {
       }
       function Jd() {
         var Z, me, Ne, Be, Et, Nt;
-        if (Z = N, (me = hd()) !== e) {
-          for (Ne = [], Be = N, (Et = vr()) !== e && (Nt = hd()) !== e ? Be = Et = [Et, Nt] : (N = Be, Be = e); Be !== e; ) Ne.push(Be), Be = N, (Et = vr()) !== e && (Nt = hd()) !== e ? Be = Et = [Et, Nt] : (N = Be, Be = e);
+        if (Z = N, (me = md()) !== e) {
+          for (Ne = [], Be = N, (Et = vr()) !== e && (Nt = md()) !== e ? Be = Et = [Et, Nt] : (N = Be, Be = e); Be !== e; ) Ne.push(Be), Be = N, (Et = vr()) !== e && (Nt = md()) !== e ? Be = Et = [Et, Nt] : (N = Be, Be = e);
           Ne !== e ? (Hn = Z, Z = me = function(Ht, ir) {
             const ar = [Ht];
             for (let on = 0; on < ir.length; on++) ar.push(ir[on][1]);
@@ -114715,12 +114739,12 @@ function aEt() {
         } else N = Z, Z = e;
         return Z;
       }
-      function hd() {
+      function md() {
         var Z, me, Ne, Be, Et, Nt;
         return Z = N, (me = function() {
           var Ht, ir, ar, on;
           return Ht = N, r.substr(N, 14).toLowerCase() === "key_block_size" ? (ir = r.substr(N, 14), N += 14) : (ir = e, fr === 0 && On(Cl)), ir !== e ? (ar = N, fr++, on = Oo(), fr--, on === e ? ar = void 0 : (N = ar, ar = e), ar !== e ? (Hn = Ht, Ht = ir = "KEY_BLOCK_SIZE") : (N = Ht, Ht = e)) : (N = Ht, Ht = e), Ht;
-        }()) !== e && vr() !== e ? ((Ne = Ti()) === e && (Ne = null), Ne !== e && vr() !== e && (Be = $d()) !== e ? (Hn = Z, Et = Ne, Nt = Be, Z = me = { type: me.toLowerCase(), symbol: Et, expr: Nt }) : (N = Z, Z = e)) : (N = Z, Z = e), Z === e && (Z = Md()) === e && (Z = N, r.substr(N, 4).toLowerCase() === "with" ? (me = r.substr(N, 4), N += 4) : (me = e, fr === 0 && On(op)), me !== e && vr() !== e ? (r.substr(N, 6).toLowerCase() === "parser" ? (Ne = r.substr(N, 6), N += 6) : (Ne = e, fr === 0 && On($f)), Ne !== e && vr() !== e && (Be = qu()) !== e ? (Hn = Z, Z = me = { type: "with parser", expr: Be }) : (N = Z, Z = e)) : (N = Z, Z = e), Z === e && (Z = N, r.substr(N, 7).toLowerCase() === "visible" ? (me = r.substr(N, 7), N += 7) : (me = e, fr === 0 && On(Bc)), me === e && (r.substr(N, 9).toLowerCase() === "invisible" ? (me = r.substr(N, 9), N += 9) : (me = e, fr === 0 && On(id))), me !== e && (Hn = Z, me = function(Ht) {
+        }()) !== e && vr() !== e ? ((Ne = Ti()) === e && (Ne = null), Ne !== e && vr() !== e && (Be = $d()) !== e ? (Hn = Z, Et = Ne, Nt = Be, Z = me = { type: me.toLowerCase(), symbol: Et, expr: Nt }) : (N = Z, Z = e)) : (N = Z, Z = e), Z === e && (Z = Md()) === e && (Z = N, r.substr(N, 4).toLowerCase() === "with" ? (me = r.substr(N, 4), N += 4) : (me = e, fr === 0 && On(op)), me !== e && vr() !== e ? (r.substr(N, 6).toLowerCase() === "parser" ? (Ne = r.substr(N, 6), N += 6) : (Ne = e, fr === 0 && On($f)), Ne !== e && vr() !== e && (Be = qu()) !== e ? (Hn = Z, Z = me = { type: "with parser", expr: Be }) : (N = Z, Z = e)) : (N = Z, Z = e), Z === e && (Z = N, r.substr(N, 7).toLowerCase() === "visible" ? (me = r.substr(N, 7), N += 7) : (me = e, fr === 0 && On(Bc)), me === e && (r.substr(N, 9).toLowerCase() === "invisible" ? (me = r.substr(N, 9), N += 9) : (me = e, fr === 0 && On(ad))), me !== e && (Hn = Z, me = function(Ht) {
           return { type: Ht.toLowerCase(), expr: Ht.toLowerCase() };
         }(me)), (Z = me) === e && (Z = Tl()))), Z;
       }
@@ -114808,7 +114832,7 @@ function aEt() {
         var Z, me;
         return Z = N, function() {
           var Ne, Be, Et, Nt;
-          return Ne = N, r.substr(N, 5).toLowerCase() === "where" ? (Be = r.substr(N, 5), N += 5) : (Be = e, fr === 0 && On(cd)), Be !== e ? (Et = N, fr++, Nt = Oo(), fr--, Nt === e ? Et = void 0 : (N = Et, Et = e), Et !== e ? Ne = Be = [Be, Et] : (N = Ne, Ne = e)) : (N = Ne, Ne = e), Ne;
+          return Ne = N, r.substr(N, 5).toLowerCase() === "where" ? (Be = r.substr(N, 5), N += 5) : (Be = e, fr === 0 && On(fd)), Be !== e ? (Et = N, fr++, Nt = Oo(), fr--, Nt === e ? Et = void 0 : (N = Et, Et = e), Et !== e ? Ne = Be = [Be, Et] : (N = Ne, Ne = e)) : (N = Ne, Ne = e), Ne;
         }() !== e && vr() !== e && (me = Mc()) !== e ? (Hn = Z, Z = me) : (N = Z, Z = e), Z;
       }
       function Op() {
@@ -114864,9 +114888,9 @@ function aEt() {
       }
       function uf() {
         var Z, me, Ne, Be, Et, Nt, Ht, ir;
-        return Z = N, me = N, (Ne = uu()) !== e && (Be = vr()) !== e && (Et = fl()) !== e ? me = Ne = [Ne, Be, Et] : (N = me, me = e), me === e && (me = null), me !== e && (Ne = vr()) !== e && (Be = Zf()) !== e && (Et = vr()) !== e ? (r.charCodeAt(N) === 61 ? (Nt = "=", N++) : (Nt = e, fr === 0 && On(ad)), Nt !== e && vr() !== e && (Ht = Su()) !== e ? (Hn = Z, Z = me = function(ar, on, gn) {
+        return Z = N, me = N, (Ne = uu()) !== e && (Be = vr()) !== e && (Et = fl()) !== e ? me = Ne = [Ne, Be, Et] : (N = me, me = e), me === e && (me = null), me !== e && (Ne = vr()) !== e && (Be = Zf()) !== e && (Et = vr()) !== e ? (r.charCodeAt(N) === 61 ? (Nt = "=", N++) : (Nt = e, fr === 0 && On(ud)), Nt !== e && vr() !== e && (Ht = Su()) !== e ? (Hn = Z, Z = me = function(ar, on, gn) {
           return { column: on, value: gn, table: ar && ar[0] };
-        }(me, Be, Ht)) : (N = Z, Z = e)) : (N = Z, Z = e), Z === e && (Z = N, me = N, (Ne = uu()) !== e && (Be = vr()) !== e && (Et = fl()) !== e ? me = Ne = [Ne, Be, Et] : (N = me, me = e), me === e && (me = null), me !== e && (Ne = vr()) !== e && (Be = Zf()) !== e && (Et = vr()) !== e ? (r.charCodeAt(N) === 61 ? (Nt = "=", N++) : (Nt = e, fr === 0 && On(ad)), Nt !== e && vr() !== e && (Ht = Ul()) !== e && vr() !== e && $i() !== e && vr() !== e && (ir = Wl()) !== e && vr() !== e && nu() !== e ? (Hn = Z, Z = me = function(ar, on, gn) {
+        }(me, Be, Ht)) : (N = Z, Z = e)) : (N = Z, Z = e), Z === e && (Z = N, me = N, (Ne = uu()) !== e && (Be = vr()) !== e && (Et = fl()) !== e ? me = Ne = [Ne, Be, Et] : (N = me, me = e), me === e && (me = null), me !== e && (Ne = vr()) !== e && (Be = Zf()) !== e && (Et = vr()) !== e ? (r.charCodeAt(N) === 61 ? (Nt = "=", N++) : (Nt = e, fr === 0 && On(ud)), Nt !== e && vr() !== e && (Ht = Ul()) !== e && vr() !== e && $i() !== e && vr() !== e && (ir = Wl()) !== e && vr() !== e && nu() !== e ? (Hn = Z, Z = me = function(ar, on, gn) {
           return { column: on, value: gn, table: ar && ar[0], keyword: "values" };
         }(me, Be, ir)) : (N = Z, Z = e)) : (N = Z, Z = e)), Z;
       }
@@ -114885,8 +114909,8 @@ function aEt() {
           var Ne, Be;
           return Ne = N, Ul() !== e && vr() !== e && (Be = function() {
             var Et, Nt, Ht, ir, ar, on, gn, us;
-            if (Et = N, (Nt = vd()) !== e) {
-              for (Ht = [], ir = N, (ar = vr()) !== e && (on = qi()) !== e && (gn = vr()) !== e && (us = vd()) !== e ? ir = ar = [ar, on, gn, us] : (N = ir, ir = e); ir !== e; ) Ht.push(ir), ir = N, (ar = vr()) !== e && (on = qi()) !== e && (gn = vr()) !== e && (us = vd()) !== e ? ir = ar = [ar, on, gn, us] : (N = ir, ir = e);
+            if (Et = N, (Nt = bd()) !== e) {
+              for (Ht = [], ir = N, (ar = vr()) !== e && (on = qi()) !== e && (gn = vr()) !== e && (us = bd()) !== e ? ir = ar = [ar, on, gn, us] : (N = ir, ir = e); ir !== e; ) Ht.push(ir), ir = N, (ar = vr()) !== e && (on = qi()) !== e && (gn = vr()) !== e && (us = bd()) !== e ? ir = ar = [ar, on, gn, us] : (N = ir, ir = e);
               Ht !== e ? (Hn = Et, Nt = pn(Nt, Ht), Et = Nt) : (N = Et, Et = e);
             } else N = Et, Et = e;
             return Et;
@@ -114903,13 +114927,13 @@ function aEt() {
         else N = Z, Z = e;
         else N = Z, Z = e;
         else N = Z, Z = e;
-        return Z === e && (Z = N, Xl() !== e && vr() !== e && (me = vd()) !== e ? (Hn = Z, Z = me) : (N = Z, Z = e)), Z;
+        return Z === e && (Z = N, Xl() !== e && vr() !== e && (me = bd()) !== e ? (Hn = Z, Z = me) : (N = Z, Z = e)), Z;
       }
       function jd() {
         var Z, me, Ne;
         return Z = N, Br() !== e && vr() !== e ? (r.substr(N, 9).toLowerCase() === "duplicate" ? (me = r.substr(N, 9), N += 9) : (me = e, fr === 0 && On(rh)), me !== e && vr() !== e && ka() !== e && vr() !== e && cf() !== e && vr() !== e && (Ne = Pd()) !== e ? (Hn = Z, Z = { keyword: "on duplicate key update", set: Ne }) : (N = Z, Z = e)) : (N = Z, Z = e), Z;
       }
-      function md() {
+      function vd() {
         var Z, me, Ne, Be, Et, Nt, Ht;
         return Z = N, (me = gl()) !== e ? (Ne = N, (Be = vr()) !== e && (Et = nr()) !== e && (Nt = vr()) !== e ? (r.substr(N, 5).toLowerCase() === "abort" ? (Ht = r.substr(N, 5), N += 5) : (Ht = e, fr === 0 && On(Wm)), Ht === e && (r.substr(N, 4).toLowerCase() === "fail" ? (Ht = r.substr(N, 4), N += 4) : (Ht = e, fr === 0 && On(Cp)), Ht === e && (r.substr(N, 6).toLowerCase() === "ignore" ? (Ht = r.substr(N, 6), N += 6) : (Ht = e, fr === 0 && On(Am)), Ht === e && (r.substr(N, 7).toLowerCase() === "replace" ? (Ht = r.substr(N, 7), N += 7) : (Ht = e, fr === 0 && On(nh)), Ht === e && (r.substr(N, 8).toLowerCase() === "rollback" ? (Ht = r.substr(N, 8), N += 8) : (Ht = e, fr === 0 && On(ip)))))), Ht !== e ? Ne = Be = [Be, Et, Nt, Ht] : (N = Ne, Ne = e)) : (N = Ne, Ne = e), Ne === e && (Ne = null), Ne !== e ? (Hn = Z, Z = me = function(ir) {
           const ar = { type: "insert" };
@@ -114919,7 +114943,7 @@ function aEt() {
           return ir = N, r.substr(N, 7).toLowerCase() === "replace" ? (ar = r.substr(N, 7), N += 7) : (ar = e, fr === 0 && On(nh)), ar !== e ? (on = N, fr++, gn = Oo(), fr--, gn === e ? on = void 0 : (N = on, on = e), on !== e ? ir = ar = [ar, on] : (N = ir, ir = e)) : (N = ir, ir = e), ir;
         }()) !== e && (Hn = Z, me = { type: "replace" }), Z = me), Z;
       }
-      function vd() {
+      function bd() {
         var Z, me;
         return Z = N, $i() !== e && vr() !== e && (me = zl()) !== e && vr() !== e && nu() !== e ? (Hn = Z, Z = me) : (N = Z, Z = e), Z;
       }
@@ -115043,7 +115067,7 @@ function aEt() {
           }()) !== e && vr() !== e && $i() !== e && vr() !== e && (ir = Lc()) !== e && vr() !== e && nu() !== e ? (Hn = Nt, ar = Ht, (on = ir).parentheses = !0, Ht = ei(ar, on), Nt = Ht) : (N = Nt, Nt = e);
           var ar, on;
           return Nt;
-        }()) === e && (Z = N, (me = Se()) === e && (me = N, r.charCodeAt(N) === 33 ? (Ne = "!", N++) : (Ne = e, fr === 0 && On(Do)), Ne !== e ? (Be = N, fr++, r.charCodeAt(N) === 61 ? (Et = "=", N++) : (Et = e, fr === 0 && On(ad)), fr--, Et === e ? Be = void 0 : (N = Be, Be = e), Be !== e ? me = Ne = [Ne, Be] : (N = me, me = e)) : (N = me, me = e)), me !== e && (Ne = vr()) !== e && (Be = v()) !== e ? (Hn = Z, Z = me = ei("NOT", Be)) : (N = Z, Z = e)), Z;
+        }()) === e && (Z = N, (me = Se()) === e && (me = N, r.charCodeAt(N) === 33 ? (Ne = "!", N++) : (Ne = e, fr === 0 && On(Do)), Ne !== e ? (Be = N, fr++, r.charCodeAt(N) === 61 ? (Et = "=", N++) : (Et = e, fr === 0 && On(ud)), fr--, Et === e ? Be = void 0 : (N = Be, Be = e), Be !== e ? me = Ne = [Ne, Be] : (N = me, me = e)) : (N = me, me = e)), me !== e && (Ne = vr()) !== e && (Be = v()) !== e ? (Hn = Z, Z = me = ei("NOT", Be)) : (N = Z, Z = e)), Z;
       }
       function Xr() {
         var Z, me, Ne, Be, Et;
@@ -115088,7 +115112,7 @@ function aEt() {
       }
       function Pl() {
         var Z;
-        return r.substr(N, 2) === ">=" ? (Z = ">=", N += 2) : (Z = e, fr === 0 && On(Ff)), Z === e && (r.charCodeAt(N) === 62 ? (Z = ">", N++) : (Z = e, fr === 0 && On(Wd)), Z === e && (r.substr(N, 2) === "<=" ? (Z = "<=", N += 2) : (Z = e, fr === 0 && On($p)), Z === e && (r.substr(N, 2) === "<>" ? (Z = "<>", N += 2) : (Z = e, fr === 0 && On(Fh)), Z === e && (r.charCodeAt(N) === 60 ? (Z = "<", N++) : (Z = e, fr === 0 && On(Ym)), Z === e && (r.substr(N, 2) === "==" ? (Z = "==", N += 2) : (Z = e, fr === 0 && On(Fp)), Z === e && (r.charCodeAt(N) === 61 ? (Z = "=", N++) : (Z = e, fr === 0 && On(ad)), Z === e && (r.substr(N, 2) === "!=" ? (Z = "!=", N += 2) : (Z = e, fr === 0 && On(Uh))))))))), Z;
+        return r.substr(N, 2) === ">=" ? (Z = ">=", N += 2) : (Z = e, fr === 0 && On(Ff)), Z === e && (r.charCodeAt(N) === 62 ? (Z = ">", N++) : (Z = e, fr === 0 && On(Wd)), Z === e && (r.substr(N, 2) === "<=" ? (Z = "<=", N += 2) : (Z = e, fr === 0 && On($p)), Z === e && (r.substr(N, 2) === "<>" ? (Z = "<>", N += 2) : (Z = e, fr === 0 && On(Fh)), Z === e && (r.charCodeAt(N) === 60 ? (Z = "<", N++) : (Z = e, fr === 0 && On(Ym)), Z === e && (r.substr(N, 2) === "==" ? (Z = "==", N += 2) : (Z = e, fr === 0 && On(Fp)), Z === e && (r.charCodeAt(N) === 61 ? (Z = "=", N++) : (Z = e, fr === 0 && On(ud)), Z === e && (r.substr(N, 2) === "!=" ? (Z = "!=", N += 2) : (Z = e, fr === 0 && On(Uh))))))))), Z;
       }
       function Qu() {
         var Z, me, Ne, Be, Et;
@@ -115275,7 +115299,7 @@ function aEt() {
       function Tf() {
         var Z, me, Ne, Be;
         if (Z = N, r.charCodeAt(N) === 34 ? (me = '"', N++) : (me = e, fr === 0 && On(tf)), me !== e) {
-          if (Ne = [], qf.test(r.charAt(N)) ? (Be = r.charAt(N), N++) : (Be = e, fr === 0 && On(ud)), Be !== e) for (; Be !== e; ) Ne.push(Be), qf.test(r.charAt(N)) ? (Be = r.charAt(N), N++) : (Be = e, fr === 0 && On(ud));
+          if (Ne = [], qf.test(r.charAt(N)) ? (Be = r.charAt(N), N++) : (Be = e, fr === 0 && On(ld)), Be !== e) for (; Be !== e; ) Ne.push(Be), qf.test(r.charAt(N)) ? (Be = r.charAt(N), N++) : (Be = e, fr === 0 && On(ld));
           else Ne = e;
           Ne !== e ? (r.charCodeAt(N) === 34 ? (Be = '"', N++) : (Be = e, fr === 0 && On(tf)), Be !== e ? (Hn = Z, Z = me = { type: "double_quote_string", value: Ne.join("") }) : (N = Z, Z = e)) : (N = Z, Z = e);
         } else N = Z, Z = e;
@@ -115537,7 +115561,7 @@ function aEt() {
       }
       function ga() {
         var Z;
-        return Id.test(r.charAt(N)) ? (Z = r.charAt(N), N++) : (Z = e, fr === 0 && On(ld)), Z;
+        return Id.test(r.charAt(N)) ? (Z = r.charAt(N), N++) : (Z = e, fr === 0 && On(cd)), Z;
       }
       function cl() {
         var Z, me, Ne, Be;
@@ -115791,7 +115815,7 @@ function aEt() {
       }
       function Ti() {
         var Z;
-        return r.charCodeAt(N) === 61 ? (Z = "=", N++) : (Z = e, fr === 0 && On(ad)), Z;
+        return r.charCodeAt(N) === 61 ? (Z = "=", N++) : (Z = e, fr === 0 && On(ud)), Z;
       }
       function wi() {
         var Z, me, Ne, Be;
@@ -115865,16 +115889,16 @@ function aEt() {
       }
       function vr() {
         var Z, me;
-        for (Z = [], (me = du()) === e && (me = bd()); me !== e; ) Z.push(me), (me = du()) === e && (me = bd());
+        for (Z = [], (me = du()) === e && (me = gd()); me !== e; ) Z.push(me), (me = du()) === e && (me = gd());
         return Z;
       }
       function oc() {
         var Z, me;
-        if (Z = [], (me = du()) === e && (me = bd()), me !== e) for (; me !== e; ) Z.push(me), (me = du()) === e && (me = bd());
+        if (Z = [], (me = du()) === e && (me = gd()), me !== e) for (; me !== e; ) Z.push(me), (me = du()) === e && (me = gd());
         else Z = e;
         return Z;
       }
-      function bd() {
+      function gd() {
         var Z;
         return (Z = function() {
           var me, Ne, Be, Et, Nt, Ht;
@@ -116094,7 +116118,7 @@ function aEt() {
           me = N, (Ne = function() {
             var Ht, ir, ar, on;
             return Ht = N, r.substr(N, 4).toLowerCase() === "enum" ? (ir = r.substr(N, 4), N += 4) : (ir = e, fr === 0 && On(Ob)), ir !== e ? (ar = N, fr++, on = Oo(), fr--, on === e ? ar = void 0 : (N = ar, ar = e), ar !== e ? (Hn = Ht, Ht = ir = "ENUM") : (N = Ht, Ht = e)) : (N = Ht, Ht = e), Ht;
-          }()) !== e && vr() !== e && (Be = vd()) !== e ? (Hn = me, Et = Ne, (Nt = Be).parentheses = !0, me = Ne = { dataType: Et, expr: Nt }) : (N = me, me = e);
+          }()) !== e && vr() !== e && (Be = bd()) !== e ? (Hn = me, Et = Ne, (Nt = Be).parentheses = !0, me = Ne = { dataType: Et, expr: Nt }) : (N = me, me = e);
           var Et, Nt;
           return me;
         }()) === e && (Z = function() {
@@ -116102,7 +116126,7 @@ function aEt() {
           return me = N, r.substr(N, 7).toLowerCase() === "boolean" ? (Ne = r.substr(N, 7), N += 7) : (Ne = e, fr === 0 && On(Cm)), Ne !== e && (Hn = me, Ne = { dataType: "BOOLEAN" }), me = Ne;
         }()) === e && (Z = function() {
           var me, Ne;
-          return me = N, r.substr(N, 4).toLowerCase() === "blob" ? (Ne = r.substr(N, 4), N += 4) : (Ne = e, fr === 0 && On(Um)), Ne === e && (r.substr(N, 8).toLowerCase() === "tinyblob" ? (Ne = r.substr(N, 8), N += 8) : (Ne = e, fr === 0 && On(dd)), Ne === e && (r.substr(N, 10).toLowerCase() === "mediumblob" ? (Ne = r.substr(N, 10), N += 10) : (Ne = e, fr === 0 && On(zv)), Ne === e && (r.substr(N, 8).toLowerCase() === "longblob" ? (Ne = r.substr(N, 8), N += 8) : (Ne = e, fr === 0 && On(Qh))))), Ne !== e && (Hn = me, Ne = { dataType: Ne.toUpperCase() }), me = Ne;
+          return me = N, r.substr(N, 4).toLowerCase() === "blob" ? (Ne = r.substr(N, 4), N += 4) : (Ne = e, fr === 0 && On(Um)), Ne === e && (r.substr(N, 8).toLowerCase() === "tinyblob" ? (Ne = r.substr(N, 8), N += 8) : (Ne = e, fr === 0 && On(pd)), Ne === e && (r.substr(N, 10).toLowerCase() === "mediumblob" ? (Ne = r.substr(N, 10), N += 10) : (Ne = e, fr === 0 && On(zv)), Ne === e && (r.substr(N, 8).toLowerCase() === "longblob" ? (Ne = r.substr(N, 8), N += 8) : (Ne = e, fr === 0 && On(Qh))))), Ne !== e && (Hn = me, Ne = { dataType: Ne.toUpperCase() }), me = Ne;
         }()), Z;
       }
       function Te() {
@@ -116228,13 +116252,13 @@ function aEt() {
         return Ji(F, ee, 1);
       }, tt = qe("IF", !0), Ie = function(F, ee) {
         return Ji(F, ee);
-      }, ut = qe("UNIQUE", !0), Vt = qe("KEY", !0), gr = qe("PRIMARY", !0), ur = qe("IDENTITY", !0), cr = qe("COLUMN_FORMAT", !0), Gt = qe("FIXED", !0), Cr = qe("DYNAMIC", !0), Nr = qe("DEFAULT", !0), ln = qe("STORAGE", !0), Lr = qe("DISK", !0), Sn = qe("MEMORY", !0), xn = qe("CURSOR", !0), pn = qe("EXECUTE", !0), bn = qe("EXEC", !0), ts = qe("@", !1), kn = qe("if", !0), Jn = qe("exists", !0), Cs = qe("PROCEDURE", !0), js = qe("ENCRYPTION", !0), os = qe("SCHEMABINDING", !0), Es = qe("VIEW_METADATA", !0), Fs = qe("CHECK", !0), Hs = qe("OPTION", !0), yo = qe("ALGORITHM", !0), Ks = qe("INSTANT", !0), To = qe("INPLACE", !0), to = qe("COPY", !0), So = qe("LOCK", !0), Fo = qe("NONE", !0), wo = qe("SHARED", !0), yi = qe("EXCLUSIVE", !0), Si = qe("NOCHECK", !0), fa = qe("PRIMARY KEY", !0), Ga = qe("NOT", !0), Ya = qe("FOR", !0), yu = qe("REPLICATION", !0), ia = qe("FOREIGN KEY", !0), ru = qe("MATCH FULL", !0), zs = qe("MATCH PARTIAL", !0), ao = qe("MATCH SIMPLE", !0), ko = qe("RESTRICT", !0), qo = qe("CASCADE", !0), Eo = qe("SET NULL", !0), rn = qe("NO ACTION", !0), Pn = qe("SET DEFAULT", !0), Rs = qe("CHARACTER", !0), Us = qe("SET", !0), ho = qe("CHARSET", !0), co = qe("COLLATE", !0), Bo = qe("AUTO_INCREMENT", !0), Vo = qe("AVG_ROW_LENGTH", !0), di = qe("KEY_BLOCK_SIZE", !0), wa = qe("MAX_ROWS", !0), Ba = qe("MIN_ROWS", !0), Oa = qe("STATS_SAMPLE_PAGES", !0), Ma = qe("CONNECTION", !0), Za = qe("COMPRESSION", !0), Ja = qe("'", !1), wc = qe("ZLIB", !0), Cl = qe("LZ4", !0), Nl = qe("ENGINE", !0), va = qe("TEXTIMAGE_ON", !0), Nu = qe("result", !0), mu = qe("caching", !0), Ru = qe("statistics", !0), Ll = qe("io", !0), Rl = qe("xml", !0), Ju = qe("profile", !0), ef = qe("time", !0), el = qe("datefirst", !0), tl = qe("dateformat", !0), od = qe("deadlock_priority", !0), Kl = qe("lock_timeout", !0), Fl = qe("concat_null_yields_null", !0), vf = qe("cursor_close_on_commit", !0), Gd = qe("fips_flagger", !0), tm = qe("identity_insert", !0), Hm = qe("language", !0), yp = qe("offsets", !0), Hd = qe("quoted_identifier", !0), wp = qe("arithabort", !0), jp = qe("arithignore", !0), $h = qe("fmtonly", !0), xl = qe("nocount", !0), rm = qe("noexec", !0), th = qe("numberic_roundabort", !0), nm = qe("parseonly", !0), op = qe("query_governor_cost_limit", !0), $f = qe("rowcount", !0), Bc = qe("textsize", !0), id = qe("ansi_defaults", !0), Vm = qe("ansi_null_dflt_off", !0), ad = qe("ansi_null_dflt_on", !0), rh = qe("ansi_nulls", !0), Wm = qe("ansi_padding", !0), Cp = qe("ansi_warnings", !0), Am = qe("forceplan", !0), nh = qe("showplan_all", !0), ip = qe("showplan_text", !0), Vd = qe("showplan_xml", !0), Do = qe("implicit_transactions", !0), bf = qe("remote_proc_transactions", !0), Ff = qe("xact_abort", !0), Wd = function(F) {
+      }, ut = qe("UNIQUE", !0), Vt = qe("KEY", !0), gr = qe("PRIMARY", !0), ur = qe("IDENTITY", !0), cr = qe("COLUMN_FORMAT", !0), Gt = qe("FIXED", !0), Cr = qe("DYNAMIC", !0), Nr = qe("DEFAULT", !0), ln = qe("STORAGE", !0), Lr = qe("DISK", !0), Sn = qe("MEMORY", !0), xn = qe("CURSOR", !0), pn = qe("EXECUTE", !0), bn = qe("EXEC", !0), ts = qe("@", !1), kn = qe("if", !0), Jn = qe("exists", !0), Cs = qe("PROCEDURE", !0), js = qe("ENCRYPTION", !0), os = qe("SCHEMABINDING", !0), Es = qe("VIEW_METADATA", !0), Fs = qe("CHECK", !0), Hs = qe("OPTION", !0), yo = qe("ALGORITHM", !0), Ks = qe("INSTANT", !0), To = qe("INPLACE", !0), to = qe("COPY", !0), So = qe("LOCK", !0), Fo = qe("NONE", !0), wo = qe("SHARED", !0), yi = qe("EXCLUSIVE", !0), Si = qe("NOCHECK", !0), fa = qe("PRIMARY KEY", !0), Ga = qe("NOT", !0), Ya = qe("FOR", !0), yu = qe("REPLICATION", !0), ia = qe("FOREIGN KEY", !0), ru = qe("MATCH FULL", !0), zs = qe("MATCH PARTIAL", !0), ao = qe("MATCH SIMPLE", !0), ko = qe("RESTRICT", !0), qo = qe("CASCADE", !0), Eo = qe("SET NULL", !0), rn = qe("NO ACTION", !0), Pn = qe("SET DEFAULT", !0), Rs = qe("CHARACTER", !0), Us = qe("SET", !0), ho = qe("CHARSET", !0), co = qe("COLLATE", !0), Bo = qe("AUTO_INCREMENT", !0), Vo = qe("AVG_ROW_LENGTH", !0), di = qe("KEY_BLOCK_SIZE", !0), wa = qe("MAX_ROWS", !0), Ba = qe("MIN_ROWS", !0), Oa = qe("STATS_SAMPLE_PAGES", !0), Ma = qe("CONNECTION", !0), Za = qe("COMPRESSION", !0), Ja = qe("'", !1), wc = qe("ZLIB", !0), Cl = qe("LZ4", !0), Nl = qe("ENGINE", !0), va = qe("TEXTIMAGE_ON", !0), Nu = qe("result", !0), mu = qe("caching", !0), Ru = qe("statistics", !0), Ll = qe("io", !0), Rl = qe("xml", !0), Ju = qe("profile", !0), ef = qe("time", !0), el = qe("datefirst", !0), tl = qe("dateformat", !0), id = qe("deadlock_priority", !0), Kl = qe("lock_timeout", !0), Fl = qe("concat_null_yields_null", !0), vf = qe("cursor_close_on_commit", !0), Gd = qe("fips_flagger", !0), tm = qe("identity_insert", !0), Hm = qe("language", !0), yp = qe("offsets", !0), Hd = qe("quoted_identifier", !0), wp = qe("arithabort", !0), jp = qe("arithignore", !0), $h = qe("fmtonly", !0), xl = qe("nocount", !0), rm = qe("noexec", !0), th = qe("numberic_roundabort", !0), nm = qe("parseonly", !0), op = qe("query_governor_cost_limit", !0), $f = qe("rowcount", !0), Bc = qe("textsize", !0), ad = qe("ansi_defaults", !0), Vm = qe("ansi_null_dflt_off", !0), ud = qe("ansi_null_dflt_on", !0), rh = qe("ansi_nulls", !0), Wm = qe("ansi_padding", !0), Cp = qe("ansi_warnings", !0), Am = qe("forceplan", !0), nh = qe("showplan_all", !0), ip = qe("showplan_text", !0), Vd = qe("showplan_xml", !0), Do = qe("implicit_transactions", !0), bf = qe("remote_proc_transactions", !0), Ff = qe("xact_abort", !0), Wd = function(F) {
         return { type: "origin", value: F.toLowerCase() };
       }, $p = qe("read", !0), Fh = qe("uncommitted", !0), Ym = qe("committed", !0), Fp = qe("REPEATABLE", !0), Uh = qe("snapshot", !0), Ch = qe("serializable", !0), sm = qe("transaction", !0), Up = qe("isolation", !0), Lp = qe("level", !0), Nc = qe("READ", !0), xp = qe("LOCAL", !0), hv = qe("LOW_PRIORITY", !0), om = qe("WRITE", !0), Lh = function(F, ee) {
         return Ji(F, ee);
       }, gf = qe("(", !1), Uf = qe(")", !1), sh = qe("PERCENT", !0), im = qe("SYSTEM_TIME", !0), ju = qe("OF", !0), Bf = qe("CONTAINED", !0), zf = qe("BTREE", !0), Qm = qe("HASH", !0), xh = qe("PARTITIONS", !0), oh = function(F, ee, Ce) {
         return { type: F.toLowerCase(), symbol: ee, expr: Ce };
-      }, Bp = qe("FILLFACTOR", !0), am = qe("MAX_DURATION", !0), Km = qe("MAXDOP", !0), _m = qe("WITH", !0), tf = qe("PARSER", !0), qf = qe("VISIBLE", !0), ud = qe("INVISIBLE", !0), Bh = qe("PAD_INDEX", !0), ih = qe("SORT_IN_TEMPDB", !0), Eh = qe("IGNORE_DUP_KEY", !0), Ep = qe("STATISTICS_NORECOMPUTE", !0), Sh = qe("STATISTICS_INCREMENTAL", !0), zh = qe("DROP_EXISTING", !0), Tm = qe("ONLINE", !0), Sp = qe("RESUMABLE", !0), yf = qe("ALLOW_ROW_LOCKS", !0), zp = qe("ALLOW_PAGE_LOCKS", !0), _t = qe("OPTIMIZE_FOR_SEQUENTIAL_KEY", !0), Or = qe("DATA_COMPRESSION", !0), cn = qe("ROW", !0), Wr = qe("PAGE", !1), bs = function(F, ee) {
+      }, Bp = qe("FILLFACTOR", !0), am = qe("MAX_DURATION", !0), Km = qe("MAXDOP", !0), _m = qe("WITH", !0), tf = qe("PARSER", !0), qf = qe("VISIBLE", !0), ld = qe("INVISIBLE", !0), Bh = qe("PAD_INDEX", !0), ih = qe("SORT_IN_TEMPDB", !0), Eh = qe("IGNORE_DUP_KEY", !0), Ep = qe("STATISTICS_NORECOMPUTE", !0), Sh = qe("STATISTICS_INCREMENTAL", !0), zh = qe("DROP_EXISTING", !0), Tm = qe("ONLINE", !0), Sp = qe("RESUMABLE", !0), yf = qe("ALLOW_ROW_LOCKS", !0), zp = qe("ALLOW_PAGE_LOCKS", !0), _t = qe("OPTIMIZE_FOR_SEQUENTIAL_KEY", !0), Or = qe("DATA_COMPRESSION", !0), cn = qe("ROW", !0), Wr = qe("PAGE", !1), bs = function(F, ee) {
         return ee.unshift(F), ee.forEach((Ce) => {
           const { table: Me, as: Mt } = Ce;
           Rt[Me] = Me, Mt && (Rt[Mt] = Me), function(It) {
@@ -116242,7 +116266,7 @@ function aEt() {
             It.clear(), Bt.forEach((or) => It.add(or));
           }(qa);
         }), ee;
-      }, cs = qe("FORCESEEK", !0), Ns = qe("SPATIAL_WINDOW_MAX_CELLS", !0), fo = qe("NOEXPAND", !0), io = qe("FORCESCAN", !0), Uo = qe("HOLDLOCK", !0), Ko = qe("NOLOCK", !0), fi = qe("NOWAIT", !0), Bi = qe("PAGLOCK", !0), Di = qe("READCOMMITTED", !0), ba = qe("READCOMMITTEDLOCK", !0), Pa = qe("READPAST", !0), Ki = qe("READUNCOMMITTED", !0), ja = qe("REPEATABLEREAD ", !0), Ta = qe("ROWLOCK", !0), vu = qe("SERIALIZABLE", !0), cu = qe("SNAPSHOT", !0), ul = qe("TABLOCK", !0), Ou = qe("TABLOCKX", !0), ec = qe("UPDLOCK", !0), Eu = qe("XLOCK", !0), uc = qe("##", !1), Td = qe("#", !1), Gf = qe("FIRST", !0), Cc = qe("ROWS", !0), ah = qe("ONLY", !0), qp = qe("NEXT", !0), ll = qe("RAW", !0), zc = qe("AUTO", !0), Id = qe("EXPLICIT", !0), ld = function(F) {
+      }, cs = qe("FORCESEEK", !0), Ns = qe("SPATIAL_WINDOW_MAX_CELLS", !0), fo = qe("NOEXPAND", !0), io = qe("FORCESCAN", !0), Uo = qe("HOLDLOCK", !0), Ko = qe("NOLOCK", !0), fi = qe("NOWAIT", !0), Bi = qe("PAGLOCK", !0), Di = qe("READCOMMITTED", !0), ba = qe("READCOMMITTEDLOCK", !0), Pa = qe("READPAST", !0), Ki = qe("READUNCOMMITTED", !0), ja = qe("REPEATABLEREAD ", !0), Ta = qe("ROWLOCK", !0), vu = qe("SERIALIZABLE", !0), cu = qe("SNAPSHOT", !0), ul = qe("TABLOCK", !0), Ou = qe("TABLOCKX", !0), ec = qe("UPDLOCK", !0), Eu = qe("XLOCK", !0), uc = qe("##", !1), Td = qe("#", !1), Gf = qe("FIRST", !0), Cc = qe("ROWS", !0), ah = qe("ONLY", !0), qp = qe("NEXT", !0), ll = qe("RAW", !0), zc = qe("AUTO", !0), Id = qe("EXPLICIT", !0), cd = function(F) {
         return { keyword: F };
       }, um = qe("PATH", !0), Xm = qe("XML", !0), Cd = qe("JSON", !0), Hf = qe("=", !1), Nd = function(F, ee) {
         return mp(F, ee);
@@ -116252,10 +116276,10 @@ function aEt() {
         return nd[F.toUpperCase()] === !0;
       }, lm = qe('"', !1), ev = /^[^"]/, bv = zn(['"'], !0, !1), tv = /^[^']/, cm = zn(["'"], !0, !1), Av = qe("`", !1), _v = /^[^`]/, Nm = zn(["`"], !0, !1), Jv = qe("[", !1), Lb = /^[^\]]/, gv = zn(["]"], !0, !1), xb = qe("]", !1), Tv = function(F, ee) {
         return F + ee.join("");
-      }, Eb = /^[A-Za-z_@#\u4E00-\u9FA5]/, Db = zn([["A", "Z"], ["a", "z"], "_", "@", "#", ["一", "龥"]], !1, !1), Iv = /^[A-Za-z0-9_\-@$$\u4E00-\u9FA5\xC0-\u017F\x80-\xFF]/, Nv = zn([["A", "Z"], ["a", "z"], ["0", "9"], "_", "-", "@", "$", "$", ["一", "龥"], ["À", "ſ"], ["", "ÿ"]], !1, !1), eb = /^[A-Za-z0-9_:\u4E00-\u9FA5\xC0-\u017F\x80-\xFF]/, fm = zn([["A", "Z"], ["a", "z"], ["0", "9"], "_", ":", ["一", "龥"], ["À", "ſ"], ["", "ÿ"]], !1, !1), Ap = qe(":", !1), Kd = qe("OVER", !0), cd = qe("FOLLOWING", !0), Ah = qe("PRECEDING", !0), qh = qe("CURRENT", !0), Rv = qe("UNBOUNDED", !0), tb = qe("WITHIN", !0), dm = qe("N", !0), Ov = qe("_binary", !0), kv = qe("_latin1", !0), Mv = qe("0x", !0), Rm = /^[0-9A-Fa-f]/, _h = zn([["0", "9"], ["A", "F"], ["a", "f"]], !1, !1), Gh = function(F, ee) {
+      }, Eb = /^[A-Za-z_@#\u4E00-\u9FA5]/, Db = zn([["A", "Z"], ["a", "z"], "_", "@", "#", ["一", "龥"]], !1, !1), Iv = /^[A-Za-z0-9_\-@$$\u4E00-\u9FA5\xC0-\u017F\x80-\xFF]/, Nv = zn([["A", "Z"], ["a", "z"], ["0", "9"], "_", "-", "@", "$", "$", ["一", "龥"], ["À", "ſ"], ["", "ÿ"]], !1, !1), eb = /^[A-Za-z0-9_:\u4E00-\u9FA5\xC0-\u017F\x80-\xFF]/, fm = zn([["A", "Z"], ["a", "z"], ["0", "9"], "_", ":", ["一", "龥"], ["À", "ſ"], ["", "ÿ"]], !1, !1), Ap = qe(":", !1), Kd = qe("OVER", !0), fd = qe("FOLLOWING", !0), Ah = qe("PRECEDING", !0), qh = qe("CURRENT", !0), Rv = qe("UNBOUNDED", !0), tb = qe("WITHIN", !0), dm = qe("N", !0), Ov = qe("_binary", !0), kv = qe("_latin1", !0), Mv = qe("0x", !0), Rm = /^[0-9A-Fa-f]/, _h = zn([["0", "9"], ["A", "F"], ["a", "f"]], !1, !1), Gh = function(F, ee) {
         return { type: F.toLowerCase(), value: ee[1].join("") };
       }, rv = /^[^"\\\0-\x1F\x7F]/, rb = zn(['"', "\\", ["\0", ""], ""], !0, !1), Dv = /^[^'\\]/, nb = zn(["'", "\\"], !0, !1), sb = qe("\\'", !1), Om = qe('\\"', !1), ob = qe("\\\\", !1), ib = qe("\\/", !1), Pv = qe("\\b", !1), Sb = qe("\\f", !1), Ab = qe("\\n", !1), jv = qe("\\r", !1), $v = qe("\\t", !1), Hh = qe("\\u", !1), rf = qe("\\", !1), Rd = qe("''", !1), pm = qe('""', !1), Wf = qe("``", !1), Cf = /^[\n\r]/, yv = zn([`
-`, "\r"], !1, !1), km = qe(".", !1), Lf = /^[0-9]/, Od = zn([["0", "9"]], !1, !1), _b = /^[0-9a-fA-F]/, ab = zn([["0", "9"], ["a", "f"], ["A", "F"]], !1, !1), Tb = /^[eE]/, ub = zn(["e", "E"], !1, !1), wv = /^[+\-]/, Cv = zn(["+", "-"], !1, !1), Lv = qe("NULL", !0), lb = qe("NOT NULL", !0), Pb = qe("TRUE", !0), Ib = qe("TO", !0), cb = qe("TOP", !0), fb = qe("FALSE", !0), Fv = qe("DROP", !0), Nb = qe("DECLARE", !0), Rb = qe("USE", !0), db = qe("ALTER", !0), Ob = qe("SELECT", !0), pb = qe("UPDATE", !0), Uv = qe("CREATE", !0), q = qe("TEMPORARY", !0), as = qe("DELETE", !0), hm = qe("INSERT", !0), xf = qe("RECURSIVE", !0), nv = qe("REPLACE", !0), $r = qe("RENAME", !0), Gs = qe("IGNORE", !0), kd = qe("PARTITION", !0), Mm = qe("INTO", !0), sv = qe("FROM", !0), ws = qe("UNLOCK", !0), Bv = qe("AS", !0), hb = qe("TABLE", !0), jb = qe("VIEW", !0), mm = qe("DATABASE", !0), B = qe("SCHEMA", !0), is = qe("TABLES", !0), Dm = qe("ON", !0), _p = qe("OFF", !0), Pm = qe("LEFT", !0), Ir = qe("RIGHT", !0), Ds = qe("FULL", !0), fd = qe("INNER", !0), xv = qe("CROSS", !0), vm = qe("JOIN", !0), ls = qe("APPLY", !0), mb = qe("OUTER", !0), ov = qe("UNION", !0), bm = qe("VALUES", !0), iv = qe("USING", !0), jm = qe("WHERE", !0), Hp = qe("GO", !0), $m = qe("GROUP", !0), Fm = qe("BY", !0), Th = qe("ORDER", !0), Ih = qe("HAVING", !0), D = qe("LIMIT", !0), Zn = qe("OFFSET", !0), Vh = qe("FETCH", !0), Ef = qe("ASC", !0), Nh = qe("DESC", !0), wr = qe("ALL", !0), _s = qe("DISTINCT", !0), El = qe("BETWEEN", !0), lh = qe("IN", !0), Wh = qe("IS", !0), es = qe("LIKE", !0), qc = qe("EXISTS", !0), lc = qe("AND", !0), av = qe("OR", !0), Vp = qe("ARRAY_AGG", !0), ap = qe("STRING_AGG", !0), Xd = qe("COUNT", !0), Ev = qe("MAX", !0), ch = qe("MIN", !0), gm = qe("SUM", !0), vb = qe("AVG", !0), ym = qe("CALL", !0), wm = qe("CASE", !0), Yh = qe("WHEN", !0), Um = qe("THEN", !0), dd = qe("ELSE", !0), zv = qe("END", !0), Qh = qe("CAST", !0), Cm = qe("BIT", !0), up = qe("MONEY", !0), Bm = qe("SMALLMONEY", !0), fh = qe("CHAR", !0), N = qe("VARCHAR", !0), Hn = qe("BINARY", !0), Sf = qe("VARBINARY", !0), T = qe("NCHAR", !0), Vn = qe("NVARCHAR", !0), fr = qe("NUMERIC", !0), Ls = qe("DECIMAL", !0), Rc = qe("SIGNED", !0), mr = qe("UNSIGNED", !0), ms = qe("INT", !0), On = qe("ZEROFILL", !0), Wp = qe("INTEGER", !0), dh = qe("SMALLINT", !0), $n = qe("TINYINT", !0), A = qe("TINYTEXT", !0), Dn = qe("TEXT", !0), Af = qe("NTEXT", !0), Lc = qe("MEDIUMTEXT", !0), xc = qe("LONGTEXT", !0), rr = qe("BIGINT", !0), fs = qe("FLOAT", !0), tc = qe("REAL", !0), rc = qe("DOUBLE", !0), Yp = qe("DATE", !0), Rn = qe("SMALLDATETIME", !0), Rh = qe("DATETIME", !0), Zd = qe("DATETIME2", !0), ph = qe("DATETIMEOFFSET", !0), Tp = qe("TIME", !0), Qp = qe("TIMESTAMP", !0), pd = qe("TRUNCATE", !0), cc = qe("UNIQUEIDENTIFIER", !0), nf = qe("USER", !0), $u = qe("CURRENT_DATE", !0), Ro = qe("INTERVAL", !0), Kh = qe("YEAR", !0), lp = qe("MONTH", !0), hh = qe("DAY", !0), mh = qe("HOUR", !0), Ld = qe("MINUTE", !0), Oh = qe("SECOND", !0), Gc = qe("CURRENT_TIME", !0), Yf = qe("CURRENT_TIMESTAMP", !0), sf = qe("CURRENT_USER", !0), zo = qe("SESSION_USER", !0), Kp = qe("SYSTEM_USER", !0), Ip = qe("PIVOT", !0), Np = qe("UNPIVOT", !0), fu = qe("@@", !1), of = qe("$", !1), Md = qe("return", !0), Jd = qe(":=", !1), hd = qe("DUAL", !0), Dd = qe("ADD", !0), ep = qe("COLUMN", !0), af = qe("INDEX", !0), cp = qe("FULLTEXT", !0), Yu = qe("SPATIAL", !0), Qf = qe("CLUSTERED", !0), tp = qe("NONCLUSTERED", !0), Rp = qe("COMMENT", !0), Op = qe("CONSTRAINT", !0), fc = qe("REFERENCES", !0), _f = qe("SQL_CALC_FOUND_ROWS", !0), Sl = qe("SQL_CACHE", !0), vh = qe("SQL_NO_CACHE", !0), Pd = qe("SQL_SMALL_RESULT", !0), uf = qe("SQL_BIG_RESULT", !0), Ol = qe("SQL_BUFFER_RESULT", !0), bh = qe(",", !1), kp = qe(";", !1), jd = qe("||", !1), md = qe("&&", !1), vd = qe("/*", !1), zl = qe("*/", !1), Go = qe("--", !1), rp = { type: "any" }, Oc = /^[ \t\n\r]/, Kf = zn([" ", "	", `
+`, "\r"], !1, !1), km = qe(".", !1), Lf = /^[0-9]/, Od = zn([["0", "9"]], !1, !1), _b = /^[0-9a-fA-F]/, ab = zn([["0", "9"], ["a", "f"], ["A", "F"]], !1, !1), Tb = /^[eE]/, ub = zn(["e", "E"], !1, !1), wv = /^[+\-]/, Cv = zn(["+", "-"], !1, !1), Lv = qe("NULL", !0), lb = qe("NOT NULL", !0), Pb = qe("TRUE", !0), Ib = qe("TO", !0), cb = qe("TOP", !0), fb = qe("FALSE", !0), Fv = qe("DROP", !0), Nb = qe("DECLARE", !0), Rb = qe("USE", !0), db = qe("ALTER", !0), Ob = qe("SELECT", !0), pb = qe("UPDATE", !0), Uv = qe("CREATE", !0), q = qe("TEMPORARY", !0), as = qe("DELETE", !0), hm = qe("INSERT", !0), xf = qe("RECURSIVE", !0), nv = qe("REPLACE", !0), $r = qe("RENAME", !0), Gs = qe("IGNORE", !0), kd = qe("PARTITION", !0), Mm = qe("INTO", !0), sv = qe("FROM", !0), ws = qe("UNLOCK", !0), Bv = qe("AS", !0), hb = qe("TABLE", !0), jb = qe("VIEW", !0), mm = qe("DATABASE", !0), B = qe("SCHEMA", !0), is = qe("TABLES", !0), Dm = qe("ON", !0), _p = qe("OFF", !0), Pm = qe("LEFT", !0), Ir = qe("RIGHT", !0), Ds = qe("FULL", !0), dd = qe("INNER", !0), xv = qe("CROSS", !0), vm = qe("JOIN", !0), ls = qe("APPLY", !0), mb = qe("OUTER", !0), ov = qe("UNION", !0), bm = qe("VALUES", !0), iv = qe("USING", !0), jm = qe("WHERE", !0), Hp = qe("GO", !0), $m = qe("GROUP", !0), Fm = qe("BY", !0), Th = qe("ORDER", !0), Ih = qe("HAVING", !0), D = qe("LIMIT", !0), Zn = qe("OFFSET", !0), Vh = qe("FETCH", !0), Ef = qe("ASC", !0), Nh = qe("DESC", !0), wr = qe("ALL", !0), _s = qe("DISTINCT", !0), El = qe("BETWEEN", !0), lh = qe("IN", !0), Wh = qe("IS", !0), es = qe("LIKE", !0), qc = qe("EXISTS", !0), lc = qe("AND", !0), av = qe("OR", !0), Vp = qe("ARRAY_AGG", !0), ap = qe("STRING_AGG", !0), Xd = qe("COUNT", !0), Ev = qe("MAX", !0), ch = qe("MIN", !0), gm = qe("SUM", !0), vb = qe("AVG", !0), ym = qe("CALL", !0), wm = qe("CASE", !0), Yh = qe("WHEN", !0), Um = qe("THEN", !0), pd = qe("ELSE", !0), zv = qe("END", !0), Qh = qe("CAST", !0), Cm = qe("BIT", !0), up = qe("MONEY", !0), Bm = qe("SMALLMONEY", !0), fh = qe("CHAR", !0), N = qe("VARCHAR", !0), Hn = qe("BINARY", !0), Sf = qe("VARBINARY", !0), T = qe("NCHAR", !0), Vn = qe("NVARCHAR", !0), fr = qe("NUMERIC", !0), Ls = qe("DECIMAL", !0), Rc = qe("SIGNED", !0), mr = qe("UNSIGNED", !0), ms = qe("INT", !0), On = qe("ZEROFILL", !0), Wp = qe("INTEGER", !0), dh = qe("SMALLINT", !0), $n = qe("TINYINT", !0), A = qe("TINYTEXT", !0), Dn = qe("TEXT", !0), Af = qe("NTEXT", !0), Lc = qe("MEDIUMTEXT", !0), xc = qe("LONGTEXT", !0), rr = qe("BIGINT", !0), fs = qe("FLOAT", !0), tc = qe("REAL", !0), rc = qe("DOUBLE", !0), Yp = qe("DATE", !0), Rn = qe("SMALLDATETIME", !0), Rh = qe("DATETIME", !0), Zd = qe("DATETIME2", !0), ph = qe("DATETIMEOFFSET", !0), Tp = qe("TIME", !0), Qp = qe("TIMESTAMP", !0), hd = qe("TRUNCATE", !0), cc = qe("UNIQUEIDENTIFIER", !0), nf = qe("USER", !0), $u = qe("CURRENT_DATE", !0), Ro = qe("INTERVAL", !0), Kh = qe("YEAR", !0), lp = qe("MONTH", !0), hh = qe("DAY", !0), mh = qe("HOUR", !0), Ld = qe("MINUTE", !0), Oh = qe("SECOND", !0), Gc = qe("CURRENT_TIME", !0), Yf = qe("CURRENT_TIMESTAMP", !0), sf = qe("CURRENT_USER", !0), zo = qe("SESSION_USER", !0), Kp = qe("SYSTEM_USER", !0), Ip = qe("PIVOT", !0), Np = qe("UNPIVOT", !0), fu = qe("@@", !1), of = qe("$", !1), Md = qe("return", !0), Jd = qe(":=", !1), md = qe("DUAL", !0), Dd = qe("ADD", !0), ep = qe("COLUMN", !0), af = qe("INDEX", !0), cp = qe("FULLTEXT", !0), Yu = qe("SPATIAL", !0), Qf = qe("CLUSTERED", !0), tp = qe("NONCLUSTERED", !0), Rp = qe("COMMENT", !0), Op = qe("CONSTRAINT", !0), fc = qe("REFERENCES", !0), _f = qe("SQL_CALC_FOUND_ROWS", !0), Sl = qe("SQL_CACHE", !0), vh = qe("SQL_NO_CACHE", !0), Pd = qe("SQL_SMALL_RESULT", !0), uf = qe("SQL_BIG_RESULT", !0), Ol = qe("SQL_BUFFER_RESULT", !0), bh = qe(",", !1), kp = qe(";", !1), jd = qe("||", !1), vd = qe("&&", !1), bd = qe("/*", !1), zl = qe("*/", !1), Go = qe("--", !1), rp = { type: "any" }, Oc = /^[ \t\n\r]/, Kf = zn([" ", "	", `
 `, "\r"], !1, !1), kc = function(F, ee, Ce) {
         return F && !Ce || !F && Ce;
       }, Su = function(F, ee, Ce) {
@@ -116401,7 +116425,7 @@ function aEt() {
           var ee, Ce, Me, Mt;
           ee = L, (Ce = function() {
             var _r, tn, ns, vs;
-            return _r = L, r.substr(L, 8).toLowerCase() === "truncate" ? (tn = r.substr(L, 8), L += 8) : (tn = e, Kt === 0 && hn(pd)), tn !== e ? (ns = L, Kt++, vs = xo(), Kt--, vs === e ? ns = void 0 : (L = ns, ns = e), ns !== e ? (v = _r, _r = tn = "TRUNCATE") : (L = _r, _r = e)) : (L = _r, _r = e), _r;
+            return _r = L, r.substr(L, 8).toLowerCase() === "truncate" ? (tn = r.substr(L, 8), L += 8) : (tn = e, Kt === 0 && hn(hd)), tn !== e ? (ns = L, Kt++, vs = xo(), Kt--, vs === e ? ns = void 0 : (L = ns, ns = e), ns !== e ? (v = _r, _r = tn = "TRUNCATE") : (L = _r, _r = e)) : (L = _r, _r = e), _r;
           }()) !== e && zt() !== e ? ((Me = xs()) === e && (Me = null), Me !== e && zt() !== e && (Mt = m()) !== e ? (v = ee, It = Ce, Bt = Me, (or = Mt) && or.forEach((_r) => Wa.add(`${It}::${[_r.server, _r.db, _r.schema].filter(Boolean).join(".") || null}::${_r.table}`)), Ce = { tableList: Array.from(Wa), columnList: Uu(qa), ast: { type: It.toLowerCase(), keyword: Bt && Bt.toLowerCase() || "table", name: or } }, ee = Ce) : (L = ee, ee = e)) : (L = ee, ee = e);
           var It, Bt, or;
           return ee;
@@ -116482,7 +116506,7 @@ function aEt() {
             return _r = L, r.substr(L, 6).toLowerCase() === "result" ? (tn = r.substr(L, 6), L += 6) : (tn = e, Kt === 0 && hn(Nu)), tn !== e && zt() !== e && (ns = gn()) !== e && zt() !== e ? (r.substr(L, 7).toLowerCase() === "caching" ? (vs = r.substr(L, 7), L += 7) : (vs = e, Kt === 0 && hn(mu)), vs !== e ? (v = _r, _r = tn = { type: "origin", value: "result set caching" }) : (L = _r, _r = e)) : (L = _r, _r = e), _r === e && (_r = L, r.substr(L, 10).toLowerCase() === "statistics" ? (tn = r.substr(L, 10), L += 10) : (tn = e, Kt === 0 && hn(Ru)), tn !== e && zt() !== e ? (r.substr(L, 2).toLowerCase() === "io" ? (ns = r.substr(L, 2), L += 2) : (ns = e, Kt === 0 && hn(Ll)), ns === e && (r.substr(L, 3).toLowerCase() === "xml" ? (ns = r.substr(L, 3), L += 3) : (ns = e, Kt === 0 && hn(Rl)), ns === e && (r.substr(L, 7).toLowerCase() === "profile" ? (ns = r.substr(L, 7), L += 7) : (ns = e, Kt === 0 && hn(Ju)), ns === e && (r.substr(L, 4).toLowerCase() === "time" ? (ns = r.substr(L, 4), L += 4) : (ns = e, Kt === 0 && hn(ef))))), ns !== e ? (v = _r, tn = { type: "origin", value: "statistics " + ns.toLowerCase() }, _r = tn) : (L = _r, _r = e)) : (L = _r, _r = e)), _r;
           }()) === e && (Me = function() {
             var _r, tn, ns, vs;
-            return _r = L, r.substr(L, 9).toLowerCase() === "datefirst" ? (tn = r.substr(L, 9), L += 9) : (tn = e, Kt === 0 && hn(el)), tn === e && (r.substr(L, 10).toLowerCase() === "dateformat" ? (tn = r.substr(L, 10), L += 10) : (tn = e, Kt === 0 && hn(tl)), tn === e && (r.substr(L, 17).toLowerCase() === "deadlock_priority" ? (tn = r.substr(L, 17), L += 17) : (tn = e, Kt === 0 && hn(od)), tn === e && (r.substr(L, 12).toLowerCase() === "lock_timeout" ? (tn = r.substr(L, 12), L += 12) : (tn = e, Kt === 0 && hn(Kl)), tn === e && (r.substr(L, 23).toLowerCase() === "concat_null_yields_null" ? (tn = r.substr(L, 23), L += 23) : (tn = e, Kt === 0 && hn(Fl)), tn === e && (r.substr(L, 22).toLowerCase() === "cursor_close_on_commit" ? (tn = r.substr(L, 22), L += 22) : (tn = e, Kt === 0 && hn(vf)), tn === e && (r.substr(L, 12).toLowerCase() === "fips_flagger" ? (tn = r.substr(L, 12), L += 12) : (tn = e, Kt === 0 && hn(Gd)), tn === e && (r.substr(L, 15).toLowerCase() === "identity_insert" ? (tn = r.substr(L, 15), L += 15) : (tn = e, Kt === 0 && hn(tm)), tn === e && (r.substr(L, 8).toLowerCase() === "language" ? (tn = r.substr(L, 8), L += 8) : (tn = e, Kt === 0 && hn(Hm)), tn === e && (r.substr(L, 7).toLowerCase() === "offsets" ? (tn = r.substr(L, 7), L += 7) : (tn = e, Kt === 0 && hn(yp)), tn === e && (r.substr(L, 17).toLowerCase() === "quoted_identifier" ? (tn = r.substr(L, 17), L += 17) : (tn = e, Kt === 0 && hn(Hd)), tn === e && (r.substr(L, 10).toLowerCase() === "arithabort" ? (tn = r.substr(L, 10), L += 10) : (tn = e, Kt === 0 && hn(wp)), tn === e && (r.substr(L, 11).toLowerCase() === "arithignore" ? (tn = r.substr(L, 11), L += 11) : (tn = e, Kt === 0 && hn(jp)), tn === e && (r.substr(L, 7).toLowerCase() === "fmtonly" ? (tn = r.substr(L, 7), L += 7) : (tn = e, Kt === 0 && hn($h)), tn === e && (r.substr(L, 7).toLowerCase() === "nocount" ? (tn = r.substr(L, 7), L += 7) : (tn = e, Kt === 0 && hn(xl)), tn === e && (r.substr(L, 6).toLowerCase() === "noexec" ? (tn = r.substr(L, 6), L += 6) : (tn = e, Kt === 0 && hn(rm)), tn === e && (r.substr(L, 19).toLowerCase() === "numberic_roundabort" ? (tn = r.substr(L, 19), L += 19) : (tn = e, Kt === 0 && hn(th)), tn === e && (r.substr(L, 9).toLowerCase() === "parseonly" ? (tn = r.substr(L, 9), L += 9) : (tn = e, Kt === 0 && hn(nm)), tn === e && (r.substr(L, 25).toLowerCase() === "query_governor_cost_limit" ? (tn = r.substr(L, 25), L += 25) : (tn = e, Kt === 0 && hn(op)), tn === e && (r.substr(L, 8).toLowerCase() === "rowcount" ? (tn = r.substr(L, 8), L += 8) : (tn = e, Kt === 0 && hn($f)), tn === e && (r.substr(L, 8).toLowerCase() === "textsize" ? (tn = r.substr(L, 8), L += 8) : (tn = e, Kt === 0 && hn(Bc)), tn === e && (tn = L, r.substr(L, 13).toLowerCase() === "ansi_defaults" ? (ns = r.substr(L, 13), L += 13) : (ns = e, Kt === 0 && hn(id)), ns !== e ? (r.substr(L, 18).toLowerCase() === "ansi_null_dflt_off" ? (vs = r.substr(L, 18), L += 18) : (vs = e, Kt === 0 && hn(Vm)), vs !== e ? tn = ns = [ns, vs] : (L = tn, tn = e)) : (L = tn, tn = e), tn === e && (r.substr(L, 17).toLowerCase() === "ansi_null_dflt_on" ? (tn = r.substr(L, 17), L += 17) : (tn = e, Kt === 0 && hn(ad)), tn === e && (r.substr(L, 10).toLowerCase() === "ansi_nulls" ? (tn = r.substr(L, 10), L += 10) : (tn = e, Kt === 0 && hn(rh)), tn === e && (r.substr(L, 12).toLowerCase() === "ansi_padding" ? (tn = r.substr(L, 12), L += 12) : (tn = e, Kt === 0 && hn(Wm)), tn === e && (r.substr(L, 13).toLowerCase() === "ansi_warnings" ? (tn = r.substr(L, 13), L += 13) : (tn = e, Kt === 0 && hn(Cp)), tn === e && (r.substr(L, 9).toLowerCase() === "forceplan" ? (tn = r.substr(L, 9), L += 9) : (tn = e, Kt === 0 && hn(Am)), tn === e && (r.substr(L, 12).toLowerCase() === "showplan_all" ? (tn = r.substr(L, 12), L += 12) : (tn = e, Kt === 0 && hn(nh)), tn === e && (r.substr(L, 13).toLowerCase() === "showplan_text" ? (tn = r.substr(L, 13), L += 13) : (tn = e, Kt === 0 && hn(ip)), tn === e && (r.substr(L, 12).toLowerCase() === "showplan_xml" ? (tn = r.substr(L, 12), L += 12) : (tn = e, Kt === 0 && hn(Vd)), tn === e && (r.substr(L, 21).toLowerCase() === "implicit_transactions" ? (tn = r.substr(L, 21), L += 21) : (tn = e, Kt === 0 && hn(Do)), tn === e && (r.substr(L, 24).toLowerCase() === "remote_proc_transactions" ? (tn = r.substr(L, 24), L += 24) : (tn = e, Kt === 0 && hn(bf)), tn === e && (r.substr(L, 10).toLowerCase() === "xact_abort" ? (tn = r.substr(L, 10), L += 10) : (tn = e, Kt === 0 && hn(Ff)))))))))))))))))))))))))))))))))), tn !== e && (v = _r, tn = Wd(tn)), _r = tn;
+            return _r = L, r.substr(L, 9).toLowerCase() === "datefirst" ? (tn = r.substr(L, 9), L += 9) : (tn = e, Kt === 0 && hn(el)), tn === e && (r.substr(L, 10).toLowerCase() === "dateformat" ? (tn = r.substr(L, 10), L += 10) : (tn = e, Kt === 0 && hn(tl)), tn === e && (r.substr(L, 17).toLowerCase() === "deadlock_priority" ? (tn = r.substr(L, 17), L += 17) : (tn = e, Kt === 0 && hn(id)), tn === e && (r.substr(L, 12).toLowerCase() === "lock_timeout" ? (tn = r.substr(L, 12), L += 12) : (tn = e, Kt === 0 && hn(Kl)), tn === e && (r.substr(L, 23).toLowerCase() === "concat_null_yields_null" ? (tn = r.substr(L, 23), L += 23) : (tn = e, Kt === 0 && hn(Fl)), tn === e && (r.substr(L, 22).toLowerCase() === "cursor_close_on_commit" ? (tn = r.substr(L, 22), L += 22) : (tn = e, Kt === 0 && hn(vf)), tn === e && (r.substr(L, 12).toLowerCase() === "fips_flagger" ? (tn = r.substr(L, 12), L += 12) : (tn = e, Kt === 0 && hn(Gd)), tn === e && (r.substr(L, 15).toLowerCase() === "identity_insert" ? (tn = r.substr(L, 15), L += 15) : (tn = e, Kt === 0 && hn(tm)), tn === e && (r.substr(L, 8).toLowerCase() === "language" ? (tn = r.substr(L, 8), L += 8) : (tn = e, Kt === 0 && hn(Hm)), tn === e && (r.substr(L, 7).toLowerCase() === "offsets" ? (tn = r.substr(L, 7), L += 7) : (tn = e, Kt === 0 && hn(yp)), tn === e && (r.substr(L, 17).toLowerCase() === "quoted_identifier" ? (tn = r.substr(L, 17), L += 17) : (tn = e, Kt === 0 && hn(Hd)), tn === e && (r.substr(L, 10).toLowerCase() === "arithabort" ? (tn = r.substr(L, 10), L += 10) : (tn = e, Kt === 0 && hn(wp)), tn === e && (r.substr(L, 11).toLowerCase() === "arithignore" ? (tn = r.substr(L, 11), L += 11) : (tn = e, Kt === 0 && hn(jp)), tn === e && (r.substr(L, 7).toLowerCase() === "fmtonly" ? (tn = r.substr(L, 7), L += 7) : (tn = e, Kt === 0 && hn($h)), tn === e && (r.substr(L, 7).toLowerCase() === "nocount" ? (tn = r.substr(L, 7), L += 7) : (tn = e, Kt === 0 && hn(xl)), tn === e && (r.substr(L, 6).toLowerCase() === "noexec" ? (tn = r.substr(L, 6), L += 6) : (tn = e, Kt === 0 && hn(rm)), tn === e && (r.substr(L, 19).toLowerCase() === "numberic_roundabort" ? (tn = r.substr(L, 19), L += 19) : (tn = e, Kt === 0 && hn(th)), tn === e && (r.substr(L, 9).toLowerCase() === "parseonly" ? (tn = r.substr(L, 9), L += 9) : (tn = e, Kt === 0 && hn(nm)), tn === e && (r.substr(L, 25).toLowerCase() === "query_governor_cost_limit" ? (tn = r.substr(L, 25), L += 25) : (tn = e, Kt === 0 && hn(op)), tn === e && (r.substr(L, 8).toLowerCase() === "rowcount" ? (tn = r.substr(L, 8), L += 8) : (tn = e, Kt === 0 && hn($f)), tn === e && (r.substr(L, 8).toLowerCase() === "textsize" ? (tn = r.substr(L, 8), L += 8) : (tn = e, Kt === 0 && hn(Bc)), tn === e && (tn = L, r.substr(L, 13).toLowerCase() === "ansi_defaults" ? (ns = r.substr(L, 13), L += 13) : (ns = e, Kt === 0 && hn(ad)), ns !== e ? (r.substr(L, 18).toLowerCase() === "ansi_null_dflt_off" ? (vs = r.substr(L, 18), L += 18) : (vs = e, Kt === 0 && hn(Vm)), vs !== e ? tn = ns = [ns, vs] : (L = tn, tn = e)) : (L = tn, tn = e), tn === e && (r.substr(L, 17).toLowerCase() === "ansi_null_dflt_on" ? (tn = r.substr(L, 17), L += 17) : (tn = e, Kt === 0 && hn(ud)), tn === e && (r.substr(L, 10).toLowerCase() === "ansi_nulls" ? (tn = r.substr(L, 10), L += 10) : (tn = e, Kt === 0 && hn(rh)), tn === e && (r.substr(L, 12).toLowerCase() === "ansi_padding" ? (tn = r.substr(L, 12), L += 12) : (tn = e, Kt === 0 && hn(Wm)), tn === e && (r.substr(L, 13).toLowerCase() === "ansi_warnings" ? (tn = r.substr(L, 13), L += 13) : (tn = e, Kt === 0 && hn(Cp)), tn === e && (r.substr(L, 9).toLowerCase() === "forceplan" ? (tn = r.substr(L, 9), L += 9) : (tn = e, Kt === 0 && hn(Am)), tn === e && (r.substr(L, 12).toLowerCase() === "showplan_all" ? (tn = r.substr(L, 12), L += 12) : (tn = e, Kt === 0 && hn(nh)), tn === e && (r.substr(L, 13).toLowerCase() === "showplan_text" ? (tn = r.substr(L, 13), L += 13) : (tn = e, Kt === 0 && hn(ip)), tn === e && (r.substr(L, 12).toLowerCase() === "showplan_xml" ? (tn = r.substr(L, 12), L += 12) : (tn = e, Kt === 0 && hn(Vd)), tn === e && (r.substr(L, 21).toLowerCase() === "implicit_transactions" ? (tn = r.substr(L, 21), L += 21) : (tn = e, Kt === 0 && hn(Do)), tn === e && (r.substr(L, 24).toLowerCase() === "remote_proc_transactions" ? (tn = r.substr(L, 24), L += 24) : (tn = e, Kt === 0 && hn(bf)), tn === e && (r.substr(L, 10).toLowerCase() === "xact_abort" ? (tn = r.substr(L, 10), L += 10) : (tn = e, Kt === 0 && hn(Ff)))))))))))))))))))))))))))))))))), tn !== e && (v = _r, tn = Wd(tn)), _r = tn;
           }()), Me !== e && zt() !== e && (Mt = uv()) !== e ? (v = ee, Ce = function(_r, tn) {
             return { tableList: Array.from(Wa), columnList: Uu(qa), ast: { type: "set", expr: [{ type: "assign", left: _r, right: tn }] } };
           }(Me, Mt), ee = Ce) : (L = ee, ee = e)) : (L = ee, ee = e)), ee;
@@ -116961,7 +116985,7 @@ function aEt() {
             var eo, ni, ui, bi;
             eo = L, r.substr(L, 3).toLowerCase() === "for" ? (ni = r.substr(L, 3), L += 3) : (ni = e, Kt === 0 && hn(Ya)), ni !== e && zt() !== e ? (r.substr(L, 4).toLowerCase() === "json" ? (ui = r.substr(L, 4), L += 4) : (ui = e, Kt === 0 && hn(Cd)), ui !== e && zt() !== e && (bi = function() {
               var Ho, $s;
-              return Ho = L, r.substr(L, 4).toLowerCase() === "path" ? ($s = r.substr(L, 4), L += 4) : ($s = e, Kt === 0 && hn(um)), $s !== e && (v = Ho, $s = ld($s)), Ho = $s;
+              return Ho = L, r.substr(L, 4).toLowerCase() === "path" ? ($s = r.substr(L, 4), L += 4) : ($s = e, Kt === 0 && hn(um)), $s !== e && (v = Ho, $s = cd($s)), Ho = $s;
             }()) !== e ? (v = eo, ea = bi, ni = { type: "for json", ...ea }, eo = ni) : (L = eo, eo = e)) : (L = eo, eo = e);
             var ea;
             return eo;
@@ -116969,7 +116993,7 @@ function aEt() {
             var eo, ni, ui, bi;
             eo = L, r.substr(L, 3).toLowerCase() === "for" ? (ni = r.substr(L, 3), L += 3) : (ni = e, Kt === 0 && hn(Ya)), ni !== e && zt() !== e ? (r.substr(L, 3).toLowerCase() === "xml" ? (ui = r.substr(L, 3), L += 3) : (ui = e, Kt === 0 && hn(Xm)), ui !== e && zt() !== e && (bi = function() {
               var Ho, $s, Vu, dl, ra, Bd, Kc, Zp;
-              Ho = L, r.substr(L, 3).toLowerCase() === "raw" ? ($s = r.substr(L, 3), L += 3) : ($s = e, Kt === 0 && hn(ll)), $s === e && (r.substr(L, 4).toLowerCase() === "auto" ? ($s = r.substr(L, 4), L += 4) : ($s = e, Kt === 0 && hn(zc)), $s === e && (r.substr(L, 8).toLowerCase() === "explicit" ? ($s = r.substr(L, 8), L += 8) : ($s = e, Kt === 0 && hn(Id)))), $s !== e && (v = Ho, $s = ld($s)), (Ho = $s) === e && (Ho = L, r.substr(L, 4).toLowerCase() === "path" ? ($s = r.substr(L, 4), L += 4) : ($s = e, Kt === 0 && hn(um)), $s !== e && zt() !== e ? (Vu = L, (dl = Fa()) !== e && (ra = zt()) !== e ? ((Bd = Ai()) === e && (Bd = Je()), Bd === e && (Bd = null), Bd !== e && (Kc = zt()) !== e && (Zp = Ka()) !== e ? Vu = dl = [dl, ra, Bd, Kc, Zp] : (L = Vu, Vu = e)) : (L = Vu, Vu = e), Vu === e && (Vu = null), Vu !== e ? (v = Ho, $s = { keyword: $s, expr: (pl = Vu) && pl[2] }, Ho = $s) : (L = Ho, Ho = e)) : (L = Ho, Ho = e));
+              Ho = L, r.substr(L, 3).toLowerCase() === "raw" ? ($s = r.substr(L, 3), L += 3) : ($s = e, Kt === 0 && hn(ll)), $s === e && (r.substr(L, 4).toLowerCase() === "auto" ? ($s = r.substr(L, 4), L += 4) : ($s = e, Kt === 0 && hn(zc)), $s === e && (r.substr(L, 8).toLowerCase() === "explicit" ? ($s = r.substr(L, 8), L += 8) : ($s = e, Kt === 0 && hn(Id)))), $s !== e && (v = Ho, $s = cd($s)), (Ho = $s) === e && (Ho = L, r.substr(L, 4).toLowerCase() === "path" ? ($s = r.substr(L, 4), L += 4) : ($s = e, Kt === 0 && hn(um)), $s !== e && zt() !== e ? (Vu = L, (dl = Fa()) !== e && (ra = zt()) !== e ? ((Bd = Ai()) === e && (Bd = Je()), Bd === e && (Bd = null), Bd !== e && (Kc = zt()) !== e && (Zp = Ka()) !== e ? Vu = dl = [dl, ra, Bd, Kc, Zp] : (L = Vu, Vu = e)) : (L = Vu, Vu = e), Vu === e && (Vu = null), Vu !== e ? (v = Ho, $s = { keyword: $s, expr: (pl = Vu) && pl[2] }, Ho = $s) : (L = Ho, Ho = e)) : (L = Ho, Ho = e));
               var pl;
               return Ho;
             }()) !== e ? (v = eo, ea = bi, ni = { type: "for xml", ...ea }, eo = ni) : (L = eo, eo = e)) : (L = eo, eo = e);
@@ -117141,7 +117165,7 @@ function aEt() {
         return F = L, (ee = function() {
           var Bt, or, _r, tn;
           return Bt = L, r.substr(L, 14).toLowerCase() === "key_block_size" ? (or = r.substr(L, 14), L += 14) : (or = e, Kt === 0 && hn(di)), or !== e ? (_r = L, Kt++, tn = xo(), Kt--, tn === e ? _r = void 0 : (L = _r, _r = e), _r !== e ? (v = Bt, Bt = or = "KEY_BLOCK_SIZE") : (L = Bt, Bt = e)) : (L = Bt, Bt = e), Bt;
-        }()) !== e && zt() !== e ? ((Ce = yl()) === e && (Ce = null), Ce !== e && zt() !== e && (Me = Te()) !== e ? (v = F, F = ee = oh(ee, Ce, Me)) : (L = F, F = e)) : (L = F, F = e), F === e && (F = L, r.substr(L, 10).toLowerCase() === "fillfactor" ? (ee = r.substr(L, 10), L += 10) : (ee = e, Kt === 0 && hn(Bp)), ee === e && (r.substr(L, 12).toLowerCase() === "max_duration" ? (ee = r.substr(L, 12), L += 12) : (ee = e, Kt === 0 && hn(am)), ee === e && (r.substr(L, 6).toLowerCase() === "maxdop" ? (ee = r.substr(L, 6), L += 6) : (ee = e, Kt === 0 && hn(Km)))), ee !== e && zt() !== e && (Ce = yl()) !== e && zt() !== e && (Me = Te()) !== e ? (v = F, F = ee = oh(ee, Ce, Me)) : (L = F, F = e), F === e && (F = Xl()) === e && (F = L, r.substr(L, 4).toLowerCase() === "with" ? (ee = r.substr(L, 4), L += 4) : (ee = e, Kt === 0 && hn(_m)), ee !== e && zt() !== e ? (r.substr(L, 6).toLowerCase() === "parser" ? (Ce = r.substr(L, 6), L += 6) : (Ce = e, Kt === 0 && hn(tf)), Ce !== e && zt() !== e && (Me = $i()) !== e ? (v = F, F = ee = { type: "with parser", expr: Me }) : (L = F, F = e)) : (L = F, F = e), F === e && (F = L, r.substr(L, 7).toLowerCase() === "visible" ? (ee = r.substr(L, 7), L += 7) : (ee = e, Kt === 0 && hn(qf)), ee === e && (r.substr(L, 9).toLowerCase() === "invisible" ? (ee = r.substr(L, 9), L += 9) : (ee = e, Kt === 0 && hn(ud))), ee !== e && (v = F, ee = { type: (It = ee).toLowerCase(), expr: It.toLowerCase() }), (F = ee) === e && (F = L, r.substr(L, 9).toLowerCase() === "pad_index" ? (ee = r.substr(L, 9), L += 9) : (ee = e, Kt === 0 && hn(Bh)), ee === e && (r.substr(L, 14).toLowerCase() === "sort_in_tempdb" ? (ee = r.substr(L, 14), L += 14) : (ee = e, Kt === 0 && hn(ih)), ee === e && (r.substr(L, 14).toLowerCase() === "ignore_dup_key" ? (ee = r.substr(L, 14), L += 14) : (ee = e, Kt === 0 && hn(Eh)), ee === e && (r.substr(L, 22).toLowerCase() === "statistics_norecompute" ? (ee = r.substr(L, 22), L += 22) : (ee = e, Kt === 0 && hn(Ep)), ee === e && (r.substr(L, 22).toLowerCase() === "statistics_incremental" ? (ee = r.substr(L, 22), L += 22) : (ee = e, Kt === 0 && hn(Sh)), ee === e && (r.substr(L, 13).toLowerCase() === "drop_existing" ? (ee = r.substr(L, 13), L += 13) : (ee = e, Kt === 0 && hn(zh)), ee === e && (r.substr(L, 6).toLowerCase() === "online" ? (ee = r.substr(L, 6), L += 6) : (ee = e, Kt === 0 && hn(Tm)), ee === e && (r.substr(L, 9).toLowerCase() === "resumable" ? (ee = r.substr(L, 9), L += 9) : (ee = e, Kt === 0 && hn(Sp)), ee === e && (r.substr(L, 15).toLowerCase() === "allow_row_locks" ? (ee = r.substr(L, 15), L += 15) : (ee = e, Kt === 0 && hn(yf)), ee === e && (r.substr(L, 16).toLowerCase() === "allow_page_locks" ? (ee = r.substr(L, 16), L += 16) : (ee = e, Kt === 0 && hn(zp)), ee === e && (r.substr(L, 27).toLowerCase() === "optimize_for_sequential_key" ? (ee = r.substr(L, 27), L += 27) : (ee = e, Kt === 0 && hn(_t)))))))))))), ee !== e && zt() !== e && (Ce = yl()) !== e && zt() !== e ? ((Me = Zs()) === e && (Me = function() {
+        }()) !== e && zt() !== e ? ((Ce = yl()) === e && (Ce = null), Ce !== e && zt() !== e && (Me = Te()) !== e ? (v = F, F = ee = oh(ee, Ce, Me)) : (L = F, F = e)) : (L = F, F = e), F === e && (F = L, r.substr(L, 10).toLowerCase() === "fillfactor" ? (ee = r.substr(L, 10), L += 10) : (ee = e, Kt === 0 && hn(Bp)), ee === e && (r.substr(L, 12).toLowerCase() === "max_duration" ? (ee = r.substr(L, 12), L += 12) : (ee = e, Kt === 0 && hn(am)), ee === e && (r.substr(L, 6).toLowerCase() === "maxdop" ? (ee = r.substr(L, 6), L += 6) : (ee = e, Kt === 0 && hn(Km)))), ee !== e && zt() !== e && (Ce = yl()) !== e && zt() !== e && (Me = Te()) !== e ? (v = F, F = ee = oh(ee, Ce, Me)) : (L = F, F = e), F === e && (F = Xl()) === e && (F = L, r.substr(L, 4).toLowerCase() === "with" ? (ee = r.substr(L, 4), L += 4) : (ee = e, Kt === 0 && hn(_m)), ee !== e && zt() !== e ? (r.substr(L, 6).toLowerCase() === "parser" ? (Ce = r.substr(L, 6), L += 6) : (Ce = e, Kt === 0 && hn(tf)), Ce !== e && zt() !== e && (Me = $i()) !== e ? (v = F, F = ee = { type: "with parser", expr: Me }) : (L = F, F = e)) : (L = F, F = e), F === e && (F = L, r.substr(L, 7).toLowerCase() === "visible" ? (ee = r.substr(L, 7), L += 7) : (ee = e, Kt === 0 && hn(qf)), ee === e && (r.substr(L, 9).toLowerCase() === "invisible" ? (ee = r.substr(L, 9), L += 9) : (ee = e, Kt === 0 && hn(ld))), ee !== e && (v = F, ee = { type: (It = ee).toLowerCase(), expr: It.toLowerCase() }), (F = ee) === e && (F = L, r.substr(L, 9).toLowerCase() === "pad_index" ? (ee = r.substr(L, 9), L += 9) : (ee = e, Kt === 0 && hn(Bh)), ee === e && (r.substr(L, 14).toLowerCase() === "sort_in_tempdb" ? (ee = r.substr(L, 14), L += 14) : (ee = e, Kt === 0 && hn(ih)), ee === e && (r.substr(L, 14).toLowerCase() === "ignore_dup_key" ? (ee = r.substr(L, 14), L += 14) : (ee = e, Kt === 0 && hn(Eh)), ee === e && (r.substr(L, 22).toLowerCase() === "statistics_norecompute" ? (ee = r.substr(L, 22), L += 22) : (ee = e, Kt === 0 && hn(Ep)), ee === e && (r.substr(L, 22).toLowerCase() === "statistics_incremental" ? (ee = r.substr(L, 22), L += 22) : (ee = e, Kt === 0 && hn(Sh)), ee === e && (r.substr(L, 13).toLowerCase() === "drop_existing" ? (ee = r.substr(L, 13), L += 13) : (ee = e, Kt === 0 && hn(zh)), ee === e && (r.substr(L, 6).toLowerCase() === "online" ? (ee = r.substr(L, 6), L += 6) : (ee = e, Kt === 0 && hn(Tm)), ee === e && (r.substr(L, 9).toLowerCase() === "resumable" ? (ee = r.substr(L, 9), L += 9) : (ee = e, Kt === 0 && hn(Sp)), ee === e && (r.substr(L, 15).toLowerCase() === "allow_row_locks" ? (ee = r.substr(L, 15), L += 15) : (ee = e, Kt === 0 && hn(yf)), ee === e && (r.substr(L, 16).toLowerCase() === "allow_page_locks" ? (ee = r.substr(L, 16), L += 16) : (ee = e, Kt === 0 && hn(zp)), ee === e && (r.substr(L, 27).toLowerCase() === "optimize_for_sequential_key" ? (ee = r.substr(L, 27), L += 27) : (ee = e, Kt === 0 && hn(_t)))))))))))), ee !== e && zt() !== e && (Ce = yl()) !== e && zt() !== e ? ((Me = Zs()) === e && (Me = function() {
           var Bt, or, _r, tn;
           return Bt = L, r.substr(L, 3).toLowerCase() === "off" ? (or = r.substr(L, 3), L += 3) : (or = e, Kt === 0 && hn(_p)), or !== e ? (_r = L, Kt++, tn = xo(), Kt--, tn === e ? _r = void 0 : (L = _r, _r = e), _r !== e ? Bt = or = [or, _r] : (L = Bt, Bt = e)) : (L = Bt, Bt = e), Bt;
         }()), Me !== e ? (v = F, F = ee = function(Bt, or, _r) {
@@ -117194,7 +117218,7 @@ function aEt() {
         var F, ee, Ce, Me, Mt;
         return F = L, (ee = function() {
           var It;
-          return r.substr(L, 4).toLowerCase() === "dual" ? (It = r.substr(L, 4), L += 4) : (It = e, Kt === 0 && hn(hd)), It;
+          return r.substr(L, 4).toLowerCase() === "dual" ? (It = r.substr(L, 4), L += 4) : (It = e, Kt === 0 && hn(md)), It;
         }()) !== e && (v = F, ee = { type: "dual" }), (F = ee) === e && (F = L, (ee = Ze()) !== e && zt() !== e ? ((Ce = Gu()) === e && (Ce = null), Ce !== e ? (v = F, F = ee = { type: "expr", expr: ee, as: Ce }) : (L = F, F = e)) : (L = F, F = e), F === e && (F = L, (ee = d()) !== e && zt() !== e ? ((Ce = sc()) === e && (Ce = null), Ce !== e && zt() !== e ? ((Me = Gu()) === e && (Me = null), Me !== e && zt() !== e ? ((Mt = Ul()) === e && (Mt = null), Mt !== e ? (v = F, F = ee = function(It, Bt, or, _r) {
           return It.as = or, It.table_hint = _r, It.temporal_table = Bt, It;
         }(ee, Ce, Me, Mt)) : (L = F, F = e)) : (L = F, F = e)) : (L = F, F = e)) : (L = F, F = e), F === e && (F = L, (ee = vn()) !== e && zt() !== e ? ((Ce = ff()) === e && (Ce = null), Ce !== e ? (v = F, F = ee = /* @__PURE__ */ function(It, Bt) {
@@ -117219,7 +117243,7 @@ function aEt() {
           return Mt = L, r.substr(L, 5).toLowerCase() === "cross" ? (It = r.substr(L, 5), L += 5) : (It = e, Kt === 0 && hn(xv)), It !== e ? (Bt = L, Kt++, or = xo(), Kt--, or === e ? Bt = void 0 : (L = Bt, Bt = e), Bt !== e ? Mt = It = [It, Bt] : (L = Mt, Mt = e)) : (L = Mt, Mt = e), Mt;
         }()) !== e && zt() !== e ? ((Ce = mo()) === e && (Ce = vo()), Ce !== e ? (v = F, F = ee = "CROSS " + Ce[0].toUpperCase()) : (L = F, F = e)) : (L = F, F = e), F === e && (F = L, (ee = $o()) !== e && zt() !== e && (Ce = vo()) !== e ? (v = F, F = ee = "OUTER APPLY") : (L = F, F = e), F === e && (F = L, (ee = function() {
           var Mt, It, Bt, or;
-          return Mt = L, r.substr(L, 5).toLowerCase() === "inner" ? (It = r.substr(L, 5), L += 5) : (It = e, Kt === 0 && hn(fd)), It !== e ? (Bt = L, Kt++, or = xo(), Kt--, or === e ? Bt = void 0 : (L = Bt, Bt = e), Bt !== e ? Mt = It = [It, Bt] : (L = Mt, Mt = e)) : (L = Mt, Mt = e), Mt;
+          return Mt = L, r.substr(L, 5).toLowerCase() === "inner" ? (It = r.substr(L, 5), L += 5) : (It = e, Kt === 0 && hn(dd)), It !== e ? (Bt = L, Kt++, or = xo(), Kt--, or === e ? Bt = void 0 : (L = Bt, Bt = e), Bt !== e ? Mt = It = [It, Bt] : (L = Mt, Mt = e)) : (L = Mt, Mt = e), Mt;
         }()) === e && (ee = null), ee !== e && zt() !== e && (Ce = mo()) !== e ? (v = F, F = ee = /* @__PURE__ */ function(Mt) {
           return Mt ? "INNER JOIN" : "JOIN";
         }(ee)) : (L = F, F = e)))), F;
@@ -117699,7 +117723,7 @@ function aEt() {
               var or, _r;
               return or = L, r.charCodeAt(L) === 42 ? (_r = "*", L++) : (_r = e, Kt === 0 && hn(Gp)), _r !== e && (v = or, _r = { type: "star", value: "*" }), or = _r;
             }()) !== e && (v = It, Bt = { expr: Bt }), (It = Bt) === e && (It = je()), It;
-          }()) !== e && zt() !== e && Ka() !== e && zt() !== e ? ((Mt = bd()) === e && (Mt = null), Mt !== e ? (v = ee, Ce = /* @__PURE__ */ function(It, Bt, or) {
+          }()) !== e && zt() !== e && Ka() !== e && zt() !== e ? ((Mt = gd()) === e && (Mt = null), Mt !== e ? (v = ee, Ce = /* @__PURE__ */ function(It, Bt, or) {
             return { type: "aggr_func", name: It, args: Bt, over: or };
           }(Ce, Me, Mt), ee = Ce) : (L = ee, ee = e)) : (L = ee, ee = e), ee;
         }()) === e && (F = function() {
@@ -117719,7 +117743,7 @@ function aEt() {
               var Bt, or, _r, tn;
               return Bt = L, r.substr(L, 3).toLowerCase() === "avg" ? (or = r.substr(L, 3), L += 3) : (or = e, Kt === 0 && hn(vb)), or !== e ? (_r = L, Kt++, tn = xo(), Kt--, tn === e ? _r = void 0 : (L = _r, _r = e), _r !== e ? (v = Bt, Bt = or = "AVG") : (L = Bt, Bt = e)) : (L = Bt, Bt = e), Bt;
             }()), It;
-          }()) !== e && zt() !== e && Fa() !== e && zt() !== e && (Me = Qe()) !== e && zt() !== e && Ka() !== e && zt() !== e ? ((Mt = bd()) === e && (Mt = null), Mt !== e ? (v = ee, Ce = function(It, Bt, or) {
+          }()) !== e && zt() !== e && Fa() !== e && zt() !== e && (Me = Qe()) !== e && zt() !== e && Ka() !== e && zt() !== e ? ((Mt = gd()) === e && (Mt = null), Mt !== e ? (v = ee, Ce = function(It, Bt, or) {
             return { type: "aggr_func", name: It, args: { expr: Bt }, over: or, ...sl() };
           }(Ce, Me, Mt), ee = Ce) : (L = ee, ee = e)) : (L = ee, ee = e), ee;
         }()) === e && (F = function() {
@@ -117741,7 +117765,7 @@ function aEt() {
           return { type: "on update", keyword: Me };
         }(ee)) : (L = F, F = e)), F;
       }
-      function bd() {
+      function gd() {
         var F, ee, Ce;
         return F = L, r.substr(L, 4).toLowerCase() === "over" ? (ee = r.substr(L, 4), L += 4) : (ee = e, Kt === 0 && hn(Kd)), ee !== e && zt() !== e && (Ce = Tl()) !== e ? (v = F, F = ee = { type: "window", as_window_specification: Ce }) : (L = F, F = e), F === e && (F = oc()), F;
       }
@@ -117761,11 +117785,11 @@ function aEt() {
       }
       function du() {
         var F, ee, Ce, Me;
-        return F = L, (ee = J()) !== e && zt() !== e ? (r.substr(L, 9).toLowerCase() === "following" ? (Ce = r.substr(L, 9), L += 9) : (Ce = e, Kt === 0 && hn(cd)), Ce !== e ? (v = F, (Me = ee).value += " FOLLOWING", F = ee = Me) : (L = F, F = e)) : (L = F, F = e), F === e && (F = eu()), F;
+        return F = L, (ee = J()) !== e && zt() !== e ? (r.substr(L, 9).toLowerCase() === "following" ? (Ce = r.substr(L, 9), L += 9) : (Ce = e, Kt === 0 && hn(fd)), Ce !== e ? (v = F, (Me = ee).value += " FOLLOWING", F = ee = Me) : (L = F, F = e)) : (L = F, F = e), F === e && (F = eu()), F;
       }
       function iu() {
         var F, ee, Ce, Me, Mt;
-        return F = L, (ee = J()) !== e && zt() !== e ? (r.substr(L, 9).toLowerCase() === "preceding" ? (Ce = r.substr(L, 9), L += 9) : (Ce = e, Kt === 0 && hn(Ah)), Ce === e && (r.substr(L, 9).toLowerCase() === "following" ? (Ce = r.substr(L, 9), L += 9) : (Ce = e, Kt === 0 && hn(cd))), Ce !== e ? (v = F, Mt = Ce, (Me = ee).value += " " + Mt.toUpperCase(), F = ee = Me) : (L = F, F = e)) : (L = F, F = e), F === e && (F = eu()), F;
+        return F = L, (ee = J()) !== e && zt() !== e ? (r.substr(L, 9).toLowerCase() === "preceding" ? (Ce = r.substr(L, 9), L += 9) : (Ce = e, Kt === 0 && hn(Ah)), Ce === e && (r.substr(L, 9).toLowerCase() === "following" ? (Ce = r.substr(L, 9), L += 9) : (Ce = e, Kt === 0 && hn(fd))), Ce !== e ? (v = F, Mt = Ce, (Me = ee).value += " " + Mt.toUpperCase(), F = ee = Me) : (L = F, F = e)) : (L = F, F = e), F === e && (F = eu()), F;
       }
       function eu() {
         var F, ee, Ce;
@@ -117819,12 +117843,12 @@ function aEt() {
             var or, _r, tn, ns;
             return or = L, r.substr(L, 11).toLowerCase() === "system_user" ? (_r = r.substr(L, 11), L += 11) : (_r = e, Kt === 0 && hn(Kp)), _r !== e ? (tn = L, Kt++, ns = xo(), Kt--, ns === e ? tn = void 0 : (L = tn, tn = e), tn !== e ? (v = or, or = _r = "SYSTEM_USER") : (L = or, or = e)) : (L = or, or = e), or;
           }()), Bt;
-        }()) !== e && zt() !== e && (Ce = Fa()) !== e && zt() !== e ? ((Me = $t()) === e && (Me = null), Me !== e && zt() !== e && Ka() !== e && zt() !== e ? ((Mt = bd()) === e && (Mt = null), Mt !== e ? (v = F, F = ee = function(Bt, or, _r) {
+        }()) !== e && zt() !== e && (Ce = Fa()) !== e && zt() !== e ? ((Me = $t()) === e && (Me = null), Me !== e && zt() !== e && Ka() !== e && zt() !== e ? ((Mt = gd()) === e && (Mt = null), Mt !== e ? (v = F, F = ee = function(Bt, or, _r) {
           return { type: "function", name: { name: [{ type: "default", value: Bt }] }, args: or || { type: "expr_list", value: [] }, over: _r, ...sl() };
         }(ee, Me, Mt)) : (L = F, F = e)) : (L = F, F = e)) : (L = F, F = e), F === e && (F = L, (ee = St()) !== e && zt() !== e ? ((Ce = oc()) === e && (Ce = null), Ce !== e ? (v = F, F = ee = { type: "function", name: { name: [{ type: "origin", value: ee }] }, over: Ce, ...sl() }) : (L = F, F = e)) : (L = F, F = e), F === e && (F = L, (ee = ac()) !== e && zt() !== e && (Ce = Fa()) !== e && zt() !== e ? ((Me = tr()) === e && (Me = null), Me !== e && zt() !== e && Ka() !== e && zt() !== e ? ((Mt = function() {
           var Bt, or, _r;
           return Bt = L, r.substr(L, 6).toLowerCase() === "within" ? (or = r.substr(L, 6), L += 6) : (or = e, Kt === 0 && hn(tb)), or !== e && zt() !== e && Dt() !== e && zt() !== e && Fa() !== e && zt() !== e && (_r = Y()) !== e && zt() !== e && Ka() !== e ? (v = Bt, Bt = or = { type: "within", keyword: "group", orderby: _r }) : (L = Bt, Bt = e), Bt;
-        }()) === e && (Mt = null), Mt !== e && zt() !== e ? ((It = bd()) === e && (It = null), It !== e ? (v = F, F = ee = function(Bt, or, _r, tn) {
+        }()) === e && (Mt = null), Mt !== e && zt() !== e ? ((It = gd()) === e && (It = null), It !== e ? (v = F, F = ee = function(Bt, or, _r, tn) {
           return or && or.type !== "expr_list" && (or = { type: "expr_list", value: [or] }), { type: "function", name: Bt, args: or || { type: "expr_list", value: [] }, within_group: _r, over: tn, ...sl() };
         }(ee, Me, Mt, It)) : (L = F, F = e)) : (L = F, F = e)) : (L = F, F = e)) : (L = F, F = e))), F;
       }
@@ -118155,7 +118179,7 @@ function aEt() {
       }
       function Er() {
         var F, ee, Ce, Me;
-        return F = L, r.substr(L, 4).toLowerCase() === "else" ? (ee = r.substr(L, 4), L += 4) : (ee = e, Kt === 0 && hn(dd)), ee !== e ? (Ce = L, Kt++, Me = xo(), Kt--, Me === e ? Ce = void 0 : (L = Ce, Ce = e), Ce !== e ? F = ee = [ee, Ce] : (L = F, F = e)) : (L = F, F = e), F;
+        return F = L, r.substr(L, 4).toLowerCase() === "else" ? (ee = r.substr(L, 4), L += 4) : (ee = e, Kt === 0 && hn(pd)), ee !== e ? (Ce = L, Kt++, Me = xo(), Kt--, Me === e ? Ce = void 0 : (L = Ce, Ce = e), Ce !== e ? F = ee = [ee, Ce] : (L = F, F = e)) : (L = F, F = e), F;
       }
       function Mn() {
         var F, ee, Ce, Me;
@@ -118354,7 +118378,7 @@ function aEt() {
           return r.substr(L, 2) === "||" ? (ee = "||", L += 2) : (ee = e, Kt === 0 && hn(jd)), ee;
         }()) === e && (F = function() {
           var ee;
-          return r.substr(L, 2) === "&&" ? (ee = "&&", L += 2) : (ee = e, Kt === 0 && hn(md)), ee;
+          return r.substr(L, 2) === "&&" ? (ee = "&&", L += 2) : (ee = e, Kt === 0 && hn(vd)), ee;
         }()), F;
       }
       function zt() {
@@ -118372,8 +118396,8 @@ function aEt() {
         var F;
         return (F = function ee() {
           var Ce, Me, Mt, It, Bt, or, _r;
-          if (Ce = L, r.substr(L, 2) === "/*" ? (Me = "/*", L += 2) : (Me = e, Kt === 0 && hn(vd)), Me !== e) {
-            for (Mt = [], It = L, Bt = L, Kt++, r.substr(L, 2) === "*/" ? (or = "*/", L += 2) : (or = e, Kt === 0 && hn(zl)), Kt--, or === e ? Bt = void 0 : (L = Bt, Bt = e), Bt !== e ? (or = L, Kt++, r.substr(L, 2) === "/*" ? (_r = "/*", L += 2) : (_r = e, Kt === 0 && hn(vd)), Kt--, _r === e ? or = void 0 : (L = or, or = e), or !== e && (_r = ic()) !== e ? It = Bt = [Bt, or, _r] : (L = It, It = e)) : (L = It, It = e), It === e && (It = ee()); It !== e; ) Mt.push(It), It = L, Bt = L, Kt++, r.substr(L, 2) === "*/" ? (or = "*/", L += 2) : (or = e, Kt === 0 && hn(zl)), Kt--, or === e ? Bt = void 0 : (L = Bt, Bt = e), Bt !== e ? (or = L, Kt++, r.substr(L, 2) === "/*" ? (_r = "/*", L += 2) : (_r = e, Kt === 0 && hn(vd)), Kt--, _r === e ? or = void 0 : (L = or, or = e), or !== e && (_r = ic()) !== e ? It = Bt = [Bt, or, _r] : (L = It, It = e)) : (L = It, It = e), It === e && (It = ee());
+          if (Ce = L, r.substr(L, 2) === "/*" ? (Me = "/*", L += 2) : (Me = e, Kt === 0 && hn(bd)), Me !== e) {
+            for (Mt = [], It = L, Bt = L, Kt++, r.substr(L, 2) === "*/" ? (or = "*/", L += 2) : (or = e, Kt === 0 && hn(zl)), Kt--, or === e ? Bt = void 0 : (L = Bt, Bt = e), Bt !== e ? (or = L, Kt++, r.substr(L, 2) === "/*" ? (_r = "/*", L += 2) : (_r = e, Kt === 0 && hn(bd)), Kt--, _r === e ? or = void 0 : (L = or, or = e), or !== e && (_r = ic()) !== e ? It = Bt = [Bt, or, _r] : (L = It, It = e)) : (L = It, It = e), It === e && (It = ee()); It !== e; ) Mt.push(It), It = L, Bt = L, Kt++, r.substr(L, 2) === "*/" ? (or = "*/", L += 2) : (or = e, Kt === 0 && hn(zl)), Kt--, or === e ? Bt = void 0 : (L = Bt, Bt = e), Bt !== e ? (or = L, Kt++, r.substr(L, 2) === "/*" ? (_r = "/*", L += 2) : (_r = e, Kt === 0 && hn(bd)), Kt--, _r === e ? or = void 0 : (L = or, or = e), or !== e && (_r = ic()) !== e ? It = Bt = [Bt, or, _r] : (L = It, It = e)) : (L = It, It = e), It === e && (It = ee());
             Mt !== e ? (r.substr(L, 2) === "*/" ? (It = "*/", L += 2) : (It = e, Kt === 0 && hn(zl)), It !== e ? Ce = Me = [Me, Mt, It] : (L = Ce, Ce = e)) : (L = Ce, Ce = e);
           } else L = Ce, Ce = e;
           return Ce;
@@ -118748,7 +118772,7 @@ function aEt() {
       f = f !== void 0 ? f : {};
       var b, e = {}, P = { start: If }, $ = If, V = Ln("IF", !0), oe = Ln("EXTENSION", !0), Ae = Ln("SCHEMA", !0), Ue = Ln("VERSION", !0), Fe = Ln("CASCADED", !0), tt = Ln("LOCAL", !0), Ie = Ln("CHECK", !0), ut = Ln("OPTION", !1), Vt = Ln("check_option", !0), gr = Ln("security_barrier", !0), ur = Ln("security_invoker", !0), cr = Ln("TYPE", !0), Gt = Ln("DOMAIN", !0), Cr = Ln("INCREMENT", !0), Nr = Ln("MINVALUE", !0), ln = function(E, G) {
         return { resource: "sequence", prefix: E.toLowerCase(), value: G };
-      }, Lr = Ln("NO", !0), Sn = Ln("MAXVALUE", !0), xn = Ln("START", !0), pn = Ln("CACHE", !0), bn = Ln("CYCLE", !0), ts = Ln("OWNED", !0), kn = Ln("NONE", !0), Jn = Ln("NULLS", !0), Cs = Ln("FIRST", !0), js = Ln("LAST", !0), os = Ln("AUTO_INCREMENT", !0), Es = Ln("UNIQUE", !0), Fs = Ln("KEY", !0), Hs = Ln("PRIMARY", !0), yo = Ln("COLUMN_FORMAT", !0), Ks = Ln("FIXED", !0), To = Ln("DYNAMIC", !0), to = Ln("DEFAULT", !0), So = Ln("STORAGE", !0), Fo = Ln("DISK", !0), wo = Ln("MEMORY", !0), yi = Ln("CASCADE", !0), Si = Ln("RESTRICT", !0), fa = Ln("OUT", !0), Ga = Ln("VARIADIC", !0), Ya = Ln("INOUT", !0), yu = Ln("AGGREGATE", !0), ia = Ln("FUNCTION", !0), ru = Ln("OWNER", !0), zs = Ln("CURRENT_ROLE", !0), ao = Ln("CURRENT_USER", !0), ko = Ln("SESSION_USER", !0), qo = Ln("ALGORITHM", !0), Eo = Ln("INSTANT", !0), rn = Ln("INPLACE", !0), Pn = Ln("COPY", !0), Rs = Ln("LOCK", !0), Us = Ln("SHARED", !0), ho = Ln("EXCLUSIVE", !0), co = Ln("PRIMARY KEY", !0), Bo = Ln("FOREIGN KEY", !0), Vo = Ln("MATCH FULL", !0), di = Ln("MATCH PARTIAL", !0), wa = Ln("MATCH SIMPLE", !0), Ba = Ln("SET NULL", !0), Oa = Ln("NO ACTION", !0), Ma = Ln("SET DEFAULT", !0), Za = Ln("TRIGGER", !0), Ja = Ln("BEFORE", !0), wc = Ln("AFTER", !0), Cl = Ln("INSTEAD OF", !0), Nl = Ln("ON", !0), va = Ln("EXECUTE", !0), Nu = Ln("PROCEDURE", !0), mu = Ln("OF", !0), Ru = Ln("NOT", !0), Ll = Ln("DEFERRABLE", !0), Rl = Ln("INITIALLY IMMEDIATE", !0), Ju = Ln("INITIALLY DEFERRED", !0), ef = Ln("FOR", !0), el = Ln("EACH", !0), tl = Ln("ROW", !0), od = Ln("STATEMENT", !0), Kl = Ln("CHARACTER", !0), Fl = Ln("SET", !0), vf = Ln("CHARSET", !0), Gd = Ln("COLLATE", !0), tm = Ln("AVG_ROW_LENGTH", !0), Hm = Ln("KEY_BLOCK_SIZE", !0), yp = Ln("MAX_ROWS", !0), Hd = Ln("MIN_ROWS", !0), wp = Ln("STATS_SAMPLE_PAGES", !0), jp = Ln("CONNECTION", !0), $h = Ln("COMPRESSION", !0), xl = Ln("'", !1), rm = Ln("ZLIB", !0), th = Ln("LZ4", !0), nm = Ln("ENGINE", !0), op = Ln("IN", !0), $f = Ln("ACCESS SHARE", !0), Bc = Ln("ROW SHARE", !0), id = Ln("ROW EXCLUSIVE", !0), Vm = Ln("SHARE UPDATE EXCLUSIVE", !0), ad = Ln("SHARE ROW EXCLUSIVE", !0), rh = Ln("ACCESS EXCLUSIVE", !0), Wm = Ln("SHARE", !0), Cp = Ln("MODE", !0), Am = Ln("NOWAIT", !0), nh = Ln("TABLES", !0), ip = Ln("PREPARE", !0), Vd = Ln(";", !1), Do = Ln("(", !1), bf = Ln(")", !1), Ff = Ln("PERCENT", !0), Wd = Ln("exclude", !0), $p = Ln("OUTFILE", !0), Fh = Ln("DUMPFILE", !0), Ym = Ln("BTREE", !0), Fp = Ln("HASH", !0), Uh = Ln("GIST", !0), Ch = Ln("GIN", !0), sm = Ln("WITH", !0), Up = Ln("PARSER", !0), Lp = Ln("VISIBLE", !0), Nc = Ln("INVISIBLE", !0), xp = function(E, G) {
+      }, Lr = Ln("NO", !0), Sn = Ln("MAXVALUE", !0), xn = Ln("START", !0), pn = Ln("CACHE", !0), bn = Ln("CYCLE", !0), ts = Ln("OWNED", !0), kn = Ln("NONE", !0), Jn = Ln("NULLS", !0), Cs = Ln("FIRST", !0), js = Ln("LAST", !0), os = Ln("AUTO_INCREMENT", !0), Es = Ln("UNIQUE", !0), Fs = Ln("KEY", !0), Hs = Ln("PRIMARY", !0), yo = Ln("COLUMN_FORMAT", !0), Ks = Ln("FIXED", !0), To = Ln("DYNAMIC", !0), to = Ln("DEFAULT", !0), So = Ln("STORAGE", !0), Fo = Ln("DISK", !0), wo = Ln("MEMORY", !0), yi = Ln("CASCADE", !0), Si = Ln("RESTRICT", !0), fa = Ln("OUT", !0), Ga = Ln("VARIADIC", !0), Ya = Ln("INOUT", !0), yu = Ln("AGGREGATE", !0), ia = Ln("FUNCTION", !0), ru = Ln("OWNER", !0), zs = Ln("CURRENT_ROLE", !0), ao = Ln("CURRENT_USER", !0), ko = Ln("SESSION_USER", !0), qo = Ln("ALGORITHM", !0), Eo = Ln("INSTANT", !0), rn = Ln("INPLACE", !0), Pn = Ln("COPY", !0), Rs = Ln("LOCK", !0), Us = Ln("SHARED", !0), ho = Ln("EXCLUSIVE", !0), co = Ln("PRIMARY KEY", !0), Bo = Ln("FOREIGN KEY", !0), Vo = Ln("MATCH FULL", !0), di = Ln("MATCH PARTIAL", !0), wa = Ln("MATCH SIMPLE", !0), Ba = Ln("SET NULL", !0), Oa = Ln("NO ACTION", !0), Ma = Ln("SET DEFAULT", !0), Za = Ln("TRIGGER", !0), Ja = Ln("BEFORE", !0), wc = Ln("AFTER", !0), Cl = Ln("INSTEAD OF", !0), Nl = Ln("ON", !0), va = Ln("EXECUTE", !0), Nu = Ln("PROCEDURE", !0), mu = Ln("OF", !0), Ru = Ln("NOT", !0), Ll = Ln("DEFERRABLE", !0), Rl = Ln("INITIALLY IMMEDIATE", !0), Ju = Ln("INITIALLY DEFERRED", !0), ef = Ln("FOR", !0), el = Ln("EACH", !0), tl = Ln("ROW", !0), id = Ln("STATEMENT", !0), Kl = Ln("CHARACTER", !0), Fl = Ln("SET", !0), vf = Ln("CHARSET", !0), Gd = Ln("COLLATE", !0), tm = Ln("AVG_ROW_LENGTH", !0), Hm = Ln("KEY_BLOCK_SIZE", !0), yp = Ln("MAX_ROWS", !0), Hd = Ln("MIN_ROWS", !0), wp = Ln("STATS_SAMPLE_PAGES", !0), jp = Ln("CONNECTION", !0), $h = Ln("COMPRESSION", !0), xl = Ln("'", !1), rm = Ln("ZLIB", !0), th = Ln("LZ4", !0), nm = Ln("ENGINE", !0), op = Ln("IN", !0), $f = Ln("ACCESS SHARE", !0), Bc = Ln("ROW SHARE", !0), ad = Ln("ROW EXCLUSIVE", !0), Vm = Ln("SHARE UPDATE EXCLUSIVE", !0), ud = Ln("SHARE ROW EXCLUSIVE", !0), rh = Ln("ACCESS EXCLUSIVE", !0), Wm = Ln("SHARE", !0), Cp = Ln("MODE", !0), Am = Ln("NOWAIT", !0), nh = Ln("TABLES", !0), ip = Ln("PREPARE", !0), Vd = Ln(";", !1), Do = Ln("(", !1), bf = Ln(")", !1), Ff = Ln("PERCENT", !0), Wd = Ln("exclude", !0), $p = Ln("OUTFILE", !0), Fh = Ln("DUMPFILE", !0), Ym = Ln("BTREE", !0), Fp = Ln("HASH", !0), Uh = Ln("GIST", !0), Ch = Ln("GIN", !0), sm = Ln("WITH", !0), Up = Ln("PARSER", !0), Lp = Ln("VISIBLE", !0), Nc = Ln("INVISIBLE", !0), xp = function(E, G) {
         return G.unshift(E), G.forEach((se) => {
           const { table: ge, as: Ke } = se;
           Qb[ge] = ge, Ke && (Qb[Ke] = ge), function(lt) {
@@ -118758,13 +118782,13 @@ function aEt() {
         }), G;
       }, hv = Ln("ROWCOUNT", !0), om = Ln("TIMELIMIT", !0), Lh = Ln("=>", !1), gf = Ln("GENERATOR", !0), Uf = Ln("LATERAL", !0), sh = Ln("TABLESAMPLE", !0), im = Ln("REPEATABLE", !0), ju = Ln("CROSS", !0), Bf = Ln("PRECEDING", !0), zf = Ln("RANGE", !0), Qm = Ln("FOLLOWING", !0), xh = Ln("CURRENT", !0), oh = Ln("UNBOUNDED", !0), Bp = Ln("=", !1), am = Ln("DO", !0), Km = Ln("NOTHING", !0), _m = Ln("CONFLICT", !0), tf = function(E, G) {
         return Xu(E, G);
-      }, qf = Ln("!", !1), ud = Ln(">=", !1), Bh = Ln(">", !1), ih = Ln("<=", !1), Eh = Ln("<>", !1), Ep = Ln("<", !1), Sh = Ln("!=", !1), zh = Ln("SIMILAR", !0), Tm = Ln("ESCAPE", !0), Sp = Ln("+", !1), yf = Ln("-", !1), zp = Ln("*", !1), _t = Ln("/", !1), Or = Ln("%", !1), cn = Ln("||", !1), Wr = Ln("$", !1), bs = Ln("~", !1), cs = Ln("?|", !1), Ns = Ln("?&", !1), fo = Ln("?", !1), io = Ln("#-", !1), Uo = Ln("#>>", !1), Ko = Ln("#>", !1), fi = Ln("@>", !1), Bi = Ln("<@", !1), Di = Ln("E", !0), ba = function(E) {
+      }, qf = Ln("!", !1), ld = Ln(">=", !1), Bh = Ln(">", !1), ih = Ln("<=", !1), Eh = Ln("<>", !1), Ep = Ln("<", !1), Sh = Ln("!=", !1), zh = Ln("SIMILAR", !0), Tm = Ln("ESCAPE", !0), Sp = Ln("+", !1), yf = Ln("-", !1), zp = Ln("*", !1), _t = Ln("/", !1), Or = Ln("%", !1), cn = Ln("||", !1), Wr = Ln("$", !1), bs = Ln("~", !1), cs = Ln("?|", !1), Ns = Ln("?&", !1), fo = Ln("?", !1), io = Ln("#-", !1), Uo = Ln("#>>", !1), Ko = Ln("#>", !1), fi = Ln("@>", !1), Bi = Ln("<@", !1), Di = Ln("E", !0), ba = function(E) {
         return { type: "default", value: E };
       }, Pa = function(E) {
         return Sa[E.toUpperCase()] === !0;
-      }, Ki = Ln('"', !1), ja = /^[^"]/, Ta = $a(['"'], !0, !1), vu = /^[^']/, cu = $a(["'"], !0, !1), ul = Ln("`", !1), Ou = /^[^`]/, ec = $a(["`"], !0, !1), Eu = /^[A-Za-z0-9_\u4E00-\u9FA5]/, uc = $a([["A", "Z"], ["a", "z"], ["0", "9"], "_", ["一", "龥"]], !1, !1), Td = /^[A-Za-z0-9_\-$\u4E00-\u9FA5]/, Gf = $a([["A", "Z"], ["a", "z"], ["0", "9"], "_", "-", "$", ["一", "龥"]], !1, !1), Cc = Ln(":", !1), ah = Ln("OVER", !0), qp = Ln("FILTER", !0), ll = Ln("FIRST_VALUE", !0), zc = Ln("LAST_VALUE", !0), Id = Ln("ROW_NUMBER", !0), ld = Ln("DENSE_RANK", !0), um = Ln("RANK", !0), Xm = Ln("LAG", !0), Cd = Ln("LEAD", !0), Hf = Ln("NTH_VALUE", !0), Nd = Ln("IGNORE", !0), Yd = Ln("RESPECT", !0), Qd = Ln("LISTAGG", !0), uh = Ln("percentile_cont", !0), Qv = Ln("percentile_disc", !0), Zm = Ln("within", !0), Kv = Ln("mode", !0), Xv = Ln("BOTH", !0), Vf = Ln("LEADING", !0), wf = Ln("TRAILING", !0), Im = Ln("trim", !0), Gp = Ln("INPUT", !0), mv = Ln("PATH", !0), Jm = Ln("OUTER", !0), vv = Ln("RECURSIVE", !0), Zv = Ln("POSITION", !0), lm = Ln("now", !0), ev = Ln("at", !0), bv = Ln("zone", !0), tv = Ln("FLATTEN", !0), cm = Ln("parse_json", !0), Av = Ln("CENTURY", !0), _v = Ln("DAY", !0), Nm = Ln("DATE", !0), Jv = Ln("DECADE", !0), Lb = Ln("DOW", !0), gv = Ln("DOY", !0), xb = Ln("EPOCH", !0), Tv = Ln("HOUR", !0), Eb = Ln("ISODOW", !0), Db = Ln("ISOYEAR", !0), Iv = Ln("MICROSECONDS", !0), Nv = Ln("MILLENNIUM", !0), eb = Ln("MILLISECONDS", !0), fm = Ln("MINUTE", !0), Ap = Ln("MONTH", !0), Kd = Ln("QUARTER", !0), cd = Ln("SECOND", !0), Ah = Ln("TIMEZONE", !0), qh = Ln("TIMEZONE_HOUR", !0), Rv = Ln("TIMEZONE_MINUTE", !0), tb = Ln("WEEK", !0), dm = Ln("YEAR", !0), Ov = Ln("NTILE", !0), kv = /^[\n]/, Mv = $a([`
+      }, Ki = Ln('"', !1), ja = /^[^"]/, Ta = $a(['"'], !0, !1), vu = /^[^']/, cu = $a(["'"], !0, !1), ul = Ln("`", !1), Ou = /^[^`]/, ec = $a(["`"], !0, !1), Eu = /^[A-Za-z0-9_\u4E00-\u9FA5]/, uc = $a([["A", "Z"], ["a", "z"], ["0", "9"], "_", ["一", "龥"]], !1, !1), Td = /^[A-Za-z0-9_\-$\u4E00-\u9FA5]/, Gf = $a([["A", "Z"], ["a", "z"], ["0", "9"], "_", "-", "$", ["一", "龥"]], !1, !1), Cc = Ln(":", !1), ah = Ln("OVER", !0), qp = Ln("FILTER", !0), ll = Ln("FIRST_VALUE", !0), zc = Ln("LAST_VALUE", !0), Id = Ln("ROW_NUMBER", !0), cd = Ln("DENSE_RANK", !0), um = Ln("RANK", !0), Xm = Ln("LAG", !0), Cd = Ln("LEAD", !0), Hf = Ln("NTH_VALUE", !0), Nd = Ln("IGNORE", !0), Yd = Ln("RESPECT", !0), Qd = Ln("LISTAGG", !0), uh = Ln("percentile_cont", !0), Qv = Ln("percentile_disc", !0), Zm = Ln("within", !0), Kv = Ln("mode", !0), Xv = Ln("BOTH", !0), Vf = Ln("LEADING", !0), wf = Ln("TRAILING", !0), Im = Ln("trim", !0), Gp = Ln("INPUT", !0), mv = Ln("PATH", !0), Jm = Ln("OUTER", !0), vv = Ln("RECURSIVE", !0), Zv = Ln("POSITION", !0), lm = Ln("now", !0), ev = Ln("at", !0), bv = Ln("zone", !0), tv = Ln("FLATTEN", !0), cm = Ln("parse_json", !0), Av = Ln("CENTURY", !0), _v = Ln("DAY", !0), Nm = Ln("DATE", !0), Jv = Ln("DECADE", !0), Lb = Ln("DOW", !0), gv = Ln("DOY", !0), xb = Ln("EPOCH", !0), Tv = Ln("HOUR", !0), Eb = Ln("ISODOW", !0), Db = Ln("ISOYEAR", !0), Iv = Ln("MICROSECONDS", !0), Nv = Ln("MILLENNIUM", !0), eb = Ln("MILLISECONDS", !0), fm = Ln("MINUTE", !0), Ap = Ln("MONTH", !0), Kd = Ln("QUARTER", !0), fd = Ln("SECOND", !0), Ah = Ln("TIMEZONE", !0), qh = Ln("TIMEZONE_HOUR", !0), Rv = Ln("TIMEZONE_MINUTE", !0), tb = Ln("WEEK", !0), dm = Ln("YEAR", !0), Ov = Ln("NTILE", !0), kv = /^[\n]/, Mv = $a([`
 `], !1, !1), Rm = /^[^"\\\0-\x1F\x7F]/, _h = $a(['"', "\\", ["\0", ""], ""], !0, !1), Gh = /^[^'\\]/, rv = $a(["'", "\\"], !0, !1), rb = Ln("\\'", !1), Dv = Ln('\\"', !1), nb = Ln("\\\\", !1), sb = Ln("\\/", !1), Om = Ln("\\b", !1), ob = Ln("\\f", !1), ib = Ln("\\n", !1), Pv = Ln("\\r", !1), Sb = Ln("\\t", !1), Ab = Ln("\\u", !1), jv = Ln("\\", !1), $v = Ln("''", !1), Hh = Ln('""', !1), rf = /^[\n\r]/, Rd = $a([`
-`, "\r"], !1, !1), pm = Ln(".", !1), Wf = /^[0-9]/, Cf = $a([["0", "9"]], !1, !1), yv = /^[0-9a-fA-F]/, km = $a([["0", "9"], ["a", "f"], ["A", "F"]], !1, !1), Lf = /^[eE]/, Od = $a(["e", "E"], !1, !1), _b = /^[+\-]/, ab = $a(["+", "-"], !1, !1), Tb = Ln("NULL", !0), ub = Ln("NOT NULL", !0), wv = Ln("TRUE", !0), Cv = Ln("TO", !0), Lv = Ln("TOP", !0), lb = Ln("FALSE", !0), Pb = Ln("SHOW", !0), Ib = Ln("DROP", !0), cb = Ln("USE", !0), fb = Ln("ALTER", !0), Fv = Ln("SELECT", !0), Nb = Ln("UPDATE", !0), Rb = Ln("CREATE", !0), db = Ln("TEMPORARY", !0), Ob = Ln("TEMP", !0), pb = Ln("DELETE", !0), Uv = Ln("INSERT", !0), q = Ln("REPLACE", !0), as = Ln("RETURNING", !0), hm = Ln("RENAME", !0), xf = Ln("PARTITION", !0), nv = Ln("INTO", !0), $r = Ln("FROM", !0), Gs = Ln("AS", !0), kd = Ln("TABLE", !0), Mm = Ln("DATABASE", !0), sv = Ln("SEQUENCE", !0), ws = Ln("TABLESPACE", !0), Bv = Ln("DEALLOCATE", !0), hb = Ln("LEFT", !0), jb = Ln("RIGHT", !0), mm = Ln("FULL", !0), B = Ln("INNER", !0), is = Ln("JOIN", !0), Dm = Ln("UNION", !0), _p = Ln("VALUES", !0), Pm = Ln("USING", !0), Ir = Ln("WHERE", !0), Ds = Ln("GROUP", !0), fd = Ln("BY", !0), xv = Ln("ORDER", !0), vm = Ln("HAVING", !0), ls = Ln("QUALIFY", !0), mb = Ln("WINDOW", !0), ov = Ln("LIMIT", !0), bm = Ln("OFFSET", !0), iv = Ln("ASC", !0), jm = Ln("DESC", !0), Hp = Ln("ALL", !0), $m = Ln("DISTINCT", !0), Fm = Ln("BETWEEN", !0), Th = Ln("IS", !0), Ih = Ln("LIKE", !0), D = Ln("ILIKE", !0), Zn = Ln("EXISTS", !0), Vh = Ln("REGEXP", !0), Ef = Ln("AND", !0), Nh = Ln("OR", !0), wr = Ln("ARRAY", !0), _s = Ln("ARRAY_AGG", !0), El = Ln("STRING_AGG", !0), lh = Ln("COUNT", !0), Wh = Ln("GROUP_CONCAT", !0), es = Ln("MAX", !0), qc = Ln("MIN", !0), lc = Ln("SUM", !0), av = Ln("AVG", !0), Vp = Ln("EXTRACT", !0), ap = Ln("CALL", !0), Xd = Ln("CASE", !0), Ev = Ln("WHEN", !0), ch = Ln("THEN", !0), gm = Ln("ELSE", !0), vb = Ln("END", !0), ym = Ln("CAST", !0), wm = Ln("TRY_CAST", !0), Yh = Ln("BINARY", !0), Um = Ln("VARBINARY", !0), dd = Ln("BOOL", !0), zv = Ln("BOOLEAN", !0), Qh = Ln("CHAR", !0), Cm = Ln("VARCHAR", !0), up = Ln("NUMBER", !0), Bm = Ln("NUMERIC", !0), fh = Ln("DECIMAL", !0), N = Ln("STRING", !0), Hn = Ln("SIGNED", !0), Sf = Ln("UNSIGNED", !0), T = Ln("INT", !0), Vn = Ln("BYTEINT", !0), fr = Ln("ZEROFILL", !0), Ls = Ln("INTEGER", !0), Rc = Ln("JSON", !0), mr = Ln("JSONB", !0), ms = Ln("GEOMETRY", !0), On = Ln("GEOGRAPHY", !0), Wp = Ln("SMALLINT", !0), dh = Ln("SERIAL", !0), $n = Ln("TINYINT", !0), A = Ln("TINYTEXT", !0), Dn = Ln("TEXT", !0), Af = Ln("MEDIUMTEXT", !0), Lc = Ln("LONGTEXT", !0), xc = Ln("BIGINT", !0), rr = Ln("ENUM", !0), fs = Ln("FLOAT", !0), tc = Ln("FLOAT4", !0), rc = Ln("FLOAT8", !0), Yp = Ln("DOUBLE", !0), Rn = Ln("PRECISION", !0), Rh = Ln("BIGSERIAL", !0), Zd = Ln("REAL", !0), ph = Ln("DATETIME", !0), Tp = Ln("ROWS", !0), Qp = Ln("TIME", !0), pd = Ln("TIMESTAMP", !0), cc = Ln("TIMESTAMP_TZ", !0), nf = Ln("TIMESTAMP_NTZ", !0), $u = Ln("TRUNCATE", !0), Ro = Ln("USER", !0), Kh = Ln("UUID", !0), lp = Ln("OID", !0), hh = Ln("REGCLASS", !0), mh = Ln("REGCOLLATION", !0), Ld = Ln("REGCONFIG", !0), Oh = Ln("REGDICTIONARY", !0), Gc = Ln("REGNAMESPACE", !0), Yf = Ln("REGOPER", !0), sf = Ln("REGOPERATOR", !0), zo = Ln("REGPROC", !0), Kp = Ln("REGPROCEDURE", !0), Ip = Ln("REGROLE", !0), Np = Ln("REGTYPE", !0), fu = Ln("CURRENT_DATE", !0), of = Ln("INTERVAL", !0), Md = Ln("MM", !0), Jd = Ln("MON", !0), hd = Ln("MONS", !0), Dd = Ln("MONTHS", !0), ep = Ln("W", !0), af = Ln("WK", !0), cp = Ln("WEEKOFYEAR", !0), Yu = Ln("WOY", !0), Qf = Ln("WY", !0), tp = Ln("WEEKS", !0), Rp = Ln("CURRENT_TIME", !0), Op = Ln("CURRENT_TIMESTAMP", !0), fc = Ln("SYSTEM_USER", !0), _f = Ln("GLOBAL", !0), Sl = Ln("SESSION", !0), vh = Ln("PERSIST", !0), Pd = Ln("PERSIST_ONLY", !0), uf = Ln("PIVOT", !0), Ol = Ln("UNPIVOT", !0), bh = Ln("VIEW", !0), kp = Ln("@", !1), jd = Ln("@@", !1), md = Ln("$$", !1), vd = Ln("return", !0), zl = Ln(":=", !1), Go = Ln("::", !1), rp = Ln("DUAL", !0), Oc = Ln("ADD", !0), Kf = Ln("COLUMN", !0), kc = Ln("INDEX", !0), Su = Ln("FULLTEXT", !0), Mc = Ln("SPATIAL", !0), L = Ln("COMMENT", !0), v = Ln("CONSTRAINT", !0), Xr = Ln("CONCURRENTLY", !0), Pl = Ln("REFERENCES", !0), Qu = Ln("SQL_CALC_FOUND_ROWS", !0), Kt = Ln("SQL_CACHE", !0), qe = Ln("SQL_NO_CACHE", !0), zn = Ln("SQL_SMALL_RESULT", !0), zu = Ln("SQL_BIG_RESULT", !0), fp = Ln("SQL_BUFFER_RESULT", !0), hn = Ln(",", !1), Vr = Ln("[", !1), Xf = Ln("]", !1), Wl = Ln("->", !1), Mp = Ln("->>", !1), Ku = Ln("&&", !1), uu = Ln("/*", !1), ql = Ln("*/", !1), Dc = Ln("--", !1), Tf = Ln("//", !1), Dp = { type: "any" }, ou = /^[ \t\n\r]/, Zf = $a([" ", "	", `
+`, "\r"], !1, !1), pm = Ln(".", !1), Wf = /^[0-9]/, Cf = $a([["0", "9"]], !1, !1), yv = /^[0-9a-fA-F]/, km = $a([["0", "9"], ["a", "f"], ["A", "F"]], !1, !1), Lf = /^[eE]/, Od = $a(["e", "E"], !1, !1), _b = /^[+\-]/, ab = $a(["+", "-"], !1, !1), Tb = Ln("NULL", !0), ub = Ln("NOT NULL", !0), wv = Ln("TRUE", !0), Cv = Ln("TO", !0), Lv = Ln("TOP", !0), lb = Ln("FALSE", !0), Pb = Ln("SHOW", !0), Ib = Ln("DROP", !0), cb = Ln("USE", !0), fb = Ln("ALTER", !0), Fv = Ln("SELECT", !0), Nb = Ln("UPDATE", !0), Rb = Ln("CREATE", !0), db = Ln("TEMPORARY", !0), Ob = Ln("TEMP", !0), pb = Ln("DELETE", !0), Uv = Ln("INSERT", !0), q = Ln("REPLACE", !0), as = Ln("RETURNING", !0), hm = Ln("RENAME", !0), xf = Ln("PARTITION", !0), nv = Ln("INTO", !0), $r = Ln("FROM", !0), Gs = Ln("AS", !0), kd = Ln("TABLE", !0), Mm = Ln("DATABASE", !0), sv = Ln("SEQUENCE", !0), ws = Ln("TABLESPACE", !0), Bv = Ln("DEALLOCATE", !0), hb = Ln("LEFT", !0), jb = Ln("RIGHT", !0), mm = Ln("FULL", !0), B = Ln("INNER", !0), is = Ln("JOIN", !0), Dm = Ln("UNION", !0), _p = Ln("VALUES", !0), Pm = Ln("USING", !0), Ir = Ln("WHERE", !0), Ds = Ln("GROUP", !0), dd = Ln("BY", !0), xv = Ln("ORDER", !0), vm = Ln("HAVING", !0), ls = Ln("QUALIFY", !0), mb = Ln("WINDOW", !0), ov = Ln("LIMIT", !0), bm = Ln("OFFSET", !0), iv = Ln("ASC", !0), jm = Ln("DESC", !0), Hp = Ln("ALL", !0), $m = Ln("DISTINCT", !0), Fm = Ln("BETWEEN", !0), Th = Ln("IS", !0), Ih = Ln("LIKE", !0), D = Ln("ILIKE", !0), Zn = Ln("EXISTS", !0), Vh = Ln("REGEXP", !0), Ef = Ln("AND", !0), Nh = Ln("OR", !0), wr = Ln("ARRAY", !0), _s = Ln("ARRAY_AGG", !0), El = Ln("STRING_AGG", !0), lh = Ln("COUNT", !0), Wh = Ln("GROUP_CONCAT", !0), es = Ln("MAX", !0), qc = Ln("MIN", !0), lc = Ln("SUM", !0), av = Ln("AVG", !0), Vp = Ln("EXTRACT", !0), ap = Ln("CALL", !0), Xd = Ln("CASE", !0), Ev = Ln("WHEN", !0), ch = Ln("THEN", !0), gm = Ln("ELSE", !0), vb = Ln("END", !0), ym = Ln("CAST", !0), wm = Ln("TRY_CAST", !0), Yh = Ln("BINARY", !0), Um = Ln("VARBINARY", !0), pd = Ln("BOOL", !0), zv = Ln("BOOLEAN", !0), Qh = Ln("CHAR", !0), Cm = Ln("VARCHAR", !0), up = Ln("NUMBER", !0), Bm = Ln("NUMERIC", !0), fh = Ln("DECIMAL", !0), N = Ln("STRING", !0), Hn = Ln("SIGNED", !0), Sf = Ln("UNSIGNED", !0), T = Ln("INT", !0), Vn = Ln("BYTEINT", !0), fr = Ln("ZEROFILL", !0), Ls = Ln("INTEGER", !0), Rc = Ln("JSON", !0), mr = Ln("JSONB", !0), ms = Ln("GEOMETRY", !0), On = Ln("GEOGRAPHY", !0), Wp = Ln("SMALLINT", !0), dh = Ln("SERIAL", !0), $n = Ln("TINYINT", !0), A = Ln("TINYTEXT", !0), Dn = Ln("TEXT", !0), Af = Ln("MEDIUMTEXT", !0), Lc = Ln("LONGTEXT", !0), xc = Ln("BIGINT", !0), rr = Ln("ENUM", !0), fs = Ln("FLOAT", !0), tc = Ln("FLOAT4", !0), rc = Ln("FLOAT8", !0), Yp = Ln("DOUBLE", !0), Rn = Ln("PRECISION", !0), Rh = Ln("BIGSERIAL", !0), Zd = Ln("REAL", !0), ph = Ln("DATETIME", !0), Tp = Ln("ROWS", !0), Qp = Ln("TIME", !0), hd = Ln("TIMESTAMP", !0), cc = Ln("TIMESTAMP_TZ", !0), nf = Ln("TIMESTAMP_NTZ", !0), $u = Ln("TRUNCATE", !0), Ro = Ln("USER", !0), Kh = Ln("UUID", !0), lp = Ln("OID", !0), hh = Ln("REGCLASS", !0), mh = Ln("REGCOLLATION", !0), Ld = Ln("REGCONFIG", !0), Oh = Ln("REGDICTIONARY", !0), Gc = Ln("REGNAMESPACE", !0), Yf = Ln("REGOPER", !0), sf = Ln("REGOPERATOR", !0), zo = Ln("REGPROC", !0), Kp = Ln("REGPROCEDURE", !0), Ip = Ln("REGROLE", !0), Np = Ln("REGTYPE", !0), fu = Ln("CURRENT_DATE", !0), of = Ln("INTERVAL", !0), Md = Ln("MM", !0), Jd = Ln("MON", !0), md = Ln("MONS", !0), Dd = Ln("MONTHS", !0), ep = Ln("W", !0), af = Ln("WK", !0), cp = Ln("WEEKOFYEAR", !0), Yu = Ln("WOY", !0), Qf = Ln("WY", !0), tp = Ln("WEEKS", !0), Rp = Ln("CURRENT_TIME", !0), Op = Ln("CURRENT_TIMESTAMP", !0), fc = Ln("SYSTEM_USER", !0), _f = Ln("GLOBAL", !0), Sl = Ln("SESSION", !0), vh = Ln("PERSIST", !0), Pd = Ln("PERSIST_ONLY", !0), uf = Ln("PIVOT", !0), Ol = Ln("UNPIVOT", !0), bh = Ln("VIEW", !0), kp = Ln("@", !1), jd = Ln("@@", !1), vd = Ln("$$", !1), bd = Ln("return", !0), zl = Ln(":=", !1), Go = Ln("::", !1), rp = Ln("DUAL", !0), Oc = Ln("ADD", !0), Kf = Ln("COLUMN", !0), kc = Ln("INDEX", !0), Su = Ln("FULLTEXT", !0), Mc = Ln("SPATIAL", !0), L = Ln("COMMENT", !0), v = Ln("CONSTRAINT", !0), Xr = Ln("CONCURRENTLY", !0), Pl = Ln("REFERENCES", !0), Qu = Ln("SQL_CALC_FOUND_ROWS", !0), Kt = Ln("SQL_CACHE", !0), qe = Ln("SQL_NO_CACHE", !0), zn = Ln("SQL_SMALL_RESULT", !0), zu = Ln("SQL_BIG_RESULT", !0), fp = Ln("SQL_BUFFER_RESULT", !0), hn = Ln(",", !1), Vr = Ln("[", !1), Xf = Ln("]", !1), Wl = Ln("->", !1), Mp = Ln("->>", !1), Ku = Ln("&&", !1), uu = Ln("/*", !1), ql = Ln("*/", !1), Dc = Ln("--", !1), Tf = Ln("//", !1), Dp = { type: "any" }, ou = /^[ \t\n\r]/, Zf = $a([" ", "	", `
 `, "\r"], !1, !1), nc = /^[^$]/, dp = $a(["$"], !0, !1), qu = function(E) {
         return { dataType: E };
       }, Oo = Ln("WITHOUT", !0), Al = Ln("ZONE", !0), Pc = function(E) {
@@ -118870,7 +118894,7 @@ function aEt() {
               return Sr;
             }()) === e && (ae = null), ae !== e && (fe = O()) !== e ? ((Ge = function() {
               var Sr, Kr, sn, Gn;
-              Sr = g, r.substr(g, 3).toLowerCase() === "for" ? (Kr = r.substr(g, 3), g += 3) : (Kr = e, At === 0 && jr(ef)), Kr !== e && O() !== e ? (r.substr(g, 4).toLowerCase() === "each" ? (sn = r.substr(g, 4), g += 4) : (sn = e, At === 0 && jr(el)), sn === e && (sn = null), sn !== e && O() !== e ? (r.substr(g, 3).toLowerCase() === "row" ? (Gn = r.substr(g, 3), g += 3) : (Gn = e, At === 0 && jr(tl)), Gn === e && (r.substr(g, 9).toLowerCase() === "statement" ? (Gn = r.substr(g, 9), g += 9) : (Gn = e, At === 0 && jr(od))), Gn !== e ? (Qr = Sr, Cn = Kr, gs = Gn, Kr = { keyword: (Un = sn) ? `${Cn.toLowerCase()} ${Un.toLowerCase()}` : Cn.toLowerCase(), args: gs.toLowerCase() }, Sr = Kr) : (g = Sr, Sr = e)) : (g = Sr, Sr = e)) : (g = Sr, Sr = e);
+              Sr = g, r.substr(g, 3).toLowerCase() === "for" ? (Kr = r.substr(g, 3), g += 3) : (Kr = e, At === 0 && jr(ef)), Kr !== e && O() !== e ? (r.substr(g, 4).toLowerCase() === "each" ? (sn = r.substr(g, 4), g += 4) : (sn = e, At === 0 && jr(el)), sn === e && (sn = null), sn !== e && O() !== e ? (r.substr(g, 3).toLowerCase() === "row" ? (Gn = r.substr(g, 3), g += 3) : (Gn = e, At === 0 && jr(tl)), Gn === e && (r.substr(g, 9).toLowerCase() === "statement" ? (Gn = r.substr(g, 9), g += 9) : (Gn = e, At === 0 && jr(id))), Gn !== e ? (Qr = Sr, Cn = Kr, gs = Gn, Kr = { keyword: (Un = sn) ? `${Cn.toLowerCase()} ${Un.toLowerCase()}` : Cn.toLowerCase(), args: gs.toLowerCase() }, Sr = Kr) : (g = Sr, Sr = e)) : (g = Sr, Sr = e)) : (g = Sr, Sr = e);
               var Cn, Un, gs;
               return Sr;
             }()) === e && (Ge = null), Ge !== e && O() !== e ? ((Ye = function() {
@@ -119086,7 +119110,7 @@ function aEt() {
             return Tn = g, r.substr(g, 4).toLowerCase() === "lock" ? (Yn = r.substr(g, 4), g += 4) : (Yn = e, At === 0 && jr(Rs)), Yn !== e ? (ps = g, At++, _ = ar(), At--, _ === e ? ps = void 0 : (g = ps, ps = e), ps !== e ? Tn = Yn = [Yn, ps] : (g = Tn, Tn = e)) : (g = Tn, Tn = e), Tn;
           }()) !== e && O() !== e ? ((ge = yl()) === e && (ge = null), ge !== e && O() !== e && (Ke = l()) !== e && O() !== e ? ((lt = function() {
             var Tn, Yn, ps, _;
-            return Tn = g, r.substr(g, 2).toLowerCase() === "in" ? (Yn = r.substr(g, 2), g += 2) : (Yn = e, At === 0 && jr(op)), Yn !== e && O() !== e ? (r.substr(g, 12).toLowerCase() === "access share" ? (ps = r.substr(g, 12), g += 12) : (ps = e, At === 0 && jr($f)), ps === e && (r.substr(g, 9).toLowerCase() === "row share" ? (ps = r.substr(g, 9), g += 9) : (ps = e, At === 0 && jr(Bc)), ps === e && (r.substr(g, 13).toLowerCase() === "row exclusive" ? (ps = r.substr(g, 13), g += 13) : (ps = e, At === 0 && jr(id)), ps === e && (r.substr(g, 22).toLowerCase() === "share update exclusive" ? (ps = r.substr(g, 22), g += 22) : (ps = e, At === 0 && jr(Vm)), ps === e && (r.substr(g, 19).toLowerCase() === "share row exclusive" ? (ps = r.substr(g, 19), g += 19) : (ps = e, At === 0 && jr(ad)), ps === e && (r.substr(g, 9).toLowerCase() === "exclusive" ? (ps = r.substr(g, 9), g += 9) : (ps = e, At === 0 && jr(ho)), ps === e && (r.substr(g, 16).toLowerCase() === "access exclusive" ? (ps = r.substr(g, 16), g += 16) : (ps = e, At === 0 && jr(rh)), ps === e && (r.substr(g, 5).toLowerCase() === "share" ? (ps = r.substr(g, 5), g += 5) : (ps = e, At === 0 && jr(Wm))))))))), ps !== e && O() !== e ? (r.substr(g, 4).toLowerCase() === "mode" ? (_ = r.substr(g, 4), g += 4) : (_ = e, At === 0 && jr(Cp)), _ !== e ? (Qr = Tn, Yn = { mode: `in ${ps.toLowerCase()} mode` }, Tn = Yn) : (g = Tn, Tn = e)) : (g = Tn, Tn = e)) : (g = Tn, Tn = e), Tn;
+            return Tn = g, r.substr(g, 2).toLowerCase() === "in" ? (Yn = r.substr(g, 2), g += 2) : (Yn = e, At === 0 && jr(op)), Yn !== e && O() !== e ? (r.substr(g, 12).toLowerCase() === "access share" ? (ps = r.substr(g, 12), g += 12) : (ps = e, At === 0 && jr($f)), ps === e && (r.substr(g, 9).toLowerCase() === "row share" ? (ps = r.substr(g, 9), g += 9) : (ps = e, At === 0 && jr(Bc)), ps === e && (r.substr(g, 13).toLowerCase() === "row exclusive" ? (ps = r.substr(g, 13), g += 13) : (ps = e, At === 0 && jr(ad)), ps === e && (r.substr(g, 22).toLowerCase() === "share update exclusive" ? (ps = r.substr(g, 22), g += 22) : (ps = e, At === 0 && jr(Vm)), ps === e && (r.substr(g, 19).toLowerCase() === "share row exclusive" ? (ps = r.substr(g, 19), g += 19) : (ps = e, At === 0 && jr(ud)), ps === e && (r.substr(g, 9).toLowerCase() === "exclusive" ? (ps = r.substr(g, 9), g += 9) : (ps = e, At === 0 && jr(ho)), ps === e && (r.substr(g, 16).toLowerCase() === "access exclusive" ? (ps = r.substr(g, 16), g += 16) : (ps = e, At === 0 && jr(rh)), ps === e && (r.substr(g, 5).toLowerCase() === "share" ? (ps = r.substr(g, 5), g += 5) : (ps = e, At === 0 && jr(Wm))))))))), ps !== e && O() !== e ? (r.substr(g, 4).toLowerCase() === "mode" ? (_ = r.substr(g, 4), g += 4) : (_ = e, At === 0 && jr(Cp)), _ !== e ? (Qr = Tn, Yn = { mode: `in ${ps.toLowerCase()} mode` }, Tn = Yn) : (g = Tn, Tn = e)) : (g = Tn, Tn = e)) : (g = Tn, Tn = e), Tn;
           }()) === e && (lt = null), lt !== e && O() !== e ? (r.substr(g, 6).toLowerCase() === "nowait" ? (vt = r.substr(g, 6), g += 6) : (vt = e, At === 0 && jr(Am)), vt === e && (vt = null), vt !== e ? (Qr = G, sr = ge, mn = lt, dn = vt, (ve = Ke) && ve.forEach((Tn) => pa.add(`lock::${[Tn.db, Tn.schema].filter(Boolean).join(".") || null}::${Tn.table}`)), se = { tableList: Array.from(pa), columnList: gu(hi), ast: { type: "lock", keyword: sr && sr.toLowerCase(), tables: ve.map((Tn) => ({ table: Tn })), lock_mode: mn, nowait: dn } }, G = se) : (g = G, G = e)) : (g = G, G = e)) : (g = G, G = e)) : (g = G, G = e);
           var sr, ve, mn, dn;
           return G;
@@ -119983,7 +120007,7 @@ function aEt() {
             return Ke = g, r.substr(g, 4).toLowerCase() === "year" ? (lt = r.substr(g, 4), g += 4) : (lt = e, At === 0 && jr(dm)), lt !== e ? (vt = g, At++, sr = ar(), At--, sr === e ? vt = void 0 : (g = vt, vt = e), vt !== e ? (Qr = Ke, Ke = lt = "YEAR") : (g = Ke, Ke = e)) : (g = Ke, Ke = e), Ke;
           }()) === e && (ge = function() {
             var Ke, lt, vt, sr;
-            return r.substr(g, 5).toLowerCase() === "month" ? (Ke = r.substr(g, 5), g += 5) : (Ke = e, At === 0 && jr(Ap)), Ke === e && (r.substr(g, 2).toLowerCase() === "mm" ? (Ke = r.substr(g, 2), g += 2) : (Ke = e, At === 0 && jr(Md)), Ke === e && (r.substr(g, 3).toLowerCase() === "mon" ? (Ke = r.substr(g, 3), g += 3) : (Ke = e, At === 0 && jr(Jd)), Ke === e && (r.substr(g, 4).toLowerCase() === "mons" ? (Ke = r.substr(g, 4), g += 4) : (Ke = e, At === 0 && jr(hd)), Ke === e && (Ke = g, r.substr(g, 6).toLowerCase() === "months" ? (lt = r.substr(g, 6), g += 6) : (lt = e, At === 0 && jr(Dd)), lt !== e ? (vt = g, At++, sr = ar(), At--, sr === e ? vt = void 0 : (g = vt, vt = e), vt !== e ? (Qr = Ke, Ke = lt = "MONTH") : (g = Ke, Ke = e)) : (g = Ke, Ke = e))))), Ke;
+            return r.substr(g, 5).toLowerCase() === "month" ? (Ke = r.substr(g, 5), g += 5) : (Ke = e, At === 0 && jr(Ap)), Ke === e && (r.substr(g, 2).toLowerCase() === "mm" ? (Ke = r.substr(g, 2), g += 2) : (Ke = e, At === 0 && jr(Md)), Ke === e && (r.substr(g, 3).toLowerCase() === "mon" ? (Ke = r.substr(g, 3), g += 3) : (Ke = e, At === 0 && jr(Jd)), Ke === e && (r.substr(g, 4).toLowerCase() === "mons" ? (Ke = r.substr(g, 4), g += 4) : (Ke = e, At === 0 && jr(md)), Ke === e && (Ke = g, r.substr(g, 6).toLowerCase() === "months" ? (lt = r.substr(g, 6), g += 6) : (lt = e, At === 0 && jr(Dd)), lt !== e ? (vt = g, At++, sr = ar(), At--, sr === e ? vt = void 0 : (g = vt, vt = e), vt !== e ? (Qr = Ke, Ke = lt = "MONTH") : (g = Ke, Ke = e)) : (g = Ke, Ke = e))))), Ke;
           }()) === e && (ge = function() {
             var Ke, lt, vt, sr;
             return r.substr(g, 4).toLowerCase() === "week" ? (Ke = r.substr(g, 4), g += 4) : (Ke = e, At === 0 && jr(tb)), Ke === e && (r.substr(g, 1).toLowerCase() === "w" ? (Ke = r.charAt(g), g++) : (Ke = e, At === 0 && jr(ep)), Ke === e && (r.substr(g, 2).toLowerCase() === "wk" ? (Ke = r.substr(g, 2), g += 2) : (Ke = e, At === 0 && jr(af)), Ke === e && (r.substr(g, 10).toLowerCase() === "weekofyear" ? (Ke = r.substr(g, 10), g += 10) : (Ke = e, At === 0 && jr(cp)), Ke === e && (r.substr(g, 3).toLowerCase() === "woy" ? (Ke = r.substr(g, 3), g += 3) : (Ke = e, At === 0 && jr(Yu)), Ke === e && (r.substr(g, 2).toLowerCase() === "wy" ? (Ke = r.substr(g, 2), g += 2) : (Ke = e, At === 0 && jr(Qf)), Ke === e && (Ke = g, r.substr(g, 5).toLowerCase() === "weeks" ? (lt = r.substr(g, 5), g += 5) : (lt = e, At === 0 && jr(tp)), lt !== e ? (vt = g, At++, sr = ar(), At--, sr === e ? vt = void 0 : (g = vt, vt = e), vt !== e ? (Qr = Ke, Ke = lt = "WEEK") : (g = Ke, Ke = e)) : (g = Ke, Ke = e))))))), Ke;
@@ -119998,13 +120022,13 @@ function aEt() {
             return Ke = g, r.substr(g, 6).toLowerCase() === "minute" ? (lt = r.substr(g, 6), g += 6) : (lt = e, At === 0 && jr(fm)), lt !== e ? (vt = g, At++, sr = ar(), At--, sr === e ? vt = void 0 : (g = vt, vt = e), vt !== e ? (Qr = Ke, Ke = lt = "MINUTE") : (g = Ke, Ke = e)) : (g = Ke, Ke = e), Ke;
           }()) === e && (ge = function() {
             var Ke, lt, vt, sr;
-            return Ke = g, r.substr(g, 6).toLowerCase() === "second" ? (lt = r.substr(g, 6), g += 6) : (lt = e, At === 0 && jr(cd)), lt !== e ? (vt = g, At++, sr = ar(), At--, sr === e ? vt = void 0 : (g = vt, vt = e), vt !== e ? (Qr = Ke, Ke = lt = "SECOND") : (g = Ke, Ke = e)) : (g = Ke, Ke = e), Ke;
+            return Ke = g, r.substr(g, 6).toLowerCase() === "second" ? (lt = r.substr(g, 6), g += 6) : (lt = e, At === 0 && jr(fd)), lt !== e ? (vt = g, At++, sr = ar(), At--, sr === e ? vt = void 0 : (g = vt, vt = e), vt !== e ? (Qr = Ke, Ke = lt = "SECOND") : (g = Ke, Ke = e)) : (g = Ke, Ke = e), Ke;
           }()), ge;
         }()) !== e ? (Qr = E, E = { type: "interval", expr: G, unit: se.toLowerCase() }) : (g = E, E = e), E === e && (E = g, Xs() !== e && O() !== e && (G = yt()) !== e ? (Qr = E, E = /* @__PURE__ */ function(ge) {
           return { type: "interval", expr: ge, unit: "" };
         }(G)) : (g = E, E = e)), E;
       }
-      function bd() {
+      function gd() {
         var E, G, se, ge, Ke, lt, vt, sr;
         return E = g, td() !== e && O() !== e && (G = Tl()) !== e && O() !== e ? ((se = du()) === e && (se = null), se !== e && O() !== e && (ge = kb()) !== e && O() !== e ? ((Ke = td()) === e && (Ke = null), Ke !== e ? (Qr = E, vt = G, (sr = se) && vt.push(sr), E = { type: "case", expr: null, args: vt }) : (g = E, E = e)) : (g = E, E = e)) : (g = E, E = e), E === e && (E = g, td() !== e && O() !== e && (G = eu()) !== e && O() !== e && (se = Tl()) !== e && O() !== e ? ((ge = du()) === e && (ge = null), ge !== e && O() !== e && (Ke = kb()) !== e && O() !== e ? ((lt = td()) === e && (lt = null), lt !== e ? (Qr = E, E = function(ve, mn, dn) {
           return dn && mn.push(dn), { type: "case", expr: ve, args: mn };
@@ -120145,7 +120169,7 @@ function aEt() {
       }
       function St() {
         var E;
-        return r.substr(g, 2) === ">=" ? (E = ">=", g += 2) : (E = e, At === 0 && jr(ud)), E === e && (r.charCodeAt(g) === 62 ? (E = ">", g++) : (E = e, At === 0 && jr(Bh)), E === e && (r.substr(g, 2) === "<=" ? (E = "<=", g += 2) : (E = e, At === 0 && jr(ih)), E === e && (r.substr(g, 2) === "<>" ? (E = "<>", g += 2) : (E = e, At === 0 && jr(Eh)), E === e && (r.charCodeAt(g) === 60 ? (E = "<", g++) : (E = e, At === 0 && jr(Ep)), E === e && (r.charCodeAt(g) === 61 ? (E = "=", g++) : (E = e, At === 0 && jr(Bp)), E === e && (r.substr(g, 2) === "!=" ? (E = "!=", g += 2) : (E = e, At === 0 && jr(Sh)))))))), E;
+        return r.substr(g, 2) === ">=" ? (E = ">=", g += 2) : (E = e, At === 0 && jr(ld)), E === e && (r.charCodeAt(g) === 62 ? (E = ">", g++) : (E = e, At === 0 && jr(Bh)), E === e && (r.substr(g, 2) === "<=" ? (E = "<=", g += 2) : (E = e, At === 0 && jr(ih)), E === e && (r.substr(g, 2) === "<>" ? (E = "<>", g += 2) : (E = e, At === 0 && jr(Eh)), E === e && (r.charCodeAt(g) === 60 ? (E = "<", g++) : (E = e, At === 0 && jr(Ep)), E === e && (r.charCodeAt(g) === 61 ? (E = "=", g++) : (E = e, At === 0 && jr(Bp)), E === e && (r.substr(g, 2) === "!=" ? (E = "!=", g += 2) : (E = e, At === 0 && jr(Sh)))))))), E;
       }
       function ft() {
         var E, G, se;
@@ -120214,9 +120238,9 @@ function aEt() {
             }()) === e && (z = nd()), z;
           }()) !== e && O() !== e ? ((Yn = Sc()) === e && (Yn = null), Yn !== e && O() !== e && (ps = sa()) !== e ? (Qr = vt, sr = function(z, ae, fe, Ge) {
             return { type: "cast", keyword: z.toLowerCase(), expr: ae, symbol: "as", target: [{ dataType: fe + (Ge ? " " + Ge : "") }] };
-          }(sr, mn, Tn, Yn), vt = sr) : (g = vt, vt = e)) : (g = vt, vt = e), vt === e && (vt = g, (sr = aa()) !== e && O() !== e ? ((ve = H()) === e && (ve = oc()) === e && (ve = Js()) === e && (ve = Zs()) === e && (ve = Ar()) === e && (ve = bd()) === e && (ve = Jt()) === e && (ve = us()), ve !== e && O() !== e && (mn = sa()) !== e && O() !== e ? ((dn = Kn()) === e && (dn = null), dn !== e ? (Qr = vt, sr = function(z, ae) {
+          }(sr, mn, Tn, Yn), vt = sr) : (g = vt, vt = e)) : (g = vt, vt = e), vt === e && (vt = g, (sr = aa()) !== e && O() !== e ? ((ve = H()) === e && (ve = oc()) === e && (ve = Js()) === e && (ve = Zs()) === e && (ve = Ar()) === e && (ve = gd()) === e && (ve = Jt()) === e && (ve = us()), ve !== e && O() !== e && (mn = sa()) !== e && O() !== e ? ((dn = Kn()) === e && (dn = null), dn !== e ? (Qr = vt, sr = function(z, ae) {
             return z.parentheses = !0, ae ? { type: "cast", keyword: "cast", expr: z, ...ae } : z;
-          }(ve, dn), vt = sr) : (g = vt, vt = e)) : (g = vt, vt = e)) : (g = vt, vt = e), vt === e && (vt = g, (sr = H()) === e && (sr = Js()) === e && (sr = Zs()) === e && (sr = Ar()) === e && (sr = bd()) === e && (sr = oc()) === e && (sr = Jt()) === e && (sr = us()), sr !== e && O() !== e ? ((ve = Kn()) === e && (ve = null), ve !== e ? (Qr = vt, sr = function(z, ae) {
+          }(ve, dn), vt = sr) : (g = vt, vt = e)) : (g = vt, vt = e)) : (g = vt, vt = e), vt === e && (vt = g, (sr = H()) === e && (sr = Js()) === e && (sr = Zs()) === e && (sr = Ar()) === e && (sr = gd()) === e && (sr = oc()) === e && (sr = Jt()) === e && (sr = us()), sr !== e && O() !== e ? ((ve = Kn()) === e && (ve = null), ve !== e ? (Qr = vt, sr = function(z, ae) {
             return ae ? { type: "cast", keyword: "cast", expr: z, ...ae } : z;
           }(sr, ve), vt = sr) : (g = vt, vt = e)) : (g = vt, vt = e)))))), vt;
         }()) === e && (E = g, aa() !== e && (G = O()) !== e && (se = J()) !== e && (ge = O()) !== e && (Ke = sa()) !== e ? (Qr = E, (lt = se).parentheses = !0, E = lt) : (g = E, E = e), E === e && (E = ti()) === e && (E = g, O() !== e ? (r.charCodeAt(g) === 36 ? (G = "$", g++) : (G = e, At === 0 && jr(Wr)), G !== e ? (r.charCodeAt(g) === 60 ? (se = "<", g++) : (se = e, At === 0 && jr(Ep)), se !== e && (ge = Zr()) !== e ? (r.charCodeAt(g) === 62 ? (Ke = ">", g++) : (Ke = e, At === 0 && jr(Bh)), Ke !== e ? (Qr = E, E = { type: "origin", value: `$<${ge.value}>` }) : (g = E, E = e)) : (g = E, E = e)) : (g = E, E = e)) : (g = E, E = e))), E;
@@ -120456,7 +120480,7 @@ function aEt() {
           var G, se, ge;
           return G = g, (se = function() {
             var Ke;
-            return r.substr(g, 10).toLowerCase() === "row_number" ? (Ke = r.substr(g, 10), g += 10) : (Ke = e, At === 0 && jr(Id)), Ke === e && (r.substr(g, 10).toLowerCase() === "dense_rank" ? (Ke = r.substr(g, 10), g += 10) : (Ke = e, At === 0 && jr(ld)), Ke === e && (r.substr(g, 4).toLowerCase() === "rank" ? (Ke = r.substr(g, 4), g += 4) : (Ke = e, At === 0 && jr(um)))), Ke;
+            return r.substr(g, 10).toLowerCase() === "row_number" ? (Ke = r.substr(g, 10), g += 10) : (Ke = e, At === 0 && jr(Id)), Ke === e && (r.substr(g, 10).toLowerCase() === "dense_rank" ? (Ke = r.substr(g, 10), g += 10) : (Ke = e, At === 0 && jr(cd)), Ke === e && (r.substr(g, 4).toLowerCase() === "rank" ? (Ke = r.substr(g, 4), g += 4) : (Ke = e, At === 0 && jr(um)))), Ke;
           }()) !== e && O() !== e && aa() !== e && O() !== e && sa() !== e && O() !== e && (ge = Ps()) !== e ? (Qr = G, se = /* @__PURE__ */ function(Ke, lt) {
             return { type: "window_func", name: Ke, over: lt };
           }(se, ge), G = se) : (g = G, G = e), G;
@@ -120612,7 +120636,7 @@ function aEt() {
       }
       function an() {
         var E, G;
-        return E = g, r.substr(g, 7).toLowerCase() === "century" ? (G = r.substr(g, 7), g += 7) : (G = e, At === 0 && jr(Av)), G === e && (r.substr(g, 3).toLowerCase() === "day" ? (G = r.substr(g, 3), g += 3) : (G = e, At === 0 && jr(_v)), G === e && (r.substr(g, 4).toLowerCase() === "date" ? (G = r.substr(g, 4), g += 4) : (G = e, At === 0 && jr(Nm)), G === e && (r.substr(g, 6).toLowerCase() === "decade" ? (G = r.substr(g, 6), g += 6) : (G = e, At === 0 && jr(Jv)), G === e && (r.substr(g, 3).toLowerCase() === "dow" ? (G = r.substr(g, 3), g += 3) : (G = e, At === 0 && jr(Lb)), G === e && (r.substr(g, 3).toLowerCase() === "doy" ? (G = r.substr(g, 3), g += 3) : (G = e, At === 0 && jr(gv)), G === e && (r.substr(g, 5).toLowerCase() === "epoch" ? (G = r.substr(g, 5), g += 5) : (G = e, At === 0 && jr(xb)), G === e && (r.substr(g, 4).toLowerCase() === "hour" ? (G = r.substr(g, 4), g += 4) : (G = e, At === 0 && jr(Tv)), G === e && (r.substr(g, 6).toLowerCase() === "isodow" ? (G = r.substr(g, 6), g += 6) : (G = e, At === 0 && jr(Eb)), G === e && (r.substr(g, 7).toLowerCase() === "isoyear" ? (G = r.substr(g, 7), g += 7) : (G = e, At === 0 && jr(Db)), G === e && (r.substr(g, 12).toLowerCase() === "microseconds" ? (G = r.substr(g, 12), g += 12) : (G = e, At === 0 && jr(Iv)), G === e && (r.substr(g, 10).toLowerCase() === "millennium" ? (G = r.substr(g, 10), g += 10) : (G = e, At === 0 && jr(Nv)), G === e && (r.substr(g, 12).toLowerCase() === "milliseconds" ? (G = r.substr(g, 12), g += 12) : (G = e, At === 0 && jr(eb)), G === e && (r.substr(g, 6).toLowerCase() === "minute" ? (G = r.substr(g, 6), g += 6) : (G = e, At === 0 && jr(fm)), G === e && (r.substr(g, 5).toLowerCase() === "month" ? (G = r.substr(g, 5), g += 5) : (G = e, At === 0 && jr(Ap)), G === e && (r.substr(g, 7).toLowerCase() === "quarter" ? (G = r.substr(g, 7), g += 7) : (G = e, At === 0 && jr(Kd)), G === e && (r.substr(g, 6).toLowerCase() === "second" ? (G = r.substr(g, 6), g += 6) : (G = e, At === 0 && jr(cd)), G === e && (r.substr(g, 8).toLowerCase() === "timezone" ? (G = r.substr(g, 8), g += 8) : (G = e, At === 0 && jr(Ah)), G === e && (r.substr(g, 13).toLowerCase() === "timezone_hour" ? (G = r.substr(g, 13), g += 13) : (G = e, At === 0 && jr(qh)), G === e && (r.substr(g, 15).toLowerCase() === "timezone_minute" ? (G = r.substr(g, 15), g += 15) : (G = e, At === 0 && jr(Rv)), G === e && (r.substr(g, 4).toLowerCase() === "week" ? (G = r.substr(g, 4), g += 4) : (G = e, At === 0 && jr(tb)), G === e && (r.substr(g, 4).toLowerCase() === "year" ? (G = r.substr(g, 4), g += 4) : (G = e, At === 0 && jr(dm))))))))))))))))))))))), G !== e && (Qr = E, G = G), E = G;
+        return E = g, r.substr(g, 7).toLowerCase() === "century" ? (G = r.substr(g, 7), g += 7) : (G = e, At === 0 && jr(Av)), G === e && (r.substr(g, 3).toLowerCase() === "day" ? (G = r.substr(g, 3), g += 3) : (G = e, At === 0 && jr(_v)), G === e && (r.substr(g, 4).toLowerCase() === "date" ? (G = r.substr(g, 4), g += 4) : (G = e, At === 0 && jr(Nm)), G === e && (r.substr(g, 6).toLowerCase() === "decade" ? (G = r.substr(g, 6), g += 6) : (G = e, At === 0 && jr(Jv)), G === e && (r.substr(g, 3).toLowerCase() === "dow" ? (G = r.substr(g, 3), g += 3) : (G = e, At === 0 && jr(Lb)), G === e && (r.substr(g, 3).toLowerCase() === "doy" ? (G = r.substr(g, 3), g += 3) : (G = e, At === 0 && jr(gv)), G === e && (r.substr(g, 5).toLowerCase() === "epoch" ? (G = r.substr(g, 5), g += 5) : (G = e, At === 0 && jr(xb)), G === e && (r.substr(g, 4).toLowerCase() === "hour" ? (G = r.substr(g, 4), g += 4) : (G = e, At === 0 && jr(Tv)), G === e && (r.substr(g, 6).toLowerCase() === "isodow" ? (G = r.substr(g, 6), g += 6) : (G = e, At === 0 && jr(Eb)), G === e && (r.substr(g, 7).toLowerCase() === "isoyear" ? (G = r.substr(g, 7), g += 7) : (G = e, At === 0 && jr(Db)), G === e && (r.substr(g, 12).toLowerCase() === "microseconds" ? (G = r.substr(g, 12), g += 12) : (G = e, At === 0 && jr(Iv)), G === e && (r.substr(g, 10).toLowerCase() === "millennium" ? (G = r.substr(g, 10), g += 10) : (G = e, At === 0 && jr(Nv)), G === e && (r.substr(g, 12).toLowerCase() === "milliseconds" ? (G = r.substr(g, 12), g += 12) : (G = e, At === 0 && jr(eb)), G === e && (r.substr(g, 6).toLowerCase() === "minute" ? (G = r.substr(g, 6), g += 6) : (G = e, At === 0 && jr(fm)), G === e && (r.substr(g, 5).toLowerCase() === "month" ? (G = r.substr(g, 5), g += 5) : (G = e, At === 0 && jr(Ap)), G === e && (r.substr(g, 7).toLowerCase() === "quarter" ? (G = r.substr(g, 7), g += 7) : (G = e, At === 0 && jr(Kd)), G === e && (r.substr(g, 6).toLowerCase() === "second" ? (G = r.substr(g, 6), g += 6) : (G = e, At === 0 && jr(fd)), G === e && (r.substr(g, 8).toLowerCase() === "timezone" ? (G = r.substr(g, 8), g += 8) : (G = e, At === 0 && jr(Ah)), G === e && (r.substr(g, 13).toLowerCase() === "timezone_hour" ? (G = r.substr(g, 13), g += 13) : (G = e, At === 0 && jr(qh)), G === e && (r.substr(g, 15).toLowerCase() === "timezone_minute" ? (G = r.substr(g, 15), g += 15) : (G = e, At === 0 && jr(Rv)), G === e && (r.substr(g, 4).toLowerCase() === "week" ? (G = r.substr(g, 4), g += 4) : (G = e, At === 0 && jr(tb)), G === e && (r.substr(g, 4).toLowerCase() === "year" ? (G = r.substr(g, 4), g += 4) : (G = e, At === 0 && jr(dm))))))))))))))))))))))), G !== e && (Qr = E, G = G), E = G;
       }
       function qr() {
         var E;
@@ -120917,7 +120941,7 @@ function aEt() {
       }
       function gh() {
         var E, G, se, ge;
-        return E = g, r.substr(g, 2).toLowerCase() === "by" ? (G = r.substr(g, 2), g += 2) : (G = e, At === 0 && jr(fd)), G !== e ? (se = g, At++, ge = ar(), At--, ge === e ? se = void 0 : (g = se, se = e), se !== e ? E = G = [G, se] : (g = E, E = e)) : (g = E, E = e), E;
+        return E = g, r.substr(g, 2).toLowerCase() === "by" ? (G = r.substr(g, 2), g += 2) : (G = e, At === 0 && jr(dd)), G !== e ? (se = g, At++, ge = ar(), At--, ge === e ? se = void 0 : (g = se, se = e), se !== e ? E = G = [G, se] : (g = E, E = e)) : (g = E, E = e), E;
       }
       function Wc() {
         var E, G, se, ge;
@@ -121125,7 +121149,7 @@ function aEt() {
       }
       function tn() {
         var E, G, se, ge;
-        return E = g, r.substr(g, 9).toLowerCase() === "timestamp" ? (G = r.substr(g, 9), g += 9) : (G = e, At === 0 && jr(pd)), G !== e ? (se = g, At++, ge = ar(), At--, ge === e ? se = void 0 : (g = se, se = e), se !== e ? (Qr = E, E = G = "TIMESTAMP") : (g = E, E = e)) : (g = E, E = e), E;
+        return E = g, r.substr(g, 9).toLowerCase() === "timestamp" ? (G = r.substr(g, 9), g += 9) : (G = e, At === 0 && jr(hd)), G !== e ? (se = g, At++, ge = ar(), At--, ge === e ? se = void 0 : (g = se, se = e), se !== e ? (Qr = E, E = G = "TIMESTAMP") : (g = E, E = e)) : (g = E, E = e), E;
       }
       function ns() {
         var E, G, se, ge;
@@ -121153,7 +121177,7 @@ function aEt() {
       }
       function ni() {
         var E;
-        return r.substr(g, 2) === "$$" ? (E = "$$", g += 2) : (E = e, At === 0 && jr(md)), E;
+        return r.substr(g, 2) === "$$" ? (E = "$$", g += 2) : (E = e, At === 0 && jr(vd)), E;
       }
       function ui() {
         var E;
@@ -121324,7 +121348,7 @@ function aEt() {
           var se, ge;
           return se = g, function() {
             var Ke;
-            return r.substr(g, 6).toLowerCase() === "return" ? (Ke = r.substr(g, 6), g += 6) : (Ke = e, At === 0 && jr(vd)), Ke;
+            return r.substr(g, 6).toLowerCase() === "return" ? (Ke = r.substr(g, 6), g += 6) : (Ke = e, At === 0 && jr(bd)), Ke;
           }() !== e && O() !== e && (ge = qn()) !== e ? (Qr = se, se = { type: "return", expr: ge }) : (g = se, se = e), se;
         }()), G !== e ? (Qr = E, E = { type: "proc", stmt: G, vars: at }) : (g = E, E = e)) : (g = E, E = e), E;
       }
@@ -121493,7 +121517,7 @@ function aEt() {
           var G, se;
           return G = g, (se = function() {
             var ge, Ke, lt, vt;
-            return ge = g, r.substr(g, 4).toLowerCase() === "bool" ? (Ke = r.substr(g, 4), g += 4) : (Ke = e, At === 0 && jr(dd)), Ke !== e ? (lt = g, At++, vt = ar(), At--, vt === e ? lt = void 0 : (g = lt, lt = e), lt !== e ? (Qr = ge, ge = Ke = "BOOL") : (g = ge, ge = e)) : (g = ge, ge = e), ge;
+            return ge = g, r.substr(g, 4).toLowerCase() === "bool" ? (Ke = r.substr(g, 4), g += 4) : (Ke = e, At === 0 && jr(pd)), Ke !== e ? (lt = g, At++, vt = ar(), At--, vt === e ? lt = void 0 : (g = lt, lt = e), lt !== e ? (Qr = ge, ge = Ke = "BOOL") : (g = ge, ge = e)) : (g = ge, ge = e), ge;
           }()) === e && (se = function() {
             var ge, Ke, lt, vt;
             return ge = g, r.substr(g, 7).toLowerCase() === "boolean" ? (Ke = r.substr(g, 7), g += 7) : (Ke = e, At === 0 && jr(zv)), Ke !== e ? (lt = g, At++, vt = ar(), At--, vt === e ? lt = void 0 : (g = lt, lt = e), lt !== e ? (Qr = ge, ge = Ke = "BOOLEAN") : (g = ge, ge = e)) : (g = ge, ge = e), ge;
@@ -121775,7 +121799,7 @@ function aEt() {
       f = f !== void 0 ? f : {};
       var b, e = {}, P = { start: Wl }, $ = Wl, V = zn("IF", !0), oe = zn("EXTENSION", !0), Ae = zn("SCHEMA", !0), Ue = zn("VERSION", !0), Fe = zn("CASCADED", !0), tt = zn("LOCAL", !0), Ie = zn("CHECK", !0), ut = zn("OPTION", !1), Vt = zn("check_option", !0), gr = zn("security_barrier", !0), ur = zn("security_invoker", !0), cr = zn("TYPE", !0), Gt = zn("DOMAIN", !0), Cr = zn("INCREMENT", !0), Nr = zn("MINVALUE", !0), ln = function(R, X) {
         return { resource: "sequence", prefix: R.toLowerCase(), value: X };
-      }, Lr = zn("NO", !0), Sn = zn("MAXVALUE", !0), xn = zn("START", !0), pn = zn("CACHE", !0), bn = zn("CYCLE", !0), ts = zn("OWNED", !0), kn = zn("NONE", !0), Jn = zn("NULLS", !0), Cs = zn("FIRST", !0), js = zn("LAST", !0), os = zn("AUTO_INCREMENT", !0), Es = zn("UNIQUE", !0), Fs = zn("KEY", !0), Hs = zn("PRIMARY", !0), yo = zn("COLUMN_FORMAT", !0), Ks = zn("FIXED", !0), To = zn("DYNAMIC", !0), to = zn("DEFAULT", !0), So = zn("STORAGE", !0), Fo = zn("DISK", !0), wo = zn("MEMORY", !0), yi = zn("CASCADE", !0), Si = zn("RESTRICT", !0), fa = zn("OUT", !0), Ga = zn("VARIADIC", !0), Ya = zn("INOUT", !0), yu = zn("AGGREGATE", !0), ia = zn("FUNCTION", !0), ru = zn("OWNER", !0), zs = zn("CURRENT_ROLE", !0), ao = zn("CURRENT_USER", !0), ko = zn("SESSION_USER", !0), qo = zn("ALGORITHM", !0), Eo = zn("INSTANT", !0), rn = zn("INPLACE", !0), Pn = zn("COPY", !0), Rs = zn("LOCK", !0), Us = zn("SHARED", !0), ho = zn("EXCLUSIVE", !0), co = zn("PRIMARY KEY", !0), Bo = zn("FOREIGN KEY", !0), Vo = zn("MATCH FULL", !0), di = zn("MATCH PARTIAL", !0), wa = zn("MATCH SIMPLE", !0), Ba = zn("SET NULL", !0), Oa = zn("NO ACTION", !0), Ma = zn("SET DEFAULT", !0), Za = zn("TRIGGER", !0), Ja = zn("BEFORE", !0), wc = zn("AFTER", !0), Cl = zn("INSTEAD OF", !0), Nl = zn("ON", !0), va = zn("EXECUTE", !0), Nu = zn("PROCEDURE", !0), mu = zn("OF", !0), Ru = zn("NOT", !0), Ll = zn("DEFERRABLE", !0), Rl = zn("INITIALLY IMMEDIATE", !0), Ju = zn("INITIALLY DEFERRED", !0), ef = zn("FOR", !0), el = zn("EACH", !0), tl = zn("ROW", !0), od = zn("STATEMENT", !0), Kl = zn("CHARACTER", !0), Fl = zn("SET", !0), vf = zn("CHARSET", !0), Gd = zn("COLLATE", !0), tm = zn("AVG_ROW_LENGTH", !0), Hm = zn("KEY_BLOCK_SIZE", !0), yp = zn("MAX_ROWS", !0), Hd = zn("MIN_ROWS", !0), wp = zn("STATS_SAMPLE_PAGES", !0), jp = zn("CONNECTION", !0), $h = zn("COMPRESSION", !0), xl = zn("'", !1), rm = zn("ZLIB", !0), th = zn("LZ4", !0), nm = zn("ENGINE", !0), op = zn("IN", !0), $f = zn("ACCESS SHARE", !0), Bc = zn("ROW SHARE", !0), id = zn("ROW EXCLUSIVE", !0), Vm = zn("SHARE UPDATE EXCLUSIVE", !0), ad = zn("SHARE ROW EXCLUSIVE", !0), rh = zn("ACCESS EXCLUSIVE", !0), Wm = zn("SHARE", !0), Cp = zn("MODE", !0), Am = zn("NOWAIT", !0), nh = zn("TABLES", !0), ip = zn("PREPARE", !0), Vd = zn(";", !1), Do = zn("(", !1), bf = zn(")", !1), Ff = function(R, X) {
+      }, Lr = zn("NO", !0), Sn = zn("MAXVALUE", !0), xn = zn("START", !0), pn = zn("CACHE", !0), bn = zn("CYCLE", !0), ts = zn("OWNED", !0), kn = zn("NONE", !0), Jn = zn("NULLS", !0), Cs = zn("FIRST", !0), js = zn("LAST", !0), os = zn("AUTO_INCREMENT", !0), Es = zn("UNIQUE", !0), Fs = zn("KEY", !0), Hs = zn("PRIMARY", !0), yo = zn("COLUMN_FORMAT", !0), Ks = zn("FIXED", !0), To = zn("DYNAMIC", !0), to = zn("DEFAULT", !0), So = zn("STORAGE", !0), Fo = zn("DISK", !0), wo = zn("MEMORY", !0), yi = zn("CASCADE", !0), Si = zn("RESTRICT", !0), fa = zn("OUT", !0), Ga = zn("VARIADIC", !0), Ya = zn("INOUT", !0), yu = zn("AGGREGATE", !0), ia = zn("FUNCTION", !0), ru = zn("OWNER", !0), zs = zn("CURRENT_ROLE", !0), ao = zn("CURRENT_USER", !0), ko = zn("SESSION_USER", !0), qo = zn("ALGORITHM", !0), Eo = zn("INSTANT", !0), rn = zn("INPLACE", !0), Pn = zn("COPY", !0), Rs = zn("LOCK", !0), Us = zn("SHARED", !0), ho = zn("EXCLUSIVE", !0), co = zn("PRIMARY KEY", !0), Bo = zn("FOREIGN KEY", !0), Vo = zn("MATCH FULL", !0), di = zn("MATCH PARTIAL", !0), wa = zn("MATCH SIMPLE", !0), Ba = zn("SET NULL", !0), Oa = zn("NO ACTION", !0), Ma = zn("SET DEFAULT", !0), Za = zn("TRIGGER", !0), Ja = zn("BEFORE", !0), wc = zn("AFTER", !0), Cl = zn("INSTEAD OF", !0), Nl = zn("ON", !0), va = zn("EXECUTE", !0), Nu = zn("PROCEDURE", !0), mu = zn("OF", !0), Ru = zn("NOT", !0), Ll = zn("DEFERRABLE", !0), Rl = zn("INITIALLY IMMEDIATE", !0), Ju = zn("INITIALLY DEFERRED", !0), ef = zn("FOR", !0), el = zn("EACH", !0), tl = zn("ROW", !0), id = zn("STATEMENT", !0), Kl = zn("CHARACTER", !0), Fl = zn("SET", !0), vf = zn("CHARSET", !0), Gd = zn("COLLATE", !0), tm = zn("AVG_ROW_LENGTH", !0), Hm = zn("KEY_BLOCK_SIZE", !0), yp = zn("MAX_ROWS", !0), Hd = zn("MIN_ROWS", !0), wp = zn("STATS_SAMPLE_PAGES", !0), jp = zn("CONNECTION", !0), $h = zn("COMPRESSION", !0), xl = zn("'", !1), rm = zn("ZLIB", !0), th = zn("LZ4", !0), nm = zn("ENGINE", !0), op = zn("IN", !0), $f = zn("ACCESS SHARE", !0), Bc = zn("ROW SHARE", !0), ad = zn("ROW EXCLUSIVE", !0), Vm = zn("SHARE UPDATE EXCLUSIVE", !0), ud = zn("SHARE ROW EXCLUSIVE", !0), rh = zn("ACCESS EXCLUSIVE", !0), Wm = zn("SHARE", !0), Cp = zn("MODE", !0), Am = zn("NOWAIT", !0), nh = zn("TABLES", !0), ip = zn("PREPARE", !0), Vd = zn(";", !1), Do = zn("(", !1), bf = zn(")", !1), Ff = function(R, X) {
         return { with: R, ...X };
       }, Wd = zn("OUTFILE", !0), $p = zn("DUMPFILE", !0), Fh = zn("BTREE", !0), Ym = zn("HASH", !0), Fp = zn("GIST", !0), Uh = zn("GIN", !0), Ch = zn("WITH", !0), sm = zn("PARSER", !0), Up = zn("VISIBLE", !0), Lp = zn("INVISIBLE", !0), Nc = function(R, X) {
         return X.unshift(R), X.forEach((O) => {
@@ -121787,13 +121811,13 @@ function aEt() {
         }), X;
       }, xp = zn("LATERAL", !0), hv = zn("TABLESAMPLE", !0), om = zn("REPEATABLE", !0), Lh = zn("CROSS", !0), gf = zn("FOLLOWING", !0), Uf = zn("PRECEDING", !0), sh = zn("CURRENT", !0), im = zn("UNBOUNDED", !0), ju = zn("=", !1), Bf = zn("DO", !0), zf = zn("NOTHING", !0), Qm = zn("CONFLICT", !0), xh = zn("->", !1), oh = function(R, X) {
         return zd(R, X);
-      }, Bp = zn("!", !1), am = zn(">=", !1), Km = zn(">", !1), _m = zn("<=", !1), tf = zn("<>", !1), qf = zn("<", !1), ud = zn("!=", !1), Bh = zn("SIMILAR", !0), ih = zn("!~*", !1), Eh = zn("~*", !1), Ep = zn("~", !1), Sh = zn("!~", !1), zh = zn("ESCAPE", !0), Tm = zn("+", !1), Sp = zn("-", !1), yf = zn("*", !1), zp = zn("/", !1), _t = zn("%", !1), Or = zn("||", !1), cn = zn("$", !1), Wr = zn("?", !1), bs = zn("?|", !1), cs = zn("?&", !1), Ns = zn("#-", !1), fo = zn("#>>", !1), io = zn("#>", !1), Uo = zn("@>", !1), Ko = zn("<@", !1), fi = zn("E", !0), Bi = function(R) {
+      }, Bp = zn("!", !1), am = zn(">=", !1), Km = zn(">", !1), _m = zn("<=", !1), tf = zn("<>", !1), qf = zn("<", !1), ld = zn("!=", !1), Bh = zn("SIMILAR", !0), ih = zn("!~*", !1), Eh = zn("~*", !1), Ep = zn("~", !1), Sh = zn("!~", !1), zh = zn("ESCAPE", !0), Tm = zn("+", !1), Sp = zn("-", !1), yf = zn("*", !1), zp = zn("/", !1), _t = zn("%", !1), Or = zn("||", !1), cn = zn("$", !1), Wr = zn("?", !1), bs = zn("?|", !1), cs = zn("?&", !1), Ns = zn("#-", !1), fo = zn("#>>", !1), io = zn("#>", !1), Uo = zn("@>", !1), Ko = zn("<@", !1), fi = zn("E", !0), Bi = function(R) {
         return Vu[R.toUpperCase()] === !0;
       }, Di = zn('"', !1), ba = /^[^"]/, Pa = zu(['"'], !0, !1), Ki = /^[^']/, ja = zu(["'"], !0, !1), Ta = zn("`", !1), vu = /^[^`]/, cu = zu(["`"], !0, !1), ul = function(R) {
         return { type: "default", value: R };
-      }, Ou = /^[A-Za-z_\u4E00-\u9FA5\xC0-\u017F]/, ec = zu([["A", "Z"], ["a", "z"], "_", ["一", "龥"], ["À", "ſ"]], !1, !1), Eu = /^[A-Za-z0-9_$\x80-\uFFFF]/, uc = zu([["A", "Z"], ["a", "z"], ["0", "9"], "_", "$", ["", "￿"]], !1, !1), Td = /^[A-Za-z0-9_\u4E00-\u9FA5\xC0-\u017F]/, Gf = zu([["A", "Z"], ["a", "z"], ["0", "9"], "_", ["一", "龥"], ["À", "ſ"]], !1, !1), Cc = zn(":", !1), ah = zn("OVER", !0), qp = zn("FILTER", !0), ll = zn("FIRST_VALUE", !0), zc = zn("LAST_VALUE", !0), Id = zn("ROW_NUMBER", !0), ld = zn("DENSE_RANK", !0), um = zn("RANK", !0), Xm = zn("LAG", !0), Cd = zn("LEAD", !0), Hf = zn("NTH_VALUE", !0), Nd = zn("IGNORE", !0), Yd = zn("RESPECT", !0), Qd = zn("percentile_cont", !0), uh = zn("percentile_disc", !0), Qv = zn("within", !0), Zm = zn("mode", !0), Kv = zn("BOTH", !0), Xv = zn("LEADING", !0), Vf = zn("TRAILING", !0), wf = zn("trim", !0), Im = zn("INPUT", !0), Gp = zn("=>", !1), mv = zn("PATH", !0), Jm = zn("OUTER", !0), vv = zn("RECURSIVE", !0), Zv = zn("now", !0), lm = zn("at", !0), ev = zn("zone", !0), bv = zn("FLATTEN", !0), tv = zn("CENTURY", !0), cm = zn("DAY", !0), Av = zn("DATE", !0), _v = zn("DECADE", !0), Nm = zn("DOW", !0), Jv = zn("DOY", !0), Lb = zn("EPOCH", !0), gv = zn("HOUR", !0), xb = zn("ISODOW", !0), Tv = zn("ISOYEAR", !0), Eb = zn("MICROSECONDS", !0), Db = zn("MILLENNIUM", !0), Iv = zn("MILLISECONDS", !0), Nv = zn("MINUTE", !0), eb = zn("MONTH", !0), fm = zn("QUARTER", !0), Ap = zn("SECOND", !0), Kd = zn("TIMEZONE", !0), cd = zn("TIMEZONE_HOUR", !0), Ah = zn("TIMEZONE_MINUTE", !0), qh = zn("WEEK", !0), Rv = zn("YEAR", !0), tb = zn("NTILE", !0), dm = /^[\n]/, Ov = zu([`
+      }, Ou = /^[A-Za-z_\u4E00-\u9FA5\xC0-\u017F]/, ec = zu([["A", "Z"], ["a", "z"], "_", ["一", "龥"], ["À", "ſ"]], !1, !1), Eu = /^[A-Za-z0-9_$\x80-\uFFFF]/, uc = zu([["A", "Z"], ["a", "z"], ["0", "9"], "_", "$", ["", "￿"]], !1, !1), Td = /^[A-Za-z0-9_\u4E00-\u9FA5\xC0-\u017F]/, Gf = zu([["A", "Z"], ["a", "z"], ["0", "9"], "_", ["一", "龥"], ["À", "ſ"]], !1, !1), Cc = zn(":", !1), ah = zn("OVER", !0), qp = zn("FILTER", !0), ll = zn("FIRST_VALUE", !0), zc = zn("LAST_VALUE", !0), Id = zn("ROW_NUMBER", !0), cd = zn("DENSE_RANK", !0), um = zn("RANK", !0), Xm = zn("LAG", !0), Cd = zn("LEAD", !0), Hf = zn("NTH_VALUE", !0), Nd = zn("IGNORE", !0), Yd = zn("RESPECT", !0), Qd = zn("percentile_cont", !0), uh = zn("percentile_disc", !0), Qv = zn("within", !0), Zm = zn("mode", !0), Kv = zn("BOTH", !0), Xv = zn("LEADING", !0), Vf = zn("TRAILING", !0), wf = zn("trim", !0), Im = zn("INPUT", !0), Gp = zn("=>", !1), mv = zn("PATH", !0), Jm = zn("OUTER", !0), vv = zn("RECURSIVE", !0), Zv = zn("now", !0), lm = zn("at", !0), ev = zn("zone", !0), bv = zn("FLATTEN", !0), tv = zn("CENTURY", !0), cm = zn("DAY", !0), Av = zn("DATE", !0), _v = zn("DECADE", !0), Nm = zn("DOW", !0), Jv = zn("DOY", !0), Lb = zn("EPOCH", !0), gv = zn("HOUR", !0), xb = zn("ISODOW", !0), Tv = zn("ISOYEAR", !0), Eb = zn("MICROSECONDS", !0), Db = zn("MILLENNIUM", !0), Iv = zn("MILLISECONDS", !0), Nv = zn("MINUTE", !0), eb = zn("MONTH", !0), fm = zn("QUARTER", !0), Ap = zn("SECOND", !0), Kd = zn("TIMEZONE", !0), fd = zn("TIMEZONE_HOUR", !0), Ah = zn("TIMEZONE_MINUTE", !0), qh = zn("WEEK", !0), Rv = zn("YEAR", !0), tb = zn("NTILE", !0), dm = /^[\n]/, Ov = zu([`
 `], !1, !1), kv = /^[^"\\\0-\x1F\x7F]/, Mv = zu(['"', "\\", ["\0", ""], ""], !0, !1), Rm = /^[^'\\]/, _h = zu(["'", "\\"], !0, !1), Gh = zn("\\'", !1), rv = zn('\\"', !1), rb = zn("\\\\", !1), Dv = zn("\\/", !1), nb = zn("\\b", !1), sb = zn("\\f", !1), Om = zn("\\n", !1), ob = zn("\\r", !1), ib = zn("\\t", !1), Pv = zn("\\u", !1), Sb = zn("\\", !1), Ab = zn("''", !1), jv = /^[\n\r]/, $v = zu([`
-`, "\r"], !1, !1), Hh = zn(".", !1), rf = /^[0-9]/, Rd = zu([["0", "9"]], !1, !1), pm = /^[0-9a-fA-F]/, Wf = zu([["0", "9"], ["a", "f"], ["A", "F"]], !1, !1), Cf = /^[eE]/, yv = zu(["e", "E"], !1, !1), km = /^[+\-]/, Lf = zu(["+", "-"], !1, !1), Od = zn("NULL", !0), _b = zn("NOT NULL", !0), ab = zn("TRUE", !0), Tb = zn("TO", !0), ub = zn("FALSE", !0), wv = zn("SHOW", !0), Cv = zn("DROP", !0), Lv = zn("USE", !0), lb = zn("ALTER", !0), Pb = zn("SELECT", !0), Ib = zn("UPDATE", !0), cb = zn("CREATE", !0), fb = zn("TEMPORARY", !0), Fv = zn("TEMP", !0), Nb = zn("DELETE", !0), Rb = zn("INSERT", !0), db = zn("REPLACE", !0), Ob = zn("RETURNING", !0), pb = zn("RENAME", !0), Uv = zn("PARTITION", !0), q = zn("INTO", !0), as = zn("FROM", !0), hm = zn("AS", !0), xf = zn("TABLE", !0), nv = zn("DATABASE", !0), $r = zn("SEQUENCE", !0), Gs = zn("TABLESPACE", !0), kd = zn("DEALLOCATE", !0), Mm = zn("LEFT", !0), sv = zn("RIGHT", !0), ws = zn("FULL", !0), Bv = zn("INNER", !0), hb = zn("JOIN", !0), jb = zn("UNION", !0), mm = zn("VALUES", !0), B = zn("USING", !0), is = zn("WHERE", !0), Dm = zn("GROUP", !0), _p = zn("BY", !0), Pm = zn("ORDER", !0), Ir = zn("HAVING", !0), Ds = zn("WINDOW", !0), fd = zn("LIMIT", !0), xv = zn("OFFSET", !0), vm = zn("ASC", !0), ls = zn("DESC", !0), mb = zn("DESCRIBE", !0), ov = zn("ALL", !0), bm = zn("DISTINCT", !0), iv = zn("BETWEEN", !0), jm = zn("IS", !0), Hp = zn("LIKE", !0), $m = zn("ILIKE", !0), Fm = zn("EXISTS", !0), Th = zn("AND", !0), Ih = zn("OR", !0), D = zn("ARRAY", !0), Zn = zn("ARRAY_AGG", !0), Vh = zn("STRING_AGG", !0), Ef = zn("COUNT", !0), Nh = zn("GROUP_CONCAT", !0), wr = zn("MAX", !0), _s = zn("MIN", !0), El = zn("SUM", !0), lh = zn("AVG", !0), Wh = zn("EXTRACT", !0), es = zn("CALL", !0), qc = zn("CASE", !0), lc = zn("WHEN", !0), av = zn("THEN", !0), Vp = zn("ELSE", !0), ap = zn("END", !0), Xd = zn("CAST", !0), Ev = zn("TRY_CAST", !0), ch = zn("BOOL", !0), gm = zn("BOOLEAN", !0), vb = zn("CHAR", !0), ym = zn("VARCHAR", !0), wm = zn("NUMBER", !0), Yh = zn("DECIMAL", !0), Um = zn("SIGNED", !0), dd = zn("UNSIGNED", !0), zv = zn("INT", !0), Qh = zn("ZEROFILL", !0), Cm = zn("INTEGER", !0), up = zn("JSON", !0), Bm = zn("JSONB", !0), fh = zn("GEOMETRY", !0), N = zn("SMALLINT", !0), Hn = zn("SERIAL", !0), Sf = zn("TINYINT", !0), T = zn("TINYTEXT", !0), Vn = zn("TEXT", !0), fr = zn("MEDIUMTEXT", !0), Ls = zn("LONGTEXT", !0), Rc = zn("BIGINT", !0), mr = zn("ENUM", !0), ms = zn("FLOAT", !0), On = zn("DOUBLE", !0), Wp = zn("BIGSERIAL", !0), dh = zn("REAL", !0), $n = zn("DATETIME", !0), A = zn("ROWS", !0), Dn = zn("TIME", !0), Af = zn("TIMESTAMP", !0), Lc = zn("TRUNCATE", !0), xc = zn("USER", !0), rr = zn("UUID", !0), fs = zn("OID", !0), tc = zn("REGCLASS", !0), rc = zn("REGCOLLATION", !0), Yp = zn("REGCONFIG", !0), Rn = zn("REGDICTIONARY", !0), Rh = zn("REGNAMESPACE", !0), Zd = zn("REGOPER", !0), ph = zn("REGOPERATOR", !0), Tp = zn("REGPROC", !0), Qp = zn("REGPROCEDURE", !0), pd = zn("REGROLE", !0), cc = zn("REGTYPE", !0), nf = zn("CURRENT_DATE", !0), $u = zn("INTERVAL", !0), Ro = zn("CURRENT_TIME", !0), Kh = zn("CURRENT_TIMESTAMP", !0), lp = zn("SYSTEM_USER", !0), hh = zn("GLOBAL", !0), mh = zn("SESSION", !0), Ld = zn("PERSIST", !0), Oh = zn("PERSIST_ONLY", !0), Gc = zn("VIEW", !0), Yf = zn("@", !1), sf = zn("@@", !1), zo = zn("$$", !1), Kp = zn("return", !0), Ip = zn(":=", !1), Np = zn("::", !1), fu = zn("DUAL", !0), of = zn("ADD", !0), Md = zn("COLUMN", !0), Jd = zn("INDEX", !0), hd = zn("FULLTEXT", !0), Dd = zn("SPATIAL", !0), ep = zn("COMMENT", !0), af = zn("CONSTRAINT", !0), cp = zn("CONCURRENTLY", !0), Yu = zn("REFERENCES", !0), Qf = zn("SQL_CALC_FOUND_ROWS", !0), tp = zn("SQL_CACHE", !0), Rp = zn("SQL_NO_CACHE", !0), Op = zn("SQL_SMALL_RESULT", !0), fc = zn("SQL_BIG_RESULT", !0), _f = zn("SQL_BUFFER_RESULT", !0), Sl = zn(",", !1), vh = zn("[", !1), Pd = zn("]", !1), uf = zn("->>", !1), Ol = zn("&&", !1), bh = zn("/*", !1), kp = zn("*/", !1), jd = zn("--", !1), md = zn("//", !1), vd = { type: "any" }, zl = /^[ \t\n\r]/, Go = zu([" ", "	", `
+`, "\r"], !1, !1), Hh = zn(".", !1), rf = /^[0-9]/, Rd = zu([["0", "9"]], !1, !1), pm = /^[0-9a-fA-F]/, Wf = zu([["0", "9"], ["a", "f"], ["A", "F"]], !1, !1), Cf = /^[eE]/, yv = zu(["e", "E"], !1, !1), km = /^[+\-]/, Lf = zu(["+", "-"], !1, !1), Od = zn("NULL", !0), _b = zn("NOT NULL", !0), ab = zn("TRUE", !0), Tb = zn("TO", !0), ub = zn("FALSE", !0), wv = zn("SHOW", !0), Cv = zn("DROP", !0), Lv = zn("USE", !0), lb = zn("ALTER", !0), Pb = zn("SELECT", !0), Ib = zn("UPDATE", !0), cb = zn("CREATE", !0), fb = zn("TEMPORARY", !0), Fv = zn("TEMP", !0), Nb = zn("DELETE", !0), Rb = zn("INSERT", !0), db = zn("REPLACE", !0), Ob = zn("RETURNING", !0), pb = zn("RENAME", !0), Uv = zn("PARTITION", !0), q = zn("INTO", !0), as = zn("FROM", !0), hm = zn("AS", !0), xf = zn("TABLE", !0), nv = zn("DATABASE", !0), $r = zn("SEQUENCE", !0), Gs = zn("TABLESPACE", !0), kd = zn("DEALLOCATE", !0), Mm = zn("LEFT", !0), sv = zn("RIGHT", !0), ws = zn("FULL", !0), Bv = zn("INNER", !0), hb = zn("JOIN", !0), jb = zn("UNION", !0), mm = zn("VALUES", !0), B = zn("USING", !0), is = zn("WHERE", !0), Dm = zn("GROUP", !0), _p = zn("BY", !0), Pm = zn("ORDER", !0), Ir = zn("HAVING", !0), Ds = zn("WINDOW", !0), dd = zn("LIMIT", !0), xv = zn("OFFSET", !0), vm = zn("ASC", !0), ls = zn("DESC", !0), mb = zn("DESCRIBE", !0), ov = zn("ALL", !0), bm = zn("DISTINCT", !0), iv = zn("BETWEEN", !0), jm = zn("IS", !0), Hp = zn("LIKE", !0), $m = zn("ILIKE", !0), Fm = zn("EXISTS", !0), Th = zn("AND", !0), Ih = zn("OR", !0), D = zn("ARRAY", !0), Zn = zn("ARRAY_AGG", !0), Vh = zn("STRING_AGG", !0), Ef = zn("COUNT", !0), Nh = zn("GROUP_CONCAT", !0), wr = zn("MAX", !0), _s = zn("MIN", !0), El = zn("SUM", !0), lh = zn("AVG", !0), Wh = zn("EXTRACT", !0), es = zn("CALL", !0), qc = zn("CASE", !0), lc = zn("WHEN", !0), av = zn("THEN", !0), Vp = zn("ELSE", !0), ap = zn("END", !0), Xd = zn("CAST", !0), Ev = zn("TRY_CAST", !0), ch = zn("BOOL", !0), gm = zn("BOOLEAN", !0), vb = zn("CHAR", !0), ym = zn("VARCHAR", !0), wm = zn("NUMBER", !0), Yh = zn("DECIMAL", !0), Um = zn("SIGNED", !0), pd = zn("UNSIGNED", !0), zv = zn("INT", !0), Qh = zn("ZEROFILL", !0), Cm = zn("INTEGER", !0), up = zn("JSON", !0), Bm = zn("JSONB", !0), fh = zn("GEOMETRY", !0), N = zn("SMALLINT", !0), Hn = zn("SERIAL", !0), Sf = zn("TINYINT", !0), T = zn("TINYTEXT", !0), Vn = zn("TEXT", !0), fr = zn("MEDIUMTEXT", !0), Ls = zn("LONGTEXT", !0), Rc = zn("BIGINT", !0), mr = zn("ENUM", !0), ms = zn("FLOAT", !0), On = zn("DOUBLE", !0), Wp = zn("BIGSERIAL", !0), dh = zn("REAL", !0), $n = zn("DATETIME", !0), A = zn("ROWS", !0), Dn = zn("TIME", !0), Af = zn("TIMESTAMP", !0), Lc = zn("TRUNCATE", !0), xc = zn("USER", !0), rr = zn("UUID", !0), fs = zn("OID", !0), tc = zn("REGCLASS", !0), rc = zn("REGCOLLATION", !0), Yp = zn("REGCONFIG", !0), Rn = zn("REGDICTIONARY", !0), Rh = zn("REGNAMESPACE", !0), Zd = zn("REGOPER", !0), ph = zn("REGOPERATOR", !0), Tp = zn("REGPROC", !0), Qp = zn("REGPROCEDURE", !0), hd = zn("REGROLE", !0), cc = zn("REGTYPE", !0), nf = zn("CURRENT_DATE", !0), $u = zn("INTERVAL", !0), Ro = zn("CURRENT_TIME", !0), Kh = zn("CURRENT_TIMESTAMP", !0), lp = zn("SYSTEM_USER", !0), hh = zn("GLOBAL", !0), mh = zn("SESSION", !0), Ld = zn("PERSIST", !0), Oh = zn("PERSIST_ONLY", !0), Gc = zn("VIEW", !0), Yf = zn("@", !1), sf = zn("@@", !1), zo = zn("$$", !1), Kp = zn("return", !0), Ip = zn(":=", !1), Np = zn("::", !1), fu = zn("DUAL", !0), of = zn("ADD", !0), Md = zn("COLUMN", !0), Jd = zn("INDEX", !0), md = zn("FULLTEXT", !0), Dd = zn("SPATIAL", !0), ep = zn("COMMENT", !0), af = zn("CONSTRAINT", !0), cp = zn("CONCURRENTLY", !0), Yu = zn("REFERENCES", !0), Qf = zn("SQL_CALC_FOUND_ROWS", !0), tp = zn("SQL_CACHE", !0), Rp = zn("SQL_NO_CACHE", !0), Op = zn("SQL_SMALL_RESULT", !0), fc = zn("SQL_BIG_RESULT", !0), _f = zn("SQL_BUFFER_RESULT", !0), Sl = zn(",", !1), vh = zn("[", !1), Pd = zn("]", !1), uf = zn("->>", !1), Ol = zn("&&", !1), bh = zn("/*", !1), kp = zn("*/", !1), jd = zn("--", !1), vd = zn("//", !1), bd = { type: "any" }, zl = /^[ \t\n\r]/, Go = zu([" ", "	", `
 `, "\r"], !1, !1), rp = /^[^$]/, Oc = zu(["$"], !0, !1), Kf = function(R) {
         return { dataType: R };
       }, kc = zn("bytea", !0), Su = function(R) {
@@ -121899,7 +121923,7 @@ function aEt() {
               return Yi;
             }()) === e && (it = null), it !== e && (No = Rt()) !== e ? ((ti = function() {
               var Yi, Xi, li, Sa;
-              Yi = v, r.substr(v, 3).toLowerCase() === "for" ? (Xi = r.substr(v, 3), v += 3) : (Xi = e, qe === 0 && Vr(ef)), Xi !== e && Rt() !== e ? (r.substr(v, 4).toLowerCase() === "each" ? (li = r.substr(v, 4), v += 4) : (li = e, qe === 0 && Vr(el)), li === e && (li = null), li !== e && Rt() !== e ? (r.substr(v, 3).toLowerCase() === "row" ? (Sa = r.substr(v, 3), v += 3) : (Sa = e, qe === 0 && Vr(tl)), Sa === e && (r.substr(v, 9).toLowerCase() === "statement" ? (Sa = r.substr(v, 9), v += 9) : (Sa = e, qe === 0 && Vr(od))), Sa !== e ? (Xr = Yi, oo = Xi, ji = Sa, Xi = { keyword: (Ci = li) ? `${oo.toLowerCase()} ${Ci.toLowerCase()}` : oo.toLowerCase(), args: ji.toLowerCase() }, Yi = Xi) : (v = Yi, Yi = e)) : (v = Yi, Yi = e)) : (v = Yi, Yi = e);
+              Yi = v, r.substr(v, 3).toLowerCase() === "for" ? (Xi = r.substr(v, 3), v += 3) : (Xi = e, qe === 0 && Vr(ef)), Xi !== e && Rt() !== e ? (r.substr(v, 4).toLowerCase() === "each" ? (li = r.substr(v, 4), v += 4) : (li = e, qe === 0 && Vr(el)), li === e && (li = null), li !== e && Rt() !== e ? (r.substr(v, 3).toLowerCase() === "row" ? (Sa = r.substr(v, 3), v += 3) : (Sa = e, qe === 0 && Vr(tl)), Sa === e && (r.substr(v, 9).toLowerCase() === "statement" ? (Sa = r.substr(v, 9), v += 9) : (Sa = e, qe === 0 && Vr(id))), Sa !== e ? (Xr = Yi, oo = Xi, ji = Sa, Xi = { keyword: (Ci = li) ? `${oo.toLowerCase()} ${Ci.toLowerCase()}` : oo.toLowerCase(), args: ji.toLowerCase() }, Yi = Xi) : (v = Yi, Yi = e)) : (v = Yi, Yi = e)) : (v = Yi, Yi = e);
               var oo, Ci, ji;
               return Yi;
             }()) === e && (ti = null), ti !== e && Rt() !== e ? ((na = function() {
@@ -122115,7 +122139,7 @@ function aEt() {
             return qn = v, r.substr(v, 4).toLowerCase() === "lock" ? (Bn = r.substr(v, 4), v += 4) : (Bn = e, qe === 0 && Vr(Rs)), Bn !== e ? (Qn = v, qe++, As = ft(), qe--, As === e ? Qn = void 0 : (v = Qn, Qn = e), Qn !== e ? qn = Bn = [Bn, Qn] : (v = qn, qn = e)) : (v = qn, qn = e), qn;
           }()) !== e && Rt() !== e ? ((ye = Ut()) === e && (ye = null), ye !== e && Rt() !== e && (ot = rl()) !== e && Rt() !== e ? ((ct = function() {
             var qn, Bn, Qn, As;
-            return qn = v, r.substr(v, 2).toLowerCase() === "in" ? (Bn = r.substr(v, 2), v += 2) : (Bn = e, qe === 0 && Vr(op)), Bn !== e && Rt() !== e ? (r.substr(v, 12).toLowerCase() === "access share" ? (Qn = r.substr(v, 12), v += 12) : (Qn = e, qe === 0 && Vr($f)), Qn === e && (r.substr(v, 9).toLowerCase() === "row share" ? (Qn = r.substr(v, 9), v += 9) : (Qn = e, qe === 0 && Vr(Bc)), Qn === e && (r.substr(v, 13).toLowerCase() === "row exclusive" ? (Qn = r.substr(v, 13), v += 13) : (Qn = e, qe === 0 && Vr(id)), Qn === e && (r.substr(v, 22).toLowerCase() === "share update exclusive" ? (Qn = r.substr(v, 22), v += 22) : (Qn = e, qe === 0 && Vr(Vm)), Qn === e && (r.substr(v, 19).toLowerCase() === "share row exclusive" ? (Qn = r.substr(v, 19), v += 19) : (Qn = e, qe === 0 && Vr(ad)), Qn === e && (r.substr(v, 9).toLowerCase() === "exclusive" ? (Qn = r.substr(v, 9), v += 9) : (Qn = e, qe === 0 && Vr(ho)), Qn === e && (r.substr(v, 16).toLowerCase() === "access exclusive" ? (Qn = r.substr(v, 16), v += 16) : (Qn = e, qe === 0 && Vr(rh)), Qn === e && (r.substr(v, 5).toLowerCase() === "share" ? (Qn = r.substr(v, 5), v += 5) : (Qn = e, qe === 0 && Vr(Wm))))))))), Qn !== e && Rt() !== e ? (r.substr(v, 4).toLowerCase() === "mode" ? (As = r.substr(v, 4), v += 4) : (As = e, qe === 0 && Vr(Cp)), As !== e ? (Xr = qn, Bn = { mode: `in ${Qn.toLowerCase()} mode` }, qn = Bn) : (v = qn, qn = e)) : (v = qn, qn = e)) : (v = qn, qn = e), qn;
+            return qn = v, r.substr(v, 2).toLowerCase() === "in" ? (Bn = r.substr(v, 2), v += 2) : (Bn = e, qe === 0 && Vr(op)), Bn !== e && Rt() !== e ? (r.substr(v, 12).toLowerCase() === "access share" ? (Qn = r.substr(v, 12), v += 12) : (Qn = e, qe === 0 && Vr($f)), Qn === e && (r.substr(v, 9).toLowerCase() === "row share" ? (Qn = r.substr(v, 9), v += 9) : (Qn = e, qe === 0 && Vr(Bc)), Qn === e && (r.substr(v, 13).toLowerCase() === "row exclusive" ? (Qn = r.substr(v, 13), v += 13) : (Qn = e, qe === 0 && Vr(ad)), Qn === e && (r.substr(v, 22).toLowerCase() === "share update exclusive" ? (Qn = r.substr(v, 22), v += 22) : (Qn = e, qe === 0 && Vr(Vm)), Qn === e && (r.substr(v, 19).toLowerCase() === "share row exclusive" ? (Qn = r.substr(v, 19), v += 19) : (Qn = e, qe === 0 && Vr(ud)), Qn === e && (r.substr(v, 9).toLowerCase() === "exclusive" ? (Qn = r.substr(v, 9), v += 9) : (Qn = e, qe === 0 && Vr(ho)), Qn === e && (r.substr(v, 16).toLowerCase() === "access exclusive" ? (Qn = r.substr(v, 16), v += 16) : (Qn = e, qe === 0 && Vr(rh)), Qn === e && (r.substr(v, 5).toLowerCase() === "share" ? (Qn = r.substr(v, 5), v += 5) : (Qn = e, qe === 0 && Vr(Wm))))))))), Qn !== e && Rt() !== e ? (r.substr(v, 4).toLowerCase() === "mode" ? (As = r.substr(v, 4), v += 4) : (As = e, qe === 0 && Vr(Cp)), As !== e ? (Xr = qn, Bn = { mode: `in ${Qn.toLowerCase()} mode` }, qn = Bn) : (v = qn, qn = e)) : (v = qn, qn = e)) : (v = qn, qn = e), qn;
           }()) === e && (ct = null), ct !== e && Rt() !== e ? (r.substr(v, 6).toLowerCase() === "nowait" ? (gt = r.substr(v, 6), v += 6) : (gt = e, qe === 0 && Vr(Am)), gt === e && (gt = null), gt !== e ? (Xr = X, hr = ye, en = ct, Ur = gt, (Hr = ot) && Hr.forEach((qn) => pu.add(`lock::${[qn.db, qn.schema].filter(Boolean).join(".") || null}::${qn.table}`)), O = { tableList: Array.from(pu), columnList: hl(Bu), ast: { type: "lock", keyword: hr && hr.toLowerCase(), tables: Hr.map((qn) => ({ table: qn })), lock_mode: en, nowait: Ur } }, X = O) : (v = X, X = e)) : (v = X, X = e)) : (v = X, X = e)) : (v = X, X = e);
           var hr, Hr, en, Ur;
           return X;
@@ -122401,7 +122425,7 @@ function aEt() {
         var R, X, O, ye, ot, ct;
         return R = v, (X = function() {
           var gt, hr, Hr, en;
-          return gt = v, r.substr(v, 8).toLowerCase() === "fulltext" ? (hr = r.substr(v, 8), v += 8) : (hr = e, qe === 0 && Vr(hd)), hr !== e ? (Hr = v, qe++, en = ft(), qe--, en === e ? Hr = void 0 : (v = Hr, Hr = e), Hr !== e ? (Xr = gt, gt = hr = "FULLTEXT") : (v = gt, gt = e)) : (v = gt, gt = e), gt;
+          return gt = v, r.substr(v, 8).toLowerCase() === "fulltext" ? (hr = r.substr(v, 8), v += 8) : (hr = e, qe === 0 && Vr(md)), hr !== e ? (Hr = v, qe++, en = ft(), qe--, en === e ? Hr = void 0 : (v = Hr, Hr = e), Hr !== e ? (Xr = gt, gt = hr = "FULLTEXT") : (v = gt, gt = e)) : (v = gt, gt = e), gt;
         }()) === e && (X = function() {
           var gt, hr, Hr, en;
           return gt = v, r.substr(v, 7).toLowerCase() === "spatial" ? (hr = r.substr(v, 7), v += 7) : (hr = e, qe === 0 && Vr(Dd)), hr !== e ? (Hr = v, qe++, en = ft(), qe--, en === e ? Hr = void 0 : (v = Hr, Hr = e), Hr !== e ? (Xr = gt, gt = hr = "SPATIAL") : (v = gt, gt = e)) : (v = gt, gt = e), gt;
@@ -122883,7 +122907,7 @@ function aEt() {
         var R, X, O, ye, ot, ct, gt;
         return R = v, X = v, (O = function() {
           var hr, Hr, en, Ur;
-          return hr = v, r.substr(v, 5).toLowerCase() === "limit" ? (Hr = r.substr(v, 5), v += 5) : (Hr = e, qe === 0 && Vr(fd)), Hr !== e ? (en = v, qe++, Ur = ft(), qe--, Ur === e ? en = void 0 : (v = en, en = e), en !== e ? hr = Hr = [Hr, en] : (v = hr, hr = e)) : (v = hr, hr = e), hr;
+          return hr = v, r.substr(v, 5).toLowerCase() === "limit" ? (Hr = r.substr(v, 5), v += 5) : (Hr = e, qe === 0 && Vr(dd)), Hr !== e ? (en = v, qe++, Ur = ft(), qe--, Ur === e ? en = void 0 : (v = en, en = e), en !== e ? hr = Hr = [Hr, en] : (v = hr, hr = e)) : (v = hr, hr = e), hr;
         }()) !== e && (ye = Rt()) !== e ? ((ot = $t()) === e && (ot = ii()), ot !== e ? X = O = [O, ye, ot] : (v = X, X = e)) : (v = X, X = e), X === e && (X = null), X !== e && (O = Rt()) !== e ? (ye = v, (ot = function() {
           var hr, Hr, en, Ur;
           return hr = v, r.substr(v, 6).toLowerCase() === "offset" ? (Hr = r.substr(v, 6), v += 6) : (Hr = e, qe === 0 && Vr(xv)), Hr !== e ? (en = v, qe++, Ur = ft(), qe--, Ur === e ? en = void 0 : (v = en, en = e), en !== e ? (Xr = hr, hr = Hr = "OFFSET") : (v = hr, hr = e)) : (v = hr, hr = e), hr;
@@ -123172,7 +123196,7 @@ function aEt() {
       }
       function Vi() {
         var R;
-        return r.substr(v, 2) === ">=" ? (R = ">=", v += 2) : (R = e, qe === 0 && Vr(am)), R === e && (r.charCodeAt(v) === 62 ? (R = ">", v++) : (R = e, qe === 0 && Vr(Km)), R === e && (r.substr(v, 2) === "<=" ? (R = "<=", v += 2) : (R = e, qe === 0 && Vr(_m)), R === e && (r.substr(v, 2) === "<>" ? (R = "<>", v += 2) : (R = e, qe === 0 && Vr(tf)), R === e && (r.charCodeAt(v) === 60 ? (R = "<", v++) : (R = e, qe === 0 && Vr(qf)), R === e && (r.charCodeAt(v) === 61 ? (R = "=", v++) : (R = e, qe === 0 && Vr(ju)), R === e && (r.substr(v, 2) === "!=" ? (R = "!=", v += 2) : (R = e, qe === 0 && Vr(ud)))))))), R;
+        return r.substr(v, 2) === ">=" ? (R = ">=", v += 2) : (R = e, qe === 0 && Vr(am)), R === e && (r.charCodeAt(v) === 62 ? (R = ">", v++) : (R = e, qe === 0 && Vr(Km)), R === e && (r.substr(v, 2) === "<=" ? (R = "<=", v += 2) : (R = e, qe === 0 && Vr(_m)), R === e && (r.substr(v, 2) === "<>" ? (R = "<>", v += 2) : (R = e, qe === 0 && Vr(tf)), R === e && (r.charCodeAt(v) === 60 ? (R = "<", v++) : (R = e, qe === 0 && Vr(qf)), R === e && (r.charCodeAt(v) === 61 ? (R = "=", v++) : (R = e, qe === 0 && Vr(ju)), R === e && (r.substr(v, 2) === "!=" ? (R = "!=", v += 2) : (R = e, qe === 0 && Vr(ld)))))))), R;
       }
       function ka() {
         var R, X, O, ye, ot, ct;
@@ -123296,7 +123320,7 @@ function aEt() {
       }
       function Cu() {
         var R, X;
-        return R = v, (X = St()) !== e ? (Xr = v, (Bi(X) ? e : void 0) !== e ? (Xr = R, R = X = X) : (v = R, R = e)) : (v = R, R = e), R === e && (R = v, (X = bd()) !== e && (Xr = R, X = X), R = X), R;
+        return R = v, (X = St()) !== e ? (Xr = v, (Bi(X) ? e : void 0) !== e ? (Xr = R, R = X = X) : (v = R, R = e)) : (v = R, R = e), R === e && (R = v, (X = gd()) !== e && (Xr = R, X = X), R = X), R;
       }
       function vr() {
         var R, X, O, ye, ot, ct, gt, hr, Hr;
@@ -123304,13 +123328,13 @@ function aEt() {
           return Vu[en.toUpperCase()] === !0;
         }(X) ? e : void 0) !== e ? (O = v, (ye = Rt()) !== e && (ot = Zi()) !== e && (ct = Rt()) !== e && (gt = Mu()) !== e && (hr = Rt()) !== e && (Hr = Ji()) !== e ? O = ye = [ye, ot, ct, gt, hr, Hr] : (v = O, O = e), O === e && (O = null), O !== e ? (Xr = R, R = X = function(en, Ur) {
           return Ur ? `${en}(${Ur[3].map((qn) => qn.value).join(", ")})` : en;
-        }(X, O)) : (v = R, R = e)) : (v = R, R = e)) : (v = R, R = e), R === e && (R = v, (X = bd()) !== e && (Xr = R, X = X), R = X), R;
+        }(X, O)) : (v = R, R = e)) : (v = R, R = e)) : (v = R, R = e), R === e && (R = v, (X = gd()) !== e && (Xr = R, X = X), R = X), R;
       }
       function oc() {
         var R;
         return (R = Tl()) === e && (R = Ql()) === e && (R = du()), R;
       }
-      function bd() {
+      function gd() {
         var R, X;
         return R = v, (X = Tl()) === e && (X = Ql()) === e && (X = du()), X !== e && (Xr = R, X = X.value), R = X;
       }
@@ -123363,7 +123387,7 @@ function aEt() {
       }
       function je() {
         var R, X;
-        return R = v, (X = Ze()) !== e ? (Xr = v, (Bi(X) ? e : void 0) !== e ? (Xr = R, R = X = X) : (v = R, R = e)) : (v = R, R = e), R === e && (R = bd()), R;
+        return R = v, (X = Ze()) !== e ? (Xr = v, (Bi(X) ? e : void 0) !== e ? (Xr = R, R = X = X) : (v = R, R = e)) : (v = R, R = e), R === e && (R = gd()), R;
       }
       function Ze() {
         var R, X, O, ye;
@@ -123471,7 +123495,7 @@ function aEt() {
           var X, O, ye;
           return X = v, (O = function() {
             var ot;
-            return r.substr(v, 10).toLowerCase() === "row_number" ? (ot = r.substr(v, 10), v += 10) : (ot = e, qe === 0 && Vr(Id)), ot === e && (r.substr(v, 10).toLowerCase() === "dense_rank" ? (ot = r.substr(v, 10), v += 10) : (ot = e, qe === 0 && Vr(ld)), ot === e && (r.substr(v, 4).toLowerCase() === "rank" ? (ot = r.substr(v, 4), v += 4) : (ot = e, qe === 0 && Vr(um)))), ot;
+            return r.substr(v, 10).toLowerCase() === "row_number" ? (ot = r.substr(v, 10), v += 10) : (ot = e, qe === 0 && Vr(Id)), ot === e && (r.substr(v, 10).toLowerCase() === "dense_rank" ? (ot = r.substr(v, 10), v += 10) : (ot = e, qe === 0 && Vr(cd)), ot === e && (r.substr(v, 4).toLowerCase() === "rank" ? (ot = r.substr(v, 4), v += 4) : (ot = e, qe === 0 && Vr(um)))), ot;
           }()) !== e && Rt() !== e && Zi() !== e && Rt() !== e && Ji() !== e && Rt() !== e && (ye = _n()) !== e ? (Xr = X, O = /* @__PURE__ */ function(ot, ct) {
             return { type: "window_func", name: ot, over: ct };
           }(O, ye), X = O) : (v = X, X = e), X;
@@ -123605,7 +123629,7 @@ function aEt() {
       }
       function Ni() {
         var R, X;
-        return R = v, r.substr(v, 7).toLowerCase() === "century" ? (X = r.substr(v, 7), v += 7) : (X = e, qe === 0 && Vr(tv)), X === e && (r.substr(v, 3).toLowerCase() === "day" ? (X = r.substr(v, 3), v += 3) : (X = e, qe === 0 && Vr(cm)), X === e && (r.substr(v, 4).toLowerCase() === "date" ? (X = r.substr(v, 4), v += 4) : (X = e, qe === 0 && Vr(Av)), X === e && (r.substr(v, 6).toLowerCase() === "decade" ? (X = r.substr(v, 6), v += 6) : (X = e, qe === 0 && Vr(_v)), X === e && (r.substr(v, 3).toLowerCase() === "dow" ? (X = r.substr(v, 3), v += 3) : (X = e, qe === 0 && Vr(Nm)), X === e && (r.substr(v, 3).toLowerCase() === "doy" ? (X = r.substr(v, 3), v += 3) : (X = e, qe === 0 && Vr(Jv)), X === e && (r.substr(v, 5).toLowerCase() === "epoch" ? (X = r.substr(v, 5), v += 5) : (X = e, qe === 0 && Vr(Lb)), X === e && (r.substr(v, 4).toLowerCase() === "hour" ? (X = r.substr(v, 4), v += 4) : (X = e, qe === 0 && Vr(gv)), X === e && (r.substr(v, 6).toLowerCase() === "isodow" ? (X = r.substr(v, 6), v += 6) : (X = e, qe === 0 && Vr(xb)), X === e && (r.substr(v, 7).toLowerCase() === "isoyear" ? (X = r.substr(v, 7), v += 7) : (X = e, qe === 0 && Vr(Tv)), X === e && (r.substr(v, 12).toLowerCase() === "microseconds" ? (X = r.substr(v, 12), v += 12) : (X = e, qe === 0 && Vr(Eb)), X === e && (r.substr(v, 10).toLowerCase() === "millennium" ? (X = r.substr(v, 10), v += 10) : (X = e, qe === 0 && Vr(Db)), X === e && (r.substr(v, 12).toLowerCase() === "milliseconds" ? (X = r.substr(v, 12), v += 12) : (X = e, qe === 0 && Vr(Iv)), X === e && (r.substr(v, 6).toLowerCase() === "minute" ? (X = r.substr(v, 6), v += 6) : (X = e, qe === 0 && Vr(Nv)), X === e && (r.substr(v, 5).toLowerCase() === "month" ? (X = r.substr(v, 5), v += 5) : (X = e, qe === 0 && Vr(eb)), X === e && (r.substr(v, 7).toLowerCase() === "quarter" ? (X = r.substr(v, 7), v += 7) : (X = e, qe === 0 && Vr(fm)), X === e && (r.substr(v, 6).toLowerCase() === "second" ? (X = r.substr(v, 6), v += 6) : (X = e, qe === 0 && Vr(Ap)), X === e && (r.substr(v, 8).toLowerCase() === "timezone" ? (X = r.substr(v, 8), v += 8) : (X = e, qe === 0 && Vr(Kd)), X === e && (r.substr(v, 13).toLowerCase() === "timezone_hour" ? (X = r.substr(v, 13), v += 13) : (X = e, qe === 0 && Vr(cd)), X === e && (r.substr(v, 15).toLowerCase() === "timezone_minute" ? (X = r.substr(v, 15), v += 15) : (X = e, qe === 0 && Vr(Ah)), X === e && (r.substr(v, 4).toLowerCase() === "week" ? (X = r.substr(v, 4), v += 4) : (X = e, qe === 0 && Vr(qh)), X === e && (r.substr(v, 4).toLowerCase() === "year" ? (X = r.substr(v, 4), v += 4) : (X = e, qe === 0 && Vr(Rv))))))))))))))))))))))), X !== e && (Xr = R, X = X), R = X;
+        return R = v, r.substr(v, 7).toLowerCase() === "century" ? (X = r.substr(v, 7), v += 7) : (X = e, qe === 0 && Vr(tv)), X === e && (r.substr(v, 3).toLowerCase() === "day" ? (X = r.substr(v, 3), v += 3) : (X = e, qe === 0 && Vr(cm)), X === e && (r.substr(v, 4).toLowerCase() === "date" ? (X = r.substr(v, 4), v += 4) : (X = e, qe === 0 && Vr(Av)), X === e && (r.substr(v, 6).toLowerCase() === "decade" ? (X = r.substr(v, 6), v += 6) : (X = e, qe === 0 && Vr(_v)), X === e && (r.substr(v, 3).toLowerCase() === "dow" ? (X = r.substr(v, 3), v += 3) : (X = e, qe === 0 && Vr(Nm)), X === e && (r.substr(v, 3).toLowerCase() === "doy" ? (X = r.substr(v, 3), v += 3) : (X = e, qe === 0 && Vr(Jv)), X === e && (r.substr(v, 5).toLowerCase() === "epoch" ? (X = r.substr(v, 5), v += 5) : (X = e, qe === 0 && Vr(Lb)), X === e && (r.substr(v, 4).toLowerCase() === "hour" ? (X = r.substr(v, 4), v += 4) : (X = e, qe === 0 && Vr(gv)), X === e && (r.substr(v, 6).toLowerCase() === "isodow" ? (X = r.substr(v, 6), v += 6) : (X = e, qe === 0 && Vr(xb)), X === e && (r.substr(v, 7).toLowerCase() === "isoyear" ? (X = r.substr(v, 7), v += 7) : (X = e, qe === 0 && Vr(Tv)), X === e && (r.substr(v, 12).toLowerCase() === "microseconds" ? (X = r.substr(v, 12), v += 12) : (X = e, qe === 0 && Vr(Eb)), X === e && (r.substr(v, 10).toLowerCase() === "millennium" ? (X = r.substr(v, 10), v += 10) : (X = e, qe === 0 && Vr(Db)), X === e && (r.substr(v, 12).toLowerCase() === "milliseconds" ? (X = r.substr(v, 12), v += 12) : (X = e, qe === 0 && Vr(Iv)), X === e && (r.substr(v, 6).toLowerCase() === "minute" ? (X = r.substr(v, 6), v += 6) : (X = e, qe === 0 && Vr(Nv)), X === e && (r.substr(v, 5).toLowerCase() === "month" ? (X = r.substr(v, 5), v += 5) : (X = e, qe === 0 && Vr(eb)), X === e && (r.substr(v, 7).toLowerCase() === "quarter" ? (X = r.substr(v, 7), v += 7) : (X = e, qe === 0 && Vr(fm)), X === e && (r.substr(v, 6).toLowerCase() === "second" ? (X = r.substr(v, 6), v += 6) : (X = e, qe === 0 && Vr(Ap)), X === e && (r.substr(v, 8).toLowerCase() === "timezone" ? (X = r.substr(v, 8), v += 8) : (X = e, qe === 0 && Vr(Kd)), X === e && (r.substr(v, 13).toLowerCase() === "timezone_hour" ? (X = r.substr(v, 13), v += 13) : (X = e, qe === 0 && Vr(fd)), X === e && (r.substr(v, 15).toLowerCase() === "timezone_minute" ? (X = r.substr(v, 15), v += 15) : (X = e, qe === 0 && Vr(Ah)), X === e && (r.substr(v, 4).toLowerCase() === "week" ? (X = r.substr(v, 4), v += 4) : (X = e, qe === 0 && Vr(qh)), X === e && (r.substr(v, 4).toLowerCase() === "year" ? (X = r.substr(v, 4), v += 4) : (X = e, qe === 0 && Vr(Rv))))))))))))))))))))))), X !== e && (Xr = R, X = X), R = X;
       }
       function Wt() {
         var R;
@@ -124013,7 +124037,7 @@ function aEt() {
       }
       function hp() {
         var R, X, O, ye;
-        return R = v, r.substr(v, 8).toLowerCase() === "unsigned" ? (X = r.substr(v, 8), v += 8) : (X = e, qe === 0 && Vr(dd)), X !== e ? (O = v, qe++, ye = ft(), qe--, ye === e ? O = void 0 : (v = O, O = e), O !== e ? (Xr = R, R = X = "UNSIGNED") : (v = R, R = e)) : (v = R, R = e), R;
+        return R = v, r.substr(v, 8).toLowerCase() === "unsigned" ? (X = r.substr(v, 8), v += 8) : (X = e, qe === 0 && Vr(pd)), X !== e ? (O = v, qe++, ye = ft(), qe--, ye === e ? O = void 0 : (v = O, O = e), O !== e ? (Xr = R, R = X = "UNSIGNED") : (v = R, R = e)) : (v = R, R = e), R;
       }
       function kh() {
         var R, X, O, ye;
@@ -124244,7 +124268,7 @@ function aEt() {
           return X;
         }()) === e && (R = function() {
           var X, O, ye, ot, ct, gt;
-          if (X = v, r.substr(v, 2) === "//" ? (O = "//", v += 2) : (O = e, qe === 0 && Vr(md)), O !== e) {
+          if (X = v, r.substr(v, 2) === "//" ? (O = "//", v += 2) : (O = e, qe === 0 && Vr(vd)), O !== e) {
             for (ye = [], ot = v, ct = v, qe++, gt = It(), qe--, gt === e ? ct = void 0 : (v = ct, ct = e), ct !== e && (gt = Me()) !== e ? ot = ct = [ct, gt] : (v = ot, ot = e); ot !== e; ) ye.push(ot), ot = v, ct = v, qe++, gt = It(), qe--, gt === e ? ct = void 0 : (v = ct, ct = e), ct !== e && (gt = Me()) !== e ? ot = ct = [ct, gt] : (v = ot, ot = e);
             ye !== e ? X = O = [O, ye] : (v = X, X = e);
           } else v = X, X = e;
@@ -124259,7 +124283,7 @@ function aEt() {
       }
       function Me() {
         var R;
-        return r.length > v ? (R = r.charAt(v), v++) : (R = e, qe === 0 && Vr(vd)), R;
+        return r.length > v ? (R = r.charAt(v), v++) : (R = e, qe === 0 && Vr(bd)), R;
       }
       function Mt() {
         var R;
@@ -124269,7 +124293,7 @@ function aEt() {
         var R, X;
         if ((R = function() {
           var O, ye;
-          return O = v, qe++, r.length > v ? (ye = r.charAt(v), v++) : (ye = e, qe === 0 && Vr(vd)), qe--, ye === e ? O = void 0 : (v = O, O = e), O;
+          return O = v, qe++, r.length > v ? (ye = r.charAt(v), v++) : (ye = e, qe === 0 && Vr(bd)), qe--, ye === e ? O = void 0 : (v = O, O = e), O;
         }()) === e) if (R = [], jv.test(r.charAt(v)) ? (X = r.charAt(v), v++) : (X = e, qe === 0 && Vr($v)), X !== e) for (; X !== e; ) R.push(X), jv.test(r.charAt(v)) ? (X = r.charAt(v), v++) : (X = e, qe === 0 && Vr($v));
         else R = e;
         return R;
@@ -124499,7 +124523,7 @@ function aEt() {
             return ye = v, r.substr(v, 12).toLowerCase() === "regprocedure" ? (ot = r.substr(v, 12), v += 12) : (ot = e, qe === 0 && Vr(Qp)), ot !== e ? (ct = v, qe++, gt = ft(), qe--, gt === e ? ct = void 0 : (v = ct, ct = e), ct !== e ? (Xr = ye, ye = ot = "REGPROCEDURE") : (v = ye, ye = e)) : (v = ye, ye = e), ye;
           }()) === e && (O = function() {
             var ye, ot, ct, gt;
-            return ye = v, r.substr(v, 7).toLowerCase() === "regrole" ? (ot = r.substr(v, 7), v += 7) : (ot = e, qe === 0 && Vr(pd)), ot !== e ? (ct = v, qe++, gt = ft(), qe--, gt === e ? ct = void 0 : (v = ct, ct = e), ct !== e ? (Xr = ye, ye = ot = "REGROLE") : (v = ye, ye = e)) : (v = ye, ye = e), ye;
+            return ye = v, r.substr(v, 7).toLowerCase() === "regrole" ? (ot = r.substr(v, 7), v += 7) : (ot = e, qe === 0 && Vr(hd)), ot !== e ? (ct = v, qe++, gt = ft(), qe--, gt === e ? ct = void 0 : (v = ct, ct = e), ct !== e ? (Xr = ye, ye = ot = "REGROLE") : (v = ye, ye = e)) : (v = ye, ye = e), ye;
           }()) === e && (O = function() {
             var ye, ot, ct, gt;
             return ye = v, r.substr(v, 7).toLowerCase() === "regtype" ? (ot = r.substr(v, 7), v += 7) : (ot = e, qe === 0 && Vr(cc)), ot !== e ? (ct = v, qe++, gt = ft(), qe--, gt === e ? ct = void 0 : (v = ct, ct = e), ct !== e ? (Xr = ye, ye = ot = "REGTYPE") : (v = ye, ye = e)) : (v = ye, ye = e), ye;
@@ -125093,8 +125117,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
       Array.isArray(Ki) && Eu.push(Ki.join(" ")), Eu.push(function(ll) {
         if (ll) {
           if (typeof ll == "string") return ll;
-          var zc = ll.type, Id = ll.columns, ld = [Ie(zc)];
-          return Id && ld.push("(".concat(Id.map(Do).join(", "), ")")), ld.filter(ut).join(" ");
+          var zc = ll.type, Id = ll.columns, cd = [Ie(zc)];
+          return Id && cd.push("(".concat(Id.map(Do).join(", "), ")")), cd.filter(ut).join(" ");
         }
       }(bs), Ue(cu), ju(cn, Ns));
       var uc = Di.position, Td = "";
@@ -125102,8 +125126,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
       var Gf = io || {}, Cc = Gf.keyword, ah = Gf.expr;
       Eu.push(b(Cc, Do, ah)), Eu.push(b("WHERE", Do, ec)), Ko && (Eu.push(e("GROUP BY", bf(Ko.columns).join(", "))), Eu.push(bf(Ko.modifiers).join(", "))), Eu.push(b("HAVING", Do, fi)), Eu.push(b("QUALIFY", Do, vu)), Eu.push(b("WINDOW", Do, ul)), Eu.push(Ff(ja, "order by")), Eu.push(Wd(Wr)), Eu.push(To(Pa)), ba && Eu.push(b(ba.keyword, Vt, ba.expr)), Eu.push(Ie(Uo)), uc === "end" && Eu.push(Td), Eu.push(function(ll) {
         if (ll) {
-          var zc = ll.expr, Id = ll.keyword, ld = [Ie(ll.type), Ie(Id)];
-          return zc ? "".concat(ld.join(" "), "(").concat(Do(zc), ")") : ld.join(" ");
+          var zc = ll.expr, Id = ll.keyword, cd = [Ie(ll.type), Ie(Id)];
+          return zc ? "".concat(cd.join(" "), "(").concat(Do(zc), ")") : cd.join(" ");
         }
       }(cs));
       var qp = Eu.filter(ut).join(" ");
@@ -125242,7 +125266,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         case "aggregate":
           return function(cn) {
             var Wr = cn.args, bs = cn.expr, cs = cn.keyword, Ns = cn.name, fo = cn.type, io = Wr.expr, Uo = Wr.orderby;
-            return [Ie(fo), Ie(cs), [[tt(Ns.schema), tt(Ns.name)].filter(ut).join("."), "(".concat(io.map(rh).join(", ")).concat(Uo ? [" ORDER", "BY", Uo.map(rh).join(", ")].join(" ") : "", ")")].filter(ut).join(""), ad(bs)].filter(ut).join(" ");
+            return [Ie(fo), Ie(cs), [[tt(Ns.schema), tt(Ns.name)].filter(ut).join("."), "(".concat(io.map(rh).join(", ")).concat(Uo ? [" ORDER", "BY", Uo.map(rh).join(", ")].join(" ") : "", ")")].filter(ut).join(""), ud(bs)].filter(ut).join(" ");
           }(_t);
         case "table":
           return function(cn) {
@@ -125252,7 +125276,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         case "schema":
           return function(cn) {
             var Wr = cn.expr, bs = cn.keyword, cs = cn.schema;
-            return [Ie(cn.type), Ie(bs), tt(cs), ad(Wr)].filter(ut).join(" ");
+            return [Ie(cn.type), Ie(bs), tt(cs), ud(Wr)].filter(ut).join(" ");
           }(_t);
         case "sequence":
           return function(cn) {
@@ -125263,12 +125287,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         case "type":
           return function(cn) {
             var Wr = cn.expr, bs = cn.keyword, cs = cn.name;
-            return [Ie(cn.type), Ie(bs), [tt(cs.schema), tt(cs.name)].filter(ut).join("."), ad(Wr)].filter(ut).join(" ");
+            return [Ie(cn.type), Ie(bs), [tt(cs.schema), tt(cs.name)].filter(ut).join("."), ud(Wr)].filter(ut).join(" ");
           }(_t);
         case "function":
           return function(cn) {
             var Wr = cn.args, bs = cn.expr, cs = cn.keyword, Ns = cn.name;
-            return [Ie(cn.type), Ie(cs), [[tt(Ns.schema), tt(Ns.name)].filter(ut).join("."), Wr && "(".concat(Wr.expr ? Wr.expr.map(rh).join(", ") : "", ")")].filter(ut).join(""), ad(bs)].filter(ut).join(" ");
+            return [Ie(cn.type), Ie(cs), [[tt(Ns.schema), tt(Ns.name)].filter(ut).join("."), Wr && "(".concat(Wr.expr ? Wr.expr.map(rh).join(", ") : "", ")")].filter(ut).join(""), ud(bs)].filter(ut).join(" ");
           }(_t);
         case "view":
           return function(cn) {
@@ -125288,7 +125312,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         case "aggregate":
           cn = function(Wr) {
             var bs = Wr.type, cs = Wr.replace, Ns = Wr.keyword, fo = Wr.name, io = Wr.args, Uo = Wr.options, Ko = [Ie(bs), Ie(cs), Ie(Ns)], fi = [tt(fo.schema), fo.name].filter(ut).join("."), Bi = "".concat(io.expr.map(rh).join(", ")).concat(io.orderby ? [" ORDER", "BY", io.orderby.map(rh).join(", ")].join(" ") : "");
-            return Ko.push("".concat(fi, "(").concat(Bi, ")"), "(".concat(Uo.map(id).join(", "), ")")), Ko.filter(ut).join(" ");
+            return Ko.push("".concat(fi, "(").concat(Bi, ")"), "(".concat(Uo.map(ad).join(", "), ")")), Ko.filter(ut).join(" ");
           }(_t);
           break;
         case "table":
@@ -125352,7 +125376,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               return typeof Cc == "string" ? tt(Cc) : Do(Cc);
             }).join(", "), ")"), Td = Bi;
             Bi && (Td = typeof Bi == "string" ? tt(Bi) : [tt(Bi.schema), tt(Bi.name)].filter(ut).join("."));
-            var Gf = [Ie(cu), Ie(Ko), Ie(Ns), Ie(fo), Ie(bs), Td, Ie(ja), Za(Ta)].concat($h(kn(fi)), ["(".concat(pn(Uo), ")"), uc, Cs(ba).join(" "), ad(Pa), ad(Ki), b("TABLESPACE", Vt, vu)]);
+            var Gf = [Ie(cu), Ie(Ko), Ie(Ns), Ie(fo), Ie(bs), Td, Ie(ja), Za(Ta)].concat($h(kn(fi)), ["(".concat(pn(Uo), ")"), uc, Cs(ba).join(" "), ud(Pa), ud(Ki), b("TABLESPACE", Vt, vu)]);
             return ec ? Gf.push(Eu, b("WHERE", Do, ul)) : Gf.push(b("WHERE", Do, ul), Eu), Gf.push(b("ON", Do, Di), b("FILESTREAM_ON", Vt, cs)), Gf.filter(ut).join(" ");
           }(_t);
           break;
@@ -125542,7 +125566,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     }, desc: ef, describe: ef, set: function(_t) {
       var Or = _t.type, cn = _t.expr, Wr = _t.keyword, bs = Ie(Or), cs = cn.map(Do).join(", ");
       return [bs, Ie(Wr), cs].filter(ut).join(" ");
-    }, lock: el, unlock: el, show: zs, grant: od, revoke: od, proc: function(_t) {
+    }, lock: el, unlock: el, show: zs, grant: id, revoke: id, proc: function(_t) {
       var Or = _t.stmt;
       switch (Or.type) {
         case "assign":
@@ -125721,8 +125745,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         case "tumble":
           Ou = function(ll) {
             if (!ll) return "";
-            var zc = ll.data, Id = ll.timecol, ld = ll.offset, um = ll.size, Xm = [tt(zc.expr.db), tt(zc.expr.schema), tt(zc.expr.table)].filter(ut).join("."), Cd = "DESCRIPTOR(".concat(Nc(Id.expr), ")"), Hf = ["TABLE(TUMBLE(TABLE ".concat(Oa(zc, Xm)), Oa(Id, Cd)], Nd = Oa(um, co(um.expr));
-            return ld && ld.expr ? Hf.push(Nd, "".concat(Oa(ld, co(ld.expr)), "))")) : Hf.push("".concat(Nd, "))")), Hf.filter(ut).join(", ");
+            var zc = ll.data, Id = ll.timecol, cd = ll.offset, um = ll.size, Xm = [tt(zc.expr.db), tt(zc.expr.schema), tt(zc.expr.table)].filter(ut).join("."), Cd = "DESCRIPTOR(".concat(Nc(Id.expr), ")"), Hf = ["TABLE(TUMBLE(TABLE ".concat(Oa(zc, Xm)), Oa(Id, Cd)], Nd = Oa(um, co(um.expr));
+            return cd && cd.expr ? Hf.push(Nd, "".concat(Oa(cd, co(cd.expr)), "))")) : Hf.push("".concat(Nd, "))")), Hf.filter(ut).join(", ");
           }(io);
           break;
         case "generator":
@@ -125916,7 +125940,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
       var Or = _t.name, cn = _t.host, Wr = [Vt(Or)];
       return cn && Wr.push("@", Vt(cn)), Wr.join("");
     }
-    function od(_t) {
+    function id(_t) {
       var Or = _t.type, cn = _t.grant_option_for, Wr = _t.keyword, bs = _t.objects, cs = _t.on, Ns = _t.to_from, fo = _t.user_or_roles, io = _t.with, Uo = [Ie(Or), Vt(cn)], Ko = bs.map(function(fi) {
         var Bi = fi.priv, Di = fi.columns, ba = [Do(Bi)];
         return Di && ba.push("(".concat(Di.map(Nc).join(", "), ")")), ba.join(" ");
@@ -126108,7 +126132,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           return Do(_t);
       }
     }
-    function id(_t) {
+    function ad(_t) {
       var Or = _t.type, cn = _t.symbol, Wr = _t.value, bs = [Ie(Or), cn];
       switch (Ie(Or)) {
         case "SFUNC":
@@ -126135,7 +126159,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           return ju(Or);
       }
     }
-    function ad(_t) {
+    function ud(_t) {
       if (!_t) return "";
       var Or = _t.action, cn = _t.create_definitions, Wr = _t.if_not_exists, bs = _t.keyword, cs = _t.if_exists, Ns = _t.old_column, fo = _t.prefix, io = _t.resource, Uo = _t.symbol, Ko = _t.suffix, fi = "", Bi = [];
       switch (io) {
@@ -126218,7 +126242,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         return Or && typeof Symbol == "function" && Or.constructor === Symbol && Or !== Symbol.prototype ? "symbol" : typeof Or;
       })(_t);
     }
-    var ip = { alter: ad, aggr_func: function(_t) {
+    var ip = { alter: ud, aggr_func: function(_t) {
       var Or = _t.args, cn = _t.filter, Wr = _t.over, bs = _t.within_group_orderby, cs = Do(Or.expr);
       cs = Array.isArray(cs) ? cs.join(", ") : cs;
       var Ns = _t.name, fo = yp(Wr);
@@ -126537,7 +126561,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
       }).join(", ");
       return [Ie(Or), "[".concat(cn, "]")].join("");
     };
-    var Bf = o(1), zf = o(2), Qm = o(3), xh = o(4), oh = o(5), Bp = o(6), am = o(7), Km = o(8), _m = o(9), tf = o(10), qf = o(11), ud = o(12), Bh = o(13), ih = o(14), Eh = { athena: Bf.parse, bigquery: zf.parse, db2: Qm.parse, flinksql: xh.parse, hive: oh.parse, mysql: Bp.parse, mariadb: am.parse, noql: Km.parse, postgresql: _m.parse, redshift: tf.parse, snowflake: Bh.parse, sqlite: qf.parse, transactsql: ud.parse, trino: ih.parse };
+    var Bf = o(1), zf = o(2), Qm = o(3), xh = o(4), oh = o(5), Bp = o(6), am = o(7), Km = o(8), _m = o(9), tf = o(10), qf = o(11), ld = o(12), Bh = o(13), ih = o(14), Eh = { athena: Bf.parse, bigquery: zf.parse, db2: Qm.parse, flinksql: xh.parse, hive: oh.parse, mysql: Bp.parse, mariadb: am.parse, noql: Km.parse, postgresql: _m.parse, redshift: tf.parse, snowflake: Bh.parse, sqlite: qf.parse, transactsql: ld.parse, trino: ih.parse };
     function Ep(_t) {
       return (Ep = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(Or) {
         return typeof Or;
@@ -126687,8 +126711,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     (typeof self > "u" ? "undefined" : zp(self)) === "object" && self && (self.NodeSQLParser = { Parser: yf, util: i }), typeof la > "u" && (typeof window > "u" ? "undefined" : zp(window)) === "object" && window && (window.global = window), (typeof la > "u" ? "undefined" : zp(la)) === "object" && la && la.window && (la.window.NodeSQLParser = { Parser: yf, util: i });
   }]));
 })(oH);
-const uEt = /* @__PURE__ */ XS(oH), lEt = /* @__PURE__ */ Dee({
+const cEt = /* @__PURE__ */ XS(oH), fEt = /* @__PURE__ */ Dee({
   __proto__: null,
-  default: uEt
+  default: cEt
 }, [oH]);
 //# sourceMappingURL=sqljob.js.map
