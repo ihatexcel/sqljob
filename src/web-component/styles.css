@@ -162,6 +162,11 @@
     font-weight: 600;
 }
 
+/* Masquer le bouton "SQL reference" hardcodé dans @sqlrooms/sql-editor */
+a[href="https://duckdb.org/docs/sql/introduction"] {
+    display: none !important;
+}
+
 /* CodeMirror SQL Editor Styles */
 .codemirror-sql-container {
     width: 100%;
