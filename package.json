@@ -42,6 +42,7 @@
     "@sqlrooms/ui": "0.29.0-rc.1",
     "@sqlrooms/utils": "0.29.0-rc.1",
     "codemirror": "^6.0.2",
+    "easymde": "^2.20.0",
     "eruda": "^3.4.3",
     "lucide-react": "^0.577.0",
     "react": "^18.3.1",

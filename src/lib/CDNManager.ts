@@ -112,19 +112,19 @@ export class CDNManager {
                 this.loadedStyles.add(url);
             }
 
+            static easyMDELoadingPromise: Promise<void> | null = null;
+
             static async loadEasyMDE() {
-                const easymdeJsUrl = 'https://cdn.jsdelivr.net/npm/easymde@2.20.0/dist/easymde.min.js';
-                const easymdeCssUrl = 'https://cdn.jsdelivr.net/npm/easymde@2.20.0/dist/easymde.min.css';
-
-                // Charger le CSS
-                this.loadStyle(easymdeCssUrl);
-
-                // Charger le JS
-                if (typeof EasyMDE !== 'undefined') {
-                    this.loadedScripts.add(easymdeJsUrl);
-                    return;
-                }
-                await this.loadScript(easymdeJsUrl);
+                if (typeof (window as any).EasyMDE !== 'undefined') return;
+                if (this.easyMDELoadingPromise) return this.easyMDELoadingPromise;
+                this.easyMDELoadingPromise = (async () => {
+                    // CSS bundlé via npm
+                    await import('easymde/dist/easymde.min.css');
+                    // JS : EasyMDE expose sa classe sur window via UMD
+                    const mod = await import('easymde');
+                    (window as any).EasyMDE = mod.default ?? mod;
+                })();
+                return this.easyMDELoadingPromise;
             }
 
             static async loadXlsx() {
