@@ -86124,34 +86124,36 @@ function SidebarControls() {
         icon: wt === "dark" ? Sun : Moon
       }
     ),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(
-      RoomShell.SidebarButton,
-      {
-        title: "Personnaliser le thème",
-        onClick: Ct.onToggle,
-        isSelected: Ct.isOpen,
-        icon: Paintbrush
-      }
-    ),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(ThemeCustomModal, { open: Ct.isOpen, onClose: Ct.onClose }),
-    yt && /* @__PURE__ */ jsxRuntimeExports.jsx(
-      RoomShell.SidebarButton,
-      {
-        title: `Moteur : ${At === "ducklings" ? "Ducklings 🐤" : "DuckDB WASM 🦆"}`,
-        onClick: () => kt({ showDbEngineModal: !0 }),
-        icon: DbEngineIcon
-      }
-    ),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(
-      RoomShell.SidebarButton,
-      {
-        title: "Console debug (Eruda)",
-        onClick: St.onToggle,
-        isSelected: St.isOpen,
-        icon: MessageSquareCode
-      }
-    ),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(ErudaModal, { open: St.isOpen, onClose: St.onClose }),
+    yt && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        RoomShell.SidebarButton,
+        {
+          title: "Personnaliser le thème",
+          onClick: Ct.onToggle,
+          isSelected: Ct.isOpen,
+          icon: Paintbrush
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(ThemeCustomModal, { open: Ct.isOpen, onClose: Ct.onClose }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        RoomShell.SidebarButton,
+        {
+          title: `Moteur : ${At === "ducklings" ? "Ducklings 🐤" : "DuckDB WASM 🦆"}`,
+          onClick: () => kt({ showDbEngineModal: !0 }),
+          icon: DbEngineIcon
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        RoomShell.SidebarButton,
+        {
+          title: "Console debug (Eruda)",
+          onClick: St.onToggle,
+          isSelected: St.isOpen,
+          icon: MessageSquareCode
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(ErudaModal, { open: St.isOpen, onClose: St.onClose })
+    ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1" }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       RoomShell.SidebarButton,
@@ -86165,22 +86167,25 @@ function SidebarControls() {
   ] }) : null;
 }
 function Room() {
-  const yt = useDisclosure(), { showLayout: At } = useNotebookStore(useShallow((xt) => ({
-    showLayout: xt.showLayout
+  const yt = useDisclosure(), { showLayout: At, devMode: xt } = useNotebookStore(useShallow((wt) => ({
+    showLayout: wt.showLayout,
+    devMode: wt.devMode
   })));
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs(RoomShell, { roomStore: useNotebookStore, className: "h-screen w-screen", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs(RoomShell.Sidebar, { className: At ? "" : "hidden", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(RoomShellSidebarButton, { roomPanelType: "data" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          RoomShell.SidebarButton,
-          {
-            title: "SQL Editor",
-            onClick: yt.onToggle,
-            isSelected: yt.isOpen,
-            icon: Terminal
-          }
-        ),
+        xt && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(RoomShellSidebarButton, { roomPanelType: "data" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            RoomShell.SidebarButton,
+            {
+              title: "SQL Editor",
+              onClick: yt.onToggle,
+              isSelected: yt.isOpen,
+              icon: Terminal
+            }
+          )
+        ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(SidebarControls, {})
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(RoomShell.LayoutComposer, { tileClassName: "p-0" }),
