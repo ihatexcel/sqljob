@@ -12,7 +12,7 @@ import {
     Accordion, AccordionContent, AccordionItem, AccordionTrigger,
     Checkbox,
 } from '@sqlrooms/ui'
-import { Icon } from \'../../../lib/icons\'
+import { Icon } from '../../../lib/icons'
 
 function getCommonParamDef(paramKey: string, cellType: string) {
     const schema = CELL_TYPE_SCHEMAS?.types?.[cellType]
