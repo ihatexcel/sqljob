@@ -150,7 +150,7 @@ export const createHelpersSlice = (set: any, get: any) => ({
 
     setStatus(message: string, type: string) {
         const { devMode } = get()
-        if (!devMode && type === 'success') {
+        if (!devMode && type !== 'error') {
             set({ status: '', statusType: '' })
             return
         }
