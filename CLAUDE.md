@@ -2,14 +2,30 @@
 
 ## Branches & Git
 
-- **Ne jamais modifier `main` directement.** Tout développement se fait sur une branche `claude/<feature>`.
-- Toujours committer et pousser les changements sur la branche de travail désignée.
+### Branches principales
+
+| Branche | Rôle | GitHub Pages |
+|---------|------|-------------|
+| `main`  | Production | `/` (racine) |
+| `beta`  | Recette / pré-prod | `/beta` |
+| `claude/dev` | Intégration continue | `/dev` |
+
+### Règles de développement
+
+- **Ne jamais committer directement sur `main` ou `beta`.** Tout développement se fait sur une branche `claude/<feature>`.
+- Une fois la feature terminée, **merger directement** la branche `claude/<feature>` dans `claude/dev` (pas de PR pour cette étape).
+- La promotion vers les branches supérieures se fait par PR : `claude/dev` → `beta` → `main`.
+- Toujours committer et pousser les changements sur la branche de travail désignée avant de merger dans `claude/dev`.
 
 ## Build CDN
 
 - **Ne jamais lancer `npm run build:cdn` manuellement.** Le build du bundle `dist-cdn/` est géré par GitHub Actions :
   - `build-cdn.yml` : build déclenché manuellement (`workflow_dispatch`), commit sur `main`.
-  - `deploy.yml` : build + déploiement GitHub Pages à chaque push sur `main`.
+  - `deploy.yml` : build + déploiement GitHub Pages à chaque push sur `main`, `beta` ou `dev`.
+    - `main` → déploie sur `/` via `peaceiris/actions-gh-pages` (branche `gh-pages`, racine)
+    - `beta` → déploie sur `/beta` (branche `gh-pages`, sous-dossier `beta/`)
+    - `dev` → déploie sur `/dev` (branche `gh-pages`, sous-dossier `dev/`)
+  - ⚠️ GitHub Pages doit être configuré sur **Source : Deploy from a branch → `gh-pages` / `/ (root)`**.
 - Ne pas committer les fichiers `dist-cdn/` sauf si explicitement demandé.
 
 ## Stack technique
@@ -54,5 +70,5 @@ src/
     CDNManager.ts       # Chargement dynamique de libs CDN
 .github/workflows/
   build-cdn.yml         # Build manuel dist-cdn → commit main
-  deploy.yml            # Build + deploy GitHub Pages sur push main
+  deploy.yml            # Build + deploy GitHub Pages (main→/, beta→/beta, dev→/dev)
 ```

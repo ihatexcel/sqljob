@@ -7,7 +7,7 @@
  * - Fichiers : fichiers chargés (cells source + dropzone)
  * - Tables DuckDB : tables disponibles avec colonnes et types
  */
-import { RoomPanel, TableCard } from '@sqlrooms/room-shell'
+import { RoomPanel, TableCard, useBaseRoomShellStore } from '@sqlrooms/room-shell'
 import { FileDropzone } from '@sqlrooms/dropzone'
 import { convertToValidColumnOrTableName } from '@sqlrooms/utils'
 import {
@@ -21,7 +21,7 @@ import {
     TooltipContent,
     TooltipTrigger,
 } from '@sqlrooms/ui'
-import { FolderIcon, TableIcon, FileTextIcon, XIcon, UploadIcon } from 'lucide-react'
+import { FolderIcon, TableIcon, FileTextIcon, XIcon, UploadIcon, DatabaseIcon } from 'lucide-react'
 import { useNotebookStore } from '../store/notebookStore'
 
 // ─── Section Fichiers ─────────────────────────────────────────────────────────
@@ -124,8 +124,24 @@ export const DataSourcesPanel = () => {
         }
     }
 
+    const togglePanel = useBaseRoomShellStore(s => s.layout.togglePanel)
+
     return (
-        <RoomPanel type="data" className="flex flex-col h-full overflow-hidden">
+        <RoomPanel type="data" showHeader={false} className="flex flex-col h-full overflow-hidden">
+            {/* Header custom sans épinglage */}
+            <div className="flex items-center justify-between px-3 py-2 bg-secondary/50 shrink-0">
+                <div className="flex items-center gap-2 text-muted-foreground">
+                    <DatabaseIcon className="h-4 w-4" />
+                    <h2 className="text-xs font-semibold uppercase">Sources</h2>
+                </div>
+                <button
+                    aria-label="Fermer le panneau Sources"
+                    onClick={() => togglePanel('data')}
+                    className="text-muted-foreground hover:text-foreground"
+                >
+                    <XIcon className="w-[18px]" />
+                </button>
+            </div>
             {/* Dropzone */}
             <div className="p-2 border-b border-border shrink-0">
                 <FileDropzone
