@@ -42,46 +42,48 @@ function SidebarControls() {
 
     return (
         <>
-            {/* Documentation */}
+            {/* Documentation (gist) — toujours visible */}
             <RoomShell.SidebarButton
                 title="Documentation"
                 onClick={() => window.open('https://ihatexcel.github.io/sqljob/?gist=68cd597ba5da05ceba24fb975c05384f', '_blank')}
                 icon={BookHeartIcon}
             />
 
-            {/* Theme toggle */}
+            {/* Theme toggle — toujours visible */}
             <RoomShell.SidebarButton
                 title={theme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}
                 onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
                 icon={theme === 'dark' ? SunIcon : MoonIcon}
             />
 
-            {/* Personnalisation CSS du thème */}
-            <RoomShell.SidebarButton
-                title="Personnaliser le thème"
-                onClick={themeModalDisclosure.onToggle}
-                isSelected={themeModalDisclosure.isOpen}
-                icon={PaintbrushIcon}
-            />
-            <ThemeCustomModal open={themeModalDisclosure.isOpen} onClose={themeModalDisclosure.onClose} />
-
-            {/* DB Engine (devMode only) */}
             {devMode && (
-                <RoomShell.SidebarButton
-                    title={`Moteur : ${dbEngine === 'ducklings' ? 'Ducklings 🐤' : 'DuckDB WASM 🦆'}`}
-                    onClick={() => set({ showDbEngineModal: true })}
-                    icon={DbEngineIcon}
-                />
-            )}
+                <>
+                    {/* Personnalisation CSS du thème */}
+                    <RoomShell.SidebarButton
+                        title="Personnaliser le thème"
+                        onClick={themeModalDisclosure.onToggle}
+                        isSelected={themeModalDisclosure.isOpen}
+                        icon={PaintbrushIcon}
+                    />
+                    <ThemeCustomModal open={themeModalDisclosure.isOpen} onClose={themeModalDisclosure.onClose} />
 
-            {/* Console debug Eruda */}
-            <RoomShell.SidebarButton
-                title="Console debug (Eruda)"
-                onClick={erudaDisclosure.onToggle}
-                isSelected={erudaDisclosure.isOpen}
-                icon={MessageSquareCodeIcon}
-            />
-            <ErudaModal open={erudaDisclosure.isOpen} onClose={erudaDisclosure.onClose} />
+                    {/* DB Engine */}
+                    <RoomShell.SidebarButton
+                        title={`Moteur : ${dbEngine === 'ducklings' ? 'Ducklings 🐤' : 'DuckDB WASM 🦆'}`}
+                        onClick={() => set({ showDbEngineModal: true })}
+                        icon={DbEngineIcon}
+                    />
+
+                    {/* Console debug Eruda */}
+                    <RoomShell.SidebarButton
+                        title="Console debug (Eruda)"
+                        onClick={erudaDisclosure.onToggle}
+                        isSelected={erudaDisclosure.isOpen}
+                        icon={MessageSquareCodeIcon}
+                    />
+                    <ErudaModal open={erudaDisclosure.isOpen} onClose={erudaDisclosure.onClose} />
+                </>
+            )}
 
             {/* DevMode toggle — ancré en bas via spacer */}
             <div className="flex-1" />
@@ -97,22 +99,27 @@ function SidebarControls() {
 
 export function Room() {
     const sqlEditorDisclosure = useDisclosure()
-    const { showLayout } = useNotebookStore(useShallow(s => ({
+    const { showLayout, devMode } = useNotebookStore(useShallow(s => ({
         showLayout: s.showLayout,
+        devMode: s.devMode,
     })))
 
     return (
         <>
             <RoomShell roomStore={useNotebookStore} className="h-screen w-screen">
                 <RoomShell.Sidebar className={showLayout ? '' : 'hidden'}>
-                    {/* Sources panel toggle */}
-                    <RoomShellSidebarButton roomPanelType="data" />
-                    <RoomShell.SidebarButton
-                        title="SQL Editor"
-                        onClick={sqlEditorDisclosure.onToggle}
-                        isSelected={sqlEditorDisclosure.isOpen}
-                        icon={TerminalIcon}
-                    />
+                    {devMode && (
+                        <>
+                            {/* Sources panel toggle */}
+                            <RoomShellSidebarButton roomPanelType="data" />
+                            <RoomShell.SidebarButton
+                                title="SQL Editor"
+                                onClick={sqlEditorDisclosure.onToggle}
+                                isSelected={sqlEditorDisclosure.isOpen}
+                                icon={TerminalIcon}
+                            />
+                        </>
+                    )}
                     <SidebarControls />
                 </RoomShell.Sidebar>
                 <RoomShell.LayoutComposer tileClassName="p-0" />
