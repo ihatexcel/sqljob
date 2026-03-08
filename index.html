@@ -9,8 +9,6 @@
     <link rel="icon" href="https://raw.githubusercontent.com/ihatexcel/sqljob/main/ihatexcel.ico" type="image/x-icon">
     <!-- simple-datatables CSS chargé dynamiquement via CDNManager -->
 
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@5/themes.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <!-- iconify chargé localement via npm (évite le blocage COEP) -->
 
@@ -20,8 +18,6 @@
     <script type="module" src="./dist-cdn/sqljob.js?v=20260306b"></script>
 
     <style>
-
-
         /* Simple-datatables dark mode fix */
         .datatable-wrapper,
         .datatable-top,
@@ -32,9 +28,9 @@
 
         .datatable-input,
         .datatable-selector {
-            background: oklch(var(--b1)) !important;
-            color: oklch(var(--bc)) !important;
-            border-color: oklch(var(--b3)) !important;
+            background: hsl(var(--background)) !important;
+            color: hsl(var(--foreground)) !important;
+            border-color: hsl(var(--border)) !important;
         }
 
         /* Container query pour le responsive */
@@ -73,20 +69,12 @@
             }
         }
 
-        /* Empêcher DaisyUI d'écraser les styles EasyMDE */
-        .editor-preview-active *:not(h1):not(h2):not(h3):not(h4):not(h5):not(h6),
-        .editor-preview *:not(h1):not(h2):not(h3):not(h4):not(h5):not(h6),
-        .editor-preview-side *:not(h1):not(h2):not(h3):not(h4):not(h5):not(h6),
-        .editor-preview-full *:not(h1):not(h2):not(h3):not(h4):not(h5):not(h6) {
-            all: revert;
-        }
-
         .editor-preview-full {
             overflow: visible;
         }
 
         .editor-preview {
-            background-color: var(--color-base-100) !important;
+            background-color: hsl(var(--background)) !important;
         }
 
         .EasyMDEContainer .editor-preview-active~.CodeMirror {
@@ -127,8 +115,6 @@
             display: none;
         }
 
-
-
         /* Hauteur cellule : variables CSS + max/min natifs (px et % combinables) */
         .cell-body-has-height {
             min-height: max(var(--cell-min-h-px, 0), var(--cell-min-h-pct, 0%));
@@ -162,9 +148,8 @@
         .editor-preview h1,
         .editor-preview-side h1,
         .editor-preview-full h1 {
-            color: var(--color-primary) !important;
+            color: hsl(var(--primary)) !important;
             font-size: 2.25rem;
-            /* équivalent text-4xl */
             line-height: 2.5rem;
             font-weight: 700;
         }
@@ -173,9 +158,8 @@
         .editor-preview h2,
         .editor-preview-side h2,
         .editor-preview-full h2 {
-            color: var(--color-secondary) !important;
+            color: hsl(var(--secondary-foreground)) !important;
             font-size: 1.875rem;
-            /* équivalent text-3xl */
             line-height: 2.25rem;
             font-weight: 600;
         }
@@ -187,57 +171,125 @@
         }
 
         .codemirror-sql-container .cm-editor {
-            background: oklch(var(--b1));
+            background: hsl(var(--background));
         }
 
         .codemirror-sql-container .cm-gutters {
-            background: oklch(var(--b2));
-            border-right: 1px solid oklch(var(--b3));
+            background: hsl(var(--muted));
+            border-right: 1px solid hsl(var(--border));
         }
 
         .codemirror-sql-container .cm-activeLineGutter {
-            background: oklch(var(--b3));
+            background: hsl(var(--border));
         }
 
         .codemirror-sql-container .cm-line {
-            color: oklch(var(--bc));
+            color: hsl(var(--foreground));
         }
 
         /* Tooltips marimo-sql */
         .cm-tooltip {
-            background: oklch(var(--b2)) !important;
-            border: 1px solid oklch(var(--b3)) !important;
+            background: hsl(var(--popover)) !important;
+            border: 1px solid hsl(var(--border)) !important;
             border-radius: 0.5rem !important;
             box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1) !important;
         }
 
         .cm-tooltip-autocomplete {
-            background: oklch(var(--b2)) !important;
+            background: hsl(var(--popover)) !important;
         }
 
         .cm-tooltip-autocomplete>ul>li {
-            color: oklch(var(--bc)) !important;
+            color: hsl(var(--popover-foreground)) !important;
         }
 
         .cm-tooltip-autocomplete>ul>li[aria-selected] {
-            background: oklch(var(--p) / 0.2) !important;
-            color: oklch(var(--bc)) !important;
+            background: hsl(var(--primary) / 0.2) !important;
+            color: hsl(var(--popover-foreground)) !important;
         }
 
         /* Cursor */
         .codemirror-sql-container .cm-cursor {
-            border-left-color: oklch(var(--p)) !important;
+            border-left-color: hsl(var(--primary)) !important;
         }
 
         .codemirror-sql-container div::selection {
-            color: var(--color-secondary) !important;
-            background-color: var(--color-base-300) !important;
+            color: hsl(var(--foreground)) !important;
+            background-color: hsl(var(--muted)) !important;
         }
+
+        /* ── SHIM (remplace les classes DaisyUI dans les templates générés) ── */
+
+        /* Base colors */
+        .bg-base-100 { background-color: hsl(var(--background)); }
+        .bg-base-200 { background-color: hsl(var(--muted)); }
+        .bg-base-300 { background-color: hsl(var(--border)); }
+        .text-base-content { color: hsl(var(--foreground)); }
+        .text-base-content\/70 { color: hsl(var(--foreground) / 0.7); }
+        .text-base-content\/60 { color: hsl(var(--foreground) / 0.6); }
+        .text-base-content\/40 { color: hsl(var(--foreground) / 0.4); }
+        .border-base-300 { border-color: hsl(var(--border)); }
+        .text-success { color: #16a34a; }
+        .dark .text-success { color: #4ade80; }
+        .text-warning { color: #ca8a04; }
+        .dark .text-warning { color: #facc15; }
+        .text-error { color: #dc2626; }
+        .dark .text-error { color: #f87171; }
+
+        /* Boutons */
+        .btn { display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.375rem 0.75rem; border-radius: 0.375rem; font-size: 0.875rem; font-weight: 500; cursor: pointer; border: 1px solid transparent; transition: background-color 0.15s; background: transparent; }
+        .btn-xs { padding: 0.125rem 0.375rem; font-size: 0.75rem; }
+        .btn-sm { padding: 0.25rem 0.5rem; font-size: 0.8125rem; }
+        .btn-ghost { background: transparent; border-color: transparent; color: hsl(var(--foreground)); }
+        .btn-ghost:hover { background: hsl(var(--muted)); }
+        .btn-primary { background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); border-color: hsl(var(--primary)); }
+        .btn-primary:hover { opacity: 0.9; }
+        .btn-error { background: hsl(var(--destructive)); color: hsl(var(--destructive-foreground)); border-color: hsl(var(--destructive)); }
+        .btn-error:hover { opacity: 0.9; }
+
+        /* Badge */
+        .badge { display: inline-flex; align-items: center; padding: 0.125rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; }
+        .badge-primary { background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); }
+        .badge-soft.badge-primary { background: hsl(var(--primary) / 0.15); color: hsl(var(--primary)); }
+        .badge-warning { background: #fef3c7; color: #92400e; }
+        .dark .badge-warning { background: #451a03; color: #fbbf24; }
+        .badge-ghost { background: hsl(var(--muted)); color: hsl(var(--muted-foreground)); }
+        .badge-info { background: #dbeafe; color: #1e40af; }
+        .dark .badge-info { background: #1e3a5f; color: #93c5fd; }
+
+        /* Join (groupe de boutons) */
+        .join { display: inline-flex; }
+        .join .join-item:not(:first-child) { border-top-left-radius: 0 !important; border-bottom-left-radius: 0 !important; margin-left: -1px; }
+        .join .join-item:not(:last-child) { border-top-right-radius: 0 !important; border-bottom-right-radius: 0 !important; }
+
+        /* Dropdown */
+        .dropdown { position: relative; display: inline-block; }
+        .dropdown-end .dropdown-content { right: 0; left: auto; }
+        .dropdown-content { display: none; position: absolute; z-index: 50; min-width: 8rem; }
+        .dropdown:focus-within .dropdown-content { display: block; }
+        .menu { list-style: none; padding: 0.25rem; margin: 0; }
+        .menu-xs li a, .menu-xs li button { padding: 0.25rem 0.5rem; font-size: 0.75rem; }
+        .menu li a, .menu li button { display: flex; align-items: center; gap: 0.5rem; padding: 0.375rem 0.75rem; border-radius: 0.25rem; cursor: pointer; color: hsl(var(--foreground)); text-decoration: none; background: transparent; border: none; width: 100%; }
+        .menu li a:hover, .menu li button:hover { background: hsl(var(--muted)); }
+        .rounded-box { border-radius: 0.5rem; }
+
+        /* Formulaires */
+        .input, .select, .textarea { background: hsl(var(--background)); color: hsl(var(--foreground)); border: 1px solid hsl(var(--border)); border-radius: 0.375rem; padding: 0.375rem 0.75rem; outline: none; transition: border-color 0.15s; }
+        .input:focus, .select:focus, .textarea:focus { border-color: hsl(var(--primary)); box-shadow: 0 0 0 2px hsl(var(--primary) / 0.2); }
+        .input-sm, .select-sm { padding: 0.25rem 0.5rem; font-size: 0.8125rem; }
+        .input-xs { padding: 0.125rem 0.375rem; font-size: 0.75rem; }
+        .input-bordered, .select-bordered, .textarea-bordered { border-color: hsl(var(--border)); }
+        .range { -webkit-appearance: none; width: 100%; height: 0.5rem; border-radius: 9999px; background: hsl(var(--muted)); outline: none; }
+        .range::-webkit-slider-thumb { -webkit-appearance: none; width: 1rem; height: 1rem; border-radius: 50%; cursor: pointer; }
+        .range-primary::-webkit-slider-thumb { background: hsl(var(--primary)); }
+        .range-sm { height: 0.375rem; }
+        .fieldset { border: none; padding: 0; margin: 0; }
+        .fieldset-legend, .fieldset legend { font-size: 0.75rem; font-weight: 500; color: hsl(var(--muted-foreground)); margin-bottom: 0.25rem; display: block; }
     </style>
 
 </head>
 
-<body class="min-h-screen font-sans bg-base-100 text-base-content transition-colors duration-200">
+<body class="min-h-screen font-sans bg-background text-foreground transition-colors duration-200">
     <sqljob-app></sqljob-app>
 </body>
 
