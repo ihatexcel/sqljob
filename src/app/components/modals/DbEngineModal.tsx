@@ -31,7 +31,7 @@ export function DbEngineModal() {
             <DialogContent aria-describedby={undefined}>
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
-                        <Icon name="settings" size={20} />
+                        <span className="text-xl">{dbEngine === 'ducklings' ? '🐤' : '🦆'}</span>
                         Configuration job générale
                     </DialogTitle>
                 </DialogHeader>
