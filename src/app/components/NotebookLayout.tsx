@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { useRef, useEffect, useState } from 'react'
+import { useRef, useEffect, useState, useCallback } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import { useNotebookStore } from '../store/notebookStore'
 import {
@@ -17,6 +17,7 @@ import { ConfirmModal } from './modals/ConfirmModal'
 import { TemplateModal } from './modals/TemplateModal'
 import { AddGroupModal, InsertGroupModal, InsertCellModal, AddCellToGroupModal } from './modals/SimpleModals'
 import { DbEngineModal } from './modals/DbEngineModal'
+import { ThemeCustomModal, initCustomTheme } from './modals/ThemeCustomModal'
 import { ExportModal, GistTokenModal, GistResultModal, JsonPassphraseModal } from './modals/ExportModals'
 import { CellConfigModal } from './modals/CellConfigModal'
 import { LoopConfigModal, GroupSettingsModal, ChildGroupModal } from './modals/GroupModals'
@@ -246,50 +247,62 @@ function StatusBar() {
 
 // ─── Floating controls (bottom left) ─────────────────────────────────────────
 function FloatingControls() {
-    const { devMode, showLayout, availableThemes, currentTheme, dbEngine, setTheme } = useNotebookStore(useShallow(s => ({
+    const { devMode, showLayout, dbEngine } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         showLayout: s.showLayout,
-        availableThemes: s.availableThemes,
-        currentTheme: s.currentTheme,
         dbEngine: s.dbEngine,
-        setTheme: s.setTheme
     })))
     const set = useNotebookStore.setState
+    const [showThemeModal, setShowThemeModal] = useState(false)
 
     if (!showLayout) return null
 
     return (
-        <div className="fixed bottom-4 left-4 z-[1500] flex gap-1">
-            <Button
-                variant={devMode ? 'secondary' : 'ghost'}
-                size="sm"
-                title={devMode ? 'Mode client' : 'Mode développeur'}
-                onClick={() => set({ devMode: !devMode })}
-            >
-                <Icon name={devMode ? 'visibility' : 'settings'} size={20} />
-            </Button>
+        <>
+            <div className="fixed bottom-4 left-4 z-[1500] flex gap-1">
+                <Button
+                    variant={devMode ? 'secondary' : 'ghost'}
+                    size="sm"
+                    title={devMode ? 'Mode client' : 'Mode développeur'}
+                    onClick={() => set({ devMode: !devMode })}
+                >
+                    <Icon name={devMode ? 'visibility' : 'settings'} size={20} />
+                </Button>
 
-            {devMode && (
-                <>
-                    <ThemeSwitch />
+                {devMode && (
+                    <>
+                        <ThemeSwitch />
 
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => set({ showDbEngineModal: true })}
-                        title={`Moteur: ${dbEngine === 'ducklings' ? 'Ducklings' : 'DuckDB WASM'}`}
-                    >
-                        <span>{dbEngine === 'ducklings' ? '🐤' : '🦆'}</span>
-                    </Button>
-                </>
-            )}
-        </div>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setShowThemeModal(true)}
+                            title="Personnaliser le thème"
+                        >
+                            <Icon name="palette" size={20} />
+                        </Button>
+
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => set({ showDbEngineModal: true })}
+                            title={`Moteur: ${dbEngine === 'ducklings' ? 'Ducklings' : 'DuckDB WASM'}`}
+                        >
+                            <span>{dbEngine === 'ducklings' ? '🐤' : '🦆'}</span>
+                        </Button>
+                    </>
+                )}
+            </div>
+            <ThemeCustomModal open={showThemeModal} onClose={() => setShowThemeModal(false)} />
+        </>
     )
 }
 
 // ─── Layout principal ─────────────────────────────────────────────────────────
 export function NotebookLayout() {
     const { showLayout, setShowLayout } = useNotebookStore(useShallow(s => ({ showLayout: s.showLayout, setShowLayout: s.setShowLayout })))
+
+    useEffect(() => { initCustomTheme() }, [])
 
     useEffect(() => {
         const handler = (e: KeyboardEvent) => {

@@ -8,7 +8,7 @@ import {
     Activity, ArrowDown, ArrowLeft, ArrowLeftRight, ArrowRight, ArrowUp,
     ArrowUpDown, Braces, ChartBar, CircleCheck, CirclePlay, Copy, Database,
     Download, Eye, FileOutput, FileText, FileType, FolderOpen, FolderPlus,
-    Globe, Lock, Network, Newspaper, PenLine, Play, Plus, RefreshCw,
+    Globe, Lock, Network, Newspaper, Paintbrush, PenLine, Play, Plus, RefreshCw,
     Save, Settings, Share2, SlidersHorizontal, Table2, Trash2, TrendingUp, X, Zap,
 } from 'lucide-react'
 
@@ -52,6 +52,7 @@ const ICON_MAP: Record<string, any> = {
     'article':                      Newspaper,
     'export-notes-outline-sharp':   FileOutput,
     'bolt':                         Zap,
+    'palette':                      Paintbrush,
 }
 
 /** Icône générique depuis un nom material-symbols (sans préfixe) */
