@@ -1,0 +1,36 @@
+name: Auto-merge claude/* → claude/dev
+
+on:
+  push:
+    branches:
+      - 'claude/**'
+      - '!claude/dev'
+
+permissions:
+  contents: write
+
+jobs:
+  merge-to-dev:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: claude/dev
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Fetch source branch
+        run: git fetch origin ${{ github.ref_name }}
+
+      - name: Merge into claude/dev
+        run: |
+          git merge --no-ff origin/${{ github.ref_name }} \
+            -m "auto-merge: ${{ github.ref_name }} → claude/dev"
+
+      - name: Push claude/dev
+        run: git push origin claude/dev
