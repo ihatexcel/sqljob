@@ -272,6 +272,15 @@ function FloatingControls() {
                 <Button
                     variant="ghost"
                     size="sm"
+                    onClick={() => window.open('https://ihatexcel.github.io/sqljob/?gist=68cd597ba5da05ceba24fb975c05384f', '_blank')}
+                    title="Documentation"
+                >
+                    <Icon name="book-heart" size={20} />
+                </Button>
+
+                <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={() => setShowThemeModal(true)}
                     title="Personnaliser le thème"
                 >
