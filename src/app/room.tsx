@@ -11,7 +11,8 @@ import { useDisclosure, useTheme } from '@sqlrooms/ui'
 import { useShallow } from 'zustand/react/shallow'
 import { useNotebookStore } from './store/notebookStore'
 import { SqlEditorModal } from '@sqlrooms/sql-editor'
-import { BookHeartIcon, DatabaseIcon, MoonIcon, Settings2Icon, SunIcon, TerminalIcon } from 'lucide-react'
+import { BookHeartIcon, MoonIcon, PaintbrushIcon, Settings2Icon, SunIcon, TerminalIcon } from 'lucide-react'
+import { ThemeCustomModal } from './components/modals/ThemeCustomModal'
 import { ConfirmModal } from './components/modals/ConfirmModal'
 import { TemplateModal } from './components/modals/TemplateModal'
 import { AddGroupModal, InsertGroupModal, InsertCellModal, AddCellToGroupModal } from './components/modals/SimpleModals'
@@ -19,6 +20,11 @@ import { DbEngineModal } from './components/modals/DbEngineModal'
 import { ExportModal, GistTokenModal, GistResultModal, JsonPassphraseModal } from './components/modals/ExportModals'
 import { CellConfigModal } from './components/modals/CellConfigModal'
 import { LoopConfigModal, GroupSettingsModal, ChildGroupModal } from './components/modals/GroupModals'
+
+function DbEngineIcon({ className }: { className?: string }) {
+    const dbEngine = useNotebookStore(s => s.dbEngine)
+    return <span className={className} style={{ fontSize: '1.1em', lineHeight: 1 }}>{dbEngine === 'ducklings' ? '🐤' : '🦆'}</span>
+}
 
 function SidebarControls() {
     const { devMode, dbEngine, showLayout } = useNotebookStore(useShallow(s => ({
@@ -28,6 +34,7 @@ function SidebarControls() {
     })))
     const { theme, setTheme } = useTheme()
     const set = useNotebookStore.setState
+    const themeModalDisclosure = useDisclosure()
 
     if (!showLayout) return null
 
@@ -47,12 +54,21 @@ function SidebarControls() {
                 icon={theme === 'dark' ? SunIcon : MoonIcon}
             />
 
+            {/* Personnalisation CSS du thème */}
+            <RoomShell.SidebarButton
+                title="Personnaliser le thème"
+                onClick={themeModalDisclosure.onToggle}
+                isSelected={themeModalDisclosure.isOpen}
+                icon={PaintbrushIcon}
+            />
+            <ThemeCustomModal open={themeModalDisclosure.isOpen} onClose={themeModalDisclosure.onClose} />
+
             {/* DB Engine (devMode only) */}
             {devMode && (
                 <RoomShell.SidebarButton
                     title={`Moteur : ${dbEngine === 'ducklings' ? 'Ducklings 🐤' : 'DuckDB WASM 🦆'}`}
                     onClick={() => set({ showDbEngineModal: true })}
-                    icon={DatabaseIcon}
+                    icon={DbEngineIcon}
                 />
             )}
 
