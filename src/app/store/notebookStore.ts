@@ -350,7 +350,7 @@ export const useNotebookStore = create<any>((set, get, api) => {
                     title: 'Sources',
                     icon: DatabaseIcon,
                     component: DataSourcesPanel,
-                    placement: 'sidebar',
+                    placement: 'manual',
                 },
             },
         },
