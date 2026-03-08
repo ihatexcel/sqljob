@@ -11,7 +11,7 @@ import { useDisclosure, useTheme } from '@sqlrooms/ui'
 import { useShallow } from 'zustand/react/shallow'
 import { useNotebookStore } from './store/notebookStore'
 import { SqlEditorModal } from '@sqlrooms/sql-editor'
-import { DatabaseIcon, MoonIcon, Settings2Icon, SunIcon, TerminalIcon } from 'lucide-react'
+import { BookHeartIcon, DatabaseIcon, MoonIcon, Settings2Icon, SunIcon, TerminalIcon } from 'lucide-react'
 import { ConfirmModal } from './components/modals/ConfirmModal'
 import { TemplateModal } from './components/modals/TemplateModal'
 import { AddGroupModal, InsertGroupModal, InsertCellModal, AddCellToGroupModal } from './components/modals/SimpleModals'
@@ -33,6 +33,13 @@ function SidebarControls() {
 
     return (
         <>
+            {/* Documentation */}
+            <RoomShell.SidebarButton
+                title="Documentation"
+                onClick={() => window.open('https://ihatexcel.github.io/sqljob/?gist=68cd597ba5da05ceba24fb975c05384f', '_blank')}
+                icon={BookHeartIcon}
+            />
+
             {/* Theme toggle */}
             <RoomShell.SidebarButton
                 title={theme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}
