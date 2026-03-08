@@ -84894,7 +84894,316 @@ const duckdbManagerConnector = createBaseDuckDbConnector(
       return (Vt == null ? void 0 : Vt.linkGroups) || [];
     }
   };
-}), STORAGE_LIGHT = "sqljob-custom-theme-light", STORAGE_DARK = "sqljob-custom-theme-dark", STYLE_ID = "sqljob-custom-theme";
+}), STORAGE_LIGHT = "sqljob-custom-theme-light", STORAGE_DARK = "sqljob-custom-theme-dark", STORAGE_PRESET = "sqljob-custom-theme-preset", STYLE_ID = "sqljob-custom-theme", PRESETS = [
+  {
+    id: "default",
+    label: "Défaut",
+    emoji: "⚪",
+    light: "",
+    dark: ""
+  },
+  {
+    id: "valentine",
+    label: "Valentine",
+    emoji: "🌸",
+    light: `  --background: 333 100% 97%;
+  --foreground: 328 73% 22%;
+  --card: 333 100% 97%;
+  --card-foreground: 328 73% 22%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 328 73% 22%;
+  --primary: 339 79% 62%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 325 80% 88%;
+  --secondary-foreground: 328 73% 22%;
+  --muted: 333 60% 92%;
+  --muted-foreground: 328 35% 50%;
+  --accent: 350 89% 80%;
+  --accent-foreground: 328 73% 22%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 333 50% 87%;
+  --input: 333 50% 87%;
+  --ring: 339 79% 62%;`,
+    dark: `  --background: 330 25% 10%;
+  --foreground: 330 80% 90%;
+  --card: 330 25% 13%;
+  --card-foreground: 330 80% 90%;
+  --popover: 330 25% 10%;
+  --popover-foreground: 330 80% 90%;
+  --primary: 339 75% 65%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 325 35% 28%;
+  --secondary-foreground: 330 80% 90%;
+  --muted: 330 18% 18%;
+  --muted-foreground: 330 35% 62%;
+  --accent: 350 55% 42%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 63% 40%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 330 18% 22%;
+  --input: 330 18% 22%;
+  --ring: 339 75% 65%;`
+  },
+  {
+    id: "synthwave",
+    label: "Synthwave",
+    emoji: "🌆",
+    light: `  --background: 264 30% 95%;
+  --foreground: 264 50% 15%;
+  --card: 0 0% 100%;
+  --card-foreground: 264 50% 15%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 264 50% 15%;
+  --primary: 300 85% 55%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 196 90% 50%;
+  --secondary-foreground: 264 50% 15%;
+  --muted: 264 20% 88%;
+  --muted-foreground: 264 25% 42%;
+  --accent: 55 95% 50%;
+  --accent-foreground: 264 50% 15%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 264 20% 82%;
+  --input: 264 20% 82%;
+  --ring: 300 85% 55%;`,
+    dark: `  --background: 264 28% 10%;
+  --foreground: 300 8% 90%;
+  --card: 264 28% 13%;
+  --card-foreground: 300 8% 90%;
+  --popover: 264 28% 10%;
+  --popover-foreground: 300 8% 90%;
+  --primary: 300 100% 60%;
+  --primary-foreground: 264 28% 10%;
+  --secondary: 196 100% 45%;
+  --secondary-foreground: 264 28% 10%;
+  --muted: 264 20% 18%;
+  --muted-foreground: 300 8% 58%;
+  --accent: 55 100% 50%;
+  --accent-foreground: 264 28% 10%;
+  --destructive: 0 63% 45%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 264 20% 25%;
+  --input: 264 20% 25%;
+  --ring: 300 100% 60%;`
+  },
+  {
+    id: "emerald",
+    label: "Emerald",
+    emoji: "💚",
+    light: `  --background: 0 0% 100%;
+  --foreground: 170 50% 15%;
+  --card: 0 0% 100%;
+  --card-foreground: 170 50% 15%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 170 50% 15%;
+  --primary: 160 84% 39%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 156 55% 75%;
+  --secondary-foreground: 170 50% 15%;
+  --muted: 160 18% 93%;
+  --muted-foreground: 170 25% 40%;
+  --accent: 155 60% 42%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 160 18% 85%;
+  --input: 160 18% 85%;
+  --ring: 160 84% 39%;`,
+    dark: `  --background: 170 28% 8%;
+  --foreground: 160 18% 92%;
+  --card: 170 28% 11%;
+  --card-foreground: 160 18% 92%;
+  --popover: 170 28% 8%;
+  --popover-foreground: 160 18% 92%;
+  --primary: 160 84% 45%;
+  --primary-foreground: 170 28% 8%;
+  --secondary: 156 38% 22%;
+  --secondary-foreground: 160 18% 92%;
+  --muted: 170 18% 15%;
+  --muted-foreground: 160 14% 58%;
+  --accent: 155 60% 35%;
+  --accent-foreground: 160 18% 92%;
+  --destructive: 0 63% 31%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 170 18% 18%;
+  --input: 170 18% 18%;
+  --ring: 160 84% 45%;`
+  },
+  {
+    id: "nord",
+    label: "Nord",
+    emoji: "🏔️",
+    light: `  --background: 220 26% 97%;
+  --foreground: 220 16% 22%;
+  --card: 0 0% 100%;
+  --card-foreground: 220 16% 22%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 220 16% 22%;
+  --primary: 213 32% 52%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 193 43% 67%;
+  --secondary-foreground: 220 16% 22%;
+  --muted: 220 16% 90%;
+  --muted-foreground: 220 10% 45%;
+  --accent: 178 26% 55%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 354 42% 56%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 220 12% 83%;
+  --input: 220 12% 83%;
+  --ring: 213 32% 52%;`,
+    dark: `  --background: 220 16% 22%;
+  --foreground: 220 26% 92%;
+  --card: 220 16% 26%;
+  --card-foreground: 220 26% 92%;
+  --popover: 220 16% 22%;
+  --popover-foreground: 220 26% 92%;
+  --primary: 213 32% 62%;
+  --primary-foreground: 220 16% 22%;
+  --secondary: 220 16% 30%;
+  --secondary-foreground: 220 26% 92%;
+  --muted: 220 14% 28%;
+  --muted-foreground: 220 12% 62%;
+  --accent: 178 26% 45%;
+  --accent-foreground: 220 26% 92%;
+  --destructive: 354 42% 50%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 220 12% 32%;
+  --input: 220 12% 32%;
+  --ring: 213 32% 62%;`
+  },
+  {
+    id: "autumn",
+    label: "Autumn",
+    emoji: "🍂",
+    light: `  --background: 30 100% 97%;
+  --foreground: 20 60% 18%;
+  --card: 30 100% 97%;
+  --card-foreground: 20 60% 18%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 20 60% 18%;
+  --primary: 24 100% 38%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 15 75% 58%;
+  --secondary-foreground: 20 60% 18%;
+  --muted: 30 45% 90%;
+  --muted-foreground: 20 35% 43%;
+  --accent: 45 95% 45%;
+  --accent-foreground: 20 60% 18%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 30 38% 82%;
+  --input: 30 38% 82%;
+  --ring: 24 100% 38%;`,
+    dark: `  --background: 20 28% 10%;
+  --foreground: 30 45% 87%;
+  --card: 20 28% 13%;
+  --card-foreground: 30 45% 87%;
+  --popover: 20 28% 10%;
+  --popover-foreground: 30 45% 87%;
+  --primary: 24 100% 50%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 15 50% 28%;
+  --secondary-foreground: 30 45% 87%;
+  --muted: 20 18% 17%;
+  --muted-foreground: 30 25% 55%;
+  --accent: 45 75% 40%;
+  --accent-foreground: 20 28% 10%;
+  --destructive: 0 63% 35%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 20 18% 22%;
+  --input: 20 18% 22%;
+  --ring: 24 100% 50%;`
+  },
+  {
+    id: "dracula",
+    label: "Dracula",
+    emoji: "🧛",
+    light: `  --background: 231 14% 95%;
+  --foreground: 231 14% 20%;
+  --card: 0 0% 100%;
+  --card-foreground: 231 14% 20%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 231 14% 20%;
+  --primary: 265 80% 58%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 231 13% 83%;
+  --secondary-foreground: 231 14% 20%;
+  --muted: 231 13% 88%;
+  --muted-foreground: 225 18% 43%;
+  --accent: 135 55% 42%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 231 12% 82%;
+  --input: 231 12% 82%;
+  --ring: 265 80% 58%;`,
+    dark: `  --background: 231 15% 18%;
+  --foreground: 60 28% 95%;
+  --card: 231 15% 21%;
+  --card-foreground: 60 28% 95%;
+  --popover: 231 15% 18%;
+  --popover-foreground: 60 28% 95%;
+  --primary: 265 89% 78%;
+  --primary-foreground: 231 15% 18%;
+  --secondary: 231 13% 26%;
+  --secondary-foreground: 60 28% 95%;
+  --muted: 231 13% 23%;
+  --muted-foreground: 225 25% 62%;
+  --accent: 135 94% 65%;
+  --accent-foreground: 231 15% 18%;
+  --destructive: 0 100% 67%;
+  --destructive-foreground: 231 15% 18%;
+  --border: 231 12% 28%;
+  --input: 231 12% 28%;
+  --ring: 265 89% 78%;`
+  },
+  {
+    id: "coffee",
+    label: "Coffee",
+    emoji: "☕",
+    light: `  --background: 30 14% 92%;
+  --foreground: 30 20% 15%;
+  --card: 30 14% 92%;
+  --card-foreground: 30 20% 15%;
+  --popover: 30 14% 95%;
+  --popover-foreground: 30 20% 15%;
+  --primary: 25 35% 38%;
+  --primary-foreground: 30 14% 92%;
+  --secondary: 20 22% 55%;
+  --secondary-foreground: 30 20% 15%;
+  --muted: 30 10% 85%;
+  --muted-foreground: 30 14% 40%;
+  --accent: 15 45% 46%;
+  --accent-foreground: 30 14% 92%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 30 10% 78%;
+  --input: 30 10% 78%;
+  --ring: 25 35% 38%;`,
+    dark: `  --background: 25 18% 12%;
+  --foreground: 30 22% 85%;
+  --card: 25 18% 15%;
+  --card-foreground: 30 22% 85%;
+  --popover: 25 18% 12%;
+  --popover-foreground: 30 22% 85%;
+  --primary: 25 38% 55%;
+  --primary-foreground: 25 18% 12%;
+  --secondary: 20 18% 22%;
+  --secondary-foreground: 30 22% 85%;
+  --muted: 25 13% 18%;
+  --muted-foreground: 30 16% 53%;
+  --accent: 15 40% 45%;
+  --accent-foreground: 30 22% 85%;
+  --destructive: 0 63% 31%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 25 12% 22%;
+  --input: 25 12% 22%;
+  --ring: 25 38% 55%;`
+  }
+];
 function applyCustomTheme(yt, At) {
   let xt = document.getElementById(STYLE_ID);
   xt || (xt = document.createElement("style"), xt.id = STYLE_ID, document.head.appendChild(xt));
@@ -84907,49 +85216,56 @@ ${At.trim()}
 `);
 }
 function ThemeCustomModal({ open: yt, onClose: At }) {
-  const [xt, wt] = reactExports.useState(""), [Et, kt] = reactExports.useState("");
+  const [xt, wt] = reactExports.useState("custom"), [Et, kt] = reactExports.useState(""), [Ct, St] = reactExports.useState("");
   reactExports.useEffect(() => {
-    yt && (wt(localStorage.getItem(STORAGE_LIGHT) || ""), kt(localStorage.getItem(STORAGE_DARK) || ""));
+    if (!yt) return;
+    const Nt = localStorage.getItem(STORAGE_LIGHT) || "", Ot = localStorage.getItem(STORAGE_DARK) || "", Ut = localStorage.getItem(STORAGE_PRESET) || "custom";
+    kt(Nt), St(Ot), wt(Ut);
   }, [yt]);
-  function Ct() {
-    localStorage.setItem(STORAGE_LIGHT, xt), localStorage.setItem(STORAGE_DARK, Et), applyCustomTheme(xt, Et), At();
+  function Tt(Nt) {
+    wt(Nt);
+    const Ot = PRESETS.find((Ut) => Ut.id === Nt);
+    Ot && (kt(Ot.light), St(Ot.dark));
   }
-  function St() {
-    wt(""), kt(""), localStorage.removeItem(STORAGE_LIGHT), localStorage.removeItem(STORAGE_DARK), applyCustomTheme("", "");
+  function $t(Nt) {
+    kt(Nt), wt("custom");
   }
-  const Tt = !!(xt.trim() || Et.trim());
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open: yt, onOpenChange: ($t) => !$t && At(), children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { "aria-describedby": void 0, className: "max-w-2xl", children: [
+  function Lt(Nt) {
+    St(Nt), wt("custom");
+  }
+  function It() {
+    localStorage.setItem(STORAGE_LIGHT, Et), localStorage.setItem(STORAGE_DARK, Ct), localStorage.setItem(STORAGE_PRESET, xt), applyCustomTheme(Et, Ct), At();
+  }
+  function jt() {
+    kt(""), St(""), wt("default"), localStorage.removeItem(STORAGE_LIGHT), localStorage.removeItem(STORAGE_DARK), localStorage.removeItem(STORAGE_PRESET), applyCustomTheme("", "");
+  }
+  const Dt = !!(Et.trim() || Ct.trim());
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open: yt, onOpenChange: (Nt) => !Nt && At(), children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { "aria-describedby": void 0, className: "max-w-2xl", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(DialogHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogTitle, { className: "flex items-center gap-2", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "palette", size: 20 }),
       "Personnalisation du thème"
     ] }) }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4 text-sm", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-muted-foreground", children: "Collez des variables CSS pour surcharger les couleurs du thème. Laissez vide pour utiliser le thème par défaut." }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-2 text-xs text-muted-foreground flex-wrap", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Références :" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "a",
-          {
-            href: "https://sqlrooms.org/theming.html",
-            target: "_blank",
-            rel: "noopener noreferrer",
-            className: "underline hover:text-foreground",
-            children: "sqlrooms/theming"
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "·" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "a",
-          {
-            href: "https://ui.shadcn.com/themes#themes",
-            target: "_blank",
-            rel: "noopener noreferrer",
-            className: "underline hover:text-foreground",
-            children: "shadcn/ui themes"
-          }
-        )
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-xs font-medium text-muted-foreground", children: "Thème prédéfini" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(Select, { value: xt, onValueChange: Tt, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(SelectTrigger, { className: "h-9", children: /* @__PURE__ */ jsxRuntimeExports.jsx(SelectValue, {}) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(SelectContent, { children: [
+            PRESETS.map((Nt) => /* @__PURE__ */ jsxRuntimeExports.jsxs(SelectItem, { value: Nt.id, children: [
+              Nt.emoji,
+              " ",
+              Nt.label
+            ] }, Nt.id)),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "custom", children: "✏️ Personnalisé" })
+          ] })
+        ] })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(Separator$2, {}),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-muted-foreground text-xs", children: [
+        "Variables CSS surchargeant le thème.",
+        " ",
+        /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "https://ui.shadcn.com/themes#themes", target: "_blank", rel: "noopener noreferrer", className: "underline hover:text-foreground", children: "Référence shadcn/ui" })
+      ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-xs font-medium", children: "☀️ Mode clair" }),
@@ -84961,8 +85277,8 @@ function ThemeCustomModal({ open: yt, onClose: At }) {
 --background: 0 0% 100%;
 --foreground: 240 10% 3.9%;
 ...`,
-              value: xt,
-              onChange: ($t) => wt($t.target.value),
+              value: Et,
+              onChange: (Nt) => $t(Nt.target.value),
               spellCheck: !1
             }
           )
@@ -84977,8 +85293,8 @@ function ThemeCustomModal({ open: yt, onClose: At }) {
 --background: 224 71.4% 4.1%;
 --foreground: 210 20% 98%;
 ...`,
-              value: Et,
-              onChange: ($t) => kt($t.target.value),
+              value: Ct,
+              onChange: (Nt) => Lt(Nt.target.value),
               spellCheck: !1
             }
           )
@@ -84986,9 +85302,9 @@ function ThemeCustomModal({ open: yt, onClose: At }) {
       ] })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogFooter, { className: "gap-2", children: [
-      Tt && /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "ghost", size: "sm", onClick: St, className: "mr-auto text-destructive hover:text-destructive", children: "Réinitialiser" }),
+      Dt && /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "ghost", size: "sm", onClick: jt, className: "mr-auto text-destructive hover:text-destructive", children: "Réinitialiser" }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "outline", size: "sm", onClick: At, children: "Annuler" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { size: "sm", onClick: Ct, children: "Appliquer" })
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { size: "sm", onClick: It, children: "Appliquer" })
     ] })
   ] }) });
 }
