@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="fr">
+<!--Begin of sqljob notebook -->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iHateXcel - sqljob</title>
+    <link rel="icon" href="https://raw.githubusercontent.com/ihatexcel/sqljob/main/ihatexcel.ico" type="image/x-icon">
+    <!-- simple-datatables CSS chargé dynamiquement via CDNManager -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- iconify chargé localement via npm (évite le blocage COEP) -->
+
+    <!--
+    -->
+    <link rel="stylesheet" href="./dist-cdn/sqljob.css?v=20260306b">
+    <script type="module" src="./dist-cdn/sqljob.js?v=20260306b"></script>
+
+    <style>
+        /* Simple-datatables dark mode fix */
+        .datatable-wrapper,
+        .datatable-top,
+        .datatable-bottom,
+        .datatable-container {
+            background: transparent !important;
+        }
+
+        .datatable-input,
+        .datatable-selector {
+            background: hsl(var(--background)) !important;
+            color: hsl(var(--foreground)) !important;
+            border-color: hsl(var(--border)) !important;
+        }
+
+        /* Container query pour le responsive */
+        .cell-container {
+            container-type: inline-size;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        @container (max-width: 350px) {
+            .cell-header-responsive .flex.gap-1.items-center>.join {
+                display: none;
+            }
+
+            .cell-header-responsive .flex.gap-1.items-center>.dropdown.hidden {
+                display: block;
+            }
+        }
+
+        /* Container query pour le responsive des groupes */
+        .flex-1.bg-base-100.border {
+            container-type: inline-size;
+        }
+
+        @container (max-width: 500px) {
+
+            /* Cacher les boutons join dans les headers de groupes */
+            .flex-1.bg-base-100.border .flex.items-center.justify-between>.join {
+                display: none;
+            }
+
+            /* Afficher le dropdown dans les headers de groupes */
+            .flex-1.bg-base-100.border .flex.items-center.justify-between>.dropdown.hidden {
+                display: block;
+            }
+        }
+
+        .editor-preview-full {
+            overflow: visible;
+        }
+
+        .editor-preview {
+            background-color: hsl(var(--background)) !important;
+        }
+
+        .EasyMDEContainer .editor-preview-active~.CodeMirror {
+            display: none;
+        }
+
+        /* EasyMDE mode client : pas de bordure + masquer le glitch au chargement */
+        .easymde-client {
+            opacity: 0;
+            transition: opacity 0.15s ease-in;
+        }
+        .easymde-client.easymde-ready {
+            opacity: 1;
+        }
+        .easymde-client .EasyMDEContainer,
+        .easymde-client .CodeMirror,
+        .easymde-client .cm-editor,
+        .easymde-client .editor-preview,
+        .easymde-client .editor-preview-full {
+            border: none !important;
+        }
+        /* Masquer la scrollbar verticale en mode client */
+        .easymde-client .CodeMirror,
+        .easymde-client .CodeMirror-scroll,
+        .easymde-client .cm-editor,
+        .easymde-client .cm-scroller,
+        .easymde-client .editor-preview,
+        .easymde-client .editor-preview-full {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .easymde-client .CodeMirror::-webkit-scrollbar,
+        .easymde-client .CodeMirror-scroll::-webkit-scrollbar,
+        .easymde-client .cm-editor::-webkit-scrollbar,
+        .easymde-client .cm-scroller::-webkit-scrollbar,
+        .easymde-client .editor-preview::-webkit-scrollbar,
+        .easymde-client .editor-preview-full::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Hauteur cellule : variables CSS + max/min natifs (px et % combinables) */
+        .cell-body-has-height {
+            min-height: max(var(--cell-min-h-px, 0), var(--cell-min-h-pct, 0%));
+            max-height: min(var(--cell-max-h-px, 9999px), var(--cell-max-h-pct, 9999px));
+        }
+
+        /* Perspective: remplir tout l'espace disponible (quand hasCellHeight) */
+        .cell-body .perspective-fill-height perspective-viewer {
+            flex: 1;
+            min-height: 0;
+            min-width: 0;
+        }
+
+        /* Markdown/EasyMDE : remplir la hauteur quand cell-body a min/max height */
+        .cell-body .flex-1.min-h-0 .EasyMDEContainer {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        .cell-body .flex-1.min-h-0 .EasyMDEContainer .CodeMirror,
+        .cell-body .flex-1.min-h-0 .EasyMDEContainer .cm-editor,
+        .cell-body .flex-1.min-h-0 .EasyMDEContainer .editor-preview,
+        .cell-body .flex-1.min-h-0 .EasyMDEContainer .editor-preview-full {
+            flex: 1;
+            min-height: 0;
+        }
+
+        /* Styles pour les titres - doit venir APRÈS all: revert */
+        .editor-preview-active h1,
+        .editor-preview h1,
+        .editor-preview-side h1,
+        .editor-preview-full h1 {
+            color: hsl(var(--primary)) !important;
+            font-size: 2.25rem;
+            line-height: 2.5rem;
+            font-weight: 700;
+        }
+
+        .editor-preview-active h2,
+        .editor-preview h2,
+        .editor-preview-side h2,
+        .editor-preview-full h2 {
+            color: hsl(var(--secondary-foreground)) !important;
+            font-size: 1.875rem;
+            line-height: 2.25rem;
+            font-weight: 600;
+        }
+
+        /* CodeMirror SQL Editor Styles */
+        .codemirror-sql-container {
+            width: 100%;
+            min-height: 20px;
+        }
+
+        .codemirror-sql-container .cm-editor {
+            background: hsl(var(--background));
+        }
+
+        .codemirror-sql-container .cm-gutters {
+            background: hsl(var(--muted));
+            border-right: 1px solid hsl(var(--border));
+        }
+
+        .codemirror-sql-container .cm-activeLineGutter {
+            background: hsl(var(--border));
+        }
+
+        .codemirror-sql-container .cm-line {
+            color: hsl(var(--foreground));
+        }
+
+        /* Tooltips marimo-sql */
+        .cm-tooltip {
+            background: hsl(var(--popover)) !important;
+            border: 1px solid hsl(var(--border)) !important;
+            border-radius: 0.5rem !important;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1) !important;
+        }
+
+        .cm-tooltip-autocomplete {
+            background: hsl(var(--popover)) !important;
+        }
+
+        .cm-tooltip-autocomplete>ul>li {
+            color: hsl(var(--popover-foreground)) !important;
+        }
+
+        .cm-tooltip-autocomplete>ul>li[aria-selected] {
+            background: hsl(var(--primary) / 0.2) !important;
+            color: hsl(var(--popover-foreground)) !important;
+        }
+
+        /* Cursor */
+        .codemirror-sql-container .cm-cursor {
+            border-left-color: hsl(var(--primary)) !important;
+        }
+
+        .codemirror-sql-container div::selection {
+            color: hsl(var(--foreground)) !important;
+            background-color: hsl(var(--muted)) !important;
+        }
+
+        /* ── SHIM (remplace les classes DaisyUI dans les templates générés) ── */
+
+        /* Base colors */
+        .bg-base-100 { background-color: hsl(var(--background)); }
+        .bg-base-200 { background-color: hsl(var(--muted)); }
+        .bg-base-300 { background-color: hsl(var(--border)); }
+        .text-base-content { color: hsl(var(--foreground)); }
+        .text-base-content\/70 { color: hsl(var(--foreground) / 0.7); }
+        .text-base-content\/60 { color: hsl(var(--foreground) / 0.6); }
+        .text-base-content\/40 { color: hsl(var(--foreground) / 0.4); }
+        .border-base-300 { border-color: hsl(var(--border)); }
+        .text-success { color: #16a34a; }
+        .dark .text-success { color: #4ade80; }
+        .text-warning { color: #ca8a04; }
+        .dark .text-warning { color: #facc15; }
+        .text-error { color: #dc2626; }
+        .dark .text-error { color: #f87171; }
+
+        /* Boutons */
+        .btn { display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.375rem 0.75rem; border-radius: 0.375rem; font-size: 0.875rem; font-weight: 500; cursor: pointer; border: 1px solid transparent; transition: background-color 0.15s; background: transparent; }
+        .btn-xs { padding: 0.125rem 0.375rem; font-size: 0.75rem; }
+        .btn-sm { padding: 0.25rem 0.5rem; font-size: 0.8125rem; }
+        .btn-ghost { background: transparent; border-color: transparent; color: hsl(var(--foreground)); }
+        .btn-ghost:hover { background: hsl(var(--muted)); }
+        .btn-primary { background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); border-color: hsl(var(--primary)); }
+        .btn-primary:hover { opacity: 0.9; }
+        .btn-error { background: hsl(var(--destructive)); color: hsl(var(--destructive-foreground)); border-color: hsl(var(--destructive)); }
+        .btn-error:hover { opacity: 0.9; }
+
+        /* Badge */
+        .badge { display: inline-flex; align-items: center; padding: 0.125rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; }
+        .badge-primary { background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); }
+        .badge-soft.badge-primary { background: hsl(var(--primary) / 0.15); color: hsl(var(--primary)); }
+        .badge-warning { background: #fef3c7; color: #92400e; }
+        .dark .badge-warning { background: #451a03; color: #fbbf24; }
+        .badge-ghost { background: hsl(var(--muted)); color: hsl(var(--muted-foreground)); }
+        .badge-info { background: #dbeafe; color: #1e40af; }
+        .dark .badge-info { background: #1e3a5f; color: #93c5fd; }
+
+        /* Join (groupe de boutons) */
+        .join { display: inline-flex; }
+        .join .join-item:not(:first-child) { border-top-left-radius: 0 !important; border-bottom-left-radius: 0 !important; margin-left: -1px; }
+        .join .join-item:not(:last-child) { border-top-right-radius: 0 !important; border-bottom-right-radius: 0 !important; }
+
+        /* Dropdown */
+        .dropdown { position: relative; display: inline-block; }
+        .dropdown-end .dropdown-content { right: 0; left: auto; }
+        .dropdown-content { display: none; position: absolute; z-index: 50; min-width: 8rem; }
+        .dropdown:focus-within .dropdown-content { display: block; }
+        .menu { list-style: none; padding: 0.25rem; margin: 0; }
+        .menu-xs li a, .menu-xs li button { padding: 0.25rem 0.5rem; font-size: 0.75rem; }
+        .menu li a, .menu li button { display: flex; align-items: center; gap: 0.5rem; padding: 0.375rem 0.75rem; border-radius: 0.25rem; cursor: pointer; color: hsl(var(--foreground)); text-decoration: none; background: transparent; border: none; width: 100%; }
+        .menu li a:hover, .menu li button:hover { background: hsl(var(--muted)); }
+        .rounded-box { border-radius: 0.5rem; }
+
+        /* Formulaires */
+        .input, .select, .textarea { background: hsl(var(--background)); color: hsl(var(--foreground)); border: 1px solid hsl(var(--border)); border-radius: 0.375rem; padding: 0.375rem 0.75rem; outline: none; transition: border-color 0.15s; }
+        .input:focus, .select:focus, .textarea:focus { border-color: hsl(var(--primary)); box-shadow: 0 0 0 2px hsl(var(--primary) / 0.2); }
+        .input-sm, .select-sm { padding: 0.25rem 0.5rem; font-size: 0.8125rem; }
+        .input-xs { padding: 0.125rem 0.375rem; font-size: 0.75rem; }
+        .input-bordered, .select-bordered, .textarea-bordered { border-color: hsl(var(--border)); }
+        .range { -webkit-appearance: none; width: 100%; height: 0.5rem; border-radius: 9999px; background: hsl(var(--muted)); outline: none; }
+        .range::-webkit-slider-thumb { -webkit-appearance: none; width: 1rem; height: 1rem; border-radius: 50%; cursor: pointer; }
+        .range-primary::-webkit-slider-thumb { background: hsl(var(--primary)); }
+        .range-sm { height: 0.375rem; }
+        .fieldset { border: none; padding: 0; margin: 0; }
+        .fieldset-legend, .fieldset legend { font-size: 0.75rem; font-weight: 500; color: hsl(var(--muted-foreground)); margin-bottom: 0.25rem; display: block; }
+    </style>
+
+</head>
+
+<body class="min-h-screen font-sans bg-background text-foreground transition-colors duration-200">
+    <sqljob-app></sqljob-app>
+</body>
+
+</html>
