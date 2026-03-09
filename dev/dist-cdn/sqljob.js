@@ -76864,28 +76864,31 @@ function NavBar() {
               " Export Base64"
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(DropdownMenuSeparator, {}),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(DropdownMenuItem, { asChild: !0, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "cursor-pointer flex items-center gap-2 w-full", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "folder-open", size: 16 }),
-              " Import JSON",
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "input",
-                {
-                  ref: Ct,
-                  type: "file",
-                  accept: ".json",
-                  hidden: !0,
-                  onChange: (Tt) => {
-                    var $t;
-                    kt(Tt), ($t = document.activeElement) == null || $t.blur();
-                  }
-                }
-              )
-            ] }) })
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuItem, { onClick: () => {
+              var Tt;
+              return (Tt = Ct.current) == null ? void 0 : Tt.click();
+            }, children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "folder-open", size: 16, className: "mr-2" }),
+              " Import JSON"
+            ] })
           ] })
         ] })
       ] }),
       At && /* @__PURE__ */ jsxRuntimeExports.jsx(Spinner, { className: "h-4 w-4" })
-    ] })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "input",
+      {
+        ref: Ct,
+        type: "file",
+        accept: ".json",
+        hidden: !0,
+        onChange: (Tt) => {
+          var $t;
+          kt(Tt), ($t = document.activeElement) == null || $t.blur();
+        }
+      }
+    )
   ] });
 }
 function StatusBar() {
