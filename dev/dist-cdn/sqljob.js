@@ -82410,17 +82410,17 @@ const createExportSlice = (yt, At) => ({
   },
   // ─── Config dans le store — remplace ConfigManager.buildConfigFromState(this.pages, ...) ───
   async buildExportConfig(xt = {}) {
-    const wt = At(), Et = xt.devMode ?? wt.devMode, kt = xt.showLayout ?? wt.showLayout, Ct = xt.includeFileData ?? !1;
+    const wt = At(), Et = xt.devMode ?? wt.devMode, kt = xt.showLayout ?? wt.showLayout, Ct = xt.includeFileData ?? !1, St = localStorage.getItem(STORAGE_PRESET) || "default", Tt = St === "custom" && localStorage.getItem(STORAGE_LIGHT) || "", $t = St === "custom" && localStorage.getItem(STORAGE_DARK) || "";
     return ConfigManager.buildConfigFromState(
       wt.pages,
       Et,
       kt,
       Ct,
-      wt.currentTheme,
+      St,
       wt.dbEngine,
       wt.directedAcyclicGraph,
-      localStorage.getItem(STORAGE_LIGHT) || "",
-      localStorage.getItem(STORAGE_DARK) || ""
+      Tt,
+      $t
     );
   },
   openExportModal(xt) {
@@ -82625,48 +82625,56 @@ ${It}${$t}</head>
     }
   },
   async applyImportedConfig(xt) {
-    var It, jt, Dt, Nt, Ot, Ut, Ht, Vt, Yt, rr, gr;
+    var $t, Lt, It, jt, Dt, Nt, Ot, Ut, Ht, Vt, Yt;
     await ConfigManager.prepareConfigForLoad(xt);
-    const wt = (Ar, vr) => initializeCell(Ar, vr, { generateId: () => At().generateCellId() }), Et = (Ar, vr) => {
-      const wr = {
-        _id: Ar.id || At().generateGroupId(),
-        _type: Ar.type || "core",
-        direction: Ar.direction || "row",
-        style: Ar.style || "",
-        _order: ConfigManager.normalizeOrder(Ar.order, vr),
-        cells: (Ar.cells || []).map((Pr, Vr) => wt(ConfigManager.normalizeCell({ ...Pr }), Vr)),
-        accordion: Ar.accordion || !1,
-        title: Ar.title || "",
-        accordionOpen: Ar.accordionOpen !== !1
+    const wt = (rr, gr) => initializeCell(rr, gr, { generateId: () => At().generateCellId() }), Et = (rr, gr) => {
+      const Ar = {
+        _id: rr.id || At().generateGroupId(),
+        _type: rr.type || "core",
+        direction: rr.direction || "row",
+        style: rr.style || "",
+        _order: ConfigManager.normalizeOrder(rr.order, gr),
+        cells: (rr.cells || []).map((vr, wr) => wt(ConfigManager.normalizeCell({ ...vr }), wr)),
+        accordion: rr.accordion || !1,
+        title: rr.title || "",
+        accordionOpen: rr.accordionOpen !== !1
       };
-      return wr.tabsChild = Ar.tabsChild || !1, wr.name = Ar.name || "", Array.isArray(Ar.queries) && Ar.queries.length > 0 ? wr.queries = Ar.queries.map((Pr) => ({
-        name: Pr.name || "main",
-        sql: Pr.sql || "",
-        engine: Pr.engine || "sql",
-        clientVisible: Pr.clientVisible === !0
-      })) : wr.queries = [], wr.loop = Ar.loop ? { enabled: Ar.loop.enabled || !1, query: Ar.loop.query || "", zip: Ar.loop.zip || !1, zipQuery: Ar.loop.zipQuery || "" } : { enabled: !1, query: "", zip: !1, zipQuery: "" }, Ar.children && Ar.children.length > 0 && (wr.children = Ar.children.map((Pr, Vr) => {
-        const Kr = Et(Pr, Vr);
-        return Kr._order = ConfigManager.normalizeOrder(Pr.order, Vr), Kr;
-      })), wr;
+      return Ar.tabsChild = rr.tabsChild || !1, Ar.name = rr.name || "", Array.isArray(rr.queries) && rr.queries.length > 0 ? Ar.queries = rr.queries.map((vr) => ({
+        name: vr.name || "main",
+        sql: vr.sql || "",
+        engine: vr.engine || "sql",
+        clientVisible: vr.clientVisible === !0
+      })) : Ar.queries = [], Ar.loop = rr.loop ? { enabled: rr.loop.enabled || !1, query: rr.loop.query || "", zip: rr.loop.zip || !1, zipQuery: rr.loop.zipQuery || "" } : { enabled: !1, query: "", zip: !1, zipQuery: "" }, rr.children && rr.children.length > 0 && (Ar.children = rr.children.map((vr, wr) => {
+        const Pr = Et(vr, wr);
+        return Pr._order = ConfigManager.normalizeOrder(vr.order, wr), Pr;
+      })), Ar;
     };
-    let kt = (((It = xt.job) == null ? void 0 : It.pages) || []).map((Ar, vr) => {
-      const wr = (Ar.groups || []).map((Pr, Vr) => Et(Pr, Vr));
+    let kt = ((($t = xt.job) == null ? void 0 : $t.pages) || []).map((rr, gr) => {
+      const Ar = (rr.groups || []).map((vr, wr) => Et(vr, wr));
       return {
-        _id: Ar.id || At().generatePageId(),
-        name: Ar.name || `Feuille ${vr + 1}`,
-        groups: wr.filter((Pr) => Pr._type === "core"),
-        linkGroups: wr.filter((Pr) => Pr._type === "link")
+        _id: rr.id || At().generatePageId(),
+        name: rr.name || `Feuille ${gr + 1}`,
+        groups: Ar.filter((vr) => vr._type === "core"),
+        linkGroups: Ar.filter((vr) => vr._type === "link")
       };
     });
     kt.length === 0 && (kt = [{ _id: At().generatePageId(), name: "Feuille 1", groups: [], linkGroups: [] }]), yt({ pages: kt, activePageIndex: 0, _pagesInitialized: /* @__PURE__ */ new Set() }), At().ensureAllCellsHaveNames(), await At().loadPendingSourceFiles(), await At().evaluateAllGroupIfQueries(), await At().runAllGroups();
     const Ct = At().pages[0];
-    Ct && yt((Ar) => ({ _pagesInitialized: /* @__PURE__ */ new Set([...Ar._pagesInitialized, Ct._id]) })), setTimeout(() => setTimeout(() => At().refreshMarkdownCellsForPage(0), 300), 0);
-    const St = (jt = xt.ui) == null ? void 0 : jt.dbEngine;
-    St && St !== At().dbEngine && await At().switchDbEngine(St), ((Dt = xt.ui) == null ? void 0 : Dt.directedAcyclicGraph) !== void 0 && yt({ directedAcyclicGraph: xt.ui.directedAcyclicGraph === !0 }), ((Nt = xt.ui) == null ? void 0 : Nt.devMode) !== void 0 && yt({ devMode: xt.ui.devMode !== !1 }), (((Ot = xt.ui) == null ? void 0 : Ot.showLayout) !== void 0 || ((Ut = xt.ui) == null ? void 0 : Ut.displaySettings) !== void 0) && yt({ showLayout: (((Ht = xt.ui) == null ? void 0 : Ht.showLayout) ?? ((Vt = xt.ui) == null ? void 0 : Vt.displaySettings)) !== !1 });
-    const Tt = (Yt = xt.ui) == null ? void 0 : Yt.theme;
-    Tt && At().availableThemes.includes(Tt) && At().setTheme(Tt);
-    const $t = ((rr = xt.ui) == null ? void 0 : rr.customThemeLight) || "", Lt = ((gr = xt.ui) == null ? void 0 : gr.customThemeDark) || "";
-    ($t || Lt) && (localStorage.setItem(STORAGE_LIGHT, $t), localStorage.setItem(STORAGE_DARK, Lt), localStorage.removeItem(STORAGE_PRESET), applyCustomTheme($t, Lt)), At().setStatus("Configuration chargée", "success");
+    Ct && yt((rr) => ({ _pagesInitialized: /* @__PURE__ */ new Set([...rr._pagesInitialized, Ct._id]) })), setTimeout(() => setTimeout(() => At().refreshMarkdownCellsForPage(0), 300), 0);
+    const St = (Lt = xt.ui) == null ? void 0 : Lt.dbEngine;
+    St && St !== At().dbEngine && await At().switchDbEngine(St), ((It = xt.ui) == null ? void 0 : It.directedAcyclicGraph) !== void 0 && yt({ directedAcyclicGraph: xt.ui.directedAcyclicGraph === !0 }), ((jt = xt.ui) == null ? void 0 : jt.devMode) !== void 0 && yt({ devMode: xt.ui.devMode !== !1 }), (((Dt = xt.ui) == null ? void 0 : Dt.showLayout) !== void 0 || ((Nt = xt.ui) == null ? void 0 : Nt.displaySettings) !== void 0) && yt({ showLayout: (((Ot = xt.ui) == null ? void 0 : Ot.showLayout) ?? ((Ut = xt.ui) == null ? void 0 : Ut.displaySettings)) !== !1 });
+    const Tt = (Ht = xt.ui) == null ? void 0 : Ht.theme;
+    if (Tt === "light" || Tt === "dark")
+      At().availableThemes.includes(Tt) && At().setTheme(Tt);
+    else if (Tt === "custom") {
+      const rr = ((Vt = xt.ui) == null ? void 0 : Vt.customThemeLight) || "", gr = ((Yt = xt.ui) == null ? void 0 : Yt.customThemeDark) || "";
+      localStorage.setItem(STORAGE_LIGHT, rr), localStorage.setItem(STORAGE_DARK, gr), localStorage.setItem(STORAGE_PRESET, "custom"), applyCustomTheme(rr, gr);
+    } else if (Tt && Tt !== "default") {
+      const rr = PRESETS.find((gr) => gr.id === Tt);
+      rr && (localStorage.setItem(STORAGE_LIGHT, rr.light), localStorage.setItem(STORAGE_DARK, rr.dark), localStorage.setItem(STORAGE_PRESET, rr.id), applyCustomTheme(rr.light, rr.dark));
+    } else
+      localStorage.removeItem(STORAGE_LIGHT), localStorage.removeItem(STORAGE_DARK), localStorage.removeItem(STORAGE_PRESET), applyCustomTheme("", "");
+    At().setStatus("Configuration chargée", "success");
   }
 });
 class CellBodyRenderer {
