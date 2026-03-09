@@ -2,21 +2,23 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [main, recette]
+    branches: [main, beta, recette, claude/dev]
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: pages
-  cancel-in-progress: false
+  group: deploy-${{ github.ref_name }}
+  cancel-in-progress: true
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
 
       - uses: actions/setup-node@v4
         with:
@@ -27,7 +29,7 @@ jobs:
 
       - run: npm run build:cdn
 
-      - name: Prepare deploy directory
+      - name: Prepare site files
         run: |
           mkdir -p _site
           cp index.html _site/
@@ -37,19 +39,29 @@ jobs:
 
       # main → racine du site (/)
       - name: Deploy main to /
-        if: github.ref == 'refs/heads/main'
+        if: github.ref_name == 'main'
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./_site
+          publish_dir: _site
           keep_files: true
 
-      # recette → sous-dossier /beta/
-      - name: Deploy recette to /beta/
-        if: github.ref == 'refs/heads/recette'
+      # beta / recette → sous-dossier /beta/
+      - name: Deploy beta to /beta/
+        if: github.ref_name == 'beta' || github.ref_name == 'recette'
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./_site
+          publish_dir: _site
           destination_dir: beta
+          keep_files: true
+
+      # claude/dev → sous-dossier /dev/
+      - name: Deploy claude/dev to /dev/
+        if: github.ref == 'refs/heads/claude/dev'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: _site
+          destination_dir: dev
           keep_files: true
