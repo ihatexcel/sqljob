@@ -81956,6 +81956,19 @@ ${At.trim()}
 }`), xt.textContent = wt.join(`
 `);
 }
+function applyThemeFromConfig(yt) {
+  const At = yt == null ? void 0 : yt.theme;
+  if (!(!At || At === "light" || At === "dark"))
+    if (At === "default")
+      localStorage.removeItem(STORAGE_LIGHT), localStorage.removeItem(STORAGE_DARK), localStorage.removeItem(STORAGE_PRESET), applyCustomTheme("", "");
+    else if (At === "custom") {
+      const xt = (yt == null ? void 0 : yt.customThemeLight) || "", wt = (yt == null ? void 0 : yt.customThemeDark) || "";
+      localStorage.setItem(STORAGE_LIGHT, xt), localStorage.setItem(STORAGE_DARK, wt), localStorage.setItem(STORAGE_PRESET, "custom"), applyCustomTheme(xt, wt);
+    } else {
+      const xt = PRESETS.find((wt) => wt.id === At);
+      xt && (localStorage.setItem(STORAGE_LIGHT, xt.light), localStorage.setItem(STORAGE_DARK, xt.dark), localStorage.setItem(STORAGE_PRESET, xt.id), applyCustomTheme(xt.light, xt.dark));
+    }
+}
 const T$1 = (yt, At) => ({ light: css(yt), dark: css(At) });
 function base$1(yt, At, xt) {
   return {
@@ -82625,56 +82638,46 @@ ${It}${$t}</head>
     }
   },
   async applyImportedConfig(xt) {
-    var $t, Lt, It, jt, Dt, Nt, Ot, Ut, Ht, Vt, Yt;
+    var $t, Lt, It, jt, Dt, Nt, Ot, Ut, Ht;
     await ConfigManager.prepareConfigForLoad(xt);
-    const wt = (rr, gr) => initializeCell(rr, gr, { generateId: () => At().generateCellId() }), Et = (rr, gr) => {
-      const Ar = {
-        _id: rr.id || At().generateGroupId(),
-        _type: rr.type || "core",
-        direction: rr.direction || "row",
-        style: rr.style || "",
-        _order: ConfigManager.normalizeOrder(rr.order, gr),
-        cells: (rr.cells || []).map((vr, wr) => wt(ConfigManager.normalizeCell({ ...vr }), wr)),
-        accordion: rr.accordion || !1,
-        title: rr.title || "",
-        accordionOpen: rr.accordionOpen !== !1
+    const wt = (Vt, Yt) => initializeCell(Vt, Yt, { generateId: () => At().generateCellId() }), Et = (Vt, Yt) => {
+      const rr = {
+        _id: Vt.id || At().generateGroupId(),
+        _type: Vt.type || "core",
+        direction: Vt.direction || "row",
+        style: Vt.style || "",
+        _order: ConfigManager.normalizeOrder(Vt.order, Yt),
+        cells: (Vt.cells || []).map((gr, Ar) => wt(ConfigManager.normalizeCell({ ...gr }), Ar)),
+        accordion: Vt.accordion || !1,
+        title: Vt.title || "",
+        accordionOpen: Vt.accordionOpen !== !1
       };
-      return Ar.tabsChild = rr.tabsChild || !1, Ar.name = rr.name || "", Array.isArray(rr.queries) && rr.queries.length > 0 ? Ar.queries = rr.queries.map((vr) => ({
-        name: vr.name || "main",
-        sql: vr.sql || "",
-        engine: vr.engine || "sql",
-        clientVisible: vr.clientVisible === !0
-      })) : Ar.queries = [], Ar.loop = rr.loop ? { enabled: rr.loop.enabled || !1, query: rr.loop.query || "", zip: rr.loop.zip || !1, zipQuery: rr.loop.zipQuery || "" } : { enabled: !1, query: "", zip: !1, zipQuery: "" }, rr.children && rr.children.length > 0 && (Ar.children = rr.children.map((vr, wr) => {
-        const Pr = Et(vr, wr);
-        return Pr._order = ConfigManager.normalizeOrder(vr.order, wr), Pr;
-      })), Ar;
+      return rr.tabsChild = Vt.tabsChild || !1, rr.name = Vt.name || "", Array.isArray(Vt.queries) && Vt.queries.length > 0 ? rr.queries = Vt.queries.map((gr) => ({
+        name: gr.name || "main",
+        sql: gr.sql || "",
+        engine: gr.engine || "sql",
+        clientVisible: gr.clientVisible === !0
+      })) : rr.queries = [], rr.loop = Vt.loop ? { enabled: Vt.loop.enabled || !1, query: Vt.loop.query || "", zip: Vt.loop.zip || !1, zipQuery: Vt.loop.zipQuery || "" } : { enabled: !1, query: "", zip: !1, zipQuery: "" }, Vt.children && Vt.children.length > 0 && (rr.children = Vt.children.map((gr, Ar) => {
+        const vr = Et(gr, Ar);
+        return vr._order = ConfigManager.normalizeOrder(gr.order, Ar), vr;
+      })), rr;
     };
-    let kt = ((($t = xt.job) == null ? void 0 : $t.pages) || []).map((rr, gr) => {
-      const Ar = (rr.groups || []).map((vr, wr) => Et(vr, wr));
+    let kt = ((($t = xt.job) == null ? void 0 : $t.pages) || []).map((Vt, Yt) => {
+      const rr = (Vt.groups || []).map((gr, Ar) => Et(gr, Ar));
       return {
-        _id: rr.id || At().generatePageId(),
-        name: rr.name || `Feuille ${gr + 1}`,
-        groups: Ar.filter((vr) => vr._type === "core"),
-        linkGroups: Ar.filter((vr) => vr._type === "link")
+        _id: Vt.id || At().generatePageId(),
+        name: Vt.name || `Feuille ${Yt + 1}`,
+        groups: rr.filter((gr) => gr._type === "core"),
+        linkGroups: rr.filter((gr) => gr._type === "link")
       };
     });
     kt.length === 0 && (kt = [{ _id: At().generatePageId(), name: "Feuille 1", groups: [], linkGroups: [] }]), yt({ pages: kt, activePageIndex: 0, _pagesInitialized: /* @__PURE__ */ new Set() }), At().ensureAllCellsHaveNames(), await At().loadPendingSourceFiles(), await At().evaluateAllGroupIfQueries(), await At().runAllGroups();
     const Ct = At().pages[0];
-    Ct && yt((rr) => ({ _pagesInitialized: /* @__PURE__ */ new Set([...rr._pagesInitialized, Ct._id]) })), setTimeout(() => setTimeout(() => At().refreshMarkdownCellsForPage(0), 300), 0);
+    Ct && yt((Vt) => ({ _pagesInitialized: /* @__PURE__ */ new Set([...Vt._pagesInitialized, Ct._id]) })), setTimeout(() => setTimeout(() => At().refreshMarkdownCellsForPage(0), 300), 0);
     const St = (Lt = xt.ui) == null ? void 0 : Lt.dbEngine;
     St && St !== At().dbEngine && await At().switchDbEngine(St), ((It = xt.ui) == null ? void 0 : It.directedAcyclicGraph) !== void 0 && yt({ directedAcyclicGraph: xt.ui.directedAcyclicGraph === !0 }), ((jt = xt.ui) == null ? void 0 : jt.devMode) !== void 0 && yt({ devMode: xt.ui.devMode !== !1 }), (((Dt = xt.ui) == null ? void 0 : Dt.showLayout) !== void 0 || ((Nt = xt.ui) == null ? void 0 : Nt.displaySettings) !== void 0) && yt({ showLayout: (((Ot = xt.ui) == null ? void 0 : Ot.showLayout) ?? ((Ut = xt.ui) == null ? void 0 : Ut.displaySettings)) !== !1 });
     const Tt = (Ht = xt.ui) == null ? void 0 : Ht.theme;
-    if (Tt === "light" || Tt === "dark")
-      At().availableThemes.includes(Tt) && At().setTheme(Tt);
-    else if (Tt === "custom") {
-      const rr = ((Vt = xt.ui) == null ? void 0 : Vt.customThemeLight) || "", gr = ((Yt = xt.ui) == null ? void 0 : Yt.customThemeDark) || "";
-      localStorage.setItem(STORAGE_LIGHT, rr), localStorage.setItem(STORAGE_DARK, gr), localStorage.setItem(STORAGE_PRESET, "custom"), applyCustomTheme(rr, gr);
-    } else if (Tt && Tt !== "default") {
-      const rr = PRESETS.find((gr) => gr.id === Tt);
-      rr && (localStorage.setItem(STORAGE_LIGHT, rr.light), localStorage.setItem(STORAGE_DARK, rr.dark), localStorage.setItem(STORAGE_PRESET, rr.id), applyCustomTheme(rr.light, rr.dark));
-    } else
-      localStorage.removeItem(STORAGE_LIGHT), localStorage.removeItem(STORAGE_DARK), localStorage.removeItem(STORAGE_PRESET), applyCustomTheme("", "");
-    At().setStatus("Configuration chargée", "success");
+    Tt === "light" || Tt === "dark" ? At().availableThemes.includes(Tt) && At().setTheme(Tt) : Tt && applyThemeFromConfig(xt.ui), At().setStatus("Configuration chargée", "success");
   }
 });
 class CellBodyRenderer {
@@ -85113,42 +85116,42 @@ function exposeGlobals() {
   });
 }
 function buildInitialState() {
-  var Lt, It, jt, Dt, Nt, Ot;
-  const yt = typeof window < "u" && window._loadedConfig ? window._loadedConfig : ConfigManager.getDefaultConfig(), At = (Ut, Ht) => initializeCell(Ut, Ht), xt = (Ut, Ht) => {
-    const Vt = ConfigManager.normalizeGroup({ ...Ut }), Yt = {
-      _id: Vt.id || ConfigManager.generateGroupId(),
-      _type: Vt.type || "core",
-      direction: Vt.direction || "row",
-      style: Vt.style || "",
-      _order: ConfigManager.normalizeOrder(Vt.order, Ht),
-      cells: (Vt.cells || []).map((rr, gr) => At(ConfigManager.normalizeCell({ ...rr }), gr)),
-      loop: Vt.loop ? {
-        enabled: Vt.loop.enabled || !1,
-        query: Vt.loop.query || "",
-        zip: Vt.loop.zip || !1,
-        zipQuery: Vt.loop.zipQuery || ""
+  var Lt, It, jt, Dt, Nt, Ot, Ut;
+  const yt = typeof window < "u" && window._loadedConfig ? window._loadedConfig : ConfigManager.getDefaultConfig(), At = (Ht, Vt) => initializeCell(Ht, Vt), xt = (Ht, Vt) => {
+    const Yt = ConfigManager.normalizeGroup({ ...Ht }), rr = {
+      _id: Yt.id || ConfigManager.generateGroupId(),
+      _type: Yt.type || "core",
+      direction: Yt.direction || "row",
+      style: Yt.style || "",
+      _order: ConfigManager.normalizeOrder(Yt.order, Vt),
+      cells: (Yt.cells || []).map((gr, Ar) => At(ConfigManager.normalizeCell({ ...gr }), Ar)),
+      loop: Yt.loop ? {
+        enabled: Yt.loop.enabled || !1,
+        query: Yt.loop.query || "",
+        zip: Yt.loop.zip || !1,
+        zipQuery: Yt.loop.zipQuery || ""
       } : { enabled: !1, query: "", zip: !1, zipQuery: "" },
-      accordion: Vt.accordion || !1,
-      title: Vt.title || "",
-      accordionOpen: Vt.accordionOpen !== !1
+      accordion: Yt.accordion || !1,
+      title: Yt.title || "",
+      accordionOpen: Yt.accordionOpen !== !1
     };
-    return Yt.tabsChild = Vt.tabsChild || !1, Yt.name = Vt.name || "", Array.isArray(Vt.queries) && Vt.queries.length > 0 ? Yt.queries = Vt.queries.map((rr) => ({
-      name: rr.name || "main",
-      sql: rr.sql || "",
-      engine: rr.engine || "sql",
-      clientVisible: rr.clientVisible === !0
-    })) : Yt.queries = [], Vt.children && Vt.children.length > 0 && (Yt.children = Vt.children.map((rr, gr) => {
-      const Ar = xt(rr, gr);
-      return Ar._order = ConfigManager.normalizeOrder(rr.order, gr), Ar;
-    })), Yt;
+    return rr.tabsChild = Yt.tabsChild || !1, rr.name = Yt.name || "", Array.isArray(Yt.queries) && Yt.queries.length > 0 ? rr.queries = Yt.queries.map((gr) => ({
+      name: gr.name || "main",
+      sql: gr.sql || "",
+      engine: gr.engine || "sql",
+      clientVisible: gr.clientVisible === !0
+    })) : rr.queries = [], Yt.children && Yt.children.length > 0 && (rr.children = Yt.children.map((gr, Ar) => {
+      const vr = xt(gr, Ar);
+      return vr._order = ConfigManager.normalizeOrder(gr.order, Ar), vr;
+    })), rr;
   };
-  let wt = (((Lt = yt.job) == null ? void 0 : Lt.pages) || []).map((Ut, Ht) => {
-    const Vt = (Ut.groups || []).map((Yt, rr) => xt(Yt, rr));
+  let wt = (((Lt = yt.job) == null ? void 0 : Lt.pages) || []).map((Ht, Vt) => {
+    const Yt = (Ht.groups || []).map((rr, gr) => xt(rr, gr));
     return {
-      _id: Ut.id || ConfigManager.generatePageId(),
-      name: Ut.name || `Feuille ${Ht + 1}`,
-      groups: Vt.filter((Yt) => Yt._type === "core"),
-      linkGroups: Vt.filter((Yt) => Yt._type === "link")
+      _id: Ht.id || ConfigManager.generatePageId(),
+      name: Ht.name || `Feuille ${Vt + 1}`,
+      groups: Yt.filter((rr) => rr._type === "core"),
+      linkGroups: Yt.filter((rr) => rr._type === "link")
     };
   });
   wt.length === 0 && (wt = [{
@@ -85159,10 +85162,10 @@ function buildInitialState() {
   }]);
   const Et = ((It = yt.ui) == null ? void 0 : It.devMode) !== !1, kt = ((jt = yt.ui) == null ? void 0 : jt.showLayout) ?? !1, Ct = typeof localStorage < "u" ? localStorage.getItem("sqljob-theme") : null, St = ((Dt = yt.ui) == null ? void 0 : Dt.theme) || Ct || "light";
   if (typeof document < "u") {
-    const Ut = St === "dark" ? "dark" : "light";
-    document.documentElement.classList.remove("light", "dark"), document.documentElement.classList.add(Ut), localStorage.setItem("sqljob-theme", Ut);
+    const Ht = St === "dark" ? "dark" : "light";
+    document.documentElement.classList.remove("light", "dark"), document.documentElement.classList.add(Ht), localStorage.setItem("sqljob-theme", Ht), (Nt = yt.ui) != null && Nt.theme && applyThemeFromConfig(yt.ui);
   }
-  const Tt = typeof localStorage < "u" ? localStorage.getItem("sqljob-dbEngine") : null, $t = ((Nt = yt.ui) == null ? void 0 : Nt.dbEngine) || Tt || "duckdb-wasm";
+  const Tt = typeof localStorage < "u" ? localStorage.getItem("sqljob-dbEngine") : null, $t = ((Ot = yt.ui) == null ? void 0 : Ot.dbEngine) || Tt || "duckdb-wasm";
   return DuckDBManager.setEngine($t), {
     pages: wt,
     activePageIndex: 0,
@@ -85175,7 +85178,7 @@ function buildInitialState() {
     currentTheme: St,
     dbEngine: $t,
     showDbEngineModal: !1,
-    directedAcyclicGraph: ((Ot = yt.ui) == null ? void 0 : Ot.directedAcyclicGraph) === !0,
+    directedAcyclicGraph: ((Ut = yt.ui) == null ? void 0 : Ut.directedAcyclicGraph) === !0,
     // GitHub Gist
     githubToken: "",
     gistShareUrl: "",
