@@ -206,7 +206,10 @@ export const createFilesSlice = (set: any, get: any) => ({
                             cell._rejectErrorsCount = Number(rejectResult?.[0]?.cnt ?? 0)
                         } catch { cell._rejectErrorsCount = 0 }
                         get().setStatus(`${cell.name} chargé via requête de fallback`, 'success')
-                    } catch (_query1Error) { /* fallback also failed */ }
+                    } catch (fallbackError: any) {
+                        cell._fallbackQueryError = fallbackError.message
+                        get().setStatus(`Requête fallback échouée : ${fallbackError.message}`, 'error')
+                    }
                 }
                 if (!executed) throw primaryError
             }
@@ -285,6 +288,7 @@ export const createFilesSlice = (set: any, get: any) => ({
         cell._parseLevels = []
         cell._loadedViaFallback = false
         cell._mainQueryError = null
+        cell._fallbackQueryError = null
         cell._rejectErrorsCount = 0
         cell._rowCount = 0
         if (Array.isArray(cell.files)) cell.files = cell.files.filter((f: any) => f.slot !== 'source')
