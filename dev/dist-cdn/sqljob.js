@@ -146,7 +146,7 @@ function S$5(yt, At, xt) {
     return At.call(xt, kt, Et++);
   }), wt;
 }
-function T$4(yt) {
+function T$5(yt) {
   if (yt._status === -1) {
     var At = yt._result;
     At = At(), At.then(function(xt) {
@@ -219,7 +219,7 @@ react_production_min.forwardRef = function(yt) {
 };
 react_production_min.isValidElement = O$6;
 react_production_min.lazy = function(yt) {
-  return { $$typeof: y$3, _payload: { _status: -1, _result: yt }, _init: T$4 };
+  return { $$typeof: y$3, _payload: { _status: -1, _result: yt }, _init: T$5 };
 };
 react_production_min.memo = function(yt, At) {
   return { $$typeof: x$4, type: yt, compare: At === void 0 ? null : At };
@@ -3934,7 +3934,7 @@ function Ej(yt, At, xt) {
         } else zg !== null && (Fj(zg), zg = null), kt = !0;
         if (!kt) return At.flags & 65536 ? At : null;
       }
-      return At.flags & 128 ? (At.lanes = xt, At) : (wt = wt !== null, wt !== (yt !== null && yt.memoizedState !== null) && wt && (At.child.flags |= 8192, At.mode & 1 && (yt === null || L$4.current & 1 ? T$3 === 0 && (T$3 = 3) : tj())), At.updateQueue !== null && (At.flags |= 4), S$4(At), null);
+      return At.flags & 128 ? (At.lanes = xt, At) : (wt = wt !== null, wt !== (yt !== null && yt.memoizedState !== null) && wt && (At.child.flags |= 8192, At.mode & 1 && (yt === null || L$4.current & 1 ? T$4 === 0 && (T$4 = 3) : tj())), At.updateQueue !== null && (At.flags |= 4), S$4(At), null);
     case 4:
       return zh$1(), Aj(yt, At), yt === null && sf(At.stateNode.containerInfo), S$4(At), null;
     case 10:
@@ -3945,7 +3945,7 @@ function Ej(yt, At, xt) {
       if (E$3(L$4), kt = At.memoizedState, kt === null) return S$4(At), null;
       if (wt = (At.flags & 128) !== 0, Ct = kt.rendering, Ct === null) if (wt) Dj(kt, !1);
       else {
-        if (T$3 !== 0 || yt !== null && yt.flags & 128) for (yt = At.child; yt !== null; ) {
+        if (T$4 !== 0 || yt !== null && yt.flags & 128) for (yt = At.child; yt !== null; ) {
           if (Ct = Ch(yt), Ct !== null) {
             for (At.flags |= 128, Dj(kt, !1), wt = Ct.updateQueue, wt !== null && (At.updateQueue = wt, At.flags |= 4), At.subtreeFlags = 0, wt = xt, xt = At.child; xt !== null; ) kt = xt, yt = wt, kt.flags &= 14680066, Ct = kt.alternate, Ct === null ? (kt.childLanes = 0, kt.lanes = yt, kt.child = null, kt.subtreeFlags = 0, kt.memoizedProps = null, kt.memoizedState = null, kt.updateQueue = null, kt.dependencies = null, kt.stateNode = null) : (kt.childLanes = Ct.childLanes, kt.lanes = Ct.lanes, kt.child = Ct.child, kt.subtreeFlags = 0, kt.deletions = null, kt.memoizedProps = Ct.memoizedProps, kt.memoizedState = Ct.memoizedState, kt.updateQueue = Ct.updateQueue, kt.type = Ct.type, yt = Ct.dependencies, kt.dependencies = yt === null ? null : { lanes: yt.lanes, firstContext: yt.firstContext }), xt = xt.sibling;
             return G$3(L$4, L$4.current & 1 | 2), At.child;
@@ -4640,7 +4640,7 @@ function jk(yt) {
     V$2 = At.return;
   }
 }
-var lk = Math.ceil, mk = ua.ReactCurrentDispatcher, nk = ua.ReactCurrentOwner, ok = ua.ReactCurrentBatchConfig, K$4 = 0, Q$1 = null, Y$4 = null, Z$4 = 0, fj = 0, ej = Uf(0), T$3 = 0, pk = null, rh = 0, qk = 0, rk = 0, sk$2 = null, tk = null, fk = 0, Gj = 1 / 0, uk$2 = null, Oi = !1, Pi = null, Ri = null, vk = !1, wk = null, xk = 0, yk = 0, zk = null, Ak = -1, Bk = 0;
+var lk = Math.ceil, mk = ua.ReactCurrentDispatcher, nk = ua.ReactCurrentOwner, ok = ua.ReactCurrentBatchConfig, K$4 = 0, Q$1 = null, Y$4 = null, Z$4 = 0, fj = 0, ej = Uf(0), T$4 = 0, pk = null, rh = 0, qk = 0, rk = 0, sk$2 = null, tk = null, fk = 0, Gj = 1 / 0, uk$2 = null, Oi = !1, Pi = null, Ri = null, vk = !1, wk = null, xk = 0, yk = 0, zk = null, Ak = -1, Bk = 0;
 function R$2() {
   return K$4 & 6 ? B$5() : Ak !== -1 ? Ak : Ak = B$5();
 }
@@ -4649,7 +4649,7 @@ function yi(yt) {
 }
 function gi(yt, At, xt, wt) {
   if (50 < yk) throw yk = 0, zk = null, Error(p$5(185));
-  Ac(yt, xt, wt), (!(K$4 & 2) || yt !== Q$1) && (yt === Q$1 && (!(K$4 & 2) && (qk |= xt), T$3 === 4 && Ck(yt, Z$4)), Dk(yt, wt), xt === 1 && K$4 === 0 && !(At.mode & 1) && (Gj = B$5() + 500, fg && jg()));
+  Ac(yt, xt, wt), (!(K$4 & 2) || yt !== Q$1) && (yt === Q$1 && (!(K$4 & 2) && (qk |= xt), T$4 === 4 && Ck(yt, Z$4)), Dk(yt, wt), xt === 1 && K$4 === 0 && !(At.mode & 1) && (Gj = B$5() + 500, fg && jg()));
 }
 function Dk(yt, At) {
   var xt = yt.callbackNode;
@@ -4703,7 +4703,7 @@ function Gk(yt, At) {
         Mk(yt, St);
       }
     while (!0);
-    $g(), mk.current = kt, K$4 = Et, Y$4 !== null ? At = 0 : (Q$1 = null, Z$4 = 0, At = T$3);
+    $g(), mk.current = kt, K$4 = Et, Y$4 !== null ? At = 0 : (Q$1 = null, Z$4 = 0, At = T$4);
   }
   if (At !== 0) {
     if (At === 2 && (Et = xc(yt), Et !== 0 && (wt = Et, At = Nk(yt, Et))), At === 1) throw xt = pk, Kk(yt, 0), Ck(yt, wt), Dk(yt, B$5()), xt;
@@ -4860,7 +4860,7 @@ function Kk(yt, At) {
     }
     xt = xt.return;
   }
-  if (Q$1 = yt, Y$4 = yt = Pg(yt.current, null), Z$4 = fj = At, T$3 = 0, pk = null, rk = qk = rh = 0, tk = sk$2 = null, fh !== null) {
+  if (Q$1 = yt, Y$4 = yt = Pg(yt.current, null), Z$4 = fj = At, T$4 = 0, pk = null, rk = qk = rh = 0, tk = sk$2 = null, fh !== null) {
     for (At = 0; At < fh.length; At++) if (xt = fh[At], wt = xt.interleaved, wt !== null) {
       xt.interleaved = null;
       var Et = wt.next, kt = xt.pending;
@@ -4886,7 +4886,7 @@ function Mk(yt, At) {
         Ih = !1;
       }
       if (Hh = 0, O$5 = N$2 = M$3 = null, Jh = !1, Kh = 0, nk.current = null, xt === null || xt.return === null) {
-        T$3 = 1, pk = At, Y$4 = null;
+        T$4 = 1, pk = At, Y$4 = null;
         break;
       }
       e: {
@@ -4920,7 +4920,7 @@ function Mk(yt, At) {
             break e;
           }
         }
-        kt = Tt = Ji(Tt, St), T$3 !== 4 && (T$3 = 2), sk$2 === null ? sk$2 = [kt] : sk$2.push(kt), kt = Ct;
+        kt = Tt = Ji(Tt, St), T$4 !== 4 && (T$4 = 2), sk$2 === null ? sk$2 = [kt] : sk$2.push(kt), kt = Ct;
         do {
           switch (kt.tag) {
             case 3:
@@ -4954,7 +4954,7 @@ function Jk() {
   return mk.current = Rh, yt === null ? Rh : yt;
 }
 function tj() {
-  (T$3 === 0 || T$3 === 3 || T$3 === 2) && (T$3 = 4), Q$1 === null || !(rh & 268435455) && !(qk & 268435455) || Ck(Q$1, Z$4);
+  (T$4 === 0 || T$4 === 3 || T$4 === 2) && (T$4 = 4), Q$1 === null || !(rh & 268435455) && !(qk & 268435455) || Ck(Q$1, Z$4);
 }
 function Ik(yt, At) {
   var xt = K$4;
@@ -4970,7 +4970,7 @@ function Ik(yt, At) {
     }
   while (!0);
   if ($g(), K$4 = xt, mk.current = wt, Y$4 !== null) throw Error(p$5(261));
-  return Q$1 = null, Z$4 = 0, T$3;
+  return Q$1 = null, Z$4 = 0, T$4;
 }
 function Tk() {
   for (; Y$4 !== null; ) Uk(Y$4);
@@ -4993,7 +4993,7 @@ function Sk(yt) {
       }
       if (yt !== null) yt.flags |= 32768, yt.subtreeFlags = 0, yt.deletions = null;
       else {
-        T$3 = 6, Y$4 = null;
+        T$4 = 6, Y$4 = null;
         return;
       }
     } else if (xt = Ej(xt, At, fj), xt !== null) {
@@ -5006,7 +5006,7 @@ function Sk(yt) {
     }
     Y$4 = At = yt;
   } while (At !== null);
-  T$3 === 0 && (T$3 = 5);
+  T$4 === 0 && (T$4 = 5);
 }
 function Pk(yt, At, xt) {
   var wt = C$3, Et = ok.transition;
@@ -5173,7 +5173,7 @@ function W$3(yt, At, xt) {
 }
 function Ti(yt, At, xt) {
   var wt = yt.pingCache;
-  wt !== null && wt.delete(At), At = R$2(), yt.pingedLanes |= yt.suspendedLanes & xt, Q$1 === yt && (Z$4 & xt) === xt && (T$3 === 4 || T$3 === 3 && (Z$4 & 130023424) === Z$4 && 500 > B$5() - fk ? Kk(yt, 0) : rk |= xt), Dk(yt, At);
+  wt !== null && wt.delete(At), At = R$2(), yt.pingedLanes |= yt.suspendedLanes & xt, Q$1 === yt && (Z$4 & xt) === xt && (T$4 === 4 || T$4 === 3 && (Z$4 & 130023424) === Z$4 && 500 > B$5() - fk ? Kk(yt, 0) : rk |= xt), Dk(yt, At);
 }
 function Yk(yt, At) {
   At === 0 && (yt.mode & 1 ? (At = sc, sc <<= 1, !(sc & 130023424) && (sc = 4194304)) : At = 1);
@@ -11127,7 +11127,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${At.d
     const Et = (kt = yt.current) == null ? void 0 : kt.getAttribute("aria-describedby");
     At && Et && (document.getElementById(At) || console.warn(wt));
   }, [wt, yt, At]), null;
-}, Root$8 = Dialog$1, Portal$4 = DialogPortal$1, Overlay = DialogOverlay$1, Content$2 = DialogContent$1, Title$1 = DialogTitle$1, Description$1 = DialogDescription$1, Close$1 = DialogClose, N$1 = '[cmdk-group=""]', Y$1 = '[cmdk-group-items=""]', be = '[cmdk-group-heading=""]', le$1 = '[cmdk-item=""]', ce$1 = `${le$1}:not([aria-disabled="true"])`, Z$2 = "cmdk-item-select", T$2 = "data-value", Re = (yt, At, xt) => W$2(yt, At, xt), ue = reactExports.createContext(void 0), K$2 = () => reactExports.useContext(ue), de$3 = reactExports.createContext(void 0), ee$2 = () => reactExports.useContext(de$3), fe = reactExports.createContext(void 0), me = reactExports.forwardRef((yt, At) => {
+}, Root$8 = Dialog$1, Portal$4 = DialogPortal$1, Overlay = DialogOverlay$1, Content$2 = DialogContent$1, Title$1 = DialogTitle$1, Description$1 = DialogDescription$1, Close$1 = DialogClose, N$1 = '[cmdk-group=""]', Y$1 = '[cmdk-group-items=""]', be = '[cmdk-group-heading=""]', le$1 = '[cmdk-item=""]', ce$1 = `${le$1}:not([aria-disabled="true"])`, Z$2 = "cmdk-item-select", T$3 = "data-value", Re = (yt, At, xt) => W$2(yt, At, xt), ue = reactExports.createContext(void 0), K$2 = () => reactExports.useContext(ue), de$3 = reactExports.createContext(void 0), ee$2 = () => reactExports.useContext(de$3), fe = reactExports.createContext(void 0), me = reactExports.forwardRef((yt, At) => {
   let xt = L$3(() => {
     var Zn, Xn;
     return { search: "", value: (Xn = (Zn = yt.value) != null ? Zn : yt.defaultValue) != null ? Xn : "", selectedItemId: void 0, filtered: { count: 0, items: /* @__PURE__ */ new Map(), groups: /* @__PURE__ */ new Set() } };
@@ -11203,12 +11203,12 @@ For more information, see https://radix-ui.com/primitives/docs/components/${At.d
       Ko ? Ko.appendChild(lo.parentElement === Ko ? lo : lo.closest(`${Y$1} > *`)) : Mo.appendChild(lo.parentElement === Mo ? lo : lo.closest(`${Y$1} > *`));
     }), Xn.sort((lo, Ko) => Ko[1] - lo[1]).forEach((lo) => {
       var Ko;
-      let Is = (Ko = gr.current) == null ? void 0 : Ko.querySelector(`${N$1}[${T$2}="${encodeURIComponent(lo[0])}"]`);
+      let Is = (Ko = gr.current) == null ? void 0 : Ko.querySelector(`${N$1}[${T$3}="${encodeURIComponent(lo[0])}"]`);
       Is == null || Is.parentElement.appendChild(Is);
     });
   }
   function Kr() {
-    let Zn = an().find((Mo) => Mo.getAttribute("aria-disabled") !== "true"), Xn = Zn == null ? void 0 : Zn.getAttribute(T$2);
+    let Zn = an().find((Mo) => Mo.getAttribute("aria-disabled") !== "true"), Xn = Zn == null ? void 0 : Zn.getAttribute(T$3);
     vr.setState("value", Xn || void 0);
   }
   function tn() {
@@ -11244,17 +11244,17 @@ For more information, see https://radix-ui.com/primitives/docs/components/${At.d
   }
   function mn(Zn) {
     let Xn = an()[Zn];
-    Xn && vr.setState("value", Xn.getAttribute(T$2));
+    Xn && vr.setState("value", Xn.getAttribute(T$3));
   }
   function Rn(Zn) {
     var Xn;
     let Mo = An(), lo = an(), Ko = lo.findIndex((ds) => ds === Mo), Is = lo[Ko + Zn];
-    (Xn = St.current) != null && Xn.loop && (Is = Ko + Zn < 0 ? lo[lo.length - 1] : Ko + Zn === lo.length ? lo[0] : lo[Ko + Zn]), Is && vr.setState("value", Is.getAttribute(T$2));
+    (Xn = St.current) != null && Xn.loop && (Is = Ko + Zn < 0 ? lo[lo.length - 1] : Ko + Zn === lo.length ? lo[0] : lo[Ko + Zn]), Is && vr.setState("value", Is.getAttribute(T$3));
   }
   function zn(Zn) {
     let Xn = An(), Mo = Xn == null ? void 0 : Xn.closest(N$1), lo;
     for (; Mo && !lo; ) Mo = Zn > 0 ? we(Mo, N$1) : De(Mo, N$1), lo = Mo == null ? void 0 : Mo.querySelector(ce$1);
-    lo ? vr.setState("value", lo.getAttribute(T$2)) : Rn(Zn);
+    lo ? vr.setState("value", lo.getAttribute(T$3)) : Rn(Zn);
   }
   let jn = () => mn(an().length - 1), To = (Zn) => {
     Zn.preventDefault(), Zn.metaKey ? jn() : Zn.altKey ? zn(1) : Rn(1);
@@ -11400,7 +11400,7 @@ function ve(yt, At, xt, wt = []) {
         if (typeof Lt == "object" && "current" in Lt) return Lt.current ? ($t = Lt.current.textContent) == null ? void 0 : $t.trim() : Et.current;
       }
     })(), Tt = wt.map(($t) => $t.trim());
-    kt.value(yt, St, Tt), (Ct = At.current) == null || Ct.setAttribute(T$2, St), Et.current = St;
+    kt.value(yt, St, Tt), (Ct = At.current) == null || Ct.setAttribute(T$3, St), Et.current = St;
   }), Et;
 }
 var ke$1 = () => {
@@ -27087,7 +27087,7 @@ class StyleSet {
     this.styleTag && this.styleTag.getAttribute("nonce") != At && this.styleTag.setAttribute("nonce", At);
   }
 }
-var base$1 = {
+var base$2 = {
   8: "Backspace",
   9: "Tab",
   10: "Enter",
@@ -27166,13 +27166,13 @@ var base$1 = {
   221: "}",
   222: '"'
 }, mac = typeof navigator < "u" && /Mac/.test(navigator.platform), ie$3 = typeof navigator < "u" && /MSIE \d|Trident\/(?:[7-9]|\d{2,})\..*rv:(\d+)/.exec(navigator.userAgent);
-for (var i$b = 0; i$b < 10; i$b++) base$1[48 + i$b] = base$1[96 + i$b] = String(i$b);
-for (var i$b = 1; i$b <= 24; i$b++) base$1[i$b + 111] = "F" + i$b;
+for (var i$b = 0; i$b < 10; i$b++) base$2[48 + i$b] = base$2[96 + i$b] = String(i$b);
+for (var i$b = 1; i$b <= 24; i$b++) base$2[i$b + 111] = "F" + i$b;
 for (var i$b = 65; i$b <= 90; i$b++)
-  base$1[i$b] = String.fromCharCode(i$b + 32), shift[i$b] = String.fromCharCode(i$b);
-for (var code$1 in base$1) shift.hasOwnProperty(code$1) || (shift[code$1] = base$1[code$1]);
+  base$2[i$b] = String.fromCharCode(i$b + 32), shift[i$b] = String.fromCharCode(i$b);
+for (var code$1 in base$2) shift.hasOwnProperty(code$1) || (shift[code$1] = base$2[code$1]);
 function keyName(yt) {
-  var At = mac && yt.metaKey && yt.shiftKey && !yt.ctrlKey && !yt.altKey || ie$3 && yt.shiftKey && yt.key && yt.key.length == 1 || yt.key == "Unidentified", xt = !At && yt.key || (yt.shiftKey ? shift : base$1)[yt.keyCode] || yt.key || "Unidentified";
+  var At = mac && yt.metaKey && yt.shiftKey && !yt.ctrlKey && !yt.altKey || ie$3 && yt.shiftKey && yt.key && yt.key.length == 1 || yt.key == "Unidentified", xt = !At && yt.key || (yt.shiftKey ? shift : base$2)[yt.keyCode] || yt.key || "Unidentified";
   return xt == "Esc" && (xt = "Escape"), xt == "Del" && (xt = "Delete"), xt == "Left" && (xt = "ArrowLeft"), xt == "Up" && (xt = "ArrowUp"), xt == "Right" && (xt = "ArrowRight"), xt == "Down" && (xt = "ArrowDown"), xt;
 }
 function crelt() {
@@ -33008,7 +33008,7 @@ function runHandlers(yt, At, xt, wt) {
   }, Dt = yt[wt], Nt, Ot;
   return Dt && (jt(Dt[St + modifiers(Et, At, !Ct)]) ? Tt = !0 : Ct && (At.altKey || At.metaKey || At.ctrlKey) && // Ctrl-Alt may be used for AltGr on Windows
   !(browser.windows && At.ctrlKey && At.altKey) && // Alt-combinations on macOS tend to be typed characters
-  !(browser.mac && At.altKey && !(At.ctrlKey || At.metaKey)) && (Nt = base$1[At.keyCode]) && Nt != Et ? (jt(Dt[St + modifiers(Nt, At, !0)]) || At.shiftKey && (Ot = shift[At.keyCode]) != Et && Ot != Nt && jt(Dt[St + modifiers(Ot, At, !1)])) && (Tt = !0) : Ct && At.shiftKey && jt(Dt[St + modifiers(Et, At, !0)]) && (Tt = !0), !Tt && jt(Dt._any) && (Tt = !0)), $t && (Tt = !0), Tt && Lt && At.stopPropagation(), currentKeyEvent = null, Tt;
+  !(browser.mac && At.altKey && !(At.ctrlKey || At.metaKey)) && (Nt = base$2[At.keyCode]) && Nt != Et ? (jt(Dt[St + modifiers(Nt, At, !0)]) || At.shiftKey && (Ot = shift[At.keyCode]) != Et && Ot != Nt && jt(Dt[St + modifiers(Ot, At, !1)])) && (Tt = !0) : Ct && At.shiftKey && jt(Dt[St + modifiers(Et, At, !0)]) && (Tt = !0), !Tt && jt(Dt._any) && (Tt = !0)), $t && (Tt = !0), Tt && Lt && At.stopPropagation(), currentKeyEvent = null, Tt;
 }
 class RectangleMarker {
   /**
@@ -44764,12 +44764,12 @@ const Z_ = class Z_ {
     }
     return At.children && At.children.length > 0 && (wt.children = await Promise.all(At.children.map((kt) => Z_.cleanGroup(kt, xt)))), wt;
   }
-  static async buildConfigFromState(At, xt = !0, wt = !0, Et = !1, kt = "light", Ct = "duckdb-wasm", St = !1) {
-    const Tt = await Promise.all(At.map(async ($t) => {
-      const Lt = await Promise.all($t.groups.map((Dt) => Z_.cleanGroup(Dt, Et))), It = await Promise.all(($t.linkGroups || []).map((Dt) => Z_.cleanGroup(Dt, Et))), jt = [...Lt, ...It];
+  static async buildConfigFromState(At, xt = !0, wt = !0, Et = !1, kt = "light", Ct = "duckdb-wasm", St = !1, Tt = "", $t = "") {
+    const Lt = await Promise.all(At.map(async (It) => {
+      const jt = await Promise.all(It.groups.map((Ot) => Z_.cleanGroup(Ot, Et))), Dt = await Promise.all((It.linkGroups || []).map((Ot) => Z_.cleanGroup(Ot, Et))), Nt = [...jt, ...Dt];
       return {
-        name: $t.name,
-        groups: jt
+        name: It.name,
+        groups: Nt
       };
     }));
     return {
@@ -44780,10 +44780,12 @@ const Z_ = class Z_ {
         showLayout: wt,
         theme: kt,
         dbEngine: Ct,
-        directedAcyclicGraph: St
+        directedAcyclicGraph: St,
+        ...Tt ? { customThemeLight: Tt } : {},
+        ...$t ? { customThemeDark: $t } : {}
       },
       job: {
-        pages: Tt
+        pages: Lt
       }
     };
   }
@@ -50908,7 +50910,7 @@ var E$2 = (yt) => {
   }
 };
 h$2 = /* @__PURE__ */ new WeakMap();
-var c$6, l$2, a$5, d$2, k$3, x$3, T$1, D$2, m$4, v$3, f$4, w$2 = class UC {
+var c$6, l$2, a$5, d$2, k$3, x$3, T$2, D$2, m$4, v$3, f$4, w$2 = class UC {
   constructor(At, xt, wt) {
     if (s$4(this, c$6), s$4(this, l$2), s$4(this, a$5), s$4(this, d$2), s$4(this, k$3), s$4(this, x$3, (Et, kt, Ct) => {
       if (!Ct.backend) throw new Error(`You must specify a 'backend' property in your Backend entry: ${JSON.stringify(Ct)}`);
@@ -50922,11 +50924,11 @@ var c$6, l$2, a$5, d$2, k$3, x$3, T$1, D$2, m$4, v$3, f$4, w$2 = class UC {
     }), this.setup = () => {
       if (!(typeof window > "u")) {
         if (UC.isSetUp) throw new Error("Cannot have two MultiBackends at the same time.");
-        UC.isSetUp = !0, t$2(this, T$1).call(this, window), t$2(this, a$5)[t$2(this, c$6)].instance.setup();
+        UC.isSetUp = !0, t$2(this, T$2).call(this, window), t$2(this, a$5)[t$2(this, c$6)].instance.setup();
       }
     }, this.teardown = () => {
       typeof window > "u" || (UC.isSetUp = !1, t$2(this, D$2).call(this, window), t$2(this, a$5)[t$2(this, c$6)].instance.teardown());
-    }, this.connectDragSource = (Et, kt, Ct) => t$2(this, f$4).call(this, "connectDragSource", Et, kt, Ct), this.connectDragPreview = (Et, kt, Ct) => t$2(this, f$4).call(this, "connectDragPreview", Et, kt, Ct), this.connectDropTarget = (Et, kt, Ct) => t$2(this, f$4).call(this, "connectDropTarget", Et, kt, Ct), this.profile = () => t$2(this, a$5)[t$2(this, c$6)].instance.profile(), this.previewEnabled = () => t$2(this, a$5)[t$2(this, c$6)].preview, this.previewsList = () => t$2(this, l$2), this.backendsList = () => t$2(this, d$2), s$4(this, T$1, (Et) => {
+    }, this.connectDragSource = (Et, kt, Ct) => t$2(this, f$4).call(this, "connectDragSource", Et, kt, Ct), this.connectDragPreview = (Et, kt, Ct) => t$2(this, f$4).call(this, "connectDragPreview", Et, kt, Ct), this.connectDropTarget = (Et, kt, Ct) => t$2(this, f$4).call(this, "connectDropTarget", Et, kt, Ct), this.profile = () => t$2(this, a$5)[t$2(this, c$6)].instance.profile(), this.previewEnabled = () => t$2(this, a$5)[t$2(this, c$6)].preview, this.previewsList = () => t$2(this, l$2), this.backendsList = () => t$2(this, d$2), s$4(this, T$2, (Et) => {
       for (let kt of t$2(this, d$2)) kt.transition && Et.addEventListener(kt.transition.event, t$2(this, m$4));
     }), s$4(this, D$2, (Et) => {
       for (let kt of t$2(this, d$2)) kt.transition && Et.removeEventListener(kt.transition.event, t$2(this, m$4));
@@ -50957,7 +50959,7 @@ var c$6, l$2, a$5, d$2, k$3, x$3, T$1, D$2, m$4, v$3, f$4, w$2 = class UC {
     p$2(this, c$6, t$2(this, d$2)[0].id), p$2(this, k$3, {});
   }
 };
-c$6 = /* @__PURE__ */ new WeakMap(), l$2 = /* @__PURE__ */ new WeakMap(), a$5 = /* @__PURE__ */ new WeakMap(), d$2 = /* @__PURE__ */ new WeakMap(), k$3 = /* @__PURE__ */ new WeakMap(), x$3 = /* @__PURE__ */ new WeakMap(), T$1 = /* @__PURE__ */ new WeakMap(), D$2 = /* @__PURE__ */ new WeakMap(), m$4 = /* @__PURE__ */ new WeakMap(), v$3 = /* @__PURE__ */ new WeakMap(), f$4 = /* @__PURE__ */ new WeakMap(), w$2.isSetUp = !1;
+c$6 = /* @__PURE__ */ new WeakMap(), l$2 = /* @__PURE__ */ new WeakMap(), a$5 = /* @__PURE__ */ new WeakMap(), d$2 = /* @__PURE__ */ new WeakMap(), k$3 = /* @__PURE__ */ new WeakMap(), x$3 = /* @__PURE__ */ new WeakMap(), T$2 = /* @__PURE__ */ new WeakMap(), D$2 = /* @__PURE__ */ new WeakMap(), m$4 = /* @__PURE__ */ new WeakMap(), v$3 = /* @__PURE__ */ new WeakMap(), f$4 = /* @__PURE__ */ new WeakMap(), w$2.isSetUp = !1;
 var M$2 = w$2, S$3 = (yt, At, xt) => new M$2(yt, At, xt), y$2 = (yt, At) => ({ event: yt, check: At }), L$2 = y$2("touchstart", (yt) => {
   let At = yt;
   return At.touches !== null && At.touches !== void 0;
@@ -81938,6 +81940,469 @@ class CellConfigService {
     St && (St[Ct] = wt);
   }
 }
+const STORAGE_LIGHT = "sqljob-custom-theme-light", STORAGE_DARK = "sqljob-custom-theme-dark", STORAGE_PRESET = "sqljob-custom-theme-preset", STYLE_ID = "sqljob-custom-theme";
+function css(yt) {
+  return Object.entries(yt).map(([At, xt]) => `  --${At}: ${xt};`).join(`
+`);
+}
+function applyCustomTheme(yt, At) {
+  let xt = document.getElementById(STYLE_ID);
+  xt || (xt = document.createElement("style"), xt.id = STYLE_ID, document.head.appendChild(xt));
+  const wt = [];
+  yt.trim() && wt.push(`:root {
+${yt.trim()}
+}`), At.trim() && wt.push(`.dark {
+${At.trim()}
+}`), xt.textContent = wt.join(`
+`);
+}
+const T$1 = (yt, At) => ({ light: css(yt), dark: css(At) });
+function base$1(yt, At, xt) {
+  return {
+    background: yt,
+    foreground: At,
+    card: xt ?? yt,
+    "card-foreground": At,
+    popover: xt ?? yt,
+    "popover-foreground": At
+  };
+}
+function palette(yt, At, xt, wt, Et, kt) {
+  return { primary: yt, "primary-foreground": At, secondary: xt, "secondary-foreground": wt, accent: Et, "accent-foreground": kt };
+}
+function borders(yt, At, xt = "0 84% 60%", wt = "0 0% 100%") {
+  return { border: yt, input: yt, ring: At, destructive: xt, "destructive-foreground": wt };
+}
+function muted(yt, At) {
+  return { muted: yt, "muted-foreground": At };
+}
+const PRESETS = [
+  {
+    id: "default",
+    label: "Défaut",
+    emoji: "⬜",
+    light: "",
+    dark: ""
+  },
+  // ── Thèmes clairs ──────────────────────────────────────────────────────────
+  {
+    id: "light",
+    label: "Light",
+    emoji: "☀️",
+    ...T$1(
+      { ...base$1("0 0% 100%", "0 0% 11%"), ...palette("259 94% 51%", "0 0% 100%", "314 100% 47%", "0 0% 100%", "174 75% 46%", "0 0% 100%"), ...muted("0 0% 94%", "0 0% 40%"), ...borders("0 0% 87%", "259 94% 51%") },
+      { ...base$1("259 20% 11%", "259 10% 88%"), ...palette("259 80% 70%", "259 20% 11%", "314 70% 60%", "259 20% 11%", "174 75% 60%", "259 20% 11%"), ...muted("259 15% 18%", "259 10% 58%"), ...borders("259 15% 22%", "259 80% 70%") }
+    )
+  },
+  {
+    id: "cupcake",
+    label: "Cupcake",
+    emoji: "🧁",
+    ...T$1(
+      { ...base$1("342 30% 98%", "15 25% 18%", "0 0% 100%"), ...palette("183 47% 47%", "0 0% 100%", "338 72% 77%", "15 25% 18%", "40 66% 54%", "0 0% 100%"), ...muted("342 20% 93%", "15 18% 42%"), ...borders("342 18% 86%", "183 47% 47%") },
+      { ...base$1("183 25% 12%", "183 15% 85%"), ...palette("183 47% 55%", "183 25% 12%", "338 50% 45%", "183 15% 85%", "40 60% 45%", "183 25% 12%"), ...muted("183 18% 18%", "183 12% 55%"), ...borders("183 18% 22%", "183 47% 55%") }
+    )
+  },
+  {
+    id: "bumblebee",
+    label: "Bumblebee",
+    emoji: "🐝",
+    ...T$1(
+      { ...base$1("0 0% 100%", "20 14% 15%", "0 0% 100%"), ...palette("41 96% 50%", "20 14% 15%", "41 100% 38%", "0 0% 100%", "41 90% 33%", "0 0% 100%"), ...muted("41 50% 94%", "20 12% 42%"), ...borders("41 30% 88%", "41 96% 50%") },
+      { ...base$1("30 20% 10%", "41 30% 88%"), ...palette("41 96% 55%", "30 20% 10%", "41 70% 32%", "41 30% 88%", "41 90% 45%", "30 20% 10%"), ...muted("30 15% 16%", "41 20% 55%"), ...borders("30 15% 20%", "41 96% 55%") }
+    )
+  },
+  {
+    id: "emerald",
+    label: "Emerald",
+    emoji: "💚",
+    ...T$1(
+      { ...base$1("0 0% 100%", "170 50% 15%", "0 0% 100%"), ...palette("160 84% 39%", "0 0% 100%", "156 55% 75%", "170 50% 15%", "155 60% 42%", "0 0% 100%"), ...muted("160 18% 93%", "170 25% 40%"), ...borders("160 18% 85%", "160 84% 39%") },
+      { ...base$1("170 28% 8%", "160 18% 92%"), ...palette("160 84% 45%", "170 28% 8%", "156 38% 22%", "160 18% 92%", "155 60% 35%", "160 18% 92%"), ...muted("170 18% 15%", "160 14% 58%"), ...borders("170 18% 18%", "160 84% 45%") }
+    )
+  },
+  {
+    id: "corporate",
+    label: "Corporate",
+    emoji: "🏢",
+    ...T$1(
+      { ...base$1("0 0% 100%", "215 25% 15%", "0 0% 100%"), ...palette("215 96% 32%", "0 0% 100%", "215 35% 50%", "0 0% 100%", "215 75% 50%", "0 0% 100%"), ...muted("215 15% 93%", "215 15% 42%"), ...borders("215 12% 86%", "215 96% 32%") },
+      { ...base$1("215 30% 10%", "215 15% 87%"), ...palette("215 70% 58%", "215 30% 10%", "215 30% 28%", "215 15% 87%", "215 70% 55%", "215 30% 10%"), ...muted("215 22% 16%", "215 12% 55%"), ...borders("215 20% 20%", "215 70% 58%") }
+    )
+  },
+  {
+    id: "retro",
+    label: "Retro",
+    emoji: "📻",
+    ...T$1(
+      { ...base$1("45 47% 80%", "345 14% 10%", "45 40% 75%"), ...palette("3 74% 66%", "345 14% 10%", "145 27% 62%", "345 14% 10%", "49 67% 68%", "345 14% 10%"), ...muted("45 30% 72%", "345 12% 38%"), ...borders("45 25% 65%", "3 74% 66%") },
+      { ...base$1("345 20% 12%", "45 35% 82%"), ...palette("3 74% 60%", "345 20% 12%", "145 35% 35%", "45 35% 82%", "49 67% 55%", "345 20% 12%"), ...muted("345 14% 18%", "45 22% 52%"), ...borders("345 14% 22%", "3 74% 60%") }
+    )
+  },
+  {
+    id: "cyberpunk",
+    label: "Cyberpunk",
+    emoji: "🤖",
+    ...T$1(
+      { ...base$1("55 100% 96%", "245 70% 10%", "0 0% 100%"), ...palette("55 100% 50%", "245 70% 10%", "294 100% 63%", "245 70% 10%", "178 100% 50%", "245 70% 10%"), ...muted("55 60% 90%", "245 40% 38%"), ...borders("55 50% 82%", "55 100% 50%") },
+      { ...base$1("245 50% 8%", "55 80% 88%"), ...palette("55 100% 55%", "245 50% 8%", "294 100% 58%", "245 50% 8%", "178 100% 45%", "245 50% 8%"), ...muted("245 35% 14%", "55 50% 55%"), ...borders("245 30% 18%", "55 100% 55%") }
+    )
+  },
+  {
+    id: "valentine",
+    label: "Valentine",
+    emoji: "🌸",
+    ...T$1(
+      { ...base$1("333 100% 97%", "328 73% 22%", "0 0% 100%"), ...palette("339 79% 62%", "0 0% 100%", "325 80% 88%", "328 73% 22%", "350 89% 80%", "328 73% 22%"), ...muted("333 60% 92%", "328 35% 50%"), ...borders("333 50% 87%", "339 79% 62%") },
+      { ...base$1("330 25% 10%", "330 80% 90%"), ...palette("339 75% 65%", "0 0% 100%", "325 35% 28%", "330 80% 90%", "350 55% 42%", "0 0% 100%"), ...muted("330 18% 18%", "330 35% 62%"), ...borders("330 18% 22%", "339 75% 65%") }
+    )
+  },
+  {
+    id: "garden",
+    label: "Garden",
+    emoji: "🌷",
+    ...T$1(
+      { ...base$1("0 0% 98%", "0 0% 13%", "0 0% 100%"), ...palette("352 90% 55%", "0 0% 100%", "119 36% 43%", "0 0% 100%", "41 82% 50%", "0 0% 100%"), ...muted("352 20% 93%", "0 0% 38%"), ...borders("352 15% 86%", "352 90% 55%") },
+      { ...base$1("352 25% 10%", "0 0% 88%"), ...palette("352 90% 60%", "352 25% 10%", "119 40% 28%", "0 0% 88%", "41 82% 45%", "352 25% 10%"), ...muted("352 18% 16%", "0 0% 55%"), ...borders("352 15% 20%", "352 90% 60%") }
+    )
+  },
+  {
+    id: "aqua",
+    label: "Aqua",
+    emoji: "🌊",
+    ...T$1(
+      { ...base$1("220 40% 96%", "220 35% 15%", "0 0% 100%"), ...palette("200 100% 40%", "0 0% 100%", "170 80% 45%", "0 0% 100%", "55 90% 50%", "220 35% 15%"), ...muted("220 25% 90%", "220 25% 40%"), ...borders("220 20% 83%", "200 100% 40%") },
+      { ...base$1("200 40% 9%", "200 25% 88%"), ...palette("200 100% 50%", "200 40% 9%", "170 70% 35%", "200 25% 88%", "55 90% 45%", "200 40% 9%"), ...muted("200 28% 15%", "200 18% 55%"), ...borders("200 25% 18%", "200 100% 50%") }
+    )
+  },
+  {
+    id: "lofi",
+    label: "Lo-Fi",
+    emoji: "🎵",
+    ...T$1(
+      { ...base$1("0 0% 100%", "0 0% 0%", "0 0% 100%"), ...palette("0 0% 13%", "0 0% 100%", "0 0% 35%", "0 0% 100%", "0 0% 50%", "0 0% 100%"), ...muted("0 0% 93%", "0 0% 38%"), ...borders("0 0% 85%", "0 0% 13%") },
+      { ...base$1("0 0% 8%", "0 0% 92%"), ...palette("0 0% 78%", "0 0% 8%", "0 0% 55%", "0 0% 92%", "0 0% 40%", "0 0% 92%"), ...muted("0 0% 14%", "0 0% 55%"), ...borders("0 0% 18%", "0 0% 78%") }
+    )
+  },
+  {
+    id: "pastel",
+    label: "Pastel",
+    emoji: "🎨",
+    ...T$1(
+      { ...base$1("0 0% 100%", "220 10% 20%", "0 0% 100%"), ...palette("330 65% 75%", "220 10% 20%", "200 60% 75%", "220 10% 20%", "145 50% 70%", "220 10% 20%"), ...muted("0 0% 93%", "220 8% 42%"), ...borders("0 0% 85%", "330 65% 75%") },
+      { ...base$1("220 15% 12%", "220 10% 88%"), ...palette("330 55% 65%", "220 15% 12%", "200 50% 55%", "220 10% 88%", "145 45% 50%", "220 15% 12%"), ...muted("220 12% 18%", "220 8% 55%"), ...borders("220 12% 22%", "330 55% 65%") }
+    )
+  },
+  {
+    id: "fantasy",
+    label: "Fantasy",
+    emoji: "🧙",
+    ...T$1(
+      { ...base$1("0 0% 100%", "265 25% 15%", "0 0% 100%"), ...palette("265 80% 55%", "0 0% 100%", "316 60% 47%", "0 0% 100%", "35 80% 55%", "0 0% 100%"), ...muted("265 15% 93%", "265 15% 42%"), ...borders("265 12% 86%", "265 80% 55%") },
+      { ...base$1("265 30% 10%", "265 15% 88%"), ...palette("265 70% 65%", "265 30% 10%", "316 50% 38%", "265 15% 88%", "35 80% 50%", "265 30% 10%"), ...muted("265 22% 16%", "265 12% 55%"), ...borders("265 20% 20%", "265 70% 65%") }
+    )
+  },
+  {
+    id: "wireframe",
+    label: "Wireframe",
+    emoji: "📐",
+    ...T$1(
+      { ...base$1("0 0% 100%", "0 0% 0%", "0 0% 98%"), ...palette("0 0% 18%", "0 0% 100%", "0 0% 40%", "0 0% 100%", "0 0% 60%", "0 0% 100%"), ...muted("0 0% 92%", "0 0% 38%"), ...borders("0 0% 78%", "0 0% 18%") },
+      { ...base$1("0 0% 10%", "0 0% 90%"), ...palette("0 0% 80%", "0 0% 10%", "0 0% 55%", "0 0% 90%", "0 0% 40%", "0 0% 90%"), ...muted("0 0% 16%", "0 0% 55%"), ...borders("0 0% 20%", "0 0% 80%") }
+    )
+  },
+  {
+    id: "cmyk",
+    label: "CMYK",
+    emoji: "🖨️",
+    ...T$1(
+      { ...base$1("0 0% 100%", "0 0% 0%", "0 0% 100%"), ...palette("192 100% 44%", "0 0% 0%", "306 100% 40%", "0 0% 100%", "55 100% 50%", "0 0% 0%"), ...muted("192 30% 93%", "0 0% 38%"), ...borders("0 0% 85%", "192 100% 44%") },
+      { ...base$1("192 30% 9%", "0 0% 90%"), ...palette("192 100% 50%", "192 30% 9%", "306 80% 50%", "0 0% 90%", "55 100% 45%", "192 30% 9%"), ...muted("192 22% 15%", "0 0% 55%"), ...borders("192 20% 18%", "192 100% 50%") }
+    )
+  },
+  {
+    id: "autumn",
+    label: "Autumn",
+    emoji: "🍂",
+    ...T$1(
+      { ...base$1("30 100% 97%", "20 60% 18%", "0 0% 100%"), ...palette("24 100% 38%", "0 0% 100%", "15 75% 58%", "20 60% 18%", "45 95% 45%", "20 60% 18%"), ...muted("30 45% 90%", "20 35% 43%"), ...borders("30 38% 82%", "24 100% 38%") },
+      { ...base$1("20 28% 10%", "30 45% 87%"), ...palette("24 100% 50%", "0 0% 100%", "15 50% 28%", "30 45% 87%", "45 75% 40%", "20 28% 10%"), ...muted("20 18% 17%", "30 25% 55%"), ...borders("20 18% 22%", "24 100% 50%") }
+    )
+  },
+  {
+    id: "business",
+    label: "Business",
+    emoji: "💼",
+    ...T$1(
+      { ...base$1("0 0% 100%", "215 30% 12%", "0 0% 100%"), ...palette("215 96% 32%", "0 0% 100%", "215 40% 50%", "0 0% 100%", "30 80% 45%", "0 0% 100%"), ...muted("215 12% 93%", "215 18% 40%"), ...borders("215 10% 85%", "215 96% 32%") },
+      { ...base$1("215 30% 9%", "215 15% 87%"), ...palette("215 70% 50%", "215 30% 9%", "215 28% 28%", "215 15% 87%", "30 70% 40%", "215 15% 87%"), ...muted("215 22% 15%", "215 12% 55%"), ...borders("215 20% 18%", "215 70% 50%") }
+    )
+  },
+  {
+    id: "acid",
+    label: "Acid",
+    emoji: "🧪",
+    ...T$1(
+      { ...base$1("73 100% 95%", "300 50% 10%", "0 0% 100%"), ...palette("305 100% 50%", "0 0% 100%", "63 100% 50%", "300 50% 10%", "280 100% 70%", "0 0% 100%"), ...muted("73 60% 88%", "300 30% 38%"), ...borders("73 50% 80%", "305 100% 50%") },
+      { ...base$1("300 30% 8%", "73 80% 88%"), ...palette("305 100% 55%", "300 30% 8%", "63 100% 45%", "73 80% 88%", "280 90% 65%", "300 30% 8%"), ...muted("300 22% 14%", "73 40% 55%"), ...borders("300 20% 18%", "305 100% 55%") }
+    )
+  },
+  {
+    id: "lemonade",
+    label: "Lemonade",
+    emoji: "🍋",
+    ...T$1(
+      { ...base$1("75 100% 98%", "90 25% 12%", "0 0% 100%"), ...palette("75 80% 42%", "0 0% 100%", "75 60% 55%", "90 25% 12%", "75 50% 38%", "0 0% 100%"), ...muted("75 55% 91%", "90 18% 40%"), ...borders("75 40% 83%", "75 80% 42%") },
+      { ...base$1("90 25% 10%", "75 40% 88%"), ...palette("75 80% 48%", "90 25% 10%", "75 45% 30%", "75 40% 88%", "75 50% 42%", "90 25% 10%"), ...muted("90 18% 15%", "75 25% 55%"), ...borders("90 15% 18%", "75 80% 48%") }
+    )
+  },
+  {
+    id: "winter",
+    label: "Winter",
+    emoji: "❄️",
+    ...T$1(
+      { ...base$1("215 100% 98%", "217 25% 15%", "0 0% 100%"), ...palette("228 80% 58%", "0 0% 100%", "180 60% 45%", "217 25% 15%", "210 100% 52%", "0 0% 100%"), ...muted("215 50% 92%", "217 18% 42%"), ...borders("215 35% 84%", "228 80% 58%") },
+      { ...base$1("217 30% 11%", "215 25% 88%"), ...palette("228 70% 65%", "217 30% 11%", "180 50% 32%", "215 25% 88%", "210 85% 55%", "217 30% 11%"), ...muted("217 22% 17%", "215 15% 55%"), ...borders("217 18% 21%", "228 70% 65%") }
+    )
+  },
+  {
+    id: "caramellatte",
+    label: "Caramellatte",
+    emoji: "🍮",
+    ...T$1(
+      { ...base$1("36 40% 93%", "30 30% 18%", "36 35% 90%"), ...palette("30 60% 45%", "36 40% 93%", "30 40% 55%", "30 30% 18%", "45 70% 55%", "30 30% 18%"), ...muted("36 28% 85%", "30 20% 42%"), ...borders("36 22% 78%", "30 60% 45%") },
+      { ...base$1("25 22% 11%", "36 30% 85%"), ...palette("30 60% 52%", "25 22% 11%", "30 35% 28%", "36 30% 85%", "45 65% 45%", "25 22% 11%"), ...muted("25 16% 17%", "36 18% 53%"), ...borders("25 14% 21%", "30 60% 52%") }
+    )
+  },
+  {
+    id: "silk",
+    label: "Silk",
+    emoji: "🪡",
+    ...T$1(
+      { ...base$1("40 20% 96%", "350 15% 18%", "40 15% 93%"), ...palette("350 30% 48%", "40 20% 96%", "160 20% 55%", "350 15% 18%", "40 35% 60%", "350 15% 18%"), ...muted("40 14% 88%", "350 10% 42%"), ...borders("40 12% 80%", "350 30% 48%") },
+      { ...base$1("350 15% 10%", "40 15% 88%"), ...palette("350 35% 55%", "350 15% 10%", "160 18% 32%", "40 15% 88%", "40 35% 45%", "40 15% 88%"), ...muted("350 12% 16%", "40 10% 55%"), ...borders("350 10% 20%", "350 35% 55%") }
+    )
+  },
+  // ── Thèmes sombres ─────────────────────────────────────────────────────────
+  {
+    id: "dark",
+    label: "Dark",
+    emoji: "🌑",
+    ...T$1(
+      { ...base$1("222 25% 94%", "222 25% 15%", "0 0% 100%"), ...palette("217 80% 52%", "0 0% 100%", "291 45% 55%", "0 0% 100%", "174 65% 48%", "0 0% 100%"), ...muted("222 15% 87%", "222 15% 40%"), ...borders("222 12% 80%", "217 80% 52%") },
+      { ...base$1("222 47% 11%", "220 15% 85%"), ...palette("217 92% 76%", "222 47% 11%", "291 48% 68%", "222 47% 11%", "174 75% 60%", "222 47% 11%"), ...muted("222 35% 17%", "220 15% 58%"), ...borders("222 35% 20%", "217 92% 76%") }
+    )
+  },
+  {
+    id: "synthwave",
+    label: "Synthwave",
+    emoji: "🌆",
+    ...T$1(
+      { ...base$1("264 30% 95%", "264 50% 15%", "0 0% 100%"), ...palette("300 85% 55%", "0 0% 100%", "196 90% 50%", "264 50% 15%", "55 95% 50%", "264 50% 15%"), ...muted("264 20% 88%", "264 25% 42%"), ...borders("264 20% 82%", "300 85% 55%") },
+      { ...base$1("264 28% 10%", "300 8% 90%"), ...palette("300 100% 60%", "264 28% 10%", "196 100% 45%", "264 28% 10%", "55 100% 50%", "264 28% 10%"), ...muted("264 20% 18%", "300 8% 58%"), ...borders("264 20% 25%", "300 100% 60%") }
+    )
+  },
+  {
+    id: "halloween",
+    label: "Halloween",
+    emoji: "🎃",
+    ...T$1(
+      { ...base$1("28 50% 96%", "0 0% 10%", "0 0% 100%"), ...palette("28 100% 45%", "0 0% 100%", "280 55% 45%", "0 0% 100%", "95 90% 42%", "0 0% 100%"), ...muted("28 35% 88%", "0 0% 38%"), ...borders("28 28% 80%", "28 100% 45%") },
+      { ...base$1("0 0% 9%", "0 0% 85%"), ...palette("28 100% 51%", "0 0% 9%", "280 65% 51%", "0 0% 85%", "95 97% 50%", "0 0% 9%"), ...muted("0 0% 15%", "0 0% 55%"), ...borders("0 0% 18%", "28 100% 51%") }
+    )
+  },
+  {
+    id: "forest",
+    label: "Forest",
+    emoji: "🌲",
+    ...T$1(
+      { ...base$1("141 25% 94%", "141 20% 12%", "0 0% 100%"), ...palette("141 72% 38%", "0 0% 100%", "141 45% 28%", "0 0% 100%", "41 80% 45%", "0 0% 100%"), ...muted("141 15% 87%", "141 15% 40%"), ...borders("141 12% 80%", "141 72% 38%") },
+      { ...base$1("0 0% 9%", "141 10% 82%"), ...palette("141 72% 42%", "0 0% 9%", "141 45% 32%", "141 10% 82%", "41 80% 50%", "0 0% 9%"), ...muted("0 0% 15%", "141 8% 52%"), ...borders("0 0% 18%", "141 72% 42%") }
+    )
+  },
+  {
+    id: "black",
+    label: "Black",
+    emoji: "⬛",
+    ...T$1(
+      { ...base$1("0 0% 97%", "0 0% 5%", "0 0% 100%"), ...palette("0 0% 15%", "0 0% 100%", "0 0% 35%", "0 0% 100%", "0 0% 55%", "0 0% 100%"), ...muted("0 0% 90%", "0 0% 35%"), ...borders("0 0% 80%", "0 0% 15%") },
+      { ...base$1("0 0% 0%", "0 0% 100%"), ...palette("0 0% 22%", "0 0% 100%", "0 0% 35%", "0 0% 100%", "0 0% 50%", "0 0% 100%"), ...muted("0 0% 8%", "0 0% 60%"), ...borders("0 0% 12%", "0 0% 70%") }
+    )
+  },
+  {
+    id: "luxury",
+    label: "Luxury",
+    emoji: "💎",
+    ...T$1(
+      { ...base$1("48 30% 96%", "48 15% 12%", "48 25% 92%"), ...palette("48 80% 42%", "0 0% 100%", "0 0% 55%", "48 15% 12%", "48 70% 45%", "0 0% 100%"), ...muted("48 20% 88%", "48 12% 40%"), ...borders("48 15% 80%", "48 80% 42%") },
+      { ...base$1("0 0% 8%", "48 10% 93%"), ...palette("48 96% 75%", "0 0% 8%", "0 0% 75%", "0 0% 8%", "48 70% 55%", "0 0% 8%"), ...muted("0 0% 13%", "48 8% 58%"), ...borders("0 0% 17%", "48 96% 75%") }
+    )
+  },
+  {
+    id: "dracula",
+    label: "Dracula",
+    emoji: "🧛",
+    ...T$1(
+      { ...base$1("231 14% 95%", "231 14% 20%", "0 0% 100%"), ...palette("265 80% 58%", "0 0% 100%", "231 13% 83%", "231 14% 20%", "135 55% 42%", "0 0% 100%"), ...muted("231 13% 88%", "225 18% 43%"), ...borders("231 12% 82%", "265 80% 58%") },
+      { ...base$1("231 15% 18%", "60 28% 95%"), ...palette("265 89% 78%", "231 15% 18%", "231 13% 26%", "60 28% 95%", "135 94% 65%", "231 15% 18%"), ...muted("231 13% 23%", "225 25% 62%"), ...borders("231 12% 28%", "265 89% 78%") }
+    )
+  },
+  {
+    id: "night",
+    label: "Night",
+    emoji: "🌙",
+    ...T$1(
+      { ...base$1("199 30% 94%", "199 25% 12%", "0 0% 100%"), ...palette("199 80% 45%", "0 0% 100%", "230 60% 60%", "0 0% 100%", "34 90% 48%", "0 0% 100%"), ...muted("199 20% 87%", "199 18% 40%"), ...borders("199 15% 80%", "199 80% 45%") },
+      { ...base$1("222 35% 14%", "199 20% 88%"), ...palette("199 89% 48%", "222 35% 14%", "230 70% 67%", "222 35% 14%", "34 100% 50%", "222 35% 14%"), ...muted("222 25% 19%", "199 15% 55%"), ...borders("222 22% 22%", "199 89% 48%") }
+    )
+  },
+  {
+    id: "coffee",
+    label: "Coffee",
+    emoji: "☕",
+    ...T$1(
+      { ...base$1("30 14% 92%", "30 20% 15%", "30 14% 95%"), ...palette("25 35% 38%", "30 14% 92%", "20 22% 55%", "30 20% 15%", "15 45% 46%", "30 14% 92%"), ...muted("30 10% 85%", "30 14% 40%"), ...borders("30 10% 78%", "25 35% 38%") },
+      { ...base$1("25 18% 12%", "30 22% 85%"), ...palette("25 38% 55%", "25 18% 12%", "20 18% 22%", "30 22% 85%", "15 40% 45%", "30 22% 85%"), ...muted("25 13% 18%", "30 16% 53%"), ...borders("25 12% 22%", "25 38% 55%") }
+    )
+  },
+  {
+    id: "dim",
+    label: "Dim",
+    emoji: "🌫️",
+    ...T$1(
+      { ...base$1("220 20% 94%", "220 14% 18%", "0 0% 100%"), ...palette("221 65% 52%", "0 0% 100%", "215 45% 55%", "0 0% 100%", "40 55% 48%", "0 0% 100%"), ...muted("220 14% 87%", "220 10% 42%"), ...borders("220 12% 80%", "221 65% 52%") },
+      { ...base$1("220 24% 18%", "220 15% 82%"), ...palette("221 65% 75%", "220 24% 18%", "215 45% 65%", "220 24% 18%", "40 55% 70%", "220 24% 18%"), ...muted("220 18% 23%", "220 12% 55%"), ...borders("220 16% 27%", "221 65% 75%") }
+    )
+  },
+  {
+    id: "nord",
+    label: "Nord",
+    emoji: "🏔️",
+    ...T$1(
+      { ...base$1("220 26% 97%", "220 16% 22%", "0 0% 100%"), ...palette("213 32% 52%", "0 0% 100%", "193 43% 67%", "220 16% 22%", "178 26% 55%", "0 0% 100%"), ...muted("220 16% 90%", "220 10% 45%"), ...borders("220 12% 83%", "213 32% 52%") },
+      { ...base$1("220 16% 22%", "220 26% 92%"), ...palette("213 32% 62%", "220 16% 22%", "220 16% 30%", "220 26% 92%", "178 26% 45%", "220 26% 92%"), ...muted("220 14% 28%", "220 12% 62%"), ...borders("220 12% 32%", "213 32% 62%") }
+    )
+  },
+  {
+    id: "sunset",
+    label: "Sunset",
+    emoji: "🌅",
+    ...T$1(
+      { ...base$1("340 60% 96%", "340 20% 12%", "0 0% 100%"), ...palette("340 80% 52%", "0 0% 100%", "25 90% 50%", "0 0% 100%", "50 90% 48%", "340 20% 12%"), ...muted("340 35% 89%", "340 15% 40%"), ...borders("340 25% 81%", "340 80% 52%") },
+      { ...base$1("340 30% 12%", "340 20% 88%"), ...palette("340 80% 58%", "340 30% 12%", "25 90% 55%", "340 30% 12%", "50 90% 52%", "340 30% 12%"), ...muted("340 20% 18%", "340 14% 55%"), ...borders("340 18% 22%", "340 80% 58%") }
+    )
+  },
+  {
+    id: "abyss",
+    label: "Abyss",
+    emoji: "🌊",
+    ...T$1(
+      { ...base$1("240 30% 95%", "240 20% 12%", "0 0% 100%"), ...palette("240 60% 52%", "0 0% 100%", "270 45% 50%", "0 0% 100%", "200 80% 50%", "0 0% 100%"), ...muted("240 20% 88%", "240 15% 40%"), ...borders("240 15% 80%", "240 60% 52%") },
+      { ...base$1("240 30% 8%", "240 20% 88%"), ...palette("240 60% 65%", "240 30% 8%", "270 50% 55%", "240 20% 88%", "200 80% 55%", "240 30% 8%"), ...muted("240 22% 14%", "240 14% 55%"), ...borders("240 18% 18%", "240 60% 65%") }
+    )
+  }
+];
+function detectPreset(yt, At) {
+  if (!yt.trim() && !At.trim()) return "default";
+  const xt = PRESETS.find((wt) => wt.id !== "default" && wt.light === yt && wt.dark === At);
+  return xt ? xt.id : "custom";
+}
+function ThemeCustomModal({ open: yt, onClose: At }) {
+  const [xt, wt] = reactExports.useState("default"), [Et, kt] = reactExports.useState(""), [Ct, St] = reactExports.useState("");
+  reactExports.useEffect(() => {
+    if (!yt) return;
+    const Ot = localStorage.getItem(STORAGE_LIGHT) || "", Ut = localStorage.getItem(STORAGE_DARK) || "";
+    kt(Ot), St(Ut), wt(detectPreset(Ot, Ut));
+  }, [yt]);
+  function Tt(Ot) {
+    const Ut = PRESETS.find((Ht) => Ht.id === Ot);
+    Ut && (wt(Ot), kt(Ut.light), St(Ut.dark));
+  }
+  function $t(Ot) {
+    kt(Ot);
+    const Ut = Ct;
+    Ot.trim() && Ut.trim() ? wt("custom") : !Ot.trim() && !Ut.trim() && wt("default");
+  }
+  function Lt(Ot) {
+    St(Ot);
+    const Ut = Et;
+    Ut.trim() && Ot.trim() ? wt("custom") : !Ut.trim() && !Ot.trim() && wt("default");
+  }
+  function It() {
+    localStorage.setItem(STORAGE_LIGHT, Et), localStorage.setItem(STORAGE_DARK, Ct), localStorage.setItem(STORAGE_PRESET, xt), applyCustomTheme(Et, Ct), At();
+  }
+  function jt() {
+    kt(""), St(""), wt("default"), localStorage.removeItem(STORAGE_LIGHT), localStorage.removeItem(STORAGE_DARK), localStorage.removeItem(STORAGE_PRESET), applyCustomTheme("", "");
+  }
+  const Dt = xt === "custom", Nt = !!(Et.trim() || Ct.trim());
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open: yt, onOpenChange: (Ot) => !Ot && At(), children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { "aria-describedby": void 0, className: "max-w-2xl", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(DialogHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogTitle, { className: "flex items-center gap-2", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "palette", size: 20 }),
+      "Personnalisation du thème"
+    ] }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4 text-sm", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-xs font-medium text-muted-foreground", children: "Thème" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(Select, { value: xt, onValueChange: Tt, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(SelectTrigger, { className: "h-9", children: /* @__PURE__ */ jsxRuntimeExports.jsx(SelectValue, {}) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(SelectContent, { children: [
+            PRESETS.map((Ot) => /* @__PURE__ */ jsxRuntimeExports.jsxs(SelectItem, { value: Ot.id, children: [
+              Ot.emoji,
+              " ",
+              Ot.label
+            ] }, Ot.id)),
+            Dt && /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "custom", children: "✏️ Personnalisé" })
+          ] })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Separator$2, {}),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-muted-foreground text-xs", children: [
+        "Variables CSS surchargeant le thème (format HSL sans ",
+        /* @__PURE__ */ jsxRuntimeExports.jsx("code", { children: "hsl()" }),
+        ").",
+        " ",
+        /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "https://ui.shadcn.com/themes#themes", target: "_blank", rel: "noopener noreferrer", className: "underline hover:text-foreground", children: "Référence shadcn/ui" })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-xs font-medium", children: "☀️ Mode clair" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "textarea",
+            {
+              className: "w-full h-48 text-xs font-mono rounded-md border border-border bg-background p-2 resize-none focus:outline-none focus:ring-1 focus:ring-primary",
+              placeholder: `--primary: 262.1 83.3% 57.8%;
+--background: 0 0% 100%;
+--foreground: 240 10% 3.9%;`,
+              value: Et,
+              onChange: (Ot) => $t(Ot.target.value),
+              spellCheck: !1
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-xs font-medium", children: "🌙 Mode sombre" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "textarea",
+            {
+              className: "w-full h-48 text-xs font-mono rounded-md border border-border bg-background p-2 resize-none focus:outline-none focus:ring-1 focus:ring-primary",
+              placeholder: `--primary: 263.4 70% 50.4%;
+--background: 224 71.4% 4.1%;
+--foreground: 210 20% 98%;`,
+              value: Ct,
+              onChange: (Ot) => Lt(Ot.target.value),
+              spellCheck: !1
+            }
+          )
+        ] })
+      ] })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogFooter, { className: "gap-2", children: [
+      Nt && /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "ghost", size: "sm", onClick: jt, className: "mr-auto text-destructive hover:text-destructive", children: "Réinitialiser" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "outline", size: "sm", onClick: At, children: "Annuler" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { size: "sm", onClick: It, children: "Appliquer" })
+    ] })
+  ] }) });
+}
 const createExportSlice = (yt, At) => ({
   setTheme(xt) {
     const wt = xt === "dark" ? "dark" : "light";
@@ -81953,7 +82418,9 @@ const createExportSlice = (yt, At) => ({
       Ct,
       wt.currentTheme,
       wt.dbEngine,
-      wt.directedAcyclicGraph
+      wt.directedAcyclicGraph,
+      localStorage.getItem(STORAGE_LIGHT) || "",
+      localStorage.getItem(STORAGE_DARK) || ""
     );
   },
   openExportModal(xt) {
@@ -82158,46 +82625,48 @@ ${It}${$t}</head>
     }
   },
   async applyImportedConfig(xt) {
-    var $t, Lt, It, jt, Dt, Nt, Ot, Ut, Ht;
+    var It, jt, Dt, Nt, Ot, Ut, Ht, Vt, Yt, rr, gr;
     await ConfigManager.prepareConfigForLoad(xt);
-    const wt = (Vt, Yt) => initializeCell(Vt, Yt, { generateId: () => At().generateCellId() }), Et = (Vt, Yt) => {
-      const rr = {
-        _id: Vt.id || At().generateGroupId(),
-        _type: Vt.type || "core",
-        direction: Vt.direction || "row",
-        style: Vt.style || "",
-        _order: ConfigManager.normalizeOrder(Vt.order, Yt),
-        cells: (Vt.cells || []).map((gr, Ar) => wt(ConfigManager.normalizeCell({ ...gr }), Ar)),
-        accordion: Vt.accordion || !1,
-        title: Vt.title || "",
-        accordionOpen: Vt.accordionOpen !== !1
+    const wt = (Ar, vr) => initializeCell(Ar, vr, { generateId: () => At().generateCellId() }), Et = (Ar, vr) => {
+      const wr = {
+        _id: Ar.id || At().generateGroupId(),
+        _type: Ar.type || "core",
+        direction: Ar.direction || "row",
+        style: Ar.style || "",
+        _order: ConfigManager.normalizeOrder(Ar.order, vr),
+        cells: (Ar.cells || []).map((Pr, Vr) => wt(ConfigManager.normalizeCell({ ...Pr }), Vr)),
+        accordion: Ar.accordion || !1,
+        title: Ar.title || "",
+        accordionOpen: Ar.accordionOpen !== !1
       };
-      return rr.tabsChild = Vt.tabsChild || !1, rr.name = Vt.name || "", Array.isArray(Vt.queries) && Vt.queries.length > 0 ? rr.queries = Vt.queries.map((gr) => ({
-        name: gr.name || "main",
-        sql: gr.sql || "",
-        engine: gr.engine || "sql",
-        clientVisible: gr.clientVisible === !0
-      })) : rr.queries = [], rr.loop = Vt.loop ? { enabled: Vt.loop.enabled || !1, query: Vt.loop.query || "", zip: Vt.loop.zip || !1, zipQuery: Vt.loop.zipQuery || "" } : { enabled: !1, query: "", zip: !1, zipQuery: "" }, Vt.children && Vt.children.length > 0 && (rr.children = Vt.children.map((gr, Ar) => {
-        const vr = Et(gr, Ar);
-        return vr._order = ConfigManager.normalizeOrder(gr.order, Ar), vr;
-      })), rr;
+      return wr.tabsChild = Ar.tabsChild || !1, wr.name = Ar.name || "", Array.isArray(Ar.queries) && Ar.queries.length > 0 ? wr.queries = Ar.queries.map((Pr) => ({
+        name: Pr.name || "main",
+        sql: Pr.sql || "",
+        engine: Pr.engine || "sql",
+        clientVisible: Pr.clientVisible === !0
+      })) : wr.queries = [], wr.loop = Ar.loop ? { enabled: Ar.loop.enabled || !1, query: Ar.loop.query || "", zip: Ar.loop.zip || !1, zipQuery: Ar.loop.zipQuery || "" } : { enabled: !1, query: "", zip: !1, zipQuery: "" }, Ar.children && Ar.children.length > 0 && (wr.children = Ar.children.map((Pr, Vr) => {
+        const Kr = Et(Pr, Vr);
+        return Kr._order = ConfigManager.normalizeOrder(Pr.order, Vr), Kr;
+      })), wr;
     };
-    let kt = ((($t = xt.job) == null ? void 0 : $t.pages) || []).map((Vt, Yt) => {
-      const rr = (Vt.groups || []).map((gr, Ar) => Et(gr, Ar));
+    let kt = (((It = xt.job) == null ? void 0 : It.pages) || []).map((Ar, vr) => {
+      const wr = (Ar.groups || []).map((Pr, Vr) => Et(Pr, Vr));
       return {
-        _id: Vt.id || At().generatePageId(),
-        name: Vt.name || `Feuille ${Yt + 1}`,
-        groups: rr.filter((gr) => gr._type === "core"),
-        linkGroups: rr.filter((gr) => gr._type === "link")
+        _id: Ar.id || At().generatePageId(),
+        name: Ar.name || `Feuille ${vr + 1}`,
+        groups: wr.filter((Pr) => Pr._type === "core"),
+        linkGroups: wr.filter((Pr) => Pr._type === "link")
       };
     });
     kt.length === 0 && (kt = [{ _id: At().generatePageId(), name: "Feuille 1", groups: [], linkGroups: [] }]), yt({ pages: kt, activePageIndex: 0, _pagesInitialized: /* @__PURE__ */ new Set() }), At().ensureAllCellsHaveNames(), await At().loadPendingSourceFiles(), await At().evaluateAllGroupIfQueries(), await At().runAllGroups();
     const Ct = At().pages[0];
-    Ct && yt((Vt) => ({ _pagesInitialized: /* @__PURE__ */ new Set([...Vt._pagesInitialized, Ct._id]) })), setTimeout(() => setTimeout(() => At().refreshMarkdownCellsForPage(0), 300), 0);
-    const St = (Lt = xt.ui) == null ? void 0 : Lt.dbEngine;
-    St && St !== At().dbEngine && await At().switchDbEngine(St), ((It = xt.ui) == null ? void 0 : It.directedAcyclicGraph) !== void 0 && yt({ directedAcyclicGraph: xt.ui.directedAcyclicGraph === !0 }), ((jt = xt.ui) == null ? void 0 : jt.devMode) !== void 0 && yt({ devMode: xt.ui.devMode !== !1 }), (((Dt = xt.ui) == null ? void 0 : Dt.showLayout) !== void 0 || ((Nt = xt.ui) == null ? void 0 : Nt.displaySettings) !== void 0) && yt({ showLayout: (((Ot = xt.ui) == null ? void 0 : Ot.showLayout) ?? ((Ut = xt.ui) == null ? void 0 : Ut.displaySettings)) !== !1 });
-    const Tt = (Ht = xt.ui) == null ? void 0 : Ht.theme;
-    Tt && At().availableThemes.includes(Tt) && At().setTheme(Tt), At().setStatus("Configuration chargée", "success");
+    Ct && yt((Ar) => ({ _pagesInitialized: /* @__PURE__ */ new Set([...Ar._pagesInitialized, Ct._id]) })), setTimeout(() => setTimeout(() => At().refreshMarkdownCellsForPage(0), 300), 0);
+    const St = (jt = xt.ui) == null ? void 0 : jt.dbEngine;
+    St && St !== At().dbEngine && await At().switchDbEngine(St), ((Dt = xt.ui) == null ? void 0 : Dt.directedAcyclicGraph) !== void 0 && yt({ directedAcyclicGraph: xt.ui.directedAcyclicGraph === !0 }), ((Nt = xt.ui) == null ? void 0 : Nt.devMode) !== void 0 && yt({ devMode: xt.ui.devMode !== !1 }), (((Ot = xt.ui) == null ? void 0 : Ot.showLayout) !== void 0 || ((Ut = xt.ui) == null ? void 0 : Ut.displaySettings) !== void 0) && yt({ showLayout: (((Ht = xt.ui) == null ? void 0 : Ht.showLayout) ?? ((Vt = xt.ui) == null ? void 0 : Vt.displaySettings)) !== !1 });
+    const Tt = (Yt = xt.ui) == null ? void 0 : Yt.theme;
+    Tt && At().availableThemes.includes(Tt) && At().setTheme(Tt);
+    const $t = ((rr = xt.ui) == null ? void 0 : rr.customThemeLight) || "", Lt = ((gr = xt.ui) == null ? void 0 : gr.customThemeDark) || "";
+    ($t || Lt) && (localStorage.setItem(STORAGE_LIGHT, $t), localStorage.setItem(STORAGE_DARK, Lt), localStorage.removeItem(STORAGE_PRESET), applyCustomTheme($t, Lt)), At().setStatus("Configuration chargée", "success");
   }
 });
 class CellBodyRenderer {
@@ -84894,420 +85363,7 @@ const duckdbManagerConnector = createBaseDuckDbConnector(
       return (Vt == null ? void 0 : Vt.linkGroups) || [];
     }
   };
-}), STORAGE_LIGHT = "sqljob-custom-theme-light", STORAGE_DARK = "sqljob-custom-theme-dark", STORAGE_PRESET = "sqljob-custom-theme-preset", STYLE_ID = "sqljob-custom-theme", PRESETS = [
-  {
-    id: "default",
-    label: "Défaut",
-    emoji: "⚪",
-    light: "",
-    dark: ""
-  },
-  {
-    id: "valentine",
-    label: "Valentine",
-    emoji: "🌸",
-    light: `  --background: 333 100% 97%;
-  --foreground: 328 73% 22%;
-  --card: 333 100% 97%;
-  --card-foreground: 328 73% 22%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 328 73% 22%;
-  --primary: 339 79% 62%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 325 80% 88%;
-  --secondary-foreground: 328 73% 22%;
-  --muted: 333 60% 92%;
-  --muted-foreground: 328 35% 50%;
-  --accent: 350 89% 80%;
-  --accent-foreground: 328 73% 22%;
-  --destructive: 0 84% 60%;
-  --destructive-foreground: 0 0% 100%;
-  --border: 333 50% 87%;
-  --input: 333 50% 87%;
-  --ring: 339 79% 62%;`,
-    dark: `  --background: 330 25% 10%;
-  --foreground: 330 80% 90%;
-  --card: 330 25% 13%;
-  --card-foreground: 330 80% 90%;
-  --popover: 330 25% 10%;
-  --popover-foreground: 330 80% 90%;
-  --primary: 339 75% 65%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 325 35% 28%;
-  --secondary-foreground: 330 80% 90%;
-  --muted: 330 18% 18%;
-  --muted-foreground: 330 35% 62%;
-  --accent: 350 55% 42%;
-  --accent-foreground: 0 0% 100%;
-  --destructive: 0 63% 40%;
-  --destructive-foreground: 0 0% 98%;
-  --border: 330 18% 22%;
-  --input: 330 18% 22%;
-  --ring: 339 75% 65%;`
-  },
-  {
-    id: "synthwave",
-    label: "Synthwave",
-    emoji: "🌆",
-    light: `  --background: 264 30% 95%;
-  --foreground: 264 50% 15%;
-  --card: 0 0% 100%;
-  --card-foreground: 264 50% 15%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 264 50% 15%;
-  --primary: 300 85% 55%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 196 90% 50%;
-  --secondary-foreground: 264 50% 15%;
-  --muted: 264 20% 88%;
-  --muted-foreground: 264 25% 42%;
-  --accent: 55 95% 50%;
-  --accent-foreground: 264 50% 15%;
-  --destructive: 0 84% 60%;
-  --destructive-foreground: 0 0% 100%;
-  --border: 264 20% 82%;
-  --input: 264 20% 82%;
-  --ring: 300 85% 55%;`,
-    dark: `  --background: 264 28% 10%;
-  --foreground: 300 8% 90%;
-  --card: 264 28% 13%;
-  --card-foreground: 300 8% 90%;
-  --popover: 264 28% 10%;
-  --popover-foreground: 300 8% 90%;
-  --primary: 300 100% 60%;
-  --primary-foreground: 264 28% 10%;
-  --secondary: 196 100% 45%;
-  --secondary-foreground: 264 28% 10%;
-  --muted: 264 20% 18%;
-  --muted-foreground: 300 8% 58%;
-  --accent: 55 100% 50%;
-  --accent-foreground: 264 28% 10%;
-  --destructive: 0 63% 45%;
-  --destructive-foreground: 0 0% 98%;
-  --border: 264 20% 25%;
-  --input: 264 20% 25%;
-  --ring: 300 100% 60%;`
-  },
-  {
-    id: "emerald",
-    label: "Emerald",
-    emoji: "💚",
-    light: `  --background: 0 0% 100%;
-  --foreground: 170 50% 15%;
-  --card: 0 0% 100%;
-  --card-foreground: 170 50% 15%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 170 50% 15%;
-  --primary: 160 84% 39%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 156 55% 75%;
-  --secondary-foreground: 170 50% 15%;
-  --muted: 160 18% 93%;
-  --muted-foreground: 170 25% 40%;
-  --accent: 155 60% 42%;
-  --accent-foreground: 0 0% 100%;
-  --destructive: 0 84% 60%;
-  --destructive-foreground: 0 0% 100%;
-  --border: 160 18% 85%;
-  --input: 160 18% 85%;
-  --ring: 160 84% 39%;`,
-    dark: `  --background: 170 28% 8%;
-  --foreground: 160 18% 92%;
-  --card: 170 28% 11%;
-  --card-foreground: 160 18% 92%;
-  --popover: 170 28% 8%;
-  --popover-foreground: 160 18% 92%;
-  --primary: 160 84% 45%;
-  --primary-foreground: 170 28% 8%;
-  --secondary: 156 38% 22%;
-  --secondary-foreground: 160 18% 92%;
-  --muted: 170 18% 15%;
-  --muted-foreground: 160 14% 58%;
-  --accent: 155 60% 35%;
-  --accent-foreground: 160 18% 92%;
-  --destructive: 0 63% 31%;
-  --destructive-foreground: 0 0% 98%;
-  --border: 170 18% 18%;
-  --input: 170 18% 18%;
-  --ring: 160 84% 45%;`
-  },
-  {
-    id: "nord",
-    label: "Nord",
-    emoji: "🏔️",
-    light: `  --background: 220 26% 97%;
-  --foreground: 220 16% 22%;
-  --card: 0 0% 100%;
-  --card-foreground: 220 16% 22%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 220 16% 22%;
-  --primary: 213 32% 52%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 193 43% 67%;
-  --secondary-foreground: 220 16% 22%;
-  --muted: 220 16% 90%;
-  --muted-foreground: 220 10% 45%;
-  --accent: 178 26% 55%;
-  --accent-foreground: 0 0% 100%;
-  --destructive: 354 42% 56%;
-  --destructive-foreground: 0 0% 100%;
-  --border: 220 12% 83%;
-  --input: 220 12% 83%;
-  --ring: 213 32% 52%;`,
-    dark: `  --background: 220 16% 22%;
-  --foreground: 220 26% 92%;
-  --card: 220 16% 26%;
-  --card-foreground: 220 26% 92%;
-  --popover: 220 16% 22%;
-  --popover-foreground: 220 26% 92%;
-  --primary: 213 32% 62%;
-  --primary-foreground: 220 16% 22%;
-  --secondary: 220 16% 30%;
-  --secondary-foreground: 220 26% 92%;
-  --muted: 220 14% 28%;
-  --muted-foreground: 220 12% 62%;
-  --accent: 178 26% 45%;
-  --accent-foreground: 220 26% 92%;
-  --destructive: 354 42% 50%;
-  --destructive-foreground: 0 0% 100%;
-  --border: 220 12% 32%;
-  --input: 220 12% 32%;
-  --ring: 213 32% 62%;`
-  },
-  {
-    id: "autumn",
-    label: "Autumn",
-    emoji: "🍂",
-    light: `  --background: 30 100% 97%;
-  --foreground: 20 60% 18%;
-  --card: 30 100% 97%;
-  --card-foreground: 20 60% 18%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 20 60% 18%;
-  --primary: 24 100% 38%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 15 75% 58%;
-  --secondary-foreground: 20 60% 18%;
-  --muted: 30 45% 90%;
-  --muted-foreground: 20 35% 43%;
-  --accent: 45 95% 45%;
-  --accent-foreground: 20 60% 18%;
-  --destructive: 0 84% 60%;
-  --destructive-foreground: 0 0% 100%;
-  --border: 30 38% 82%;
-  --input: 30 38% 82%;
-  --ring: 24 100% 38%;`,
-    dark: `  --background: 20 28% 10%;
-  --foreground: 30 45% 87%;
-  --card: 20 28% 13%;
-  --card-foreground: 30 45% 87%;
-  --popover: 20 28% 10%;
-  --popover-foreground: 30 45% 87%;
-  --primary: 24 100% 50%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 15 50% 28%;
-  --secondary-foreground: 30 45% 87%;
-  --muted: 20 18% 17%;
-  --muted-foreground: 30 25% 55%;
-  --accent: 45 75% 40%;
-  --accent-foreground: 20 28% 10%;
-  --destructive: 0 63% 35%;
-  --destructive-foreground: 0 0% 98%;
-  --border: 20 18% 22%;
-  --input: 20 18% 22%;
-  --ring: 24 100% 50%;`
-  },
-  {
-    id: "dracula",
-    label: "Dracula",
-    emoji: "🧛",
-    light: `  --background: 231 14% 95%;
-  --foreground: 231 14% 20%;
-  --card: 0 0% 100%;
-  --card-foreground: 231 14% 20%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 231 14% 20%;
-  --primary: 265 80% 58%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 231 13% 83%;
-  --secondary-foreground: 231 14% 20%;
-  --muted: 231 13% 88%;
-  --muted-foreground: 225 18% 43%;
-  --accent: 135 55% 42%;
-  --accent-foreground: 0 0% 100%;
-  --destructive: 0 84% 60%;
-  --destructive-foreground: 0 0% 100%;
-  --border: 231 12% 82%;
-  --input: 231 12% 82%;
-  --ring: 265 80% 58%;`,
-    dark: `  --background: 231 15% 18%;
-  --foreground: 60 28% 95%;
-  --card: 231 15% 21%;
-  --card-foreground: 60 28% 95%;
-  --popover: 231 15% 18%;
-  --popover-foreground: 60 28% 95%;
-  --primary: 265 89% 78%;
-  --primary-foreground: 231 15% 18%;
-  --secondary: 231 13% 26%;
-  --secondary-foreground: 60 28% 95%;
-  --muted: 231 13% 23%;
-  --muted-foreground: 225 25% 62%;
-  --accent: 135 94% 65%;
-  --accent-foreground: 231 15% 18%;
-  --destructive: 0 100% 67%;
-  --destructive-foreground: 231 15% 18%;
-  --border: 231 12% 28%;
-  --input: 231 12% 28%;
-  --ring: 265 89% 78%;`
-  },
-  {
-    id: "coffee",
-    label: "Coffee",
-    emoji: "☕",
-    light: `  --background: 30 14% 92%;
-  --foreground: 30 20% 15%;
-  --card: 30 14% 92%;
-  --card-foreground: 30 20% 15%;
-  --popover: 30 14% 95%;
-  --popover-foreground: 30 20% 15%;
-  --primary: 25 35% 38%;
-  --primary-foreground: 30 14% 92%;
-  --secondary: 20 22% 55%;
-  --secondary-foreground: 30 20% 15%;
-  --muted: 30 10% 85%;
-  --muted-foreground: 30 14% 40%;
-  --accent: 15 45% 46%;
-  --accent-foreground: 30 14% 92%;
-  --destructive: 0 84% 60%;
-  --destructive-foreground: 0 0% 100%;
-  --border: 30 10% 78%;
-  --input: 30 10% 78%;
-  --ring: 25 35% 38%;`,
-    dark: `  --background: 25 18% 12%;
-  --foreground: 30 22% 85%;
-  --card: 25 18% 15%;
-  --card-foreground: 30 22% 85%;
-  --popover: 25 18% 12%;
-  --popover-foreground: 30 22% 85%;
-  --primary: 25 38% 55%;
-  --primary-foreground: 25 18% 12%;
-  --secondary: 20 18% 22%;
-  --secondary-foreground: 30 22% 85%;
-  --muted: 25 13% 18%;
-  --muted-foreground: 30 16% 53%;
-  --accent: 15 40% 45%;
-  --accent-foreground: 30 22% 85%;
-  --destructive: 0 63% 31%;
-  --destructive-foreground: 0 0% 98%;
-  --border: 25 12% 22%;
-  --input: 25 12% 22%;
-  --ring: 25 38% 55%;`
-  }
-];
-function applyCustomTheme(yt, At) {
-  let xt = document.getElementById(STYLE_ID);
-  xt || (xt = document.createElement("style"), xt.id = STYLE_ID, document.head.appendChild(xt));
-  const wt = [];
-  yt.trim() && wt.push(`:root {
-${yt.trim()}
-}`), At.trim() && wt.push(`.dark {
-${At.trim()}
-}`), xt.textContent = wt.join(`
-`);
-}
-function ThemeCustomModal({ open: yt, onClose: At }) {
-  const [xt, wt] = reactExports.useState("custom"), [Et, kt] = reactExports.useState(""), [Ct, St] = reactExports.useState("");
-  reactExports.useEffect(() => {
-    if (!yt) return;
-    const Nt = localStorage.getItem(STORAGE_LIGHT) || "", Ot = localStorage.getItem(STORAGE_DARK) || "", Ut = localStorage.getItem(STORAGE_PRESET) || "custom";
-    kt(Nt), St(Ot), wt(Ut);
-  }, [yt]);
-  function Tt(Nt) {
-    wt(Nt);
-    const Ot = PRESETS.find((Ut) => Ut.id === Nt);
-    Ot && (kt(Ot.light), St(Ot.dark));
-  }
-  function $t(Nt) {
-    kt(Nt), wt("custom");
-  }
-  function Lt(Nt) {
-    St(Nt), wt("custom");
-  }
-  function It() {
-    localStorage.setItem(STORAGE_LIGHT, Et), localStorage.setItem(STORAGE_DARK, Ct), localStorage.setItem(STORAGE_PRESET, xt), applyCustomTheme(Et, Ct), At();
-  }
-  function jt() {
-    kt(""), St(""), wt("default"), localStorage.removeItem(STORAGE_LIGHT), localStorage.removeItem(STORAGE_DARK), localStorage.removeItem(STORAGE_PRESET), applyCustomTheme("", "");
-  }
-  const Dt = !!(Et.trim() || Ct.trim());
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open: yt, onOpenChange: (Nt) => !Nt && At(), children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { "aria-describedby": void 0, className: "max-w-2xl", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx(DialogHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogTitle, { className: "flex items-center gap-2", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "palette", size: 20 }),
-      "Personnalisation du thème"
-    ] }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4 text-sm", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-xs font-medium text-muted-foreground", children: "Thème prédéfini" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(Select, { value: xt, onValueChange: Tt, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(SelectTrigger, { className: "h-9", children: /* @__PURE__ */ jsxRuntimeExports.jsx(SelectValue, {}) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(SelectContent, { children: [
-            PRESETS.map((Nt) => /* @__PURE__ */ jsxRuntimeExports.jsxs(SelectItem, { value: Nt.id, children: [
-              Nt.emoji,
-              " ",
-              Nt.label
-            ] }, Nt.id)),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "custom", children: "✏️ Personnalisé" })
-          ] })
-        ] })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(Separator$2, {}),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-muted-foreground text-xs", children: [
-        "Variables CSS surchargeant le thème.",
-        " ",
-        /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "https://ui.shadcn.com/themes#themes", target: "_blank", rel: "noopener noreferrer", className: "underline hover:text-foreground", children: "Référence shadcn/ui" })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-xs font-medium", children: "☀️ Mode clair" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "textarea",
-            {
-              className: "w-full h-48 text-xs font-mono rounded-md border border-border bg-background p-2 resize-none focus:outline-none focus:ring-1 focus:ring-primary",
-              placeholder: `--primary: 262.1 83.3% 57.8%;
---background: 0 0% 100%;
---foreground: 240 10% 3.9%;
-...`,
-              value: Et,
-              onChange: (Nt) => $t(Nt.target.value),
-              spellCheck: !1
-            }
-          )
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-xs font-medium", children: "🌙 Mode sombre" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "textarea",
-            {
-              className: "w-full h-48 text-xs font-mono rounded-md border border-border bg-background p-2 resize-none focus:outline-none focus:ring-1 focus:ring-primary",
-              placeholder: `--primary: 263.4 70% 50.4%;
---background: 224 71.4% 4.1%;
---foreground: 210 20% 98%;
-...`,
-              value: Ct,
-              onChange: (Nt) => Lt(Nt.target.value),
-              spellCheck: !1
-            }
-          )
-        ] })
-      ] })
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogFooter, { className: "gap-2", children: [
-      Dt && /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "ghost", size: "sm", onClick: jt, className: "mr-auto text-destructive hover:text-destructive", children: "Réinitialiser" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "outline", size: "sm", onClick: At, children: "Annuler" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { size: "sm", onClick: It, children: "Appliquer" })
-    ] })
-  ] }) });
-}
+});
 let loadPromise = null, initialized = !1;
 function loadEruda() {
   return loadPromise || (loadPromise = Promise.resolve().then(() => eruda).then((yt) => yt.default ?? yt), loadPromise.catch(() => {
