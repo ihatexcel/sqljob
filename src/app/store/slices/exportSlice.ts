@@ -10,6 +10,7 @@ import { GistEncrypt } from '../../../lib/GistEncrypt'
 import { GitHubGistManager } from '../../../lib/GitHubGistManager'
 import { FileHandler } from '../../../lib/FileHandler'
 import { initializeCell } from '../../../lib/CellConfigService'
+import { STORAGE_LIGHT, STORAGE_DARK, STORAGE_PRESET, applyCustomTheme } from '../../components/modals/ThemeCustomModal'
 
 export const createExportSlice = (set: any, get: any) => ({
 
@@ -38,7 +39,9 @@ export const createExportSlice = (set: any, get: any) => ({
             includeFileData,
             s.currentTheme,
             s.dbEngine,
-            s.directedAcyclicGraph
+            s.directedAcyclicGraph,
+            localStorage.getItem(STORAGE_LIGHT) || '',
+            localStorage.getItem(STORAGE_DARK)  || ''
         )
     },
 
@@ -412,6 +415,15 @@ ${configScriptTag}${embeddedScripts}</head>
         const configTheme = config.ui?.theme
         if (configTheme && get().availableThemes.includes(configTheme)) {
             get().setTheme(configTheme)
+        }
+        // Thème custom CSS
+        const importedLight = config.ui?.customThemeLight || ''
+        const importedDark  = config.ui?.customThemeDark  || ''
+        if (importedLight || importedDark) {
+            localStorage.setItem(STORAGE_LIGHT, importedLight)
+            localStorage.setItem(STORAGE_DARK,  importedDark)
+            localStorage.removeItem(STORAGE_PRESET)
+            applyCustomTheme(importedLight, importedDark)
         }
         get().setStatus('Configuration chargée', 'success')
     },
