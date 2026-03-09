@@ -23909,15 +23909,15 @@ CASE
       OR lower('{fileName}') LIKE '%.csv.gz'
     THEN
         'SELECT * FROM read_csv(''' || '{fileName}' || ''',
-         ALL_VARCHAR = true, HEADER = true, AUTO_DETECT = true,
-         SAMPLE_SIZE = -1, IGNORE_ERRORS = true)'
+         HEADER = true, AUTO_DETECT = true,
+         SAMPLE_SIZE = -1, IGNORE_ERRORS = true, store_rejects = true)'
 
     WHEN lower('{fileName}') LIKE '%.xlsx'
     THEN
         'SELECT * FROM read_xlsx(''' || '{fileName}' || ''',
-         ALL_VARCHAR = true, HEADER = true,
+         HEADER = true,
          STOP_AT_EMPTY = false, EMPTY_AS_VARCHAR = true,
-         IGNORE_ERRORS = true)'
+         IGNORE_ERRORS = true, store_rejects = true)'
 
     WHEN lower('{fileName}') LIKE '%.tsv'
       OR lower('{fileName}') LIKE '%.tsv.gz'
@@ -23925,9 +23925,9 @@ CASE
       OR lower('{fileName}') LIKE '%.txt.gz'
     THEN
         'SELECT * FROM read_csv(''' || '{fileName}' || ''',
-         ALL_VARCHAR = true, HEADER = true,
+         HEADER = true,
          DELIM = ''\\t'', AUTO_DETECT = true,
-         SAMPLE_SIZE = -1, IGNORE_ERRORS = true)'
+         SAMPLE_SIZE = -1, IGNORE_ERRORS = true, store_rejects = true)'
 
     WHEN lower('{fileName}') LIKE '%.parquet'
       OR lower('{fileName}') LIKE '%.parquet.gz'
@@ -75667,6 +75667,223 @@ function SqlDataTable({ cell: yt, searchable: At = !1 }) {
     )
   ] }) : null;
 }
+const qm = class qm {
+  static getDuckDBWasmUrl() {
+    return `https://cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@${qm.DUCKDB_WASM_VERSION}/+esm`;
+  }
+  static getDucklingsUrl() {
+    return `https://cdn.jsdelivr.net/npm/@ducklings/browser@${qm.DUCKLINGS_VERSION}/+esm`;
+  }
+  static getEngine() {
+    return qm.currentEngine;
+  }
+  static setEngine(At) {
+    if (!["duckdb-wasm", "ducklings"].includes(At))
+      throw new Error(`Moteur inconnu: ${At}`);
+    qm.currentEngine = At;
+  }
+  static async destroy(At) {
+    var xt, wt, Et, kt, Ct, St, Tt, $t;
+    At == null || At("Destruction de la base de données...", "loading");
+    try {
+      qm.connInstance && (qm.currentEngine === "ducklings" && await ((wt = (xt = qm.connInstance).close) == null ? void 0 : wt.call(xt)), qm.connInstance = null), qm.dbInstance && (qm.currentEngine === "ducklings" ? await ((kt = (Et = qm.dbInstance).close) == null ? void 0 : kt.call(Et)) : await ((St = (Ct = qm.dbInstance).terminate) == null ? void 0 : St.call(Ct)), qm.dbInstance = null), qm.workerRef && (($t = (Tt = qm.workerRef).terminate) == null || $t.call(Tt), qm.workerRef = null), qm.duckdbModuleRef = null, qm._chartTypesInitialized = !1, window.duckdbModule = null, window.ducklingsModule = null, At == null || At("Base de données détruite", "success");
+    } catch (Lt) {
+      console.error("Erreur destruction DB:", Lt), At == null || At("Erreur destruction: " + Lt.message, "error");
+    }
+  }
+  static async switchEngine(At, xt) {
+    At === qm.currentEngine && qm.dbInstance || (await qm.destroy(xt), qm.setEngine(At), await qm.initDuckDB(xt));
+  }
+  static supportsFileOperations() {
+    return qm.currentEngine === "duckdb-wasm";
+  }
+  static supportsExtensions() {
+    return qm.currentEngine === "duckdb-wasm";
+  }
+  static async initDuckDB(At) {
+    return qm.dbInstance && qm.connInstance ? { db: qm.dbInstance, conn: qm.connInstance } : qm.currentEngine === "ducklings" ? await qm._initDucklings(At) : await qm._initDuckDBWasm(At);
+  }
+  static async _initDuckDBWasm(At) {
+    At == null || At("Initialisation de DuckDB WASM...", "loading");
+    const xt = await import(
+      /* @vite-ignore */
+      qm.getDuckDBWasmUrl()
+    );
+    window.duckdbModule = xt, qm.duckdbModuleRef = xt;
+    const wt = xt.getJsDelivrBundles(), Et = await xt.selectBundle(wt), kt = URL.createObjectURL(
+      new Blob([`importScripts("${Et.mainWorker}");`], { type: "text/javascript" })
+    ), Ct = new Worker(kt);
+    qm.workerRef = Ct;
+    const St = {
+      log(Tt) {
+      }
+    };
+    return qm.dbInstance = new xt.AsyncDuckDB(St, Ct), URL.revokeObjectURL(kt), await qm.dbInstance.instantiate(Et.mainModule, Et.pthreadWorker), qm.connInstance = await qm.dbInstance.connect(), At == null || At("Chargement extension Excel...", "loading"), await qm.connInstance.query("INSTALL excel;"), await qm.connInstance.query("LOAD excel;"), At == null || At("DuckDB WASM prêt", "success"), { db: qm.dbInstance, conn: qm.connInstance };
+  }
+  static async _initDucklings(At) {
+    if (At == null || At("Initialisation de Ducklings...", "loading"), location.protocol === "file:")
+      return At == null || At("Ducklings nécessite un serveur HTTP. Basculement vers DuckDB WASM...", "warning"), await new Promise((kt) => setTimeout(kt, 1500)), qm.currentEngine = "duckdb-wasm", await qm._initDuckDBWasm(At);
+    const xt = await import(
+      /* @vite-ignore */
+      qm.getDucklingsUrl()
+    );
+    window.ducklingsModule = xt, qm.duckdbModuleRef = xt;
+    const wt = xt.getJsDelivrBundle(), Et = await xt.createWorker(wt.mainWorker);
+    return qm.workerRef = Et, await xt.init({
+      worker: Et,
+      wasmUrl: wt.wasmModule,
+      wasmJsUrl: wt.wasmJs
+    }), qm.dbInstance = new xt.DuckDB(), qm.connInstance = await qm.dbInstance.connect(), At == null || At("Ducklings prêt", "success"), { db: qm.dbInstance, conn: qm.connInstance };
+  }
+  static async executeQuery(At) {
+    if (typeof At == "string" && At.length > 200 && At.slice(0, 200) + "", !qm.connInstance)
+      throw new Error("DuckDB non initialisé");
+    return qm.currentEngine === "ducklings" ? await qm.connInstance.query(At) : (await qm.connInstance.query(At)).toArray().map((wt) => Object.fromEntries(wt));
+  }
+  /** Crée tous les types taleshape dans DuckDB comme alias VARCHAR.
+   *  DuckDB ne supporte que VARCHAR (et ENUM/STRUCT) pour CREATE TYPE —
+   *  pas DOUBLE. Les valeurs numériques sont converties via _num() côté parser.
+   *  Idempotent : utilise IF NOT EXISTS. */
+  static async initChartTypes() {
+    if (!qm._chartTypesInitialized) {
+      if (qm.currentEngine === "ducklings") {
+        qm._chartTypesInitialized = !0;
+        return;
+      }
+      if (qm.connInstance) {
+        for (const At of qm.CHART_TYPE_NAMES)
+          try {
+            await qm.connInstance.query(`CREATE TYPE IF NOT EXISTS ${At} AS VARCHAR;`);
+          } catch (xt) {
+            throw console.error("[initChartTypes] FAILED on", At, ":", (xt == null ? void 0 : xt.message) ?? xt), xt;
+          }
+        qm._chartTypesInitialized = !0;
+      }
+    }
+  }
+  /** Pour Ducklings : extrait les casts ::ROLENAME du SQL et retourne le SQL nettoyé
+   *  + la map columnTypes équivalente à ce que DESCRIBE donnerait sur DuckDB WASM.
+   *  Ex: "month::XAXIS, revenue::BARCHART AS Rev"
+   *   → strippedSql: "month, revenue AS Rev"
+   *   → columnTypes: { month: 'XAXIS', Rev: 'BARCHART' } */
+  static _stripChartCasts(At) {
+    const xt = {}, wt = qm.CHART_TYPE_NAMES.join("|"), Et = new RegExp(`(\\[[^\\]]*\\]|[\\w.]+|\\))\\s*::\\s*(${wt})\\b(\\s+AS\\s+(?:"([^"]+)"|(\\w+)))?`, "gi");
+    return { strippedSql: At.replace(Et, (Ct, St, Tt, $t, Lt, It) => {
+      const jt = Tt.toUpperCase();
+      let Dt, Nt;
+      return St.startsWith("[") ? (Dt = Lt ?? It ?? jt, Nt = St + ($t ?? ` AS "${jt}"`)) : St !== ")" && /^\d/.test(St) && St.includes(".") ? (Dt = Lt ?? It ?? St, Nt = St + ($t ?? "")) : (Dt = Lt ?? It ?? (St === ")" ? null : St.split(".").at(-1)), Nt = St + ($t ?? "")), Dt && (xt[Dt] = jt), Nt;
+    }), columnTypes: xt };
+  }
+  /** Exécute une requête et retourne les lignes + les types DuckDB de chaque colonne.
+   *  Utilise DESCRIBE pour lire les types (ex: 'XAXIS', 'BARCHART').
+   *  columnTypes: { colAlias -> 'XAXIS' | 'BARCHART' | ... } */
+  static async executeQueryWithSchema(At) {
+    if (!qm.connInstance)
+      throw new Error("DuckDB non initialisé");
+    const { strippedSql: xt, columnTypes: wt } = qm._stripChartCasts(At);
+    return qm.currentEngine === "ducklings" ? { rows: await qm.connInstance.query(xt), columnTypes: wt } : { rows: (await qm.connInstance.query(xt)).toArray().map((Ct) => Object.fromEntries(Ct)), columnTypes: wt };
+  }
+  static async registerFile(At, xt) {
+    if (qm.currentEngine === "ducklings")
+      throw new Error("Ducklings ne supporte pas l'enregistrement de fichiers. Utilisez DuckDB WASM pour les notebooks avec fichiers.");
+    if (!qm.dbInstance || !qm.duckdbModuleRef)
+      throw new Error("DuckDB non initialisé");
+    await qm.dbInstance.registerFileHandle(
+      At,
+      xt,
+      qm.duckdbModuleRef.DuckDBDataProtocol.BROWSER_FILEREADER,
+      !0
+    );
+  }
+  static async copyFileToBuffer(At) {
+    if (qm.currentEngine === "ducklings")
+      throw new Error("Ducklings ne supporte pas copyFileToBuffer. Utilisez DuckDB WASM.");
+    return await qm.dbInstance.copyFileToBuffer(At);
+  }
+  /** Attend que le fichier soit disponible dans le système de fichiers virtuel avec retry */
+  static async waitForFile(At, xt = 10, wt = 200) {
+    for (let Et = 0; Et < xt; Et++) {
+      try {
+        const kt = await qm.dbInstance.copyFileToBuffer(At);
+        if (kt && kt.byteLength > 0)
+          return kt;
+      } catch {
+      }
+      await new Promise((kt) => setTimeout(kt, wt));
+    }
+    throw new Error(`Le fichier ${At} n'est pas disponible après ${xt} tentatives`);
+  }
+  /** Supprime un fichier du système de fichiers virtuel DuckDB (pour éviter conflits aux prochains exports) */
+  static async dropFile(At) {
+    var xt;
+    if (!(qm.currentEngine === "ducklings" || !((xt = qm.dbInstance) != null && xt.dropFile)))
+      try {
+        await qm.dbInstance.dropFile(At);
+      } catch (wt) {
+        console.warn("dropFile ignoré:", wt);
+      }
+  }
+  static async executeQueryArrow(At) {
+    if (!qm.connInstance)
+      throw new Error("DuckDB non initialisé");
+    if (qm.currentEngine === "ducklings")
+      throw new Error("Ducklings ne supporte pas le format Arrow. Utilisez DuckDB WASM.");
+    return await qm.connInstance.query(At);
+  }
+  static getConnection() {
+    return qm.connInstance;
+  }
+  static getDatabase() {
+    return qm.dbInstance;
+  }
+};
+U$(qm, "dbInstance", null), U$(qm, "connInstance", null), U$(qm, "duckdbModuleRef", null), U$(qm, "currentEngine", "duckdb-wasm"), // 'duckdb-wasm' | 'ducklings'
+U$(qm, "workerRef", null), // Versions et URLs des CDN (chargés dynamiquement selon le moteur)
+U$(qm, "DUCKDB_WASM_VERSION", "1.33.1-dev18.0"), U$(qm, "DUCKLINGS_VERSION", "1.4.4"), // Tous les types taleshape à créer dans DuckDB pour que ::XAXIS etc. fonctionne
+U$(qm, "CHART_TYPE_NAMES", [
+  // Chart roles
+  "XAXIS",
+  "YAXIS",
+  "BARCHART",
+  "BARCHART_STACKED",
+  "BARCHART_PERCENT",
+  "BARCHART_STACKED_PERCENT",
+  "LINECHART",
+  "LINECHART_PERCENT",
+  "PIECHART",
+  "PIECHART_PERCENT",
+  "DONUTCHART",
+  "DONUTCHART_PERCENT",
+  "BOXPLOT",
+  "GAUGE",
+  "GAUGE_PERCENT",
+  "CATEGORY",
+  "COLOR",
+  "COLORS",
+  "RANGE",
+  "LABELS",
+  "XLINE",
+  "YLINE",
+  "LABEL",
+  // KPI roles
+  "PERCENT",
+  "COMPARE",
+  "TREND",
+  // Layout/filter roles (hors scope rendu mais on les crée pour la syntaxe)
+  "SECTION",
+  "HEADER_IMAGE",
+  "FOOTER_LINK",
+  "DOWNLOAD_CSV",
+  "DOWNLOAD_PDF",
+  "DOWNLOAD_XLSX",
+  "DROPDOWN",
+  "DROPDOWN_MULTI",
+  "DATEPICKER",
+  "DATEPICKER_FROM",
+  "DATEPICKER_TO",
+  "INPUT"
+]), U$(qm, "_chartTypesInitialized", !1);
+let DuckDBManager = qm;
 function CellBodySkeleton() {
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex min-w-0 w-full flex-col mt-2 gap-4", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "animate-pulse rounded-md bg-muted h-8 w-full" }),
@@ -75743,6 +75960,22 @@ function MarkdownBody({ cell: yt, path: At, cellIndex: xt }) {
     ) })
   ] });
 }
+function RejectErrorsModal({ open: yt, onClose: At }) {
+  const [xt, wt] = reactExports.useState([]), [Et, kt] = reactExports.useState([]), [Ct, St] = reactExports.useState(!1);
+  return reactExports.useEffect(() => {
+    yt && (St(!0), DuckDBManager.executeQuery("SELECT * FROM reject_errors").then((Tt) => {
+      wt(Tt ?? []), kt(Tt != null && Tt.length ? Object.keys(Tt[0]) : []);
+    }).catch(() => {
+      wt([]), kt([]);
+    }).finally(() => St(!1)));
+  }, [yt]), /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open: yt, onOpenChange: (Tt) => !Tt && At(), children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { className: "max-w-4xl max-h-[80vh] flex flex-col", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(DialogHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, { children: "Lignes rejetées (reject_errors)" }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 min-h-0 overflow-auto", children: Ct ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-4 text-sm text-muted-foreground", children: "Chargement…" }) : xt.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-4 text-sm text-muted-foreground", children: "Aucune ligne rejetée." }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "w-full text-xs border-collapse", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("thead", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("tr", { className: "bg-muted", children: Et.map((Tt) => /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "border border-border px-2 py-1 text-left font-semibold whitespace-nowrap", children: Tt }, Tt)) }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("tbody", { children: xt.map((Tt, $t) => /* @__PURE__ */ jsxRuntimeExports.jsx("tr", { className: "even:bg-muted/30", children: Et.map((Lt) => /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "border border-border px-2 py-1 max-w-[300px] truncate", title: String(Tt[Lt] ?? ""), children: String(Tt[Lt] ?? "") }, Lt)) }, $t)) })
+    ] }) })
+  ] }) });
+}
 function SourceBody({ cell: yt, path: At, cellIndex: xt }) {
   const {
     handleSingleSourceDrop: wt,
@@ -75751,45 +75984,68 @@ function SourceBody({ cell: yt, path: At, cellIndex: xt }) {
     removeSingleSourceFile: Ct,
     devMode: St,
     forceUpdate: Tt
-  } = useNotebookStore(useShallow((jt) => ({
-    handleSingleSourceDrop: jt.handleSingleSourceDrop,
-    handleSingleSourceFileSelect: jt.handleSingleSourceFileSelect,
-    downloadSourceFile: jt.downloadSourceFile,
-    removeSingleSourceFile: jt.removeSingleSourceFile,
-    devMode: jt.devMode,
-    forceUpdate: jt.forceUpdate
-  }))), $t = reactExports.useRef(null), [Lt, It] = reactExports.useState(!1);
+  } = useNotebookStore(useShallow((rr) => ({
+    handleSingleSourceDrop: rr.handleSingleSourceDrop,
+    handleSingleSourceFileSelect: rr.handleSingleSourceFileSelect,
+    downloadSourceFile: rr.downloadSourceFile,
+    removeSingleSourceFile: rr.removeSingleSourceFile,
+    devMode: rr.devMode,
+    forceUpdate: rr.forceUpdate
+  }))), $t = reactExports.useRef(null), [Lt, It] = reactExports.useState(!1), [jt, Dt] = reactExports.useState(!1), Nt = !!yt._loadedViaFallback, Ot = yt._mainQueryError || null, Ut = yt._rejectErrorsCount ?? 0, Ht = Nt ? "border-2 border-solid border-orange-500 bg-orange-500/10 cursor-default" : "border-2 border-solid border-green-500 bg-green-500/10 cursor-default", Vt = Nt ? "text-orange-600" : "text-green-600", Yt = Nt ? "warning" : "check-circle";
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "div",
       {
-        className: `flex items-center justify-center rounded-lg transition-all duration-200 mt-1 mb-1 min-h-[20px] ${yt._fileName ? "border-2 border-solid border-green-500 bg-green-500/10 cursor-default" : Lt ? "border-2 border-solid border-accent bg-accent/10 cursor-pointer" : "border-2 border-dashed border-primary bg-primary/5 cursor-pointer hover:border-accent hover:bg-accent/10"}`,
+        className: `flex items-center justify-center rounded-lg transition-all duration-200 mt-1 mb-1 min-h-[20px] ${yt._fileName ? Ht : Lt ? "border-2 border-solid border-accent bg-accent/10 cursor-pointer" : "border-2 border-dashed border-primary bg-primary/5 cursor-pointer hover:border-accent hover:bg-accent/10"}`,
         onClick: () => {
-          var jt;
-          return !yt._fileName && ((jt = $t.current) == null ? void 0 : jt.click());
+          var rr;
+          return !yt._fileName && ((rr = $t.current) == null ? void 0 : rr.click());
         },
-        onDragOver: (jt) => {
-          jt.preventDefault(), It(!0);
+        onDragOver: (rr) => {
+          rr.preventDefault(), It(!0);
         },
-        onDragLeave: (jt) => {
-          jt.preventDefault(), It(!1);
+        onDragLeave: (rr) => {
+          rr.preventDefault(), It(!1);
         },
-        onDrop: (jt) => {
-          jt.preventDefault(), It(!1), wt(jt, At, xt);
+        onDrop: (rr) => {
+          rr.preventDefault(), It(!1), wt(rr, At, xt);
         },
         children: [
           yt._fileName ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-3 px-4 py-3 w-full", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "check-circle", size: 20, className: "text-green-600" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex-1 text-green-600 font-medium truncate", children: yt._fileName }),
+            Nt && Ot ? /* @__PURE__ */ jsxRuntimeExports.jsxs(Tooltip, { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(TooltipTrigger, { asChild: !0, children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: Vt, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: Yt, size: 20 }) }) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(TooltipContent, { side: "top", className: "max-w-sm text-xs", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-semibold mb-1", children: "Requête principale échouée :" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-mono whitespace-pre-wrap", children: Ot })
+              ] })
+            ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: Vt, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: Yt, size: 20 }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `flex-1 ${Vt} font-medium truncate`, children: yt._fileName }),
+            Nt && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-orange-500 text-xs font-semibold", children: "via fallback" }),
+            Ut > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "button",
+              {
+                className: "inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-destructive/10 text-destructive text-xs font-semibold hover:bg-destructive/20",
+                onClick: (rr) => {
+                  rr.stopPropagation(), Dt(!0);
+                },
+                title: "Voir les lignes rejetées",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "warning", size: 14 }),
+                  Ut,
+                  " rejet",
+                  Ut > 1 ? "s" : ""
+                ]
+              }
+            ),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-muted-foreground text-xs", children: [
               "→ ",
               yt.name
             ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "inline-flex items-center justify-center p-2 rounded hover:bg-muted", onClick: (jt) => {
-              jt.stopPropagation(), kt(At, xt);
+            /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "inline-flex items-center justify-center p-2 rounded hover:bg-muted", onClick: (rr) => {
+              rr.stopPropagation(), kt(At, xt);
             }, title: "Télécharger", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "download", size: 20 }) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "inline-flex items-center justify-center p-2 rounded hover:bg-destructive/10 text-destructive", onClick: (jt) => {
-              jt.stopPropagation(), Ct(At, xt);
+            /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "inline-flex items-center justify-center p-2 rounded hover:bg-destructive/10 text-destructive", onClick: (rr) => {
+              rr.stopPropagation(), Ct(At, xt);
             }, title: "Supprimer", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "close", size: 24 }) })
           ] }, "has-file") : (
             // key distinct : force React à démonter/remonter au lieu de recycler le nœud DOM.
@@ -75811,12 +76067,13 @@ function SourceBody({ cell: yt, path: At, cellIndex: xt }) {
               type: "file",
               hidden: !0,
               accept: ".csv,.parquet,.xlsx,.xls",
-              onChange: (jt) => Et(jt, At, xt)
+              onChange: (rr) => Et(rr, At, xt)
             }
           )
         ]
       }
     ),
+    jt && /* @__PURE__ */ jsxRuntimeExports.jsx(RejectErrorsModal, { open: jt, onClose: () => Dt(!1) }),
     St && /* @__PURE__ */ jsxRuntimeExports.jsxs(Accordion, { type: "single", collapsible: !0, className: "mt-1", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs(AccordionItem, { value: "import", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(AccordionTrigger, { className: "text-sm font-semibold text-primary py-1", children: "Requête d'import" }),
@@ -81016,224 +81273,7 @@ const createPagesSlice = (yt, At) => ({
     const { devMode: wt } = At();
     return wt ? !0 : ConfigManager.getGroupIfQuery(xt) && (xt._ifQueryResult === !1 || xt._ifQueryResult === null || xt._ifQueryResult !== !0) ? !1 : !!(xt.cells && xt.cells.some((Et) => At().shouldShowCell(Et)) || xt.children && xt.children.some((Et) => At().shouldShowGroup(Et)));
   }
-}), qm = class qm {
-  static getDuckDBWasmUrl() {
-    return `https://cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@${qm.DUCKDB_WASM_VERSION}/+esm`;
-  }
-  static getDucklingsUrl() {
-    return `https://cdn.jsdelivr.net/npm/@ducklings/browser@${qm.DUCKLINGS_VERSION}/+esm`;
-  }
-  static getEngine() {
-    return qm.currentEngine;
-  }
-  static setEngine(At) {
-    if (!["duckdb-wasm", "ducklings"].includes(At))
-      throw new Error(`Moteur inconnu: ${At}`);
-    qm.currentEngine = At;
-  }
-  static async destroy(At) {
-    var xt, wt, Et, kt, Ct, St, Tt, $t;
-    At == null || At("Destruction de la base de données...", "loading");
-    try {
-      qm.connInstance && (qm.currentEngine === "ducklings" && await ((wt = (xt = qm.connInstance).close) == null ? void 0 : wt.call(xt)), qm.connInstance = null), qm.dbInstance && (qm.currentEngine === "ducklings" ? await ((kt = (Et = qm.dbInstance).close) == null ? void 0 : kt.call(Et)) : await ((St = (Ct = qm.dbInstance).terminate) == null ? void 0 : St.call(Ct)), qm.dbInstance = null), qm.workerRef && (($t = (Tt = qm.workerRef).terminate) == null || $t.call(Tt), qm.workerRef = null), qm.duckdbModuleRef = null, qm._chartTypesInitialized = !1, window.duckdbModule = null, window.ducklingsModule = null, At == null || At("Base de données détruite", "success");
-    } catch (Lt) {
-      console.error("Erreur destruction DB:", Lt), At == null || At("Erreur destruction: " + Lt.message, "error");
-    }
-  }
-  static async switchEngine(At, xt) {
-    At === qm.currentEngine && qm.dbInstance || (await qm.destroy(xt), qm.setEngine(At), await qm.initDuckDB(xt));
-  }
-  static supportsFileOperations() {
-    return qm.currentEngine === "duckdb-wasm";
-  }
-  static supportsExtensions() {
-    return qm.currentEngine === "duckdb-wasm";
-  }
-  static async initDuckDB(At) {
-    return qm.dbInstance && qm.connInstance ? { db: qm.dbInstance, conn: qm.connInstance } : qm.currentEngine === "ducklings" ? await qm._initDucklings(At) : await qm._initDuckDBWasm(At);
-  }
-  static async _initDuckDBWasm(At) {
-    At == null || At("Initialisation de DuckDB WASM...", "loading");
-    const xt = await import(
-      /* @vite-ignore */
-      qm.getDuckDBWasmUrl()
-    );
-    window.duckdbModule = xt, qm.duckdbModuleRef = xt;
-    const wt = xt.getJsDelivrBundles(), Et = await xt.selectBundle(wt), kt = URL.createObjectURL(
-      new Blob([`importScripts("${Et.mainWorker}");`], { type: "text/javascript" })
-    ), Ct = new Worker(kt);
-    qm.workerRef = Ct;
-    const St = {
-      log(Tt) {
-      }
-    };
-    return qm.dbInstance = new xt.AsyncDuckDB(St, Ct), URL.revokeObjectURL(kt), await qm.dbInstance.instantiate(Et.mainModule, Et.pthreadWorker), qm.connInstance = await qm.dbInstance.connect(), At == null || At("Chargement extension Excel...", "loading"), await qm.connInstance.query("INSTALL excel;"), await qm.connInstance.query("LOAD excel;"), At == null || At("DuckDB WASM prêt", "success"), { db: qm.dbInstance, conn: qm.connInstance };
-  }
-  static async _initDucklings(At) {
-    if (At == null || At("Initialisation de Ducklings...", "loading"), location.protocol === "file:")
-      return At == null || At("Ducklings nécessite un serveur HTTP. Basculement vers DuckDB WASM...", "warning"), await new Promise((kt) => setTimeout(kt, 1500)), qm.currentEngine = "duckdb-wasm", await qm._initDuckDBWasm(At);
-    const xt = await import(
-      /* @vite-ignore */
-      qm.getDucklingsUrl()
-    );
-    window.ducklingsModule = xt, qm.duckdbModuleRef = xt;
-    const wt = xt.getJsDelivrBundle(), Et = await xt.createWorker(wt.mainWorker);
-    return qm.workerRef = Et, await xt.init({
-      worker: Et,
-      wasmUrl: wt.wasmModule,
-      wasmJsUrl: wt.wasmJs
-    }), qm.dbInstance = new xt.DuckDB(), qm.connInstance = await qm.dbInstance.connect(), At == null || At("Ducklings prêt", "success"), { db: qm.dbInstance, conn: qm.connInstance };
-  }
-  static async executeQuery(At) {
-    if (typeof At == "string" && At.length > 200 && At.slice(0, 200) + "", !qm.connInstance)
-      throw new Error("DuckDB non initialisé");
-    return qm.currentEngine === "ducklings" ? await qm.connInstance.query(At) : (await qm.connInstance.query(At)).toArray().map((wt) => Object.fromEntries(wt));
-  }
-  /** Crée tous les types taleshape dans DuckDB comme alias VARCHAR.
-   *  DuckDB ne supporte que VARCHAR (et ENUM/STRUCT) pour CREATE TYPE —
-   *  pas DOUBLE. Les valeurs numériques sont converties via _num() côté parser.
-   *  Idempotent : utilise IF NOT EXISTS. */
-  static async initChartTypes() {
-    if (!qm._chartTypesInitialized) {
-      if (qm.currentEngine === "ducklings") {
-        qm._chartTypesInitialized = !0;
-        return;
-      }
-      if (qm.connInstance) {
-        for (const At of qm.CHART_TYPE_NAMES)
-          try {
-            await qm.connInstance.query(`CREATE TYPE IF NOT EXISTS ${At} AS VARCHAR;`);
-          } catch (xt) {
-            throw console.error("[initChartTypes] FAILED on", At, ":", (xt == null ? void 0 : xt.message) ?? xt), xt;
-          }
-        qm._chartTypesInitialized = !0;
-      }
-    }
-  }
-  /** Pour Ducklings : extrait les casts ::ROLENAME du SQL et retourne le SQL nettoyé
-   *  + la map columnTypes équivalente à ce que DESCRIBE donnerait sur DuckDB WASM.
-   *  Ex: "month::XAXIS, revenue::BARCHART AS Rev"
-   *   → strippedSql: "month, revenue AS Rev"
-   *   → columnTypes: { month: 'XAXIS', Rev: 'BARCHART' } */
-  static _stripChartCasts(At) {
-    const xt = {}, wt = qm.CHART_TYPE_NAMES.join("|"), Et = new RegExp(`(\\[[^\\]]*\\]|[\\w.]+|\\))\\s*::\\s*(${wt})\\b(\\s+AS\\s+(?:"([^"]+)"|(\\w+)))?`, "gi");
-    return { strippedSql: At.replace(Et, (Ct, St, Tt, $t, Lt, It) => {
-      const jt = Tt.toUpperCase();
-      let Dt, Nt;
-      return St.startsWith("[") ? (Dt = Lt ?? It ?? jt, Nt = St + ($t ?? ` AS "${jt}"`)) : St !== ")" && /^\d/.test(St) && St.includes(".") ? (Dt = Lt ?? It ?? St, Nt = St + ($t ?? "")) : (Dt = Lt ?? It ?? (St === ")" ? null : St.split(".").at(-1)), Nt = St + ($t ?? "")), Dt && (xt[Dt] = jt), Nt;
-    }), columnTypes: xt };
-  }
-  /** Exécute une requête et retourne les lignes + les types DuckDB de chaque colonne.
-   *  Utilise DESCRIBE pour lire les types (ex: 'XAXIS', 'BARCHART').
-   *  columnTypes: { colAlias -> 'XAXIS' | 'BARCHART' | ... } */
-  static async executeQueryWithSchema(At) {
-    if (!qm.connInstance)
-      throw new Error("DuckDB non initialisé");
-    const { strippedSql: xt, columnTypes: wt } = qm._stripChartCasts(At);
-    return qm.currentEngine === "ducklings" ? { rows: await qm.connInstance.query(xt), columnTypes: wt } : { rows: (await qm.connInstance.query(xt)).toArray().map((Ct) => Object.fromEntries(Ct)), columnTypes: wt };
-  }
-  static async registerFile(At, xt) {
-    if (qm.currentEngine === "ducklings")
-      throw new Error("Ducklings ne supporte pas l'enregistrement de fichiers. Utilisez DuckDB WASM pour les notebooks avec fichiers.");
-    if (!qm.dbInstance || !qm.duckdbModuleRef)
-      throw new Error("DuckDB non initialisé");
-    await qm.dbInstance.registerFileHandle(
-      At,
-      xt,
-      qm.duckdbModuleRef.DuckDBDataProtocol.BROWSER_FILEREADER,
-      !0
-    );
-  }
-  static async copyFileToBuffer(At) {
-    if (qm.currentEngine === "ducklings")
-      throw new Error("Ducklings ne supporte pas copyFileToBuffer. Utilisez DuckDB WASM.");
-    return await qm.dbInstance.copyFileToBuffer(At);
-  }
-  /** Attend que le fichier soit disponible dans le système de fichiers virtuel avec retry */
-  static async waitForFile(At, xt = 10, wt = 200) {
-    for (let Et = 0; Et < xt; Et++) {
-      try {
-        const kt = await qm.dbInstance.copyFileToBuffer(At);
-        if (kt && kt.byteLength > 0)
-          return kt;
-      } catch {
-      }
-      await new Promise((kt) => setTimeout(kt, wt));
-    }
-    throw new Error(`Le fichier ${At} n'est pas disponible après ${xt} tentatives`);
-  }
-  /** Supprime un fichier du système de fichiers virtuel DuckDB (pour éviter conflits aux prochains exports) */
-  static async dropFile(At) {
-    var xt;
-    if (!(qm.currentEngine === "ducklings" || !((xt = qm.dbInstance) != null && xt.dropFile)))
-      try {
-        await qm.dbInstance.dropFile(At);
-      } catch (wt) {
-        console.warn("dropFile ignoré:", wt);
-      }
-  }
-  static async executeQueryArrow(At) {
-    if (!qm.connInstance)
-      throw new Error("DuckDB non initialisé");
-    if (qm.currentEngine === "ducklings")
-      throw new Error("Ducklings ne supporte pas le format Arrow. Utilisez DuckDB WASM.");
-    return await qm.connInstance.query(At);
-  }
-  static getConnection() {
-    return qm.connInstance;
-  }
-  static getDatabase() {
-    return qm.dbInstance;
-  }
-};
-U$(qm, "dbInstance", null), U$(qm, "connInstance", null), U$(qm, "duckdbModuleRef", null), U$(qm, "currentEngine", "duckdb-wasm"), // 'duckdb-wasm' | 'ducklings'
-U$(qm, "workerRef", null), // Versions et URLs des CDN (chargés dynamiquement selon le moteur)
-U$(qm, "DUCKDB_WASM_VERSION", "1.33.1-dev18.0"), U$(qm, "DUCKLINGS_VERSION", "1.4.4"), // Tous les types taleshape à créer dans DuckDB pour que ::XAXIS etc. fonctionne
-U$(qm, "CHART_TYPE_NAMES", [
-  // Chart roles
-  "XAXIS",
-  "YAXIS",
-  "BARCHART",
-  "BARCHART_STACKED",
-  "BARCHART_PERCENT",
-  "BARCHART_STACKED_PERCENT",
-  "LINECHART",
-  "LINECHART_PERCENT",
-  "PIECHART",
-  "PIECHART_PERCENT",
-  "DONUTCHART",
-  "DONUTCHART_PERCENT",
-  "BOXPLOT",
-  "GAUGE",
-  "GAUGE_PERCENT",
-  "CATEGORY",
-  "COLOR",
-  "COLORS",
-  "RANGE",
-  "LABELS",
-  "XLINE",
-  "YLINE",
-  "LABEL",
-  // KPI roles
-  "PERCENT",
-  "COMPARE",
-  "TREND",
-  // Layout/filter roles (hors scope rendu mais on les crée pour la syntaxe)
-  "SECTION",
-  "HEADER_IMAGE",
-  "FOOTER_LINK",
-  "DOWNLOAD_CSV",
-  "DOWNLOAD_PDF",
-  "DOWNLOAD_XLSX",
-  "DROPDOWN",
-  "DROPDOWN_MULTI",
-  "DATEPICKER",
-  "DATEPICKER_FROM",
-  "DATEPICKER_TO",
-  "INPUT"
-]), U$(qm, "_chartTypesInitialized", !1);
-let DuckDBManager = qm;
-const SAFE_GLOBALS = {
+}), SAFE_GLOBALS = {
   Date,
   Math,
   String,
@@ -83633,55 +83673,67 @@ FROM source1 LIMIT 10;`;
     kt.length > 0 && At().loadSingleSourceFile(kt[0], wt, Et);
   },
   async loadSingleSourceFile(xt, wt, Et, kt = {}) {
-    var Tt, $t, Lt, It, jt, Dt;
+    var Tt, $t, Lt, It, jt, Dt, Nt;
     const Ct = At().getCellAtPath(wt, Et);
     if (!Ct || Ct.type !== "source") return;
     const St = kt.skipRunNextCells === !0;
     Ct._fileName = xt.name, Ct._currentFile = xt, yt({ isLoading: !0 }), Ct._status = "running", At().setStatus(`Chargement de ${Ct.name}...`, "loading");
     try {
-      const Nt = Ct.name || "source1";
-      let Ot, Ut = !1, Ht = xt.name;
-      if (((gr) => {
-        const Ar = gr.toLowerCase();
-        return Ar.endsWith(".csv.gz") ? "csv.gz" : Ar.endsWith(".tsv.gz") ? "tsv.gz" : Ar.endsWith(".txt.gz") ? "txt.gz" : Ar.split(".").pop();
-      })(Ht) === "xls") {
+      const Ot = Ct.name || "source1";
+      let Ut, Ht = !1, Vt = xt.name;
+      if (((Ar) => {
+        const vr = Ar.toLowerCase();
+        return vr.endsWith(".csv.gz") ? "csv.gz" : vr.endsWith(".tsv.gz") ? "tsv.gz" : vr.endsWith(".txt.gz") ? "txt.gz" : vr.split(".").pop();
+      })(Vt) === "xls") {
         At().setStatus("Conversion Excel (.xls) via SheetJS...", "loading");
-        const gr = ((Tt = Ct.json) == null ? void 0 : Tt.xlsx) || {}, { csv: Ar, csvFileName: vr } = await FileHandler.processExcelFile(xt, gr.options, gr.toCsvOptions, gr.sheetSelection), wr = new Blob([Ar], { type: "text/csv" });
-        await DuckDBManager.registerFile(vr, wr), Ht = vr, Ot = `CREATE OR REPLACE TABLE ${Nt} AS SELECT * FROM read_csv('${Ht}', HEADER = true, AUTO_DETECT = true, SAMPLE_SIZE = -1)`;
+        const Ar = ((Tt = Ct.json) == null ? void 0 : Tt.xlsx) || {}, { csv: vr, csvFileName: wr } = await FileHandler.processExcelFile(xt, Ar.options, Ar.toCsvOptions, Ar.sheetSelection), Pr = new Blob([vr], { type: "text/csv" });
+        await DuckDBManager.registerFile(wr, Pr), Vt = wr, Ut = `CREATE OR REPLACE TABLE ${Ot} AS SELECT * FROM read_csv('${Vt}', HEADER = true, AUTO_DETECT = true, SAMPLE_SIZE = -1)`;
       } else {
         await DuckDBManager.registerFile(xt.name, xt);
-        const gr = (ConfigManager.getCellQuery(Ct, "main") || ((Lt = ($t = Ct.queries) == null ? void 0 : $t[0]) == null ? void 0 : Lt.sql) || "").trim();
-        if (gr) {
-          const Ar = { name: Nt, fileNameUpload: Ht, fileName: Ht }, wr = { queries: [{ name: "main", sql: At().replaceSourceContext(gr, Ar), engine: "sql", clientVisible: !1 }], _parseLevels: [] };
-          Ot = await At().parseQueryRecursively(wr), Ct._parseLevels = wr._parseLevels || [];
+        const Ar = (ConfigManager.getCellQuery(Ct, "main") || ((Lt = ($t = Ct.queries) == null ? void 0 : $t[0]) == null ? void 0 : Lt.sql) || "").trim();
+        if (Ar) {
+          const vr = { name: Ot, fileNameUpload: Vt, fileName: Vt }, Pr = { queries: [{ name: "main", sql: At().replaceSourceContext(Ar, vr), engine: "sql", clientVisible: !1 }], _parseLevels: [] };
+          Ut = await At().parseQueryRecursively(Pr), Ct._parseLevels = Pr._parseLevels || [];
         } else
-          Ot = `CREATE OR REPLACE TABLE ${Nt} AS SELECT * FROM '${Ht}'`;
+          Ut = `CREATE OR REPLACE TABLE ${Ot} AS SELECT * FROM '${Vt}'`;
       }
       try {
-        await DuckDBManager.executeQuery(Ot), Ut = !0;
-      } catch (gr) {
-        const Ar = (ConfigManager.getCellQuery(Ct, "fallback") || ((jt = (It = Ct.queries) == null ? void 0 : It[1]) == null ? void 0 : jt.sql) || "").trim();
-        if (Ar) {
+        await DuckDBManager.executeQuery(Ut), Ht = !0, Ct._loadedViaFallback = !1, Ct._mainQueryError = null, Ct._rejectErrorsCount = 0;
+      } catch (Ar) {
+        Ct._mainQueryError = Ar.message;
+        const vr = (ConfigManager.getCellQuery(Ct, "fallback") || ((jt = (It = Ct.queries) == null ? void 0 : It[1]) == null ? void 0 : jt.sql) || "").trim();
+        if (vr) {
           At().setStatus("Requête initiale échouée, tentative fallback...", "loading");
-          const vr = { name: Nt, fileNameUpload: Ht, fileName: Ht }, wr = { type: "source", queries: [{ name: "main", sql: "" }, { name: "fallback", sql: At().replaceSourceContext(Ar, vr), engine: "sql", clientVisible: !1 }], _parseLevels: [] };
+          const wr = { name: Ot, fileNameUpload: Vt, fileName: Vt }, Pr = { type: "source", queries: [{ name: "main", sql: "" }, { name: "fallback", sql: At().replaceSourceContext(vr, wr), engine: "sql", clientVisible: !1 }], _parseLevels: [] };
           try {
-            const Pr = await At().parseQueryRecursively(wr, 1);
-            await DuckDBManager.executeQuery(Pr), Ut = !0, Ot = Pr, Ct._parseLevels = wr._parseLevels || [], At().setStatus(`${Ct.name} chargé via requête de fallback`, "success");
+            try {
+              await DuckDBManager.executeQuery("DROP TABLE IF EXISTS reject_errors");
+            } catch {
+            }
+            const Vr = await At().parseQueryRecursively(Pr, 1);
+            await DuckDBManager.executeQuery(Vr), Ht = !0, Ut = Vr, Ct._parseLevels = Pr._parseLevels || [], Ct._loadedViaFallback = !0;
+            try {
+              const Kr = await DuckDBManager.executeQuery("SELECT count(*) as cnt FROM reject_errors");
+              Ct._rejectErrorsCount = Number(((Dt = Kr == null ? void 0 : Kr[0]) == null ? void 0 : Dt.cnt) ?? 0);
+            } catch {
+              Ct._rejectErrorsCount = 0;
+            }
+            At().setStatus(`${Ct.name} chargé via requête de fallback`, "success");
           } catch {
           }
         }
-        if (!Ut) throw gr;
+        if (!Ht) throw Ar;
       }
-      Ct._loaded = !0, Ct._status = "success", Ct._pendingFileLoad = !1, (Dt = Ct._parseLevels) != null && Dt.length || (Ct._parseLevels = [{ level: "final", innerQuery: Ot, replacement: null }]), At().setStatus(`${Ct.name} chargé!`, "success");
-      const rr = At()._roomFiles ?? [];
-      rr.some((gr) => gr.tableName === Nt) || yt({ _roomFiles: [...rr, { name: xt.name, tableName: Nt, size: xt.size ?? 0, source: "source-cell" }] }), await At().refreshDuckdbTables();
+      Ct._loaded = !0, Ct._status = "success", Ct._pendingFileLoad = !1, (Nt = Ct._parseLevels) != null && Nt.length || (Ct._parseLevels = [{ level: "final", innerQuery: Ut, replacement: null }]), At().setStatus(`${Ct.name} chargé!`, "success");
+      const gr = At()._roomFiles ?? [];
+      gr.some((Ar) => Ar.tableName === Ot) || yt({ _roomFiles: [...gr, { name: xt.name, tableName: Ot, size: xt.size ?? 0, source: "source-cell" }] }), await At().refreshDuckdbTables();
       try {
         await At().db.refreshTableSchemas();
       } catch {
       }
       St || (await At().runCellsAfterWithStopConditions(wt, Et, Ct._id)).stopped || At().setStatus("Exécution terminée", "success");
-    } catch (Nt) {
-      Ct._status = "error", At().setStatus("Erreur: " + Nt.message, "error"), Ct._fileName = "", Ct._currentFile = null, Array.isArray(Ct.files) && (Ct.files = Ct.files.filter((Ot) => Ot.slot !== "source")), delete Ct.fileBase64, delete Ct.fileName;
+    } catch (Ot) {
+      Ct._status = "error", At().setStatus("Erreur: " + Ot.message, "error"), Ct._fileName = "", Ct._currentFile = null, Array.isArray(Ct.files) && (Ct.files = Ct.files.filter((Ut) => Ut.slot !== "source")), delete Ct.fileBase64, delete Ct.fileName;
     } finally {
       yt({ isLoading: !1 });
     }
@@ -83709,7 +83761,7 @@ FROM source1 LIMIT 10;`;
     const kt = Et.name.replace(/[^a-zA-Z0-9_]/g, "_");
     document.querySelectorAll(`script[id^="sourceFile_${kt}"]`).forEach((St) => St.remove());
     const Ct = document.getElementById("fileInput_" + Et._id);
-    Ct && (Ct.value = ""), Et._fileName = "", Et._currentFile = null, Et._loaded = !1, Et._status = null, Et._parseLevels = [], Array.isArray(Et.files) && (Et.files = Et.files.filter((St) => St.slot !== "source")), delete Et.fileBase64, delete Et.fileName, At().setStatus(`Fichier supprimé de ${Et.name}`, "success"), yt((St) => ({ _rev: St._rev + 1 }));
+    Ct && (Ct.value = ""), Et._fileName = "", Et._currentFile = null, Et._loaded = !1, Et._status = null, Et._parseLevels = [], Et._loadedViaFallback = !1, Et._mainQueryError = null, Et._rejectErrorsCount = 0, Array.isArray(Et.files) && (Et.files = Et.files.filter((St) => St.slot !== "source")), delete Et.fileBase64, delete Et.fileName, At().setStatus(`Fichier supprimé de ${Et.name}`, "success"), yt((St) => ({ _rev: St._rev + 1 }));
   },
   handleDocxTemplateDrop(xt, wt, Et) {
     const kt = At().getCellAtPath(wt, Et);
