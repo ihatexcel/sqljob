@@ -75795,7 +75795,7 @@ function SourceBody({ cell: yt, path: At, cellIndex: xt }) {
             // key distinct : force React à démonter/remonter au lieu de recycler le nœud DOM.
             // Sans ça, iconify ayant remplacé les <span> par des <svg> hors du VDOM React,
             // React ne sait pas les supprimer → l'ancienne icône persiste après suppression.
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { width: "100%", textAlign: "center", padding: "4px" }, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center gap-1 py-2 w-full", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "create-new-folder", size: 48 }),
               /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "m-0 text-muted-foreground text-sm", children: yt.title || "Glissez-déposez ici" }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "mt-0 mb-0 text-accent text-xs font-semibold", children: [
@@ -75817,10 +75817,10 @@ function SourceBody({ cell: yt, path: At, cellIndex: xt }) {
         ]
       }
     ),
-    St && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-1 flex flex-col gap-3", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm font-semibold text-primary mb-1", children: "Requête d'import" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
+    St && /* @__PURE__ */ jsxRuntimeExports.jsxs(Accordion, { type: "single", collapsible: !0, className: "mt-1", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(AccordionItem, { value: "import", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(AccordionTrigger, { className: "text-sm font-semibold text-primary py-1", children: "Requête d'import" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(AccordionContent, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
           SqlEditorWidget,
           {
             cell: yt,
@@ -75830,11 +75830,11 @@ function SourceBody({ cell: yt, path: At, cellIndex: xt }) {
             showParsedQueryProp: "_showParsedQuery",
             applySourceDefaultIfEmpty: !0
           }
-        )
+        ) })
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm font-semibold text-primary mb-1", children: "Requête de fallback (si erreur)" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(AccordionItem, { value: "fallback", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(AccordionTrigger, { className: "text-sm font-semibold text-primary py-1", children: "Requête de fallback (si erreur)" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(AccordionContent, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
           SqlEditorWidget,
           {
             cell: yt,
@@ -75844,7 +75844,7 @@ function SourceBody({ cell: yt, path: At, cellIndex: xt }) {
             showParsedQueryProp: "_showParsedQuery2",
             applySourceDefaultIfEmpty: !0
           }
-        )
+        ) })
       ] })
     ] })
   ] });
