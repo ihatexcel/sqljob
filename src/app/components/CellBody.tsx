@@ -11,6 +11,7 @@ import { CDNManager } from '../../lib/CDNManager'
 import { SqlEditorWidget } from './SqlEditorWidget'
 import { SqlDataTable } from './SqlDataTable'
 import { Icon } from '../../lib/icons'
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@sqlrooms/ui'
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 function CellBodySkeleton() {
@@ -143,7 +144,7 @@ function SourceBody({ cell, path, cellIndex }: any) {
                     // key distinct : force React à démonter/remonter au lieu de recycler le nœud DOM.
                     // Sans ça, iconify ayant remplacé les <span> par des <svg> hors du VDOM React,
                     // React ne sait pas les supprimer → l'ancienne icône persiste après suppression.
-                    <div key="no-file" style={{ width: '100%', textAlign: 'center', padding: '4px' }}>
+                    <div key="no-file" className="flex flex-col items-center gap-1 py-2 w-full">
                         <Icon name="create-new-folder" size={48} />
                         <p className="m-0 text-muted-foreground text-sm">{cell.title || 'Glissez-déposez ici'}</p>
                         <p className="mt-0 mb-0 text-accent text-xs font-semibold">→ {cell.name}</p>
@@ -165,20 +166,28 @@ function SourceBody({ cell, path, cellIndex }: any) {
                     onChange={e => handleSingleSourceFileSelect(e, path, cellIndex)} />
             </div>
             {devMode && (
-                <div className="mt-1 flex flex-col gap-3">
-                    <div>
-                        <div className="text-sm font-semibold text-primary mb-1">Requête d'import</div>
-                        <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
-                            queryType="query" showParsedQueryProp="_showParsedQuery"
-                            applySourceDefaultIfEmpty={true} />
-                    </div>
-                    <div>
-                        <div className="text-sm font-semibold text-primary mb-1">Requête de fallback (si erreur)</div>
-                        <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
-                            queryType="query2" showParsedQueryProp="_showParsedQuery2"
-                            applySourceDefaultIfEmpty={true} />
-                    </div>
-                </div>
+                <Accordion type="single" collapsible className="mt-1">
+                    <AccordionItem value="import">
+                        <AccordionTrigger className="text-sm font-semibold text-primary py-1">
+                            Requête d'import
+                        </AccordionTrigger>
+                        <AccordionContent>
+                            <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
+                                queryType="query" showParsedQueryProp="_showParsedQuery"
+                                applySourceDefaultIfEmpty={true} />
+                        </AccordionContent>
+                    </AccordionItem>
+                    <AccordionItem value="fallback">
+                        <AccordionTrigger className="text-sm font-semibold text-primary py-1">
+                            Requête de fallback (si erreur)
+                        </AccordionTrigger>
+                        <AccordionContent>
+                            <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
+                                queryType="query2" showParsedQueryProp="_showParsedQuery2"
+                                applySourceDefaultIfEmpty={true} />
+                        </AccordionContent>
+                    </AccordionItem>
+                </Accordion>
             )}
         </div>
     )
