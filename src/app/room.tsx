@@ -35,6 +35,7 @@ function SidebarControls() {
     })))
     const { theme, setTheme } = useTheme()
     const set = useNotebookStore.setState
+    const sqlEditorDisclosure = useDisclosure()
     const themeModalDisclosure = useDisclosure()
     const erudaDisclosure = useDisclosure()
 
@@ -42,22 +43,19 @@ function SidebarControls() {
 
     return (
         <>
-            {/* Documentation (gist) — toujours visible */}
-            <RoomShell.SidebarButton
-                title="Documentation"
-                onClick={() => window.open('https://ihatexcel.github.io/sqljob/?gist=68cd597ba5da05ceba24fb975c05384f', '_blank')}
-                icon={BookHeartIcon}
-            />
-
-            {/* Theme toggle — toujours visible */}
-            <RoomShell.SidebarButton
-                title={theme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}
-                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                icon={theme === 'dark' ? SunIcon : MoonIcon}
-            />
-
             {devMode && (
                 <>
+                    {/* Sources panel toggle */}
+                    <RoomShellSidebarButton roomPanelType="data" />
+
+                    {/* SQL Editor */}
+                    <RoomShell.SidebarButton
+                        title="SQL Editor"
+                        onClick={sqlEditorDisclosure.onToggle}
+                        isSelected={sqlEditorDisclosure.isOpen}
+                        icon={TerminalIcon}
+                    />
+
                     {/* Personnalisation CSS du thème */}
                     <RoomShell.SidebarButton
                         title="Personnaliser le thème"
@@ -85,49 +83,49 @@ function SidebarControls() {
                 </>
             )}
 
-            {/* DevMode toggle — ancré en bas via spacer */}
+            {/* Toujours visibles — ancrés en bas via spacer */}
             <div className="flex-1" />
+
+            {/* Documentation (gist) */}
+            <RoomShell.SidebarButton
+                title="Documentation"
+                onClick={() => window.open('https://ihatexcel.github.io/sqljob/?gist=68cd597ba5da05ceba24fb975c05384f', '_blank')}
+                icon={BookHeartIcon}
+            />
+
+            {/* Theme toggle */}
+            <RoomShell.SidebarButton
+                title={theme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                icon={theme === 'dark' ? SunIcon : MoonIcon}
+            />
+
+            {/* DevMode toggle */}
             <RoomShell.SidebarButton
                 title={devMode ? 'Passer en mode client' : 'Passer en mode développeur'}
                 onClick={() => set({ devMode: !devMode })}
                 isSelected={devMode}
                 icon={Settings2Icon}
             />
+
+            <SqlEditorModal
+                isOpen={sqlEditorDisclosure.isOpen}
+                onClose={sqlEditorDisclosure.onClose}
+            />
         </>
     )
 }
 
 export function Room() {
-    const sqlEditorDisclosure = useDisclosure()
-    const { showLayout, devMode } = useNotebookStore(useShallow(s => ({
-        showLayout: s.showLayout,
-        devMode: s.devMode,
-    })))
+    const showLayout = useNotebookStore(s => s.showLayout)
 
     return (
         <>
             <RoomShell roomStore={useNotebookStore} className="h-screen w-screen">
                 <RoomShell.Sidebar className={showLayout ? '' : 'hidden'}>
-                    {devMode && (
-                        <>
-                            {/* Sources panel toggle */}
-                            <RoomShellSidebarButton roomPanelType="data" />
-                            <RoomShell.SidebarButton
-                                title="SQL Editor"
-                                onClick={sqlEditorDisclosure.onToggle}
-                                isSelected={sqlEditorDisclosure.isOpen}
-                                icon={TerminalIcon}
-                            />
-                        </>
-                    )}
                     <SidebarControls />
                 </RoomShell.Sidebar>
                 <RoomShell.LayoutComposer tileClassName="p-0" />
-
-                <SqlEditorModal
-                    isOpen={sqlEditorDisclosure.isOpen}
-                    onClose={sqlEditorDisclosure.onClose}
-                />
             </RoomShell>
 
             {/* Modals globaux — portals vers document.body, indépendants du layout */}
