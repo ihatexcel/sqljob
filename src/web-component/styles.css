@@ -1,7 +1,11 @@
 @import "@sqlrooms/ui/tailwind-preset.css";
 
-/* Forcer Tailwind à scanner les classes utilisées par @sqlrooms/ui */
+/* Forcer Tailwind à scanner les classes utilisées par les packages @sqlrooms */
 @source "../../node_modules/@sqlrooms/ui/dist";
+@source "../../node_modules/@sqlrooms/schema-tree/dist";
+@source "../../node_modules/@sqlrooms/sql-editor/dist";
+@source "../../node_modules/@sqlrooms/room-shell/dist";
+@source "../../node_modules/@sqlrooms/data-table/dist";
 
 /* Alpine.js x-cloak pour cacher les éléments non initialisés */
 [x-cloak] {
