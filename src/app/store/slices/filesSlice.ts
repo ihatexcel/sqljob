@@ -199,7 +199,7 @@ export const createFilesSlice = (set: any, get: any) => ({
                         await DuckDBManager.executeQuery(fallbackQuery1)
                         executed = true
                         loadQuery = fallbackQuery1
-                        cell._parseLevels2 = cellLike1._parseLevels || []
+                        cell._parseLevels2 = cellLike1._parseLevels2 || []
                         cell._loadedViaFallback = true
                         try {
                             const rejectResult = await DuckDBManager.executeQuery('SELECT count(*) as cnt FROM reject_errors')
