@@ -67,7 +67,7 @@ function muted(muted: string, mutedFg: string) {
     return { muted, 'muted-foreground': mutedFg }
 }
 
-const PRESETS: ThemePreset[] = [
+export const PRESETS: ThemePreset[] = [
     {
         id: 'default', label: 'Défaut', emoji: '⬜',
         light: '', dark: '',
