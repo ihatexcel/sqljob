@@ -183,18 +183,28 @@ export const createFilesSlice = (set: any, get: any) => ({
             try {
                 await DuckDBManager.executeQuery(loadQuery)
                 executed = true
+                cell._loadedViaFallback = false
+                cell._mainQueryError = null
+                cell._rejectErrorsCount = 0
             } catch (primaryError: any) {
+                cell._mainQueryError = primaryError.message
                 const query1Template = (ConfigManager.getCellQuery(cell, 'fallback') || cell.queries?.[1]?.sql || '').trim()
                 if (query1Template) {
                     get().setStatus(`Requête initiale échouée, tentative fallback...`, 'loading')
                     const ctx1 = { name: tableName, fileNameUpload: fileName, fileName }
                     const cellLike1 = { type: 'source', queries: [{ name: 'main', sql: '' }, { name: 'fallback', sql: get().replaceSourceContext(query1Template, ctx1), engine: 'sql', clientVisible: false }], _parseLevels: [] }
                     try {
+                        try { await DuckDBManager.executeQuery('DROP TABLE IF EXISTS reject_errors') } catch { /* ignore */ }
                         const fallbackQuery1 = await get().parseQueryRecursively(cellLike1, 1)
                         await DuckDBManager.executeQuery(fallbackQuery1)
                         executed = true
                         loadQuery = fallbackQuery1
                         cell._parseLevels = cellLike1._parseLevels || []
+                        cell._loadedViaFallback = true
+                        try {
+                            const rejectResult = await DuckDBManager.executeQuery('SELECT count(*) as cnt FROM reject_errors')
+                            cell._rejectErrorsCount = Number(rejectResult?.[0]?.cnt ?? 0)
+                        } catch { cell._rejectErrorsCount = 0 }
                         get().setStatus(`${cell.name} chargé via requête de fallback`, 'success')
                     } catch (_query1Error) { /* fallback also failed */ }
                 }
@@ -267,6 +277,9 @@ export const createFilesSlice = (set: any, get: any) => ({
         cell._loaded = false
         cell._status = null
         cell._parseLevels = []
+        cell._loadedViaFallback = false
+        cell._mainQueryError = null
+        cell._rejectErrorsCount = 0
         if (Array.isArray(cell.files)) cell.files = cell.files.filter((f: any) => f.slot !== 'source')
         delete cell.fileBase64
         delete cell.fileName
