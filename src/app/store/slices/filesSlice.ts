@@ -199,7 +199,7 @@ export const createFilesSlice = (set: any, get: any) => ({
                         await DuckDBManager.executeQuery(fallbackQuery1)
                         executed = true
                         loadQuery = fallbackQuery1
-                        cell._parseLevels = cellLike1._parseLevels || []
+                        cell._parseLevels2 = cellLike1._parseLevels || []
                         cell._loadedViaFallback = true
                         try {
                             const rejectResult = await DuckDBManager.executeQuery('SELECT count(*) as cnt FROM reject_errors')
@@ -210,6 +210,12 @@ export const createFilesSlice = (set: any, get: any) => ({
                 }
                 if (!executed) throw primaryError
             }
+
+            // Compte les lignes intégrées
+            try {
+                const countResult = await DuckDBManager.executeQuery(`SELECT count(*) as cnt FROM "${tableName}"`)
+                cell._rowCount = Number(countResult?.[0]?.cnt ?? 0)
+            } catch { cell._rowCount = 0 }
 
             cell._loaded = true
             cell._status = 'success'
@@ -280,6 +286,7 @@ export const createFilesSlice = (set: any, get: any) => ({
         cell._loadedViaFallback = false
         cell._mainQueryError = null
         cell._rejectErrorsCount = 0
+        cell._rowCount = 0
         if (Array.isArray(cell.files)) cell.files = cell.files.filter((f: any) => f.slot !== 'source')
         delete cell.fileBase64
         delete cell.fileName
