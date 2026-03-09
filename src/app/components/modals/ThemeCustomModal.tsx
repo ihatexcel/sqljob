@@ -39,6 +39,37 @@ export function initCustomTheme() {
     if (light || dark) applyCustomTheme(light, dark)
 }
 
+/**
+ * Applique le thème (preset nommé, custom ou default) depuis un objet config.ui.
+ * Appelé à l'init (buildInitialState) ET à l'import (applyImportedConfig).
+ */
+export function applyThemeFromConfig(ui: any) {
+    const preset = ui?.theme
+    if (!preset || preset === 'light' || preset === 'dark') return  // compat backward : géré séparément
+    if (preset === 'default') {
+        localStorage.removeItem(STORAGE_LIGHT)
+        localStorage.removeItem(STORAGE_DARK)
+        localStorage.removeItem(STORAGE_PRESET)
+        applyCustomTheme('', '')
+    } else if (preset === 'custom') {
+        const l = ui?.customThemeLight || ''
+        const d = ui?.customThemeDark  || ''
+        localStorage.setItem(STORAGE_LIGHT, l)
+        localStorage.setItem(STORAGE_DARK,  d)
+        localStorage.setItem(STORAGE_PRESET, 'custom')
+        applyCustomTheme(l, d)
+    } else {
+        // Preset nommé — PRESETS[] est toujours chargé avant l'appel (modules ES)
+        const found = PRESETS.find((p: any) => p.id === preset)
+        if (found) {
+            localStorage.setItem(STORAGE_LIGHT, found.light)
+            localStorage.setItem(STORAGE_DARK,  found.dark)
+            localStorage.setItem(STORAGE_PRESET, found.id)
+            applyCustomTheme(found.light, found.dark)
+        }
+    }
+}
+
 // ─── Définition des thèmes ────────────────────────────────────────────────────
 
 type ThemePreset = { id: string; label: string; emoji: string; light: string; dark: string }

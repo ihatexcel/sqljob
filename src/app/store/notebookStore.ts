@@ -27,6 +27,7 @@ import { createFilesSlice } from './slices/filesSlice'
 import { createEditorsSlice } from './slices/editorsSlice'
 import { createExecutionSlice } from './slices/executionSlice'
 import { ConfigManager } from '../../lib/ConfigManager'
+import { applyThemeFromConfig } from '../components/modals/ThemeCustomModal'
 import { DuckDBManager } from '../../lib/DuckDBManager'
 import { CellConfigService, initializeCell } from '../../lib/CellConfigService'
 import { CellRenderer } from '../../lib/CellRenderer'
@@ -145,6 +146,8 @@ function buildInitialState() {
         document.documentElement.classList.remove('light', 'dark')
         document.documentElement.classList.add(theme)
         localStorage.setItem('sqljob-theme', theme)
+        // Appliquer le preset ou CSS custom issu de la config (gist URL, import JSON…)
+        if (config.ui?.theme) applyThemeFromConfig(config.ui)
     }
     const savedDbEngine = typeof localStorage !== 'undefined' ? localStorage.getItem('sqljob-dbEngine') : null
     const initialDbEngine = config.ui?.dbEngine || savedDbEngine || 'duckdb-wasm'

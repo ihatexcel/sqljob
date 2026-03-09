@@ -10,7 +10,7 @@ import { GistEncrypt } from '../../../lib/GistEncrypt'
 import { GitHubGistManager } from '../../../lib/GitHubGistManager'
 import { FileHandler } from '../../../lib/FileHandler'
 import { initializeCell } from '../../../lib/CellConfigService'
-import { STORAGE_LIGHT, STORAGE_DARK, STORAGE_PRESET, applyCustomTheme, PRESETS } from '../../components/modals/ThemeCustomModal'
+import { applyThemeFromConfig, STORAGE_LIGHT, STORAGE_DARK, STORAGE_PRESET } from '../../components/modals/ThemeCustomModal'
 
 export const createExportSlice = (set: any, get: any) => ({
 
@@ -416,32 +416,10 @@ ${configScriptTag}${embeddedScripts}</head>
             set({ showLayout: (config.ui?.showLayout ?? config.ui?.displaySettings) !== false })
         }
         const configTheme = config.ui?.theme
-        // Backward-compat : "light"/"dark" → juste le toggle de mode
         if (configTheme === 'light' || configTheme === 'dark') {
             if (get().availableThemes.includes(configTheme)) get().setTheme(configTheme)
-        } else if (configTheme === 'custom') {
-            // CSS personnalisé
-            const importedLight = config.ui?.customThemeLight || ''
-            const importedDark  = config.ui?.customThemeDark  || ''
-            localStorage.setItem(STORAGE_LIGHT, importedLight)
-            localStorage.setItem(STORAGE_DARK,  importedDark)
-            localStorage.setItem(STORAGE_PRESET, 'custom')
-            applyCustomTheme(importedLight, importedDark)
-        } else if (configTheme && configTheme !== 'default') {
-            // Preset nommé (valentine, nord…) — reconstituer depuis PRESETS
-            const found = PRESETS.find((p: any) => p.id === configTheme)
-            if (found) {
-                localStorage.setItem(STORAGE_LIGHT, found.light)
-                localStorage.setItem(STORAGE_DARK,  found.dark)
-                localStorage.setItem(STORAGE_PRESET, found.id)
-                applyCustomTheme(found.light, found.dark)
-            }
-        } else {
-            // "default" → effacer tout CSS custom
-            localStorage.removeItem(STORAGE_LIGHT)
-            localStorage.removeItem(STORAGE_DARK)
-            localStorage.removeItem(STORAGE_PRESET)
-            applyCustomTheme('', '')
+        } else if (configTheme) {
+            applyThemeFromConfig(config.ui)
         }
         get().setStatus('Configuration chargée', 'success')
     },
