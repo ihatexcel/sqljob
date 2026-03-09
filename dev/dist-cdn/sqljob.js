@@ -75961,19 +75961,46 @@ function MarkdownBody({ cell: yt, path: At, cellIndex: xt }) {
   ] });
 }
 function RejectErrorsModal({ open: yt, onClose: At }) {
-  const [xt, wt] = reactExports.useState([]), [Et, kt] = reactExports.useState([]), [Ct, St] = reactExports.useState(!1);
-  return reactExports.useEffect(() => {
-    yt && (St(!0), DuckDBManager.executeQuery("SELECT * FROM reject_errors").then((Tt) => {
-      wt(Tt ?? []), kt(Tt != null && Tt.length ? Object.keys(Tt[0]) : []);
+  const [xt, wt] = reactExports.useState([]), [Et, kt] = reactExports.useState([]), [Ct, St] = reactExports.useState(!1), [Tt, $t] = reactExports.useState({ pageIndex: 0, pageSize: 20 }), [Lt, It] = reactExports.useState([]);
+  reactExports.useEffect(() => {
+    yt && (St(!0), DuckDBManager.executeQuery("SELECT * FROM reject_errors").then((Nt) => {
+      const Ot = Nt ?? [];
+      wt(Ot), kt(Ot.length ? Object.keys(Ot[0]) : []);
     }).catch(() => {
       wt([]), kt([]);
     }).finally(() => St(!1)));
-  }, [yt]), /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open: yt, onOpenChange: (Tt) => !Tt && At(), children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { className: "max-w-4xl max-h-[80vh] flex flex-col", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx(DialogHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, { children: "Lignes rejetées (reject_errors)" }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 min-h-0 overflow-auto", children: Ct ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-4 text-sm text-muted-foreground", children: "Chargement…" }) : xt.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-4 text-sm text-muted-foreground", children: "Aucune ligne rejetée." }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "w-full text-xs border-collapse", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("thead", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("tr", { className: "bg-muted", children: Et.map((Tt) => /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "border border-border px-2 py-1 text-left font-semibold whitespace-nowrap", children: Tt }, Tt)) }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("tbody", { children: xt.map((Tt, $t) => /* @__PURE__ */ jsxRuntimeExports.jsx("tr", { className: "even:bg-muted/30", children: Et.map((Lt) => /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "border border-border px-2 py-1 max-w-[300px] truncate", title: String(Tt[Lt] ?? ""), children: String(Tt[Lt] ?? "") }, Lt)) }, $t)) })
-    ] }) })
+  }, [yt]);
+  const jt = reactExports.useMemo(() => Et.map((Nt) => ({
+    id: Nt,
+    accessorKey: Nt,
+    header: Nt,
+    cell: ({ getValue: Ot }) => {
+      const Ut = Ot();
+      return Ut == null ? "" : String(Ut);
+    }
+  })), [Et]), Dt = reactExports.useMemo(() => {
+    const Nt = Tt.pageIndex * Tt.pageSize;
+    return xt.slice(Nt, Nt + Tt.pageSize);
+  }, [xt, Tt]);
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open: yt, onOpenChange: (Nt) => !Nt && At(), children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { className: "max-w-5xl max-h-[80vh] flex flex-col", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(DialogHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogTitle, { children: [
+      "Lignes rejetées — reject_errors (",
+      xt.length,
+      ")"
+    ] }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 min-h-0 overflow-auto", children: Ct ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-4 text-sm text-muted-foreground", children: "Chargement…" }) : xt.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-4 text-sm text-muted-foreground", children: "Aucune ligne rejetée." }) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+      DataTablePaginated,
+      {
+        data: Dt,
+        columns: jt,
+        numRows: xt.length,
+        pagination: Tt,
+        sorting: Lt,
+        onPaginationChange: $t,
+        onSortingChange: It,
+        fontSize: "text-xs"
+      }
+    ) })
   ] }) });
 }
 function SourceBody({ cell: yt, path: At, cellIndex: xt }) {
@@ -76013,18 +76040,17 @@ function SourceBody({ cell: yt, path: At, cellIndex: xt }) {
         children: [
           yt._fileName ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-3 px-4 py-3 w-full", children: [
             Nt && Ot ? /* @__PURE__ */ jsxRuntimeExports.jsxs(Tooltip, { children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(TooltipTrigger, { asChild: !0, children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: Vt, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: Yt, size: 20 }) }) }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs(TooltipContent, { side: "top", className: "max-w-sm text-xs", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(TooltipTrigger, { className: `inline-flex items-center ${Vt} cursor-help bg-transparent border-0 p-0`, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: Yt, size: 20 }) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(TooltipContent, { side: "top", className: "max-w-sm text-xs z-50", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-semibold mb-1", children: "Requête principale échouée :" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-mono whitespace-pre-wrap", children: Ot })
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-mono whitespace-pre-wrap break-all", children: Ot })
               ] })
-            ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: Vt, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: Yt, size: 20 }) }),
+            ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `inline-flex items-center ${Vt}`, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: Yt, size: 20 }) }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `flex-1 ${Vt} font-medium truncate`, children: yt._fileName }),
-            Nt && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-orange-500 text-xs font-semibold", children: "via fallback" }),
-            Ut > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            Nt && /* @__PURE__ */ jsxRuntimeExports.jsxs(
               "button",
               {
-                className: "inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-destructive/10 text-destructive text-xs font-semibold hover:bg-destructive/20",
+                className: "inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-orange-500/10 text-orange-600 text-xs font-semibold hover:bg-orange-500/20",
                 onClick: (rr) => {
                   rr.stopPropagation(), Dt(!0);
                 },
@@ -76032,8 +76058,10 @@ function SourceBody({ cell: yt, path: At, cellIndex: xt }) {
                 children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "warning", size: 14 }),
                   Ut,
-                  " rejet",
-                  Ut > 1 ? "s" : ""
+                  " ligne",
+                  Ut !== 1 ? "s" : "",
+                  " non intégrée",
+                  Ut !== 1 ? "s" : ""
                 ]
               }
             ),
