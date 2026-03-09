@@ -196,6 +196,7 @@ function SourceBody({ cell, path, cellIndex }: any) {
     const isFallback = !!cell._loadedViaFallback
     const mainError = cell._mainQueryError || null
     const rejectCount = cell._rejectErrorsCount ?? 0
+    const rowCount = cell._rowCount ?? null
 
     const fileBorderClass = isFallback
         ? 'border-2 border-solid border-orange-500 bg-orange-500/10 cursor-default'
@@ -230,6 +231,12 @@ function SourceBody({ cell, path, cellIndex }: any) {
                     <div key="has-file" className="flex flex-wrap items-center gap-3 px-4 py-3 w-full">
                         <span className={`inline-flex items-center ${fileColor}`}><Icon name={fileIcon} size={20} /></span>
                         <span className={`flex-1 ${fileColor} font-medium truncate`}>{cell._fileName}</span>
+                        {rowCount !== null && (
+                            <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-semibold bg-muted ${fileColor}`}>
+                                <Icon name="check-circle" size={14} />
+                                {rowCount.toLocaleString()} ligne{rowCount !== 1 ? 's' : ''} intégrée{rowCount !== 1 ? 's' : ''}
+                            </span>
+                        )}
                         {cell._fileName && (
                             <button
                                 className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-semibold ${rejectCount > 0 ? 'bg-destructive/10 text-destructive hover:bg-destructive/20' : 'bg-muted text-muted-foreground'}`}
