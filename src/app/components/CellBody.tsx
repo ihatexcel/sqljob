@@ -195,6 +195,7 @@ function SourceBody({ cell, path, cellIndex }: any) {
 
     const isFallback = !!cell._loadedViaFallback
     const mainError = cell._mainQueryError || null
+    const fallbackError = cell._fallbackQueryError || null
     const rejectCount = cell._rejectErrorsCount ?? 0
     const rowCount = cell._rowCount ?? null
 
@@ -283,6 +284,12 @@ function SourceBody({ cell, path, cellIndex }: any) {
                             Requête de fallback (si erreur)
                         </AccordionTrigger>
                         <AccordionContent>
+                            {fallbackError && (
+                                <div className="mb-2 p-2 rounded bg-destructive/10 border border-destructive/30 text-xs text-destructive">
+                                    <span className="font-semibold">Erreur :</span>{' '}
+                                    <span className="font-mono break-all">{fallbackError}</span>
+                                </div>
+                            )}
                             <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
                                 queryType="query2" showParsedQueryProp="_showParsedQuery2"
                                 applySourceDefaultIfEmpty={true} />
