@@ -13,7 +13,6 @@ import { SqlDataTable } from './SqlDataTable'
 import { Icon } from '../../lib/icons'
 import {
     Accordion, AccordionItem, AccordionTrigger, AccordionContent,
-    Tooltip, TooltipContent, TooltipTrigger,
     Dialog, DialogContent, DialogHeader, DialogTitle,
 } from '@sqlrooms/ui'
 import { DuckDBManager } from '../../lib/DuckDBManager'
@@ -229,27 +228,15 @@ function SourceBody({ cell, path, cellIndex }: any) {
                     </div>
                 ) : (
                     <div key="has-file" className="flex flex-wrap items-center gap-3 px-4 py-3 w-full">
-                        {isFallback && mainError ? (
-                            <Tooltip>
-                                <TooltipTrigger className={`inline-flex items-center ${fileColor} cursor-help bg-transparent border-0 p-0`}>
-                                    <Icon name={fileIcon} size={20} />
-                                </TooltipTrigger>
-                                <TooltipContent side="top" className="max-w-sm text-xs z-50">
-                                    <p className="font-semibold mb-1">Requête principale échouée :</p>
-                                    <p className="font-mono whitespace-pre-wrap break-all">{mainError}</p>
-                                </TooltipContent>
-                            </Tooltip>
-                        ) : (
-                            <span className={`inline-flex items-center ${fileColor}`}><Icon name={fileIcon} size={20} /></span>
-                        )}
+                        <span className={`inline-flex items-center ${fileColor}`}><Icon name={fileIcon} size={20} /></span>
                         <span className={`flex-1 ${fileColor} font-medium truncate`}>{cell._fileName}</span>
-                        {isFallback && (
+                        {cell._fileName && (
                             <button
-                                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-orange-500/10 text-orange-600 text-xs font-semibold hover:bg-orange-500/20"
+                                className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-semibold ${rejectCount > 0 ? 'bg-destructive/10 text-destructive hover:bg-destructive/20' : 'bg-muted text-muted-foreground'}`}
                                 onClick={e => { e.stopPropagation(); setRejectModalOpen(true) }}
                                 title="Voir les lignes rejetées"
                             >
-                                <Icon name="warning" size={14} />
+                                <Icon name={rejectCount > 0 ? 'warning' : 'check-circle'} size={14} />
                                 {rejectCount} ligne{rejectCount !== 1 ? 's' : ''} non intégrée{rejectCount !== 1 ? 's' : ''}
                             </button>
                         )}
@@ -273,6 +260,12 @@ function SourceBody({ cell, path, cellIndex }: any) {
                             Requête d'import
                         </AccordionTrigger>
                         <AccordionContent>
+                            {mainError && (
+                                <div className="mb-2 p-2 rounded bg-destructive/10 border border-destructive/30 text-xs text-destructive">
+                                    <span className="font-semibold">Erreur :</span>{' '}
+                                    <span className="font-mono break-all">{mainError}</span>
+                                </div>
+                            )}
                             <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
                                 queryType="query" showParsedQueryProp="_showParsedQuery"
                                 applySourceDefaultIfEmpty={true} />
