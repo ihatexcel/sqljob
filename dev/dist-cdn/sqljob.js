@@ -83748,7 +83748,7 @@ FROM source1 LIMIT 10;`;
             } catch {
             }
             const Kr = await At().parseQueryRecursively(Vr, 1);
-            await DuckDBManager.executeQuery(Kr), Vt = !0, Ht = Kr, Ct._parseLevels2 = Vr._parseLevels || [], Ct._loadedViaFallback = !0;
+            await DuckDBManager.executeQuery(Kr), Vt = !0, Ht = Kr, Ct._parseLevels2 = Vr._parseLevels2 || [], Ct._loadedViaFallback = !0;
             try {
               const tn = await DuckDBManager.executeQuery("SELECT count(*) as cnt FROM reject_errors");
               Ct._rejectErrorsCount = Number(((Dt = tn == null ? void 0 : tn[0]) == null ? void 0 : Dt.cnt) ?? 0);
