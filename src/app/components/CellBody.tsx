@@ -3,7 +3,7 @@
  * Rendu du body d'une cellule selon son type.
  * Remplace les templates Alpine générés par CellBodyRenderer.
  */
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import { useNotebookStore } from '../store/notebookStore'
 import { ConfigManager } from '../../lib/ConfigManager'
@@ -17,6 +17,7 @@ import {
     Dialog, DialogContent, DialogHeader, DialogTitle,
 } from '@sqlrooms/ui'
 import { DuckDBManager } from '../../lib/DuckDBManager'
+import DataTablePaginated from '@sqlrooms/data-table/dist/DataTablePaginated'
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 function CellBodySkeleton() {
@@ -119,24 +120,38 @@ function RejectErrorsModal({ open, onClose }: { open: boolean; onClose: () => vo
     const [rows, setRows] = useState<any[]>([])
     const [cols, setCols] = useState<string[]>([])
     const [loading, setLoading] = useState(false)
+    const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 20 })
+    const [sorting, setSorting] = useState([])
 
     useEffect(() => {
         if (!open) return
         setLoading(true)
         DuckDBManager.executeQuery('SELECT * FROM reject_errors')
             .then(result => {
-                setRows(result ?? [])
-                setCols(result?.length ? Object.keys(result[0]) : [])
+                const data = result ?? []
+                setRows(data)
+                setCols(data.length ? Object.keys(data[0]) : [])
             })
             .catch(() => { setRows([]); setCols([]) })
             .finally(() => setLoading(false))
     }, [open])
 
+    const columns = useMemo(() =>
+        cols.map(key => ({
+            id: key, accessorKey: key, header: key,
+            cell: ({ getValue }: any) => { const v = getValue(); return v == null ? '' : String(v) }
+        })), [cols])
+
+    const pageData = useMemo(() => {
+        const start = pagination.pageIndex * pagination.pageSize
+        return rows.slice(start, start + pagination.pageSize)
+    }, [rows, pagination])
+
     return (
         <Dialog open={open} onOpenChange={o => !o && onClose()}>
-            <DialogContent className="max-w-4xl max-h-[80vh] flex flex-col">
+            <DialogContent className="max-w-5xl max-h-[80vh] flex flex-col">
                 <DialogHeader>
-                    <DialogTitle>Lignes rejetées (reject_errors)</DialogTitle>
+                    <DialogTitle>Lignes rejetées — reject_errors ({rows.length})</DialogTitle>
                 </DialogHeader>
                 <div className="flex-1 min-h-0 overflow-auto">
                     {loading ? (
@@ -144,24 +159,16 @@ function RejectErrorsModal({ open, onClose }: { open: boolean; onClose: () => vo
                     ) : rows.length === 0 ? (
                         <div className="p-4 text-sm text-muted-foreground">Aucune ligne rejetée.</div>
                     ) : (
-                        <table className="w-full text-xs border-collapse">
-                            <thead>
-                                <tr className="bg-muted">
-                                    {cols.map(c => (
-                                        <th key={c} className="border border-border px-2 py-1 text-left font-semibold whitespace-nowrap">{c}</th>
-                                    ))}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {rows.map((row, i) => (
-                                    <tr key={i} className="even:bg-muted/30">
-                                        {cols.map(c => (
-                                            <td key={c} className="border border-border px-2 py-1 max-w-[300px] truncate" title={String(row[c] ?? '')}>{String(row[c] ?? '')}</td>
-                                        ))}
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                        <DataTablePaginated
+                            data={pageData}
+                            columns={columns}
+                            numRows={rows.length}
+                            pagination={pagination}
+                            sorting={sorting}
+                            onPaginationChange={setPagination}
+                            onSortingChange={setSorting}
+                            fontSize="text-xs"
+                        />
                     )}
                 </div>
             </DialogContent>
@@ -224,29 +231,26 @@ function SourceBody({ cell, path, cellIndex }: any) {
                     <div key="has-file" className="flex flex-wrap items-center gap-3 px-4 py-3 w-full">
                         {isFallback && mainError ? (
                             <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <span className={fileColor}><Icon name={fileIcon} size={20} /></span>
+                                <TooltipTrigger className={`inline-flex items-center ${fileColor} cursor-help bg-transparent border-0 p-0`}>
+                                    <Icon name={fileIcon} size={20} />
                                 </TooltipTrigger>
-                                <TooltipContent side="top" className="max-w-sm text-xs">
+                                <TooltipContent side="top" className="max-w-sm text-xs z-50">
                                     <p className="font-semibold mb-1">Requête principale échouée :</p>
-                                    <p className="font-mono whitespace-pre-wrap">{mainError}</p>
+                                    <p className="font-mono whitespace-pre-wrap break-all">{mainError}</p>
                                 </TooltipContent>
                             </Tooltip>
                         ) : (
-                            <span className={fileColor}><Icon name={fileIcon} size={20} /></span>
+                            <span className={`inline-flex items-center ${fileColor}`}><Icon name={fileIcon} size={20} /></span>
                         )}
                         <span className={`flex-1 ${fileColor} font-medium truncate`}>{cell._fileName}</span>
                         {isFallback && (
-                            <span className="text-orange-500 text-xs font-semibold">via fallback</span>
-                        )}
-                        {rejectCount > 0 && (
                             <button
-                                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-destructive/10 text-destructive text-xs font-semibold hover:bg-destructive/20"
+                                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-orange-500/10 text-orange-600 text-xs font-semibold hover:bg-orange-500/20"
                                 onClick={e => { e.stopPropagation(); setRejectModalOpen(true) }}
                                 title="Voir les lignes rejetées"
                             >
                                 <Icon name="warning" size={14} />
-                                {rejectCount} rejet{rejectCount > 1 ? 's' : ''}
+                                {rejectCount} ligne{rejectCount !== 1 ? 's' : ''} non intégrée{rejectCount !== 1 ? 's' : ''}
                             </button>
                         )}
                         <span className="text-muted-foreground text-xs">→ {cell.name}</span>
