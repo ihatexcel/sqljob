@@ -76039,24 +76039,18 @@ function SourceBody({ cell: yt, path: At, cellIndex: xt }) {
         },
         children: [
           yt._fileName ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-3 px-4 py-3 w-full", children: [
-            Nt && Ot ? /* @__PURE__ */ jsxRuntimeExports.jsxs(Tooltip, { children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(TooltipTrigger, { className: `inline-flex items-center ${Vt} cursor-help bg-transparent border-0 p-0`, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: Yt, size: 20 }) }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs(TooltipContent, { side: "top", className: "max-w-sm text-xs z-50", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-semibold mb-1", children: "Requête principale échouée :" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-mono whitespace-pre-wrap break-all", children: Ot })
-              ] })
-            ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `inline-flex items-center ${Vt}`, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: Yt, size: 20 }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `inline-flex items-center ${Vt}`, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: Yt, size: 20 }) }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `flex-1 ${Vt} font-medium truncate`, children: yt._fileName }),
-            Nt && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            yt._fileName && /* @__PURE__ */ jsxRuntimeExports.jsxs(
               "button",
               {
-                className: "inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-orange-500/10 text-orange-600 text-xs font-semibold hover:bg-orange-500/20",
+                className: `inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-semibold ${Ut > 0 ? "bg-destructive/10 text-destructive hover:bg-destructive/20" : "bg-muted text-muted-foreground"}`,
                 onClick: (rr) => {
                   rr.stopPropagation(), Dt(!0);
                 },
                 title: "Voir les lignes rejetées",
                 children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "warning", size: 14 }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: Ut > 0 ? "warning" : "check-circle", size: 14 }),
                   Ut,
                   " ligne",
                   Ut !== 1 ? "s" : "",
@@ -76105,17 +76099,24 @@ function SourceBody({ cell: yt, path: At, cellIndex: xt }) {
     St && /* @__PURE__ */ jsxRuntimeExports.jsxs(Accordion, { type: "single", collapsible: !0, className: "mt-1", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs(AccordionItem, { value: "import", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(AccordionTrigger, { className: "text-sm font-semibold text-primary py-1", children: "Requête d'import" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(AccordionContent, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          SqlEditorWidget,
-          {
-            cell: yt,
-            path: At,
-            cellIndex: xt,
-            queryType: "query",
-            showParsedQueryProp: "_showParsedQuery",
-            applySourceDefaultIfEmpty: !0
-          }
-        ) })
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(AccordionContent, { children: [
+          Ot && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mb-2 p-2 rounded bg-destructive/10 border border-destructive/30 text-xs text-destructive", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-semibold", children: "Erreur :" }),
+            " ",
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-mono break-all", children: Ot })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            SqlEditorWidget,
+            {
+              cell: yt,
+              path: At,
+              cellIndex: xt,
+              queryType: "query",
+              showParsedQueryProp: "_showParsedQuery",
+              applySourceDefaultIfEmpty: !0
+            }
+          )
+        ] })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(AccordionItem, { value: "fallback", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(AccordionTrigger, { className: "text-sm font-semibold text-primary py-1", children: "Requête de fallback (si erreur)" }),
