@@ -11,7 +11,12 @@ import { CDNManager } from '../../lib/CDNManager'
 import { SqlEditorWidget } from './SqlEditorWidget'
 import { SqlDataTable } from './SqlDataTable'
 import { Icon } from '../../lib/icons'
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@sqlrooms/ui'
+import {
+    Accordion, AccordionItem, AccordionTrigger, AccordionContent,
+    Tooltip, TooltipContent, TooltipTrigger,
+    Dialog, DialogContent, DialogHeader, DialogTitle,
+} from '@sqlrooms/ui'
+import { DuckDBManager } from '../../lib/DuckDBManager'
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 function CellBodySkeleton() {
@@ -109,6 +114,61 @@ function MarkdownBody({ cell, path, cellIndex }: any) {
     )
 }
 
+// ─── RejectErrorsModal ────────────────────────────────────────────────────────
+function RejectErrorsModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+    const [rows, setRows] = useState<any[]>([])
+    const [cols, setCols] = useState<string[]>([])
+    const [loading, setLoading] = useState(false)
+
+    useEffect(() => {
+        if (!open) return
+        setLoading(true)
+        DuckDBManager.executeQuery('SELECT * FROM reject_errors')
+            .then(result => {
+                setRows(result ?? [])
+                setCols(result?.length ? Object.keys(result[0]) : [])
+            })
+            .catch(() => { setRows([]); setCols([]) })
+            .finally(() => setLoading(false))
+    }, [open])
+
+    return (
+        <Dialog open={open} onOpenChange={o => !o && onClose()}>
+            <DialogContent className="max-w-4xl max-h-[80vh] flex flex-col">
+                <DialogHeader>
+                    <DialogTitle>Lignes rejetées (reject_errors)</DialogTitle>
+                </DialogHeader>
+                <div className="flex-1 min-h-0 overflow-auto">
+                    {loading ? (
+                        <div className="p-4 text-sm text-muted-foreground">Chargement…</div>
+                    ) : rows.length === 0 ? (
+                        <div className="p-4 text-sm text-muted-foreground">Aucune ligne rejetée.</div>
+                    ) : (
+                        <table className="w-full text-xs border-collapse">
+                            <thead>
+                                <tr className="bg-muted">
+                                    {cols.map(c => (
+                                        <th key={c} className="border border-border px-2 py-1 text-left font-semibold whitespace-nowrap">{c}</th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {rows.map((row, i) => (
+                                    <tr key={i} className="even:bg-muted/30">
+                                        {cols.map(c => (
+                                            <td key={c} className="border border-border px-2 py-1 max-w-[300px] truncate" title={String(row[c] ?? '')}>{String(row[c] ?? '')}</td>
+                                        ))}
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    )}
+                </div>
+            </DialogContent>
+        </Dialog>
+    )
+}
+
 // ─── SourceBody (file drop zone) ─────────────────────────────────────────────
 function SourceBody({ cell, path, cellIndex }: any) {
     const {
@@ -125,12 +185,23 @@ function SourceBody({ cell, path, cellIndex }: any) {
 
     const inputRef = useRef<HTMLInputElement>(null)
     const [isDragging, setIsDragging] = useState(false)
+    const [rejectModalOpen, setRejectModalOpen] = useState(false)
+
+    const isFallback = !!cell._loadedViaFallback
+    const mainError = cell._mainQueryError || null
+    const rejectCount = cell._rejectErrorsCount ?? 0
+
+    const fileBorderClass = isFallback
+        ? 'border-2 border-solid border-orange-500 bg-orange-500/10 cursor-default'
+        : 'border-2 border-solid border-green-500 bg-green-500/10 cursor-default'
+    const fileColor = isFallback ? 'text-orange-600' : 'text-green-600'
+    const fileIcon = isFallback ? 'warning' : 'check-circle'
 
     return (
         <div className="flex flex-col gap-2">
             <div
                 className={`flex items-center justify-center rounded-lg transition-all duration-200 mt-1 mb-1 min-h-[20px] ${cell._fileName
-                    ? 'border-2 border-solid border-green-500 bg-green-500/10 cursor-default'
+                    ? fileBorderClass
                     : isDragging
                         ? 'border-2 border-solid border-accent bg-accent/10 cursor-pointer'
                         : 'border-2 border-dashed border-primary bg-primary/5 cursor-pointer hover:border-accent hover:bg-accent/10'
@@ -151,8 +222,33 @@ function SourceBody({ cell, path, cellIndex }: any) {
                     </div>
                 ) : (
                     <div key="has-file" className="flex flex-wrap items-center gap-3 px-4 py-3 w-full">
-                        <Icon name="check-circle" size={20} className="text-green-600" />
-                        <span className="flex-1 text-green-600 font-medium truncate">{cell._fileName}</span>
+                        {isFallback && mainError ? (
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <span className={fileColor}><Icon name={fileIcon} size={20} /></span>
+                                </TooltipTrigger>
+                                <TooltipContent side="top" className="max-w-sm text-xs">
+                                    <p className="font-semibold mb-1">Requête principale échouée :</p>
+                                    <p className="font-mono whitespace-pre-wrap">{mainError}</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        ) : (
+                            <span className={fileColor}><Icon name={fileIcon} size={20} /></span>
+                        )}
+                        <span className={`flex-1 ${fileColor} font-medium truncate`}>{cell._fileName}</span>
+                        {isFallback && (
+                            <span className="text-orange-500 text-xs font-semibold">via fallback</span>
+                        )}
+                        {rejectCount > 0 && (
+                            <button
+                                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-destructive/10 text-destructive text-xs font-semibold hover:bg-destructive/20"
+                                onClick={e => { e.stopPropagation(); setRejectModalOpen(true) }}
+                                title="Voir les lignes rejetées"
+                            >
+                                <Icon name="warning" size={14} />
+                                {rejectCount} rejet{rejectCount > 1 ? 's' : ''}
+                            </button>
+                        )}
                         <span className="text-muted-foreground text-xs">→ {cell.name}</span>
                         <button className="inline-flex items-center justify-center p-2 rounded hover:bg-muted" onClick={e => { e.stopPropagation(); downloadSourceFile(path, cellIndex) }} title="Télécharger">
                             <Icon name="download" size={20} />
@@ -165,6 +261,7 @@ function SourceBody({ cell, path, cellIndex }: any) {
                 <input ref={inputRef} type="file" hidden accept=".csv,.parquet,.xlsx,.xls"
                     onChange={e => handleSingleSourceFileSelect(e, path, cellIndex)} />
             </div>
+            {rejectModalOpen && <RejectErrorsModal open={rejectModalOpen} onClose={() => setRejectModalOpen(false)} />}
             {devMode && (
                 <Accordion type="single" collapsible className="mt-1">
                     <AccordionItem value="import">
