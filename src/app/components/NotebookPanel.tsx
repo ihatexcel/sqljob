@@ -209,12 +209,8 @@ function NavBar() {
                                     <Icon name="lock" size={16} className="mr-2" /> Export Base64
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem asChild>
-                                    <label className="cursor-pointer flex items-center gap-2 w-full">
-                                        <Icon name="folder-open" size={16} /> Import JSON
-                                        <input ref={importJsonRef} type="file" accept=".json" hidden
-                                            onChange={e => { loadConfig(e); (document.activeElement as HTMLElement)?.blur() }} />
-                                    </label>
+                                <DropdownMenuItem onClick={() => importJsonRef.current?.click()}>
+                                    <Icon name="folder-open" size={16} className="mr-2" /> Import JSON
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
@@ -224,6 +220,8 @@ function NavBar() {
                     <Spinner className="h-4 w-4" />
                 )}
             </div>
+            <input ref={importJsonRef} type="file" accept=".json" hidden
+                onChange={e => { loadConfig(e); (document.activeElement as HTMLElement)?.blur() }} />
         </div>
     )
 }
