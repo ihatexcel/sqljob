@@ -86488,12 +86488,53 @@ function DbEngineIcon({ className: yt }) {
   return /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: yt, style: { fontSize: "1.1em", lineHeight: 1 }, children: At === "ducklings" ? "🐤" : "🦆" });
 }
 function SidebarControls() {
-  const { devMode: yt, dbEngine: At, showLayout: xt } = useNotebookStore(useShallow((Tt) => ({
-    devMode: Tt.devMode,
-    dbEngine: Tt.dbEngine,
-    showLayout: Tt.showLayout
-  }))), { theme: wt, setTheme: Et } = useTheme(), kt = useNotebookStore.setState, Ct = useDisclosure(), St = useDisclosure();
+  const { devMode: yt, dbEngine: At, showLayout: xt } = useNotebookStore(useShallow(($t) => ({
+    devMode: $t.devMode,
+    dbEngine: $t.dbEngine,
+    showLayout: $t.showLayout
+  }))), { theme: wt, setTheme: Et } = useTheme(), kt = useNotebookStore.setState, Ct = useDisclosure(), St = useDisclosure(), Tt = useDisclosure();
   return xt ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+    yt && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(RoomShellSidebarButton, { roomPanelType: "data" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        RoomShell.SidebarButton,
+        {
+          title: "SQL Editor",
+          onClick: Ct.onToggle,
+          isSelected: Ct.isOpen,
+          icon: Terminal
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        RoomShell.SidebarButton,
+        {
+          title: "Personnaliser le thème",
+          onClick: St.onToggle,
+          isSelected: St.isOpen,
+          icon: Paintbrush
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(ThemeCustomModal, { open: St.isOpen, onClose: St.onClose }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        RoomShell.SidebarButton,
+        {
+          title: `Moteur : ${At === "ducklings" ? "Ducklings 🐤" : "DuckDB WASM 🦆"}`,
+          onClick: () => kt({ showDbEngineModal: !0 }),
+          icon: DbEngineIcon
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        RoomShell.SidebarButton,
+        {
+          title: "Console debug (Eruda)",
+          onClick: Tt.onToggle,
+          isSelected: Tt.isOpen,
+          icon: MessageSquareCode
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(ErudaModal, { open: Tt.isOpen, onClose: Tt.onClose })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1" }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       RoomShell.SidebarButton,
       {
@@ -86510,37 +86551,6 @@ function SidebarControls() {
         icon: wt === "dark" ? Sun : Moon
       }
     ),
-    yt && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        RoomShell.SidebarButton,
-        {
-          title: "Personnaliser le thème",
-          onClick: Ct.onToggle,
-          isSelected: Ct.isOpen,
-          icon: Paintbrush
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(ThemeCustomModal, { open: Ct.isOpen, onClose: Ct.onClose }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        RoomShell.SidebarButton,
-        {
-          title: `Moteur : ${At === "ducklings" ? "Ducklings 🐤" : "DuckDB WASM 🦆"}`,
-          onClick: () => kt({ showDbEngineModal: !0 }),
-          icon: DbEngineIcon
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        RoomShell.SidebarButton,
-        {
-          title: "Console debug (Eruda)",
-          onClick: St.onToggle,
-          isSelected: St.isOpen,
-          icon: MessageSquareCode
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(ErudaModal, { open: St.isOpen, onClose: St.onClose })
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1" }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       RoomShell.SidebarButton,
       {
@@ -86549,39 +86559,22 @@ function SidebarControls() {
         isSelected: yt,
         icon: Settings2
       }
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      SqlEditorModal,
+      {
+        isOpen: Ct.isOpen,
+        onClose: Ct.onClose
+      }
     )
   ] }) : null;
 }
 function Room() {
-  const yt = useDisclosure(), { showLayout: At, devMode: xt } = useNotebookStore(useShallow((wt) => ({
-    showLayout: wt.showLayout,
-    devMode: wt.devMode
-  })));
+  const yt = useNotebookStore((At) => At.showLayout);
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs(RoomShell, { roomStore: useNotebookStore, className: "h-screen w-screen", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(RoomShell.Sidebar, { className: At ? "" : "hidden", children: [
-        xt && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(RoomShellSidebarButton, { roomPanelType: "data" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            RoomShell.SidebarButton,
-            {
-              title: "SQL Editor",
-              onClick: yt.onToggle,
-              isSelected: yt.isOpen,
-              icon: Terminal
-            }
-          )
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(SidebarControls, {})
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(RoomShell.LayoutComposer, { tileClassName: "p-0" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        SqlEditorModal,
-        {
-          isOpen: yt.isOpen,
-          onClose: yt.onClose
-        }
-      )
+      /* @__PURE__ */ jsxRuntimeExports.jsx(RoomShell.Sidebar, { className: yt ? "" : "hidden", children: /* @__PURE__ */ jsxRuntimeExports.jsx(SidebarControls, {}) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(RoomShell.LayoutComposer, { tileClassName: "p-0" })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(ConfirmModal, {}),
     /* @__PURE__ */ jsxRuntimeExports.jsx(TemplateModal, {}),
