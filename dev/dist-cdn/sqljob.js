@@ -76148,7 +76148,7 @@ function SourceBody({ cell: yt, path: At, cellIndex: xt }) {
         ] })
       ] }),
       Yt && /* @__PURE__ */ jsxRuntimeExports.jsxs(AccordionItem, { value: "query-builder", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(AccordionTrigger, { className: "text-sm font-semibold text-primary py-1", children: "Requête de production" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(AccordionTrigger, { className: "text-sm font-semibold text-primary py-1", children: "Exemple requête stable" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(AccordionContent, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("pre", { className: "text-xs font-mono bg-muted rounded p-3 overflow-x-auto whitespace-pre-wrap break-all", children: Yt }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -83798,14 +83798,14 @@ FROM source1 LIMIT 10;`;
             const Vr = (await DuckDBManager.executeQuery(`DESCRIBE SELECT * FROM "${Ut}"`)).map((qr) => `'${qr.column_name.replace(/'/g, "''")}': '${qr.column_type}'`).join(", ");
             wr = `CREATE OR REPLACE TABLE ${Ut} AS
 SELECT * FROM read_csv('${Yt}',
-  HEADER = true, AUTO_DETECT = true,
+  HEADER = true,
   SAMPLE_SIZE = -1, IGNORE_ERRORS = true, store_rejects = true,
   columns = {${Vr}})`;
           } else if (mr.endsWith(".tsv") || mr.endsWith(".tsv.gz") || mr.endsWith(".txt") || mr.endsWith(".txt.gz")) {
             const Vr = (await DuckDBManager.executeQuery(`DESCRIBE SELECT * FROM "${Ut}"`)).map((qr) => `'${qr.column_name.replace(/'/g, "''")}': '${qr.column_type}'`).join(", ");
             wr = `CREATE OR REPLACE TABLE ${Ut} AS
 SELECT * FROM read_csv('${Yt}',
-  HEADER = true, DELIM = '\\t', AUTO_DETECT = true,
+  HEADER = true, DELIM = '\\t',
   SAMPLE_SIZE = -1, IGNORE_ERRORS = true, store_rejects = true,
   columns = {${Vr}})`;
           } else mr.endsWith(".xlsx") || mr.endsWith(".xls") ? wr = `CREATE OR REPLACE TABLE ${Ut} AS
