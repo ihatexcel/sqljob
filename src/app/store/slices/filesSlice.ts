@@ -145,7 +145,7 @@ export const createFilesSlice = (set: any, get: any) => ({
         cell._fallbackQueryError = null
         cell._rejectErrorsCount = 0
         cell._rowCount = 0
-        set({ isLoading: true })
+        cell._queryBuilder = null
         cell._status = 'running'
         get().setStatus(`Chargement de ${cell.name}...`, 'loading')
 
@@ -227,6 +227,59 @@ export const createFilesSlice = (set: any, get: any) => ({
                 cell._rowCount = Number(countResult?.[0]?.cnt ?? 0)
             } catch { cell._rowCount = 0 }
 
+            // Requête de production (query builder)
+            if (executed) {
+                try {
+                    const qbTemplate = `SELECT 'CREATE OR REPLACE TABLE {name} AS' ||
+CASE
+    WHEN lower('{fileName}') LIKE '%.csv'
+      OR lower('{fileName}') LIKE '%.csv.gz'
+    THEN
+        'SELECT * FROM read_csv(''' || '{fileName}' || ''',
+         HEADER = true, AUTO_DETECT = true,
+         SAMPLE_SIZE = -1, IGNORE_ERRORS = true, store_rejects = true,
+         columns = {{
+          SELECT REPLACE(''{ '' ||
+       string_agg('''' || REPLACE(column_name, '''', '''''') || ''' : ''' || column_type || '''', '', '')
+       || '' }'' , '''', '''''') AS columns_str
+FROM (DESCRIBE SELECT * FROM {name});}}
+         )'
+    WHEN lower('{fileName}') LIKE '%.xlsx'
+    THEN
+        'SELECT * FROM read_xlsx(''' || '{fileName}' || ''',
+         HEADER = true,
+         STOP_AT_EMPTY = false, EMPTY_AS_VARCHAR = true,
+         IGNORE_ERRORS = true, store_rejects = true)'
+    WHEN lower('{fileName}') LIKE '%.tsv'
+      OR lower('{fileName}') LIKE '%.tsv.gz'
+      OR lower('{fileName}') LIKE '%.txt'
+      OR lower('{fileName}') LIKE '%.txt.gz'
+    THEN
+        'SELECT * FROM read_csv(''' || '{fileName}' || ''',
+         HEADER = true,
+         DELIM = ''\t'', AUTO_DETECT = true,
+         SAMPLE_SIZE = -1, IGNORE_ERRORS = true, store_rejects = true,
+         columns = {{
+          SELECT REPLACE(''{ '' ||
+       string_agg('''' || REPLACE(column_name, '''', '''''') || ''' : ''' || column_type || '''', '', '')
+       || '' }'' , '''', '''''') AS columns_str
+FROM (DESCRIBE SELECT * FROM {name});}}
+         )'
+    WHEN lower('{fileName}') LIKE '%.parquet'
+      OR lower('{fileName}') LIKE '%.parquet.gz'
+    THEN
+        'SELECT * FROM read_parquet(''' || '{fileName}' || ''')'
+    ELSE 'SELECT null'
+END AS query_builder`
+                    const qbCtx = { name: tableName, fileNameUpload: fileName, fileName }
+                    const qbSql = get().replaceSourceContext(qbTemplate, qbCtx)
+                    const qbCellLike = { queries: [{ name: 'main', sql: qbSql }], _parseLevels: [] }
+                    const qbFinal = await get().parseQueryRecursively(qbCellLike)
+                    const qbResult = await DuckDBManager.executeQuery(qbFinal)
+                    cell._queryBuilder = qbResult?.[0]?.query_builder || null
+                } catch { cell._queryBuilder = null }
+            }
+
             cell._loaded = true
             cell._status = 'success'
             cell._pendingFileLoad = false
@@ -298,6 +351,7 @@ export const createFilesSlice = (set: any, get: any) => ({
         cell._fallbackQueryError = null
         cell._rejectErrorsCount = 0
         cell._rowCount = 0
+        cell._queryBuilder = null
         if (Array.isArray(cell.files)) cell.files = cell.files.filter((f: any) => f.slot !== 'source')
         delete cell.fileBase64
         delete cell.fileName

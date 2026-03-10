@@ -198,6 +198,7 @@ function SourceBody({ cell, path, cellIndex }: any) {
     const fallbackError = cell._fallbackQueryError || null
     const rejectCount = cell._rejectErrorsCount ?? 0
     const rowCount = cell._rowCount ?? null
+    const queryBuilder = cell._queryBuilder || null
 
     const fileBorderClass = isFallback
         ? 'border-2 border-solid border-orange-500 bg-orange-500/10 cursor-default'
@@ -295,6 +296,25 @@ function SourceBody({ cell, path, cellIndex }: any) {
                                 applySourceDefaultIfEmpty={true} />
                         </AccordionContent>
                     </AccordionItem>
+                    {queryBuilder && (
+                        <AccordionItem value="query-builder">
+                            <AccordionTrigger className="text-sm font-semibold text-primary py-1">
+                                Requête de production
+                            </AccordionTrigger>
+                            <AccordionContent>
+                                <div className="relative">
+                                    <pre className="text-xs font-mono bg-muted rounded p-3 overflow-x-auto whitespace-pre-wrap break-all">{queryBuilder}</pre>
+                                    <button
+                                        className="absolute top-2 right-2 p-1 rounded hover:bg-muted-foreground/20"
+                                        title="Copier"
+                                        onClick={() => navigator.clipboard.writeText(queryBuilder)}
+                                    >
+                                        <Icon name="copy" size={14} />
+                                    </button>
+                                </div>
+                            </AccordionContent>
+                        </AccordionItem>
+                    )}
                 </Accordion>
             )}
         </div>
