@@ -197,6 +197,7 @@ function SourceBody({ cell, path, cellIndex }: any) {
     const mainError = cell._mainQueryError || null
     const fallbackError = cell._fallbackQueryError || null
     const rejectCount = cell._rejectErrorsCount ?? 0
+    const rejectedCellsCount = cell._rejectedCellsCount ?? 0
     const rowCount = cell._rowCount ?? null
     const queryBuilder = cell._queryBuilder || null
 
@@ -251,6 +252,12 @@ function SourceBody({ cell, path, cellIndex }: any) {
                                 <Icon name={rejectCount > 0 ? 'warning' : 'check-circle'} size={14} />
                                 {rejectCount} ligne{rejectCount !== 1 ? 's' : ''} non intégrée{rejectCount !== 1 ? 's' : ''}
                             </button>
+                        )}
+                        {cell._fileName && rejectedCellsCount > 0 && (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-semibold bg-orange-500/10 text-orange-600">
+                                <Icon name="warning" size={14} />
+                                {rejectedCellsCount.toLocaleString()} cellule{rejectedCellsCount !== 1 ? 's' : ''} non intégrée{rejectedCellsCount !== 1 ? 's' : ''}
+                            </span>
                         )}
                         <span className="text-muted-foreground text-xs">→ {cell.name}</span>
                         <button className="inline-flex items-center justify-center p-2 rounded hover:bg-muted" onClick={e => { e.stopPropagation(); downloadSourceFile(path, cellIndex) }} title="Télécharger">
