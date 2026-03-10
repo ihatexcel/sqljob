@@ -139,6 +139,7 @@ export const createFilesSlice = (set: any, get: any) => ({
         const skipRunNextCells = options.skipRunNextCells === true
         cell._fileName = file.name
         cell._currentFile = file
+        cell._importFailed = false
         cell._parseLevels = []
         cell._parseLevels2 = []
         cell._mainQueryError = null
@@ -269,6 +270,7 @@ export const createFilesSlice = (set: any, get: any) => ({
             }
         } catch (error: any) {
             cell._status = 'error'
+            cell._importFailed = true
             get().setStatus('Erreur: ' + error.message, 'error')
             cell._fileName = ''
             cell._currentFile = null
@@ -315,6 +317,7 @@ export const createFilesSlice = (set: any, get: any) => ({
         cell._currentFile = null
         cell._loaded = false
         cell._status = null
+        cell._importFailed = false
         cell._parseLevels = []
         cell._loadedViaFallback = false
         cell._mainQueryError = null
@@ -401,9 +404,7 @@ export const createFilesSlice = (set: any, get: any) => ({
                         get().setStatus(`Chargement de ${cell.name}...`, 'loading')
                         await get().loadSingleSourceFile(cell._currentFile, path, ci, { skipRunNextCells: true })
                         cell._pendingFileLoad = false
-                    } catch (error: any) {
-                        console.error(`Erreur chargement fichier source ${cell.name}:`, error)
-                    }
+                    } catch { /* ignore */ }
                 }
             }
             if (group.children) {

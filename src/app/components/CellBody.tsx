@@ -226,6 +226,9 @@ function SourceBody({ cell, path, cellIndex }: any) {
                     // React ne sait pas les supprimer → l'ancienne icône persiste après suppression.
                     <div key="no-file" className="flex flex-col items-center gap-1 py-2 w-full">
                         <Icon name="create-new-folder" size={48} />
+                        {cell._importFailed && (
+                            <p className="m-0 text-destructive text-sm font-semibold">L'import a échoué.</p>
+                        )}
                         <p className="m-0 text-muted-foreground text-sm">{cell.title || 'Glissez-déposez ici'}</p>
                         <p className="mt-0 mb-0 text-accent text-xs font-semibold">→ {cell.name}</p>
                     </div>

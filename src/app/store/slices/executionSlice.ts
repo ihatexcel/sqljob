@@ -283,10 +283,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
     async runCellAt(pathOrIndex, cellIndex) {
         const path = Array.isArray(pathOrIndex) ? pathOrIndex : [pathOrIndex]
         const cell = get().getCellAtPath(path, cellIndex)
-        if (!cell) {
-            console.error('❌ Cell not found!')
-            return
-        }
+        if (!cell) return
 
         cell._status = 'running'
         set({ isLoading: true })
@@ -298,8 +295,6 @@ export const createExecutionSlice = (set: any, get: any) => ({
             const handler = schema?.executeHandler
             if (handler && typeof get()[handler] === 'function') {
                 await get()[handler](cell, path, cellIndex)
-            } else if (handler !== null) {
-                console.warn('⚠️ Unknown cell type or missing handler:', cell.type)
             }
 
             cell._status = 'success'
