@@ -83799,14 +83799,14 @@ FROM source1 LIMIT 10;`;
             wr = `CREATE OR REPLACE TABLE ${Ut} AS
 SELECT * FROM read_csv('${Yt}',
   HEADER = true,
-  SAMPLE_SIZE = -1, IGNORE_ERRORS = true, store_rejects = true,
+  IGNORE_ERRORS = true, store_rejects = true,
   columns = {${Vr}})`;
           } else if (mr.endsWith(".tsv") || mr.endsWith(".tsv.gz") || mr.endsWith(".txt") || mr.endsWith(".txt.gz")) {
             const Vr = (await DuckDBManager.executeQuery(`DESCRIBE SELECT * FROM "${Ut}"`)).map((qr) => `'${qr.column_name.replace(/'/g, "''")}': '${qr.column_type}'`).join(", ");
             wr = `CREATE OR REPLACE TABLE ${Ut} AS
 SELECT * FROM read_csv('${Yt}',
   HEADER = true, DELIM = '\\t',
-  SAMPLE_SIZE = -1, IGNORE_ERRORS = true, store_rejects = true,
+  IGNORE_ERRORS = true, store_rejects = true,
   columns = {${Vr}})`;
           } else mr.endsWith(".xlsx") || mr.endsWith(".xls") ? wr = `CREATE OR REPLACE TABLE ${Ut} AS
 SELECT * FROM read_xlsx('${Yt}',
