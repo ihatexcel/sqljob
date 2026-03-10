@@ -83721,7 +83721,7 @@ FROM source1 LIMIT 10;`;
     const Ct = At().getCellAtPath(wt, Et);
     if (!Ct || Ct.type !== "source") return;
     const St = kt.skipRunNextCells === !0;
-    Ct._fileName = xt.name, Ct._currentFile = xt, yt({ isLoading: !0 }), Ct._status = "running", At().setStatus(`Chargement de ${Ct.name}...`, "loading");
+    Ct._fileName = xt.name, Ct._currentFile = xt, Ct._parseLevels = [], Ct._parseLevels2 = [], Ct._mainQueryError = null, Ct._fallbackQueryError = null, Ct._rejectErrorsCount = 0, Ct._rowCount = 0, yt({ isLoading: !0 }), Ct._status = "running", At().setStatus(`Chargement de ${Ct.name}...`, "loading");
     try {
       const Ut = Ct.name || "source1";
       let Ht, Vt = !1, Yt = xt.name;
