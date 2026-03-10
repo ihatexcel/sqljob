@@ -372,9 +372,16 @@ export const createExecutionSlice = (set: any, get: any) => ({
             return await parseRecursive(newQuery)
         }
 
-        const finalQuery = await parseRecursive(currentQuery)
-        cell[levelsKey].push({ level: 'final', innerQuery: finalQuery, replacement: null })
-        return finalQuery
+        try {
+            const finalQuery = await parseRecursive(currentQuery)
+            cell[levelsKey].push({ level: 'final', innerQuery: finalQuery, replacement: null })
+            return finalQuery
+        } catch (e) {
+            if (!cell[levelsKey].some((l: any) => l.level === 'final')) {
+                cell[levelsKey].push({ level: 'final', innerQuery: currentQuery, replacement: null })
+            }
+            throw e
+        }
     },
 
     async executeSqlRecursiveParseCell(cell) {
