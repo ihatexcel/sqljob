@@ -23917,7 +23917,7 @@ CASE
         'SELECT * FROM read_xlsx(''' || '{fileName}' || ''',
          HEADER = true,
          STOP_AT_EMPTY = false, EMPTY_AS_VARCHAR = true,
-         IGNORE_ERRORS = true, store_rejects = true)'
+         IGNORE_ERRORS = true)'
 
     WHEN lower('{fileName}') LIKE '%.tsv'
       OR lower('{fileName}') LIKE '%.tsv.gz'
@@ -83811,7 +83811,7 @@ SELECT * FROM read_csv('${Yt}',
           } else mr.endsWith(".xlsx") || mr.endsWith(".xls") ? wr = `CREATE OR REPLACE TABLE ${Ut} AS
 SELECT * FROM read_xlsx('${Yt}',
   HEADER = true, STOP_AT_EMPTY = false,
-  EMPTY_AS_VARCHAR = true, IGNORE_ERRORS = true, store_rejects = true)` : (mr.endsWith(".parquet") || mr.endsWith(".parquet.gz")) && (wr = `CREATE OR REPLACE TABLE ${Ut} AS
+  EMPTY_AS_VARCHAR = true, IGNORE_ERRORS = true)` : (mr.endsWith(".parquet") || mr.endsWith(".parquet.gz")) && (wr = `CREATE OR REPLACE TABLE ${Ut} AS
 SELECT * FROM read_parquet('${Yt}')`);
           Ct._queryBuilder = wr || null;
         } catch {
