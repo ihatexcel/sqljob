@@ -84420,7 +84420,13 @@ const createExecutionSlice = (yt, At) => ({
       St++;
       const Nt = wt === 1 ? " (query2)" : "";
       At().setStatus(`Parsing niveau ${St}${Nt}...`, "loading");
-      const Ot = await $t(Dt), Ut = await DuckDBManager.executeQuery(Ot);
+      const Ot = await $t(Dt);
+      let Ut;
+      try {
+        Ut = await DuckDBManager.executeQuery(Ot);
+      } catch (rr) {
+        throw rr._partialOuterQuery = Lt, rr;
+      }
       let Ht;
       if (Et) {
         const rr = Ut.length > 0 ? Object.values(Ut[0])[0] : null;
@@ -84445,7 +84451,7 @@ const createExecutionSlice = (yt, At) => ({
       const Lt = await $t(Ct);
       return xt[kt].push({ level: "final", innerQuery: Lt, replacement: null }), Lt;
     } catch (Lt) {
-      throw xt[kt].some((It) => It.level === "final") || xt[kt].push({ level: "final", innerQuery: Ct, replacement: null }), Lt;
+      throw xt[kt].some((It) => It.level === "final") || xt[kt].push({ level: "final", innerQuery: Lt._partialOuterQuery ?? Ct, replacement: null }), Lt;
     }
   },
   async executeSqlRecursiveParseCell(xt) {
