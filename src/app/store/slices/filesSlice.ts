@@ -229,24 +229,26 @@ export const createFilesSlice = (set: any, get: any) => ({
                 cell._rowCount = Number(countResult?.[0]?.cnt ?? 0)
             } catch { cell._rowCount = 0 }
 
-            // Compte les lignes totales du fichier source (all_varchar) pour détecter les lignes non intégrées
-            // (utile notamment pour xlsx où store_rejects n'est pas disponible)
+            // Détecte les cellules non intégrées via comparaison NULLs (all_varchar vs auto-type)
+            // Non applicable aux parquets (pas de pb de conversion)
             try {
                 const lower = fileName.toLowerCase()
-                let allVarcharQuery: string | null = null
+                let nullQueryRaw: string | null = null
                 if (lower.endsWith('.csv') || lower.endsWith('.csv.gz')) {
-                    allVarcharQuery = `SELECT count(*) as cnt FROM read_csv('${fileName}', HEADER = true, ALL_VARCHAR = true)`
+                    nullQueryRaw = `SELECT SUM((COLUMNS(*) IS NULL)::INT) AS nb_null FROM read_csv('${fileName}', HEADER = true, ALL_VARCHAR = true)`
                 } else if (lower.endsWith('.xlsx')) {
-                    allVarcharQuery = `SELECT count(*) as cnt FROM read_xlsx('${fileName}', HEADER = true, STOP_AT_EMPTY = false, EMPTY_AS_VARCHAR = true, ALL_VARCHAR = true)`
+                    nullQueryRaw = `SELECT SUM((COLUMNS(*) IS NULL)::INT) AS nb_null FROM read_xlsx('${fileName}', HEADER = true, STOP_AT_EMPTY = false, EMPTY_AS_VARCHAR = true, ALL_VARCHAR = true)`
                 } else if (lower.endsWith('.tsv') || lower.endsWith('.tsv.gz') || lower.endsWith('.txt') || lower.endsWith('.txt.gz')) {
-                    allVarcharQuery = `SELECT count(*) as cnt FROM read_csv('${fileName}', HEADER = true, DELIM = '\t', ALL_VARCHAR = true)`
-                } else if (lower.endsWith('.parquet') || lower.endsWith('.parquet.gz')) {
-                    allVarcharQuery = `SELECT count(*) as cnt FROM read_parquet('${fileName}')`
+                    nullQueryRaw = `SELECT SUM((COLUMNS(*) IS NULL)::INT) AS nb_null FROM read_csv('${fileName}', HEADER = true, DELIM = '\t', ALL_VARCHAR = true)`
                 }
-                if (allVarcharQuery) {
-                    const allVarcharResult = await DuckDBManager.executeQuery(allVarcharQuery)
-                    const allVarcharCount = Number(allVarcharResult?.[0]?.cnt ?? 0)
-                    const rejectFromDiff = allVarcharCount - cell._rowCount
+                if (nullQueryRaw) {
+                    const [rawResult, intResult] = await Promise.all([
+                        DuckDBManager.executeQuery(nullQueryRaw),
+                        DuckDBManager.executeQuery(`SELECT SUM((COLUMNS(*) IS NULL)::INT) AS nb_null FROM "${tableName}"`),
+                    ])
+                    const nullRaw = Number(rawResult?.[0]?.nb_null ?? 0)
+                    const nullInt = Number(intResult?.[0]?.nb_null ?? 0)
+                    const rejectFromDiff = nullInt - nullRaw
                     if (rejectFromDiff > (cell._rejectErrorsCount ?? 0)) {
                         cell._rejectErrorsCount = rejectFromDiff
                     }
