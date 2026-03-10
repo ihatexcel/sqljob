@@ -139,6 +139,12 @@ export const createFilesSlice = (set: any, get: any) => ({
         const skipRunNextCells = options.skipRunNextCells === true
         cell._fileName = file.name
         cell._currentFile = file
+        cell._parseLevels = []
+        cell._parseLevels2 = []
+        cell._mainQueryError = null
+        cell._fallbackQueryError = null
+        cell._rejectErrorsCount = 0
+        cell._rowCount = 0
         set({ isLoading: true })
         cell._status = 'running'
         get().setStatus(`Chargement de ${cell.name}...`, 'loading')
