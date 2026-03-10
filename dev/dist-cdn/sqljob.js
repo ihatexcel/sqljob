@@ -84409,39 +84409,44 @@ const createExecutionSlice = (yt, At) => ({
     const kt = wt === 1 ? "_parseLevels2" : "_parseLevels";
     xt[kt] = [];
     let Ct = At().parseQueryWithParameters(ConfigManager.getCellQuery(xt, wt) || ""), St = 0;
-    const Tt = 10, $t = async (It) => {
+    const Tt = 10, $t = async (Lt) => {
       if (St >= Tt)
         throw new Error("Nombre maximum de niveaux d'imbrication atteint (10)");
-      const jt = It.indexOf("}}");
-      if (jt === -1) return It;
-      const Dt = It.lastIndexOf("{{", jt);
-      if (Dt === -1) return It;
-      const Nt = It.substring(Dt + 2, jt).trim();
+      const It = Lt.indexOf("}}");
+      if (It === -1) return Lt;
+      const jt = Lt.lastIndexOf("{{", It);
+      if (jt === -1) return Lt;
+      const Dt = Lt.substring(jt + 2, It).trim();
       St++;
-      const Ot = wt === 1 ? " (query2)" : "";
-      At().setStatus(`Parsing niveau ${St}${Ot}...`, "loading");
-      const Ut = await $t(Nt), Ht = await DuckDBManager.executeQuery(Ut);
-      let Vt;
+      const Nt = wt === 1 ? " (query2)" : "";
+      At().setStatus(`Parsing niveau ${St}${Nt}...`, "loading");
+      const Ot = await $t(Dt), Ut = await DuckDBManager.executeQuery(Ot);
+      let Ht;
       if (Et) {
-        const gr = Ht.length > 0 ? Object.values(Ht[0])[0] : null;
-        Vt = gr != null ? String(gr) : "";
+        const rr = Ut.length > 0 ? Object.values(Ut[0])[0] : null;
+        Ht = rr != null ? String(rr) : "";
       } else {
-        if (!Ht || Ht.length === 0)
+        if (!Ut || Ut.length === 0)
           throw new Error(`Niveau ${St}: La requête n'a retourné aucun résultat`);
-        const gr = Object.values(Ht[0])[0];
-        if (gr == null)
+        const rr = Object.values(Ut[0])[0];
+        if (rr == null)
           throw new Error(`Niveau ${St}: Le résultat est null ou undefined`);
-        Vt = String(gr);
+        Ht = String(rr);
       }
       xt[kt].push({
         level: St,
-        innerQuery: Ut,
-        replacement: Vt
+        innerQuery: Ot,
+        replacement: Ht
       });
-      const Yt = String(Vt).replace(/\$/g, "$$$$"), rr = It.substring(0, Dt) + Yt + It.substring(jt + 2);
-      return await $t(rr);
-    }, Lt = await $t(Ct);
-    return xt[kt].push({ level: "final", innerQuery: Lt, replacement: null }), Lt;
+      const Vt = String(Ht).replace(/\$/g, "$$$$"), Yt = Lt.substring(0, jt) + Vt + Lt.substring(It + 2);
+      return await $t(Yt);
+    };
+    try {
+      const Lt = await $t(Ct);
+      return xt[kt].push({ level: "final", innerQuery: Lt, replacement: null }), Lt;
+    } catch (Lt) {
+      throw xt[kt].some((It) => It.level === "final") || xt[kt].push({ level: "final", innerQuery: Ct, replacement: null }), Lt;
+    }
   },
   async executeSqlRecursiveParseCell(xt) {
     var wt, Et, kt, Ct;
