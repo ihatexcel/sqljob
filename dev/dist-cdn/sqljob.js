@@ -83801,9 +83801,9 @@ CASE
          HEADER = true, AUTO_DETECT = true,
          SAMPLE_SIZE = -1, IGNORE_ERRORS = true, store_rejects = true,
          columns = {{
-          SELECT REPLACE(''{ '' ||
-       string_agg('''' || REPLACE(column_name, '''', '''''') || ''' : ''' || column_type || '''', '', '')
-       || '' }'' , '''', '''''') AS columns_str
+          SELECT REPLACE('{ ' ||
+       string_agg('''' || REPLACE(column_name, '''', '''''') || ''' : ''' || column_type || '''', ', ')
+       || ' }' , '''', '''''') AS columns_str
 FROM (DESCRIBE SELECT * FROM {name});}}
          )'
     WHEN lower('{fileName}') LIKE '%.xlsx'
@@ -83822,9 +83822,9 @@ FROM (DESCRIBE SELECT * FROM {name});}}
          DELIM = ''	'', AUTO_DETECT = true,
          SAMPLE_SIZE = -1, IGNORE_ERRORS = true, store_rejects = true,
          columns = {{
-          SELECT REPLACE(''{ '' ||
-       string_agg('''' || REPLACE(column_name, '''', '''''') || ''' : ''' || column_type || '''', '', '')
-       || '' }'' , '''', '''''') AS columns_str
+          SELECT REPLACE('{ ' ||
+       string_agg('''' || REPLACE(column_name, '''', '''''') || ''' : ''' || column_type || '''', ', ')
+       || ' }' , '''', '''''') AS columns_str
 FROM (DESCRIBE SELECT * FROM {name});}}
          )'
     WHEN lower('{fileName}') LIKE '%.parquet'
