@@ -196,10 +196,10 @@ export const createFilesSlice = (set: any, get: any) => ({
                     try {
                         try { await DuckDBManager.executeQuery('DROP TABLE IF EXISTS reject_errors') } catch { /* ignore */ }
                         const fallbackQuery1 = await get().parseQueryRecursively(cellLike1, 1)
+                        cell._parseLevels2 = cellLike1._parseLevels2 || []
                         await DuckDBManager.executeQuery(fallbackQuery1)
                         executed = true
                         loadQuery = fallbackQuery1
-                        cell._parseLevels2 = cellLike1._parseLevels2 || []
                         cell._loadedViaFallback = true
                         try {
                             const rejectResult = await DuckDBManager.executeQuery('SELECT count(*) as cnt FROM reject_errors')
@@ -207,6 +207,7 @@ export const createFilesSlice = (set: any, get: any) => ({
                         } catch { cell._rejectErrorsCount = 0 }
                         get().setStatus(`${cell.name} chargé via requête de fallback`, 'success')
                     } catch (fallbackError: any) {
+                        cell._parseLevels2 = cellLike1._parseLevels2 || []
                         cell._fallbackQueryError = fallbackError.message
                         get().setStatus(`Requête fallback échouée : ${fallbackError.message}`, 'error')
                     }
