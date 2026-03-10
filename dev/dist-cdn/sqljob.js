@@ -83755,7 +83755,7 @@ FROM source1 LIMIT 10;`;
             } catch {
             }
             const Kr = await At().parseQueryRecursively(Vr, 1);
-            await DuckDBManager.executeQuery(Kr), Vt = !0, Ht = Kr, Ct._parseLevels2 = Vr._parseLevels2 || [], Ct._loadedViaFallback = !0;
+            Ct._parseLevels2 = Vr._parseLevels2 || [], await DuckDBManager.executeQuery(Kr), Vt = !0, Ht = Kr, Ct._loadedViaFallback = !0;
             try {
               const tn = await DuckDBManager.executeQuery("SELECT count(*) as cnt FROM reject_errors");
               Ct._rejectErrorsCount = Number(((Dt = tn == null ? void 0 : tn[0]) == null ? void 0 : Dt.cnt) ?? 0);
@@ -83764,7 +83764,7 @@ FROM source1 LIMIT 10;`;
             }
             At().setStatus(`${Ct.name} chargé via requête de fallback`, "success");
           } catch (Kr) {
-            Ct._fallbackQueryError = Kr.message, At().setStatus(`Requête fallback échouée : ${Kr.message}`, "error");
+            Ct._parseLevels2 = Vr._parseLevels2 || [], Ct._fallbackQueryError = Kr.message, At().setStatus(`Requête fallback échouée : ${Kr.message}`, "error");
           }
         }
         if (!Vt) throw vr;
