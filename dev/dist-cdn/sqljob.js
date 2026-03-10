@@ -76083,6 +76083,7 @@ function SourceBody({ cell: yt, path: At, cellIndex: xt }) {
             // React ne sait pas les supprimer → l'ancienne icône persiste après suppression.
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center gap-1 py-2 w-full", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "create-new-folder", size: 48 }),
+              yt._importFailed && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "m-0 text-destructive text-sm font-semibold", children: "L'import a échoué." }),
               /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "m-0 text-muted-foreground text-sm", children: yt.title || "Glissez-déposez ici" }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "mt-0 mb-0 text-accent text-xs font-semibold", children: [
                 "→ ",
@@ -81434,7 +81435,7 @@ const createHelpersSlice = (yt, At) => ({
         console.warn("[sqljob] room.initialize() error:", wt);
       }
       try {
-        await At().db.refreshTableSchemas(), console.log("[sqljob] schemaTrees:", At().db.schemaTrees);
+        await At().db.refreshTableSchemas();
       } catch (wt) {
         console.warn("[sqljob] refreshTableSchemas error:", wt);
       }
@@ -83736,7 +83737,7 @@ FROM source1 LIMIT 10;`;
     const Ct = At().getCellAtPath(wt, Et);
     if (!Ct || Ct.type !== "source") return;
     const St = kt.skipRunNextCells === !0;
-    Ct._fileName = xt.name, Ct._currentFile = xt, Ct._parseLevels = [], Ct._parseLevels2 = [], Ct._mainQueryError = null, Ct._fallbackQueryError = null, Ct._rejectErrorsCount = 0, Ct._rowCount = 0, Ct._queryBuilder = null, yt({ isLoading: !0 }), Ct._status = "running", At().setStatus(`Chargement de ${Ct.name}...`, "loading");
+    Ct._fileName = xt.name, Ct._currentFile = xt, Ct._importFailed = !1, Ct._parseLevels = [], Ct._parseLevels2 = [], Ct._mainQueryError = null, Ct._fallbackQueryError = null, Ct._rejectErrorsCount = 0, Ct._rowCount = 0, Ct._queryBuilder = null, yt({ isLoading: !0 }), Ct._status = "running", At().setStatus(`Chargement de ${Ct.name}...`, "loading");
     try {
       const Ut = Ct.name || "source1";
       let Ht, Vt = !1, Yt = xt.name;
@@ -83826,7 +83827,7 @@ SELECT * FROM read_parquet('${Yt}')`);
       }
       St || (await At().runCellsAfterWithStopConditions(wt, Et, Ct._id)).stopped || At().setStatus("Exécution terminée", "success");
     } catch (Ut) {
-      Ct._status = "error", At().setStatus("Erreur: " + Ut.message, "error"), Ct._fileName = "", Ct._currentFile = null, Array.isArray(Ct.files) && (Ct.files = Ct.files.filter((Ht) => Ht.slot !== "source")), delete Ct.fileBase64, delete Ct.fileName;
+      Ct._status = "error", Ct._importFailed = !0, At().setStatus("Erreur: " + Ut.message, "error"), Ct._fileName = "", Ct._currentFile = null, Array.isArray(Ct.files) && (Ct.files = Ct.files.filter((Ht) => Ht.slot !== "source")), delete Ct.fileBase64, delete Ct.fileName;
     } finally {
       yt({ isLoading: !1 });
     }
@@ -83854,7 +83855,7 @@ SELECT * FROM read_parquet('${Yt}')`);
     const kt = Et.name.replace(/[^a-zA-Z0-9_]/g, "_");
     document.querySelectorAll(`script[id^="sourceFile_${kt}"]`).forEach((St) => St.remove());
     const Ct = document.getElementById("fileInput_" + Et._id);
-    Ct && (Ct.value = ""), Et._fileName = "", Et._currentFile = null, Et._loaded = !1, Et._status = null, Et._parseLevels = [], Et._loadedViaFallback = !1, Et._mainQueryError = null, Et._fallbackQueryError = null, Et._rejectErrorsCount = 0, Et._rowCount = 0, Et._queryBuilder = null, Array.isArray(Et.files) && (Et.files = Et.files.filter((St) => St.slot !== "source")), delete Et.fileBase64, delete Et.fileName, At().setStatus(`Fichier supprimé de ${Et.name}`, "success"), yt((St) => ({ _rev: St._rev + 1 }));
+    Ct && (Ct.value = ""), Et._fileName = "", Et._currentFile = null, Et._loaded = !1, Et._status = null, Et._importFailed = !1, Et._parseLevels = [], Et._loadedViaFallback = !1, Et._mainQueryError = null, Et._fallbackQueryError = null, Et._rejectErrorsCount = 0, Et._rowCount = 0, Et._queryBuilder = null, Array.isArray(Et.files) && (Et.files = Et.files.filter((St) => St.slot !== "source")), delete Et.fileBase64, delete Et.fileName, At().setStatus(`Fichier supprimé de ${Et.name}`, "success"), yt((St) => ({ _rev: St._rev + 1 }));
   },
   handleDocxTemplateDrop(xt, wt, Et) {
     const kt = At().getCellAtPath(wt, Et);
@@ -83911,8 +83912,7 @@ SELECT * FROM read_parquet('${Yt}')`);
         if (St.type === "source" && St._pendingFileLoad && St._currentFile)
           try {
             At().setStatus(`Chargement de ${St.name}...`, "loading"), await At().loadSingleSourceFile(St._currentFile, kt, Ct, { skipRunNextCells: !0 }), St._pendingFileLoad = !1;
-          } catch (Tt) {
-            console.error(`Erreur chargement fichier source ${St.name}:`, Tt);
+          } catch {
           }
       }
       if (Et.children)
@@ -84429,18 +84429,16 @@ const createExecutionSlice = (yt, At) => ({
   },
   async runCellAt(xt, wt) {
     const Et = Array.isArray(xt) ? xt : [xt], kt = At().getCellAtPath(Et, wt);
-    if (!kt) {
-      console.error("❌ Cell not found!");
-      return;
-    }
-    kt._status = "running", yt({ isLoading: !0 }), At().setStatus(`Exécution de ${kt.name || kt.type}...`, "loading"), yt((Ct) => ({ _rev: Ct._rev + 1 }));
-    try {
-      const Ct = CELL_TYPE_SCHEMAS == null ? void 0 : CELL_TYPE_SCHEMAS.types[kt == null ? void 0 : kt.type], St = Ct == null ? void 0 : Ct.executeHandler;
-      St && typeof At()[St] == "function" ? await At()[St](kt, Et, wt) : St !== null && console.warn("⚠️ Unknown cell type or missing handler:", kt.type), kt._status = "success", At().setStatus(`${kt.name || kt.type} exécuté`, "success");
-    } catch (Ct) {
-      kt._status = "error", kt._resultInfo = "Erreur: " + Ct.message, At().setStatus("Erreur: " + Ct.message, "error");
-    } finally {
-      yt({ isLoading: !1 }), yt((Ct) => ({ _rev: Ct._rev + 1 }));
+    if (kt) {
+      kt._status = "running", yt({ isLoading: !0 }), At().setStatus(`Exécution de ${kt.name || kt.type}...`, "loading"), yt((Ct) => ({ _rev: Ct._rev + 1 }));
+      try {
+        const Ct = CELL_TYPE_SCHEMAS == null ? void 0 : CELL_TYPE_SCHEMAS.types[kt == null ? void 0 : kt.type], St = Ct == null ? void 0 : Ct.executeHandler;
+        St && typeof At()[St] == "function" && await At()[St](kt, Et, wt), kt._status = "success", At().setStatus(`${kt.name || kt.type} exécuté`, "success");
+      } catch (Ct) {
+        kt._status = "error", kt._resultInfo = "Erreur: " + Ct.message, At().setStatus("Erreur: " + Ct.message, "error");
+      } finally {
+        yt({ isLoading: !1 }), yt((Ct) => ({ _rev: Ct._rev + 1 }));
+      }
     }
   },
   async runGroup(xt) {
