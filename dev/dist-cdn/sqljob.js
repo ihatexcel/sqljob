@@ -83737,7 +83737,7 @@ FROM source1 LIMIT 10;`;
     const Ct = At().getCellAtPath(wt, Et);
     if (!Ct || Ct.type !== "source") return;
     const St = kt.skipRunNextCells === !0;
-    Ct._fileName = xt.name, Ct._currentFile = xt, Ct._importFailed = !1, Ct._parseLevels = [], Ct._parseLevels2 = [], Ct._mainQueryError = null, Ct._fallbackQueryError = null, Ct._rejectErrorsCount = 0, Ct._rowCount = 0, Ct._queryBuilder = null, yt({ isLoading: !0 }), Ct._status = "running", At().setStatus(`Chargement de ${Ct.name}...`, "loading");
+    Ct._fileName = xt.name, Ct._currentFile = xt, Ct._importFailed = !1, Ct._parseLevels = [], Ct._parseLevels2 = [], Ct._mainQueryError = null, Ct._fallbackQueryError = null, Ct._rejectErrorsCount = 0, Ct._rejectedCellsCount = 0, Ct._rowCount = 0, Ct._queryBuilder = null, yt({ isLoading: !0 }), Ct._status = "running", At().setStatus(`Chargement de ${Ct.name}...`, "loading");
     try {
       const Vt = Ct.name || "source1";
       let Yt, rr = !1, gr = xt.name;
@@ -83798,8 +83798,8 @@ FROM source1 LIMIT 10;`;
           const [qr, tn] = await Promise.all([
             DuckDBManager.executeQuery(Gr),
             DuckDBManager.executeQuery(`SELECT SUM((COLUMNS(*) IS NULL)::INT) AS nb_null FROM "${Vt}"`)
-          ]), pn = Number(((Ot = qr == null ? void 0 : qr[0]) == null ? void 0 : Ot.nb_null) ?? 0), an = Number(((Ut = tn == null ? void 0 : tn[0]) == null ? void 0 : Ut.nb_null) ?? 0) - pn;
-          an > (Ct._rejectErrorsCount ?? 0) && (Ct._rejectErrorsCount = an);
+          ]), pn = Number(((Ot = qr == null ? void 0 : qr[0]) == null ? void 0 : Ot.nb_null) ?? 0), vn = Number(((Ut = tn == null ? void 0 : tn[0]) == null ? void 0 : Ut.nb_null) ?? 0);
+          Ct._rejectedCellsCount = Math.max(0, vn - pn);
         }
       } catch {
       }
@@ -83867,7 +83867,7 @@ SELECT * FROM read_parquet('${gr}')`);
     const kt = Et.name.replace(/[^a-zA-Z0-9_]/g, "_");
     document.querySelectorAll(`script[id^="sourceFile_${kt}"]`).forEach((St) => St.remove());
     const Ct = document.getElementById("fileInput_" + Et._id);
-    Ct && (Ct.value = ""), Et._fileName = "", Et._currentFile = null, Et._loaded = !1, Et._status = null, Et._importFailed = !1, Et._parseLevels = [], Et._loadedViaFallback = !1, Et._mainQueryError = null, Et._fallbackQueryError = null, Et._rejectErrorsCount = 0, Et._rowCount = 0, Et._queryBuilder = null, Array.isArray(Et.files) && (Et.files = Et.files.filter((St) => St.slot !== "source")), delete Et.fileBase64, delete Et.fileName, At().setStatus(`Fichier supprimé de ${Et.name}`, "success"), yt((St) => ({ _rev: St._rev + 1 }));
+    Ct && (Ct.value = ""), Et._fileName = "", Et._currentFile = null, Et._loaded = !1, Et._status = null, Et._importFailed = !1, Et._parseLevels = [], Et._loadedViaFallback = !1, Et._mainQueryError = null, Et._fallbackQueryError = null, Et._rejectErrorsCount = 0, Et._rejectedCellsCount = 0, Et._rowCount = 0, Et._queryBuilder = null, Array.isArray(Et.files) && (Et.files = Et.files.filter((St) => St.slot !== "source")), delete Et.fileBase64, delete Et.fileName, At().setStatus(`Fichier supprimé de ${Et.name}`, "success"), yt((St) => ({ _rev: St._rev + 1 }));
   },
   handleDocxTemplateDrop(xt, wt, Et) {
     const kt = At().getCellAtPath(wt, Et);
