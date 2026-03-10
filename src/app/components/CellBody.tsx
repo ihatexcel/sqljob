@@ -299,7 +299,7 @@ function SourceBody({ cell, path, cellIndex }: any) {
                     {queryBuilder && (
                         <AccordionItem value="query-builder">
                             <AccordionTrigger className="text-sm font-semibold text-primary py-1">
-                                Requête de production
+                                Exemple requête stable
                             </AccordionTrigger>
                             <AccordionContent>
                                 <div className="relative">

@@ -236,11 +236,11 @@ export const createFilesSlice = (set: any, get: any) => ({
                     if (ext.endsWith('.csv') || ext.endsWith('.csv.gz')) {
                         const descRows = await DuckDBManager.executeQuery(`DESCRIBE SELECT * FROM "${tableName}"`)
                         const cols = descRows.map((r: any) => `'${r.column_name.replace(/'/g, "''")}': '${r.column_type}'`).join(', ')
-                        qb = `CREATE OR REPLACE TABLE ${tableName} AS\nSELECT * FROM read_csv('${fileName}',\n  HEADER = true, AUTO_DETECT = true,\n  SAMPLE_SIZE = -1, IGNORE_ERRORS = true, store_rejects = true,\n  columns = {${cols}})`
+                        qb = `CREATE OR REPLACE TABLE ${tableName} AS\nSELECT * FROM read_csv('${fileName}',\n  HEADER = true,\n  SAMPLE_SIZE = -1, IGNORE_ERRORS = true, store_rejects = true,\n  columns = {${cols}})`
                     } else if (ext.endsWith('.tsv') || ext.endsWith('.tsv.gz') || ext.endsWith('.txt') || ext.endsWith('.txt.gz')) {
                         const descRows = await DuckDBManager.executeQuery(`DESCRIBE SELECT * FROM "${tableName}"`)
                         const cols = descRows.map((r: any) => `'${r.column_name.replace(/'/g, "''")}': '${r.column_type}'`).join(', ')
-                        qb = `CREATE OR REPLACE TABLE ${tableName} AS\nSELECT * FROM read_csv('${fileName}',\n  HEADER = true, DELIM = '\\t', AUTO_DETECT = true,\n  SAMPLE_SIZE = -1, IGNORE_ERRORS = true, store_rejects = true,\n  columns = {${cols}})`
+                        qb = `CREATE OR REPLACE TABLE ${tableName} AS\nSELECT * FROM read_csv('${fileName}',\n  HEADER = true, DELIM = '\\t',\n  SAMPLE_SIZE = -1, IGNORE_ERRORS = true, store_rejects = true,\n  columns = {${cols}})`
                     } else if (ext.endsWith('.xlsx') || ext.endsWith('.xls')) {
                         qb = `CREATE OR REPLACE TABLE ${tableName} AS\nSELECT * FROM read_xlsx('${fileName}',\n  HEADER = true, STOP_AT_EMPTY = false,\n  EMPTY_AS_VARCHAR = true, IGNORE_ERRORS = true, store_rejects = true)`
                     } else if (ext.endsWith('.parquet') || ext.endsWith('.parquet.gz')) {
