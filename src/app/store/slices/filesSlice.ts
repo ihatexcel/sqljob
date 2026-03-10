@@ -145,6 +145,7 @@ export const createFilesSlice = (set: any, get: any) => ({
         cell._mainQueryError = null
         cell._fallbackQueryError = null
         cell._rejectErrorsCount = 0
+        cell._rejectedCellsCount = 0
         cell._rowCount = 0
         cell._queryBuilder = null
         set({ isLoading: true })
@@ -248,10 +249,7 @@ export const createFilesSlice = (set: any, get: any) => ({
                     ])
                     const nullRaw = Number(rawResult?.[0]?.nb_null ?? 0)
                     const nullInt = Number(intResult?.[0]?.nb_null ?? 0)
-                    const rejectFromDiff = nullInt - nullRaw
-                    if (rejectFromDiff > (cell._rejectErrorsCount ?? 0)) {
-                        cell._rejectErrorsCount = rejectFromDiff
-                    }
+                    cell._rejectedCellsCount = Math.max(0, nullInt - nullRaw)
                 }
             } catch { /* ignore */ }
 
@@ -349,6 +347,7 @@ export const createFilesSlice = (set: any, get: any) => ({
         cell._mainQueryError = null
         cell._fallbackQueryError = null
         cell._rejectErrorsCount = 0
+        cell._rejectedCellsCount = 0
         cell._rowCount = 0
         cell._queryBuilder = null
         if (Array.isArray(cell.files)) cell.files = cell.files.filter((f: any) => f.slot !== 'source')
