@@ -267,7 +267,9 @@ export const createFilesSlice = (set: any, get: any) => ({
                         const cols = descRows.map((r: any) => `'${r.column_name.replace(/'/g, "''")}': '${r.column_type}'`).join(', ')
                         qb = `CREATE OR REPLACE TABLE ${tableName} AS\nSELECT * FROM read_csv('${fileName}',\n  HEADER = true, DELIM = '\\t',\n  IGNORE_ERRORS = true, store_rejects = true,\n  columns = {${cols}})`
                     } else if (ext.endsWith('.xlsx') || ext.endsWith('.xls')) {
-                        qb = `CREATE OR REPLACE TABLE ${tableName} AS\nSELECT * FROM read_xlsx('${fileName}',\n  HEADER = true, STOP_AT_EMPTY = false,\n  EMPTY_AS_VARCHAR = true, IGNORE_ERRORS = true)`
+                        const descRows = await DuckDBManager.executeQuery(`DESCRIBE SELECT * FROM "${tableName}"`)
+                        const colDefs = descRows.map((r: any) => `  "${r.column_name.replace(/"/g, '""')}" ${r.column_type}`).join(',\n')
+                        qb = `CREATE OR REPLACE TABLE ${tableName} (\n${colDefs}\n);\nCOPY ${tableName} FROM '${fileName}' (FORMAT xlsx, HEADER true, STOP_AT_EMPTY false, EMPTY_AS_VARCHAR true, IGNORE_ERRORS true)`
                     } else if (ext.endsWith('.parquet') || ext.endsWith('.parquet.gz')) {
                         qb = `CREATE OR REPLACE TABLE ${tableName} AS\nSELECT * FROM read_parquet('${fileName}')`
                     }
