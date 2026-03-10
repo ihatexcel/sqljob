@@ -344,7 +344,13 @@ export const createExecutionSlice = (set: any, get: any) => ({
             get().setStatus(`Parsing niveau ${level}${statusSuffix}...`, 'loading')
 
             const resolvedInnerQuery = await parseRecursive(innerQuery)
-            const results = await DuckDBManager.executeQuery(resolvedInnerQuery)
+            let results
+            try {
+                results = await DuckDBManager.executeQuery(resolvedInnerQuery)
+            } catch (e: any) {
+                e._partialOuterQuery = query
+                throw e
+            }
 
             let replacement
             if (allowEmpty) {
@@ -376,9 +382,9 @@ export const createExecutionSlice = (set: any, get: any) => ({
             const finalQuery = await parseRecursive(currentQuery)
             cell[levelsKey].push({ level: 'final', innerQuery: finalQuery, replacement: null })
             return finalQuery
-        } catch (e) {
+        } catch (e: any) {
             if (!cell[levelsKey].some((l: any) => l.level === 'final')) {
-                cell[levelsKey].push({ level: 'final', innerQuery: currentQuery, replacement: null })
+                cell[levelsKey].push({ level: 'final', innerQuery: e._partialOuterQuery ?? currentQuery, replacement: null })
             }
             throw e
         }
