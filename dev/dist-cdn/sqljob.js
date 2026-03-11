@@ -6675,7 +6675,7 @@ function useId$1(At) {
   const [yt, xt] = reactExports.useState(useReactId());
   return useLayoutEffect2(() => {
     xt((wt) => wt ?? String(count$5++));
-  }, [At]), At || (yt ? `radix-${yt}` : "");
+  }, [At]), yt ? `radix-${yt}` : "";
 }
 var COLLAPSIBLE_NAME = "Collapsible", [createCollapsibleContext, createCollapsibleScope] = createContextScope$1(COLLAPSIBLE_NAME), [CollapsibleProvider, useCollapsibleContext] = createCollapsibleContext(COLLAPSIBLE_NAME), Collapsible = reactExports.forwardRef(
   (At, yt) => {
@@ -131122,44 +131122,7 @@ const AddNodePopover = ({ className: At, parentId: yt, children: xt }) => {
     }, 150);
   }, [Lt]), Mt = Et.length === 0, { theme: Nt } = useTheme();
   return jsxRuntimeExports.jsx("div", { className: "flex h-full w-full flex-col", children: jsxRuntimeExports.jsxs("div", { className: "relative flex-1 overflow-hidden", children: [Mt && jsxRuntimeExports.jsx("div", { className: "absolute inset-0 z-10 flex items-center justify-center", children: jsxRuntimeExports.jsx(AddNodePopover, { children: jsxRuntimeExports.jsxs(Button, { size: "xs", children: [jsxRuntimeExports.jsx(Plus$2, { className: "h-4 w-4" }), "Add node"] }) }) }), jsxRuntimeExports.jsxs(index$8, { minZoom: 0.1, colorMode: Nt, nodes: Et, edges: St, nodeTypes: yt, onNodesChange: $t, viewport: It, onViewportChange: jt, nodesConnectable: !1, edgesReconnectable: !1, connectOnClick: !1, children: [jsxRuntimeExports.jsx(MiniMap, {}), jsxRuntimeExports.jsx(Controls, { position: "top-left" }), jsxRuntimeExports.jsx(Background, { variant: BackgroundVariant.Dots, gap: 16, size: 1 })] })] }) });
-}, SqlEditorQueryPicker = ({ cellId: At }) => {
-  const yt = useNotebookStore((wt) => {
-    var Ct, kt;
-    return ((kt = (Ct = wt.sqlEditor) == null ? void 0 : Ct.config) == null ? void 0 : kt.queries) ?? [];
-  }), xt = useNotebookStore((wt) => wt.updateCanvasCellSql);
-  return yt.length ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 border-b border-border bg-muted/30 px-2 py-1 text-xs shrink-0", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-muted-foreground shrink-0", children: "SQL Editor :" }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs(
-      "select",
-      {
-        className: "flex-1 min-w-0 rounded border border-input bg-background px-1 py-0.5 text-xs",
-        defaultValue: "",
-        onChange: (wt) => {
-          const Ct = yt.find((kt) => kt.id === wt.target.value);
-          Ct && xt && xt(At, Ct.query);
-        },
-        children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "", children: "— choisir une requête —" }),
-          yt.map((wt) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: wt.id, children: wt.name }, wt.id))
-        ]
-      }
-    )
-  ] }) : null;
 };
-function createSqljobCellRegistry() {
-  var xt;
-  const At = createDefaultCellRegistry(), yt = (xt = At.sql) == null ? void 0 : xt.renderCell;
-  return yt ? {
-    ...At,
-    sql: {
-      ...At.sql,
-      renderCell: (wt) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex h-full flex-col", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(SqlEditorQueryPicker, { cellId: wt.id }),
-        yt(wt)
-      ] })
-    }
-  } : At;
-}
 /**
  * @license lucide-react v0.577.0 - ISC
  *
@@ -143106,7 +143069,7 @@ const duckdbManagerConnector = createBaseDuckDbConnector(
         }
       }
     }
-  })(At, yt, xt), kt = createCellsSlice$1({ cellRegistry: createSqljobCellRegistry() })(At, yt, xt), Et = createNotebookSlice()(At, yt, xt), St = createCanvasSlice()(At, yt, xt), Tt = buildInitialState(), $t = createPagesSlice(At, yt), Lt = createHelpersSlice(At, yt), It = createParametersSlice(At, yt), Dt = createExportSlice(At, yt), Rt = createGroupsSlice(At, yt), jt = createCellsSlice(At, yt), Mt = createFilesSlice(At, yt), Nt = createEditorsSlice(At, yt), Ot = createExecutionSlice(At, yt);
+  })(At, yt, xt), kt = createCellsSlice$1({ cellRegistry: createDefaultCellRegistry() })(At, yt, xt), Et = createNotebookSlice()(At, yt, xt), St = createCanvasSlice()(At, yt, xt), Tt = buildInitialState(), $t = createPagesSlice(At, yt), Lt = createHelpersSlice(At, yt), It = createParametersSlice(At, yt), Dt = createExportSlice(At, yt), Rt = createGroupsSlice(At, yt), jt = createCellsSlice(At, yt), Mt = createFilesSlice(At, yt), Nt = createEditorsSlice(At, yt), Ot = createExecutionSlice(At, yt);
   function Bt() {
     var er, Zt;
     const Kt = (Zt = (er = yt().layout) == null ? void 0 : er.config) == null ? void 0 : Zt.nodes;
@@ -143171,26 +143134,6 @@ const duckdbManagerConnector = createBaseDuckDbConnector(
       typeof window < "u" && (window._loadedConfig = Kt);
       const er = buildInitialState();
       At({ ...er });
-    },
-    // Met à jour le SQL d'une cellule canvas (cells.config.data[id].data.sql)
-    // Appelé par SqlEditorQueryPicker quand l'utilisateur sélectionne une requête SQL Editor.
-    updateCanvasCellSql: (Kt, er) => {
-      At((Zt) => {
-        var Cr, Dr, Ur;
-        const sr = (Ur = (Dr = (Cr = Zt.cells) == null ? void 0 : Cr.config) == null ? void 0 : Dr.data) == null ? void 0 : Ur[Kt];
-        return sr ? {
-          cells: {
-            ...Zt.cells,
-            config: {
-              ...Zt.cells.config,
-              data: {
-                ...Zt.cells.config.data,
-                [Kt]: { ...sr, data: { ...sr.data, sql: er } }
-              }
-            }
-          }
-        } : {};
-      });
     },
     // Setters directs pour le state exposé aux composants React
     setPages: (Kt) => At({ pages: Kt }),
