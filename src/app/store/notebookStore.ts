@@ -283,7 +283,12 @@ export const useNotebookStore = create<any>((set, get, api) => {
         layout: {
             config: {
                 type: 'mosaic',
-                nodes: 'main',
+                nodes: {
+                    direction: 'row',
+                    first: 'data',
+                    second: 'main',
+                    splitPercentage: 25,
+                },
             },
             panels: {
                 main: {
@@ -296,7 +301,7 @@ export const useNotebookStore = create<any>((set, get, api) => {
                     title: 'Sources',
                     icon: DatabaseIcon,
                     component: DataSourcesPanel,
-                    placement: 'manual',
+                    placement: 'main',
                 },
             },
         },
