@@ -139193,14 +139193,14 @@ const createHelpersSlice = (At, yt) => ({
     const wt = yt().getParameters();
     let Ct = xt;
     for (const [kt, Et] of Object.entries(wt)) {
-      const St = kt.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), Tt = new RegExp("\\$" + St + "(?![a-zA-Z0-9_])", "g"), $t = String(Et).replace(/'/g, "''");
+      const St = kt.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), Tt = new RegExp("\\{\\{\\s*" + St + "\\s*\\}\\}", "g"), $t = String(Et).replace(/'/g, "''");
       Ct = Ct.replace(Tt, $t);
     }
     return Ct;
   },
   findReferencedParams(xt) {
     if (!xt) return [];
-    const wt = [], Ct = /\$([a-zA-Z_][a-zA-Z0-9_]*)/g;
+    const wt = [], Ct = /\{\{\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*\}\}/g;
     let kt;
     for (; (kt = Ct.exec(xt)) !== null; )
       wt.includes(kt[1]) || wt.push(kt[1]);
@@ -139282,7 +139282,7 @@ const createHelpersSlice = (At, yt) => ({
     }
     const Ct = yt().findDependentCells(xt), kt = yt().findDependentGroups(xt);
     if (Ct.length + kt.length !== 0) {
-      wt && yt().setStatus(`🔄 Rafraîchissement de ${Ct.length} cellule(s) et ${kt.length} groupe(s) dépendant(s) de $${xt}...`, "loading");
+      wt && yt().setStatus(`🔄 Rafraîchissement de ${Ct.length} cellule(s) et ${kt.length} groupe(s) dépendant(s) de {{ ${xt} }}...`, "loading");
       for (const St of kt)
         try {
           St.group._ifQueryResult = await yt().evaluateGroupIfQuery(St.group);
@@ -141949,9 +141949,9 @@ const createExecutionSlice = (At, yt) => ({
     const Et = async (St) => {
       if (kt >= Ct)
         throw new Error("Nombre maximum de niveaux d'imbrication atteint (10)");
-      const Tt = St.indexOf("}}");
+      const Tt = St.indexOf(">>");
       if (Tt === -1) return St;
-      const $t = St.lastIndexOf("{{", Tt);
+      const $t = St.lastIndexOf("<<", Tt);
       if ($t === -1)
         return St;
       const Lt = St.substring($t + 2, Tt).trim();
@@ -141994,7 +141994,7 @@ const createExecutionSlice = (At, yt) => ({
       yt().setStatus(`Boucle: ${$t.length} itérations`, "loading");
       for (let Lt = 0; Lt < $t.length; Lt++) {
         const It = $t[Lt];
-        At({ _currentLoopValue: It }), yt().setStatus(`Boucle ${Lt + 1}/${$t.length}: $loop = ${It}`, "loading");
+        At({ _currentLoopValue: It }), yt().setStatus(`Boucle ${Lt + 1}/${$t.length}: {{ loop }} = ${It}`, "loading");
         const Dt = yt().getAllItemsSorted(wt);
         for (const Rt of Dt) {
           if (Rt.type === "child") {
@@ -142073,9 +142073,9 @@ const createExecutionSlice = (At, yt) => ({
     const Tt = 10, $t = async (Lt) => {
       if (St >= Tt)
         throw new Error("Nombre maximum de niveaux d'imbrication atteint (10)");
-      const It = Lt.indexOf("}}");
+      const It = Lt.indexOf(">>");
       if (It === -1) return Lt;
-      const Dt = Lt.lastIndexOf("{{", It);
+      const Dt = Lt.lastIndexOf("<<", It);
       if (Dt === -1) return Lt;
       const Rt = Lt.substring(Dt + 2, It).trim();
       St++;
@@ -143995,7 +143995,7 @@ function LoopConfigModal() {
       (($t = St.loop) == null ? void 0 : $t.enabled) && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(Alert, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(AlertDescription, { className: "text-sm", children: [
           "La requête doit retourner une colonne. Chaque valeur sera utilisée comme variable ",
-          /* @__PURE__ */ jsxRuntimeExports.jsx("code", { className: "bg-muted px-1 rounded text-xs", children: "$loop" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("code", { className: "bg-muted px-1 rounded text-xs", children: "{{ loop }}" }),
           " pour chaque itération du groupe."
         ] }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
