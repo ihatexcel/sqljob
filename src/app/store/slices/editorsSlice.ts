@@ -20,7 +20,7 @@ export const createEditorsSlice = (set: any, get: any) => ({
             : isText ? '<span class="iconify" data-icon="material-symbols-light:article" style="font-size:0.875rem"></span>'
             : '<span class="iconify" data-icon="material-symbols-light:storage" style="font-size:0.875rem"></span>'
         const badgeClass = isJs ? 'badge-warning' : isText ? 'badge-ghost' : 'badge-info'
-        return get().renderSqlQueryEditor(cell, placeholder, true, 'query', '_showParsedQuery', languageLabel, languageIcon, badgeClass)
+        return get().renderSqlQueryEditor(cell, placeholder, true, 'query', null, languageLabel, languageIcon, badgeClass)
     },
 
     renderGroupIfQueryEditor(group: any) {
@@ -122,12 +122,10 @@ export const createEditorsSlice = (set: any, get: any) => ({
         }
     },
 
-    renderSqlQueryEditor(cell: any, placeholder: string, showResultInfo: boolean, queryType = 'query', showParsedQueryProp = '_showParsedQuery', languageLabel: any = null, languageIcon: any = null, badgeClass: any = null, pathExpr: any = null, cellIdxExpr: any = null, applySourceDefaultIfEmpty = false) {
+    renderSqlQueryEditor(cell: any, placeholder: string, showResultInfo: boolean, queryType = 'query', _unused: any = null, languageLabel: any = null, languageIcon: any = null, badgeClass: any = null, pathExpr: any = null, cellIdxExpr: any = null, applySourceDefaultIfEmpty = false) {
         const cellId = cell._id
         const queryName = queryType === 'query2' ? ConfigManager.getQuery2Name(cell) : 'main'
         const queryIndex = ConfigManager.getQueryIndexByName(cell, queryName)
-        const showParsedQuery = cell[showParsedQueryProp]
-        const parseLevelsProp = queryType === 'query2' ? '_parseLevels2' : '_parseLevels'
 
         const languageType = ConfigManager.getCellEngine(cell, queryName)
         const isJs = languageType === 'js'
@@ -146,16 +144,9 @@ export const createEditorsSlice = (set: any, get: any) => ({
                     <div class="flex justify-between items-center mb-2">
                         <span class="text-xs text-base-content/70 flex items-center gap-2">
                             <span class="badge badge-soft ${finalBadgeClass} flex items-center gap-1">${finalLanguageIcon} ${finalLanguageLabel}</span>
-                            ${devMode && !isText ? `
-                                <label class="label cursor-pointer justify-start gap-2 py-0 min-h-0">
-                                    <input type="checkbox" class="toggle toggle-sm"
-                                           x-model="cellItem.cell.${showParsedQueryProp}" />
-                                    <span class="label-text text-xs">Parsé</span>
-                                </label>
-                            ` : ''}
                         </span>
                         <div class="flex gap-1 items-center">
-                            ${!showParsedQuery && devMode && !isText ? `
+                            ${devMode && !isText ? `
                                 <button
                                     @click="$store.templateModal.open('${cellId}', '${queryType}', '${languageType}')"
                                     class="px-2 py-1 border border-base-300 bg-base-200 text-base-content/70 rounded cursor-pointer text-xs transition-all hover:border-primary hover:text-base-content"
@@ -163,7 +154,7 @@ export const createEditorsSlice = (set: any, get: any) => ({
                                     📋 Templates
                                 </button>
                             ` : ''}
-                            ${!showParsedQuery && pathExpr != null && (cellIdxExpr === 0 || cellIdxExpr) ? `
+                            ${pathExpr != null && (cellIdxExpr === 0 || cellIdxExpr) ? `
                                 <button
                                     @click="runCellAt(${pathExpr}, ${cellIdxExpr})"
                                     :disabled="isLoading"
@@ -173,31 +164,29 @@ export const createEditorsSlice = (set: any, get: any) => ({
                                     <svg x-show="cellItem.cell._status !== 'running'" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
                                 </button>
                             ` : ''}
-                            ${!showParsedQuery ? `
-                                <button
-                                    x-ref="copyBtn_${cellId}_${queryType}"
-                                    @click="(() => {
-                                        const text = ConfigManager.getCellQuery(cellItem.cell, '${queryName}') || '';
-                                        const btn = $refs['copyBtn_${cellId}_${queryType}'];
-                                        if (!btn) return;
-                                        navigator.clipboard.writeText(text).then(() => {
-                                            const originalHTML = btn.innerHTML;
-                                            btn.innerHTML = '<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;14&quot; height=&quot;14&quot; viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><polyline points=&quot;20 6 9 17 4 12&quot;></polyline></svg>';
-                                            btn.classList.add('text-success');
-                                            setTimeout(() => {
-                                                btn.innerHTML = originalHTML;
-                                                btn.classList.remove('text-success');
-                                            }, 1500);
-                                        }).catch(err => console.error('Erreur copie:', err));
-                                    })()"
-                                    class="p-1.5 text-base-content/40 hover:text-base-content transition-colors cursor-pointer"
-                                    title="Copier le code">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2 2v1"></path></svg>
-                                </button>
-                            ` : ''}
+                            <button
+                                x-ref="copyBtn_${cellId}_${queryType}"
+                                @click="(() => {
+                                    const text = ConfigManager.getCellQuery(cellItem.cell, '${queryName}') || '';
+                                    const btn = $refs['copyBtn_${cellId}_${queryType}'];
+                                    if (!btn) return;
+                                    navigator.clipboard.writeText(text).then(() => {
+                                        const originalHTML = btn.innerHTML;
+                                        btn.innerHTML = '<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;14&quot; height=&quot;14&quot; viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><polyline points=&quot;20 6 9 17 4 12&quot;></polyline></svg>';
+                                        btn.classList.add('text-success');
+                                        setTimeout(() => {
+                                            btn.innerHTML = originalHTML;
+                                            btn.classList.remove('text-success');
+                                        }, 1500);
+                                    }).catch(err => console.error('Erreur copie:', err));
+                                })()"
+                                class="p-1.5 text-base-content/40 hover:text-base-content transition-colors cursor-pointer"
+                                title="Copier le code">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
                         </div>
                     </div>
-                    ${!showParsedQuery ? (isJs || isText ? `
+                    ${isJs || isText ? `
                         <textarea
                             class="textarea textarea-bordered w-full font-mono min-h-20 p-3 resize-y text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                             x-model="cellItem.cell.queries[${queryIndex}].sql"
@@ -222,33 +211,6 @@ export const createEditorsSlice = (set: any, get: any) => ({
                                 }
                             })()"
                         ></div>
-                    `) : `
-                        <div>
-                            ${((): string => {
-                                const raw = cell[parseLevelsProp] || []
-                                const levels = raw.length > 0 ? raw : (cell.type === 'source' ? (() => {
-                                    const q = ConfigManager.getCellQuery(cell, queryName) || ''
-                                    const parsed = get().getParsedSqlQuery(q, { name: cell.name || 'source1', fileNameUpload: cell._fileName || undefined })
-                                    return [{ level: 'final', innerQuery: parsed, replacement: null }]
-                                })() : [])
-                                return levels.map((parseLevel: any) => `
-                                    <div class="relative w-full" style="margin-bottom: 0.75rem;">
-                                        <div class="flex justify-between items-center mb-2">
-                                            <span class="text-xs text-base-content/70 flex items-center gap-2">
-                                                <span class="badge badge-soft badge-primary">${parseLevel.level === 'final' ? 'Final' : 'Niveau ' + parseLevel.level}</span>
-                                                <span>${parseLevel.level === 'final' ? (isJs ? 'Code final exécuté' : 'Requête finale exécutée') : (isJs ? 'Code niveau ' + parseLevel.level : 'Requête niveau ' + parseLevel.level)}</span>
-                                            </span>
-                                        </div>
-                                        <div class="w-full min-h-20 max-h-72 p-3 bg-base-200 border border-primary rounded-lg text-base-content font-mono text-sm overflow-auto whitespace-pre-wrap break-words">${(parseLevel.innerQuery || '').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/&/g, '&amp;')}</div>
-                                        ${parseLevel.replacement ? `
-                                            <div style="margin-top: 0.1rem; padding: 0.5rem; background: var(--success-bg); border-left: 3px solid var(--success); font-family: monospace; font-size: 0.85rem;">
-                                                <strong>→ ${isJs ? 'Parsé en' : 'Résultat'}:</strong> <span>${(parseLevel.replacement || '').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/&/g, '&amp;')}</span>
-                                            </div>
-                                        ` : ''}
-                                    </div>
-                                `).join('')
-                            })()}
-                        </div>
                     `}
                 </div>
                 ${showResultInfo && cell._resultInfo ? `
@@ -258,16 +220,15 @@ export const createEditorsSlice = (set: any, get: any) => ({
         `
     },
 
-    safeRenderSqlEditor(el: HTMLElement, cell: any, placeholder: string, showResultInfo: boolean, queryType = 'query', showParsedQueryProp = '_showParsedQuery', languageLabel: any = null, languageIcon: any = null, badgeClass: any = null, pathExpr: any = null, cellIdxExpr: any = null, applySourceDefaultIfEmpty = false) {
+    safeRenderSqlEditor(el: HTMLElement, cell: any, placeholder: string, showResultInfo: boolean, queryType = 'query', _unused: any = null, languageLabel: any = null, languageIcon: any = null, badgeClass: any = null, pathExpr: any = null, cellIdxExpr: any = null, applySourceDefaultIfEmpty = false) {
         const queryName = queryType === 'query2' ? ConfigManager.getQuery2Name(cell) : 'main'
         ConfigManager.ensureCellQueries(cell, queryName)
-        const showParsed = cell[showParsedQueryProp]
         const langType = ConfigManager.getCellEngine(cell, queryName)
         const devModeVal = get().devMode
-        const key = `${showParsed ? '1' : '0'}_${langType || 'sql'}_${devModeVal ? '1' : '0'}`
+        const key = `${langType || 'sql'}_${devModeVal ? '1' : '0'}`
         if (el._sqlEditorKey === key && el.children.length > 0) return
         el._sqlEditorKey = key
-        const html = get().renderSqlQueryEditor(cell, placeholder, showResultInfo, queryType, showParsedQueryProp, languageLabel, languageIcon, badgeClass, pathExpr, cellIdxExpr, applySourceDefaultIfEmpty)
+        const html = get().renderSqlQueryEditor(cell, placeholder, showResultInfo, queryType, null, languageLabel, languageIcon, badgeClass, pathExpr, cellIdxExpr, applySourceDefaultIfEmpty)
         el.innerHTML = html
         el._x_ignoreSelf = true
         if (typeof Alpine !== 'undefined') Alpine.initTree(el)
@@ -275,10 +236,9 @@ export const createEditorsSlice = (set: any, get: any) => ({
     },
 
     safeRenderUiParameterEditor(el: HTMLElement, cell: any) {
-        const showParsed = cell._showParsedQuery
         const langType = ConfigManager.getCellEngine(cell, 0)
         const devModeVal = get().devMode
-        const key = `${showParsed ? '1' : '0'}_${langType || 'sql'}_${devModeVal ? '1' : '0'}`
+        const key = `${langType || 'sql'}_${devModeVal ? '1' : '0'}`
         if (el._sqlEditorKey === key && el.children.length > 0) return
         el._sqlEditorKey = key
         const html = get().renderUiParameterEditor(cell)
@@ -297,7 +257,7 @@ export const createEditorsSlice = (set: any, get: any) => ({
             ? '<span class="iconify" data-icon="material-symbols-light:bolt" style="font-size:0.875rem"></span>'
             : '<span class="iconify" data-icon="material-symbols-light:storage" style="font-size:0.875rem"></span>'
         const badgeClass = isJs ? 'badge-warning' : 'badge-info'
-        return get().renderSqlQueryEditor(cell, placeholder, true, 'query', '_showParsedQuery', languageLabel, languageIcon, badgeClass, pathExpr, cellIdxExpr)
+        return get().renderSqlQueryEditor(cell, placeholder, true, 'query', null, languageLabel, languageIcon, badgeClass, pathExpr, cellIdxExpr)
     },
 
     async initCodeMirrorForCell(cellItem: any, cellId: string, queryType: string, queryName: string, queryIndex: number, applySourceDefaultIfEmpty: boolean, placeholder: string, rootComponent: any) {
@@ -337,10 +297,9 @@ export const createEditorsSlice = (set: any, get: any) => ({
     },
 
     safeRenderMarkdownQueryEditor(el: HTMLElement, cell: any, pathExpr: any, cellIdxExpr: any) {
-        const showParsed = cell._showParsedQuery
         const langType = ConfigManager.getCellEngine(cell, 'main')
         const devModeVal = get().devMode
-        const key = `md_${showParsed ? '1' : '0'}_${langType || 'sql'}_${devModeVal ? '1' : '0'}`
+        const key = `md_${langType || 'sql'}_${devModeVal ? '1' : '0'}`
         if (el._sqlEditorKey === key && el.children.length > 0) return
         el._sqlEditorKey = key
         const html = get().renderMarkdownQueryEditor(cell, pathExpr, cellIdxExpr)
@@ -364,14 +323,13 @@ export const createEditorsSlice = (set: any, get: any) => ({
             : isText ? '<span class="iconify" data-icon="material-symbols-light:article" style="font-size:0.875rem"></span>'
             : '<span class="iconify" data-icon="material-symbols-light:storage" style="font-size:0.875rem"></span>'
         const badgeClass = isJs ? 'badge-warning' : isText ? 'badge-ghost' : 'badge-info'
-        return get().renderSqlQueryEditor(cell, placeholder, true, 'query', '_showParsedQuery', languageLabel, languageIcon, badgeClass, pathExpr, cellIdxExpr)
+        return get().renderSqlQueryEditor(cell, placeholder, true, 'query', null, languageLabel, languageIcon, badgeClass, pathExpr, cellIdxExpr)
     },
 
     safeRenderIframeEditor(el: HTMLElement, cell: any, pathExpr: any, cellIdxExpr: any) {
-        const showParsed = cell._showParsedQuery
         const langType = ConfigManager.getCellEngine(cell, 0)
         const devModeVal = get().devMode
-        const key = `iframe_${showParsed ? '1' : '0'}_${langType || 'sql'}_${devModeVal ? '1' : '0'}`
+        const key = `iframe_${langType || 'sql'}_${devModeVal ? '1' : '0'}`
         if (el._sqlEditorKey === key && el.children.length > 0) return
         el._sqlEditorKey = key
         const html = get().renderIframeEditor(cell, pathExpr, cellIdxExpr)

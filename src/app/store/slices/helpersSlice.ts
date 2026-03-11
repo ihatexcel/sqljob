@@ -116,8 +116,7 @@ export const createHelpersSlice = (set: any, get: any) => ({
                 const result = safeEvalJs(jsCode)
                 return result === true || (result !== null && result !== false && result !== undefined)
             } else {
-                const cellLike = { queries: [{ name: 'main', sql, engine: langType, clientVisible: false }], _parseLevels: [] }
-                const finalQuery = await get().parseQueryRecursively(cellLike)
+                const finalQuery = get().parseQueryWithParameters(sql)
                 const results = await DuckDBManager.executeQuery(finalQuery)
                 if (!results || results.length === 0) return false
                 const firstVal = Object.values(results[0])[0]
@@ -168,20 +167,6 @@ export const createHelpersSlice = (set: any, get: any) => ({
         const currentValue = cell._easyMDE.value()
         const targetContent = ConfigManager.getCellEditableContent(cell)
         if (currentValue !== targetContent) cell._easyMDE.value(targetContent)
-    },
-
-    toggleSqlView(cell: any) {
-        cell._showParsedQuery = !cell._showParsedQuery
-    },
-
-    getParsedSqlQuery(query: string, context: any = {}) {
-        if (!query) return ''
-        let parsed = query
-        if (context.name != null && context.name !== '') parsed = parsed.replace(/\{name\}/g, String(context.name))
-        if (context.fileNameUpload != null && context.fileNameUpload !== '') parsed = parsed.replace(/\{fileNameUpload\}/g, String(context.fileNameUpload))
-        if (context.fileName) parsed = parsed.replace(/\{fileName\}/g, context.fileName)
-        parsed = get().parseQueryWithParameters(parsed)
-        return parsed
     },
 
     replaceSourceContext(query: string, context: any = {}) {
