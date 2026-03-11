@@ -131,10 +131,6 @@ export const createCellsSlice = (set: any, get: any) => ({
         if (type === 'publipostageWord') {
             newCell.docxTemplateBase64 = null
             newCell.docxTemplateFileName = ''
-            newCell._showParsedQuery = false
-            newCell._showParsedQuery2 = false
-            newCell._parseLevels = []
-            newCell._parseLevels2 = []
             newCell._isDragging = false
         }
         if (type === 'pdfme') {
@@ -150,12 +146,7 @@ export const createCellsSlice = (set: any, get: any) => ({
                     ]]
                 }, null, 2)
             }
-            newCell._showParsedQuery = false
-            newCell._showParsedQuery2 = false
-            newCell._parseLevels = []
-            newCell._parseLevels2 = []
         }
-        if (['sqlRecursiveParse', 'table', 'iframe', 'sqlStat', 'perspective'].includes(type)) newCell._showParsedQuery = false
         if (type === 'perspective') {
             newCell._perspectiveReady = false
             newCell._perspectiveWorker = null
@@ -348,7 +339,6 @@ export const createCellsSlice = (set: any, get: any) => ({
             if (cell._currentFile === undefined) cell._currentFile = null
             if (cell._isDragging === undefined) cell._isDragging = false
             if (cell._loaded === undefined) cell._loaded = false
-            if (cell._showParsedQuery2 === undefined) cell._showParsedQuery2 = false
         }
         if (cell.type === 'uiParameter') {
             if (cell.referenceName && (!cell.name || !String(cell.name).trim())) cell.name = String(cell.referenceName).trim()
@@ -361,14 +351,7 @@ export const createCellsSlice = (set: any, get: any) => ({
         if (cell.type === 'publipostageWord') {
             if (cell.docxTemplateBase64 === undefined) cell.docxTemplateBase64 = null
             if (cell.docxTemplateFileName === undefined) cell.docxTemplateFileName = ''
-            if (cell._showParsedQuery === undefined) cell._showParsedQuery = false
-            if (cell._showParsedQuery2 === undefined) cell._showParsedQuery2 = false
-            if (!cell._parseLevels) cell._parseLevels = []
-            if (!cell._parseLevels2) cell._parseLevels2 = []
             if (cell._isDragging === undefined) cell._isDragging = false
-        }
-        if (['sqlRecursiveParse', 'table', 'iframe', 'sqlStat', 'perspective'].includes(cell.type)) {
-            if (cell._showParsedQuery === undefined) cell._showParsedQuery = false
         }
         if (cell.type === 'perspective') {
             cell._perspectiveReady = false

@@ -140,8 +140,6 @@ export const createFilesSlice = (set: any, get: any) => ({
         cell._fileName = file.name
         cell._currentFile = file
         cell._importFailed = false
-        cell._parseLevels = []
-        cell._parseLevels2 = []
         cell._mainQueryError = null
         cell._fallbackQueryError = null
         cell._rejectErrorsCount = 0
@@ -181,9 +179,7 @@ export const createFilesSlice = (set: any, get: any) => ({
                 if (queryTemplate) {
                     const ctx = { name: tableName, fileNameUpload: fileName, fileName }
                     const replacedSql = get().replaceSourceContext(queryTemplate, ctx)
-                    const cellLike = { queries: [{ name: 'main', sql: replacedSql, engine: 'sql', clientVisible: false }], _parseLevels: [] }
-                    loadQuery = await get().parseQueryRecursively(cellLike)
-                    cell._parseLevels = cellLike._parseLevels || []
+                    loadQuery = get().parseQueryWithParameters(replacedSql)
                 } else {
                     loadQuery = `CREATE OR REPLACE TABLE ${tableName} AS SELECT * FROM '${fileName}'`
                 }
@@ -201,11 +197,9 @@ export const createFilesSlice = (set: any, get: any) => ({
                 if (query1Template) {
                     get().setStatus(`Requête initiale échouée, tentative fallback...`, 'loading')
                     const ctx1 = { name: tableName, fileNameUpload: fileName, fileName }
-                    const cellLike1 = { type: 'source', queries: [{ name: 'main', sql: '' }, { name: 'fallback', sql: get().replaceSourceContext(query1Template, ctx1), engine: 'sql', clientVisible: false }], _parseLevels: [] }
                     try {
                         try { await DuckDBManager.executeQuery('DROP TABLE IF EXISTS reject_errors') } catch { /* ignore */ }
-                        const fallbackQuery1 = await get().parseQueryRecursively(cellLike1, 1)
-                        cell._parseLevels2 = cellLike1._parseLevels2 || []
+                        const fallbackQuery1 = get().parseQueryWithParameters(get().replaceSourceContext(query1Template, ctx1))
                         await DuckDBManager.executeQuery(fallbackQuery1)
                         executed = true
                         loadQuery = fallbackQuery1
@@ -216,7 +210,6 @@ export const createFilesSlice = (set: any, get: any) => ({
                         } catch { cell._rejectErrorsCount = 0 }
                         get().setStatus(`${cell.name} chargé via requête de fallback`, 'success')
                     } catch (fallbackError: any) {
-                        cell._parseLevels2 = cellLike1._parseLevels2 || []
                         cell._fallbackQueryError = fallbackError.message
                         get().setStatus(`Requête fallback échouée : ${fallbackError.message}`, 'error')
                     }
@@ -280,7 +273,6 @@ export const createFilesSlice = (set: any, get: any) => ({
             cell._loaded = true
             cell._status = 'success'
             cell._pendingFileLoad = false
-            if (!cell._parseLevels?.length) cell._parseLevels = [{ level: 'final', innerQuery: loadQuery, replacement: null }]
             get().setStatus(`${cell.name} chargé!`, 'success')
 
             const existing = get()._roomFiles ?? []
@@ -344,7 +336,6 @@ export const createFilesSlice = (set: any, get: any) => ({
         cell._loaded = false
         cell._status = null
         cell._importFailed = false
-        cell._parseLevels = []
         cell._loadedViaFallback = false
         cell._mainQueryError = null
         cell._fallbackQueryError = null

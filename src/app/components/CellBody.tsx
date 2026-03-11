@@ -286,8 +286,7 @@ function SourceBody({ cell, path, cellIndex }: any) {
                                 </div>
                             )}
                             <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
-                                queryType="query" showParsedQueryProp="_showParsedQuery"
-                                applySourceDefaultIfEmpty={true} />
+                                queryType="query"                                applySourceDefaultIfEmpty={true} />
                         </AccordionContent>
                     </AccordionItem>
                     <AccordionItem value="fallback">
@@ -302,8 +301,7 @@ function SourceBody({ cell, path, cellIndex }: any) {
                                 </div>
                             )}
                             <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
-                                queryType="query2" showParsedQueryProp="_showParsedQuery2"
-                                applySourceDefaultIfEmpty={true} />
+                                queryType="query2"                                applySourceDefaultIfEmpty={true} />
                         </AccordionContent>
                     </AccordionItem>
                     {queryBuilder && (
@@ -664,7 +662,7 @@ function PublipostageWordBody({ cell, path, cellIndex }: any) {
                     <div>
                         <div className="text-sm font-semibold text-primary mb-1">Requête de données</div>
                         <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
-                            queryType="query" showParsedQueryProp="_showParsedQuery" />
+                            queryType="query" />
                     </div>
                     <div>
                         <div className="text-sm font-semibold text-primary mb-1 flex items-center gap-2">
@@ -675,7 +673,7 @@ function PublipostageWordBody({ cell, path, cellIndex }: any) {
                             </span>
                         </div>
                         <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
-                            queryType="query2" showParsedQueryProp="_showParsedQuery2" />
+                            queryType="query2" />
                     </div>
                 </div>
             )}
@@ -711,7 +709,7 @@ function PdfmeBody({ cell, path, cellIndex }: any) {
                     <div>
                         <div className="text-sm font-semibold text-primary mb-1">Requête de données</div>
                         <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
-                            queryType="query" showParsedQueryProp="_showParsedQuery" />
+                            queryType="query" />
                     </div>
                     <div>
                         <div className="text-sm font-semibold text-primary mb-1 flex items-center gap-2">
@@ -722,7 +720,7 @@ function PdfmeBody({ cell, path, cellIndex }: any) {
                             </span>
                         </div>
                         <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
-                            queryType="query2" showParsedQueryProp="_showParsedQuery2" />
+                            queryType="query2" />
                     </div>
                     <div className="flex flex-col gap-1">
                         <label className="flex items-center gap-2">
@@ -787,7 +785,7 @@ function PerspectiveBody({ cell, path, cellIndex }: any) {
         <div className={hasHeight ? 'flex-1 min-h-0 flex flex-col' : 'flex flex-col gap-2'}>
             {showSqlEditorVisible?.(cell) && (
                 <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
-                    queryType="query" showParsedQueryProp="_showParsedQuery" />
+                    queryType="query" />
             )}
             {cell._status === 'running' && !cell._perspectiveReady && (
                 <div className={hasHeight ? 'flex-1 min-h-0 rounded-lg bg-background overflow-hidden' : 'rounded-lg bg-background overflow-hidden'}

@@ -133,9 +133,7 @@ export function helpersMixin() {
                             const finalResult = result === true || (result !== null && result !== false && result !== undefined);
                             return finalResult;
                         } else {
-                            // parseQueryRecursively attend une cellule avec queries.main (getCellQuery)
-                            const cellLike = { queries: [{ name: 'main', sql, engine: langType, clientVisible: false }], _parseLevels: [] };
-                            const finalQuery = await this.parseQueryRecursively(cellLike);
+                            const finalQuery = this.parseQueryWithParameters(sql);
                             const results = await DuckDBManager.executeQuery(finalQuery);
 
                             if (!results || results.length === 0) {
@@ -208,36 +206,6 @@ export function helpersMixin() {
                     }
                 },
 
-                // Toggle entre mode édition et vue parsée pour les cellules SQL
-                toggleSqlView(cell) {
-                    cell._showParsedQuery = !cell._showParsedQuery;
-                },
-
-                // Obtenir la requête SQL parsée (avec les paramètres remplacés)
-                // Gère les deux types de parsing : {variable} et $parametre
-                // Pour source : {name} = nom de la table, {fileNameUpload} = fichier déposé (variable interne à la cellule)
-                getParsedSqlQuery(query, context = {}) {
-                    if (!query) return '';
-                    let parsed = query;
-
-                    // 1. Parser les variables {xxx} avec le contexte fourni
-                    if (context.name != null && context.name !== '') {
-                        parsed = parsed.replace(/\{name\}/g, String(context.name));
-                    }
-                    if (context.fileNameUpload != null && context.fileNameUpload !== '') {
-                        parsed = parsed.replace(/\{fileNameUpload\}/g, String(context.fileNameUpload));
-                    }
-                    if (context.fileName) {
-                        parsed = parsed.replace(/\{fileName\}/g, context.fileName);
-                    }
-
-                    // 2. Parser les paramètres $xxx
-                    parsed = this.parseQueryWithParameters(parsed);
-
-                    return parsed;
-                },
-
-                /** Remplace uniquement {name}, {fileNameUpload}, {fileName} (sans $param ni {{}}). Pour passer à parseQueryRecursively. */
                 replaceSourceContext(query, context = {}) {
                     if (!query) return '';
                     let parsed = query;
