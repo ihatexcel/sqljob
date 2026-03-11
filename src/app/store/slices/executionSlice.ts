@@ -557,13 +557,14 @@ export const createExecutionSlice = (set: any, get: any) => ({
 
             get().setStatus('Exécution de la requête finale...', 'loading')
 
-            const results = await DuckDBManager.executeQuery(finalQuery)
+            const { rows: results, schemaTypes } = await DuckDBManager.executeQueryWithSchema(finalQuery)
 
             const maxRows = cell.maxRows || 100000
             const truncated = results.length > maxRows
             const rawResults = results.slice(0, maxRows)
             _rawTableDataStore.set(cell._id, rawResults)
             cell._results = rawResults
+            cell._schemaTypes = schemaTypes || {}
             cell._resultInfo = `${results.length} ligne(s)` + (truncated ? ` (limité à ${maxRows})` : '') +
                 (cell._parseLevels.length > 1 ? ` - ${cell._parseLevels.length - 1} niveau(x) de parsing` : '')
 

@@ -9,12 +9,21 @@ import DataTablePaginated from '@sqlrooms/data-table/dist/DataTablePaginated'
 import { rawTableDataStore as _rawTableDataStore } from '../../lib/tableDataStore'
 import { parseColumnRoles, getTableColumnDisplayNames } from '../../lib/EChartSqlParser'
 
+// Types Arrow numériques tels que retournés par String(field.type) de duckdb-wasm
+const NUMERIC_ARROW_RE = /^(Int|Uint|Float|Decimal)/i
+
+function colMeta(schemaTypes: Record<string, string>, key: string) {
+    const type = schemaTypes?.[key]
+    return { type: type || '', isNumeric: type ? NUMERIC_ARROW_RE.test(type) : false }
+}
+
 export function SqlDataTable({ cell, searchable = false }: { cell: any; searchable?: boolean }) {
     const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 })
     const [sorting, setSorting] = useState([])
     const [search, setSearch] = useState('')
 
     const rawResults = _rawTableDataStore.get(cell._id) || cell._results || []
+    const schemaTypes: Record<string, string> = cell._schemaTypes || {}
 
     const { columns, allColKeys } = useMemo(() => {
         if (!rawResults?.length) return { columns: [], allColKeys: [] }
@@ -29,7 +38,7 @@ export function SqlDataTable({ cell, searchable = false }: { cell: any; searchab
 
             if (percentCols.has(key)) {
                 return {
-                    id: key, accessorKey: key, header,
+                    id: key, accessorKey: key, header, meta: colMeta(schemaTypes, key),
                     cell: ({ getValue }: any) => {
                         const n = Math.min(100, Math.max(0, Number(getValue()) || 0))
                         const color = n >= 75 ? '#22c55e' : n >= 40 ? '#f59e0b' : '#ef4444'
@@ -49,7 +58,7 @@ export function SqlDataTable({ cell, searchable = false }: { cell: any; searchab
 
             if (trendCols.has(key)) {
                 return {
-                    id: key, accessorKey: key, header,
+                    id: key, accessorKey: key, header, meta: colMeta(schemaTypes, key),
                     cell: ({ getValue }: any) => {
                         const n = Number(getValue()) || 0
                         const arrow = n === 0 ? '→' : n > 0 ? '↑' : '↓'
@@ -64,7 +73,7 @@ export function SqlDataTable({ cell, searchable = false }: { cell: any; searchab
             }
 
             return {
-                id: key, accessorKey: key, header,
+                id: key, accessorKey: key, header, meta: colMeta(schemaTypes, key),
                 cell: ({ getValue }: any) => {
                     const v = getValue()
                     return v == null ? '' : String(v)
@@ -73,7 +82,7 @@ export function SqlDataTable({ cell, searchable = false }: { cell: any; searchab
         })
 
         return { columns, allColKeys: colKeys }
-    }, [rawResults])
+    }, [rawResults, schemaTypes])
 
     const filteredData = useMemo(() => {
         if (!searchable || !search) return rawResults
