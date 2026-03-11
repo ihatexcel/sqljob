@@ -11,6 +11,8 @@ import { setAutoFreeze } from 'immer'
 import { createRoomShellSlice } from '@sqlrooms/room-shell'
 import { createBaseDuckDbConnector } from '@sqlrooms/duckdb-core'
 import { createSqlEditorSlice, createDefaultSqlEditorConfig } from '@sqlrooms/sql-editor'
+import { createCellsSlice as createSqlroomsCellsSlice, createDefaultCellRegistry } from '@sqlrooms/cells'
+import { createNotebookSlice } from '@sqlrooms/notebook'
 import { DatabaseIcon } from 'lucide-react'
 // Panel components (lazy import safe — utilisés uniquement au rendu, pas à l'évaluation)
 import { NotebookPanel } from '../components/NotebookPanel'
@@ -302,6 +304,10 @@ export const useNotebookStore = create<any>((set, get, api) => {
         },
     })(set, get, api)
 
+    // === Slices sqlrooms notebook (requis par SheetsTabBar + Notebook de @sqlrooms/cells / @sqlrooms/notebook) ===
+    const sqlroomsCellsState = createSqlroomsCellsSlice({ cellRegistry: createDefaultCellRegistry() })(set, get, api)
+    const notebookState = createNotebookSlice()(set, get, api)
+
     const initialState = buildInitialState()
 
     // Slices Zustand purs (convertis depuis les mixins Alpine)
@@ -346,6 +352,8 @@ export const useNotebookStore = create<any>((set, get, api) => {
     return {
         ...sqlEditorState,
         ...roomShellState,
+        ...sqlroomsCellsState,
+        ...notebookState,
         layout: {
             ...roomShellState.layout,
             togglePanel: mobileTogglePanel,
