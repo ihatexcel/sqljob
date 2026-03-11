@@ -85400,7 +85400,12 @@ const duckdbManagerConnector = createBaseDuckDbConnector(
     layout: {
       config: {
         type: "mosaic",
-        nodes: "main"
+        nodes: {
+          direction: "row",
+          first: "data",
+          second: "main",
+          splitPercentage: 25
+        }
       },
       panels: {
         main: {
@@ -85413,7 +85418,7 @@ const duckdbManagerConnector = createBaseDuckDbConnector(
           title: "Sources",
           icon: Database,
           component: DataSourcesPanel,
-          placement: "manual"
+          placement: "main"
         }
       }
     }
