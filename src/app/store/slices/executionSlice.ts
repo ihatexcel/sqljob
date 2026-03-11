@@ -86,9 +86,9 @@ export const createExecutionSlice = (set: any, get: any) => ({
                 throw new Error('Nombre maximum de niveaux d\'imbrication atteint (10)')
             }
 
-            const posClose = q.indexOf('}}')
+            const posClose = q.indexOf('>>')
             if (posClose === -1) return q
-            const posOpen = q.lastIndexOf('{{', posClose)
+            const posOpen = q.lastIndexOf('<<', posClose)
             if (posOpen === -1) {
                 return q
             }
@@ -181,7 +181,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
             for (let i = 0; i < loopValues.length; i++) {
                 const loopValue = loopValues[i]
                 set({ _currentLoopValue: loopValue })
-                get().setStatus(`Boucle ${i + 1}/${loopValues.length}: $loop = ${loopValue}`, 'loading')
+                get().setStatus(`Boucle ${i + 1}/${loopValues.length}: {{ loop }} = ${loopValue}`, 'loading')
 
                 const orderedItems = get().getAllItemsSorted(group)
                 for (const item of orderedItems) {
@@ -327,9 +327,9 @@ export const createExecutionSlice = (set: any, get: any) => ({
                 throw new Error('Nombre maximum de niveaux d\'imbrication atteint (10)')
             }
 
-            const posClose = query.indexOf('}}')
+            const posClose = query.indexOf('>>')
             if (posClose === -1) return query
-            const posOpen = query.lastIndexOf('{{', posClose)
+            const posOpen = query.lastIndexOf('<<', posClose)
             if (posOpen === -1) return query
 
             const innerQuery = query.substring(posOpen + 2, posClose).trim()
