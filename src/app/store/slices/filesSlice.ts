@@ -139,6 +139,15 @@ export const createFilesSlice = (set: any, get: any) => ({
         const skipRunNextCells = options.skipRunNextCells === true
         cell._fileName = file.name
         cell._currentFile = file
+        cell._importFailed = false
+        cell._parseLevels = []
+        cell._parseLevels2 = []
+        cell._mainQueryError = null
+        cell._fallbackQueryError = null
+        cell._rejectErrorsCount = 0
+        cell._rejectedCellsCount = 0
+        cell._rowCount = 0
+        cell._queryBuilder = null
         set({ isLoading: true })
         cell._status = 'running'
         get().setStatus(`Chargement de ${cell.name}...`, 'loading')
@@ -183,22 +192,89 @@ export const createFilesSlice = (set: any, get: any) => ({
             try {
                 await DuckDBManager.executeQuery(loadQuery)
                 executed = true
+                cell._loadedViaFallback = false
+                cell._mainQueryError = null
+                cell._rejectErrorsCount = 0
             } catch (primaryError: any) {
+                cell._mainQueryError = primaryError.message
                 const query1Template = (ConfigManager.getCellQuery(cell, 'fallback') || cell.queries?.[1]?.sql || '').trim()
                 if (query1Template) {
                     get().setStatus(`Requête initiale échouée, tentative fallback...`, 'loading')
                     const ctx1 = { name: tableName, fileNameUpload: fileName, fileName }
                     const cellLike1 = { type: 'source', queries: [{ name: 'main', sql: '' }, { name: 'fallback', sql: get().replaceSourceContext(query1Template, ctx1), engine: 'sql', clientVisible: false }], _parseLevels: [] }
                     try {
+                        try { await DuckDBManager.executeQuery('DROP TABLE IF EXISTS reject_errors') } catch { /* ignore */ }
                         const fallbackQuery1 = await get().parseQueryRecursively(cellLike1, 1)
+                        cell._parseLevels2 = cellLike1._parseLevels2 || []
                         await DuckDBManager.executeQuery(fallbackQuery1)
                         executed = true
                         loadQuery = fallbackQuery1
-                        cell._parseLevels = cellLike1._parseLevels || []
+                        cell._loadedViaFallback = true
+                        try {
+                            const rejectResult = await DuckDBManager.executeQuery('SELECT count(*) as cnt FROM reject_errors')
+                            cell._rejectErrorsCount = Number(rejectResult?.[0]?.cnt ?? 0)
+                        } catch { cell._rejectErrorsCount = 0 }
                         get().setStatus(`${cell.name} chargé via requête de fallback`, 'success')
-                    } catch (_query1Error) { /* fallback also failed */ }
+                    } catch (fallbackError: any) {
+                        cell._parseLevels2 = cellLike1._parseLevels2 || []
+                        cell._fallbackQueryError = fallbackError.message
+                        get().setStatus(`Requête fallback échouée : ${fallbackError.message}`, 'error')
+                    }
                 }
                 if (!executed) throw primaryError
+            }
+
+            // Compte les lignes intégrées
+            try {
+                const countResult = await DuckDBManager.executeQuery(`SELECT count(*) as cnt FROM "${tableName}"`)
+                cell._rowCount = Number(countResult?.[0]?.cnt ?? 0)
+            } catch { cell._rowCount = 0 }
+
+            // Détecte les cellules non intégrées via comparaison NULLs (all_varchar vs auto-type)
+            // Non applicable aux parquets (pas de pb de conversion)
+            try {
+                const lower = fileName.toLowerCase()
+                let nullQueryRaw: string | null = null
+                if (lower.endsWith('.csv') || lower.endsWith('.csv.gz')) {
+                    nullQueryRaw = `SELECT SUM((COLUMNS(*) IS NULL)::INT) AS nb_null FROM read_csv('${fileName}', HEADER = true, ALL_VARCHAR = true)`
+                } else if (lower.endsWith('.xlsx')) {
+                    nullQueryRaw = `SELECT SUM((COLUMNS(*) IS NULL)::INT) AS nb_null FROM read_xlsx('${fileName}', HEADER = true, STOP_AT_EMPTY = false, EMPTY_AS_VARCHAR = true, ALL_VARCHAR = true)`
+                } else if (lower.endsWith('.tsv') || lower.endsWith('.tsv.gz') || lower.endsWith('.txt') || lower.endsWith('.txt.gz')) {
+                    nullQueryRaw = `SELECT SUM((COLUMNS(*) IS NULL)::INT) AS nb_null FROM read_csv('${fileName}', HEADER = true, DELIM = '\t', ALL_VARCHAR = true)`
+                }
+                if (nullQueryRaw) {
+                    const [rawResult, intResult] = await Promise.all([
+                        DuckDBManager.executeQuery(nullQueryRaw),
+                        DuckDBManager.executeQuery(`SELECT SUM((COLUMNS(*) IS NULL)::INT) AS nb_null FROM "${tableName}"`),
+                    ])
+                    const nullRaw = Number(rawResult?.[0]?.nb_null ?? 0)
+                    const nullInt = Number(intResult?.[0]?.nb_null ?? 0)
+                    cell._rejectedCellsCount = Math.max(0, nullInt - nullRaw)
+                }
+            } catch { /* ignore */ }
+
+            // Requête de production (query builder)
+            if (executed) {
+                try {
+                    const ext = fileName.toLowerCase()
+                    let qb: string
+                    if (ext.endsWith('.csv') || ext.endsWith('.csv.gz')) {
+                        const descRows = await DuckDBManager.executeQuery(`DESCRIBE SELECT * FROM "${tableName}"`)
+                        const cols = descRows.map((r: any) => `'${r.column_name.replace(/'/g, "''")}': '${r.column_type}'`).join(', ')
+                        qb = `CREATE OR REPLACE TABLE ${tableName} AS\nSELECT * FROM read_csv('${fileName}',\n  HEADER = true,\n  IGNORE_ERRORS = true, store_rejects = true,\n  columns = {${cols}})`
+                    } else if (ext.endsWith('.tsv') || ext.endsWith('.tsv.gz') || ext.endsWith('.txt') || ext.endsWith('.txt.gz')) {
+                        const descRows = await DuckDBManager.executeQuery(`DESCRIBE SELECT * FROM "${tableName}"`)
+                        const cols = descRows.map((r: any) => `'${r.column_name.replace(/'/g, "''")}': '${r.column_type}'`).join(', ')
+                        qb = `CREATE OR REPLACE TABLE ${tableName} AS\nSELECT * FROM read_csv('${fileName}',\n  HEADER = true, DELIM = '\\t',\n  IGNORE_ERRORS = true, store_rejects = true,\n  columns = {${cols}})`
+                    } else if (ext.endsWith('.xlsx') || ext.endsWith('.xls')) {
+                        const descRows = await DuckDBManager.executeQuery(`DESCRIBE SELECT * FROM "${tableName}"`)
+                        const colDefs = descRows.map((r: any) => `  "${r.column_name.replace(/"/g, '""')}" ${r.column_type}`).join(',\n')
+                        qb = `CREATE OR REPLACE TABLE ${tableName} (\n${colDefs}\n);\nCOPY ${tableName} FROM '${fileName}' (FORMAT xlsx, HEADER true, STOP_AT_EMPTY false, EMPTY_AS_VARCHAR true, IGNORE_ERRORS true)`
+                    } else if (ext.endsWith('.parquet') || ext.endsWith('.parquet.gz')) {
+                        qb = `CREATE OR REPLACE TABLE ${tableName} AS\nSELECT * FROM read_parquet('${fileName}')`
+                    }
+                    cell._queryBuilder = qb || null
+                } catch { cell._queryBuilder = null }
             }
 
             cell._loaded = true
@@ -220,6 +296,7 @@ export const createFilesSlice = (set: any, get: any) => ({
             }
         } catch (error: any) {
             cell._status = 'error'
+            cell._importFailed = true
             get().setStatus('Erreur: ' + error.message, 'error')
             cell._fileName = ''
             cell._currentFile = null
@@ -266,7 +343,15 @@ export const createFilesSlice = (set: any, get: any) => ({
         cell._currentFile = null
         cell._loaded = false
         cell._status = null
+        cell._importFailed = false
         cell._parseLevels = []
+        cell._loadedViaFallback = false
+        cell._mainQueryError = null
+        cell._fallbackQueryError = null
+        cell._rejectErrorsCount = 0
+        cell._rejectedCellsCount = 0
+        cell._rowCount = 0
+        cell._queryBuilder = null
         if (Array.isArray(cell.files)) cell.files = cell.files.filter((f: any) => f.slot !== 'source')
         delete cell.fileBase64
         delete cell.fileName
@@ -346,9 +431,7 @@ export const createFilesSlice = (set: any, get: any) => ({
                         get().setStatus(`Chargement de ${cell.name}...`, 'loading')
                         await get().loadSingleSourceFile(cell._currentFile, path, ci, { skipRunNextCells: true })
                         cell._pendingFileLoad = false
-                    } catch (error: any) {
-                        console.error(`Erreur chargement fichier source ${cell.name}:`, error)
-                    }
+                    } catch { /* ignore */ }
                 }
             }
             if (group.children) {

@@ -283,10 +283,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
     async runCellAt(pathOrIndex, cellIndex) {
         const path = Array.isArray(pathOrIndex) ? pathOrIndex : [pathOrIndex]
         const cell = get().getCellAtPath(path, cellIndex)
-        if (!cell) {
-            console.error('❌ Cell not found!')
-            return
-        }
+        if (!cell) return
 
         cell._status = 'running'
         set({ isLoading: true })
@@ -298,8 +295,6 @@ export const createExecutionSlice = (set: any, get: any) => ({
             const handler = schema?.executeHandler
             if (handler && typeof get()[handler] === 'function') {
                 await get()[handler](cell, path, cellIndex)
-            } else if (handler !== null) {
-                console.warn('⚠️ Unknown cell type or missing handler:', cell.type)
             }
 
             cell._status = 'success'
@@ -344,7 +339,13 @@ export const createExecutionSlice = (set: any, get: any) => ({
             get().setStatus(`Parsing niveau ${level}${statusSuffix}...`, 'loading')
 
             const resolvedInnerQuery = await parseRecursive(innerQuery)
-            const results = await DuckDBManager.executeQuery(resolvedInnerQuery)
+            let results
+            try {
+                results = await DuckDBManager.executeQuery(resolvedInnerQuery)
+            } catch (e: any) {
+                e._partialOuterQuery = query
+                throw e
+            }
 
             let replacement
             if (allowEmpty) {
@@ -372,9 +373,16 @@ export const createExecutionSlice = (set: any, get: any) => ({
             return await parseRecursive(newQuery)
         }
 
-        const finalQuery = await parseRecursive(currentQuery)
-        cell[levelsKey].push({ level: 'final', innerQuery: finalQuery, replacement: null })
-        return finalQuery
+        try {
+            const finalQuery = await parseRecursive(currentQuery)
+            cell[levelsKey].push({ level: 'final', innerQuery: finalQuery, replacement: null })
+            return finalQuery
+        } catch (e: any) {
+            if (!cell[levelsKey].some((l: any) => l.level === 'final')) {
+                cell[levelsKey].push({ level: 'final', innerQuery: e._partialOuterQuery ?? currentQuery, replacement: null })
+            }
+            throw e
+        }
     },
 
     async executeSqlRecursiveParseCell(cell) {

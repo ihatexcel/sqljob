@@ -4,10 +4,12 @@
  * Rendu dans le mosaic layout de RoomShell (placement: 'sidebar').
  *
  * Sections :
+ * - Dropzone : import de fichiers ad hoc
  * - Fichiers : fichiers chargés (cells source + dropzone)
- * - Tables DuckDB : tables disponibles avec colonnes et types
+ * - Arborescence des tables DuckDB (TableStructurePanel)
  */
-import { RoomPanel, TableCard, useBaseRoomShellStore } from '@sqlrooms/room-shell'
+import { RoomPanel, useBaseRoomShellStore } from '@sqlrooms/room-shell'
+import { TableStructurePanel } from '@sqlrooms/sql-editor'
 import { FileDropzone } from '@sqlrooms/dropzone'
 import { convertToValidColumnOrTableName } from '@sqlrooms/utils'
 import {
@@ -16,12 +18,11 @@ import {
     AccordionItem,
     AccordionTrigger,
     useToast,
-    Button,
     Tooltip,
     TooltipContent,
     TooltipTrigger,
 } from '@sqlrooms/ui'
-import { FolderIcon, TableIcon, FileTextIcon, XIcon, UploadIcon, DatabaseIcon } from 'lucide-react'
+import { FolderIcon, FileTextIcon, XIcon, UploadIcon, DatabaseIcon } from 'lucide-react'
 import { useNotebookStore } from '../store/notebookStore'
 
 // ─── Section Fichiers ─────────────────────────────────────────────────────────
@@ -66,35 +67,6 @@ function FilesSection() {
                         )}
                     </div>
                 </div>
-            ))}
-        </div>
-    )
-}
-
-// ─── Section Tables ───────────────────────────────────────────────────────────
-function TablesSection() {
-    const _duckdbTables = useNotebookStore(s => s._duckdbTables)
-    const tables = Object.entries(_duckdbTables || {})
-
-    if (tables.length === 0) {
-        return (
-            <div className="px-2 py-3 text-xs text-muted-foreground text-center">
-                Aucune table chargée
-            </div>
-        )
-    }
-
-    return (
-        <div className="flex flex-col gap-2">
-            {tables.map(([tableName, data]: [string, any]) => (
-                <TableCard
-                    key={tableName}
-                    value={{
-                        tableName,
-                        columns: data.columns,  // [{name, type}]
-                        rowCount: data.rowCount,
-                    }}
-                />
             ))}
         </div>
     )
@@ -160,33 +132,26 @@ export const DataSourcesPanel = () => {
                 </FileDropzone>
             </div>
 
-            {/* Accordion Files + Tables */}
-            <div className="flex-1 overflow-auto px-2">
-                <Accordion type="multiple" defaultValue={['files', 'tables']}>
+            {/* Fichiers */}
+            <div className="shrink-0 border-b border-border">
+                <Accordion type="single" collapsible defaultValue="files">
                     <AccordionItem value="files">
-                        <AccordionTrigger className="gap-1 px-1 py-2">
+                        <AccordionTrigger className="gap-1 px-3 py-2">
                             <div className="flex items-center gap-1 text-muted-foreground">
                                 <FolderIcon className="h-3.5 w-3.5" />
                                 <span className="text-xs font-semibold uppercase tracking-wide">Fichiers</span>
                             </div>
                         </AccordionTrigger>
-                        <AccordionContent className="pb-4">
+                        <AccordionContent className="pb-2 px-1">
                             <FilesSection />
                         </AccordionContent>
                     </AccordionItem>
-
-                    <AccordionItem value="tables">
-                        <AccordionTrigger className="gap-1 px-1 py-2">
-                            <div className="flex items-center gap-1 text-muted-foreground">
-                                <TableIcon className="h-3.5 w-3.5" />
-                                <span className="text-xs font-semibold uppercase tracking-wide">Tables DuckDB</span>
-                            </div>
-                        </AccordionTrigger>
-                        <AccordionContent className="pb-4">
-                            <TablesSection />
-                        </AccordionContent>
-                    </AccordionItem>
                 </Accordion>
+            </div>
+
+            {/* Arborescence tables DuckDB */}
+            <div className="flex-1 overflow-auto">
+                <TableStructurePanel />
             </div>
         </RoomPanel>
     )
