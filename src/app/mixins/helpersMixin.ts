@@ -210,8 +210,6 @@ export function helpersMixin() {
                     if (!query) return '';
                     let parsed = query;
                     if (context.name != null && context.name !== '') parsed = parsed.replace(/\{name\}/g, String(context.name));
-                    if (context.fileNameUpload != null && context.fileNameUpload !== '') parsed = parsed.replace(/\{\{fileNameUpload\}\}/g, String(context.fileNameUpload));
-                    if (context.fileName) parsed = parsed.replace(/\{\{fileName\}\}/g, context.fileName);
                     return parsed;
                 },
 

@@ -27,9 +27,9 @@ export const createParametersSlice = (set: any, get: any) => ({
         return params
     },
 
-    parseQueryWithParameters(query: string) {
+    parseQueryWithParameters(query: string, extraParams: Record<string, any> = {}) {
         if (!query) return query
-        const params = get().getParameters()
+        const params = { ...get().getParameters(), ...extraParams }
         let parsedQuery = query
         for (const [paramName, paramValue] of Object.entries(params)) {
             const escapedName = paramName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')

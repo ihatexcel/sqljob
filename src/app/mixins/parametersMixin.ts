@@ -30,10 +30,10 @@ export function parametersMixin() {
                 },
 
                 // Parser une requête SQL et remplacer les {{ param }} par leurs valeurs
-                parseQueryWithParameters(query) {
+                parseQueryWithParameters(query, extraParams = {}) {
                     if (!query) return query;
 
-                    const params = this.getParameters();
+                    const params = { ...this.getParameters(), ...extraParams };
                     let parsedQuery = query;
 
                     // Remplacer tous les {{ paramName }} par leurs valeurs
