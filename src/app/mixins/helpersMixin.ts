@@ -206,13 +206,6 @@ export function helpersMixin() {
                     }
                 },
 
-                replaceSourceContext(query, context = {}) {
-                    if (!query) return '';
-                    let parsed = query;
-                    if (context.name != null && context.name !== '') parsed = parsed.replace(/\{name\}/g, String(context.name));
-                    return parsed;
-                },
-
                 getCellIcon(type) {
                     const found = this.cellTypes.find(ct => ct.type === type);
                     return found ? found.icon : '<span class="iconify" data-icon="material-symbols-light:description" style="font-size:1rem"></span>';

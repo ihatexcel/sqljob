@@ -169,13 +169,6 @@ export const createHelpersSlice = (set: any, get: any) => ({
         if (currentValue !== targetContent) cell._easyMDE.value(targetContent)
     },
 
-    replaceSourceContext(query: string, context: any = {}) {
-        if (!query) return ''
-        let parsed = query
-        if (context.name != null && context.name !== '') parsed = parsed.replace(/\{name\}/g, String(context.name))
-        return parsed
-    },
-
     getCellIcon(type: string) {
         const { cellTypes } = get()
         const found = cellTypes.find((ct: any) => ct.type === type)

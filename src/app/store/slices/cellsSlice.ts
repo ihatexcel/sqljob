@@ -333,8 +333,8 @@ export const createCellsSlice = (set: any, get: any) => ({
 
         if (cell.type === 'source') {
             if (!cell.name) cell.name = get().generateUniqueSourceName()
-            else if (!ConfigManager.getCellQuery(cell, 'main')?.trim()) ConfigManager.setCellQuery(cell, 'main', `CREATE OR REPLACE TABLE ${cell.name} AS SELECT * FROM '{{fileNameUpload}}'`)
-            if (!ConfigManager.getCellQuery(cell, 'fallback')?.trim()) ConfigManager.setCellQuery(cell, 'fallback', (CELL_TYPE_SCHEMAS.types.source?.defaults?.queries?.find((q: any) => q.name === 'fallback')?.sql || CELL_TYPE_SCHEMAS.types.source?.defaults?.queries?.[1]?.sql || `CREATE OR REPLACE TABLE ${cell.name} AS SELECT * FROM '{{fileNameUpload}}'`))
+            else if (!ConfigManager.getCellQuery(cell, 'main')?.trim()) ConfigManager.setCellQuery(cell, 'main', `CREATE OR REPLACE TABLE ${cell.name} AS SELECT * FROM '{{fileName}}'`)
+            if (!ConfigManager.getCellQuery(cell, 'fallback')?.trim()) ConfigManager.setCellQuery(cell, 'fallback', (CELL_TYPE_SCHEMAS.types.source?.defaults?.queries?.find((q: any) => q.name === 'fallback')?.sql || CELL_TYPE_SCHEMAS.types.source?.defaults?.queries?.[1]?.sql || `CREATE OR REPLACE TABLE ${cell.name} AS SELECT * FROM '{{fileName}}'`))
             if (cell._fileName === undefined) cell._fileName = ''
             if (cell._currentFile === undefined) cell._currentFile = null
             if (cell._isDragging === undefined) cell._isDragging = false
