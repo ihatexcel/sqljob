@@ -22,6 +22,8 @@ jobs:
       - run: npm ci
 
       - run: npm run build:cdn
+        env:
+          NODE_OPTIONS: --max-old-space-size=6144
 
       - name: Commit dist-cdn
         run: |
