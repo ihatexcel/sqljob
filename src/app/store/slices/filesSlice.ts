@@ -177,7 +177,7 @@ export const createFilesSlice = (set: any, get: any) => ({
                 await DuckDBManager.registerFile(file.name, file)
                 const queryTemplate = (ConfigManager.getCellQuery(cell, 'main') || cell.queries?.[0]?.sql || '').trim()
                 if (queryTemplate) {
-                    loadQuery = get().parseQueryWithParameters(queryTemplate, { name: tableName, fileName })
+                    loadQuery = get().parseQueryWithParameters(queryTemplate, { fileName })
                 } else {
                     loadQuery = `CREATE OR REPLACE TABLE ${tableName} AS SELECT * FROM '${fileName}'`
                 }
@@ -196,7 +196,7 @@ export const createFilesSlice = (set: any, get: any) => ({
                     get().setStatus(`Requête initiale échouée, tentative fallback...`, 'loading')
                     try {
                         try { await DuckDBManager.executeQuery('DROP TABLE IF EXISTS reject_errors') } catch { /* ignore */ }
-                        const fallbackQuery1 = get().parseQueryWithParameters(query1Template, { name: tableName, fileName })
+                        const fallbackQuery1 = get().parseQueryWithParameters(query1Template, { fileName })
                         await DuckDBManager.executeQuery(fallbackQuery1)
                         executed = true
                         loadQuery = fallbackQuery1
