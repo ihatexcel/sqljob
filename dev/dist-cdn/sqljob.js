@@ -86618,7 +86618,6 @@ function SidebarControls() {
   }))), { theme: wt, setTheme: Et } = useTheme(), kt = useNotebookStore.setState, Ct = useDisclosure(), St = useDisclosure(), Tt = useDisclosure();
   return xt ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
     yt && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(RoomShellSidebarButton, { roomPanelType: "data" }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         RoomShell.SidebarButton,
         {
