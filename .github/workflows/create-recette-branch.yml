@@ -1,0 +1,27 @@
+name: Create recette branch
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  create-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Create recette branch from main (if not exists)
+        run: |
+          git fetch origin
+          if git ls-remote --exit-code origin recette; then
+            echo "Branch 'recette' already exists on remote."
+          else
+            git checkout -b recette origin/main
+            git push origin recette
+            echo "Branch 'recette' created from main and pushed."
+          fi
