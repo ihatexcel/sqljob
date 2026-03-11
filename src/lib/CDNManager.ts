@@ -40,64 +40,34 @@ export class CDNManager {
             }
 
             static async loadPizZip() {
-                const pizzipUrl = 'https://cdn.jsdelivr.net/npm/pizzip@3.2.0/dist/pizzip.min.js';
-                if (typeof PizZip === 'undefined') {
-                    await this.loadScript(pizzipUrl);
-                } else {
-                    this.loadedScripts.add(pizzipUrl);
-                }
+                if ((window as any).PizZip) return;
+                const mod = await import('pizzip');
+                (window as any).PizZip = mod.default ?? mod;
             }
 
             static async loadDocxtemplater() {
-                const docxtemplaterUrl = 'https://cdn.jsdelivr.net/npm/docxtemplater@3.67.6/build/docxtemplater.min.js';
-
-                // PizZip doit être chargé avant docxtemplater
                 await this.loadPizZip();
-
-                if (typeof window.docxtemplater === 'undefined') {
-                    await this.loadScript(docxtemplaterUrl);
-                } else {
-                    this.loadedScripts.add(docxtemplaterUrl);
-                }
+                if ((window as any).docxtemplater) return;
+                const mod = await import('docxtemplater');
+                (window as any).docxtemplater = mod.default ?? mod;
             }
 
             static async loadSimpleDatatables() {
-                const simpleDatatablesUrl = 'https://cdn.jsdelivr.net/npm/simple-datatables@10.2.0/dist/umd/simple-datatables.min.js';
-                const simpleDatatablesCssUrl = 'https://cdn.jsdelivr.net/npm/simple-datatables@10.2.0/dist/style.min.css';
-
-                // Charger le CSS si pas déjà chargé
-                if (!document.querySelector(`link[href="${simpleDatatablesCssUrl}"]`)) {
-                    const link = document.createElement('link');
-                    link.rel = 'stylesheet';
-                    link.href = simpleDatatablesCssUrl;
-                    document.head.appendChild(link);
-                }
-
-                if (typeof simpleDatatables !== 'undefined') {
-                    this.loadedScripts.add(simpleDatatablesUrl);
-                    return;
-                }
-                await this.loadScript(simpleDatatablesUrl);
+                if ((window as any).simpleDatatables) return;
+                await import('simple-datatables/dist/style.css');
+                const mod = await import('simple-datatables');
+                (window as any).simpleDatatables = mod;
             }
 
             static async loadPdfme() {
-                if (window._pdfmeModules) {
-                    return window._pdfmeModules;
-                }
-                try {
-                    const commonPromise = import('https://cdn.jsdelivr.net/npm/@pdfme/common@5.5.8/+esm');
-                    const generatorPromise = import('https://cdn.jsdelivr.net/npm/@pdfme/generator@5.5.8/+esm');
-                    const schemasPromise = import('https://cdn.jsdelivr.net/npm/@pdfme/schemas@5.5.8/+esm');
-
-                    const [common, generator, schemas] = await Promise.all([commonPromise, generatorPromise, schemasPromise]);
-
-                    window._pdfmeModules = { common, generator, schemas };
-                    return window._pdfmeModules;
-                } catch (err) {
-                    console.error('[pdfme CDN] ERREUR chargement:', err);
-                    console.error('[pdfme CDN] Stack:', err.stack);
-                    throw err;
-                }
+                if ((window as any)._pdfmeModules) return (window as any)._pdfmeModules;
+                const [common, generator, schemas] = await Promise.all([
+                    import('@pdfme/common'),
+                    import('@pdfme/generator'),
+                    import('@pdfme/schemas'),
+                ]);
+                (window as any)._pdfmeModules = { common, generator, schemas };
+                return (window as any)._pdfmeModules;
             }
 
             static loadedStyles = new Set();
@@ -112,28 +82,25 @@ export class CDNManager {
                 this.loadedStyles.add(url);
             }
 
+            static easyMDELoadingPromise: Promise<void> | null = null;
+
             static async loadEasyMDE() {
-                const easymdeJsUrl = 'https://cdn.jsdelivr.net/npm/easymde@2.20.0/dist/easymde.min.js';
-                const easymdeCssUrl = 'https://cdn.jsdelivr.net/npm/easymde@2.20.0/dist/easymde.min.css';
-
-                // Charger le CSS
-                this.loadStyle(easymdeCssUrl);
-
-                // Charger le JS
-                if (typeof EasyMDE !== 'undefined') {
-                    this.loadedScripts.add(easymdeJsUrl);
-                    return;
-                }
-                await this.loadScript(easymdeJsUrl);
+                if (typeof (window as any).EasyMDE !== 'undefined') return;
+                if (this.easyMDELoadingPromise) return this.easyMDELoadingPromise;
+                this.easyMDELoadingPromise = (async () => {
+                    // CSS bundlé via npm
+                    await import('easymde/dist/easymde.min.css');
+                    // JS : EasyMDE expose sa classe sur window via UMD
+                    const mod = await import('easymde');
+                    (window as any).EasyMDE = mod.default ?? mod;
+                })();
+                return this.easyMDELoadingPromise;
             }
 
             static async loadXlsx() {
-                const xlsxUrl = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
-                if (typeof XLSX !== 'undefined') {
-                    this.loadedScripts.add(xlsxUrl);
-                    return;
-                }
-                await this.loadScript(xlsxUrl);
+                if ((window as any).XLSX) return;
+                const mod = await import('xlsx');
+                (window as any).XLSX = mod;
             }
 
             // CodeMirror SQL — bundlé via npm (@marimo-team/codemirror-sql + @codemirror/*)
@@ -192,18 +159,12 @@ export class CDNManager {
             static async loadECharts() {
                 if (this.echartsLoaded) return;
                 if (this.echartsLoadingPromise) return this.echartsLoadingPromise;
-
                 this.echartsLoadingPromise = (async () => {
-                    const url = 'https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js';
-                    if (typeof window.echarts === 'undefined') {
-                        await this.loadScript(url);
-                    } else {
-                        this.loadedScripts.add(url);
-                    }
+                    const mod = await import('echarts');
+                    (window as any).echarts = mod;
                     this.echartsLoaded = true;
                     this.echartsLoadingPromise = null;
                 })();
-
                 return this.echartsLoadingPromise;
             }
 

@@ -10,6 +10,7 @@ import { GistEncrypt } from '../../../lib/GistEncrypt'
 import { GitHubGistManager } from '../../../lib/GitHubGistManager'
 import { FileHandler } from '../../../lib/FileHandler'
 import { initializeCell } from '../../../lib/CellConfigService'
+import { applyThemeFromConfig, STORAGE_LIGHT, STORAGE_DARK, STORAGE_PRESET } from '../../components/modals/ThemeCustomModal'
 
 export const createExportSlice = (set: any, get: any) => ({
 
@@ -31,14 +32,19 @@ export const createExportSlice = (set: any, get: any) => ({
         const devMode = options.devMode ?? s.devMode
         const showLayout = options.showLayout ?? s.showLayout
         const includeFileData = options.includeFileData ?? false
+        const presetName   = localStorage.getItem(STORAGE_PRESET) || 'default'
+        const customLight  = presetName === 'custom' ? (localStorage.getItem(STORAGE_LIGHT) || '') : ''
+        const customDark   = presetName === 'custom' ? (localStorage.getItem(STORAGE_DARK)  || '') : ''
         return ConfigManager.buildConfigFromState(
             s.pages,
             devMode,
             showLayout,
             includeFileData,
-            s.currentTheme,
+            presetName,
             s.dbEngine,
-            s.directedAcyclicGraph
+            s.directedAcyclicGraph,
+            customLight,
+            customDark
         )
     },
 
@@ -410,8 +416,10 @@ ${configScriptTag}${embeddedScripts}</head>
             set({ showLayout: (config.ui?.showLayout ?? config.ui?.displaySettings) !== false })
         }
         const configTheme = config.ui?.theme
-        if (configTheme && get().availableThemes.includes(configTheme)) {
-            get().setTheme(configTheme)
+        if (configTheme === 'light' || configTheme === 'dark') {
+            if (get().availableThemes.includes(configTheme)) get().setTheme(configTheme)
+        } else if (configTheme) {
+            applyThemeFromConfig(config.ui)
         }
         get().setStatus('Configuration chargée', 'success')
     },

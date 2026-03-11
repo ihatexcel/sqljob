@@ -174,7 +174,7 @@ function NavBar() {
             <div className="flex-none">
                 <a href="https://ihatexcel.github.io/sqljob/?gist=68cd597ba5da05ceba24fb975c05384f" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
                     <img src="https://raw.githubusercontent.com/ihatexcel/sqljob/main/ihatexcel.svg" alt="sqljob" className="h-8" />
-                    <span className="font-bold text-primary text-lg">sqlJob</span>
+                    <span className="font-bold text-primary text-lg">sqljob-ihatexcel-test</span>
                 </a>
             </div>
             <div className="flex-1 flex justify-center overflow-hidden">

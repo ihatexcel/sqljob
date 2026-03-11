@@ -746,7 +746,7 @@ import { FileHandler } from './FileHandler'
                 return cleanGroup;
             }
 
-            static async buildConfigFromState(pages, devMode = true, showLayout = true, includeFileData = false, theme = 'light', dbEngine = 'duckdb-wasm', directedAcyclicGraph = false) {
+            static async buildConfigFromState(pages, devMode = true, showLayout = true, includeFileData = false, theme = 'light', dbEngine = 'duckdb-wasm', directedAcyclicGraph = false, customThemeLight = '', customThemeDark = '') {
                 // Nettoyer chaque page
                 const cleanPages = await Promise.all(pages.map(async (page) => {
                     const cleanGroups = await Promise.all(page.groups.map(group => ConfigManager.cleanGroup(group, includeFileData)));
@@ -769,7 +769,9 @@ import { FileHandler } from './FileHandler'
                         showLayout: showLayout,
                         theme: theme,
                         dbEngine: dbEngine,
-                        directedAcyclicGraph: directedAcyclicGraph
+                        directedAcyclicGraph: directedAcyclicGraph,
+                        ...(customThemeLight ? { customThemeLight } : {}),
+                        ...(customThemeDark  ? { customThemeDark  } : {}),
                     },
                     job: {
                         pages: cleanPages

@@ -2,13 +2,9 @@
 /**
  * Store Zustand principal — remplace notebookApp.ts + tous les mixins Alpine.
  *
- * Stratégie de migration :
- * - On réutilise les 9 fichiers mixin existants tels quels via un proxy "this"
- *   qui mappe this.xxx → get().xxx (lecture) et this.xxx = val → set({xxx:val}) (écriture)
- * - Un shim Alpine minimal (window.Alpine) permet aux mixins d'utiliser
- *   Alpine.store('confirmModal') sans modification
- * - forceUpdate() déclenche un re-render React après des mutations profondes
- * - createRoomShellSlice ajoute le système de layout mosaic (RoomShell)
+ * Tous les mixins Alpine ont été convertis en slices Zustand purs.
+ * forceUpdate() déclenche un re-render React après des mutations profondes.
+ * createRoomShellSlice ajoute le système de layout mosaic (RoomShell).
  */
 import { create } from 'zustand'
 import { setAutoFreeze } from 'immer'
@@ -20,18 +16,18 @@ import { DatabaseIcon } from 'lucide-react'
 import { NotebookPanel } from '../components/NotebookPanel'
 import { DataSourcesPanel } from '../components/DataSourcesPanel'
 import '@iconify/iconify'
-// Slices convertis (Zustand pur, sans proxy this)
+// Slices Zustand purs (convertis depuis les mixins Alpine)
 import { createPagesSlice } from './slices/pagesSlice'
 import { createHelpersSlice } from './slices/helpersSlice'
 import { createParametersSlice } from './slices/parametersSlice'
 import { createExportSlice } from './slices/exportSlice'
-// Mixins restants (encore sous proxy createThisProxy — migration progressive)
-import { groupsMixin } from '../mixins/groupsMixin'
-import { cellsMixin } from '../mixins/cellsMixin'
-import { filesMixin } from '../mixins/filesMixin'
-import { executionMixin } from '../mixins/executionMixin'
-import { editorsMixin } from '../mixins/editorsMixin'
+import { createGroupsSlice } from './slices/groupsSlice'
+import { createCellsSlice } from './slices/cellsSlice'
+import { createFilesSlice } from './slices/filesSlice'
+import { createEditorsSlice } from './slices/editorsSlice'
+import { createExecutionSlice } from './slices/executionSlice'
 import { ConfigManager } from '../../lib/ConfigManager'
+import { applyThemeFromConfig } from '../components/modals/ThemeCustomModal'
 import { DuckDBManager } from '../../lib/DuckDBManager'
 import { CellConfigService, initializeCell } from '../../lib/CellConfigService'
 import { CellRenderer } from '../../lib/CellRenderer'
@@ -43,26 +39,12 @@ import { FileHandler } from '../../lib/FileHandler'
 import { CDNManager } from '../../lib/CDNManager'
 import { CELL_TYPE_SCHEMAS, CELL_TYPE_HANDLERS } from '../../lib/cellTypeSchemas'
 import { formatValueForInputType } from '../../lib/utils'
-import { useConfirmModal, useTemplateModal } from './uiStores'
+
 
 // Les mixins Alpine mutent directement les tableaux du state (this.groups.push(...)).
 // @sqlrooms/duckdb utilise Immer en interne qui freeze le state après chaque produce().
 // setAutoFreeze(false) empêche ce freeze pour que les mutations des mixins fonctionnent.
 setAutoFreeze(false)
-
-// ─── Shim Alpine pour compatibilité mixins ───────────────────────────────────
-// Les mixins appellent Alpine.store('confirmModal').show(...) et Alpine.initTree()
-// On fournit un shim minimal pour que ce code fonctionne sans Alpine.js
-if (typeof window !== 'undefined' && !window.Alpine) {
-    window.Alpine = {
-        store: (name: string) => {
-            if (name === 'confirmModal') return useConfirmModal.getState()
-            if (name === 'templateModal') return useTemplateModal.getState()
-            return null
-        },
-        initTree: () => {}
-    }
-}
 
 // ─── Expose globals (nécessaire pour les expressions dans les templates HTML) ─
 export function exposeGlobals() {
@@ -82,44 +64,6 @@ export function exposeGlobals() {
         CELL_TYPE_SCHEMAS,
         CELL_TYPE_HANDLERS,
         formatValueForInputType,
-    })
-}
-
-// ─── Proxy this → Zustand get/set ────────────────────────────────────────────
-function createThisProxy(get: () => any, set: (p: any) => void): any {
-    return new Proxy(Object.create(null), {
-        get(_, prop: string) {
-            // Alpine-specific helpers
-            if (prop === '$nextTick') return (fn: () => void) => setTimeout(fn, 0)
-
-            // Computed getters (remplacent les get() d'Alpine)
-            if (prop === 'activePage') {
-                const s = get()
-                return s.pages[s.activePageIndex] || s.pages[0]
-            }
-            if (prop === 'groups') {
-                const s = get()
-                const ap = s.pages[s.activePageIndex] || s.pages[0]
-                return ap?.groups || []
-            }
-            if (prop === 'linkGroups') {
-                const s = get()
-                const ap = s.pages[s.activePageIndex] || s.pages[0]
-                return ap?.linkGroups || []
-            }
-
-            const state = get()
-            const val = state[prop]
-            if (typeof val === 'function') {
-                // Bind les méthodes pour que leur `this` pointe vers le proxy
-                return (...args: any[]) => val.apply(createThisProxy(get, set), args)
-            }
-            return val
-        },
-        set(_, prop: string, value: any) {
-            set({ [prop]: value })
-            return true
-        }
     })
 }
 
@@ -202,6 +146,8 @@ function buildInitialState() {
         document.documentElement.classList.remove('light', 'dark')
         document.documentElement.classList.add(theme)
         localStorage.setItem('sqljob-theme', theme)
+        // Appliquer le preset ou CSS custom issu de la config (gist URL, import JSON…)
+        if (config.ui?.theme) applyThemeFromConfig(config.ui)
     }
     const savedDbEngine = typeof localStorage !== 'undefined' ? localStorage.getItem('sqljob-dbEngine') : null
     const initialDbEngine = config.ui?.dbEngine || savedDbEngine || 'duckdb-wasm'
@@ -350,7 +296,7 @@ export const useNotebookStore = create<any>((set, get, api) => {
                     title: 'Sources',
                     icon: DatabaseIcon,
                     component: DataSourcesPanel,
-                    placement: 'manual',
+                    placement: 'sidebar',
                 },
             },
         },
@@ -363,38 +309,57 @@ export const useNotebookStore = create<any>((set, get, api) => {
     const helpersActions = createHelpersSlice(set, get)
     const parametersActions = createParametersSlice(set, get)
     const exportActions = createExportSlice(set, get)
+    const groupsActions = createGroupsSlice(set, get)
+    const cellsActions = createCellsSlice(set, get)
+    const filesActions = createFilesSlice(set, get)
+    const editorsActions = createEditorsSlice(set, get)
+    const executionActions = createExecutionSlice(set, get)
 
-    // Fusionner les mixins restants (encore sous proxy createThisProxy)
-    const allMixinMethods: any = {
-        ...groupsMixin(),
-        ...cellsMixin(),
-        ...filesMixin(),
-        ...executionMixin(),
-        ...editorsMixin(),
+    // Helper : vérifie si le panneau 'data' est actuellement visible dans le layout
+    function isDataPanelVisible() {
+        const nodes = get().layout?.config?.nodes
+        if (!nodes) return false
+        if (nodes === 'data') return true
+        if (typeof nodes === 'object') return JSON.stringify(nodes).includes('"data"')
+        return false
     }
 
-    // Wrapper chaque méthode pour qu'elle utilise le proxy "this"
-    const wrappedActions: any = {}
-    for (const [key, value] of Object.entries(allMixinMethods)) {
-        if (typeof value === 'function') {
-            wrappedActions[key] = (...args: any[]) => {
-                const proxy = createThisProxy(get, set)
-                return (value as Function).apply(proxy, args)
+    // Override togglePanel pour mobile (< 768px) :
+    // ouvre le panneau 'data' en plein écran au lieu du layout splitté
+    const originalTogglePanel = roomShellState.layout.togglePanel
+    const mobileTogglePanel = (panel: string, show?: boolean) => {
+        const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
+        if (isMobile && panel === 'data') {
+            const dataVisible = isDataPanelVisible()
+            if (dataVisible) {
+                // Fermer → retour au notebook
+                set((s: any) => ({ layout: { ...s.layout, config: { ...s.layout.config, nodes: 'main' } } }))
+            } else {
+                // Ouvrir → plein écran data
+                set((s: any) => ({ layout: { ...s.layout, config: { ...s.layout.config, nodes: 'data' } } }))
             }
+            return
         }
-        // Les propriétés non-function des mixins (ex: draggedPageIndex) sont dans initialState
+        originalTogglePanel(panel, show)
     }
 
     return {
         ...sqlEditorState,
         ...roomShellState,
+        layout: {
+            ...roomShellState.layout,
+            togglePanel: mobileTogglePanel,
+        },
         ...initialState,
-        ...wrappedActions,
-        // Slices convertis (écrasent les méthodes équivalentes des wrappedActions si elles existent)
         ...pagesActions,
         ...helpersActions,
         ...parametersActions,
         ...exportActions,
+        ...groupsActions,
+        ...cellsActions,
+        ...filesActions,
+        ...editorsActions,
+        ...executionActions,
 
         // db.schemaTrees démarre undefined dans DuckDbSlice.
         // deepEquals([], []) bloque la mise à jour si aucune table → schemaTrees reste undefined.
@@ -423,8 +388,7 @@ export const useNotebookStore = create<any>((set, get, api) => {
                 if (alreadyPresent) return {};
                 return { _roomFiles: [...existing, { name: file.name, tableName, size: file.size, source: 'dropzone' }] };
             });
-            const proxy = createThisProxy(get, set);
-            await proxy.refreshDuckdbTables();
+            await get().refreshDuckdbTables();
             try { await get().db.refreshTableSchemas(); } catch { /* ignore */ }
         },
 

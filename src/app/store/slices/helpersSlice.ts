@@ -93,7 +93,7 @@ export const createHelpersSlice = (set: any, get: any) => ({
             }
             try {
                 await get().db.refreshTableSchemas()
-                console.log('[sqljob] schemaTrees:', get().db.schemaTrees)
+
             } catch (err) {
                 console.warn('[sqljob] refreshTableSchemas error:', err)
             }
@@ -150,7 +150,7 @@ export const createHelpersSlice = (set: any, get: any) => ({
 
     setStatus(message: string, type: string) {
         const { devMode } = get()
-        if (!devMode && type === 'success') {
+        if (!devMode && type !== 'error') {
             set({ status: '', statusType: '' })
             return
         }
