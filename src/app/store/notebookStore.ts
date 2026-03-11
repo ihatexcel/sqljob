@@ -14,6 +14,7 @@ import { createSqlEditorSlice, createDefaultSqlEditorConfig } from '@sqlrooms/sq
 import { createCellsSlice as createSqlroomsCellsSlice, createDefaultCellRegistry } from '@sqlrooms/cells'
 import { createNotebookSlice } from '@sqlrooms/notebook'
 import { createCanvasSlice } from '@sqlrooms/canvas'
+import { createSqljobCellRegistry } from '../lib/sqljobCellRegistry'
 import { DatabaseIcon } from 'lucide-react'
 // Panel components (lazy import safe — utilisés uniquement au rendu, pas à l'évaluation)
 import { NotebookPanel } from '../components/NotebookPanel'
@@ -306,7 +307,7 @@ export const useNotebookStore = create<any>((set, get, api) => {
     })(set, get, api)
 
     // === Slices sqlrooms notebook (requis par SheetsTabBar + Notebook de @sqlrooms/cells / @sqlrooms/notebook) ===
-    const sqlroomsCellsState = createSqlroomsCellsSlice({ cellRegistry: createDefaultCellRegistry() })(set, get, api)
+    const sqlroomsCellsState = createSqlroomsCellsSlice({ cellRegistry: createSqljobCellRegistry() })(set, get, api)
     const notebookState = createNotebookSlice()(set, get, api)
     const canvasState = createCanvasSlice()(set, get, api)
 
@@ -419,6 +420,27 @@ export const useNotebookStore = create<any>((set, get, api) => {
             }
             const newState = buildInitialState()
             set({ ...newState })
+        },
+
+        // Met à jour le SQL d'une cellule canvas (cells.config.data[id].data.sql)
+        // Appelé par SqlEditorQueryPicker quand l'utilisateur sélectionne une requête SQL Editor.
+        updateCanvasCellSql: (cellId: string, sql: string) => {
+            set((s: any) => {
+                const cell = s.cells?.config?.data?.[cellId]
+                if (!cell) return {}
+                return {
+                    cells: {
+                        ...s.cells,
+                        config: {
+                            ...s.cells.config,
+                            data: {
+                                ...s.cells.config.data,
+                                [cellId]: { ...cell, data: { ...cell.data, sql } },
+                            },
+                        },
+                    },
+                }
+            })
         },
 
         // Setters directs pour le state exposé aux composants React
