@@ -85413,7 +85413,7 @@ const duckdbManagerConnector = createBaseDuckDbConnector(
           title: "Sources",
           icon: Database,
           component: DataSourcesPanel,
-          placement: "main"
+          placement: "sidebar"
         }
       }
     }
