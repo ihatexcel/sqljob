@@ -344,6 +344,10 @@ export const createFilesSlice = (set: any, get: any) => ({
         delete cell.fileBase64
         delete cell.fileName
 
+        const existing = get()._roomFiles ?? []
+        set({ _roomFiles: existing.filter((f: any) => f.tableName !== cell.name) })
+        await get().refreshDuckdbTables()
+
         get().setStatus(`Fichier supprimé de ${cell.name}`, 'success')
         set((s: any) => ({ _rev: s._rev + 1 }))
     },
