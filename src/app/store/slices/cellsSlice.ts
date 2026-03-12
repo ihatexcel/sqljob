@@ -232,6 +232,7 @@ export const createCellsSlice = (set: any, get: any) => ({
         } else {
             if (await useConfirmModal.getState().show('Supprimer cette cellule ?')) {
                 const cell = group.cells[cellIndex]
+                await get().cleanupSourceCell(cell)
                 _rawTableDataStore.delete(cell._id)
                 const { _tables } = get()
                 if (_tables && _tables[cell._id]) {
@@ -239,6 +240,7 @@ export const createCellsSlice = (set: any, get: any) => ({
                     delete _tables[cell._id]
                 }
                 group.cells.splice(cellIndex, 1)
+                if (cell.type === 'source') await get().refreshDuckdbTables()
                 set((s: any) => ({ _rev: s._rev + 1 }))
             }
         }
