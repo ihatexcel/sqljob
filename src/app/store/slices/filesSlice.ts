@@ -314,13 +314,20 @@ export const createFilesSlice = (set: any, get: any) => ({
         }
     },
 
+    async cleanupSourceCell(cell: any) {
+        if (!cell || cell.type !== 'source' || !cell._fileName) return
+        if (DuckDBManager.dbInstance) {
+            try { await DuckDBManager.executeQuery(`DROP TABLE IF EXISTS "${cell.name}"`) } catch { /* ignore */ }
+        }
+        const existing = get()._roomFiles ?? []
+        set({ _roomFiles: existing.filter((f: any) => f.tableName !== cell.name) })
+    },
+
     async removeSingleSourceFile(path: any, cellIndex: number) {
         const cell = get().getCellAtPath(path, cellIndex)
         if (!cell || cell.type !== 'source') return
 
-        if (cell._fileName && DuckDBManager.dbInstance) {
-            try { await DuckDBManager.executeQuery(`DROP TABLE IF EXISTS "${cell.name}"`) } catch { /* ignore */ }
-        }
+        await get().cleanupSourceCell(cell)
 
         const safeSourceName = cell.name.replace(/[^a-zA-Z0-9_]/g, '_')
         document.querySelectorAll(`script[id^="sourceFile_${safeSourceName}"]`).forEach((s: any) => s.remove())
@@ -344,8 +351,6 @@ export const createFilesSlice = (set: any, get: any) => ({
         delete cell.fileBase64
         delete cell.fileName
 
-        const existing = get()._roomFiles ?? []
-        set({ _roomFiles: existing.filter((f: any) => f.tableName !== cell.name) })
         await get().refreshDuckdbTables()
 
         get().setStatus(`Fichier supprimé de ${cell.name}`, 'success')
