@@ -141383,9 +141383,11 @@ SELECT * FROM read_parquet('${qt}')`);
       } catch {
       }
     const kt = Ct.name.replace(/[^a-zA-Z0-9_]/g, "_");
-    document.querySelectorAll(`script[id^="sourceFile_${kt}"]`).forEach((St) => St.remove());
+    document.querySelectorAll(`script[id^="sourceFile_${kt}"]`).forEach((Tt) => Tt.remove());
     const Et = document.getElementById("fileInput_" + Ct._id);
-    Et && (Et.value = ""), Ct._fileName = "", Ct._currentFile = null, Ct._loaded = !1, Ct._status = null, Ct._importFailed = !1, Ct._loadedViaFallback = !1, Ct._mainQueryError = null, Ct._fallbackQueryError = null, Ct._rejectErrorsCount = 0, Ct._rejectedCellsCount = 0, Ct._rowCount = 0, Ct._queryBuilder = null, Array.isArray(Ct.files) && (Ct.files = Ct.files.filter((St) => St.slot !== "source")), delete Ct.fileBase64, delete Ct.fileName, yt().setStatus(`Fichier supprimé de ${Ct.name}`, "success"), At((St) => ({ _rev: St._rev + 1 }));
+    Et && (Et.value = ""), Ct._fileName = "", Ct._currentFile = null, Ct._loaded = !1, Ct._status = null, Ct._importFailed = !1, Ct._loadedViaFallback = !1, Ct._mainQueryError = null, Ct._fallbackQueryError = null, Ct._rejectErrorsCount = 0, Ct._rejectedCellsCount = 0, Ct._rowCount = 0, Ct._queryBuilder = null, Array.isArray(Ct.files) && (Ct.files = Ct.files.filter((Tt) => Tt.slot !== "source")), delete Ct.fileBase64, delete Ct.fileName;
+    const St = yt()._roomFiles ?? [];
+    At({ _roomFiles: St.filter((Tt) => Tt.tableName !== Ct.name) }), await yt().refreshDuckdbTables(), yt().setStatus(`Fichier supprimé de ${Ct.name}`, "success"), At((Tt) => ({ _rev: Tt._rev + 1 }));
   },
   handleDocxTemplateDrop(xt, wt, Ct) {
     const kt = yt().getCellAtPath(wt, Ct);
