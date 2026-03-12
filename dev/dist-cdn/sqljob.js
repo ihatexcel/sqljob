@@ -140656,15 +140656,21 @@ FROM source1 LIMIT 10;`;
     return "SELECT 'export_' || current_timestamp::text || '.zip' as filename;";
   },
   async deleteGroupAtPath(xt) {
-    if (!(!xt || xt.length === 0) && await useConfirmModal.getState().show("Supprimer ce groupe et tout son contenu ?")) {
-      if (xt.length === 1)
-        yt().getGroups().splice(xt[0], 1);
-      else {
-        const wt = xt.slice(0, -1), Ct = xt[xt.length - 1], kt = yt().getGroupAtPath(wt);
-        kt && kt.children && kt.children.splice(Ct, 1);
-      }
-      yt().setStatus("Groupe supprimé", "success"), At((wt) => ({ _rev: wt._rev + 1 }));
+    if (!xt || xt.length === 0 || !await useConfirmModal.getState().show("Supprimer ce groupe et tout son contenu ?")) return;
+    const wt = (Et) => {
+      const St = [];
+      for (const Tt of (Et == null ? void 0 : Et.cells) || []) Tt.type === "source" && St.push(Tt);
+      for (const Tt of (Et == null ? void 0 : Et.children) || []) St.push(...wt(Tt));
+      return St;
+    }, Ct = yt().getGroupAtPath(xt), kt = wt(Ct);
+    if (xt.length === 1)
+      yt().getGroups().splice(xt[0], 1);
+    else {
+      const Et = xt.slice(0, -1), St = xt[xt.length - 1], Tt = yt().getGroupAtPath(Et);
+      Tt && Tt.children && Tt.children.splice(St, 1);
     }
+    for (const Et of kt) await yt().cleanupSourceCell(Et);
+    kt.length > 0 && await yt().refreshDuckdbTables(), yt().setStatus("Groupe supprimé", "success"), At((Et) => ({ _rev: Et._rev + 1 }));
   },
   getLinkGroupById(xt) {
     return yt().getLinkGroups().find((wt) => wt._id === xt);
@@ -141000,9 +141006,9 @@ FROM source1 LIMIT 10;`;
       await yt().deleteGroupAtPath(Ct);
     else if (await useConfirmModal.getState().show("Supprimer cette cellule ?")) {
       const St = kt.cells[wt];
-      rawTableDataStore.delete(St._id);
+      await yt().cleanupSourceCell(St), rawTableDataStore.delete(St._id);
       const { _tables: Tt } = yt();
-      Tt && Tt[St._id] && (Tt[St._id].destroy(), delete Tt[St._id]), kt.cells.splice(wt, 1), At(($t) => ({ _rev: $t._rev + 1 }));
+      Tt && Tt[St._id] && (Tt[St._id].destroy(), delete Tt[St._id]), kt.cells.splice(wt, 1), St.type === "source" && await yt().refreshDuckdbTables(), At(($t) => ({ _rev: $t._rev + 1 }));
     }
   },
   moveCellInGroup(xt, wt, Ct) {
@@ -141374,20 +141380,24 @@ SELECT * FROM read_parquet('${qt}')`);
         throw new Error("Fichier source non disponible, veuillez le recharger");
     }
   },
+  async cleanupSourceCell(xt) {
+    if (!xt || xt.type !== "source" || !xt._fileName) return;
+    if (DuckDBManager.dbInstance)
+      try {
+        await DuckDBManager.executeQuery(`DROP TABLE IF EXISTS "${xt.name}"`);
+      } catch {
+      }
+    const wt = yt()._roomFiles ?? [];
+    At({ _roomFiles: wt.filter((Ct) => Ct.tableName !== xt.name) });
+  },
   async removeSingleSourceFile(xt, wt) {
     const Ct = yt().getCellAtPath(xt, wt);
     if (!Ct || Ct.type !== "source") return;
-    if (Ct._fileName && DuckDBManager.dbInstance)
-      try {
-        await DuckDBManager.executeQuery(`DROP TABLE IF EXISTS "${Ct.name}"`);
-      } catch {
-      }
+    await yt().cleanupSourceCell(Ct);
     const kt = Ct.name.replace(/[^a-zA-Z0-9_]/g, "_");
-    document.querySelectorAll(`script[id^="sourceFile_${kt}"]`).forEach((Tt) => Tt.remove());
+    document.querySelectorAll(`script[id^="sourceFile_${kt}"]`).forEach((St) => St.remove());
     const Et = document.getElementById("fileInput_" + Ct._id);
-    Et && (Et.value = ""), Ct._fileName = "", Ct._currentFile = null, Ct._loaded = !1, Ct._status = null, Ct._importFailed = !1, Ct._loadedViaFallback = !1, Ct._mainQueryError = null, Ct._fallbackQueryError = null, Ct._rejectErrorsCount = 0, Ct._rejectedCellsCount = 0, Ct._rowCount = 0, Ct._queryBuilder = null, Array.isArray(Ct.files) && (Ct.files = Ct.files.filter((Tt) => Tt.slot !== "source")), delete Ct.fileBase64, delete Ct.fileName;
-    const St = yt()._roomFiles ?? [];
-    At({ _roomFiles: St.filter((Tt) => Tt.tableName !== Ct.name) }), await yt().refreshDuckdbTables(), yt().setStatus(`Fichier supprimé de ${Ct.name}`, "success"), At((Tt) => ({ _rev: Tt._rev + 1 }));
+    Et && (Et.value = ""), Ct._fileName = "", Ct._currentFile = null, Ct._loaded = !1, Ct._status = null, Ct._importFailed = !1, Ct._loadedViaFallback = !1, Ct._mainQueryError = null, Ct._fallbackQueryError = null, Ct._rejectErrorsCount = 0, Ct._rejectedCellsCount = 0, Ct._rowCount = 0, Ct._queryBuilder = null, Array.isArray(Ct.files) && (Ct.files = Ct.files.filter((St) => St.slot !== "source")), delete Ct.fileBase64, delete Ct.fileName, await yt().refreshDuckdbTables(), yt().setStatus(`Fichier supprimé de ${Ct.name}`, "success"), At((St) => ({ _rev: St._rev + 1 }));
   },
   handleDocxTemplateDrop(xt, wt, Ct) {
     const kt = yt().getCellAtPath(wt, Ct);
