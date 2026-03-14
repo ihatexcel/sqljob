@@ -184,50 +184,50 @@ function NavBar({ onSwitchPanel }: { onSwitchPanel: () => void }) {
             </div>
             <div className="flex-none flex gap-2 items-center">
                 {devMode && (
-                    <>
-                        <Button variant="ghost" size="sm" onClick={runAllGroups} disabled={isLoading} title="Tout exécuter">
-                            <Icon name="play-arrow" size={20} />
-                        </Button>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="sm">
-                                    <Icon name="share" size={20} />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-48">
-                                <DropdownMenuItem onClick={() => openExportModal('gist')}>
-                                    <Icon name="share" size={16} className="mr-2" /> Partager (Gist)
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => openExportModal('json')}>
-                                    <Icon name="data-object" size={16} className="mr-2" /> Export JSON
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => openExportModal('html')}>
-                                    <Icon name="save" size={16} className="mr-2" /> Export HTML
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => openExportModal('base64')}>
-                                    <Icon name="lock" size={16} className="mr-2" /> Export Base64
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem onClick={() => importJsonRef.current?.click()}>
-                                    <Icon name="folder-open" size={16} className="mr-2" /> Import JSON
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    </>
+                    <Button variant="ghost" size="sm" onClick={runAllGroups} disabled={isLoading} title="Tout exécuter">
+                        <Icon name="play-arrow" size={20} />
+                    </Button>
                 )}
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="sm">
+                            <Icon name="share" size={20} />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48">
+                        <DropdownMenuItem onClick={() => openExportModal('gist')}>
+                            <Icon name="share" size={16} className="mr-2" /> Partager (Gist)
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => openExportModal('json')}>
+                            <Icon name="data-object" size={16} className="mr-2" /> Export JSON
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => openExportModal('html')}>
+                            <Icon name="save" size={16} className="mr-2" /> Export HTML
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => openExportModal('base64')}>
+                            <Icon name="lock" size={16} className="mr-2" /> Export Base64
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => importJsonRef.current?.click()}>
+                            <Icon name="folder-open" size={16} className="mr-2" /> Import JSON
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
                 {isLoading && (
                     <Spinner className="h-4 w-4" />
                 )}
-                {/* Bouton switch vers NotebookPanel sqlrooms natif */}
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={onSwitchPanel}
-                    title="Passer au notebook sqlrooms natif"
-                    className="opacity-60 hover:opacity-100"
-                >
-                    <Icon name="swap-horiz" size={20} />
-                </Button>
+                {/* Bouton switch vers NotebookPanel sqlrooms natif — devMode uniquement */}
+                {devMode && (
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={onSwitchPanel}
+                        title="Passer au notebook sqlrooms natif"
+                        className="opacity-60 hover:opacity-100"
+                    >
+                        <Icon name="swap-horiz" size={20} />
+                    </Button>
+                )}
             </div>
             <input ref={importJsonRef} type="file" accept=".json" hidden
                 onChange={e => { loadConfig(e); (document.activeElement as HTMLElement)?.blur() }} />
