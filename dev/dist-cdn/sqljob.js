@@ -134720,40 +134720,38 @@ function NavBar({ onSwitchPanel: At }) {
     ) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 flex justify-center overflow-hidden", children: /* @__PURE__ */ jsxRuntimeExports.jsx(TabBar, {}) }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-none flex gap-2 items-center", children: [
-      yt && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "ghost", size: "sm", onClick: kt, disabled: xt, title: "Tout exécuter", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "play-arrow", size: 20 }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenu, { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(DropdownMenuTrigger, { asChild: !0, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "ghost", size: "sm", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "share", size: 20 }) }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuContent, { align: "end", className: "w-48", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuItem, { onClick: () => Ct("gist"), children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "share", size: 16, className: "mr-2" }),
-              " Partager (Gist)"
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuItem, { onClick: () => Ct("json"), children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "data-object", size: 16, className: "mr-2" }),
-              " Export JSON"
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuItem, { onClick: () => Ct("html"), children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "save", size: 16, className: "mr-2" }),
-              " Export HTML"
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuItem, { onClick: () => Ct("base64"), children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "lock", size: 16, className: "mr-2" }),
-              " Export Base64"
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(DropdownMenuSeparator, {}),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuItem, { onClick: () => {
-              var $t;
-              return ($t = St.current) == null ? void 0 : $t.click();
-            }, children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "folder-open", size: 16, className: "mr-2" }),
-              " Import JSON"
-            ] })
+      yt && /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "ghost", size: "sm", onClick: kt, disabled: xt, title: "Tout exécuter", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "play-arrow", size: 20 }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenu, { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(DropdownMenuTrigger, { asChild: !0, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "ghost", size: "sm", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "share", size: 20 }) }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuContent, { align: "end", className: "w-48", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuItem, { onClick: () => Ct("gist"), children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "share", size: 16, className: "mr-2" }),
+            " Partager (Gist)"
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuItem, { onClick: () => Ct("json"), children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "data-object", size: 16, className: "mr-2" }),
+            " Export JSON"
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuItem, { onClick: () => Ct("html"), children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "save", size: 16, className: "mr-2" }),
+            " Export HTML"
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuItem, { onClick: () => Ct("base64"), children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "lock", size: 16, className: "mr-2" }),
+            " Export Base64"
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(DropdownMenuSeparator, {}),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuItem, { onClick: () => {
+            var $t;
+            return ($t = St.current) == null ? void 0 : $t.click();
+          }, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "folder-open", size: 16, className: "mr-2" }),
+            " Import JSON"
           ] })
         ] })
       ] }),
       xt && /* @__PURE__ */ jsxRuntimeExports.jsx(Spinner, { className: "h-4 w-4" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
+      yt && /* @__PURE__ */ jsxRuntimeExports.jsx(
         Button,
         {
           variant: "ghost",
