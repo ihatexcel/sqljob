@@ -131950,7 +131950,7 @@ function CellHeader({ cell: At, path: yt, cellIndex: xt, group: wt }) {
     isLastInGroup: jt.isLastInGroup,
     _rev: jt._rev
   })));
-  return Ct ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "group flex justify-between items-center py-2 px-4 bg-muted border-b border-border", children: [
+  return Ct ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "group @container flex justify-between items-center py-2 px-4 bg-muted border-b border-border", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 text-sm text-muted-foreground", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(CellTypeIcon, { type: At.type, size: 16 }),
       At.type === "uiParameter" ? /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-mono text-xs text-primary font-semibold", children: [
@@ -131961,7 +131961,7 @@ function CellHeader({ cell: At, path: yt, cellIndex: xt, group: wt }) {
       At._status === "running" && /* @__PURE__ */ jsxRuntimeExports.jsx(Spinner, { className: "h-3 w-3 text-yellow-500" })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-1 items-center", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "hidden group-hover:inline-flex rounded-md overflow-hidden border border-border divide-x divide-border", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "hidden @[320px]:group-hover:inline-flex rounded-md overflow-hidden border border-border divide-x divide-border", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "button",
           {
@@ -132021,7 +132021,7 @@ function CellHeader({ cell: At, path: yt, cellIndex: xt, group: wt }) {
         )
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenu, { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(DropdownMenuTrigger, { asChild: !0, children: /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "inline-flex items-center justify-center h-6 w-6 rounded hover:bg-muted-foreground/20", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "ellipsis-vertical", size: 16 }) }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(DropdownMenuTrigger, { asChild: !0, children: /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "inline-flex items-center justify-center h-6 w-6 rounded hover:bg-muted-foreground/20 @[320px]:pointer-events-none @[320px]:opacity-0", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "ellipsis-vertical", size: 16 }) }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuContent, { align: "end", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuItem, { onClick: () => Et(yt, xt), disabled: kt, children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "play-arrow", size: 14, className: "mr-2" }),
@@ -134419,8 +134419,8 @@ function GroupContainer({
     /* @__PURE__ */ jsxRuntimeExports.jsx(AccordionTrigger, { className: "px-4 py-3 font-medium", children: At.title || "" }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(AccordionContent, { className: "px-0 pb-0", children: /* @__PURE__ */ jsxRuntimeExports.jsx(GroupContent, { group: At, path: yt, depth: xt }) })
   ] }) }) : !St && At.tabsChild ? /* @__PURE__ */ jsxRuntimeExports.jsx(TabsChildContent, { group: At, path: yt, depth: xt }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-background w-full", children: [
-    St && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "group/ghdr flex items-center justify-between gap-2 py-1 px-2 bg-muted/80 border-b border-border group-header", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-1 flex-wrap items-center", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "hidden group-hover/ghdr:inline-flex rounded-md overflow-hidden border border-border divide-x divide-border", children: [
+    St && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "group/ghdr @container flex items-center justify-between gap-2 py-1 px-2 bg-muted/80 border-b border-border group-header", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-1 flex-wrap items-center", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "hidden @[380px]:group-hover/ghdr:inline-flex rounded-md overflow-hidden border border-border divide-x divide-border", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "button",
           {
@@ -134507,7 +134507,7 @@ function GroupContainer({
         )
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenu, { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(DropdownMenuTrigger, { asChild: !0, children: /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "inline-flex items-center justify-center h-6 w-6 rounded hover:bg-muted-foreground/20", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "ellipsis-vertical", size: 16 }) }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(DropdownMenuTrigger, { asChild: !0, children: /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "inline-flex items-center justify-center h-6 w-6 rounded hover:bg-muted-foreground/20 @[380px]:pointer-events-none @[380px]:opacity-0", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "ellipsis-vertical", size: 16 }) }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuContent, { align: "start", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuItem, { onClick: () => jt(yt), disabled: Tt, children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "play-arrow", size: 14, className: "mr-2" }),
