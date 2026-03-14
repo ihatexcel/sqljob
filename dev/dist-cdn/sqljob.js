@@ -131938,71 +131938,129 @@ function CellHeader({ cell: At, path: yt, cellIndex: xt, group: wt }) {
     isLastInGroup: jt.isLastInGroup,
     _rev: jt._rev
   })));
-  return Ct ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between items-center py-2 px-4 bg-muted border-b border-border", children: [
+  return Ct ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "group flex justify-between items-center py-2 px-4 bg-muted border-b border-border", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 text-sm text-muted-foreground", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(CellTypeIcon, { type: At.type, size: 16 }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: At.type }),
+      At.type === "uiParameter" ? /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-mono text-xs text-primary font-semibold", children: [
+        "{{ ",
+        ConfigManager.getCellReferenceName(At),
+        " }}"
+      ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: At.type }),
       At._status === "running" && /* @__PURE__ */ jsxRuntimeExports.jsx(Spinner, { className: "h-3 w-3 text-yellow-500" })
     ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex gap-1 items-center cell-header-responsive", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "inline-flex rounded-md overflow-hidden border border-border divide-x divide-border", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "button",
-        {
-          className: "inline-flex items-center justify-center h-6 px-2 text-xs bg-green-600 text-white hover:bg-green-700 disabled:opacity-50",
-          onClick: () => Et(yt, xt),
-          disabled: kt,
-          title: "Exécuter",
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "play-arrow", size: 16 })
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "button",
-        {
-          className: "inline-flex items-center justify-center h-6 px-2 text-xs bg-background hover:bg-muted",
-          onClick: () => St(yt, xt),
-          title: "Configurer",
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "settings", size: 16 })
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "button",
-        {
-          className: "inline-flex items-center justify-center h-6 px-2 text-xs bg-background hover:bg-muted",
-          onClick: () => Tt(yt, xt),
-          title: "Groupe enfant",
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "export-notes-outline-sharp", size: 16 })
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "button",
-        {
-          className: "inline-flex items-center justify-center h-6 px-2 text-xs bg-background hover:bg-muted disabled:opacity-50",
-          onClick: () => $t(yt, "cell", xt, -1),
-          disabled: It(wt, "cell", xt),
-          title: "Déplacer à gauche",
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "arrow-back", size: 16 })
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "button",
-        {
-          className: "inline-flex items-center justify-center h-6 px-2 text-xs bg-background hover:bg-muted disabled:opacity-50",
-          onClick: () => $t(yt, "cell", xt, 1),
-          disabled: Dt(wt, "cell", xt),
-          title: "Déplacer à droite",
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "arrow-forward", size: 16 })
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "button",
-        {
-          className: "inline-flex items-center justify-center h-6 px-2 text-xs bg-destructive text-destructive-foreground hover:bg-destructive/80",
-          onClick: () => Lt(yt, xt),
-          title: "Supprimer",
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "delete", size: 16 })
-        }
-      )
-    ] }) })
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-1 items-center", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "hidden group-hover:inline-flex rounded-md overflow-hidden border border-border divide-x divide-border", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            className: "inline-flex items-center justify-center h-6 px-2 text-xs bg-green-600 text-white hover:bg-green-700 disabled:opacity-50",
+            onClick: () => Et(yt, xt),
+            disabled: kt,
+            title: "Exécuter",
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "play-arrow", size: 16 })
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            className: "inline-flex items-center justify-center h-6 px-2 text-xs bg-background hover:bg-muted",
+            onClick: () => St(yt, xt),
+            title: "Configurer",
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "settings", size: 16 })
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            className: "inline-flex items-center justify-center h-6 px-2 text-xs bg-background hover:bg-muted",
+            onClick: () => Tt(yt, xt),
+            title: "Groupe enfant",
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "export-notes-outline-sharp", size: 16 })
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            className: "inline-flex items-center justify-center h-6 px-2 text-xs bg-background hover:bg-muted disabled:opacity-50",
+            onClick: () => $t(yt, "cell", xt, -1),
+            disabled: It(wt, "cell", xt),
+            title: "Déplacer à gauche",
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "arrow-back", size: 16 })
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            className: "inline-flex items-center justify-center h-6 px-2 text-xs bg-background hover:bg-muted disabled:opacity-50",
+            onClick: () => $t(yt, "cell", xt, 1),
+            disabled: Dt(wt, "cell", xt),
+            title: "Déplacer à droite",
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "arrow-forward", size: 16 })
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            className: "inline-flex items-center justify-center h-6 px-2 text-xs bg-destructive text-destructive-foreground hover:bg-destructive/80",
+            onClick: () => Lt(yt, xt),
+            title: "Supprimer",
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "delete", size: 16 })
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenu, { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(DropdownMenuTrigger, { asChild: !0, children: /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "inline-flex items-center justify-center h-6 w-6 rounded hover:bg-muted-foreground/20", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "more-vert", size: 16 }) }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuContent, { align: "end", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuItem, { onClick: () => Et(yt, xt), disabled: kt, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "play-arrow", size: 14, className: "mr-2" }),
+            " Exécuter"
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuItem, { onClick: () => St(yt, xt), children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "settings", size: 14, className: "mr-2" }),
+            " Configurer"
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuItem, { onClick: () => Tt(yt, xt), children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "export-notes-outline-sharp", size: 14, className: "mr-2" }),
+            " Groupe enfant"
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(DropdownMenuSeparator, {}),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            DropdownMenuItem,
+            {
+              onClick: () => $t(yt, "cell", xt, -1),
+              disabled: It(wt, "cell", xt),
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "arrow-back", size: 14, className: "mr-2" }),
+                " Déplacer à gauche"
+              ]
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            DropdownMenuItem,
+            {
+              onClick: () => $t(yt, "cell", xt, 1),
+              disabled: Dt(wt, "cell", xt),
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "arrow-forward", size: 14, className: "mr-2" }),
+                " Déplacer à droite"
+              ]
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(DropdownMenuSeparator, {}),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            DropdownMenuItem,
+            {
+              onClick: () => Lt(yt, xt),
+              className: "text-destructive focus:text-destructive",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "delete", size: 14, className: "mr-2" }),
+                " Supprimer"
+              ]
+            }
+          )
+        ] })
+      ] })
+    ] })
   ] }) : null;
 }
 const SQL_TEMPLATES = [
@@ -133873,10 +133931,6 @@ function UiParameterBody({ cell: At, path: yt, cellIndex: xt }) {
     At._value = Mt, At._userModified = !0, Dt(Mt), Ct == null || Ct(At);
   }
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-0", children: [
-    wt && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-sm font-semibold text-primary mb-1", children: [
-      "$",
-      ConfigManager.getCellReferenceName(At) || ""
-    ] }),
     wt && /* @__PURE__ */ jsxRuntimeExports.jsx(
       SqlEditorWidget,
       {
@@ -134353,8 +134407,8 @@ function GroupContainer({
     /* @__PURE__ */ jsxRuntimeExports.jsx(AccordionTrigger, { className: "px-4 py-3 font-medium", children: At.title || "" }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(AccordionContent, { className: "px-0 pb-0", children: /* @__PURE__ */ jsxRuntimeExports.jsx(GroupContent, { group: At, path: yt, depth: xt }) })
   ] }) }) : !St && At.tabsChild ? /* @__PURE__ */ jsxRuntimeExports.jsx(TabsChildContent, { group: At, path: yt, depth: xt }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-background w-full", children: [
-    St && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center justify-between gap-2 py-1 px-2 bg-muted/80 border-b border-border group-header", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-1 flex-wrap items-center", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "inline-flex rounded-md overflow-hidden border border-border divide-x divide-border", children: [
+    St && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "group/ghdr flex items-center justify-between gap-2 py-1 px-2 bg-muted/80 border-b border-border group-header", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-1 flex-wrap items-center", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "hidden group-hover/ghdr:inline-flex rounded-md overflow-hidden border border-border divide-x divide-border", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "button",
           {
@@ -134439,6 +134493,59 @@ function GroupContainer({
             children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "delete", size: 16 })
           }
         )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenu, { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(DropdownMenuTrigger, { asChild: !0, children: /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "inline-flex items-center justify-center h-6 w-6 rounded hover:bg-muted-foreground/20", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "more-vert", size: 16 }) }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuContent, { align: "start", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuItem, { onClick: () => jt(yt), disabled: Tt, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "play-arrow", size: 14, className: "mr-2" }),
+            " Exécuter le groupe"
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuItem, { onClick: () => {
+            At.direction = At.direction === "column" ? "row" : "column", Zt();
+          }, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: At.direction === "column" ? "swap-vert" : "swap-horiz", size: 14, className: "mr-2" }),
+            At.direction === "column" ? "Passer en ligne" : "Passer en colonne"
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(DropdownMenuSeparator, {}),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuItem, { onClick: () => Mt(yt), children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "create-new-folder", size: 14, className: "mr-2" }),
+            " Ajouter un sous-groupe"
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuItem, { onClick: () => Nt(yt), children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "add", size: 14, className: "mr-2" }),
+            " Ajouter une cellule"
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuItem, { onClick: () => Ht == null ? void 0 : Ht(yt), children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "autorenew", size: 14, className: "mr-2" }),
+            " Boucle"
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuItem, { onClick: () => qt == null ? void 0 : qt(yt), children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "settings", size: 14, className: "mr-2" }),
+            " Paramètres"
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(DropdownMenuSeparator, {}),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuItem, { onClick: () => Ot == null ? void 0 : Ot([...yt.slice(0, -1)], "child", yt[yt.length - 1], -1), disabled: wt, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "arrow-upward", size: 14, className: "mr-2" }),
+            " Monter"
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuItem, { onClick: () => Ot == null ? void 0 : Ot([...yt.slice(0, -1)], "child", yt[yt.length - 1], 1), disabled: Ct, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "arrow-downward", size: 14, className: "mr-2" }),
+            " Descendre"
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(DropdownMenuSeparator, {}),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            DropdownMenuItem,
+            {
+              onClick: () => Bt == null ? void 0 : Bt(yt),
+              className: "text-destructive focus:text-destructive",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "delete", size: 14, className: "mr-2" }),
+                " Supprimer le groupe"
+              ]
+            }
+          )
+        ] })
       ] }),
       ((Ur = At.loop) == null ? void 0 : Ur.enabled) && /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { variant: "secondary", className: "text-xs", children: "↺ Boucle" })
     ] }) }),
