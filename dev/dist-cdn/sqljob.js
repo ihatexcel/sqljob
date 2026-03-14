@@ -132021,7 +132021,7 @@ function CellHeader({ cell: At, path: yt, cellIndex: xt, group: wt }) {
         )
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenu, { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(DropdownMenuTrigger, { asChild: !0, children: /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "inline-flex items-center justify-center h-6 w-6 rounded hover:bg-muted-foreground/20 @[320px]:pointer-events-none @[320px]:opacity-0", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "ellipsis-vertical", size: 16 }) }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(DropdownMenuTrigger, { asChild: !0, children: /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "inline-flex items-center justify-center h-6 w-6 rounded hover:bg-muted-foreground/20 @[320px]:pointer-events-none", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "ellipsis-vertical", size: 16 }) }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuContent, { align: "end", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuItem, { onClick: () => Et(yt, xt), disabled: kt, children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "play-arrow", size: 14, className: "mr-2" }),
@@ -134507,7 +134507,7 @@ function GroupContainer({
         )
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenu, { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(DropdownMenuTrigger, { asChild: !0, children: /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "inline-flex items-center justify-center h-6 w-6 rounded hover:bg-muted-foreground/20 @[380px]:pointer-events-none @[380px]:opacity-0", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "ellipsis-vertical", size: 16 }) }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(DropdownMenuTrigger, { asChild: !0, children: /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "inline-flex items-center justify-center h-6 w-6 rounded hover:bg-muted-foreground/20 @[380px]:pointer-events-none", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "ellipsis-vertical", size: 16 }) }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuContent, { align: "start", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuItem, { onClick: () => jt(yt), disabled: Tt, children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "play-arrow", size: 14, className: "mr-2" }),
