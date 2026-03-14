@@ -34,7 +34,7 @@ export function CellHeader({ cell, path, cellIndex, group }: Props) {
     if (!devMode) return null
 
     return (
-        <div className="group flex justify-between items-center py-2 px-4 bg-muted border-b border-border">
+        <div className="group @container flex justify-between items-center py-2 px-4 bg-muted border-b border-border">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <CellTypeIcon type={cell.type} size={16} />
                 {cell.type === 'uiParameter'
@@ -49,7 +49,7 @@ export function CellHeader({ cell, path, cellIndex, group }: Props) {
             </div>
             <div className="flex gap-1 items-center">
                 {/* Boutons — cachés par défaut, révélés au hover (desktop) */}
-                <div className="hidden group-hover:inline-flex rounded-md overflow-hidden border border-border divide-x divide-border">
+                <div className="hidden @[320px]:group-hover:inline-flex rounded-md overflow-hidden border border-border divide-x divide-border">
                     <button className="inline-flex items-center justify-center h-6 px-2 text-xs bg-green-600 text-white hover:bg-green-700 disabled:opacity-50"
                         onClick={() => runCellAt(path, cellIndex)}
                         disabled={isLoading}
@@ -88,7 +88,7 @@ export function CellHeader({ cell, path, cellIndex, group }: Props) {
                 {/* Bouton kebab — toujours visible (fallback touch/mobile) */}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <button className="inline-flex items-center justify-center h-6 w-6 rounded hover:bg-muted-foreground/20">
+                        <button className="inline-flex items-center justify-center h-6 w-6 rounded hover:bg-muted-foreground/20 @[320px]:pointer-events-none @[320px]:opacity-0">
                             <Icon name="ellipsis-vertical" size={16} />
                         </button>
                     </DropdownMenuTrigger>
