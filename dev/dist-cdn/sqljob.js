@@ -44908,7 +44908,8 @@ const T_ = class T_ {
       const wt = CELL_TYPE_SCHEMAS == null ? void 0 : CELL_TYPE_SCHEMAS.types[xt.type], Ct = (wt == null ? void 0 : wt.queryNames) ?? ["main"];
       xt.queries = xt.queries.map((kt, Et) => ({
         ...kt,
-        name: kt.name || Ct[Et] || (Et === 0 ? "main" : Et === 1 ? "filename" : "query" + Et)
+        name: kt.name || Ct[Et] || (Et === 0 ? "main" : Et === 1 ? "filename" : "query" + Et),
+        sql: kt.sql || kt.query || ""
       }));
     }
     return xt.type === "pdfme" && typeof xt.json == "object" && xt.json !== null && (xt.json = JSON.stringify(xt.json, null, 2)), xt;
@@ -44919,7 +44920,8 @@ const T_ = class T_ {
   static normalizeGroup(yt) {
     return !yt || !Array.isArray(yt.queries) || (yt.queries = yt.queries.map((xt, wt) => ({
       ...xt,
-      name: xt.name || (wt === 0 ? "main" : "query" + wt)
+      name: xt.name || (wt === 0 ? "main" : "query" + wt),
+      sql: xt.sql || xt.query || ""
     }))), yt;
   }
   /** Retourne la requête par nom (ex: 'main', 'fallback', 'filename'). Rétrocompat: index 0->main, 1->fallback/filename. */
@@ -45308,7 +45310,7 @@ const T_ = class T_ {
         var Tt;
         return {
           name: Et.name || ((Tt = kt == null ? void 0 : kt.queryNames) == null ? void 0 : Tt[St]) || (St === 0 ? "main" : St === 1 ? "filename" : "query" + St),
-          sql: Et.sql || "",
+          query: Et.sql || "",
           engine: Et.engine || T_.getDefaultEngineForType(yt == null ? void 0 : yt.type, St),
           clientVisible: Et.clientVisible === !0
         };
@@ -45324,7 +45326,7 @@ const T_ = class T_ {
     const wt = { type: yt.type }, Ct = CELL_TYPE_SCHEMAS == null ? void 0 : CELL_TYPE_SCHEMAS.types[yt == null ? void 0 : yt.type], kt = (Ct == null ? void 0 : Ct.exportFields) ?? ["queries"];
     for (const Lt of kt)
       if (Lt === "queries")
-        wt.queries = T_._buildQueriesForClean(yt), yt.type === "markdown" && (!Array.isArray(wt.queries) || wt.queries.length === 0) && (wt.queries = [{ name: "main", sql: T_.getCellEditableContent(yt), engine: T_.getCellEngine(yt, "main"), clientVisible: T_.getCellQueryClientVisible(yt, "main") }]);
+        wt.queries = T_._buildQueriesForClean(yt), yt.type === "markdown" && (!Array.isArray(wt.queries) || wt.queries.length === 0) && (wt.queries = [{ name: "main", query: T_.getCellEditableContent(yt), engine: T_.getCellEngine(yt, "main"), clientVisible: T_.getCellQueryClientVisible(yt, "main") }]);
       else if (Lt === "name") {
         const It = CELL_TYPE_HANDLERS[yt == null ? void 0 : yt.type], Dt = It != null && It.getExportValue ? It.getExportValue(yt, "name") : yt.name;
         Dt !== void 0 && (wt.name = Dt);
@@ -45379,7 +45381,7 @@ const T_ = class T_ {
       const kt = T_.getGroupIfQuery(yt) || yt.queries[0];
       kt && (kt.sql || "").trim() && (wt.queries = [{
         name: "main",
-        sql: kt.sql.trim(),
+        query: kt.sql.trim(),
         engine: kt.engine || "sql",
         clientVisible: kt.clientVisible === !0
       }]);
