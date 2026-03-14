@@ -134421,7 +134421,10 @@ function GroupContainer({
   ] }) }) : !St && At.tabsChild ? /* @__PURE__ */ jsxRuntimeExports.jsx(TabsChildContent, { group: At, path: yt, depth: xt }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-background w-full", children: [
     St && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "group/ghdr @container flex items-center justify-between gap-2 py-1 px-2 bg-muted/80 border-b border-border group-header", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-1 flex-wrap items-center", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenu, { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(DropdownMenuTrigger, { asChild: !0, children: /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "inline-flex items-center justify-center h-6 w-6 rounded hover:bg-muted-foreground/20 @[380px]:pointer-events-none", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "ellipsis-vertical", size: 16 }) }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(DropdownMenuTrigger, { asChild: !0, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { className: "inline-flex items-center justify-center h-6 w-6 rounded hover:bg-muted-foreground/20 @[380px]:pointer-events-none", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "ellipsis-vertical", size: 16, className: "block @[380px]:hidden" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "ellipsis", size: 16, className: "hidden @[380px]:block" })
+        ] }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuContent, { align: "start", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuItem, { onClick: () => jt(yt), disabled: Tt, children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "play-arrow", size: 14, className: "mr-2" }),
