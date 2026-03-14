@@ -1,9 +1,10 @@
 // @ts-nocheck
+import { useState, useRef } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import { useNotebookStore } from '../store/notebookStore'
 import { Spinner, DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from '@sqlrooms/ui'
-import { Icon, CellTypeIcon } from '../../lib/icons'
-import { ConfigManager } from '../../lib/ConfigManager'
+import { Icon } from '../../lib/icons'
+import { CELL_TYPE_SCHEMAS } from '../../lib/cellTypeSchemas'
 
 interface Props {
     cell: any
@@ -17,7 +18,8 @@ export function CellHeader({ cell, path, cellIndex, group }: Props) {
         devMode, isLoading,
         runCellAt, openCellConfig, openChildGroupModal,
         moveItemInGroup, deleteCellAt,
-        isFirstInGroup, isLastInGroup, _rev
+        isFirstInGroup, isLastInGroup,
+        validateCellName, forceUpdate, _rev
     } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         isLoading: s.isLoading,
@@ -28,21 +30,65 @@ export function CellHeader({ cell, path, cellIndex, group }: Props) {
         deleteCellAt: s.deleteCellAt,
         isFirstInGroup: s.isFirstInGroup,
         isLastInGroup: s.isLastInGroup,
+        validateCellName: s.validateCellName,
+        forceUpdate: s.forceUpdate,
         _rev: s._rev
     })))
 
+    const schema = CELL_TYPE_SCHEMAS?.types[cell?.type]
+    const hasNameDisplay = !!(schema?.showNameInHeader || schema?.useNameAsReference)
+
+    const [isEditing, setIsEditing] = useState(false)
+    const [editVal, setEditVal] = useState('')
+    const inputRef = useRef<HTMLInputElement>(null)
+
     if (!devMode) return null
+
+    const startEdit = () => {
+        setEditVal(cell.name || '')
+        setIsEditing(true)
+        setTimeout(() => inputRef.current?.select(), 0)
+    }
+
+    const commitEdit = () => {
+        const trimmed = editVal.trim()
+        if (trimmed && trimmed !== cell.name) {
+            cell.name = trimmed
+            validateCellName(path, cellIndex)
+        }
+        setIsEditing(false)
+        forceUpdate()
+    }
+
+    const cancelEdit = () => setIsEditing(false)
 
     return (
         <div className="group @container flex justify-between items-center py-2 px-4 bg-muted border-b border-border">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <CellTypeIcon type={cell.type} size={16} />
-                {cell.type === 'uiParameter'
-                    ? <span className="font-mono text-xs text-primary font-semibold">
-                          {'{{ '}{ConfigManager.getCellReferenceName(cell)}{' }}'}
-                      </span>
-                    : <span>{cell.type}</span>
-                }
+            <div className="flex items-center gap-2 text-sm text-muted-foreground min-w-0">
+                {hasNameDisplay && !isEditing && (
+                    <span
+                        className={`font-mono text-xs font-semibold cursor-pointer hover:text-primary truncate ${schema?.useNameAsReference ? 'text-primary' : 'text-accent'}`}
+                        onDoubleClick={startEdit}
+                        title="Double-cliquer pour renommer"
+                    >
+                        {schema?.useNameAsReference
+                            ? `{{ ${cell.name || ''} }}`
+                            : cell.name || ''}
+                    </span>
+                )}
+                {hasNameDisplay && isEditing && (
+                    <input
+                        ref={inputRef}
+                        className="font-mono text-xs border border-input rounded px-1 py-0 h-5 w-32 bg-background text-foreground"
+                        value={editVal}
+                        onChange={e => setEditVal(e.target.value)}
+                        onBlur={commitEdit}
+                        onKeyDown={e => {
+                            if (e.key === 'Enter') { e.preventDefault(); commitEdit() }
+                            if (e.key === 'Escape') cancelEdit()
+                        }}
+                    />
+                )}
                 {cell._status === 'running' && (
                     <Spinner className="h-3 w-3 text-yellow-500" />
                 )}

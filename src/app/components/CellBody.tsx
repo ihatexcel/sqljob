@@ -653,24 +653,32 @@ function PublipostageWordBody({ cell, path, cellIndex }: any) {
                     onChange={e => handleDocxTemplateFileSelect(e, path, cellIndex)} />
             </div>
             {devMode && (
-                <div className="flex flex-col gap-3">
-                    <div>
-                        <div className="text-sm font-semibold text-primary mb-1">Requête de données</div>
-                        <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
-                            queryType="query" />
-                    </div>
-                    <div>
-                        <div className="text-sm font-semibold text-primary mb-1 flex items-center gap-2">
-                            <span>Requête de nom de fichier</span>
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200">
-                                <Icon name="storage" size={14} />
-                                SQL
+                <Accordion type="multiple" className="mt-1">
+                    <AccordionItem value="data">
+                        <AccordionTrigger className="text-sm font-semibold text-primary py-1">
+                            Requête de données
+                        </AccordionTrigger>
+                        <AccordionContent>
+                            <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
+                                queryType="query" />
+                        </AccordionContent>
+                    </AccordionItem>
+                    <AccordionItem value="filename">
+                        <AccordionTrigger className="text-sm font-semibold text-primary py-1">
+                            <span className="flex items-center gap-2">
+                                <span>Requête de nom de fichier</span>
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200">
+                                    <Icon name="storage" size={14} />
+                                    SQL
+                                </span>
                             </span>
-                        </div>
-                        <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
-                            queryType="query2" />
-                    </div>
-                </div>
+                        </AccordionTrigger>
+                        <AccordionContent>
+                            <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
+                                queryType="query2" />
+                        </AccordionContent>
+                    </AccordionItem>
+                </Accordion>
             )}
             {cell.buttonLabel && (
                 <div className="flex justify-center">
@@ -700,38 +708,50 @@ function PdfmeBody({ cell, path, cellIndex }: any) {
     return (
         <div className="flex flex-col gap-3">
             {devMode && (
-                <div className="flex flex-col gap-3">
-                    <div>
-                        <div className="text-sm font-semibold text-primary mb-1">Requête de données</div>
-                        <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
-                            queryType="query" />
-                    </div>
-                    <div>
-                        <div className="text-sm font-semibold text-primary mb-1 flex items-center gap-2">
-                            <span>Requête nom de fichier PDF</span>
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200">
-                                <Icon name="storage" size={14} />
-                                SQL
+                <Accordion type="multiple" className="mt-1">
+                    <AccordionItem value="data">
+                        <AccordionTrigger className="text-sm font-semibold text-primary py-1">
+                            Requête de données
+                        </AccordionTrigger>
+                        <AccordionContent>
+                            <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
+                                queryType="query" />
+                        </AccordionContent>
+                    </AccordionItem>
+                    <AccordionItem value="filename">
+                        <AccordionTrigger className="text-sm font-semibold text-primary py-1">
+                            <span className="flex items-center gap-2">
+                                <span>Requête nom de fichier PDF</span>
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200">
+                                    <Icon name="storage" size={14} />
+                                    SQL
+                                </span>
                             </span>
-                        </div>
-                        <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
-                            queryType="query2" />
-                    </div>
-                    <div className="flex flex-col gap-1">
-                        <label className="flex items-center gap-2">
-                            <span className="text-sm font-semibold">Template pdfme (JSON)</span>
-                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-primary/10 text-primary">Layout</span>
-                        </label>
-                        <textarea
-                            className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-xs font-mono"
-                            rows={10}
-                            style={{ minHeight: '180px' }}
-                            placeholder='{"basePdf": {...}, "schemas": [...]}'
-                            value={cell.json || ''}
-                            onChange={e => { cell.json = e.target.value; forceUpdate() }}
-                        />
-                    </div>
-                </div>
+                        </AccordionTrigger>
+                        <AccordionContent>
+                            <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
+                                queryType="query2" />
+                        </AccordionContent>
+                    </AccordionItem>
+                    <AccordionItem value="json">
+                        <AccordionTrigger className="text-sm font-semibold text-primary py-1">
+                            <span className="flex items-center gap-2">
+                                <span>Template pdfme (JSON)</span>
+                                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-primary/10 text-primary">Layout</span>
+                            </span>
+                        </AccordionTrigger>
+                        <AccordionContent>
+                            <textarea
+                                className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-xs font-mono"
+                                rows={10}
+                                style={{ minHeight: '180px' }}
+                                placeholder='{"basePdf": {...}, "schemas": [...]}'
+                                value={cell.json || ''}
+                                onChange={e => { cell.json = e.target.value; forceUpdate() }}
+                            />
+                        </AccordionContent>
+                    </AccordionItem>
+                </Accordion>
             )}
             {cell.buttonLabel && (
                 <div className="flex justify-center">
