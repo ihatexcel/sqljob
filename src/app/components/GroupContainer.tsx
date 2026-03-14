@@ -171,10 +171,10 @@ export function GroupContainer({
         <div className="bg-background w-full">
             {/* Header groupe (devMode uniquement) */}
             {devMode && (
-                <div className="group/ghdr flex items-center justify-between gap-2 py-1 px-2 bg-muted/80 border-b border-border group-header">
+                <div className="group/ghdr @container flex items-center justify-between gap-2 py-1 px-2 bg-muted/80 border-b border-border group-header">
                     <div className="flex gap-1 flex-wrap items-center">
                         {/* Boutons — cachés par défaut, révélés au hover (desktop) */}
-                        <div className="hidden group-hover/ghdr:inline-flex rounded-md overflow-hidden border border-border divide-x divide-border">
+                        <div className="hidden @[380px]:group-hover/ghdr:inline-flex rounded-md overflow-hidden border border-border divide-x divide-border">
                             <button className="inline-flex items-center justify-center h-6 px-2 text-xs bg-green-600 text-white hover:bg-green-700 disabled:opacity-50"
                                 onClick={() => runGroupAtPath(path)} disabled={isLoading} title="Exécuter le groupe">
                                 <Icon name="play-arrow" size={16} />
@@ -221,7 +221,7 @@ export function GroupContainer({
                         {/* Bouton kebab — toujours visible (fallback touch/mobile) */}
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <button className="inline-flex items-center justify-center h-6 w-6 rounded hover:bg-muted-foreground/20">
+                                <button className="inline-flex items-center justify-center h-6 w-6 rounded hover:bg-muted-foreground/20 @[380px]:pointer-events-none @[380px]:opacity-0">
                                     <Icon name="ellipsis-vertical" size={16} />
                                 </button>
                             </DropdownMenuTrigger>
