@@ -302,7 +302,12 @@
                 // DuckDB WASM : exécuter le SQL nettoyé (sans ::ROLENAME)
                 const result = await DuckDBManager.connInstance.query(strippedSql);
                 const rows = result.toArray().map(row => Object.fromEntries(row));
-                return { rows, columnTypes };
+                // Extraire les types réels depuis le schéma Arrow (utilisé par DataTable)
+                const schemaTypes: Record<string, string> = {};
+                for (const field of result.schema.fields) {
+                    schemaTypes[field.name] = String(field.type);
+                }
+                return { rows, columnTypes, schemaTypes };
             }
 
             static async registerFile(fileName, file) {

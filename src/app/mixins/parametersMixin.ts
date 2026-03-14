@@ -21,7 +21,7 @@ export function parametersMixin() {
                         collectFromGroup(group);
                     }
 
-                    // Ajouter la variable $loop si elle est définie (pendant l'exécution d'une boucle)
+                    // Ajouter la variable {{ loop }} si elle est définie (pendant l'exécution d'une boucle)
                     if (this._currentLoopValue !== null && this._currentLoopValue !== undefined) {
                         params['loop'] = this._currentLoopValue;
                     }
@@ -29,20 +29,18 @@ export function parametersMixin() {
                     return params;
                 },
 
-                // Parser une requête SQL et remplacer les $paramètre par leurs valeurs
-                parseQueryWithParameters(query) {
+                // Parser une requête SQL et remplacer les {{ param }} par leurs valeurs
+                parseQueryWithParameters(query, extraParams = {}) {
                     if (!query) return query;
 
-                    const params = this.getParameters();
+                    const params = { ...this.getParameters(), ...extraParams };
                     let parsedQuery = query;
 
-                    // Remplacer tous les $paramName par leurs valeurs
-                    // Pattern: $suivi de caractères alphanumériques ou underscore
+                    // Remplacer tous les {{ paramName }} par leurs valeurs
                     for (const [paramName, paramValue] of Object.entries(params)) {
                         // Échapper les caractères spéciaux pour la regex
                         const escapedName = paramName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                        // Pattern qui match $paramName mais pas si suivi d'un caractère alphanumérique
-                        const regex = new RegExp('\\$' + escapedName + '(?![a-zA-Z0-9_])', 'g');
+                        const regex = new RegExp('\\{\\{\\s*' + escapedName + '\\s*\\}\\}', 'g');
                         // Échapper les apostrophes dans la valeur pour éviter les injections SQL
                         const escapedValue = String(paramValue).replace(/'/g, "''");
                         parsedQuery = parsedQuery.replace(regex, escapedValue);
@@ -55,12 +53,11 @@ export function parametersMixin() {
                 // DAG (Directed Acyclic Graph) - Rafraîchissement automatique
                 // ─────────────────────────────────────────────────────────────────
 
-                // Trouver tous les paramètres référencés dans une query ($paramName)
+                // Trouver tous les paramètres référencés dans une query ({{ paramName }})
                 findReferencedParams(query) {
                     if (!query) return [];
                     const params = [];
-                    // Pattern: $suivi de caractères alphanumériques ou underscore
-                    const regex = /\$([a-zA-Z_][a-zA-Z0-9_]*)/g;
+                    const regex = /\{\{\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*\}\}/g;
                     let match;
                     while ((match = regex.exec(query)) !== null) {
                         if (!params.includes(match[1])) {
@@ -252,7 +249,7 @@ export function parametersMixin() {
                         return;
                     }
 
-                    if (this.devMode) this.setStatus(`🔄 Rafraîchissement de ${dependentCells.length} cellule(s) et ${dependentGroups.length} groupe(s) dépendant(s) de $${paramName}...`, 'loading');
+                    if (this.devMode) this.setStatus(`🔄 Rafraîchissement de ${dependentCells.length} cellule(s) et ${dependentGroups.length} groupe(s) dépendant(s) de {{ ${paramName} }}...`, 'loading');
 
                     // Réévaluer les ifQuery des groupes dépendants
                     for (let i = 0; i < dependentGroups.length; i++) {

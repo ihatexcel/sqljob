@@ -194,6 +194,15 @@ FROM source1 LIMIT 10;`
         if (!path || path.length === 0) return
         if (!await useConfirmModal.getState().show('Supprimer ce groupe et tout son contenu ?')) return
 
+        const collectSourceCells = (g: any): any[] => {
+            const result: any[] = []
+            for (const cell of (g?.cells || [])) if (cell.type === 'source') result.push(cell)
+            for (const child of (g?.children || [])) result.push(...collectSourceCells(child))
+            return result
+        }
+        const group = get().getGroupAtPath(path)
+        const sourceCells = collectSourceCells(group)
+
         if (path.length === 1) {
             get().getGroups().splice(path[0], 1)
         } else {
@@ -202,6 +211,10 @@ FROM source1 LIMIT 10;`
             const parent = get().getGroupAtPath(parentPath)
             if (parent && parent.children) parent.children.splice(childIndex, 1)
         }
+
+        for (const cell of sourceCells) await get().cleanupSourceCell(cell)
+        if (sourceCells.length > 0) await get().refreshDuckdbTables()
+
         get().setStatus('Groupe supprimé', 'success')
         set((s: any) => ({ _rev: s._rev + 1 }))
     },

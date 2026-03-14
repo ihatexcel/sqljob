@@ -8,15 +8,16 @@
  */
 import { SheetsTabBar } from '@sqlrooms/cells'
 import { Notebook } from '@sqlrooms/notebook'
+import { Canvas } from '@sqlrooms/canvas'
 import { Button } from '@sqlrooms/ui'
 import { ArrowLeftRightIcon } from 'lucide-react'
 import { useNotebookStore } from '../store/notebookStore'
 
 // ─── NotebookPanelSqlrooms ────────────────────────────────────────────────────
 export const NotebookPanelSqlrooms = ({ onSwitchPanel }: { onSwitchPanel: () => void }) => {
-    const currentSheet = useNotebookStore((s: any) => {
+    const currentSheetType = useNotebookStore((s: any) => {
         const id = s.cells?.config?.currentSheetId
-        return id ? s.cells?.config?.sheets?.[id] : undefined
+        return id ? s.cells?.config?.sheets?.[id]?.type : 'notebook'
     })
 
     return (
@@ -41,16 +42,12 @@ export const NotebookPanelSqlrooms = ({ onSwitchPanel }: { onSwitchPanel: () => 
             {/* Onglets de feuilles */}
             <SheetsTabBar />
 
-            {/* Contenu notebook */}
+            {/* Contenu : canvas ou notebook selon le type de feuille courante */}
             <div className="min-h-0 flex-1">
-                {!currentSheet && (
-                    <div className="flex h-full flex-col items-center justify-center gap-4">
-                        <p className="text-sm text-muted-foreground">
-                            Aucune feuille. Créez-en une depuis la barre d'onglets ci-dessus.
-                        </p>
-                    </div>
-                )}
-                <Notebook />
+                {currentSheetType === 'canvas'
+                    ? <Canvas />
+                    : <Notebook />
+                }
             </div>
         </div>
     )
