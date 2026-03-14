@@ -84,7 +84,8 @@ import { FileHandler } from './FileHandler'
                     const qNames = schema?.queryNames ?? ['main'];
                     c.queries = c.queries.map((q, i) => ({
                         ...q,
-                        name: q.name || qNames[i] || (i === 0 ? 'main' : i === 1 ? 'filename' : 'query' + i)
+                        name: q.name || qNames[i] || (i === 0 ? 'main' : i === 1 ? 'filename' : 'query' + i),
+                        sql: q.sql || q.query || ''
                     }));
                 }
                 // pdfme: json objet -> chaîne pour éviter [object Object] dans textarea/modale
@@ -101,7 +102,8 @@ import { FileHandler } from './FileHandler'
                 if (!group || !Array.isArray(group.queries)) return group;
                 group.queries = group.queries.map((q, i) => ({
                     ...q,
-                    name: q.name || (i === 0 ? 'main' : 'query' + i)
+                    name: q.name || (i === 0 ? 'main' : 'query' + i),
+                    sql: q.sql || q.query || ''
                 }));
                 return group;
             }
@@ -570,7 +572,7 @@ import { FileHandler } from './FileHandler'
                     const schema = CELL_TYPE_SCHEMAS?.types[cell?.type];
                     return cell.queries.map((q, i) => ({
                         name: q.name || schema?.queryNames?.[i] || (i === 0 ? 'main' : i === 1 ? 'filename' : 'query' + i),
-                        sql: q.sql || '',
+                        query: q.sql || '',
                         engine: q.engine || ConfigManager.getDefaultEngineForType(cell?.type, i),
                         clientVisible: q.clientVisible === true
                     }));
@@ -593,7 +595,7 @@ import { FileHandler } from './FileHandler'
                     if (field === 'queries') {
                         cleanCell.queries = ConfigManager._buildQueriesForClean(cell);
                         if (cell.type === 'markdown' && (!Array.isArray(cleanCell.queries) || cleanCell.queries.length === 0)) {
-                            cleanCell.queries = [{ name: 'main', sql: ConfigManager.getCellEditableContent(cell), engine: ConfigManager.getCellEngine(cell, 'main'), clientVisible: ConfigManager.getCellQueryClientVisible(cell, 'main') }];
+                            cleanCell.queries = [{ name: 'main', query: ConfigManager.getCellEditableContent(cell), engine: ConfigManager.getCellEngine(cell, 'main'), clientVisible: ConfigManager.getCellQueryClientVisible(cell, 'main') }];
                         }
                     } else if (field === 'name') {
                         const handler = CELL_TYPE_HANDLERS[cell?.type];
@@ -708,7 +710,7 @@ import { FileHandler } from './FileHandler'
                     if (q0 && (q0.sql || '').trim()) {
                         cleanGroup.queries = [{
                             name: 'main',
-                            sql: q0.sql.trim(),
+                            query: q0.sql.trim(),
                             engine: q0.engine || 'sql',
                             clientVisible: q0.clientVisible === true
                         }];
