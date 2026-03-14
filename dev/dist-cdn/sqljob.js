@@ -134420,6 +134420,59 @@ function GroupContainer({
     /* @__PURE__ */ jsxRuntimeExports.jsx(AccordionContent, { className: "px-0 pb-0", children: /* @__PURE__ */ jsxRuntimeExports.jsx(GroupContent, { group: At, path: yt, depth: xt }) })
   ] }) }) : !St && At.tabsChild ? /* @__PURE__ */ jsxRuntimeExports.jsx(TabsChildContent, { group: At, path: yt, depth: xt }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-background w-full", children: [
     St && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "group/ghdr @container flex items-center justify-between gap-2 py-1 px-2 bg-muted/80 border-b border-border group-header", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-1 flex-wrap items-center", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenu, { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(DropdownMenuTrigger, { asChild: !0, children: /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "inline-flex items-center justify-center h-6 w-6 rounded hover:bg-muted-foreground/20 @[380px]:pointer-events-none", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "ellipsis-vertical", size: 16 }) }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuContent, { align: "start", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuItem, { onClick: () => jt(yt), disabled: Tt, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "play-arrow", size: 14, className: "mr-2" }),
+            " Exécuter le groupe"
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuItem, { onClick: () => {
+            At.direction = At.direction === "column" ? "row" : "column", Zt();
+          }, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: At.direction === "column" ? "swap-vert" : "swap-horiz", size: 14, className: "mr-2" }),
+            At.direction === "column" ? "Passer en ligne" : "Passer en colonne"
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(DropdownMenuSeparator, {}),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuItem, { onClick: () => Mt(yt), children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "create-new-folder", size: 14, className: "mr-2" }),
+            " Ajouter un sous-groupe"
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuItem, { onClick: () => Nt(yt), children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "add", size: 14, className: "mr-2" }),
+            " Ajouter une cellule"
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuItem, { onClick: () => Ht == null ? void 0 : Ht(yt), children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "autorenew", size: 14, className: "mr-2" }),
+            " Boucle"
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuItem, { onClick: () => qt == null ? void 0 : qt(yt), children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "settings", size: 14, className: "mr-2" }),
+            " Paramètres"
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(DropdownMenuSeparator, {}),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuItem, { onClick: () => Ot == null ? void 0 : Ot([...yt.slice(0, -1)], "child", yt[yt.length - 1], -1), disabled: wt, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "arrow-upward", size: 14, className: "mr-2" }),
+            " Monter"
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuItem, { onClick: () => Ot == null ? void 0 : Ot([...yt.slice(0, -1)], "child", yt[yt.length - 1], 1), disabled: Ct, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "arrow-downward", size: 14, className: "mr-2" }),
+            " Descendre"
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(DropdownMenuSeparator, {}),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            DropdownMenuItem,
+            {
+              onClick: () => Bt == null ? void 0 : Bt(yt),
+              className: "text-destructive focus:text-destructive",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "delete", size: 14, className: "mr-2" }),
+                " Supprimer le groupe"
+              ]
+            }
+          )
+        ] })
+      ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "hidden @[380px]:group-hover/ghdr:inline-flex rounded-md overflow-hidden border border-border divide-x divide-border", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "button",
@@ -134505,59 +134558,6 @@ function GroupContainer({
             children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "delete", size: 16 })
           }
         )
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenu, { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(DropdownMenuTrigger, { asChild: !0, children: /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "inline-flex items-center justify-center h-6 w-6 rounded hover:bg-muted-foreground/20 @[380px]:pointer-events-none", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "ellipsis-vertical", size: 16 }) }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuContent, { align: "start", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuItem, { onClick: () => jt(yt), disabled: Tt, children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "play-arrow", size: 14, className: "mr-2" }),
-            " Exécuter le groupe"
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuItem, { onClick: () => {
-            At.direction = At.direction === "column" ? "row" : "column", Zt();
-          }, children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: At.direction === "column" ? "swap-vert" : "swap-horiz", size: 14, className: "mr-2" }),
-            At.direction === "column" ? "Passer en ligne" : "Passer en colonne"
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(DropdownMenuSeparator, {}),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuItem, { onClick: () => Mt(yt), children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "create-new-folder", size: 14, className: "mr-2" }),
-            " Ajouter un sous-groupe"
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuItem, { onClick: () => Nt(yt), children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "add", size: 14, className: "mr-2" }),
-            " Ajouter une cellule"
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuItem, { onClick: () => Ht == null ? void 0 : Ht(yt), children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "autorenew", size: 14, className: "mr-2" }),
-            " Boucle"
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuItem, { onClick: () => qt == null ? void 0 : qt(yt), children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "settings", size: 14, className: "mr-2" }),
-            " Paramètres"
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(DropdownMenuSeparator, {}),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuItem, { onClick: () => Ot == null ? void 0 : Ot([...yt.slice(0, -1)], "child", yt[yt.length - 1], -1), disabled: wt, children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "arrow-upward", size: 14, className: "mr-2" }),
-            " Monter"
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuItem, { onClick: () => Ot == null ? void 0 : Ot([...yt.slice(0, -1)], "child", yt[yt.length - 1], 1), disabled: Ct, children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "arrow-downward", size: 14, className: "mr-2" }),
-            " Descendre"
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(DropdownMenuSeparator, {}),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            DropdownMenuItem,
-            {
-              onClick: () => Bt == null ? void 0 : Bt(yt),
-              className: "text-destructive focus:text-destructive",
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "delete", size: 14, className: "mr-2" }),
-                " Supprimer le groupe"
-              ]
-            }
-          )
-        ] })
       ] }),
       ((Ur = At.loop) == null ? void 0 : Ur.enabled) && /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { variant: "secondary", className: "text-xs", children: "↺ Boucle" })
     ] }) }),
