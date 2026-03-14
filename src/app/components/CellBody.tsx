@@ -534,11 +534,6 @@ function UiParameterBody({ cell, path, cellIndex }: any) {
     return (
         <div className="flex flex-col gap-0">
             {devMode && (
-                <div className="text-sm font-semibold text-primary mb-1">
-                    ${ConfigManager.getCellReferenceName(cell) || ''}
-                </div>
-            )}
-            {devMode && (
                 <SqlEditorWidget
                     cell={cell} path={path} cellIndex={cellIndex}
                     placeholder={placeholder}
