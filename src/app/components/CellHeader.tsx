@@ -88,7 +88,7 @@ export function CellHeader({ cell, path, cellIndex, group }: Props) {
                 {/* Bouton kebab — toujours visible (fallback touch/mobile) */}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <button className="inline-flex items-center justify-center h-6 w-6 rounded hover:bg-muted-foreground/20 @[320px]:pointer-events-none @[320px]:opacity-0">
+                        <button className="inline-flex items-center justify-center h-6 w-6 rounded hover:bg-muted-foreground/20 @[320px]:pointer-events-none">
                             <Icon name="ellipsis-vertical" size={16} />
                         </button>
                     </DropdownMenuTrigger>
