@@ -73,7 +73,8 @@ import { FileHandler } from './FileHandler'
              */
             static normalizeCell(cell) {
                 if (!cell || !cell.type) return cell;
-                const c = { ...cell };
+                const TYPE_IMPORT_ALIASES = { sql: 'sqlRecursiveParse' }
+                const c = { ...cell, type: TYPE_IMPORT_ALIASES[cell.type] ?? cell.type };
                 if (c.type === 'markdown' && c.content && !ConfigManager.getCellQuery(c, 'main')) {
                     ConfigManager.ensureCellQueries(c, 'main');
                     const q = ConfigManager.getQueryByName(c, 'main');
@@ -586,7 +587,8 @@ import { FileHandler } from './FileHandler'
             }
 
             static async cleanCell(cell, includeFileData = false) {
-                const cleanCell = { type: cell.type };
+                const TYPE_EXPORT_NAMES = { sqlRecursiveParse: 'sql' }
+                const cleanCell = { type: TYPE_EXPORT_NAMES[cell.type] ?? cell.type };
 
                 const schema = CELL_TYPE_SCHEMAS?.types[cell?.type];
                 const exportFields = schema?.exportFields ?? ['queries'];

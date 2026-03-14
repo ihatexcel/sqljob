@@ -31,6 +31,7 @@ export const CELL_TYPE_SCHEMAS = {
                 source: {
                     executeHandler: 'executeSourceCell',
                     defaultNamePrefix: 'source',
+                    showNameInHeader: true,
                     secondQueryName: 'fallback',
                     requiresFileBeforeRun: true,
                     exportRuntimeBlob: true,
@@ -127,8 +128,9 @@ export const CELL_TYPE_SCHEMAS = {
                 sqlStat: {
                     executeHandler: 'executeSqlStatCell',
                     defaultNamePrefix: 'sqlStat',
+                    showNameInHeader: true,
                     showInViewWhenResultOrRunning: true,
-                    exportFields: ['queries', 'title', 'subtitle', 'icon'],
+                    exportFields: ['name', 'queries', 'title', 'subtitle', 'icon'],
                     initProps: {},
                     commonParams: ['name', 'title', 'subtitle', 'icon', 'queries'],
                     queryCount: 1,
