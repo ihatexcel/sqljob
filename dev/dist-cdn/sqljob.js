@@ -139897,6 +139897,19 @@ const createHelpersSlice = (At, yt) => ({
     } catch {
     }
   },
+  /**
+   * Rafraîchit le schéma DuckDB dans les deux systèmes :
+   * - _duckdbTables (DataSourcesPanel, SqlBlockEditor)
+   * - db.refreshTableSchemas() (autocomplétion de l'éditeur SQL sqlrooms)
+   */
+  async refreshDuckdbSchema() {
+    var xt;
+    await yt().refreshDuckdbTables();
+    try {
+      await ((xt = yt().db) == null ? void 0 : xt.refreshTableSchemas());
+    } catch {
+    }
+  },
   async init() {
     try {
       await DuckDBManager.initDuckDB((wt, Ct) => yt().setStatus(wt, Ct)), yt().ensureAllCellsHaveNames(), await yt().loadEmbeddedFiles(), await yt().loadPendingSourceFiles(), await yt().evaluateAllGroupIfQueries(), await yt().runAllGroups();
@@ -142190,6 +142203,10 @@ function formatValueForInputType(At, yt) {
   }
   return String(At);
 }
+const DDL_RE = /^\s*(CREATE|DROP|ALTER|INSERT|UPDATE|DELETE|TRUNCATE|RENAME|COMMENT)\b/im;
+function sqlIsDdl(At) {
+  return At.split(";").some((yt) => DDL_RE.test(yt));
+}
 const createExecutionSlice = (At, yt) => ({
   async runGroupAtPath(xt) {
     const wt = yt().getGroupAtPath(xt);
@@ -142329,127 +142346,127 @@ const createExecutionSlice = (At, yt) => ({
     return await yt().runGroupAtPath(wt);
   },
   async executeSqlRecursiveParseCell(xt) {
-    var wt, Ct, kt;
+    var wt, Ct, kt, Et, St;
     if (!((wt = ConfigManager.getCellQuery(xt, 0)) != null && wt.trim())) {
       console.warn("❌ cell.query est vide ou undefined!");
       return;
     }
     try {
-      const Et = yt().parseQueryWithParameters(ConfigManager.getCellQuery(xt, 0) || "");
+      const Tt = yt().parseQueryWithParameters(ConfigManager.getCellQuery(xt, 0) || "");
       yt().setStatus("Exécution de la requête...", "loading");
-      const St = /COPY\s+[\s\S]+\bTO\s+'([^']+)'/i, Tt = Et.match(St);
-      if (Tt) {
+      const $t = /COPY\s+[\s\S]+\bTO\s+'([^']+)'/i, Lt = Tt.match($t);
+      if (Lt) {
         yt().setStatus("Export du fichier...", "loading");
-        const $t = Tt[1];
+        const It = Lt[1];
         try {
-          await DuckDBManager.executeQuery(Et);
-          const Lt = $t.toLowerCase().split(".").pop(), It = ["xlsx", "xls", "parquet", "pq", "arrow", "ipc", "avro"].includes(Lt), Dt = It ? 15 : 10, Rt = It ? 300 : 200, jt = await DuckDBManager.waitForFile($t, Dt, Rt);
-          if (((jt == null ? void 0 : jt.byteLength) ?? 0) > 0) {
-            const Kt = jt instanceof ArrayBuffer ? new Uint8Array(jt) : new Uint8Array(jt.buffer || jt);
-            Lt === "xlsx" && (Kt[0] !== 80 || Kt[1] !== 75) && console.warn(`⚠️ [EXPORT] XLSX invalide: doit commencer par PK (0x50 0x4B), trouvé: 0x${(Ct = Kt[0]) == null ? void 0 : Ct.toString(16)} 0x${(kt = Kt[1]) == null ? void 0 : kt.toString(16)}`);
+          await DuckDBManager.executeQuery(Tt);
+          const Dt = It.toLowerCase().split(".").pop(), Rt = ["xlsx", "xls", "parquet", "pq", "arrow", "ipc", "avro"].includes(Dt), jt = Rt ? 15 : 10, Mt = Rt ? 300 : 200, Nt = await DuckDBManager.waitForFile(It, jt, Mt);
+          if (((Nt == null ? void 0 : Nt.byteLength) ?? 0) > 0) {
+            const Zt = Nt instanceof ArrayBuffer ? new Uint8Array(Nt) : new Uint8Array(Nt.buffer || Nt);
+            Dt === "xlsx" && (Zt[0] !== 80 || Zt[1] !== 75) && console.warn(`⚠️ [EXPORT] XLSX invalide: doit commencer par PK (0x50 0x4B), trouvé: 0x${(Ct = Zt[0]) == null ? void 0 : Ct.toString(16)} 0x${(kt = Zt[1]) == null ? void 0 : kt.toString(16)}`);
           }
-          let Nt = "text/csv;charset=utf-8;";
-          switch (Lt) {
+          let Bt = "text/csv;charset=utf-8;";
+          switch (Dt) {
             case "parquet":
             case "pq":
-              Nt = "application/octet-stream";
+              Bt = "application/octet-stream";
               break;
             case "xlsx":
-              Nt = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+              Bt = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
               break;
             case "xls":
-              Nt = "application/vnd.ms-excel";
+              Bt = "application/vnd.ms-excel";
               break;
             case "json":
             case "jsonl":
             case "ndjson":
-              Nt = "application/json;charset=utf-8;";
+              Bt = "application/json;charset=utf-8;";
               break;
             case "txt":
-              Nt = "text/plain;charset=utf-8;";
+              Bt = "text/plain;charset=utf-8;";
               break;
             case "tsv":
-              Nt = "text/tab-separated-values;charset=utf-8;";
+              Bt = "text/tab-separated-values;charset=utf-8;";
               break;
             case "csv":
-              Nt = "text/csv;charset=utf-8;";
+              Bt = "text/csv;charset=utf-8;";
               break;
             case "xml":
-              Nt = "application/xml;charset=utf-8;";
+              Bt = "application/xml;charset=utf-8;";
               break;
             case "bin":
             case "dat":
             case "blob":
-              Nt = "application/octet-stream";
+              Bt = "application/octet-stream";
               break;
             case "arrow":
             case "ipc":
-              Nt = "application/vnd.apache.arrow.stream";
+              Bt = "application/vnd.apache.arrow.stream";
               break;
             case "avro":
-              Nt = "application/avro";
+              Bt = "application/avro";
               break;
             case "gz":
             case "gzip":
-              Nt = "application/gzip";
+              Bt = "application/gzip";
               break;
             case "zip":
-              Nt = "application/zip";
+              Bt = "application/zip";
               break;
             case "zst":
             case "zstd":
-              Nt = "application/zstd";
+              Bt = "application/zstd";
               break;
             default:
-              Nt = "application/octet-stream";
+              Bt = "application/octet-stream";
               break;
           }
-          let Ot = jt instanceof ArrayBuffer ? new Uint8Array(jt) : new Uint8Array(jt.buffer ?? jt, jt.byteOffset ?? 0, jt.byteLength);
-          Lt === "xlsx" && Ot.length >= 3 && Ot[0] !== 80 && Ot[1] === 80 && Ot[2] === 75 && (Ot = Ot.slice(1));
-          const Bt = Ot.slice(0), Ht = new Blob([Bt], { type: Nt }), qt = $t.split("/").pop();
-          yt().downloadOrZipFile(qt, Ht, Nt), xt._results = [], xt._resultInfo = `✅ Fichier exporté: ${$t} (${jt.byteLength} octets)`;
-        } catch (Lt) {
-          console.error("❌ Erreur lors de la récupération du fichier exporté:", Lt), yt().setStatus("Récupération alternative des résultats...", "loading");
-          const It = Et.match(/COPY\s+\(([\s\S]+)\)\s+TO\s+/i);
-          if (It) {
-            const Dt = It[1], Rt = await DuckDBManager.executeQuery(Dt);
-            if (Rt.length > 0) {
-              const jt = Object.keys(Rt[0]), Mt = [
-                jt.join("	"),
-                ...Rt.map((Bt) => jt.map((Ht) => Bt[Ht] ?? "").join("	"))
+          let Ht = Nt instanceof ArrayBuffer ? new Uint8Array(Nt) : new Uint8Array(Nt.buffer ?? Nt, Nt.byteOffset ?? 0, Nt.byteLength);
+          Dt === "xlsx" && Ht.length >= 3 && Ht[0] !== 80 && Ht[1] === 80 && Ht[2] === 75 && (Ht = Ht.slice(1));
+          const qt = Ht.slice(0), Kt = new Blob([qt], { type: Bt }), rr = It.split("/").pop();
+          yt().downloadOrZipFile(rr, Kt, Bt), xt._results = [], xt._resultInfo = `✅ Fichier exporté: ${It} (${Nt.byteLength} octets)`;
+        } catch (Dt) {
+          console.error("❌ Erreur lors de la récupération du fichier exporté:", Dt), yt().setStatus("Récupération alternative des résultats...", "loading");
+          const Rt = Tt.match(/COPY\s+\(([\s\S]+)\)\s+TO\s+/i);
+          if (Rt) {
+            const jt = Rt[1], Mt = await DuckDBManager.executeQuery(jt);
+            if (Mt.length > 0) {
+              const Nt = Object.keys(Mt[0]), Ot = [
+                Nt.join("	"),
+                ...Mt.map((qt) => Nt.map((Kt) => qt[Kt] ?? "").join("	"))
               ].join(`
-`), Nt = new Blob([Mt], { type: "text/plain;charset=utf-8;" }), Ot = $t.split("/").pop();
-              yt().downloadOrZipFile(Ot, Nt, "text/plain;charset=utf-8;"), xt._results = [], xt._resultInfo = `✅ Fichier exporté (mode alternatif): ${$t} - ${Rt.length} ligne(s)`;
+`), Bt = new Blob([Ot], { type: "text/plain;charset=utf-8;" }), Ht = It.split("/").pop();
+              yt().downloadOrZipFile(Ht, Bt, "text/plain;charset=utf-8;"), xt._results = [], xt._resultInfo = `✅ Fichier exporté (mode alternatif): ${It} - ${Mt.length} ligne(s)`;
             } else
               throw new Error("Aucun résultat à exporter");
           } else
-            throw Lt;
+            throw Dt;
         } finally {
-          await DuckDBManager.dropFile($t);
+          await DuckDBManager.dropFile(It);
         }
       } else {
-        const $t = await DuckDBManager.executeQuery(Et);
-        if (xt._results = $t, xt._resultInfo = `✅ ${$t.length} ligne(s)`, yt().isSqlResultTabular(xt)) {
-          const Lt = xt.maxRows || 1e5, It = $t.length > Lt, Dt = $t.slice(0, Lt);
-          rawTableDataStore.set(xt._id, Dt), xt._results = Dt, It && (xt._resultInfo = `✅ ${$t.length} ligne(s) (limité à ${Lt})`);
+        const It = await DuckDBManager.executeQuery(Tt);
+        if (xt._results = It, xt._resultInfo = `✅ ${It.length} ligne(s)`, yt().isSqlResultTabular(xt)) {
+          const Dt = xt.maxRows || 1e5, Rt = It.length > Dt, jt = It.slice(0, Dt);
+          rawTableDataStore.set(xt._id, jt), xt._results = jt, Rt && (xt._resultInfo = `✅ ${It.length} ligne(s) (limité à ${Dt})`);
         }
       }
-      yt().setStatus("SQL Recursive Parse exécuté", "success");
-    } catch (Et) {
-      throw Et;
+      yt().setStatus("SQL Recursive Parse exécuté", "success"), sqlIsDdl(Tt) && await ((St = (Et = yt()).refreshDuckdbSchema) == null ? void 0 : St.call(Et));
+    } catch (Tt) {
+      throw Tt;
     }
   },
   async executeTableCell(xt) {
-    var wt;
+    var wt, Ct, kt;
     if ((wt = ConfigManager.getCellQuery(xt, 0)) != null && wt.trim()) {
       yt().setStatus("Chargement tableau...", "loading");
       try {
-        const Ct = yt().parseQueryWithParameters(ConfigManager.getCellQuery(xt, 0) || "");
+        const Et = yt().parseQueryWithParameters(ConfigManager.getCellQuery(xt, 0) || "");
         yt().setStatus("Exécution de la requête...", "loading");
-        const { rows: kt, schemaTypes: Et } = await DuckDBManager.executeQueryWithSchema(Ct), St = xt.maxRows || 1e5, Tt = kt.length > St, $t = kt.slice(0, St);
-        rawTableDataStore.set(xt._id, $t), xt._results = $t, xt._schemaTypes = Et || {}, xt._resultInfo = `${kt.length} ligne(s)` + (Tt ? ` (limité à ${St})` : ""), yt().setStatus("Tableau chargé", "success");
-      } catch (Ct) {
-        throw Ct;
+        const { rows: St, schemaTypes: Tt } = await DuckDBManager.executeQueryWithSchema(Et), $t = xt.maxRows || 1e5, Lt = St.length > $t, It = St.slice(0, $t);
+        rawTableDataStore.set(xt._id, It), xt._results = It, xt._schemaTypes = Tt || {}, xt._resultInfo = `${St.length} ligne(s)` + (Lt ? ` (limité à ${$t})` : ""), yt().setStatus("Tableau chargé", "success"), sqlIsDdl(Et) && await ((kt = (Ct = yt()).refreshDuckdbSchema) == null ? void 0 : kt.call(Ct));
+      } catch (Et) {
+        throw Et;
       }
     }
   },
@@ -142476,7 +142493,7 @@ const createExecutionSlice = (At, yt) => ({
       const { rows: Bt, schemaTypes: Ht } = await DuckDBManager.executeQueryWithSchema(
         `SELECT * FROM ${xt.name} LIMIT 1000`
       );
-      xt._results = Bt, xt._schemaTypes = Ht || {}, xt._resultInfo = `${Bt.length} ligne(s)${Bt.length === 1e3 ? " (limité à 1 000 pour l'affichage)" : ""} — ${((It = St.ast) == null ? void 0 : It.materialize) === "table" ? "TABLE" : "VIEW"} "${xt.name}" créée`, await ((Rt = (Dt = yt()).refreshDuckdbTables) == null ? void 0 : Rt.call(Dt)), yt().setStatus("SQL Block exécuté", "success");
+      xt._results = Bt, xt._schemaTypes = Ht || {}, xt._resultInfo = `${Bt.length} ligne(s)${Bt.length === 1e3 ? " (limité à 1 000 pour l'affichage)" : ""} — ${((It = St.ast) == null ? void 0 : It.materialize) === "table" ? "TABLE" : "VIEW"} "${xt.name}" créée`, await ((Rt = (Dt = yt()).refreshDuckdbSchema) == null ? void 0 : Rt.call(Dt)), yt().setStatus("SQL Block exécuté", "success");
     } catch (jt) {
       throw jt;
     }
