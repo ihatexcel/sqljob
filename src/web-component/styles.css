@@ -7,11 +7,6 @@
 @source "../../node_modules/@sqlrooms/room-shell/dist";
 @source "../../node_modules/@sqlrooms/data-table/dist";
 
-/* Alpine.js x-cloak pour cacher les éléments non initialisés */
-[x-cloak] {
-    display: none !important;
-}
-
 /* Simple-datatables dark mode fix */
 .datatable-wrapper,
 .datatable-top,
