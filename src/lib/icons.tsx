@@ -7,7 +7,7 @@
 import {
     Activity, ArrowDown, ArrowLeft, ArrowLeftRight, ArrowRight, ArrowUp,
     ArrowUpDown, BookHeart, Braces, ChartBar, CircleCheck, CirclePlay, Copy, Database,
-    Download, Eye, FileOutput, FileText, FileType, FolderOpen, FolderPlus,
+    Download, Ellipsis, EllipsisVertical, Eye, FileOutput, FileText, FileType, FolderOpen, FolderPlus,
     Globe, Lock, Network, Newspaper, Paintbrush, PenLine, Play, Plus, RefreshCw,
     Save, Settings, Share2, SlidersHorizontal, Table2, Trash2, TrendingUp, X, Zap,
 } from 'lucide-react'
@@ -54,6 +54,8 @@ const ICON_MAP: Record<string, any> = {
     'bolt':                         Zap,
     'palette':                      Paintbrush,
     'book-heart':                   BookHeart,
+    'ellipsis':                     Ellipsis,
+    'ellipsis-vertical':            EllipsisVertical,
 }
 
 /** Icône générique depuis un nom material-symbols (sans préfixe) */

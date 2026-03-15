@@ -27,13 +27,13 @@ export const createParametersSlice = (set: any, get: any) => ({
         return params
     },
 
-    parseQueryWithParameters(query: string) {
+    parseQueryWithParameters(query: string, extraParams: Record<string, any> = {}) {
         if (!query) return query
-        const params = get().getParameters()
+        const params = { ...get().getParameters(), ...extraParams }
         let parsedQuery = query
         for (const [paramName, paramValue] of Object.entries(params)) {
             const escapedName = paramName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-            const regex = new RegExp('\\$' + escapedName + '(?![a-zA-Z0-9_])', 'g')
+            const regex = new RegExp('\\{\\{\\s*' + escapedName + '\\s*\\}\\}', 'g')
             const escapedValue = String(paramValue).replace(/'/g, "''")
             parsedQuery = parsedQuery.replace(regex, escapedValue)
         }
@@ -43,7 +43,7 @@ export const createParametersSlice = (set: any, get: any) => ({
     findReferencedParams(query: string) {
         if (!query) return []
         const params: string[] = []
-        const regex = /\$([a-zA-Z_][a-zA-Z0-9_]*)/g
+        const regex = /\{\{\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*\}\}/g
         let match
         while ((match = regex.exec(query)) !== null) {
             if (!params.includes(match[1])) params.push(match[1])
@@ -165,7 +165,7 @@ export const createParametersSlice = (set: any, get: any) => ({
         const dependentGroups = get().findDependentGroups(paramName)
         const totalDependents = dependentCells.length + dependentGroups.length
         if (totalDependents === 0) return
-        if (devMode) get().setStatus(`🔄 Rafraîchissement de ${dependentCells.length} cellule(s) et ${dependentGroups.length} groupe(s) dépendant(s) de $${paramName}...`, 'loading')
+        if (devMode) get().setStatus(`🔄 Rafraîchissement de ${dependentCells.length} cellule(s) et ${dependentGroups.length} groupe(s) dépendant(s) de {{ ${paramName} }}...`, 'loading')
         for (const dep of dependentGroups) {
             try {
                 dep.group._ifQueryResult = await get().evaluateGroupIfQuery(dep.group)

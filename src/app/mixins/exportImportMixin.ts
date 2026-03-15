@@ -356,7 +356,7 @@ ${configScriptTag}${embeddedScripts}</head>
                             if (Array.isArray(group.queries) && group.queries.length > 0) {
                                 newGroup.queries = group.queries.map((q, i) => ({
                                     name: q.name || 'main',
-                                    sql: q.sql || '',
+                                    sql: q.query || q.sql || '',
                                     engine: q.engine || 'sql',
                                     clientVisible: q.clientVisible === true
                                 }));

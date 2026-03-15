@@ -11,6 +11,9 @@ import { setAutoFreeze } from 'immer'
 import { createRoomShellSlice } from '@sqlrooms/room-shell'
 import { createBaseDuckDbConnector } from '@sqlrooms/duckdb-core'
 import { createSqlEditorSlice, createDefaultSqlEditorConfig } from '@sqlrooms/sql-editor'
+import { createCellsSlice as createSqlroomsCellsSlice, createDefaultCellRegistry } from '@sqlrooms/cells'
+import { createNotebookSlice } from '@sqlrooms/notebook'
+import { createCanvasSlice } from '@sqlrooms/canvas'
 import { DatabaseIcon } from 'lucide-react'
 // Panel components (lazy import safe — utilisés uniquement au rendu, pas à l'évaluation)
 import { NotebookPanel } from '../components/NotebookPanel'
@@ -24,14 +27,11 @@ import { createExportSlice } from './slices/exportSlice'
 import { createGroupsSlice } from './slices/groupsSlice'
 import { createCellsSlice } from './slices/cellsSlice'
 import { createFilesSlice } from './slices/filesSlice'
-import { createEditorsSlice } from './slices/editorsSlice'
 import { createExecutionSlice } from './slices/executionSlice'
 import { ConfigManager } from '../../lib/ConfigManager'
 import { applyThemeFromConfig } from '../components/modals/ThemeCustomModal'
 import { DuckDBManager } from '../../lib/DuckDBManager'
 import { CellConfigService, initializeCell } from '../../lib/CellConfigService'
-import { CellRenderer } from '../../lib/CellRenderer'
-import { CellBodyRenderer, CELL_BODY_FAMILIES } from '../../lib/CellBodyRenderer'
 import { EChartSqlParser } from '../../lib/EChartSqlParser'
 import { GistEncrypt } from '../../lib/GistEncrypt'
 import { GitHubGistManager } from '../../lib/GitHubGistManager'
@@ -52,9 +52,6 @@ export function exposeGlobals() {
         ConfigManager,
         CellConfigService,
         initializeCell,
-        CellRenderer,
-        CellBodyRenderer,
-        CELL_BODY_FAMILIES,
         EChartSqlParser,
         GistEncrypt,
         GitHubGistManager,
@@ -302,6 +299,11 @@ export const useNotebookStore = create<any>((set, get, api) => {
         },
     })(set, get, api)
 
+    // === Slices sqlrooms notebook (requis par SheetsTabBar + Notebook de @sqlrooms/cells / @sqlrooms/notebook) ===
+    const sqlroomsCellsState = createSqlroomsCellsSlice({ cellRegistry: createDefaultCellRegistry() })(set, get, api)
+    const notebookState = createNotebookSlice()(set, get, api)
+    const canvasState = createCanvasSlice()(set, get, api)
+
     const initialState = buildInitialState()
 
     // Slices Zustand purs (convertis depuis les mixins Alpine)
@@ -312,7 +314,6 @@ export const useNotebookStore = create<any>((set, get, api) => {
     const groupsActions = createGroupsSlice(set, get)
     const cellsActions = createCellsSlice(set, get)
     const filesActions = createFilesSlice(set, get)
-    const editorsActions = createEditorsSlice(set, get)
     const executionActions = createExecutionSlice(set, get)
 
     // Helper : vérifie si le panneau 'data' est actuellement visible dans le layout
@@ -346,6 +347,9 @@ export const useNotebookStore = create<any>((set, get, api) => {
     return {
         ...sqlEditorState,
         ...roomShellState,
+        ...sqlroomsCellsState,
+        ...notebookState,
+        ...canvasState,
         layout: {
             ...roomShellState.layout,
             togglePanel: mobileTogglePanel,
@@ -358,7 +362,6 @@ export const useNotebookStore = create<any>((set, get, api) => {
         ...groupsActions,
         ...cellsActions,
         ...filesActions,
-        ...editorsActions,
         ...executionActions,
 
         // db.schemaTrees démarre undefined dans DuckDbSlice.

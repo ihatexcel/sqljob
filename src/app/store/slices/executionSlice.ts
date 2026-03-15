@@ -76,48 +76,6 @@ export const createExecutionSlice = (set: any, get: any) => ({
         return { stopped: false }
     },
 
-    async parseLoopQuery(query) {
-        let currentQuery = get().parseQueryWithParameters(query)
-        const maxLevels = 10
-        let level = 0
-
-        const parseRecursive = async (q) => {
-            if (level >= maxLevels) {
-                throw new Error('Nombre maximum de niveaux d\'imbrication atteint (10)')
-            }
-
-            const posClose = q.indexOf('}}')
-            if (posClose === -1) return q
-            const posOpen = q.lastIndexOf('{{', posClose)
-            if (posOpen === -1) {
-                return q
-            }
-
-            const innerQuery = q.substring(posOpen + 2, posClose).trim()
-            level++
-
-            const resolvedInnerQuery = await parseRecursive(innerQuery)
-            const results = await DuckDBManager.executeQuery(resolvedInnerQuery)
-
-            if (!results || results.length === 0) {
-                throw new Error(`Niveau ${level}: La requête n'a retourné aucun résultat`)
-            }
-
-            const firstRow = results[0]
-            const replacement = Object.values(firstRow)[0]
-
-            if (replacement === null || replacement === undefined) {
-                throw new Error(`Niveau ${level}: Le résultat est null ou undefined`)
-            }
-
-            const replStr = String(replacement).replace(/\$/g, '$$$$')
-            const newQuery = q.substring(0, posOpen) + replStr + q.substring(posClose + 2)
-            return await parseRecursive(newQuery)
-        }
-
-        return await parseRecursive(currentQuery)
-    },
-
     addFileToZip(filename, content, type = 'blob') {
         if (get()._zipMode) {
             get()._zipFiles.push({ filename, content, type })
@@ -164,7 +122,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
 
         try {
             const loopQuery = group.loop.query
-            const parsedLoopQuery = await get().parseLoopQuery(loopQuery)
+            const parsedLoopQuery = get().parseQueryWithParameters(loopQuery)
             const loopResults = await DuckDBManager.executeQuery(parsedLoopQuery)
 
             if (!loopResults || loopResults.length === 0) {
@@ -181,7 +139,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
             for (let i = 0; i < loopValues.length; i++) {
                 const loopValue = loopValues[i]
                 set({ _currentLoopValue: loopValue })
-                get().setStatus(`Boucle ${i + 1}/${loopValues.length}: $loop = ${loopValue}`, 'loading')
+                get().setStatus(`Boucle ${i + 1}/${loopValues.length}: {{ loop }} = ${loopValue}`, 'loading')
 
                 const orderedItems = get().getAllItemsSorted(group)
                 for (const item of orderedItems) {
@@ -234,7 +192,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
         try {
             let zipFilename = 'export.zip'
             if (group.loop.zipQuery) {
-                const parsedZipQuery = await get().parseLoopQuery(group.loop.zipQuery)
+                const parsedZipQuery = get().parseQueryWithParameters(group.loop.zipQuery)
                 const zipResults = await DuckDBManager.executeQuery(parsedZipQuery)
                 if (zipResults && zipResults.length > 0) {
                     const firstValue = Object.values(zipResults[0])[0]
@@ -314,89 +272,16 @@ export const createExecutionSlice = (set: any, get: any) => ({
         return await get().runGroupAtPath(path)
     },
 
-    async parseQueryRecursively(cell, queryIndex = 0, allowEmpty = false) {
-        const levelsKey = queryIndex === 1 ? '_parseLevels2' : '_parseLevels'
-        cell[levelsKey] = []
-
-        let currentQuery = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, queryIndex) || '')
-        let level = 0
-        const maxLevels = 10
-
-        const parseRecursive = async (query) => {
-            if (level >= maxLevels) {
-                throw new Error('Nombre maximum de niveaux d\'imbrication atteint (10)')
-            }
-
-            const posClose = query.indexOf('}}')
-            if (posClose === -1) return query
-            const posOpen = query.lastIndexOf('{{', posClose)
-            if (posOpen === -1) return query
-
-            const innerQuery = query.substring(posOpen + 2, posClose).trim()
-            level++
-
-            const statusSuffix = queryIndex === 1 ? ' (query2)' : ''
-            get().setStatus(`Parsing niveau ${level}${statusSuffix}...`, 'loading')
-
-            const resolvedInnerQuery = await parseRecursive(innerQuery)
-            let results
-            try {
-                results = await DuckDBManager.executeQuery(resolvedInnerQuery)
-            } catch (e: any) {
-                e._partialOuterQuery = query
-                throw e
-            }
-
-            let replacement
-            if (allowEmpty) {
-                const firstVal = results.length > 0 ? Object.values(results[0])[0] : null
-                replacement = (firstVal !== null && firstVal !== undefined) ? String(firstVal) : ''
-            } else {
-                if (!results || results.length === 0) {
-                    throw new Error(`Niveau ${level}: La requête n'a retourné aucun résultat`)
-                }
-                const firstVal = Object.values(results[0])[0]
-                if (firstVal === null || firstVal === undefined) {
-                    throw new Error(`Niveau ${level}: Le résultat est null ou undefined`)
-                }
-                replacement = String(firstVal)
-            }
-
-            cell[levelsKey].push({
-                level: level,
-                innerQuery: resolvedInnerQuery,
-                replacement: replacement
-            })
-
-            const replStr = String(replacement).replace(/\$/g, '$$$$')
-            const newQuery = query.substring(0, posOpen) + replStr + query.substring(posClose + 2)
-            return await parseRecursive(newQuery)
-        }
-
-        try {
-            const finalQuery = await parseRecursive(currentQuery)
-            cell[levelsKey].push({ level: 'final', innerQuery: finalQuery, replacement: null })
-            return finalQuery
-        } catch (e: any) {
-            if (!cell[levelsKey].some((l: any) => l.level === 'final')) {
-                cell[levelsKey].push({ level: 'final', innerQuery: e._partialOuterQuery ?? currentQuery, replacement: null })
-            }
-            throw e
-        }
-    },
-
     async executeSqlRecursiveParseCell(cell) {
         if (!ConfigManager.getCellQuery(cell, 0)?.trim()) {
             console.warn('❌ cell.query est vide ou undefined!')
             return
         }
 
-        get().setStatus('Parsing récursif...', 'loading')
-
         try {
-            const finalQuery = await get().parseQueryRecursively(cell)
+            const finalQuery = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '')
 
-            get().setStatus('Exécution de la requête finale...', 'loading')
+            get().setStatus('Exécution de la requête...', 'loading')
 
             const copyRegex = /COPY\s+[\s\S]+\bTO\s+'([^']+)'/i
             const copyMatch = finalQuery.match(copyRegex)
@@ -493,7 +378,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
                     get().downloadOrZipFile(downloadFileName, blob, mime)
 
                     cell._results = []
-                    cell._resultInfo = `✅ Fichier exporté: ${fileName} (${buffer.byteLength} octets) - ${cell._parseLevels.length - 1} niveau(x) de parsing`
+                    cell._resultInfo = `✅ Fichier exporté: ${fileName} (${buffer.byteLength} octets)`
                 } catch (copyError) {
                     console.error('❌ Erreur lors de la récupération du fichier exporté:', copyError)
 
@@ -530,14 +415,14 @@ export const createExecutionSlice = (set: any, get: any) => ({
             } else {
                 const finalResults = await DuckDBManager.executeQuery(finalQuery)
                 cell._results = finalResults
-                cell._resultInfo = `✅ ${finalResults.length} ligne(s) - ${cell._parseLevels.length - 1} niveau(x) de parsing`
+                cell._resultInfo = `✅ ${finalResults.length} ligne(s)`
                 if (get().isSqlResultTabular(cell)) {
                     const maxRows = cell.maxRows || 100000
                     const truncated = finalResults.length > maxRows
                     const rawResults = finalResults.slice(0, maxRows)
                     _rawTableDataStore.set(cell._id, rawResults)
                     cell._results = rawResults
-                    if (truncated) cell._resultInfo = `✅ ${finalResults.length} ligne(s) (limité à ${maxRows})` + (cell._parseLevels?.length > 1 ? ` - ${cell._parseLevels.length - 1} niveau(x) de parsing` : '')
+                    if (truncated) cell._resultInfo = `✅ ${finalResults.length} ligne(s) (limité à ${maxRows})`
                 }
             }
 
@@ -553,19 +438,19 @@ export const createExecutionSlice = (set: any, get: any) => ({
         get().setStatus('Chargement tableau...', 'loading')
 
         try {
-            const finalQuery = await get().parseQueryRecursively(cell)
+            const finalQuery = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '')
 
-            get().setStatus('Exécution de la requête finale...', 'loading')
+            get().setStatus('Exécution de la requête...', 'loading')
 
-            const results = await DuckDBManager.executeQuery(finalQuery)
+            const { rows: results, schemaTypes } = await DuckDBManager.executeQueryWithSchema(finalQuery)
 
             const maxRows = cell.maxRows || 100000
             const truncated = results.length > maxRows
             const rawResults = results.slice(0, maxRows)
             _rawTableDataStore.set(cell._id, rawResults)
             cell._results = rawResults
-            cell._resultInfo = `${results.length} ligne(s)` + (truncated ? ` (limité à ${maxRows})` : '') +
-                (cell._parseLevels.length > 1 ? ` - ${cell._parseLevels.length - 1} niveau(x) de parsing` : '')
+            cell._schemaTypes = schemaTypes || {}
+            cell._resultInfo = `${results.length} ligne(s)` + (truncated ? ` (limité à ${maxRows})` : '')
 
             get().setStatus('Tableau chargé', 'success')
         } catch (error) {
@@ -605,7 +490,6 @@ export const createExecutionSlice = (set: any, get: any) => ({
         const languageType = ConfigManager.getCellEngine(cell, 'main')
         if (languageType === 'text') {
             cell._markdownContent = ConfigManager.getCellEditableContent(cell)
-            cell._resultInfo = '✅ Markdown (texte)'
             return
         }
         const cellQuery = ConfigManager.getCellQuery(cell, 'main')
@@ -616,9 +500,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
         try {
             let mdContent
             if (languageType === 'js') {
-                cell._parseLevels = []
                 let jsCode = get().parseQueryWithParameters(cellQuery || '')
-                cell._parseLevels.push({ level: 'final', innerQuery: jsCode, replacement: null })
                 try {
                     const result = safeEvalJs(jsCode)
                     mdContent = typeof result === 'string' ? result : String(result)
@@ -626,9 +508,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
                     throw new Error(`Erreur JS: ${jsError.message}`)
                 }
             } else {
-                const cellLike = { queries: [{ name: 'main', sql: cellQuery, engine: 'sql', clientVisible: false }], _parseLevels: [] }
-                const finalQuery = await get().parseQueryRecursively(cellLike)
-                cell._parseLevels = cellLike._parseLevels || []
+                const finalQuery = get().parseQueryWithParameters(cellQuery || '')
                 get().setStatus('Exécution de la requête...', 'loading')
                 const results = await DuckDBManager.executeQuery(finalQuery)
                 mdContent = results.map(row => Object.values(row).join('')).join('\n')
@@ -652,12 +532,9 @@ export const createExecutionSlice = (set: any, get: any) => ({
 
             if (languageType === 'text') {
                 htmlContent = (cellQuery || '').trim()
-                cell._parseLevels = []
                 cell._resultInfo = ''
             } else if (languageType === 'js') {
-                cell._parseLevels = []
                 let jsCode = get().parseQueryWithParameters(cellQuery || '')
-                cell._parseLevels.push({ level: 'final', innerQuery: jsCode, replacement: null })
                 try {
                     const result = safeEvalJs(jsCode)
                     htmlContent = typeof result === 'string' ? result : String(result)
@@ -666,11 +543,11 @@ export const createExecutionSlice = (set: any, get: any) => ({
                 }
                 cell._resultInfo = '✅ HTML généré (JavaScript)'
             } else {
-                const finalQuery = await get().parseQueryRecursively(cell)
-                get().setStatus('Exécution de la requête finale...', 'loading')
+                const finalQuery = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '')
+                get().setStatus('Exécution de la requête...', 'loading')
                 const results = await DuckDBManager.executeQuery(finalQuery)
                 htmlContent = results.map(row => Object.values(row).join('')).join('\n')
-                cell._resultInfo = `✅ HTML généré` + (cell._parseLevels.length > 1 ? ` - ${cell._parseLevels.length - 1} niveau(x) de parsing` : '')
+                cell._resultInfo = '✅ HTML généré'
             }
 
             cell._htmlContent = htmlContent
@@ -697,9 +574,9 @@ export const createExecutionSlice = (set: any, get: any) => ({
         get().setStatus('Exécution de la stat SQL...', 'loading')
 
         try {
-            const finalQuery = await get().parseQueryRecursively(cell)
+            const finalQuery = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '')
 
-            get().setStatus('Exécution de la requête finale...', 'loading')
+            get().setStatus('Exécution de la requête...', 'loading')
             const results = await DuckDBManager.executeQuery(finalQuery)
 
             if (!results || results.length === 0) {
@@ -714,7 +591,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
 
             cell._results = results
             cell._statValue = statValue !== null && statValue !== undefined ? String(statValue) : '-'
-            cell._resultInfo = cell._parseLevels.length > 1 ? `${cell._parseLevels.length - 1} niveau(x) de parsing` : ''
+            cell._resultInfo = ''
 
             get().setStatus('Stat SQL exécutée', 'success')
         } catch (error) {
@@ -746,16 +623,8 @@ export const createExecutionSlice = (set: any, get: any) => ({
             } else if (languageType === 'js') {
                 get().setStatus('Exécution du code JavaScript...', 'loading')
 
-                cell._parseLevels = []
-
                 let jsCode = ConfigManager.getCellQuery(cell, 0) || ''
                 jsCode = get().parseQueryWithParameters(jsCode)
-
-                cell._parseLevels.push({
-                    level: 'final',
-                    innerQuery: jsCode,
-                    replacement: null
-                })
 
                 try {
                     const jsResult = safeEvalJs(jsCode)
@@ -782,8 +651,8 @@ export const createExecutionSlice = (set: any, get: any) => ({
                     throw new Error(`Erreur JS: ${jsError.message}`)
                 }
             } else {
-                const finalQuery = await get().parseQueryRecursively(cell)
-                get().setStatus('Exécution de la requête finale...', 'loading')
+                const finalQuery = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '')
+                get().setStatus('Exécution de la requête...', 'loading')
                 results = await DuckDBManager.executeQuery(finalQuery)
             }
 
@@ -867,7 +736,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
         get().setStatus('Exécution du publipostage Word...', 'loading')
 
         try {
-            const finalQuery = await get().parseQueryRecursively(cell)
+            const finalQuery = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '')
 
             get().setStatus('Récupération des données...', 'loading')
             const dataResults = await DuckDBManager.executeQuery(finalQuery)
@@ -877,7 +746,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
                 return
             }
 
-            const finalQuery2 = await get().parseQueryRecursively(cell, 1, true)
+            const finalQuery2 = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 1) || '')
 
             get().setStatus('Récupération des noms de fichiers...', 'loading')
             const filenameResults = await DuckDBManager.executeQuery(finalQuery2)
@@ -933,9 +802,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
                 get().setStatus(`Génération ${generatedCount}/${dataResults.length}...`, 'loading')
             }
 
-            cell._resultInfo = `✅ ${generatedCount} document(s) généré(s)` +
-                (cell._parseLevels.length > 1 ? ` - ${cell._parseLevels.length - 1} niveau(x) de parsing (query)` : '') +
-                (cell._parseLevels2.length > 1 ? ` - ${cell._parseLevels2.length - 1} niveau(x) de parsing (query2)` : '')
+            cell._resultInfo = `✅ ${generatedCount} document(s) généré(s)`
             get().setStatus(`${generatedCount} documents générés`, 'success')
         } catch (error) {
             throw error
@@ -966,7 +833,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
         get().setStatus('Exécution de la requête SQL...', 'loading')
 
         try {
-            const finalQuery = await get().parseQueryRecursively(cell)
+            const finalQuery = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '')
 
             get().setStatus('Récupération des données...', 'loading')
             const data = await DuckDBManager.executeQuery(finalQuery)
@@ -981,7 +848,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
             if (ConfigManager.getCellQuery(cell, 1)?.trim()) {
                 get().setStatus('Récupération du nom de fichier...', 'loading')
 
-                const finalQuery2 = await get().parseQueryRecursively(cell, 1, true)
+                const finalQuery2 = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 1) || '')
                 const filenameResults = await DuckDBManager.executeQuery(finalQuery2)
 
                 if (filenameResults && filenameResults.length > 0) {
@@ -1102,9 +969,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
                 URL.revokeObjectURL(url)
             }
 
-            cell._resultInfo = `✅ PDF généré: ${pdfFileName} (${inputs.length} page(s), ${data.length} ligne(s) SQL)` +
-                (cell._parseLevels.length > 1 ? ` - ${cell._parseLevels.length - 1} niveau(x) de parsing` : '') +
-                (cell._parseLevels2?.length > 1 ? ` - ${cell._parseLevels2.length - 1} niveau(x) de parsing (query2)` : '')
+            cell._resultInfo = `✅ PDF généré: ${pdfFileName} (${inputs.length} page(s), ${data.length} ligne(s) SQL)`
             get().setStatus('PDF généré avec succès (pdfme)', 'success')
         } catch (error) {
             console.error('[pdfme] === ERREUR executePdfmeCell ===', error)
@@ -1124,7 +989,8 @@ export const createExecutionSlice = (set: any, get: any) => ({
         get().setStatus('Parsing de la requête SQL...', 'loading')
 
         try {
-            const finalQuery = await get().parseQueryRecursively(cell)
+            const finalQuery = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '')
+            cell._perspectiveQuery = finalQuery
 
             get().setStatus('Exécution de la requête...', 'loading')
 
@@ -1151,8 +1017,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
             }
 
             const rowCount = arrowTable.numRows
-            cell._resultInfo = `✅ ${rowCount} ligne(s)` +
-                (cell._parseLevels.length > 1 ? ` - ${cell._parseLevels.length - 1} niveau(x) de parsing` : '')
+            cell._resultInfo = `✅ ${rowCount} ligne(s)`
             get().setStatus('Perspective chargé', 'success')
         } catch (error) {
             cell._perspectiveReady = false
@@ -1165,7 +1030,10 @@ export const createExecutionSlice = (set: any, get: any) => ({
         const viewer = document.getElementById(containerId)
 
         if (!viewer || !cell._arrowTable) {
-            console.warn('Perspective viewer ou données Arrow manquantes')
+            // Viewer absent du DOM (ex: showContent=false pendant l'exécution).
+            // Réinitialise le flag pour que le useEffect du composant relance le rendu
+            // une fois que le statut passe à 'success' et que le viewer est monté.
+            cell._perspectiveScheduled = false
             return
         }
 
@@ -1197,8 +1065,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
                 }
             }
 
-            const finalQuery = cell._parseLevels?.find(l => l.level === 'final')?.innerQuery
-                || ConfigManager.getCellQuery(cell, 0)
+            const finalQuery = cell._perspectiveQuery || get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '')
 
             const arrowResult = await conn.query(finalQuery)
             const batches = []
@@ -1245,7 +1112,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
         try {
             await DuckDBManager.initChartTypes()
 
-            const finalQuery = await get().parseQueryRecursively(cell)
+            const finalQuery = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '')
 
             get().setStatus('Exécution de la requête...', 'loading')
             const { rows, columnTypes } = await DuckDBManager.executeQueryWithSchema(finalQuery)
@@ -1264,10 +1131,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
             cell._echartReady = true
             set((s: any) => ({ _rev: s._rev + 1 }))
 
-            cell._resultInfo = `✅ ${rows.length} ligne(s)` +
-                (cell._parseLevels.length > 1
-                    ? ` - ${cell._parseLevels.length - 1} niveau(x) de parsing`
-                    : '')
+            cell._resultInfo = `✅ ${rows.length} ligne(s)`
             get().setStatus('EChart chargé', 'success')
         } catch (error) {
             cell._echartReady = false
