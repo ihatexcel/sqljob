@@ -458,6 +458,50 @@ export const createExecutionSlice = (set: any, get: any) => ({
         }
     },
 
+    async executeSqlBlockCell(cell) {
+        const { astToSql, getEffectiveSql, generateMaterializeQuery } = await import('../../../lib/SqlBlockService')
+        const { createDefaultSqlBlockConfig } = await import('../../../lib/SqlBlockTypes')
+
+        // Initialiser la config si elle n'existe pas
+        if (!cell.sqlBlockConfig) {
+            cell.sqlBlockConfig = createDefaultSqlBlockConfig()
+        }
+        const cfg = cell.sqlBlockConfig
+        const sql = getEffectiveSql(cfg)
+
+        if (!sql?.trim()) {
+            cell._resultInfo = 'Aucun SQL à exécuter — définissez une source et des steps.'
+            return
+        }
+
+        if (!cell.name?.trim()) {
+            throw new Error('La cellule sqlBlock doit avoir un nom (utilisé comme nom de VIEW/TABLE dans DuckDB).')
+        }
+
+        get().setStatus('Exécution du SQL Block...', 'loading')
+
+        try {
+            // Créer la VIEW ou TABLE dans DuckDB (accessible par les cellules en aval)
+            const finalSql = get().parseQueryWithParameters(sql)
+            const materializeQuery = generateMaterializeQuery(cell.name, finalSql, cfg.ast?.materialize ?? 'view')
+            await DuckDBManager.executeQuery(materializeQuery)
+
+            // Charger les résultats pour l'affichage dans la cellule
+            const { rows: results, schemaTypes } = await DuckDBManager.executeQueryWithSchema(
+                `SELECT * FROM ${cell.name} LIMIT 1000`
+            )
+            cell._results = results
+            cell._schemaTypes = schemaTypes || {}
+            cell._resultInfo = `${results.length} ligne(s)${results.length === 1000 ? ' (limité à 1 000 pour l\'affichage)' : ''} — ${cfg.ast?.materialize === 'table' ? 'TABLE' : 'VIEW'} "${cell.name}" créée`
+
+            // Synchroniser les tables DuckDB
+            await get().refreshDuckdbTables?.()
+            get().setStatus('SQL Block exécuté', 'success')
+        } catch (error) {
+            throw error
+        }
+    },
+
     showSqlEditorVisible(cell) {
         return get().devMode || ConfigManager.getCellQueryClientVisible(cell, 0)
     },

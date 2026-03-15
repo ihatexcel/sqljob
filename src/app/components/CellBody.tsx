@@ -17,6 +17,7 @@ import {
 } from '@sqlrooms/ui'
 import { DuckDBManager } from '../../lib/DuckDBManager'
 import DataTablePaginated from '@sqlrooms/data-table/dist/DataTablePaginated'
+import { SqlBlockEditor } from './sqlblock/SqlBlockEditor'
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 function CellBodySkeleton() {
@@ -850,6 +851,23 @@ function GenericHtmlBody({ cell, path, cellIndex }: any) {
     )
 }
 
+// ─── SqlBlockBody ─────────────────────────────────────────────────────────────
+function SqlBlockBody({ cell, path, cellIndex }: any) {
+    const devMode = useNotebookStore(s => s.devMode)
+    if (!devMode) {
+        // En mode client : afficher seulement les résultats
+        return (
+            <div className="flex flex-col gap-2">
+                {cell._results && Array.isArray(cell._results) && cell._results.length > 0 && (
+                    <SqlDataTable cell={cell} />
+                )}
+                {cell._resultInfo && <ResultInfo cell={cell} />}
+            </div>
+        )
+    }
+    return <SqlBlockEditor cell={cell} path={path} cellIndex={cellIndex} />
+}
+
 // ─── CellBody principal ───────────────────────────────────────────────────────
 export function CellBody({ cell, path, cellIndex, group }: { cell: any, path: number[], cellIndex: number, group: any }) {
     const {
@@ -890,6 +908,8 @@ export function CellBody({ cell, path, cellIndex, group }: { cell: any, path: nu
                 return <PdfmeBody cell={cell} path={path} cellIndex={cellIndex} />
             case 'perspective':
                 return <PerspectiveBody cell={cell} path={path} cellIndex={cellIndex} />
+            case 'sqlBlock':
+                return <SqlBlockBody cell={cell} path={path} cellIndex={cellIndex} />
             default: return null
         }
     }
