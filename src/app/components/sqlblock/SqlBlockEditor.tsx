@@ -185,56 +185,76 @@ function ChangeTypeStepUI({ step, availableCols, availableColTypes, onChange }: 
     }
 
     return (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-0 divide-y divide-border">
             {step.changes.map((change, idx) => (
-                <div key={idx} className="flex items-center gap-2 text-xs">
+                /* Chaque conversion : 2 lignes empilées */
+                <div key={idx} className="flex flex-col gap-1 py-2 first:pt-0">
+                    {/* Ligne 1 : colonne source + bouton supprimer */}
+                    <div className="flex items-center gap-1.5">
+                        <span className="text-xs text-muted-foreground shrink-0 w-4">col</span>
+                        <select
+                            className="flex-1 min-w-0 h-6 rounded border border-border bg-background px-1 text-xs font-mono"
+                            value={change.column}
+                            onChange={e => updateChange(idx, 'column', e.target.value)}
+                        >
+                            {allCols.map(c => <option key={c} value={c}>{c}</option>)}
+                            {!allCols.includes(change.column) && (
+                                <option value={change.column}>{change.column}</option>
+                            )}
+                        </select>
+                        <button
+                            onClick={() => removeChange(idx)}
+                            className="shrink-0 text-destructive hover:text-destructive/80 w-5 h-5 flex items-center justify-center"
+                            title="Supprimer"
+                        >✕</button>
+                    </div>
+                    {/* Ligne 2 : type cible */}
+                    <div className="flex items-center gap-1.5">
+                        <span className="text-xs text-muted-foreground shrink-0 w-4">→</span>
+                        <select
+                            className="flex-1 min-w-0 h-6 rounded border border-border bg-background px-1 text-xs font-mono"
+                            value={change.targetType}
+                            onChange={e => updateChange(idx, 'targetType', e.target.value)}
+                        >
+                            {DUCKDB_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+                        </select>
+                        {/* Alignement avec le bouton de la ligne 1 */}
+                        <span className="shrink-0 w-5" />
+                    </div>
+                </div>
+            ))}
+
+            {/* Bloc ajout */}
+            <div className="flex flex-col gap-1.5 pt-2">
+                {/* Ligne 1 : sélection colonne */}
+                <select
+                    className="w-full h-6 rounded border border-border bg-background px-1 text-xs font-mono"
+                    value={addCol}
+                    onChange={e => setAddCol(e.target.value)}
+                >
+                    <option value="">— choisir une colonne —</option>
+                    {allCols.map(c => (
+                        <option key={c} value={c}>
+                            {c}{availableColTypes[c] ? ` (${availableColTypes[c]})` : ''}
+                        </option>
+                    ))}
+                </select>
+                {/* Ligne 2 : type cible + bouton ajouter */}
+                <div className="flex items-center gap-1.5">
+                    <span className="text-xs text-muted-foreground shrink-0 w-4">→</span>
                     <select
-                        className="flex-1 h-6 rounded border border-border bg-background px-1 text-xs font-mono"
-                        value={change.column}
-                        onChange={e => updateChange(idx, 'column', e.target.value)}
-                    >
-                        {allCols.map(c => <option key={c} value={c}>{c}</option>)}
-                        {!allCols.includes(change.column) && (
-                            <option value={change.column}>{change.column}</option>
-                        )}
-                    </select>
-                    <span className="text-muted-foreground">→</span>
-                    <select
-                        className="w-28 h-6 rounded border border-border bg-background px-1 text-xs font-mono"
-                        value={change.targetType}
-                        onChange={e => updateChange(idx, 'targetType', e.target.value)}
+                        className="flex-1 min-w-0 h-6 rounded border border-border bg-background px-1 text-xs font-mono"
+                        value={addType}
+                        onChange={e => setAddType(e.target.value)}
                     >
                         {DUCKDB_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
                     </select>
                     <button
-                        onClick={() => removeChange(idx)}
-                        className="text-destructive hover:text-destructive/80 px-1"
-                        title="Supprimer"
-                    >✕</button>
+                        onClick={addChange}
+                        disabled={!addCol}
+                        className="shrink-0 px-2 h-6 rounded bg-primary text-primary-foreground text-xs disabled:opacity-50 whitespace-nowrap"
+                    >+ Ajouter</button>
                 </div>
-            ))}
-            <div className="flex items-center gap-2 text-xs border-t border-border pt-2 mt-1">
-                <select
-                    className="flex-1 h-6 rounded border border-border bg-background px-1 text-xs font-mono"
-                    value={addCol}
-                    onChange={e => setAddCol(e.target.value)}
-                >
-                    <option value="">— colonne —</option>
-                    {allCols.map(c => <option key={c} value={c}>{c} {availableColTypes[c] ? `(${availableColTypes[c]})` : ''}</option>)}
-                </select>
-                <span className="text-muted-foreground">→</span>
-                <select
-                    className="w-28 h-6 rounded border border-border bg-background px-1 text-xs font-mono"
-                    value={addType}
-                    onChange={e => setAddType(e.target.value)}
-                >
-                    {DUCKDB_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
-                </select>
-                <button
-                    onClick={addChange}
-                    disabled={!addCol}
-                    className="px-2 h-6 rounded bg-primary text-primary-foreground text-xs disabled:opacity-50"
-                >+ Ajouter</button>
             </div>
         </div>
     )
@@ -640,9 +660,10 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
 
             {/* Corps : Steps à gauche + SQL preview à droite */}
             {!cfg.degraded ? (
-                <div className="flex gap-3 min-h-0">
-                    {/* Colonne Steps */}
-                    <div className="flex flex-col gap-2 w-64 shrink-0">
+                <div className="flex flex-wrap gap-3 min-h-0">
+                    {/* Colonne Steps — min-w assure que les selects ont de la place,
+                        flex-1 permet de grandir si la place est disponible */}
+                    <div className="flex flex-col gap-2 min-w-52 w-64 flex-1" style={{ maxWidth: '18rem' }}>
                         <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Steps</span>
                         {ast.steps.length === 0 && (
                             <p className="text-xs text-muted-foreground italic px-1">
@@ -665,8 +686,8 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
                         <AddStepMenu onAdd={handleStepAdd} />
                     </div>
 
-                    {/* SQL Preview */}
-                    <div className="flex-1 min-w-0 flex flex-col">
+                    {/* SQL Preview — min-w-48 : en-dessous de 192px on passe à la ligne */}
+                    <div className="flex-1 min-w-48 flex flex-col">
                         <SqlPreview
                             sql={currentSql}
                             editable={true}
