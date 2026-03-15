@@ -481,9 +481,17 @@ export const createExecutionSlice = (set: any, get: any) => ({
         get().setStatus('Exécution du SQL Block...', 'loading')
 
         try {
+            // Supprimer l'objet existant s'il est d'un type différent
+            // (DuckDB refuse CREATE OR REPLACE TABLE sur une VIEW existante et vice-versa)
+            const materialize = cfg.ast?.materialize ?? 'view'
+            const oppositeType = materialize === 'view' ? 'TABLE' : 'VIEW'
+            try {
+                await DuckDBManager.executeQuery(`DROP ${oppositeType} IF EXISTS ${cell.name}`)
+            } catch (_) { /* pas d'objet à supprimer, on continue */ }
+
             // Créer la VIEW ou TABLE dans DuckDB (accessible par les cellules en aval)
             const finalSql = get().parseQueryWithParameters(sql)
-            const materializeQuery = generateMaterializeQuery(cell.name, finalSql, cfg.ast?.materialize ?? 'view')
+            const materializeQuery = generateMaterializeQuery(cell.name, finalSql, materialize)
             await DuckDBManager.executeQuery(materializeQuery)
 
             // Charger les résultats pour l'affichage dans la cellule
