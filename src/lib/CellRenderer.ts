@@ -8,8 +8,6 @@ import { CELL_BODY_FAMILIES } from './CellBodyRenderer'
                 return `
                     <div class="flex justify-between items-center py-2 px-4 bg-base-200 border-b border-base-300 cell-header-responsive" x-show="devMode">
                         <div class="flex items-center gap-2 text-sm text-base-content/60">
-                            <span x-html="getCellIcon(cellItem.cell.type)"></span>
-                            <span x-text="cellItem.cell.type"></span>
                             <span x-show="cellItem.cell._status === 'running'" class="loading loading-spinner loading-xs" style="color:var(--warning)"></span>
                         </div>
                         <div class="flex gap-1 items-center">
