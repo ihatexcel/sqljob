@@ -9,6 +9,14 @@ import { EChartSqlParser } from '../../../lib/EChartSqlParser'
 import { formatValueForInputType } from '../../../lib/utils'
 import { FileHandler } from '../../../lib/FileHandler'
 
+/** Détecte si un SQL contient une instruction DDL (CREATE, DROP, ALTER, INSERT, UPDATE, DELETE…).
+ *  Utilisé pour décider si le schéma DuckDB doit être rafraîchi après exécution. */
+const DDL_RE = /^\s*(CREATE|DROP|ALTER|INSERT|UPDATE|DELETE|TRUNCATE|RENAME|COMMENT)\b/im
+function sqlIsDdl(sql: string): boolean {
+    // Vérifier chaque statement séparé par ';'
+    return sql.split(';').some(s => DDL_RE.test(s))
+}
+
 export const createExecutionSlice = (set: any, get: any) => ({
 
     async runGroupAtPath(path) {
@@ -427,6 +435,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
             }
 
             get().setStatus('SQL Recursive Parse exécuté', 'success')
+            if (sqlIsDdl(finalQuery)) await get().refreshDuckdbSchema?.()
         } catch (error) {
             throw error
         }
@@ -453,6 +462,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
             cell._resultInfo = `${results.length} ligne(s)` + (truncated ? ` (limité à ${maxRows})` : '')
 
             get().setStatus('Tableau chargé', 'success')
+            if (sqlIsDdl(finalQuery)) await get().refreshDuckdbSchema?.()
         } catch (error) {
             throw error
         }
@@ -502,8 +512,8 @@ export const createExecutionSlice = (set: any, get: any) => ({
             cell._schemaTypes = schemaTypes || {}
             cell._resultInfo = `${results.length} ligne(s)${results.length === 1000 ? ' (limité à 1 000 pour l\'affichage)' : ''} — ${cfg.ast?.materialize === 'table' ? 'TABLE' : 'VIEW'} "${cell.name}" créée`
 
-            // Synchroniser les tables DuckDB
-            await get().refreshDuckdbTables?.()
+            // Synchroniser le schéma DuckDB (panel + éditeur SQL)
+            await get().refreshDuckdbSchema?.()
             get().setStatus('SQL Block exécuté', 'success')
         } catch (error) {
             throw error

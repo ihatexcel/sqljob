@@ -72,6 +72,16 @@ export const createHelpersSlice = (set: any, get: any) => ({
         }
     },
 
+    /**
+     * Rafraîchit le schéma DuckDB dans les deux systèmes :
+     * - _duckdbTables (DataSourcesPanel, SqlBlockEditor)
+     * - db.refreshTableSchemas() (autocomplétion de l'éditeur SQL sqlrooms)
+     */
+    async refreshDuckdbSchema() {
+        await get().refreshDuckdbTables()
+        try { await get().db?.refreshTableSchemas() } catch { /* ignoré si non prêt */ }
+    },
+
     async init() {
         try {
             await DuckDBManager.initDuckDB((msg: string, type: string) => get().setStatus(msg, type))
