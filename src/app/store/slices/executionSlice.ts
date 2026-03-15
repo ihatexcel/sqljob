@@ -490,7 +490,6 @@ export const createExecutionSlice = (set: any, get: any) => ({
         const languageType = ConfigManager.getCellEngine(cell, 'main')
         if (languageType === 'text') {
             cell._markdownContent = ConfigManager.getCellEditableContent(cell)
-            cell._resultInfo = '✅ Markdown (texte)'
             return
         }
         const cellQuery = ConfigManager.getCellQuery(cell, 'main')

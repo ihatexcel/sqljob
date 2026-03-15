@@ -27,14 +27,11 @@ import { createExportSlice } from './slices/exportSlice'
 import { createGroupsSlice } from './slices/groupsSlice'
 import { createCellsSlice } from './slices/cellsSlice'
 import { createFilesSlice } from './slices/filesSlice'
-import { createEditorsSlice } from './slices/editorsSlice'
 import { createExecutionSlice } from './slices/executionSlice'
 import { ConfigManager } from '../../lib/ConfigManager'
 import { applyThemeFromConfig } from '../components/modals/ThemeCustomModal'
 import { DuckDBManager } from '../../lib/DuckDBManager'
 import { CellConfigService, initializeCell } from '../../lib/CellConfigService'
-import { CellRenderer } from '../../lib/CellRenderer'
-import { CellBodyRenderer, CELL_BODY_FAMILIES } from '../../lib/CellBodyRenderer'
 import { EChartSqlParser } from '../../lib/EChartSqlParser'
 import { GistEncrypt } from '../../lib/GistEncrypt'
 import { GitHubGistManager } from '../../lib/GitHubGistManager'
@@ -55,9 +52,6 @@ export function exposeGlobals() {
         ConfigManager,
         CellConfigService,
         initializeCell,
-        CellRenderer,
-        CellBodyRenderer,
-        CELL_BODY_FAMILIES,
         EChartSqlParser,
         GistEncrypt,
         GitHubGistManager,
@@ -320,7 +314,6 @@ export const useNotebookStore = create<any>((set, get, api) => {
     const groupsActions = createGroupsSlice(set, get)
     const cellsActions = createCellsSlice(set, get)
     const filesActions = createFilesSlice(set, get)
-    const editorsActions = createEditorsSlice(set, get)
     const executionActions = createExecutionSlice(set, get)
 
     // Helper : vérifie si le panneau 'data' est actuellement visible dans le layout
@@ -369,7 +362,6 @@ export const useNotebookStore = create<any>((set, get, api) => {
         ...groupsActions,
         ...cellsActions,
         ...filesActions,
-        ...editorsActions,
         ...executionActions,
 
         // db.schemaTrees démarre undefined dans DuckDbSlice.
