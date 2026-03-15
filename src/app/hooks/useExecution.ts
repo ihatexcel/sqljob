@@ -15,8 +15,6 @@ export function useExecution() {
         runGroupsFromIndex: s.runGroupsFromIndex,
         runGroupsFromIndexWithStopConditions: s.runGroupsFromIndexWithStopConditions,
         isCellSkippedInAutoFlow: s.isCellSkippedInAutoFlow,
-        parseQueryRecursively: s.parseQueryRecursively,
-        parseLoopQuery: s.parseLoopQuery,
         generateAndDownloadZip: s.generateAndDownloadZip,
         downloadOrZipFile: s.downloadOrZipFile,
         addFileToZip: s.addFileToZip,

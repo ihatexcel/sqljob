@@ -1,6 +1,5 @@
 // @ts-nocheck
 import { ConfigManager } from '../../../lib/ConfigManager'
-import { CellRenderer } from '../../../lib/CellRenderer'
 import { useConfirmModal } from '../uiStores'
 
 export const createGroupsSlice = (set: any, get: any) => ({
@@ -194,6 +193,15 @@ FROM source1 LIMIT 10;`
         if (!path || path.length === 0) return
         if (!await useConfirmModal.getState().show('Supprimer ce groupe et tout son contenu ?')) return
 
+        const collectSourceCells = (g: any): any[] => {
+            const result: any[] = []
+            for (const cell of (g?.cells || [])) if (cell.type === 'source') result.push(cell)
+            for (const child of (g?.children || [])) result.push(...collectSourceCells(child))
+            return result
+        }
+        const group = get().getGroupAtPath(path)
+        const sourceCells = collectSourceCells(group)
+
         if (path.length === 1) {
             get().getGroups().splice(path[0], 1)
         } else {
@@ -202,6 +210,10 @@ FROM source1 LIMIT 10;`
             const parent = get().getGroupAtPath(parentPath)
             if (parent && parent.children) parent.children.splice(childIndex, 1)
         }
+
+        for (const cell of sourceCells) await get().cleanupSourceCell(cell)
+        if (sourceCells.length > 0) await get().refreshDuckdbTables()
+
         get().setStatus('Groupe supprimé', 'success')
         set((s: any) => ({ _rev: s._rev + 1 }))
     },
@@ -392,77 +404,5 @@ FROM source1 LIMIT 10;`
         )
     },
 
-    renderChildGroupHTML(childGroup: any, childPath: any, parentGroup: any, originalIndex: number) {
-        const pathJSON = JSON.stringify(childPath)
-        const parentPathJSON = JSON.stringify(childPath.slice(0, -1))
 
-        const header = `
-            <div class="flex items-center justify-between gap-2 py-2 px-4 bg-primary/10 border-b border-base-300" x-show="devMode">
-                <div class="join">
-                    <button class="btn btn-xs join-item" @click="toggleGroupDirection(${pathJSON})" :title="getGroupAtPath(${pathJSON})?.direction === 'column' ? 'Passer en ligne' : 'Passer en colonne'">
-                        <span class="iconify" :data-icon="getGroupAtPath(${pathJSON})?.direction === 'column' ? 'material-symbols-light:swap-vert' : 'material-symbols-light:swap-horiz'" style="font-size:1rem"></span>
-                    </button>
-                    <button class="btn btn-xs join-item" :class="getGroupAtPath(${pathJSON})?.loop?.enabled ? 'btn-info' : ''" @click="openLoopConfigModal(${pathJSON})" title="Configurer la boucle"><span class="iconify" data-icon="material-symbols-light:autorenew" style="font-size:1rem"></span></button>
-                    <button class="btn btn-xs join-item" :class="getGroupAtPath(${pathJSON})?.accordion ? 'btn-accent' : ''" @click="openGroupSettingsModal(${pathJSON})" title="Paramètres du groupe"><span class="iconify" data-icon="material-symbols-light:settings" style="font-size:1rem"></span></button>
-                    <button class="btn btn-xs btn-success join-item" @click="runGroupAtPath(${pathJSON})" :disabled="isLoading" title="Exécuter"><span class="iconify" data-icon="material-symbols-light:play-arrow" style="font-size:1rem"></span></button>
-                    <button class="btn btn-xs join-item" @click="moveItemInGroup(${parentPathJSON}, 'child', ${originalIndex}, -1)" :disabled="isFirstInGroup(getGroupAtPath(${parentPathJSON}), 'child', ${originalIndex})" title="Monter"><span class="iconify" data-icon="material-symbols-light:arrow-upward" style="font-size:1rem"></span></button>
-                    <button class="btn btn-xs join-item" @click="moveItemInGroup(${parentPathJSON}, 'child', ${originalIndex}, 1)" :disabled="isLastInGroup(getGroupAtPath(${parentPathJSON}), 'child', ${originalIndex})" title="Descendre"><span class="iconify" data-icon="material-symbols-light:arrow-downward" style="font-size:1rem"></span></button>
-                    <button class="btn btn-xs join-item" @click="addNestedGroup(${pathJSON})" title="Ajouter un sous-groupe"><span class="iconify" data-icon="material-symbols-light:create-new-folder" style="font-size:1rem"></span></button>
-                    <button class="btn btn-xs join-item" @click="openAddCellToGroupModal(${pathJSON})" title="Ajouter une cellule"><span class="iconify" data-icon="material-symbols-light:add" style="font-size:1rem"></span></button>
-                    <button class="btn btn-xs btn-error join-item" @click="deleteGroupAtPath(${pathJSON})" title="Supprimer"><span class="iconify" data-icon="material-symbols-light:delete" style="font-size:1rem"></span></button>
-                </div>
-            </div>`
-
-        const accordionBand = `
-            <div x-show="getGroupAtPath(${pathJSON})?.accordion"
-                 @click="toggleAccordion(${pathJSON})"
-                 class="flex items-center gap-2 py-2 px-4 bg-base-200 border-b border-base-300 cursor-pointer select-none hover:bg-base-300 transition-colors duration-200">
-                <span class="text-sm transition-transform duration-200" :class="getGroupAtPath(${pathJSON})?.accordionOpen ? 'rotate-90' : ''">▶</span>
-                <span class="font-semibold text-sm" x-text="getGroupAtPath(${pathJSON})?.title || ''"></span>
-            </div>`
-
-        const content = `
-            <div class="p-2" x-show="!getGroupAtPath(${pathJSON})?.accordion || getGroupAtPath(${pathJSON})?.accordionOpen" x-collapse
-                 x-data="{ _activeTabKey: null }"
-                 x-init="if (getGroupAtPath(${pathJSON})?.tabsChild) { const items = getAllItemsSorted(getGroupAtPath(${pathJSON})); if (items.length > 0) _activeTabKey = (items[0].type === 'cell' ? 'c-' : 'g-') + items[0].originalIndex; }">
-                <div x-show="!devMode && getGroupAtPath(${pathJSON})?.tabsChild" role="tablist" class="tabs tabs-box mb-2">
-                    <template x-for="(tabItem, tabIdx) in getAllItemsSorted(getGroupAtPath(${pathJSON}))" :key="'tab-' + (tabItem.type === 'cell' ? 'c-' : 'g-') + tabItem.originalIndex">
-                        <a role="tab" class="tab"
-                           :class="{ 'tab-active': _activeTabKey === ((tabItem.type === 'cell' ? 'c-' : 'g-') + tabItem.originalIndex) }"
-                           @click="_activeTabKey = (tabItem.type === 'cell' ? 'c-' : 'g-') + tabItem.originalIndex"
-                           x-text="getTabName(tabItem, tabIdx)"></a>
-                    </template>
-                </div>
-                <div class="flex gap-2" :class="(!devMode && getGroupAtPath(${pathJSON})?.tabsChild) ? 'flex-col' : ((getGroupAtPath(${pathJSON})?.direction || 'row') === 'row' ? 'flex-row flex-wrap' : 'flex-col')">
-                    <template x-for="cellItem in getSortedCells(getGroupAtPath(${pathJSON}))" :key="cellItem.cell._id">
-                        <div class="flex flex-1 min-w-0"
-                            :class="(getGroupAtPath(${pathJSON})?.direction || 'row') === 'column' ? 'flex-col w-full' : ''"
-                            style="display: contents;">
-                            <div class="bg-base-100 rounded-lg overflow-hidden transition-[border-color,box-shadow] duration-200 flex-1 cell-container"
-                                 x-show="shouldShowCell(cellItem.cell) && (devMode || !getGroupAtPath(${pathJSON})?.tabsChild || _activeTabKey === ('c-' + cellItem.originalIndex))"
-                                 :class="[getCellSizeInnerClass(), cellItem.cell.border !== false ? 'border border-base-300 shadow-sm hover:border-primary hover:shadow-lg' : 'border-0 shadow-none', {
-                                     'border-warning shadow-[0_0_10px_rgba(251,191,36,0.3)]': cellItem.cell.border !== false && cellItem.cell._status === 'running',
-                                     'border-success': cellItem.cell.border !== false && cellItem.cell._status === 'success',
-                                     'border-error': cellItem.cell.border !== false && cellItem.cell._status === 'error'
-                                 }]"
-                                 :style="getCellWrapperStyle(cellItem.cell, (getGroupAtPath(${pathJSON})?.direction || 'row') === 'column', cellItem.cell._order ?? 0)">
-                                ${CellRenderer.renderCell(pathJSON, 'cellItem.originalIndex', `getGroupAtPath(${pathJSON})`)}
-                            </div>
-                        </div>
-                    </template>
-
-                    <template x-for="subChild in getSortedChildren(getGroupAtPath(${pathJSON}))" :key="subChild.child._id || ('child-' + subChild.originalIndex)">
-                        <div class="flex-1 bg-base-100 border border-base-300 rounded-lg overflow-hidden transition-all duration-200 shadow-sm hover:border-primary hover:shadow-md"
-                             x-show="shouldShowGroup(subChild.child) && (devMode || !getGroupAtPath(${pathJSON})?.tabsChild || _activeTabKey === ('g-' + subChild.originalIndex))"
-                             :style="'order: ' + (subChild.child._order ?? 0)"
-                             x-data="{ _subPath: [...${pathJSON}, subChild.originalIndex] }"
-                             x-html="renderChildGroupHTML(subChild.child, _subPath, getGroupAtPath(${pathJSON}), subChild.originalIndex)"
-                             x-effect="$nextTick(() => Alpine.initTree($el))">
-                        </div>
-                    </template>
-                </div>
-            </div>`
-
-        return header + accordionBand + content
-    },
 })

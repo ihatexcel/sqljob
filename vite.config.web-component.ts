@@ -40,7 +40,7 @@ export default defineConfig({
         },
         outDir: 'dist-cdn',
         assetsInlineLimit: 100_000_000,
-        sourcemap: true,
+        sourcemap: false,
         rollupOptions: {
             // monaco-editor est externalisé (trop lourd à bundler).
             // Il est chargé au runtime depuis jsDelivr via AMD (@monaco-editor/react loader).

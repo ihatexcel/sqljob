@@ -131,10 +131,6 @@ export const createCellsSlice = (set: any, get: any) => ({
         if (type === 'publipostageWord') {
             newCell.docxTemplateBase64 = null
             newCell.docxTemplateFileName = ''
-            newCell._showParsedQuery = false
-            newCell._showParsedQuery2 = false
-            newCell._parseLevels = []
-            newCell._parseLevels2 = []
             newCell._isDragging = false
         }
         if (type === 'pdfme') {
@@ -150,12 +146,7 @@ export const createCellsSlice = (set: any, get: any) => ({
                     ]]
                 }, null, 2)
             }
-            newCell._showParsedQuery = false
-            newCell._showParsedQuery2 = false
-            newCell._parseLevels = []
-            newCell._parseLevels2 = []
         }
-        if (['sqlRecursiveParse', 'table', 'iframe', 'sqlStat', 'perspective'].includes(type)) newCell._showParsedQuery = false
         if (type === 'perspective') {
             newCell._perspectiveReady = false
             newCell._perspectiveWorker = null
@@ -241,6 +232,7 @@ export const createCellsSlice = (set: any, get: any) => ({
         } else {
             if (await useConfirmModal.getState().show('Supprimer cette cellule ?')) {
                 const cell = group.cells[cellIndex]
+                await get().cleanupSourceCell(cell)
                 _rawTableDataStore.delete(cell._id)
                 const { _tables } = get()
                 if (_tables && _tables[cell._id]) {
@@ -248,6 +240,7 @@ export const createCellsSlice = (set: any, get: any) => ({
                     delete _tables[cell._id]
                 }
                 group.cells.splice(cellIndex, 1)
+                if (cell.type === 'source') await get().refreshDuckdbTables()
                 set((s: any) => ({ _rev: s._rev + 1 }))
             }
         }
@@ -342,13 +335,12 @@ export const createCellsSlice = (set: any, get: any) => ({
 
         if (cell.type === 'source') {
             if (!cell.name) cell.name = get().generateUniqueSourceName()
-            else if (!ConfigManager.getCellQuery(cell, 'main')?.trim()) ConfigManager.setCellQuery(cell, 'main', `CREATE OR REPLACE TABLE ${cell.name} AS SELECT * FROM '{fileNameUpload}'`)
-            if (!ConfigManager.getCellQuery(cell, 'fallback')?.trim()) ConfigManager.setCellQuery(cell, 'fallback', (CELL_TYPE_SCHEMAS.types.source?.defaults?.queries?.find((q: any) => q.name === 'fallback')?.sql || CELL_TYPE_SCHEMAS.types.source?.defaults?.queries?.[1]?.sql || `CREATE OR REPLACE TABLE ${cell.name} AS SELECT * FROM read_csv('{fileNameUpload}', HEADER=true, AUTO_DETECT=true, SAMPLE_SIZE=-1, IGNORE_ERRORS=true)`))
+            else if (!ConfigManager.getCellQuery(cell, 'main')?.trim()) ConfigManager.setCellQuery(cell, 'main', `CREATE OR REPLACE TABLE ${cell.name} AS SELECT * FROM '{{fileName}}'`)
+            if (!ConfigManager.getCellQuery(cell, 'fallback')?.trim()) ConfigManager.setCellQuery(cell, 'fallback', (CELL_TYPE_SCHEMAS.types.source?.defaults?.queries?.find((q: any) => q.name === 'fallback')?.sql || CELL_TYPE_SCHEMAS.types.source?.defaults?.queries?.[1]?.sql || `CREATE OR REPLACE TABLE ${cell.name} AS SELECT * FROM '{{fileName}}'`))
             if (cell._fileName === undefined) cell._fileName = ''
             if (cell._currentFile === undefined) cell._currentFile = null
             if (cell._isDragging === undefined) cell._isDragging = false
             if (cell._loaded === undefined) cell._loaded = false
-            if (cell._showParsedQuery2 === undefined) cell._showParsedQuery2 = false
         }
         if (cell.type === 'uiParameter') {
             if (cell.referenceName && (!cell.name || !String(cell.name).trim())) cell.name = String(cell.referenceName).trim()
@@ -361,14 +353,7 @@ export const createCellsSlice = (set: any, get: any) => ({
         if (cell.type === 'publipostageWord') {
             if (cell.docxTemplateBase64 === undefined) cell.docxTemplateBase64 = null
             if (cell.docxTemplateFileName === undefined) cell.docxTemplateFileName = ''
-            if (cell._showParsedQuery === undefined) cell._showParsedQuery = false
-            if (cell._showParsedQuery2 === undefined) cell._showParsedQuery2 = false
-            if (!cell._parseLevels) cell._parseLevels = []
-            if (!cell._parseLevels2) cell._parseLevels2 = []
             if (cell._isDragging === undefined) cell._isDragging = false
-        }
-        if (['sqlRecursiveParse', 'table', 'iframe', 'sqlStat', 'perspective'].includes(cell.type)) {
-            if (cell._showParsedQuery === undefined) cell._showParsedQuery = false
         }
         if (cell.type === 'perspective') {
             cell._perspectiveReady = false
