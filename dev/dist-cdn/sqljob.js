@@ -133882,76 +133882,86 @@ function ChangeTypeStepUI({ step: At, availableCols: yt, availableColTypes: xt, 
   function It() {
     Ct && (wt({ ...At, changes: [...At.changes, { column: Ct, targetType: Et }] }), kt(""));
   }
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
-    At.changes.map((Dt, Rt) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 text-xs", children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-0 divide-y divide-border", children: [
+    At.changes.map((Dt, Rt) => (
+      /* Chaque conversion : 2 lignes empilées */
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-1 py-2 first:pt-0", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs text-muted-foreground shrink-0 w-4", children: "col" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "select",
+            {
+              className: "flex-1 min-w-0 h-6 rounded border border-border bg-background px-1 text-xs font-mono",
+              value: Dt.column,
+              onChange: (jt) => $t(Rt, "column", jt.target.value),
+              children: [
+                Tt.map((jt) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: jt, children: jt }, jt)),
+                !Tt.includes(Dt.column) && /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: Dt.column, children: Dt.column })
+              ]
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              onClick: () => Lt(Rt),
+              className: "shrink-0 text-destructive hover:text-destructive/80 w-5 h-5 flex items-center justify-center",
+              title: "Supprimer",
+              children: "✕"
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs text-muted-foreground shrink-0 w-4", children: "→" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "select",
+            {
+              className: "flex-1 min-w-0 h-6 rounded border border-border bg-background px-1 text-xs font-mono",
+              value: Dt.targetType,
+              onChange: (jt) => $t(Rt, "targetType", jt.target.value),
+              children: DUCKDB_TYPES.map((jt) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: jt, children: jt }, jt))
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "shrink-0 w-5" })
+        ] })
+      ] }, Rt)
+    )),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-1.5 pt-2", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "select",
         {
-          className: "flex-1 h-6 rounded border border-border bg-background px-1 text-xs font-mono",
-          value: Dt.column,
-          onChange: (jt) => $t(Rt, "column", jt.target.value),
-          children: [
-            Tt.map((jt) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: jt, children: jt }, jt)),
-            !Tt.includes(Dt.column) && /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: Dt.column, children: Dt.column })
-          ]
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-muted-foreground", children: "→" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "select",
-        {
-          className: "w-28 h-6 rounded border border-border bg-background px-1 text-xs font-mono",
-          value: Dt.targetType,
-          onChange: (jt) => $t(Rt, "targetType", jt.target.value),
-          children: DUCKDB_TYPES.map((jt) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: jt, children: jt }, jt))
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "button",
-        {
-          onClick: () => Lt(Rt),
-          className: "text-destructive hover:text-destructive/80 px-1",
-          title: "Supprimer",
-          children: "✕"
-        }
-      )
-    ] }, Rt)),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 text-xs border-t border-border pt-2 mt-1", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        "select",
-        {
-          className: "flex-1 h-6 rounded border border-border bg-background px-1 text-xs font-mono",
+          className: "w-full h-6 rounded border border-border bg-background px-1 text-xs font-mono",
           value: Ct,
           onChange: (Dt) => kt(Dt.target.value),
           children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "", children: "— colonne —" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "", children: "— choisir une colonne —" }),
             Tt.map((Dt) => /* @__PURE__ */ jsxRuntimeExports.jsxs("option", { value: Dt, children: [
               Dt,
-              " ",
-              xt[Dt] ? `(${xt[Dt]})` : ""
+              xt[Dt] ? ` (${xt[Dt]})` : ""
             ] }, Dt))
           ]
         }
       ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-muted-foreground", children: "→" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "select",
-        {
-          className: "w-28 h-6 rounded border border-border bg-background px-1 text-xs font-mono",
-          value: Et,
-          onChange: (Dt) => St(Dt.target.value),
-          children: DUCKDB_TYPES.map((Dt) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: Dt, children: Dt }, Dt))
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "button",
-        {
-          onClick: It,
-          disabled: !Ct,
-          className: "px-2 h-6 rounded bg-primary text-primary-foreground text-xs disabled:opacity-50",
-          children: "+ Ajouter"
-        }
-      )
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs text-muted-foreground shrink-0 w-4", children: "→" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "select",
+          {
+            className: "flex-1 min-w-0 h-6 rounded border border-border bg-background px-1 text-xs font-mono",
+            value: Et,
+            onChange: (Dt) => St(Dt.target.value),
+            children: DUCKDB_TYPES.map((Dt) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: Dt, children: Dt }, Dt))
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            onClick: It,
+            disabled: !Ct,
+            className: "shrink-0 px-2 h-6 rounded bg-primary text-primary-foreground text-xs disabled:opacity-50 whitespace-nowrap",
+            children: "+ Ajouter"
+          }
+        )
+      ] })
     ] })
   ] });
 }
@@ -134278,8 +134288,8 @@ function SqlBlockEditor({ cell: At, path: yt, cellIndex: xt }) {
           onEdit: Kt
         }
       )
-    ) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-3 min-h-0", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2 w-64 shrink-0", children: [
+    ) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap gap-3 min-h-0", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2 min-w-52 w-64 flex-1", style: { maxWidth: "18rem" }, children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-medium text-muted-foreground uppercase tracking-wide", children: "Steps" }),
         Tt.steps.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-muted-foreground italic px-1", children: [
           "Aucun step — SELECT * FROM ",
@@ -134301,7 +134311,7 @@ function SqlBlockEditor({ cell: At, path: yt, cellIndex: xt }) {
         )),
         /* @__PURE__ */ jsxRuntimeExports.jsx(AddStepMenu, { onAdd: qt })
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 min-w-0 flex flex-col", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 min-w-48 flex flex-col", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
         SqlPreview,
         {
           sql: jt,
