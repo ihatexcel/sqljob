@@ -142466,12 +142466,17 @@ const createExecutionSlice = (At, yt) => ({
       throw new Error("La cellule sqlBlock doit avoir un nom (utilisé comme nom de VIEW/TABLE dans DuckDB).");
     yt().setStatus("Exécution du SQL Block...", "loading");
     try {
-      const jt = yt().parseQueryWithParameters(Tt), Mt = kt(xt.name, jt, ((Lt = St.ast) == null ? void 0 : Lt.materialize) ?? "view");
-      await DuckDBManager.executeQuery(Mt);
-      const { rows: Nt, schemaTypes: Ot } = await DuckDBManager.executeQueryWithSchema(
+      const jt = ((Lt = St.ast) == null ? void 0 : Lt.materialize) ?? "view", Mt = jt === "view" ? "TABLE" : "VIEW";
+      try {
+        await DuckDBManager.executeQuery(`DROP ${Mt} IF EXISTS ${xt.name}`);
+      } catch {
+      }
+      const Nt = yt().parseQueryWithParameters(Tt), Ot = kt(xt.name, Nt, jt);
+      await DuckDBManager.executeQuery(Ot);
+      const { rows: Bt, schemaTypes: Ht } = await DuckDBManager.executeQueryWithSchema(
         `SELECT * FROM ${xt.name} LIMIT 1000`
       );
-      xt._results = Nt, xt._schemaTypes = Ot || {}, xt._resultInfo = `${Nt.length} ligne(s)${Nt.length === 1e3 ? " (limité à 1 000 pour l'affichage)" : ""} — ${((It = St.ast) == null ? void 0 : It.materialize) === "table" ? "TABLE" : "VIEW"} "${xt.name}" créée`, await ((Rt = (Dt = yt()).refreshDuckdbTables) == null ? void 0 : Rt.call(Dt)), yt().setStatus("SQL Block exécuté", "success");
+      xt._results = Bt, xt._schemaTypes = Ht || {}, xt._resultInfo = `${Bt.length} ligne(s)${Bt.length === 1e3 ? " (limité à 1 000 pour l'affichage)" : ""} — ${((It = St.ast) == null ? void 0 : It.materialize) === "table" ? "TABLE" : "VIEW"} "${xt.name}" créée`, await ((Rt = (Dt = yt()).refreshDuckdbTables) == null ? void 0 : Rt.call(Dt)), yt().setStatus("SQL Block exécuté", "success");
     } catch (jt) {
       throw jt;
     }
