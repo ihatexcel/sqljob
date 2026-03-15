@@ -1030,7 +1030,10 @@ export const createExecutionSlice = (set: any, get: any) => ({
         const viewer = document.getElementById(containerId)
 
         if (!viewer || !cell._arrowTable) {
-            console.warn('Perspective viewer ou données Arrow manquantes')
+            // Viewer absent du DOM (ex: showContent=false pendant l'exécution).
+            // Réinitialise le flag pour que le useEffect du composant relance le rendu
+            // une fois que le statut passe à 'success' et que le viewer est monté.
+            cell._perspectiveScheduled = false
             return
         }
 
