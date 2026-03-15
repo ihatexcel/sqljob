@@ -142049,7 +142049,7 @@ const createExecutionSlice = (At, yt) => ({
     var kt;
     const wt = "perspective-" + xt._id, Ct = document.getElementById(wt);
     if (!Ct || !xt._arrowTable) {
-      console.warn("Perspective viewer ou données Arrow manquantes");
+      xt._perspectiveScheduled = !1;
       return;
     }
     if (xt._perspectiveRendering) {
