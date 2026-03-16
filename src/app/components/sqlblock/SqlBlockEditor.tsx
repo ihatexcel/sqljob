@@ -11,13 +11,13 @@
  * compatible avec l'UI, un avertissement s'affiche et seul l'éditeur SQL reste actif.
  */
 import { useState, useCallback, useRef, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { useShallow } from 'zustand/react/shallow'
 import { useNotebookStore } from '../../store/notebookStore'
-import { astToSql, sqlToAst, getEffectiveSql } from '../../../lib/SqlBlockService'
+import { astToSql, sqlToAst, getEffectiveSql, generateMaterializeQuery } from '../../../lib/SqlBlockService'
 import {
     DUCKDB_TYPES,
     STEP_LABELS,
-    STEP_ICONS,
     createDefaultSqlBlockConfig,
 } from '../../../lib/SqlBlockTypes'
 import type {
@@ -50,6 +50,16 @@ function commitAstUpdate(cell: any, newAst: Partial<SqlBlockAst>, forceUpdate: (
     if (!cell.queries) cell.queries = [{ name: 'main', sql, engine: 'sql', clientVisible: false }]
     else cell.queries[0] = { ...cell.queries[0], sql }
     forceUpdate()
+}
+
+/**
+ * Retire le préfixe CREATE OR REPLACE VIEW/TABLE ... AS (...) pour extraire
+ * le SELECT intérieur. No-op si le SQL est déjà un SELECT.
+ */
+function stripMaterializePrefix(sql: string): string {
+    const m = sql.match(/^CREATE\s+OR\s+REPLACE\s+(?:VIEW|TABLE)\s+(?:"[^"]*"|\S+)\s+AS\s*\(\s*([\s\S]*?)\s*\)\s*;?\s*$/i)
+    if (m) return m[1].trim()
+    return sql.trim()
 }
 
 // ─── ColumnCheckbox ───────────────────────────────────────────────────────────
@@ -187,9 +197,7 @@ function ChangeTypeStepUI({ step, availableCols, availableColTypes, onChange }: 
     return (
         <div className="flex flex-col gap-0 divide-y divide-border">
             {step.changes.map((change, idx) => (
-                /* Chaque conversion : 2 lignes empilées */
                 <div key={idx} className="flex flex-col gap-1 py-2 first:pt-0">
-                    {/* Ligne 1 : colonne source + bouton supprimer */}
                     <div className="flex items-center gap-1.5">
                         <span className="text-xs text-muted-foreground shrink-0 w-4">col</span>
                         <select
@@ -208,7 +216,6 @@ function ChangeTypeStepUI({ step, availableCols, availableColTypes, onChange }: 
                             title="Supprimer"
                         >✕</button>
                     </div>
-                    {/* Ligne 2 : type cible */}
                     <div className="flex items-center gap-1.5">
                         <span className="text-xs text-muted-foreground shrink-0 w-4">→</span>
                         <select
@@ -218,15 +225,12 @@ function ChangeTypeStepUI({ step, availableCols, availableColTypes, onChange }: 
                         >
                             {DUCKDB_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
                         </select>
-                        {/* Alignement avec le bouton de la ligne 1 */}
                         <span className="shrink-0 w-5" />
                     </div>
                 </div>
             ))}
 
-            {/* Bloc ajout */}
             <div className="flex flex-col gap-1.5 pt-2">
-                {/* Ligne 1 : sélection colonne */}
                 <select
                     className="w-full h-6 rounded border border-border bg-background px-1 text-xs font-mono"
                     value={addCol}
@@ -239,7 +243,6 @@ function ChangeTypeStepUI({ step, availableCols, availableColTypes, onChange }: 
                         </option>
                     ))}
                 </select>
-                {/* Ligne 2 : type cible + bouton ajouter */}
                 <div className="flex items-center gap-1.5">
                     <span className="text-xs text-muted-foreground shrink-0 w-4">→</span>
                     <select
@@ -273,34 +276,52 @@ function StepItem({ step, index, totalSteps, availableCols, availableColTypes, o
     onMove: (idx: number, dir: -1 | 1) => void
 }) {
     const [open, setOpen] = useState(true)
+    const [pendingDelete, setPendingDelete] = useState(false)
 
     return (
         <div className="border border-border rounded bg-card text-card-foreground">
-            <div className="flex items-center gap-2 px-2 py-1.5 cursor-pointer select-none" onClick={() => setOpen(o => !o)}>
+            <div className="flex items-center gap-2 px-2 py-1.5 cursor-pointer select-none" onClick={() => !pendingDelete && setOpen(o => !o)}>
                 <span className="text-xs text-muted-foreground font-mono w-5 shrink-0">{index + 1}.</span>
                 <span className="flex-1 text-xs font-medium">{STEP_LABELS[step.type]}</span>
                 <div className="flex items-center gap-1 ml-auto" onClick={e => e.stopPropagation()}>
-                    <button
-                        onClick={() => onMove(index, -1)}
-                        disabled={index === 0}
-                        className="text-muted-foreground hover:text-foreground disabled:opacity-30 w-5 h-5 flex items-center justify-center text-xs"
-                        title="Monter"
-                    >▲</button>
-                    <button
-                        onClick={() => onMove(index, 1)}
-                        disabled={index === totalSteps - 1}
-                        className="text-muted-foreground hover:text-foreground disabled:opacity-30 w-5 h-5 flex items-center justify-center text-xs"
-                        title="Descendre"
-                    >▼</button>
-                    <button
-                        onClick={() => onRemove(index)}
-                        className="text-destructive hover:text-destructive/80 w-5 h-5 flex items-center justify-center text-xs"
-                        title="Supprimer ce step"
-                    >✕</button>
-                    <span className="text-muted-foreground text-xs ml-1">{open ? '▾' : '▸'}</span>
+                    {pendingDelete ? (
+                        /* Confirmation inline */
+                        <div className="flex items-center gap-1">
+                            <span className="text-xs text-destructive">Supprimer ?</span>
+                            <button
+                                onClick={() => { onRemove(index); setPendingDelete(false) }}
+                                className="px-1.5 h-5 rounded bg-destructive text-destructive-foreground text-xs"
+                            >Oui</button>
+                            <button
+                                onClick={() => setPendingDelete(false)}
+                                className="px-1.5 h-5 rounded border border-border text-xs text-muted-foreground hover:text-foreground"
+                            >Non</button>
+                        </div>
+                    ) : (
+                        <>
+                            <button
+                                onClick={() => onMove(index, -1)}
+                                disabled={index === 0}
+                                className="text-muted-foreground hover:text-foreground disabled:opacity-30 w-5 h-5 flex items-center justify-center text-xs"
+                                title="Monter"
+                            >▲</button>
+                            <button
+                                onClick={() => onMove(index, 1)}
+                                disabled={index === totalSteps - 1}
+                                className="text-muted-foreground hover:text-foreground disabled:opacity-30 w-5 h-5 flex items-center justify-center text-xs"
+                                title="Descendre"
+                            >▼</button>
+                            <button
+                                onClick={() => setPendingDelete(true)}
+                                className="text-destructive hover:text-destructive/80 w-5 h-5 flex items-center justify-center text-xs"
+                                title="Supprimer ce step"
+                            >✕</button>
+                            <span className="text-muted-foreground text-xs ml-1">{open ? '▾' : '▸'}</span>
+                        </>
+                    )}
                 </div>
             </div>
-            {open && (
+            {open && !pendingDelete && (
                 <div className="px-3 pb-3 pt-1 border-t border-border">
                     {step.type === 'select_columns' && (
                         <SelectColumnsStepUI
@@ -348,27 +369,52 @@ function defaultStep(type: SqlBlockStep['type']): SqlBlockStep {
 
 function AddStepMenu({ onAdd }: { onAdd: (step: SqlBlockStep) => void }) {
     const [open, setOpen] = useState(false)
-    const ref = useRef<HTMLDivElement>(null)
+    const [menuRect, setMenuRect] = useState<DOMRect | null>(null)
+    const btnRef = useRef<HTMLButtonElement>(null)
+    const menuRef = useRef<HTMLDivElement>(null)
+
+    function handleToggle() {
+        if (!open && btnRef.current) {
+            setMenuRect(btnRef.current.getBoundingClientRect())
+        }
+        setOpen(o => !o)
+    }
 
     useEffect(() => {
         if (!open) return
         function handleClick(e: MouseEvent) {
-            if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+            if (
+                menuRef.current && !menuRef.current.contains(e.target as Node) &&
+                btnRef.current && !btnRef.current.contains(e.target as Node)
+            ) setOpen(false)
         }
         document.addEventListener('mousedown', handleClick)
         return () => document.removeEventListener('mousedown', handleClick)
     }, [open])
 
+    const menuStyle: React.CSSProperties = menuRect ? {
+        position: 'fixed',
+        top: menuRect.bottom + 4,
+        left: menuRect.left,
+        width: menuRect.width,
+        zIndex: 9999,
+    } : {}
+
     return (
-        <div className="relative" ref={ref}>
+        <>
             <button
-                onClick={() => setOpen(o => !o)}
+                ref={btnRef}
+                onClick={handleToggle}
                 className="w-full flex items-center justify-center gap-2 px-3 py-1.5 rounded border border-dashed border-border hover:border-primary hover:text-primary text-xs text-muted-foreground transition-colors"
             >
                 <span>+ Ajouter un step</span>
             </button>
-            {open && (
-                <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-popover border border-border rounded shadow-lg overflow-hidden">
+            {open && menuRect && createPortal(
+                <div
+                    ref={menuRef}
+                    style={menuStyle}
+                    className="bg-popover border border-border rounded shadow-lg overflow-hidden"
+                >
                     {STEP_TYPES.map(s => (
                         <button
                             key={s.type}
@@ -379,9 +425,10 @@ function AddStepMenu({ onAdd }: { onAdd: (step: SqlBlockStep) => void }) {
                             <div className="text-xs text-muted-foreground">{s.description}</div>
                         </button>
                     ))}
-                </div>
+                </div>,
+                document.body
             )}
-        </div>
+        </>
     )
 }
 
@@ -415,7 +462,6 @@ function SqlPreview({ sql, editable, onEdit }: { sql: string; editable: boolean;
     return (
         <div className="flex flex-col gap-1 h-full">
             <div className="flex items-center justify-between mb-1">
-                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">SQL généré</span>
                 {editable && !editing && (
                     <button
                         onClick={handleEdit}
@@ -519,8 +565,16 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
     // Modal confirmation mode dégradé
     const [pendingDegradedSql, setPendingDegradedSql] = useState<string | null>(null)
 
-    // SQL courant
-    const currentSql = getEffectiveSql(cfg)
+    // Affichage du SQL généré (masqué par défaut)
+    const [showSql, setShowSql] = useState(false)
+
+    // SQL SELECT de base (source de vérité pour l'exécution)
+    const selectSql = getEffectiveSql(cfg)
+
+    // SQL affiché dans la preview : avec le wrapper CREATE VIEW/TABLE si la cellule a un nom
+    const displaySql = cell.name?.trim()
+        ? generateMaterializeQuery(cell.name, selectSql, ast.materialize ?? 'view')
+        : selectSql
 
     // ─── Handlers AST ──────────────────────────────────────────────────────
 
@@ -556,7 +610,9 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
 
     // ─── Handlers SQL manuel ───────────────────────────────────────────────
 
-    function handleManualSqlEdit(newSql: string) {
+    function handleManualSqlEdit(rawSql: string) {
+        // Accepte aussi le SQL complet avec CREATE VIEW/TABLE (affiché dans la preview)
+        const newSql = stripMaterializePrefix(rawSql)
         const result = sqlToAst(newSql, ast.materialize)
         if (result.compatible && result.ast) {
             // Compatible : mettre à jour l'AST depuis le SQL
@@ -568,7 +624,7 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
             else cell.queries[0] = { ...cell.queries[0], sql: newSql }
             forceUpdate()
         } else {
-            // Incompatible → demander confirmation
+            // Incompatible → demander confirmation (on stocke le SELECT sans le CREATE)
             setPendingDegradedSql(newSql)
         }
     }
@@ -590,7 +646,9 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
 
     function tryRestoreFromDegraded() {
         const cfg = getOrInitConfig(cell)
-        const sql = cfg.manualSql || currentSql
+        // Accepte le SQL avec ou sans préfixe CREATE VIEW/TABLE
+        const rawSql = cfg.manualSql || selectSql
+        const sql = stripMaterializePrefix(rawSql)
         const result = sqlToAst(sql, ast.materialize)
         if (result.compatible && result.ast) {
             cfg.ast = result.ast
@@ -604,6 +662,76 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
             alert(`Impossible de restaurer l'AST : ${result.error || 'SQL incompatible'}`)
         }
     }
+
+    // ─── Sous-composants de layout ─────────────────────────────────────────
+
+    const hasResults = cell._results && Array.isArray(cell._results) && cell._results.length > 0
+
+    const dataTableSection = (
+        <div className="flex-1 min-w-48 flex flex-col gap-1">
+            {hasResults ? (
+                <>
+                    {cell._resultInfo && (
+                        <div className="text-xs text-muted-foreground">{cell._resultInfo}</div>
+                    )}
+                    <SqlDataTable cell={cell} />
+                </>
+            ) : (
+                <div className="flex items-center justify-center h-16 text-xs text-muted-foreground italic border border-dashed border-border rounded">
+                    Aucun résultat — exécutez la cellule
+                </div>
+            )}
+            {cell._status === 'error' && cell._resultInfo && (
+                <div className="p-2 rounded bg-destructive/10 text-destructive text-xs">
+                    {cell._resultInfo}
+                </div>
+            )}
+        </div>
+    )
+
+    const sqlSection = (
+        <div className={`flex flex-col gap-1 ${showSql ? 'min-w-48 w-64' : ''}`}>
+            <button
+                onClick={() => setShowSql(s => !s)}
+                className="flex items-center gap-1 text-xs font-medium text-muted-foreground uppercase tracking-wide hover:text-foreground transition-colors whitespace-nowrap"
+            >
+                <span>SQL généré</span>
+                <span className="ml-0.5">{showSql ? '▾' : '▸'}</span>
+            </button>
+            {showSql && (
+                <SqlPreview
+                    sql={displaySql}
+                    editable={true}
+                    onEdit={handleManualSqlEdit}
+                />
+            )}
+        </div>
+    )
+
+    const stepsSection = (
+        <div className="flex flex-col gap-2 min-w-52 w-64 shrink-0">
+            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Steps</span>
+            {ast.steps.length === 0 && (
+                <p className="text-xs text-muted-foreground italic px-1">
+                    Aucun step — SELECT * FROM {ast.source || '…'}
+                </p>
+            )}
+            {ast.steps.map((step, idx) => (
+                <StepItem
+                    key={idx}
+                    step={step}
+                    index={idx}
+                    totalSteps={ast.steps.length}
+                    availableCols={availableCols}
+                    availableColTypes={availableColTypes}
+                    onUpdate={handleStepUpdate}
+                    onRemove={handleStepRemove}
+                    onMove={handleStepMove}
+                />
+            ))}
+            <AddStepMenu onAdd={handleStepAdd} />
+        </div>
+    )
 
     // ─── Render ────────────────────────────────────────────────────────────
 
@@ -658,64 +786,26 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
                 </div>
             </div>
 
-            {/* Corps : Steps à gauche + SQL preview à droite */}
+            {/* Corps principal */}
             {!cfg.degraded ? (
-                <div className="flex flex-wrap gap-3 min-h-0">
-                    {/* Colonne Steps — min-w assure que les selects ont de la place,
-                        flex-1 permet de grandir si la place est disponible */}
-                    <div className="flex flex-col gap-2 min-w-52 w-64 flex-1" style={{ maxWidth: '18rem' }}>
-                        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Steps</span>
-                        {ast.steps.length === 0 && (
-                            <p className="text-xs text-muted-foreground italic px-1">
-                                Aucun step — SELECT * FROM {ast.source || '…'}
-                            </p>
-                        )}
-                        {ast.steps.map((step, idx) => (
-                            <StepItem
-                                key={idx}
-                                step={step}
-                                index={idx}
-                                totalSteps={ast.steps.length}
-                                availableCols={availableCols}
-                                availableColTypes={availableColTypes}
-                                onUpdate={handleStepUpdate}
-                                onRemove={handleStepRemove}
-                                onMove={handleStepMove}
-                            />
-                        ))}
-                        <AddStepMenu onAdd={handleStepAdd} />
-                    </div>
-
-                    {/* SQL Preview — min-w-48 : en-dessous de 192px on passe à la ligne */}
-                    <div className="flex-1 min-w-48 flex flex-col">
+                /* Disposition : DataTable | SQL (toggle) | Steps
+                   flex-wrap → empilement naturel sur petit écran */
+                <div className="flex flex-wrap gap-3 min-h-0 items-start">
+                    {dataTableSection}
+                    {sqlSection}
+                    {stepsSection}
+                </div>
+            ) : (
+                /* Mode dégradé : DataTable | éditeur SQL */
+                <div className="flex flex-wrap gap-3 items-start">
+                    {dataTableSection}
+                    <div className="flex-1 min-w-48">
                         <SqlPreview
-                            sql={currentSql}
+                            sql={displaySql}
                             editable={true}
                             onEdit={handleManualSqlEdit}
                         />
                     </div>
-                </div>
-            ) : (
-                /* Mode dégradé : éditeur SQL full width */
-                <SqlPreview
-                    sql={currentSql}
-                    editable={true}
-                    onEdit={handleManualSqlEdit}
-                />
-            )}
-
-            {/* Résultats */}
-            {cell._results && Array.isArray(cell._results) && cell._results.length > 0 && (
-                <div className="mt-2">
-                    {cell._resultInfo && (
-                        <div className="text-xs text-muted-foreground mb-1">{cell._resultInfo}</div>
-                    )}
-                    <SqlDataTable cell={cell} />
-                </div>
-            )}
-            {cell._status === 'error' && cell._resultInfo && (
-                <div className="mt-2 p-2 rounded bg-destructive/10 text-destructive text-xs">
-                    {cell._resultInfo}
                 </div>
             )}
         </div>
