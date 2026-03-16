@@ -133819,6 +133819,11 @@ function computeStepSchemas(At, yt) {
         wt.includes(Et.column) && (Ct[Et.column] = Et.targetType);
   return xt;
 }
+const SQLBLOCK_SCHEMA = "_sqlblock";
+let sqlblockSchemaEnsured = !1;
+async function ensureSqlblockSchema() {
+  sqlblockSchemaEnsured || (await DuckDBManager.executeQuery(`CREATE SCHEMA IF NOT EXISTS "${SQLBLOCK_SCHEMA}"`), sqlblockSchemaEnsured = !0);
+}
 function useStepEyeData(At, yt) {
   const [xt, wt] = reactExports.useState(null), [Ct, kt] = reactExports.useState(!1), [, Et] = reactExports.useState(0), St = reactExports.useRef(yt);
   St.current = yt;
@@ -133830,7 +133835,8 @@ function useStepEyeData(At, yt) {
     return JSON.stringify({ src: Ot.source, steps: Ot.steps.slice(0, Nt + 1) });
   }
   function Dt(Nt) {
-    return `_sb_${Tt.current._id.replace(/[^a-zA-Z0-9]/g, "_")}_s${Nt < 0 ? "src" : Nt}`;
+    const Bt = `sb_${Tt.current._id.replace(/[^a-zA-Z0-9]/g, "_")}_s${Nt < 0 ? "src" : Nt}`;
+    return `"${SQLBLOCK_SCHEMA}"."${Bt}"`;
   }
   async function Rt(Nt) {
     var Bt;
@@ -133838,12 +133844,13 @@ function useStepEyeData(At, yt) {
     if (((Bt = Lt.current.get(Nt)) == null ? void 0 : Bt.hash) !== Ot) {
       kt(!0);
       try {
+        await ensureSqlblockSchema();
         const Ht = St.current, qt = Dt(Nt), Kt = stepSql(Ht, Nt);
         await DuckDBManager.executeQuery(
-          `CREATE OR REPLACE TABLE "${qt}" AS (${Kt} LIMIT 10)`
+          `CREATE OR REPLACE TABLE ${qt} AS (${Kt} LIMIT 10)`
         );
         const { rows: rr, schemaTypes: Zt } = await DuckDBManager.executeQueryWithSchema(
-          `SELECT * FROM "${qt}"`
+          `SELECT * FROM ${qt}`
         );
         Lt.current.set(Nt, { rows: rr, schemaTypes: Zt || {}, hash: Ot }), Et((sr) => sr + 1);
       } catch (Ht) {
@@ -134047,26 +134054,24 @@ function StepItem({
   availableColTypes: Ct,
   eyeOpen: kt,
   eyeLoading: Et,
-  eyeData: St,
-  onEyeToggle: Tt,
-  onUpdate: $t,
-  onRemove: Lt,
-  onMove: It
+  onEyeToggle: St,
+  onUpdate: Tt,
+  onRemove: $t,
+  onMove: Lt
 }) {
-  var Ot, Bt;
-  const [Dt, Rt] = reactExports.useState(!0), [jt, Mt] = reactExports.useState(!1), Nt = St ? { _id: `eye_${yt}`, _results: St.rows, _schemaTypes: St.schemaTypes } : null;
+  const [It, Dt] = reactExports.useState(!0), [Rt, jt] = reactExports.useState(!1);
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "border border-border rounded bg-card text-card-foreground", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "div",
       {
         className: "flex items-center gap-1.5 px-2 py-1.5 cursor-pointer select-none",
-        onClick: () => !jt && Rt((Ht) => !Ht),
+        onClick: () => !Rt && Dt((Mt) => !Mt),
         children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "button",
             {
-              onClick: (Ht) => {
-                Ht.stopPropagation(), Tt();
+              onClick: (Mt) => {
+                Mt.stopPropagation(), St();
               },
               className: `shrink-0 w-5 h-5 flex items-center justify-center rounded transition-colors ${kt ? "text-primary" : "text-muted-foreground hover:text-foreground"}`,
               title: kt ? "Masquer l'aperçu" : "Voir l'aperçu de cette étape",
@@ -134078,13 +134083,13 @@ function StepItem({
             "."
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex-1 text-xs font-medium", children: STEP_LABELS[At.type] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-1 ml-auto", onClick: (Ht) => Ht.stopPropagation(), children: jt ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-1 ml-auto", onClick: (Mt) => Mt.stopPropagation(), children: Rt ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs text-destructive", children: "Supprimer ?" }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "button",
               {
                 onClick: () => {
-                  Lt(yt), Mt(!1);
+                  $t(yt), jt(!1);
                 },
                 className: "px-1.5 h-5 rounded bg-destructive text-destructive-foreground text-xs",
                 children: "Oui"
@@ -134093,7 +134098,7 @@ function StepItem({
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "button",
               {
-                onClick: () => Mt(!1),
+                onClick: () => jt(!1),
                 className: "px-1.5 h-5 rounded border border-border text-xs text-muted-foreground hover:text-foreground",
                 children: "Non"
               }
@@ -134102,7 +134107,7 @@ function StepItem({
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "button",
               {
-                onClick: () => It(yt, -1),
+                onClick: () => Lt(yt, -1),
                 disabled: yt === 0,
                 className: "text-muted-foreground hover:text-foreground disabled:opacity-30 w-5 h-5 flex items-center justify-center text-xs",
                 title: "Monter",
@@ -134112,7 +134117,7 @@ function StepItem({
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "button",
               {
-                onClick: () => It(yt, 1),
+                onClick: () => Lt(yt, 1),
                 disabled: yt === xt - 1,
                 className: "text-muted-foreground hover:text-foreground disabled:opacity-30 w-5 h-5 flex items-center justify-center text-xs",
                 title: "Descendre",
@@ -134122,24 +134127,24 @@ function StepItem({
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "button",
               {
-                onClick: () => Mt(!0),
+                onClick: () => jt(!0),
                 className: "text-destructive hover:text-destructive/80 w-5 h-5 flex items-center justify-center text-xs",
                 title: "Supprimer ce step",
                 children: "✕"
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-muted-foreground text-xs ml-1", children: Dt ? "▾" : "▸" })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-muted-foreground text-xs ml-1", children: It ? "▾" : "▸" })
           ] }) })
         ]
       }
     ),
-    Dt && !jt && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "px-3 pb-3 pt-1 border-t border-border", children: [
+    It && !Rt && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "px-3 pb-3 pt-1 border-t border-border", children: [
       At.type === "select_columns" && /* @__PURE__ */ jsxRuntimeExports.jsx(
         SelectColumnsStepUI,
         {
           step: At,
           availableCols: wt,
-          onChange: (Ht) => $t(yt, Ht)
+          onChange: (Mt) => Tt(yt, Mt)
         }
       ),
       At.type === "exclude_columns" && /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -134147,7 +134152,7 @@ function StepItem({
         {
           step: At,
           availableCols: wt,
-          onChange: (Ht) => $t(yt, Ht)
+          onChange: (Mt) => Tt(yt, Mt)
         }
       ),
       At.type === "change_type" && /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -134156,24 +134161,9 @@ function StepItem({
           step: At,
           availableCols: wt,
           availableColTypes: Ct,
-          onChange: (Ht) => $t(yt, Ht)
+          onChange: (Mt) => Tt(yt, Mt)
         }
       )
-    ] }),
-    kt && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "border-t border-border bg-muted/20 px-2 py-2", children: [
-      Et && !Nt && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground italic", children: "Chargement…" }),
-      !Et && !Nt && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground italic", children: "Aucune donnée — vérifiez la source" }),
-      Nt && ((Ot = Nt._results) == null ? void 0 : Ot.length) > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-muted-foreground mb-1", children: [
-          "Aperçu ",
-          Nt._results.length,
-          " ligne",
-          Nt._results.length > 1 ? "s" : "",
-          " (LIMIT 10)"
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(SqlDataTable, { cell: Nt })
-      ] }),
-      Nt && ((Bt = Nt._results) == null ? void 0 : Bt.length) === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground italic", children: "Résultat vide" })
     ] })
   ] });
 }
@@ -134259,8 +134249,8 @@ function SqlPreview({ sql: At, editable: yt, onEdit: xt, tableSchemas: wt, cellI
   function Lt() {
     Tt(At), Et(!1);
   }
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-1 h-full", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between h-5", children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-1 flex-1 min-h-0", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between h-5 shrink-0", children: [
       yt && !kt && /* @__PURE__ */ jsxRuntimeExports.jsx(
         "button",
         {
@@ -134276,13 +134266,13 @@ function SqlPreview({ sql: At, editable: yt, onEdit: xt, tableSchemas: wt, cellI
         /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: Lt, className: "text-xs text-muted-foreground underline", children: "Annuler" })
       ] })
     ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 min-h-0", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
       SqlMonacoEditor,
       {
         value: kt ? St : At,
         onChange: kt ? (It) => Tt(It ?? "") : void 0,
         tableSchemas: wt,
-        className: "border border-border rounded overflow-hidden",
+        className: "border border-border rounded overflow-hidden h-full",
         options: {
           readOnly: !kt,
           minimap: { enabled: !1 },
@@ -134294,10 +134284,10 @@ function SqlPreview({ sql: At, editable: yt, onEdit: xt, tableSchemas: wt, cellI
           overviewRulerLanes: 0,
           scrollbar: { vertical: "auto", alwaysConsumeMouseWheel: !1 }
         },
-        height: "180px"
+        height: "100%"
       },
       `${Ct}-sql-${kt ? "edit" : "view"}`
-    )
+    ) })
   ] });
 }
 function DegradedBanner({ onRestore: At }) {
@@ -134366,67 +134356,11 @@ function SqlBlockEditor({ cell: At, path: yt, cellIndex: xt }) {
     } else
       alert(`Impossible de restaurer l'AST : ${Nn.error || "SQL incompatible"}`);
   }
-  const nn = At._results && Array.isArray(At._results) && At._results.length > 0, qr = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 min-w-48 flex flex-col gap-1", children: [
-    nn ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-      At._resultInfo && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs text-muted-foreground", children: At._resultInfo }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(SqlDataTable, { cell: At })
-    ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center justify-center h-16 text-xs text-muted-foreground italic border border-dashed border-border rounded", children: "Aucun résultat — exécutez la cellule" }),
-    At._status === "error" && At._resultInfo && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-2 rounded bg-destructive/10 text-destructive text-xs", children: At._resultInfo })
-  ] }), sn = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: `flex flex-col gap-1 ${Ot ? "min-w-48 w-64" : ""}`, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs(
-      "button",
-      {
-        onClick: () => Bt((jn) => !jn),
-        className: "flex items-center gap-1 text-xs font-medium text-muted-foreground uppercase tracking-wide hover:text-foreground transition-colors whitespace-nowrap",
-        children: [
-          "SQL généré ",
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "ml-0.5", children: Ot ? "▾" : "▸" })
-        ]
-      }
-    ),
-    Ot && /* @__PURE__ */ jsxRuntimeExports.jsx(
-      SqlPreview,
-      {
-        sql: qt,
-        editable: !0,
-        onEdit: Ur,
-        tableSchemas: Lt,
-        cellId: At._id
-      }
-    )
-  ] }), _n = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2 min-w-52 w-64 shrink-0", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-medium text-muted-foreground uppercase tracking-wide", children: "Steps" }),
-    St.steps.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-muted-foreground italic px-1", children: [
-      "Aucun step — SELECT * FROM ",
-      St.source || "…"
-    ] }),
-    St.steps.map((jn, mo) => {
-      const Nn = $t[mo] ?? { columns: Tt.map((Sn) => Sn.name), colTypes: Object.fromEntries(Tt.map((Sn) => [Sn.name, Sn.type])) };
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        StepItem,
-        {
-          step: jn,
-          index: mo,
-          totalSteps: St.steps.length,
-          availableCols: Nn.columns,
-          availableColTypes: Nn.colTypes,
-          eyeOpen: It === mo,
-          eyeLoading: Rt,
-          eyeData: jt(mo),
-          onEyeToggle: () => Dt(mo),
-          onUpdate: Zt,
-          onRemove: sr,
-          onMove: kr
-        },
-        mo
-      );
-    }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(AddStepMenu, { onAdd: Dr })
-  ] });
+  const nn = It !== null ? jt(It) : null, qr = It !== null, sn = At._results && Array.isArray(At._results) && At._results.length > 0, _n = qr && nn ? { _id: `eye_${It}_${At._id}`, _results: nn.rows, _schemaTypes: nn.schemaTypes } : At;
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-3 w-full", children: [
     Et.degraded && /* @__PURE__ */ jsxRuntimeExports.jsx(DegradedBanner, { onRestore: un }),
     Mt !== null && /* @__PURE__ */ jsxRuntimeExports.jsx(IncompatibleConfirmModal, { onConfirm: Yr, onCancel: () => Nt(null) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3 flex-wrap", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3 flex-wrap shrink-0", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 flex-1 min-w-40", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-xs text-muted-foreground shrink-0", children: "Source :" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -134469,9 +134403,15 @@ function SqlBlockEditor({ cell: At, path: yt, cellIndex: xt }) {
         ] })
       ] })
     ] }),
-    Et.degraded ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap gap-3 items-start", children: [
-      qr,
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 min-w-48", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+    Et.degraded ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-3 min-h-[280px]", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 min-w-0 flex flex-col gap-1", children: [
+        sn ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+          At._resultInfo && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs text-muted-foreground shrink-0", children: At._resultInfo }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(SqlDataTable, { cell: At })
+        ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center justify-center h-16 text-xs text-muted-foreground italic border border-dashed border-border rounded", children: "Aucun résultat — exécutez la cellule" }),
+        At._status === "error" && At._resultInfo && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-2 rounded bg-destructive/10 text-destructive text-xs", children: At._resultInfo })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-64 flex flex-col min-h-0", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
         SqlPreview,
         {
           sql: qt,
@@ -134481,10 +134421,80 @@ function SqlBlockEditor({ cell: At, path: yt, cellIndex: xt }) {
           cellId: At._id
         }
       ) })
-    ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap gap-3 min-h-0 items-start", children: [
-      qr,
-      sn,
-      _n
+    ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-3 min-h-[280px]", style: { height: "calc(100% - 40px)" }, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 min-w-0 flex flex-col gap-1", children: [
+        qr && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5 shrink-0", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs text-primary font-medium", children: [
+            "Aperçu étape ",
+            It + 1
+          ] }),
+          Rt && /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { viewBox: "0 0 24 24", className: "w-3 h-3 animate-spin text-muted-foreground", fill: "none", stroke: "currentColor", strokeWidth: "2", children: /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M21 12a9 9 0 1 1-6.219-8.56" }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              onClick: () => Dt(It),
+              className: "ml-auto text-xs text-muted-foreground hover:text-foreground underline",
+              children: "✕ fermer"
+            }
+          )
+        ] }),
+        qr ? nn && nn.rows.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(SqlDataTable, { cell: _n }) : Rt ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center justify-center h-16 text-xs text-muted-foreground italic", children: "Chargement…" }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center justify-center h-16 text-xs text-muted-foreground italic border border-dashed border-border rounded", children: "Résultat vide" }) : sn ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+          At._resultInfo && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs text-muted-foreground shrink-0", children: At._resultInfo }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(SqlDataTable, { cell: At })
+        ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center justify-center h-16 text-xs text-muted-foreground italic border border-dashed border-border rounded", children: "Aucun résultat — exécutez la cellule" }),
+        At._status === "error" && At._resultInfo && !qr && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-2 rounded bg-destructive/10 text-destructive text-xs shrink-0", children: At._resultInfo })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: `flex flex-col min-h-0 ${Ot ? "w-64 shrink-0" : ""}`, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "button",
+          {
+            onClick: () => Bt((jn) => !jn),
+            className: "flex items-center gap-1 text-xs font-medium text-muted-foreground uppercase tracking-wide hover:text-foreground transition-colors whitespace-nowrap shrink-0 mb-1",
+            children: [
+              "SQL généré ",
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "ml-0.5", children: Ot ? "▾" : "▸" })
+            ]
+          }
+        ),
+        Ot && /* @__PURE__ */ jsxRuntimeExports.jsx(
+          SqlPreview,
+          {
+            sql: qt,
+            editable: !0,
+            onEdit: Ur,
+            tableSchemas: Lt,
+            cellId: At._id
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2 w-64 shrink-0 overflow-y-auto", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-medium text-muted-foreground uppercase tracking-wide shrink-0", children: "Steps" }),
+        St.steps.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-muted-foreground italic px-1", children: [
+          "Aucun step — SELECT * FROM ",
+          St.source || "…"
+        ] }),
+        St.steps.map((jn, mo) => {
+          const Nn = $t[mo] ?? { columns: Tt.map((Sn) => Sn.name), colTypes: Object.fromEntries(Tt.map((Sn) => [Sn.name, Sn.type])) };
+          return /* @__PURE__ */ jsxRuntimeExports.jsx(
+            StepItem,
+            {
+              step: jn,
+              index: mo,
+              totalSteps: St.steps.length,
+              availableCols: Nn.columns,
+              availableColTypes: Nn.colTypes,
+              eyeOpen: It === mo,
+              eyeLoading: Rt && It === mo,
+              onEyeToggle: () => Dt(mo),
+              onUpdate: Zt,
+              onRemove: sr,
+              onMove: kr
+            },
+            mo
+          );
+        }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(AddStepMenu, { onAdd: Dr })
+      ] })
     ] })
   ] });
 }
