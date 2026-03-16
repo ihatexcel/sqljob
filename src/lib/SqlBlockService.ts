@@ -107,7 +107,8 @@ export function sqlToAst(sql: string, materialize: SqlBlockMaterialize = 'view')
 
 function tryParseSimpleSelect(sql: string, materialize: SqlBlockMaterialize): SqlBlockAst | null {
     // Pattern: SELECT <body> FROM <source>  [optional semicolon]
-    const m = sql.match(/^SELECT\s+(.+?)\s+FROM\s+(\S+)\s*;?\s*$/is);
+    // Source peut être un identifiant quoté ("table name") ou simple (table_name)
+    const m = sql.match(/^SELECT\s+(.+?)\s+FROM\s+((?:"[^"]*"|\S)+)\s*;?\s*$/is);
     if (!m) return null;
 
     const body = m[1].trim();
@@ -165,7 +166,7 @@ function extractCtes(sql: string): CteInfo[] | null {
 
         // Normaliser et parser le SELECT interne
         const normalized = innerSql.replace(/[ \t\r\n]+/g, ' ').trim();
-        const m = normalized.match(/^SELECT\s+(.+?)\s+FROM\s+(\S+)\s*;?\s*$/is);
+        const m = normalized.match(/^SELECT\s+(.+?)\s+FROM\s+((?:"[^"]*"|\S)+)\s*;?\s*$/is);
         if (!m) return null;
 
         ctes.push({ body: m[1].trim(), source: m[2].trim() });
