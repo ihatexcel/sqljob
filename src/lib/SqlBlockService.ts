@@ -57,6 +57,18 @@ export function generateMaterializeQuery(name: string, sql: string, materialize:
 }
 
 /**
+ * Génère le SQL SELECT pour les steps 0..stepIndex depuis l'AST.
+ * stepIndex = -1 → SELECT * FROM source (aucun step appliqué).
+ */
+export function stepSql(ast: SqlBlockAst, stepIndex: number): string {
+    if (!ast.source) return '';
+    if (stepIndex < 0 || !ast.steps || ast.steps.length === 0) {
+        return `SELECT * FROM ${quoteId(ast.source)}`;
+    }
+    return astToSql({ ...ast, steps: ast.steps.slice(0, stepIndex + 1) });
+}
+
+/**
  * Retourne le SQL effectif de la cellule : généré depuis l'AST ou SQL manuel en mode dégradé.
  */
 export function getEffectiveSql(config: SqlBlockConfig): string {

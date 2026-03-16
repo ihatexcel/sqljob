@@ -7,14 +7,23 @@
  * manuellement en mode dégradé). Toute modification UI met à jour l'AST puis
  * régénère le SQL.
  *
- * Mode dégradé : si l'utilisateur édite le SQL manuellement et qu'il n'est plus
- * compatible avec l'UI, un avertissement s'affiche et seul l'éditeur SQL reste actif.
+ * Colonnes par étape : dérivées statiquement depuis l'AST + source DuckDB.
+ * Aperçu par étape (œil) : table DuckDB temporaire _sb_<cellId>_s<i> LIMIT 10.
+ *   → Seules les étapes dont les prédécesseurs ont changé sont recalculées.
  */
 import { useState, useCallback, useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom'
+import { SqlMonacoEditor } from '@sqlrooms/sql-editor'
 import { useShallow } from 'zustand/react/shallow'
 import { useNotebookStore } from '../../store/notebookStore'
-import { astToSql, sqlToAst, getEffectiveSql, generateMaterializeQuery } from '../../../lib/SqlBlockService'
+import { DuckDBManager } from '../../../lib/DuckDBManager'
+import {
+    astToSql,
+    sqlToAst,
+    getEffectiveSql,
+    generateMaterializeQuery,
+    stepSql,
+} from '../../../lib/SqlBlockService'
 import {
     DUCKDB_TYPES,
     STEP_LABELS,
@@ -40,7 +49,6 @@ function getOrInitConfig(cell: any): SqlBlockConfig {
     return cell.sqlBlockConfig
 }
 
-/** Met à jour la config + régénère le SQL dans queries.main.sql + force re-render */
 function commitAstUpdate(cell: any, newAst: Partial<SqlBlockAst>, forceUpdate: () => void) {
     const cfg = getOrInitConfig(cell)
     cfg.ast = { ...cfg.ast, ...newAst }
@@ -52,14 +60,156 @@ function commitAstUpdate(cell: any, newAst: Partial<SqlBlockAst>, forceUpdate: (
     forceUpdate()
 }
 
-/**
- * Retire le préfixe CREATE OR REPLACE VIEW/TABLE ... AS (...) pour extraire
- * le SELECT intérieur. No-op si le SQL est déjà un SELECT.
- */
 function stripMaterializePrefix(sql: string): string {
     const m = sql.match(/^CREATE\s+OR\s+REPLACE\s+(?:VIEW|TABLE)\s+(?:"[^"]*"|\S+)\s+AS\s*\(\s*([\s\S]*?)\s*\)\s*;?\s*$/i)
     if (m) return m[1].trim()
     return sql.trim()
+}
+
+// ─── computeStepSchemas ───────────────────────────────────────────────────────
+// Dérive statiquement le schéma INPUT de chaque étape (colonnes/types disponibles
+// en entrée de l'étape i = sortie de l'étape i-1).
+
+interface StepSchema {
+    columns: string[]
+    colTypes: Record<string, string>
+}
+
+function computeStepSchemas(
+    ast: SqlBlockAst,
+    sourceColumns: { name: string; type: string }[]
+): StepSchema[] {
+    const schemas: StepSchema[] = []
+    let cols = sourceColumns.map(c => c.name)
+    let types: Record<string, string> = Object.fromEntries(sourceColumns.map(c => [c.name, c.type]))
+
+    for (const step of ast.steps) {
+        // Enregistrer le schéma EN ENTRÉE de cette étape
+        schemas.push({ columns: [...cols], colTypes: { ...types } })
+
+        // Calculer la sortie de cette étape (= entrée de la suivante)
+        if (step.type === 'select_columns' && step.columns.length > 0) {
+            const kept = step.columns.filter(c => cols.includes(c))
+            const newTypes: Record<string, string> = {}
+            kept.forEach(c => { newTypes[c] = types[c] ?? '' })
+            cols = kept
+            types = newTypes
+        } else if (step.type === 'exclude_columns' && step.columns.length > 0) {
+            const excl = new Set(step.columns)
+            cols = cols.filter(c => !excl.has(c))
+            const newTypes: Record<string, string> = {}
+            cols.forEach(c => { newTypes[c] = types[c] ?? '' })
+            types = newTypes
+        } else if (step.type === 'change_type') {
+            for (const change of step.changes) {
+                if (cols.includes(change.column)) types[change.column] = change.targetType
+            }
+        }
+    }
+
+    return schemas
+}
+
+// ─── useStepEyeData ───────────────────────────────────────────────────────────
+// Gère les tables DuckDB intermédiaires _sb_<cellId>_s<i> (LIMIT 10).
+// Hash-based : seules les étapes dont les prédécesseurs ont changé sont recalculées.
+
+interface EyeEntry {
+    rows: Record<string, any>[]
+    schemaTypes: Record<string, string>
+    hash: string
+}
+
+function useStepEyeData(cell: any, ast: SqlBlockAst) {
+    const [eyeOpen, setEyeOpenState] = useState<number | null>(null)
+    const [loading, setLoading] = useState(false)
+    const [, bumpRender] = useState(0)
+
+    // Refs pour accéder aux valeurs fraîches sans stale-closure
+    const astRef = useRef(ast)
+    astRef.current = ast
+    const cellRef = useRef(cell)
+    cellRef.current = cell
+    const eyeOpenRef = useRef<number | null>(null)
+
+    // Cache : stepIndex → résultats + hash upstream
+    const cache = useRef<Map<number, EyeEntry>>(new Map())
+
+    function getHash(idx: number): string {
+        const a = astRef.current
+        return JSON.stringify({ src: a.source, steps: a.steps.slice(0, idx + 1) })
+    }
+
+    function tableName(idx: number): string {
+        const safeId = cellRef.current._id.replace(/[^a-zA-Z0-9]/g, '_')
+        return `_sb_${safeId}_s${idx < 0 ? 'src' : idx}`
+    }
+
+    async function doLoad(idx: number) {
+        const hash = getHash(idx)
+        if (cache.current.get(idx)?.hash === hash) return  // Cache valide
+
+        setLoading(true)
+        try {
+            const ast = astRef.current
+            const tName = tableName(idx)
+            const sql = stepSql(ast, idx)
+            await DuckDBManager.executeQuery(
+                `CREATE OR REPLACE TABLE "${tName}" AS (${sql} LIMIT 10)`
+            )
+            const { rows, schemaTypes } = await DuckDBManager.executeQueryWithSchema(
+                `SELECT * FROM "${tName}"`
+            )
+            cache.current.set(idx, { rows, schemaTypes: schemaTypes || {}, hash })
+            bumpRender(n => n + 1)
+        } catch (err) {
+            console.warn('[sqlblock eye]', err)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    function toggleEye(idx: number) {
+        const next = eyeOpenRef.current === idx ? null : idx
+        eyeOpenRef.current = next
+        setEyeOpenState(next)
+        if (next !== null) doLoad(next)
+    }
+
+    // Auto-refresh si l'œil est ouvert et que les prédécesseurs changent
+    const upstreamKey = eyeOpen !== null
+        ? JSON.stringify([ast.source, ...ast.steps.slice(0, eyeOpen + 1)])
+        : null
+
+    useEffect(() => {
+        if (eyeOpen === null) return
+        doLoad(eyeOpen)
+    }, [upstreamKey, eyeOpen])
+
+    return {
+        eyeOpen,
+        toggleEye,
+        loading,
+        getEyeData: (idx: number): EyeEntry | null => cache.current.get(idx) ?? null,
+    }
+}
+
+// ─── Icônes SVG inline ────────────────────────────────────────────────────────
+
+function EyeIcon({ open, className = '' }: { open: boolean; className?: string }) {
+    return open ? (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+            strokeLinecap="round" strokeLinejoin="round" className={className}>
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+            <circle cx="12" cy="12" r="3" />
+        </svg>
+    ) : (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+            strokeLinecap="round" strokeLinejoin="round" className={className}>
+            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+            <line x1="1" y1="1" x2="23" y2="23" />
+        </svg>
+    )
 }
 
 // ─── ColumnCheckbox ───────────────────────────────────────────────────────────
@@ -67,12 +217,8 @@ function stripMaterializePrefix(sql: string): string {
 function ColumnCheckbox({ col, checked, onChange }: { col: string; checked: boolean; onChange: (c: string, v: boolean) => void }) {
     return (
         <label className="flex items-center gap-2 cursor-pointer px-2 py-0.5 rounded hover:bg-muted/50">
-            <input
-                type="checkbox"
-                className="rounded border-border w-3.5 h-3.5 accent-primary"
-                checked={checked}
-                onChange={e => onChange(col, e.target.checked)}
-            />
+            <input type="checkbox" className="rounded border-border w-3.5 h-3.5 accent-primary"
+                checked={checked} onChange={e => onChange(col, e.target.checked)} />
             <span className="text-xs font-mono text-foreground">{col}</span>
         </label>
     )
@@ -81,45 +227,28 @@ function ColumnCheckbox({ col, checked, onChange }: { col: string; checked: bool
 // ─── SelectColumnsStepUI ──────────────────────────────────────────────────────
 
 function SelectColumnsStepUI({ step, availableCols, onChange }: {
-    step: SelectColumnsStep
-    availableCols: string[]
-    onChange: (newStep: SelectColumnsStep) => void
+    step: SelectColumnsStep; availableCols: string[]
+    onChange: (s: SelectColumnsStep) => void
 }) {
     const all = availableCols.length > 0 ? availableCols : step.columns
     const selected = new Set(step.columns)
-
-    function toggle(col: string, checked: boolean) {
-        const newCols = checked
-            ? [...step.columns, col].filter((c, i, arr) => arr.indexOf(c) === i)
-            : step.columns.filter(c => c !== col)
-        onChange({ ...step, columns: newCols })
-    }
-
-    function selectAll() { onChange({ ...step, columns: [...all] }) }
-    function selectNone() { onChange({ ...step, columns: [] }) }
-
+    const toggle = (col: string, checked: boolean) => onChange({
+        ...step,
+        columns: checked
+            ? [...step.columns, col].filter((c, i, a) => a.indexOf(c) === i)
+            : step.columns.filter(c => c !== col),
+    })
     return (
         <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-                <button onClick={selectAll} className="underline hover:text-foreground">tout</button>
+                <button onClick={() => onChange({ ...step, columns: [...all] })} className="underline hover:text-foreground">tout</button>
                 <span>/</span>
-                <button onClick={selectNone} className="underline hover:text-foreground">aucun</button>
+                <button onClick={() => onChange({ ...step, columns: [] })} className="underline hover:text-foreground">aucun</button>
                 <span className="ml-auto">{step.columns.length}/{all.length} col.</span>
             </div>
             <div className="max-h-48 overflow-y-auto flex flex-col gap-0 border border-border rounded bg-background">
-                {all.length === 0 && (
-                    <p className="text-xs text-muted-foreground p-2 italic">
-                        Aucune colonne disponible — exécutez la source d'abord
-                    </p>
-                )}
-                {all.map(col => (
-                    <ColumnCheckbox
-                        key={col}
-                        col={col}
-                        checked={selected.has(col)}
-                        onChange={toggle}
-                    />
-                ))}
+                {all.length === 0 && <p className="text-xs text-muted-foreground p-2 italic">Aucune colonne — exécutez la source</p>}
+                {all.map(col => <ColumnCheckbox key={col} col={col} checked={selected.has(col)} onChange={toggle} />)}
             </div>
         </div>
     )
@@ -128,39 +257,25 @@ function SelectColumnsStepUI({ step, availableCols, onChange }: {
 // ─── ExcludeColumnsStepUI ─────────────────────────────────────────────────────
 
 function ExcludeColumnsStepUI({ step, availableCols, onChange }: {
-    step: ExcludeColumnsStep
-    availableCols: string[]
-    onChange: (newStep: ExcludeColumnsStep) => void
+    step: ExcludeColumnsStep; availableCols: string[]
+    onChange: (s: ExcludeColumnsStep) => void
 }) {
     const all = availableCols.length > 0 ? availableCols : step.columns
     const excluded = new Set(step.columns)
-
-    function toggle(col: string, checked: boolean) {
-        const newCols = checked
-            ? [...step.columns, col].filter((c, i, arr) => arr.indexOf(c) === i)
-            : step.columns.filter(c => c !== col)
-        onChange({ ...step, columns: newCols })
-    }
-
+    const toggle = (col: string, checked: boolean) => onChange({
+        ...step,
+        columns: checked
+            ? [...step.columns, col].filter((c, i, a) => a.indexOf(c) === i)
+            : step.columns.filter(c => c !== col),
+    })
     return (
         <div className="flex flex-col gap-1">
             <p className="text-xs text-muted-foreground mb-1">
-                Colonnes à exclure ({step.columns.length} sélectionnée{step.columns.length > 1 ? 's' : ''})
+                Colonnes à exclure ({step.columns.length} sélectionnée{step.columns.length !== 1 ? 's' : ''})
             </p>
             <div className="max-h-48 overflow-y-auto flex flex-col gap-0 border border-border rounded bg-background">
-                {all.length === 0 && (
-                    <p className="text-xs text-muted-foreground p-2 italic">
-                        Aucune colonne disponible — exécutez la source d'abord
-                    </p>
-                )}
-                {all.map(col => (
-                    <ColumnCheckbox
-                        key={col}
-                        col={col}
-                        checked={excluded.has(col)}
-                        onChange={toggle}
-                    />
-                ))}
+                {all.length === 0 && <p className="text-xs text-muted-foreground p-2 italic">Aucune colonne — exécutez la source</p>}
+                {all.map(col => <ColumnCheckbox key={col} col={col} checked={excluded.has(col)} onChange={toggle} />)}
             </div>
         </div>
     )
@@ -169,30 +284,12 @@ function ExcludeColumnsStepUI({ step, availableCols, onChange }: {
 // ─── ChangeTypeStepUI ─────────────────────────────────────────────────────────
 
 function ChangeTypeStepUI({ step, availableCols, availableColTypes, onChange }: {
-    step: ChangeTypeStep
-    availableCols: string[]
-    availableColTypes: Record<string, string>
-    onChange: (newStep: ChangeTypeStep) => void
+    step: ChangeTypeStep; availableCols: string[]; availableColTypes: Record<string, string>
+    onChange: (s: ChangeTypeStep) => void
 }) {
     const [addCol, setAddCol] = useState('')
     const [addType, setAddType] = useState('VARCHAR')
-
     const allCols = availableCols.length > 0 ? availableCols : step.changes.map(c => c.column)
-
-    function updateChange(idx: number, field: 'column' | 'targetType', value: string) {
-        const newChanges = step.changes.map((c, i) => i === idx ? { ...c, [field]: value } : c)
-        onChange({ ...step, changes: newChanges })
-    }
-
-    function removeChange(idx: number) {
-        onChange({ ...step, changes: step.changes.filter((_, i) => i !== idx) })
-    }
-
-    function addChange() {
-        if (!addCol) return
-        onChange({ ...step, changes: [...step.changes, { column: addCol, targetType: addType }] })
-        setAddCol('')
-    }
 
     return (
         <div className="flex flex-col gap-0 divide-y divide-border">
@@ -200,63 +297,43 @@ function ChangeTypeStepUI({ step, availableCols, availableColTypes, onChange }: 
                 <div key={idx} className="flex flex-col gap-1 py-2 first:pt-0">
                     <div className="flex items-center gap-1.5">
                         <span className="text-xs text-muted-foreground shrink-0 w-4">col</span>
-                        <select
-                            className="flex-1 min-w-0 h-6 rounded border border-border bg-background px-1 text-xs font-mono"
+                        <select className="flex-1 min-w-0 h-6 rounded border border-border bg-background px-1 text-xs font-mono"
                             value={change.column}
-                            onChange={e => updateChange(idx, 'column', e.target.value)}
-                        >
+                            onChange={e => onChange({ ...step, changes: step.changes.map((c, i) => i === idx ? { ...c, column: e.target.value } : c) })}>
                             {allCols.map(c => <option key={c} value={c}>{c}</option>)}
-                            {!allCols.includes(change.column) && (
-                                <option value={change.column}>{change.column}</option>
-                            )}
+                            {!allCols.includes(change.column) && <option value={change.column}>{change.column}</option>}
                         </select>
-                        <button
-                            onClick={() => removeChange(idx)}
-                            className="shrink-0 text-destructive hover:text-destructive/80 w-5 h-5 flex items-center justify-center"
-                            title="Supprimer"
-                        >✕</button>
+                        <button onClick={() => onChange({ ...step, changes: step.changes.filter((_, i) => i !== idx) })}
+                            className="shrink-0 text-destructive hover:text-destructive/80 w-5 h-5 flex items-center justify-center">✕</button>
                     </div>
                     <div className="flex items-center gap-1.5">
                         <span className="text-xs text-muted-foreground shrink-0 w-4">→</span>
-                        <select
-                            className="flex-1 min-w-0 h-6 rounded border border-border bg-background px-1 text-xs font-mono"
+                        <select className="flex-1 min-w-0 h-6 rounded border border-border bg-background px-1 text-xs font-mono"
                             value={change.targetType}
-                            onChange={e => updateChange(idx, 'targetType', e.target.value)}
-                        >
+                            onChange={e => onChange({ ...step, changes: step.changes.map((c, i) => i === idx ? { ...c, targetType: e.target.value } : c) })}>
                             {DUCKDB_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
                         </select>
                         <span className="shrink-0 w-5" />
                     </div>
                 </div>
             ))}
-
             <div className="flex flex-col gap-1.5 pt-2">
-                <select
-                    className="w-full h-6 rounded border border-border bg-background px-1 text-xs font-mono"
-                    value={addCol}
-                    onChange={e => setAddCol(e.target.value)}
-                >
+                <select className="w-full h-6 rounded border border-border bg-background px-1 text-xs font-mono"
+                    value={addCol} onChange={e => setAddCol(e.target.value)}>
                     <option value="">— choisir une colonne —</option>
-                    {allCols.map(c => (
-                        <option key={c} value={c}>
-                            {c}{availableColTypes[c] ? ` (${availableColTypes[c]})` : ''}
-                        </option>
-                    ))}
+                    {allCols.map(c => <option key={c} value={c}>{c}{availableColTypes[c] ? ` (${availableColTypes[c]})` : ''}</option>)}
                 </select>
                 <div className="flex items-center gap-1.5">
                     <span className="text-xs text-muted-foreground shrink-0 w-4">→</span>
-                    <select
-                        className="flex-1 min-w-0 h-6 rounded border border-border bg-background px-1 text-xs font-mono"
-                        value={addType}
-                        onChange={e => setAddType(e.target.value)}
-                    >
+                    <select className="flex-1 min-w-0 h-6 rounded border border-border bg-background px-1 text-xs font-mono"
+                        value={addType} onChange={e => setAddType(e.target.value)}>
                         {DUCKDB_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
                     </select>
-                    <button
-                        onClick={addChange}
+                    <button onClick={() => { if (!addCol) return; onChange({ ...step, changes: [...step.changes, { column: addCol, targetType: addType }] }); setAddCol('') }}
                         disabled={!addCol}
-                        className="shrink-0 px-2 h-6 rounded bg-primary text-primary-foreground text-xs disabled:opacity-50 whitespace-nowrap"
-                    >+ Ajouter</button>
+                        className="shrink-0 px-2 h-6 rounded bg-primary text-primary-foreground text-xs disabled:opacity-50 whitespace-nowrap">
+                        + Ajouter
+                    </button>
                 </div>
             </div>
         </div>
@@ -265,85 +342,107 @@ function ChangeTypeStepUI({ step, availableCols, availableColTypes, onChange }: 
 
 // ─── StepItem ─────────────────────────────────────────────────────────────────
 
-function StepItem({ step, index, totalSteps, availableCols, availableColTypes, onUpdate, onRemove, onMove }: {
-    step: SqlBlockStep
-    index: number
-    totalSteps: number
-    availableCols: string[]
-    availableColTypes: Record<string, string>
-    onUpdate: (idx: number, newStep: SqlBlockStep) => void
+function StepItem({ step, index, totalSteps, availableCols, availableColTypes,
+    eyeOpen, eyeLoading, eyeData, onEyeToggle,
+    onUpdate, onRemove, onMove }: {
+    step: SqlBlockStep; index: number; totalSteps: number
+    availableCols: string[]; availableColTypes: Record<string, string>
+    eyeOpen: boolean; eyeLoading: boolean
+    eyeData: EyeEntry | null
+    onEyeToggle: () => void
+    onUpdate: (idx: number, s: SqlBlockStep) => void
     onRemove: (idx: number) => void
     onMove: (idx: number, dir: -1 | 1) => void
 }) {
     const [open, setOpen] = useState(true)
     const [pendingDelete, setPendingDelete] = useState(false)
 
+    // Fake cell object pour SqlDataTable
+    const fakeEyeCell = eyeData
+        ? { _id: `eye_${index}`, _results: eyeData.rows, _schemaTypes: eyeData.schemaTypes }
+        : null
+
     return (
         <div className="border border-border rounded bg-card text-card-foreground">
-            <div className="flex items-center gap-2 px-2 py-1.5 cursor-pointer select-none" onClick={() => !pendingDelete && setOpen(o => !o)}>
-                <span className="text-xs text-muted-foreground font-mono w-5 shrink-0">{index + 1}.</span>
+            {/* Header */}
+            <div className="flex items-center gap-1.5 px-2 py-1.5 cursor-pointer select-none"
+                onClick={() => !pendingDelete && setOpen(o => !o)}>
+
+                {/* Bouton œil */}
+                <button
+                    onClick={e => { e.stopPropagation(); onEyeToggle() }}
+                    className={`shrink-0 w-5 h-5 flex items-center justify-center rounded transition-colors ${eyeOpen ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+                    title={eyeOpen ? 'Masquer l\'aperçu' : 'Voir l\'aperçu de cette étape'}
+                >
+                    {eyeLoading && eyeOpen
+                        ? <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 animate-spin" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>
+                        : <EyeIcon open={eyeOpen} className="w-3.5 h-3.5" />
+                    }
+                </button>
+
+                <span className="text-xs text-muted-foreground font-mono w-4 shrink-0">{index + 1}.</span>
                 <span className="flex-1 text-xs font-medium">{STEP_LABELS[step.type]}</span>
+
                 <div className="flex items-center gap-1 ml-auto" onClick={e => e.stopPropagation()}>
                     {pendingDelete ? (
-                        /* Confirmation inline */
                         <div className="flex items-center gap-1">
                             <span className="text-xs text-destructive">Supprimer ?</span>
-                            <button
-                                onClick={() => { onRemove(index); setPendingDelete(false) }}
-                                className="px-1.5 h-5 rounded bg-destructive text-destructive-foreground text-xs"
-                            >Oui</button>
-                            <button
-                                onClick={() => setPendingDelete(false)}
-                                className="px-1.5 h-5 rounded border border-border text-xs text-muted-foreground hover:text-foreground"
-                            >Non</button>
+                            <button onClick={() => { onRemove(index); setPendingDelete(false) }}
+                                className="px-1.5 h-5 rounded bg-destructive text-destructive-foreground text-xs">Oui</button>
+                            <button onClick={() => setPendingDelete(false)}
+                                className="px-1.5 h-5 rounded border border-border text-xs text-muted-foreground hover:text-foreground">Non</button>
                         </div>
                     ) : (
                         <>
-                            <button
-                                onClick={() => onMove(index, -1)}
-                                disabled={index === 0}
-                                className="text-muted-foreground hover:text-foreground disabled:opacity-30 w-5 h-5 flex items-center justify-center text-xs"
-                                title="Monter"
-                            >▲</button>
-                            <button
-                                onClick={() => onMove(index, 1)}
-                                disabled={index === totalSteps - 1}
-                                className="text-muted-foreground hover:text-foreground disabled:opacity-30 w-5 h-5 flex items-center justify-center text-xs"
-                                title="Descendre"
-                            >▼</button>
-                            <button
-                                onClick={() => setPendingDelete(true)}
-                                className="text-destructive hover:text-destructive/80 w-5 h-5 flex items-center justify-center text-xs"
-                                title="Supprimer ce step"
-                            >✕</button>
+                            <button onClick={() => onMove(index, -1)} disabled={index === 0}
+                                className="text-muted-foreground hover:text-foreground disabled:opacity-30 w-5 h-5 flex items-center justify-center text-xs" title="Monter">▲</button>
+                            <button onClick={() => onMove(index, 1)} disabled={index === totalSteps - 1}
+                                className="text-muted-foreground hover:text-foreground disabled:opacity-30 w-5 h-5 flex items-center justify-center text-xs" title="Descendre">▼</button>
+                            <button onClick={() => setPendingDelete(true)}
+                                className="text-destructive hover:text-destructive/80 w-5 h-5 flex items-center justify-center text-xs" title="Supprimer ce step">✕</button>
                             <span className="text-muted-foreground text-xs ml-1">{open ? '▾' : '▸'}</span>
                         </>
                     )}
                 </div>
             </div>
+
+            {/* Corps step */}
             {open && !pendingDelete && (
                 <div className="px-3 pb-3 pt-1 border-t border-border">
                     {step.type === 'select_columns' && (
-                        <SelectColumnsStepUI
-                            step={step}
-                            availableCols={availableCols}
-                            onChange={s => onUpdate(index, s)}
-                        />
+                        <SelectColumnsStepUI step={step} availableCols={availableCols}
+                            onChange={s => onUpdate(index, s)} />
                     )}
                     {step.type === 'exclude_columns' && (
-                        <ExcludeColumnsStepUI
-                            step={step}
-                            availableCols={availableCols}
-                            onChange={s => onUpdate(index, s)}
-                        />
+                        <ExcludeColumnsStepUI step={step} availableCols={availableCols}
+                            onChange={s => onUpdate(index, s)} />
                     )}
                     {step.type === 'change_type' && (
-                        <ChangeTypeStepUI
-                            step={step}
-                            availableCols={availableCols}
-                            availableColTypes={availableColTypes}
-                            onChange={s => onUpdate(index, s)}
-                        />
+                        <ChangeTypeStepUI step={step} availableCols={availableCols}
+                            availableColTypes={availableColTypes} onChange={s => onUpdate(index, s)} />
+                    )}
+                </div>
+            )}
+
+            {/* Aperçu DataTable (œil) */}
+            {eyeOpen && (
+                <div className="border-t border-border bg-muted/20 px-2 py-2">
+                    {eyeLoading && !fakeEyeCell && (
+                        <p className="text-xs text-muted-foreground italic">Chargement…</p>
+                    )}
+                    {!eyeLoading && !fakeEyeCell && (
+                        <p className="text-xs text-muted-foreground italic">Aucune donnée — vérifiez la source</p>
+                    )}
+                    {fakeEyeCell && fakeEyeCell._results?.length > 0 && (
+                        <>
+                            <p className="text-xs text-muted-foreground mb-1">
+                                Aperçu {fakeEyeCell._results.length} ligne{fakeEyeCell._results.length > 1 ? 's' : ''} (LIMIT 10)
+                            </p>
+                            <SqlDataTable cell={fakeEyeCell} />
+                        </>
+                    )}
+                    {fakeEyeCell && fakeEyeCell._results?.length === 0 && (
+                        <p className="text-xs text-muted-foreground italic">Résultat vide</p>
                     )}
                 </div>
             )}
@@ -374,9 +473,7 @@ function AddStepMenu({ onAdd }: { onAdd: (step: SqlBlockStep) => void }) {
     const menuRef = useRef<HTMLDivElement>(null)
 
     function handleToggle() {
-        if (!open && btnRef.current) {
-            setMenuRect(btnRef.current.getBoundingClientRect())
-        }
+        if (!open && btnRef.current) setMenuRect(btnRef.current.getBoundingClientRect())
         setOpen(o => !o)
     }
 
@@ -393,34 +490,22 @@ function AddStepMenu({ onAdd }: { onAdd: (step: SqlBlockStep) => void }) {
     }, [open])
 
     const menuStyle: React.CSSProperties = menuRect ? {
-        position: 'fixed',
-        top: menuRect.bottom + 4,
-        left: menuRect.left,
-        width: menuRect.width,
-        zIndex: 9999,
+        position: 'fixed', top: menuRect.bottom + 4,
+        left: menuRect.left, width: menuRect.width, zIndex: 9999,
     } : {}
 
     return (
         <>
-            <button
-                ref={btnRef}
-                onClick={handleToggle}
-                className="w-full flex items-center justify-center gap-2 px-3 py-1.5 rounded border border-dashed border-border hover:border-primary hover:text-primary text-xs text-muted-foreground transition-colors"
-            >
-                <span>+ Ajouter un step</span>
+            <button ref={btnRef} onClick={handleToggle}
+                className="w-full flex items-center justify-center gap-2 px-3 py-1.5 rounded border border-dashed border-border hover:border-primary hover:text-primary text-xs text-muted-foreground transition-colors">
+                + Ajouter un step
             </button>
             {open && menuRect && createPortal(
-                <div
-                    ref={menuRef}
-                    style={menuStyle}
-                    className="bg-popover border border-border rounded shadow-lg overflow-hidden"
-                >
+                <div ref={menuRef} style={menuStyle}
+                    className="bg-popover border border-border rounded shadow-lg overflow-hidden">
                     {STEP_TYPES.map(s => (
-                        <button
-                            key={s.type}
-                            className="w-full text-left px-3 py-2 hover:bg-muted transition-colors"
-                            onClick={() => { onAdd(defaultStep(s.type)); setOpen(false) }}
-                        >
+                        <button key={s.type} className="w-full text-left px-3 py-2 hover:bg-muted transition-colors"
+                            onClick={() => { onAdd(defaultStep(s.type)); setOpen(false) }}>
                             <div className="text-xs font-medium">{s.label}</div>
                             <div className="text-xs text-muted-foreground">{s.description}</div>
                         </button>
@@ -432,62 +517,56 @@ function AddStepMenu({ onAdd }: { onAdd: (step: SqlBlockStep) => void }) {
     )
 }
 
-// ─── SqlPreview ───────────────────────────────────────────────────────────────
+// ─── SqlPreview (avec SqlMonacoEditor) ────────────────────────────────────────
 
-function SqlPreview({ sql, editable, onEdit }: { sql: string; editable: boolean; onEdit?: (sql: string) => void }) {
-    const [editing, setEditing] = useState(false)
+function SqlPreview({ sql, editable, onEdit, tableSchemas, cellId }: {
+    sql: string; editable: boolean; onEdit?: (sql: string) => void
+    tableSchemas: any[]; cellId: string
+}) {
+    const [editMode, setEditMode] = useState(false)
     const [draft, setDraft] = useState(sql)
-    const taRef = useRef<HTMLTextAreaElement>(null)
 
-    useEffect(() => {
-        if (!editing) setDraft(sql)
-    }, [sql, editing])
+    // Sync en lecture seule
+    useEffect(() => { if (!editMode) setDraft(sql) }, [sql, editMode])
 
-    function handleEdit() {
-        setDraft(sql)
-        setEditing(true)
-        setTimeout(() => taRef.current?.focus(), 50)
-    }
-
-    function handleConfirm() {
-        onEdit?.(draft)
-        setEditing(false)
-    }
-
-    function handleCancel() {
-        setDraft(sql)
-        setEditing(false)
-    }
+    function handleApply() { onEdit?.(draft); setEditMode(false) }
+    function handleCancel() { setDraft(sql); setEditMode(false) }
 
     return (
         <div className="flex flex-col gap-1 h-full">
-            <div className="flex items-center justify-between mb-1">
-                {editable && !editing && (
-                    <button
-                        onClick={handleEdit}
-                        className="text-xs text-muted-foreground hover:text-foreground underline"
-                    >Éditer manuellement…</button>
+            <div className="flex items-center justify-between h-5">
+                {editable && !editMode && (
+                    <button onClick={() => { setDraft(sql); setEditMode(true) }}
+                        className="text-xs text-muted-foreground hover:text-foreground underline">
+                        Éditer manuellement…
+                    </button>
                 )}
-                {editing && (
+                {editMode && (
                     <div className="flex gap-2">
-                        <button onClick={handleConfirm} className="text-xs text-primary underline">Appliquer</button>
+                        <button onClick={handleApply} className="text-xs text-primary underline">Appliquer</button>
                         <button onClick={handleCancel} className="text-xs text-muted-foreground underline">Annuler</button>
                     </div>
                 )}
             </div>
-            {editing ? (
-                <textarea
-                    ref={taRef}
-                    className="flex-1 min-h-32 w-full font-mono text-xs p-2 rounded border border-border bg-background resize-y focus:outline-none focus:ring-1 focus:ring-ring"
-                    value={draft}
-                    onChange={e => setDraft(e.target.value)}
-                    spellCheck={false}
-                />
-            ) : (
-                <pre className="flex-1 min-h-32 text-xs font-mono p-2 rounded bg-muted/40 text-foreground overflow-auto whitespace-pre-wrap break-all">
-                    {sql || <span className="text-muted-foreground italic">— vide —</span>}
-                </pre>
-            )}
+            <SqlMonacoEditor
+                key={`${cellId}-sql-${editMode ? 'edit' : 'view'}`}
+                value={editMode ? draft : sql}
+                onChange={editMode ? (v) => setDraft(v ?? '') : undefined}
+                tableSchemas={tableSchemas}
+                className="border border-border rounded overflow-hidden"
+                options={{
+                    readOnly: !editMode,
+                    minimap: { enabled: false },
+                    lineNumbers: 'on',
+                    scrollBeyondLastLine: false,
+                    wordWrap: 'on',
+                    fontSize: 12,
+                    renderLineHighlight: 'none',
+                    overviewRulerLanes: 0,
+                    scrollbar: { vertical: 'auto', alwaysConsumeMouseWheel: false },
+                }}
+                height="180px"
+            />
         </div>
     )
 }
@@ -500,41 +579,28 @@ function DegradedBanner({ onRestore }: { onRestore: () => void }) {
             <span className="shrink-0 text-base">⚠️</span>
             <div className="flex-1">
                 <strong>Mode dégradé</strong> — Le SQL a été édité manuellement et n'est plus compatible avec l'interface visuelle.
-                Seul l'éditeur SQL est actif.
             </div>
-            <button
-                onClick={onRestore}
-                className="shrink-0 underline hover:no-underline ml-2"
-                title="Réinitialiser l'AST depuis le SQL actuel si possible"
-            >Tenter la restauration</button>
+            <button onClick={onRestore} className="shrink-0 underline hover:no-underline ml-2">
+                Tenter la restauration
+            </button>
         </div>
     )
 }
 
-// ─── IncompatibleConfirmModal ──────────────────────────────────────────────────
+// ─── IncompatibleConfirmModal ─────────────────────────────────────────────────
 
-function IncompatibleConfirmModal({ sql, onConfirm, onCancel }: {
-    sql: string
-    onConfirm: () => void
-    onCancel: () => void
-}) {
+function IncompatibleConfirmModal({ onConfirm, onCancel }: { onConfirm: () => void; onCancel: () => void }) {
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
             <div className="bg-background border border-border rounded-lg shadow-xl max-w-md w-full mx-4 p-5">
                 <h3 className="text-sm font-semibold mb-2">SQL non compatible avec ce bloc</h3>
                 <p className="text-xs text-muted-foreground mb-4">
-                    Le SQL saisi ne correspond à aucun des patterns reconnus par ce bloc.
+                    Le SQL saisi ne correspond à aucun des patterns reconnus.
                     Voulez-vous continuer en <strong>mode dégradé</strong> (SQL libre, UI désactivée) ?
                 </p>
                 <div className="flex justify-end gap-2">
-                    <button
-                        onClick={onCancel}
-                        className="px-3 py-1.5 text-xs rounded border border-border hover:bg-muted"
-                    >Annuler</button>
-                    <button
-                        onClick={onConfirm}
-                        className="px-3 py-1.5 text-xs rounded bg-amber-500 text-white hover:bg-amber-600"
-                    >Continuer en mode dégradé</button>
+                    <button onClick={onCancel} className="px-3 py-1.5 text-xs rounded border border-border hover:bg-muted">Annuler</button>
+                    <button onClick={onConfirm} className="px-3 py-1.5 text-xs rounded bg-amber-500 text-white hover:bg-amber-600">Continuer en mode dégradé</button>
                 </div>
             </div>
         </div>
@@ -544,42 +610,41 @@ function IncompatibleConfirmModal({ sql, onConfirm, onCancel }: {
 // ─── SqlBlockEditor (composant principal) ─────────────────────────────────────
 
 export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: number[]; cellIndex: number }) {
-    const { devMode, forceUpdate, _duckdbTables, runCellAt } = useNotebookStore(useShallow(s => ({
-        devMode: s.devMode,
+    const { forceUpdate, _duckdbTables, db } = useNotebookStore(useShallow(s => ({
         forceUpdate: s.forceUpdate,
         _duckdbTables: s._duckdbTables,
-        runCellAt: s.runCellAt,
+        db: s.db,
     })))
 
-    // S'assurer que la config est initialisée
     const cfg: SqlBlockConfig = getOrInitConfig(cell)
     const ast = cfg.ast
 
-    // Colonnes disponibles depuis le schéma DuckDB
-    const sourceInfo = ast.source ? _duckdbTables?.[ast.source] : null
-    const availableCols: string[] = sourceInfo?.columns?.map((c: any) => c.name) ?? []
-    const availableColTypes: Record<string, string> = Object.fromEntries(
-        (sourceInfo?.columns ?? []).map((c: any) => [c.name, c.type])
-    )
+    // Schémas par étape (colonnes/types en entrée de chaque step)
+    const sourceColumns: { name: string; type: string }[] =
+        ast.source ? (_duckdbTables?.[ast.source]?.columns ?? []) : []
+    const stepSchemas = computeStepSchemas(ast, sourceColumns)
 
-    // Modal confirmation mode dégradé
+    // tableSchemas pour l'autocomplétion Monaco
+    const tableSchemas = db?.schemaTrees ?? []
+
+    // Œil par étape (aperçus DuckDB)
+    const { eyeOpen, toggleEye, loading: eyeLoading, getEyeData } = useStepEyeData(cell, ast)
+
+    // Modal mode dégradé
     const [pendingDegradedSql, setPendingDegradedSql] = useState<string | null>(null)
 
-    // Affichage du SQL généré (masqué par défaut)
+    // SQL généré visible ?
     const [showSql, setShowSql] = useState(false)
 
-    // SQL SELECT de base (source de vérité pour l'exécution)
     const selectSql = getEffectiveSql(cfg)
-
-    // SQL affiché dans la preview : avec le wrapper CREATE VIEW/TABLE si la cellule a un nom
     const displaySql = cell.name?.trim()
         ? generateMaterializeQuery(cell.name, selectSql, ast.materialize ?? 'view')
         : selectSql
 
     // ─── Handlers AST ──────────────────────────────────────────────────────
 
-    const handleSourceChange = useCallback((newSource: string) => {
-        commitAstUpdate(cell, { source: newSource }, forceUpdate)
+    const handleSourceChange = useCallback((v: string) => {
+        commitAstUpdate(cell, { source: v }, forceUpdate)
     }, [cell, forceUpdate])
 
     const handleMaterializeChange = useCallback((mat: SqlBlockMaterialize) => {
@@ -587,21 +652,18 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
     }, [cell, forceUpdate])
 
     const handleStepUpdate = useCallback((idx: number, newStep: SqlBlockStep) => {
-        const newSteps = ast.steps.map((s, i) => i === idx ? newStep : s)
-        commitAstUpdate(cell, { steps: newSteps }, forceUpdate)
+        commitAstUpdate(cell, { steps: ast.steps.map((s, i) => i === idx ? newStep : s) }, forceUpdate)
     }, [cell, ast.steps, forceUpdate])
 
     const handleStepRemove = useCallback((idx: number) => {
-        const newSteps = ast.steps.filter((_, i) => i !== idx)
-        commitAstUpdate(cell, { steps: newSteps }, forceUpdate)
+        commitAstUpdate(cell, { steps: ast.steps.filter((_, i) => i !== idx) }, forceUpdate)
     }, [cell, ast.steps, forceUpdate])
 
     const handleStepMove = useCallback((idx: number, dir: -1 | 1) => {
-        const newSteps = [...ast.steps]
-        const swap = idx + dir
-        if (swap < 0 || swap >= newSteps.length) return;
-        [newSteps[idx], newSteps[swap]] = [newSteps[swap], newSteps[idx]]
-        commitAstUpdate(cell, { steps: newSteps }, forceUpdate)
+        const s = [...ast.steps]; const swap = idx + dir
+        if (swap < 0 || swap >= s.length) return
+        ;[s[idx], s[swap]] = [s[swap], s[idx]]
+        commitAstUpdate(cell, { steps: s }, forceUpdate)
     }, [cell, ast.steps, forceUpdate])
 
     const handleStepAdd = useCallback((step: SqlBlockStep) => {
@@ -611,20 +673,15 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
     // ─── Handlers SQL manuel ───────────────────────────────────────────────
 
     function handleManualSqlEdit(rawSql: string) {
-        // Accepte aussi le SQL complet avec CREATE VIEW/TABLE (affiché dans la preview)
         const newSql = stripMaterializePrefix(rawSql)
         const result = sqlToAst(newSql, ast.materialize)
         if (result.compatible && result.ast) {
-            // Compatible : mettre à jour l'AST depuis le SQL
             const cfg = getOrInitConfig(cell)
-            cfg.ast = result.ast
-            cfg.degraded = false
-            cfg.manualSql = null
+            cfg.ast = result.ast; cfg.degraded = false; cfg.manualSql = null
             if (!cell.queries) cell.queries = [{ name: 'main', sql: newSql, engine: 'sql', clientVisible: false }]
             else cell.queries[0] = { ...cell.queries[0], sql: newSql }
             forceUpdate()
         } else {
-            // Incompatible → demander confirmation (on stocke le SELECT sans le CREATE)
             setPendingDegradedSql(newSql)
         }
     }
@@ -632,28 +689,18 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
     function confirmDegraded() {
         if (!pendingDegradedSql) return
         const cfg = getOrInitConfig(cell)
-        cfg.degraded = true
-        cfg.manualSql = pendingDegradedSql
+        cfg.degraded = true; cfg.manualSql = pendingDegradedSql
         if (!cell.queries) cell.queries = [{ name: 'main', sql: pendingDegradedSql, engine: 'sql', clientVisible: false }]
         else cell.queries[0] = { ...cell.queries[0], sql: pendingDegradedSql }
-        setPendingDegradedSql(null)
-        forceUpdate()
-    }
-
-    function cancelDegraded() {
-        setPendingDegradedSql(null)
+        setPendingDegradedSql(null); forceUpdate()
     }
 
     function tryRestoreFromDegraded() {
         const cfg = getOrInitConfig(cell)
-        // Accepte le SQL avec ou sans préfixe CREATE VIEW/TABLE
-        const rawSql = cfg.manualSql || selectSql
-        const sql = stripMaterializePrefix(rawSql)
+        const sql = stripMaterializePrefix(cfg.manualSql || selectSql)
         const result = sqlToAst(sql, ast.materialize)
         if (result.compatible && result.ast) {
-            cfg.ast = result.ast
-            cfg.degraded = false
-            cfg.manualSql = null
+            cfg.ast = result.ast; cfg.degraded = false; cfg.manualSql = null
             const genSql = astToSql(result.ast)
             if (!cell.queries) cell.queries = [{ name: 'main', sql: genSql, engine: 'sql', clientVisible: false }]
             else cell.queries[0] = { ...cell.queries[0], sql: genSql }
@@ -663,7 +710,7 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
         }
     }
 
-    // ─── Sous-composants de layout ─────────────────────────────────────────
+    // ─── Sections de layout ────────────────────────────────────────────────
 
     const hasResults = cell._results && Array.isArray(cell._results) && cell._results.length > 0
 
@@ -671,9 +718,7 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
         <div className="flex-1 min-w-48 flex flex-col gap-1">
             {hasResults ? (
                 <>
-                    {cell._resultInfo && (
-                        <div className="text-xs text-muted-foreground">{cell._resultInfo}</div>
-                    )}
+                    {cell._resultInfo && <div className="text-xs text-muted-foreground">{cell._resultInfo}</div>}
                     <SqlDataTable cell={cell} />
                 </>
             ) : (
@@ -682,27 +727,24 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
                 </div>
             )}
             {cell._status === 'error' && cell._resultInfo && (
-                <div className="p-2 rounded bg-destructive/10 text-destructive text-xs">
-                    {cell._resultInfo}
-                </div>
+                <div className="p-2 rounded bg-destructive/10 text-destructive text-xs">{cell._resultInfo}</div>
             )}
         </div>
     )
 
     const sqlSection = (
         <div className={`flex flex-col gap-1 ${showSql ? 'min-w-48 w-64' : ''}`}>
-            <button
-                onClick={() => setShowSql(s => !s)}
-                className="flex items-center gap-1 text-xs font-medium text-muted-foreground uppercase tracking-wide hover:text-foreground transition-colors whitespace-nowrap"
-            >
-                <span>SQL généré</span>
-                <span className="ml-0.5">{showSql ? '▾' : '▸'}</span>
+            <button onClick={() => setShowSql(s => !s)}
+                className="flex items-center gap-1 text-xs font-medium text-muted-foreground uppercase tracking-wide hover:text-foreground transition-colors whitespace-nowrap">
+                SQL généré <span className="ml-0.5">{showSql ? '▾' : '▸'}</span>
             </button>
             {showSql && (
                 <SqlPreview
                     sql={displaySql}
                     editable={true}
                     onEdit={handleManualSqlEdit}
+                    tableSchemas={tableSchemas}
+                    cellId={cell._id}
                 />
             )}
         </div>
@@ -716,19 +758,24 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
                     Aucun step — SELECT * FROM {ast.source || '…'}
                 </p>
             )}
-            {ast.steps.map((step, idx) => (
-                <StepItem
-                    key={idx}
-                    step={step}
-                    index={idx}
-                    totalSteps={ast.steps.length}
-                    availableCols={availableCols}
-                    availableColTypes={availableColTypes}
-                    onUpdate={handleStepUpdate}
-                    onRemove={handleStepRemove}
-                    onMove={handleStepMove}
-                />
-            ))}
+            {ast.steps.map((step, idx) => {
+                const schema = stepSchemas[idx] ?? { columns: sourceColumns.map(c => c.name), colTypes: Object.fromEntries(sourceColumns.map(c => [c.name, c.type])) }
+                return (
+                    <StepItem
+                        key={idx}
+                        step={step} index={idx} totalSteps={ast.steps.length}
+                        availableCols={schema.columns}
+                        availableColTypes={schema.colTypes}
+                        eyeOpen={eyeOpen === idx}
+                        eyeLoading={eyeLoading}
+                        eyeData={getEyeData(idx)}
+                        onEyeToggle={() => toggleEye(idx)}
+                        onUpdate={handleStepUpdate}
+                        onRemove={handleStepRemove}
+                        onMove={handleStepMove}
+                    />
+                )
+            })}
             <AddStepMenu onAdd={handleStepAdd} />
         </div>
     )
@@ -737,25 +784,16 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
 
     return (
         <div className="flex flex-col gap-3 w-full">
-
-            {/* Mode dégradé : bannière d'avertissement */}
             {cfg.degraded && <DegradedBanner onRestore={tryRestoreFromDegraded} />}
-
-            {/* Modal confirmation passage en mode dégradé */}
             {pendingDegradedSql !== null && (
-                <IncompatibleConfirmModal
-                    sql={pendingDegradedSql}
-                    onConfirm={confirmDegraded}
-                    onCancel={cancelDegraded}
-                />
+                <IncompatibleConfirmModal onConfirm={confirmDegraded} onCancel={() => setPendingDegradedSql(null)} />
             )}
 
             {/* Ligne Source + Matérialisation */}
             <div className="flex items-center gap-3 flex-wrap">
                 <div className="flex items-center gap-2 flex-1 min-w-40">
                     <label className="text-xs text-muted-foreground shrink-0">Source :</label>
-                    <input
-                        type="text"
+                    <input type="text"
                         className="flex-1 h-7 rounded border border-border bg-background px-2 text-xs font-mono"
                         value={ast.source}
                         onChange={e => handleSourceChange(e.target.value)}
@@ -770,41 +808,29 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
                 <div className="flex items-center gap-2">
                     <label className="text-xs text-muted-foreground shrink-0">Résultat :</label>
                     <div className="flex rounded border border-border overflow-hidden text-xs">
-                        <button
-                            onClick={() => handleMaterializeChange('view')}
-                            disabled={cfg.degraded}
+                        <button onClick={() => handleMaterializeChange('view')} disabled={cfg.degraded}
                             className={`px-2 py-1 transition-colors ${ast.materialize === 'view' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}
-                            title="Vue DuckDB (lazy, recalculé à chaque accès)"
-                        >VIEW</button>
-                        <button
-                            onClick={() => handleMaterializeChange('table')}
-                            disabled={cfg.degraded}
+                            title="Vue DuckDB (lazy)">VIEW</button>
+                        <button onClick={() => handleMaterializeChange('table')} disabled={cfg.degraded}
                             className={`px-2 py-1 transition-colors ${ast.materialize === 'table' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}
-                            title="TABLE matérialisée (chargée en mémoire)"
-                        >TABLE</button>
+                            title="TABLE matérialisée">TABLE</button>
                     </div>
                 </div>
             </div>
 
             {/* Corps principal */}
             {!cfg.degraded ? (
-                /* Disposition : DataTable | SQL (toggle) | Steps
-                   flex-wrap → empilement naturel sur petit écran */
                 <div className="flex flex-wrap gap-3 min-h-0 items-start">
                     {dataTableSection}
                     {sqlSection}
                     {stepsSection}
                 </div>
             ) : (
-                /* Mode dégradé : DataTable | éditeur SQL */
                 <div className="flex flex-wrap gap-3 items-start">
                     {dataTableSection}
                     <div className="flex-1 min-w-48">
-                        <SqlPreview
-                            sql={displaySql}
-                            editable={true}
-                            onEdit={handleManualSqlEdit}
-                        />
+                        <SqlPreview sql={displaySql} editable={true} onEdit={handleManualSqlEdit}
+                            tableSchemas={tableSchemas} cellId={cell._id} />
                     </div>
                 </div>
             )}
