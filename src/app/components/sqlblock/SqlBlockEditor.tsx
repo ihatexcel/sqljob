@@ -111,13 +111,22 @@ function computeStepSchemas(
 }
 
 // ─── useStepEyeData ───────────────────────────────────────────────────────────
-// Gère les tables DuckDB intermédiaires _sb_<cellId>_s<i> (LIMIT 10).
+// Gère les tables DuckDB intermédiaires _sqlblock."sb_<cellId>_s<i>" (LIMIT 10).
 // Hash-based : seules les étapes dont les prédécesseurs ont changé sont recalculées.
 
 interface EyeEntry {
     rows: Record<string, any>[]
     schemaTypes: Record<string, string>
     hash: string
+}
+
+const SQLBLOCK_SCHEMA = '_sqlblock'
+let sqlblockSchemaEnsured = false
+
+async function ensureSqlblockSchema() {
+    if (sqlblockSchemaEnsured) return
+    await DuckDBManager.executeQuery(`CREATE SCHEMA IF NOT EXISTS "${SQLBLOCK_SCHEMA}"`)
+    sqlblockSchemaEnsured = true
 }
 
 function useStepEyeData(cell: any, ast: SqlBlockAst) {
@@ -140,9 +149,10 @@ function useStepEyeData(cell: any, ast: SqlBlockAst) {
         return JSON.stringify({ src: a.source, steps: a.steps.slice(0, idx + 1) })
     }
 
-    function tableName(idx: number): string {
+    function tableRef(idx: number): string {
         const safeId = cellRef.current._id.replace(/[^a-zA-Z0-9]/g, '_')
-        return `_sb_${safeId}_s${idx < 0 ? 'src' : idx}`
+        const name = `sb_${safeId}_s${idx < 0 ? 'src' : idx}`
+        return `"${SQLBLOCK_SCHEMA}"."${name}"`
     }
 
     async function doLoad(idx: number) {
@@ -151,14 +161,15 @@ function useStepEyeData(cell: any, ast: SqlBlockAst) {
 
         setLoading(true)
         try {
+            await ensureSqlblockSchema()
             const ast = astRef.current
-            const tName = tableName(idx)
+            const tRef = tableRef(idx)
             const sql = stepSql(ast, idx)
             await DuckDBManager.executeQuery(
-                `CREATE OR REPLACE TABLE "${tName}" AS (${sql} LIMIT 10)`
+                `CREATE OR REPLACE TABLE ${tRef} AS (${sql} LIMIT 10)`
             )
             const { rows, schemaTypes } = await DuckDBManager.executeQueryWithSchema(
-                `SELECT * FROM "${tName}"`
+                `SELECT * FROM ${tRef}`
             )
             cache.current.set(idx, { rows, schemaTypes: schemaTypes || {}, hash })
             bumpRender(n => n + 1)
@@ -343,12 +354,11 @@ function ChangeTypeStepUI({ step, availableCols, availableColTypes, onChange }: 
 // ─── StepItem ─────────────────────────────────────────────────────────────────
 
 function StepItem({ step, index, totalSteps, availableCols, availableColTypes,
-    eyeOpen, eyeLoading, eyeData, onEyeToggle,
+    eyeOpen, eyeLoading, onEyeToggle,
     onUpdate, onRemove, onMove }: {
     step: SqlBlockStep; index: number; totalSteps: number
     availableCols: string[]; availableColTypes: Record<string, string>
     eyeOpen: boolean; eyeLoading: boolean
-    eyeData: EyeEntry | null
     onEyeToggle: () => void
     onUpdate: (idx: number, s: SqlBlockStep) => void
     onRemove: (idx: number) => void
@@ -356,11 +366,6 @@ function StepItem({ step, index, totalSteps, availableCols, availableColTypes,
 }) {
     const [open, setOpen] = useState(true)
     const [pendingDelete, setPendingDelete] = useState(false)
-
-    // Fake cell object pour SqlDataTable
-    const fakeEyeCell = eyeData
-        ? { _id: `eye_${index}`, _results: eyeData.rows, _schemaTypes: eyeData.schemaTypes }
-        : null
 
     return (
         <div className="border border-border rounded bg-card text-card-foreground">
@@ -420,29 +425,6 @@ function StepItem({ step, index, totalSteps, availableCols, availableColTypes,
                     {step.type === 'change_type' && (
                         <ChangeTypeStepUI step={step} availableCols={availableCols}
                             availableColTypes={availableColTypes} onChange={s => onUpdate(index, s)} />
-                    )}
-                </div>
-            )}
-
-            {/* Aperçu DataTable (œil) */}
-            {eyeOpen && (
-                <div className="border-t border-border bg-muted/20 px-2 py-2">
-                    {eyeLoading && !fakeEyeCell && (
-                        <p className="text-xs text-muted-foreground italic">Chargement…</p>
-                    )}
-                    {!eyeLoading && !fakeEyeCell && (
-                        <p className="text-xs text-muted-foreground italic">Aucune donnée — vérifiez la source</p>
-                    )}
-                    {fakeEyeCell && fakeEyeCell._results?.length > 0 && (
-                        <>
-                            <p className="text-xs text-muted-foreground mb-1">
-                                Aperçu {fakeEyeCell._results.length} ligne{fakeEyeCell._results.length > 1 ? 's' : ''} (LIMIT 10)
-                            </p>
-                            <SqlDataTable cell={fakeEyeCell} />
-                        </>
-                    )}
-                    {fakeEyeCell && fakeEyeCell._results?.length === 0 && (
-                        <p className="text-xs text-muted-foreground italic">Résultat vide</p>
                     )}
                 </div>
             )}
@@ -533,8 +515,8 @@ function SqlPreview({ sql, editable, onEdit, tableSchemas, cellId }: {
     function handleCancel() { setDraft(sql); setEditMode(false) }
 
     return (
-        <div className="flex flex-col gap-1 h-full">
-            <div className="flex items-center justify-between h-5">
+        <div className="flex flex-col gap-1 flex-1 min-h-0">
+            <div className="flex items-center justify-between h-5 shrink-0">
                 {editable && !editMode && (
                     <button onClick={() => { setDraft(sql); setEditMode(true) }}
                         className="text-xs text-muted-foreground hover:text-foreground underline">
@@ -548,25 +530,27 @@ function SqlPreview({ sql, editable, onEdit, tableSchemas, cellId }: {
                     </div>
                 )}
             </div>
-            <SqlMonacoEditor
-                key={`${cellId}-sql-${editMode ? 'edit' : 'view'}`}
-                value={editMode ? draft : sql}
-                onChange={editMode ? (v) => setDraft(v ?? '') : undefined}
-                tableSchemas={tableSchemas}
-                className="border border-border rounded overflow-hidden"
-                options={{
-                    readOnly: !editMode,
-                    minimap: { enabled: false },
-                    lineNumbers: 'on',
-                    scrollBeyondLastLine: false,
-                    wordWrap: 'on',
-                    fontSize: 12,
-                    renderLineHighlight: 'none',
-                    overviewRulerLanes: 0,
-                    scrollbar: { vertical: 'auto', alwaysConsumeMouseWheel: false },
-                }}
-                height="180px"
-            />
+            <div className="flex-1 min-h-0">
+                <SqlMonacoEditor
+                    key={`${cellId}-sql-${editMode ? 'edit' : 'view'}`}
+                    value={editMode ? draft : sql}
+                    onChange={editMode ? (v) => setDraft(v ?? '') : undefined}
+                    tableSchemas={tableSchemas}
+                    className="border border-border rounded overflow-hidden h-full"
+                    options={{
+                        readOnly: !editMode,
+                        minimap: { enabled: false },
+                        lineNumbers: 'on',
+                        scrollBeyondLastLine: false,
+                        wordWrap: 'on',
+                        fontSize: 12,
+                        renderLineHighlight: 'none',
+                        overviewRulerLanes: 0,
+                        scrollbar: { vertical: 'auto', alwaysConsumeMouseWheel: false },
+                    }}
+                    height="100%"
+                />
+            </div>
         </div>
     )
 }
@@ -710,75 +694,16 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
         }
     }
 
-    // ─── Sections de layout ────────────────────────────────────────────────
+    // ─── Aperçu conditionnel (œil step actif ou résultats cellule) ────────
 
+    const eyeData = eyeOpen !== null ? getEyeData(eyeOpen) : null
+    const showingEye = eyeOpen !== null
     const hasResults = cell._results && Array.isArray(cell._results) && cell._results.length > 0
 
-    const dataTableSection = (
-        <div className="flex-1 min-w-48 flex flex-col gap-1">
-            {hasResults ? (
-                <>
-                    {cell._resultInfo && <div className="text-xs text-muted-foreground">{cell._resultInfo}</div>}
-                    <SqlDataTable cell={cell} />
-                </>
-            ) : (
-                <div className="flex items-center justify-center h-16 text-xs text-muted-foreground italic border border-dashed border-border rounded">
-                    Aucun résultat — exécutez la cellule
-                </div>
-            )}
-            {cell._status === 'error' && cell._resultInfo && (
-                <div className="p-2 rounded bg-destructive/10 text-destructive text-xs">{cell._resultInfo}</div>
-            )}
-        </div>
-    )
-
-    const sqlSection = (
-        <div className={`flex flex-col gap-1 ${showSql ? 'min-w-48 w-64' : ''}`}>
-            <button onClick={() => setShowSql(s => !s)}
-                className="flex items-center gap-1 text-xs font-medium text-muted-foreground uppercase tracking-wide hover:text-foreground transition-colors whitespace-nowrap">
-                SQL généré <span className="ml-0.5">{showSql ? '▾' : '▸'}</span>
-            </button>
-            {showSql && (
-                <SqlPreview
-                    sql={displaySql}
-                    editable={true}
-                    onEdit={handleManualSqlEdit}
-                    tableSchemas={tableSchemas}
-                    cellId={cell._id}
-                />
-            )}
-        </div>
-    )
-
-    const stepsSection = (
-        <div className="flex flex-col gap-2 min-w-52 w-64 shrink-0">
-            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Steps</span>
-            {ast.steps.length === 0 && (
-                <p className="text-xs text-muted-foreground italic px-1">
-                    Aucun step — SELECT * FROM {ast.source || '…'}
-                </p>
-            )}
-            {ast.steps.map((step, idx) => {
-                const schema = stepSchemas[idx] ?? { columns: sourceColumns.map(c => c.name), colTypes: Object.fromEntries(sourceColumns.map(c => [c.name, c.type])) }
-                return (
-                    <StepItem
-                        key={idx}
-                        step={step} index={idx} totalSteps={ast.steps.length}
-                        availableCols={schema.columns}
-                        availableColTypes={schema.colTypes}
-                        eyeOpen={eyeOpen === idx}
-                        eyeLoading={eyeLoading}
-                        eyeData={getEyeData(idx)}
-                        onEyeToggle={() => toggleEye(idx)}
-                        onUpdate={handleStepUpdate}
-                        onRemove={handleStepRemove}
-                        onMove={handleStepMove}
-                    />
-                )
-            })}
-            <AddStepMenu onAdd={handleStepAdd} />
-        </div>
-    )
+    // cellule factice pour SqlDataTable quand on affiche un aperçu step
+    const displayCell = showingEye && eyeData
+        ? { _id: `eye_${eyeOpen}_${cell._id}`, _results: eyeData.rows, _schemaTypes: eyeData.schemaTypes }
+        : cell
 
     // ─── Render ────────────────────────────────────────────────────────────
 
@@ -790,7 +715,7 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
             )}
 
             {/* Ligne Source + Matérialisation */}
-            <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex items-center gap-3 flex-wrap shrink-0">
                 <div className="flex items-center gap-2 flex-1 min-w-40">
                     <label className="text-xs text-muted-foreground shrink-0">Source :</label>
                     <input type="text"
@@ -818,17 +743,110 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
                 </div>
             </div>
 
-            {/* Corps principal */}
+            {/* Corps principal — hauteur étirée */}
             {!cfg.degraded ? (
-                <div className="flex flex-wrap gap-3 min-h-0 items-start">
-                    {dataTableSection}
-                    {sqlSection}
-                    {stepsSection}
+                <div className="flex gap-3 min-h-[280px]" style={{ height: 'calc(100% - 40px)' }}>
+
+                    {/* Colonne gauche : DataTable (résultat cell ou aperçu step) */}
+                    <div className="flex-1 min-w-0 flex flex-col gap-1">
+                        {showingEye && (
+                            <div className="flex items-center gap-1.5 shrink-0">
+                                <span className="text-xs text-primary font-medium">
+                                    Aperçu étape {eyeOpen! + 1}
+                                </span>
+                                {eyeLoading && (
+                                    <svg viewBox="0 0 24 24" className="w-3 h-3 animate-spin text-muted-foreground" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>
+                                )}
+                                <button onClick={() => toggleEye(eyeOpen!)}
+                                    className="ml-auto text-xs text-muted-foreground hover:text-foreground underline">
+                                    ✕ fermer
+                                </button>
+                            </div>
+                        )}
+                        {showingEye ? (
+                            eyeData && eyeData.rows.length > 0
+                                ? <SqlDataTable cell={displayCell} />
+                                : eyeLoading
+                                    ? <div className="flex items-center justify-center h-16 text-xs text-muted-foreground italic">Chargement…</div>
+                                    : <div className="flex items-center justify-center h-16 text-xs text-muted-foreground italic border border-dashed border-border rounded">Résultat vide</div>
+                        ) : hasResults ? (
+                            <>
+                                {cell._resultInfo && <div className="text-xs text-muted-foreground shrink-0">{cell._resultInfo}</div>}
+                                <SqlDataTable cell={cell} />
+                            </>
+                        ) : (
+                            <div className="flex items-center justify-center h-16 text-xs text-muted-foreground italic border border-dashed border-border rounded">
+                                Aucun résultat — exécutez la cellule
+                            </div>
+                        )}
+                        {cell._status === 'error' && cell._resultInfo && !showingEye && (
+                            <div className="p-2 rounded bg-destructive/10 text-destructive text-xs shrink-0">{cell._resultInfo}</div>
+                        )}
+                    </div>
+
+                    {/* Colonne SQL Monaco (toggle, étirée) */}
+                    <div className={`flex flex-col min-h-0 ${showSql ? 'w-64 shrink-0' : ''}`}>
+                        <button onClick={() => setShowSql(s => !s)}
+                            className="flex items-center gap-1 text-xs font-medium text-muted-foreground uppercase tracking-wide hover:text-foreground transition-colors whitespace-nowrap shrink-0 mb-1">
+                            SQL généré <span className="ml-0.5">{showSql ? '▾' : '▸'}</span>
+                        </button>
+                        {showSql && (
+                            <SqlPreview
+                                sql={displaySql}
+                                editable={true}
+                                onEdit={handleManualSqlEdit}
+                                tableSchemas={tableSchemas}
+                                cellId={cell._id}
+                            />
+                        )}
+                    </div>
+
+                    {/* Colonne Steps */}
+                    <div className="flex flex-col gap-2 w-64 shrink-0 overflow-y-auto">
+                        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide shrink-0">Steps</span>
+                        {ast.steps.length === 0 && (
+                            <p className="text-xs text-muted-foreground italic px-1">
+                                Aucun step — SELECT * FROM {ast.source || '…'}
+                            </p>
+                        )}
+                        {ast.steps.map((step, idx) => {
+                            const schema = stepSchemas[idx] ?? { columns: sourceColumns.map(c => c.name), colTypes: Object.fromEntries(sourceColumns.map(c => [c.name, c.type])) }
+                            return (
+                                <StepItem
+                                    key={idx}
+                                    step={step} index={idx} totalSteps={ast.steps.length}
+                                    availableCols={schema.columns}
+                                    availableColTypes={schema.colTypes}
+                                    eyeOpen={eyeOpen === idx}
+                                    eyeLoading={eyeLoading && eyeOpen === idx}
+                                    onEyeToggle={() => toggleEye(idx)}
+                                    onUpdate={handleStepUpdate}
+                                    onRemove={handleStepRemove}
+                                    onMove={handleStepMove}
+                                />
+                            )
+                        })}
+                        <AddStepMenu onAdd={handleStepAdd} />
+                    </div>
                 </div>
             ) : (
-                <div className="flex flex-wrap gap-3 items-start">
-                    {dataTableSection}
-                    <div className="flex-1 min-w-48">
+                <div className="flex gap-3 min-h-[280px]">
+                    <div className="flex-1 min-w-0 flex flex-col gap-1">
+                        {hasResults ? (
+                            <>
+                                {cell._resultInfo && <div className="text-xs text-muted-foreground shrink-0">{cell._resultInfo}</div>}
+                                <SqlDataTable cell={cell} />
+                            </>
+                        ) : (
+                            <div className="flex items-center justify-center h-16 text-xs text-muted-foreground italic border border-dashed border-border rounded">
+                                Aucun résultat — exécutez la cellule
+                            </div>
+                        )}
+                        {cell._status === 'error' && cell._resultInfo && (
+                            <div className="p-2 rounded bg-destructive/10 text-destructive text-xs">{cell._resultInfo}</div>
+                        )}
+                    </div>
+                    <div className="w-64 flex flex-col min-h-0">
                         <SqlPreview sql={displaySql} editable={true} onEdit={handleManualSqlEdit}
                             tableSchemas={tableSchemas} cellId={cell._id} />
                     </div>
