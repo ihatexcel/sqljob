@@ -33,6 +33,9 @@
     "@codemirror/view": "^6.39.15",
     "@iconify/iconify": "^3.1.1",
     "@malloydata/malloy": "^0.0.362",
+    "@malloydata/malloy-interfaces": "^0.0.362",
+    "@malloydata/query-composer": "^0.0.269-dev250516202739",
+    "@malloydata/render": "^0.0.362",
     "@marimo-team/codemirror-sql": "^0.2.4",
     "@pdfme/common": "^5.5.8",
     "@pdfme/generator": "^5.5.8",
@@ -56,6 +59,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "simple-datatables": "^10.2.0",
+    "styled-components": "^5.3.11",
     "xlsx": "^0.18.5",
     "zustand": "^5.0.11"
   }
