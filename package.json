@@ -35,7 +35,7 @@
     "@malloydata/malloy": "^0.0.362",
     "@malloydata/malloy-interfaces": "^0.0.362",
     "@malloydata/query-composer": "^0.0.269-dev250516202739",
-    "@malloydata/render": "^0.0.362",
+    "@malloydata/render": "^0.0.269",
     "@marimo-team/codemirror-sql": "^0.2.4",
     "@pdfme/common": "^5.5.8",
     "@pdfme/generator": "^5.5.8",
