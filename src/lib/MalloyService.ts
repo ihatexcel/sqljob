@@ -5,10 +5,10 @@
  * Le schéma des tables est fourni depuis _duckdbTables (état Zustand).
  *
  * Flux :
- *   1. compileQuery({ model_url, query_malloy }) — le compilateur retourne
- *      compiler_needs.table_schemas si des tables sont inconnues.
- *   2. On fournit le schéma depuis _duckdbTables (colonnes + types).
- *   3. On répète jusqu'à result.sql disponible.
+ *   1. compileQuery({ model_url, query_malloy }) — le compilateur peut retourner
+ *      compiler_needs pour demander : files (contenu du model_url), table_schemas,
+ *      sql_schemas, translations.
+ *   2. On répond à chaque besoin et on relance jusqu'à result.sql disponible.
  */
 
 import { API } from '@malloydata/malloy'
@@ -89,22 +89,11 @@ export async function compileMalloy(
         compiler_needs: { connections },
     }
 
-    // Boucle d'itération : le compilateur demande les schémas de tables manquants
+    // Boucle d'itération : le compilateur demande les ressources manquantes
     let iterations = 0
     while (iterations < 10) {
         iterations++
-        console.log(`[MalloyService] iter ${iterations} — request:`, {
-            query_malloy: request.query_malloy?.slice(0, 120),
-            compiler_needs: request.compiler_needs,
-        })
         const response = stateless.compileQuery(request)
-        console.log(`[MalloyService] iter ${iterations} — response:`, {
-            result_sql: response.result?.sql?.slice(0, 120) ?? null,
-            compiler_needs: response.compiler_needs,
-            compiler_needs_keys: response.compiler_needs ? Object.keys(response.compiler_needs) : null,
-            compiler_needs_json: JSON.stringify(response.compiler_needs),
-            logs: response.logs,
-        })
 
         // Logs d'erreur fatale
         const logs = response.logs ?? []
@@ -126,20 +115,25 @@ export async function compileMalloy(
             }
         }
 
-        // Le compilateur a besoin de schémas de tables
+        // Le compilateur a besoin de ressources supplémentaires
         if (response.compiler_needs) {
             const needs = response.compiler_needs
             const filledNeeds: MI.CompilerNeeds = { connections }
 
-            // Résoudre table_schemas depuis _duckdbTables
+            // files : contenu d'URLs Malloy (ex: le model_url lui-même).
+            // Pour internal://... le modèle de base est vide — tout le programme
+            // est dans query_malloy.
+            if (needs.files && needs.files.length > 0) {
+                filledNeeds.files = needs.files.map(f => ({
+                    url: f.url,
+                    contents: '',
+                }))
+            }
+
+            // table_schemas : schémas des tables DuckDB demandées
             if (needs.table_schemas && needs.table_schemas.length > 0) {
-                console.log(`[MalloyService] iter ${iterations} — tables demandées:`, needs.table_schemas.map(t => `${t.connection_name}.${t.name}`))
-                console.log(`[MalloyService] iter ${iterations} — tables disponibles:`, Object.keys(duckdbTables))
                 filledNeeds.table_schemas = needs.table_schemas.map(t => {
-                    // Le compilateur passe le nom de la table tel qu'écrit dans Malloy
-                    // ex: duckdb.table('orders') → name='orders', connection_name='duckdb'
                     const tableName = t.name
-                    // Cherche dans _duckdbTables (correspondance exacte ou normalisée)
                     const tableInfo =
                         duckdbTables[tableName] ??
                         duckdbTables[tableName.replace(/^.*\/([^/]+)$/, '$1')] ??
@@ -148,40 +142,25 @@ export async function compileMalloy(
                         )?.[1]
 
                     if (tableInfo) {
-                        console.log(`[MalloyService] iter ${iterations} — schema trouvé pour "${tableName}":`, tableInfo.columns.slice(0, 5))
                         return {
                             name: t.name,
                             connection_name: t.connection_name,
                             schema: buildSchema(tableInfo.columns),
                         }
                     }
-                    console.warn(`[MalloyService] iter ${iterations} — table introuvable: "${tableName}" (disponibles: ${Object.keys(duckdbTables).join(', ')})`)
-                    // Table inconnue : on retourne sans schéma (le compilateur génèrera une erreur)
+                    console.warn(`[MalloyService] table introuvable: "${tableName}" (disponibles: ${Object.keys(duckdbTables).join(', ')})`)
+                    // Table inconnue : le compilateur générera une erreur
                     return { name: t.name, connection_name: t.connection_name }
                 })
             }
 
-            // sql_schemas (vues SQL inline) — on ne les supporte pas ici
+            // sql_schemas (vues SQL inline)
             if (needs.sql_schemas) {
-                console.log(`[MalloyService] iter ${iterations} — sql_schemas demandés:`, needs.sql_schemas)
                 filledNeeds.sql_schemas = needs.sql_schemas
             }
 
-            // files : le compilateur demande le contenu d'URLs Malloy (ex: model_url)
-            // Pour internal://... on fournit un contenu vide (le modèle de base est vide,
-            // tout le programme est dans query_malloy).
-            if (needs.files && needs.files.length > 0) {
-                console.log(`[MalloyService] iter ${iterations} — files demandés:`, needs.files.map(f => f.url))
-                filledNeeds.files = needs.files.map(f => ({
-                    url: f.url,
-                    contents: '',
-                }))
-            }
-
-            // translations : JSON pré-compilé d'un modèle (on n'en a pas, on renvoie
-            // l'URL sans compiled_model_json → le compilateur compile depuis la source)
+            // translations : JSON pré-compilé d'un modèle (on n'en a pas)
             if (needs.translations && needs.translations.length > 0) {
-                console.log(`[MalloyService] iter ${iterations} — translations demandées:`, needs.translations.map(t => t.url))
                 filledNeeds.translations = needs.translations.map(t => ({ url: t.url }))
             }
 
@@ -195,12 +174,13 @@ export async function compileMalloy(
 
         // Pas de result.sql et pas de compiler_needs → erreur inattendue
         return {
-            error: 'Erreur de compilation Malloy inattendue (pas de SQL ni de compiler_needs)',
+            error: logs.length > 0
+                ? logs.map(l => l.message).join('\n')
+                : 'Erreur de compilation Malloy inattendue (pas de SQL ni de compiler_needs)',
             logs,
         }
     }
 
-    console.error('[MalloyService] Boucle de compilation dépassée (10 itérations). Dernier request:', request)
     return {
         error: 'Trop d\'itérations de compilation Malloy (boucle infinie ?)',
         logs: [],
