@@ -28,7 +28,12 @@ import {
     ComposerOptionsContext,
     StubCompile,
     UndoContext,
+    IS_STUB,
 } from '@malloydata/query-composer'
+
+// IS_STUB is exported as `true` by the CDN stub, undefined in the real package.
+// This lets us detect CDN mode at module load time without persisting state on cells.
+const VISUAL_EDITOR_AVAILABLE = !IS_STUB
 
 // ─── Icônes inline ────────────────────────────────────────────────────────────
 
@@ -153,12 +158,6 @@ function MalloyVisualEditor({ cell, path, cellIndex, onSwitchToText }: any) {
         selectedTable ?? undefined,
         'malloy://notebook',
     )
-
-    // Auto-switch to text mode if query-composer is stubbed (CDN build).
-    // queryWriter === null indicates the stub is in effect.
-    useEffect(() => {
-        if (!queryWriter) onSwitchToText()
-    }, [!!queryWriter])
 
     if (!queryWriter) return null
 
@@ -543,16 +542,10 @@ function MalloyTextEditor({ cell, path, cellIndex, onSwitchToVisual }: any) {
 export function MalloyCellEditor({ cell, path, cellIndex }: any) {
     const forceUpdate = useNotebookStore(s => s.forceUpdate)
 
-    // Par défaut : mode visuel (sauf si l'éditeur visuel s'est auto-désactivé)
-    const mode: string = cell._composerMode ?? 'visual'
-
-    // Appelé par MalloyVisualEditor quand le mode visuel est indisponible (stub CDN).
-    // On mémorise l'indisponibilité sur la cellule pour cacher le bouton bascule.
-    const switchToTextUnavailable = useCallback(() => {
-        cell._composerMode = 'text'
-        cell._visualUnavailable = true
-        forceUpdate?.()
-    }, [cell, forceUpdate])
+    // Par défaut : mode visuel si disponible, sinon texte.
+    // VISUAL_EDITOR_AVAILABLE est calculé au chargement du module (pas persisté sur la cellule).
+    const defaultMode = VISUAL_EDITOR_AVAILABLE ? 'visual' : 'text'
+    const mode: string = cell._composerMode ?? defaultMode
 
     const switchToText = useCallback(() => {
         cell._composerMode = 'text'
@@ -570,12 +563,12 @@ export function MalloyCellEditor({ cell, path, cellIndex }: any) {
                 cell={cell}
                 path={path}
                 cellIndex={cellIndex}
-                onSwitchToVisual={cell._visualUnavailable ? null : switchToVisual}
+                onSwitchToVisual={VISUAL_EDITOR_AVAILABLE ? switchToVisual : null}
             />
         )
     }
 
-    return <MalloyVisualEditor cell={cell} path={path} cellIndex={cellIndex} onSwitchToText={switchToTextUnavailable} />
+    return <MalloyVisualEditor cell={cell} path={path} cellIndex={cellIndex} onSwitchToText={switchToText} />
 }
 
 // ─── MalloyBody (wrapper selon devMode) ──────────────────────────────────────
