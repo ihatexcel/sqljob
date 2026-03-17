@@ -15,7 +15,7 @@
  *   - cell._malloyLogs       — logs de compilation (runtime)
  *   - cell._results          — résultats DuckDB (runtime, via executeMalloyCell)
  */
-import { useState, useCallback, useMemo, useRef } from 'react'
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
 import { SqlMonacoEditor } from '@sqlrooms/sql-editor'
 import { useShallow } from 'zustand/react/shallow'
 import { useNotebookStore } from '../../store/notebookStore'
@@ -156,6 +156,14 @@ function MalloyVisualEditor({ cell, path, cellIndex, onSwitchToText }: any) {
         selectedTable ?? undefined,
         'malloy://notebook',
     )
+
+    // Auto-switch to text mode if query-composer is stubbed (CDN build).
+    // queryWriter === null indicates the stub is in effect.
+    useEffect(() => {
+        if (!queryWriter) onSwitchToText()
+    }, [!!queryWriter])
+
+    if (!queryWriter) return null
 
     const isRunning = cell._status === 'running'
     const compiledSql: string | null = cell._compiledSql ?? null
