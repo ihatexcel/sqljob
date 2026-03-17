@@ -209,6 +209,8 @@ function MalloyQueryBuilderUI({ cell, path, cellIndex, onSwitchToText }: any) {
     const [compiling, setCompiling] = useState(false)
 
     const malloyText = generateMalloy(selectedTable, dimensions, measures, filters, orderByAlias, orderDir, limit)
+    // Synchronise cell.malloyText en temps réel pour que le mode texte reflète le visuel
+    useEffect(() => { cell.malloyText = malloyText }, [malloyText])
     const compiledSql: string | null = cell._compiledSql ?? null
     const malloyLogs: any[] = cell._malloyLogs ?? []
     const hasError = malloyLogs.some((l: any) => l.severity === 'error')
