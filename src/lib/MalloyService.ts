@@ -101,6 +101,8 @@ export async function compileMalloy(
         console.log(`[MalloyService] iter ${iterations} — response:`, {
             result_sql: response.result?.sql?.slice(0, 120) ?? null,
             compiler_needs: response.compiler_needs,
+            compiler_needs_keys: response.compiler_needs ? Object.keys(response.compiler_needs) : null,
+            compiler_needs_json: JSON.stringify(response.compiler_needs),
             logs: response.logs,
         })
 
@@ -163,6 +165,24 @@ export async function compileMalloy(
             if (needs.sql_schemas) {
                 console.log(`[MalloyService] iter ${iterations} — sql_schemas demandés:`, needs.sql_schemas)
                 filledNeeds.sql_schemas = needs.sql_schemas
+            }
+
+            // files : le compilateur demande le contenu d'URLs Malloy (ex: model_url)
+            // Pour internal://... on fournit un contenu vide (le modèle de base est vide,
+            // tout le programme est dans query_malloy).
+            if (needs.files && needs.files.length > 0) {
+                console.log(`[MalloyService] iter ${iterations} — files demandés:`, needs.files.map(f => f.url))
+                filledNeeds.files = needs.files.map(f => ({
+                    url: f.url,
+                    contents: '',
+                }))
+            }
+
+            // translations : JSON pré-compilé d'un modèle (on n'en a pas, on renvoie
+            // l'URL sans compiled_model_json → le compilateur compile depuis la source)
+            if (needs.translations && needs.translations.length > 0) {
+                console.log(`[MalloyService] iter ${iterations} — translations demandées:`, needs.translations.map(t => t.url))
+                filledNeeds.translations = needs.translations.map(t => ({ url: t.url }))
             }
 
             request = {
