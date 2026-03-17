@@ -27,6 +27,7 @@ import {
 import {
     DUCKDB_TYPES,
     STEP_LABELS,
+    STEP_CATEGORIES,
     createDefaultSqlBlockConfig,
 } from '../../../lib/SqlBlockTypes'
 import type {
@@ -36,6 +37,27 @@ import type {
     SelectColumnsStep,
     ExcludeColumnsStep,
     ChangeTypeStep,
+    FilterRowsStep,
+    FilterCondition,
+    FilterOp,
+    SortStep,
+    SortKey,
+    TopNStep,
+    RenameColumnsStep,
+    DeriveStep,
+    FillNullStep,
+    GroupByStep,
+    Aggregation,
+    JoinStep,
+    JoinCondition,
+    UnionStep,
+    PivotStep,
+    UnpivotStep,
+    WindowStep,
+    WindowColumn,
+    UnnestStep,
+    JsonExtractStep,
+    DateTruncStep,
     SqlBlockMaterialize,
 } from '../../../lib/SqlBlockTypes'
 import { SqlDataTable } from '../SqlDataTable'
@@ -75,6 +97,89 @@ interface StepSchema {
     colTypes: Record<string, string>
 }
 
+function applyStepToSchema(step: SqlBlockStep, cols: string[], types: Record<string, string>): { cols: string[]; types: Record<string, string> } {
+    switch (step.type) {
+        case 'select_columns': {
+            if (!step.columns.length) return { cols, types }
+            const kept = step.columns.filter(c => cols.includes(c))
+            return { cols: kept, types: Object.fromEntries(kept.map(c => [c, types[c] ?? ''])) }
+        }
+        case 'exclude_columns': {
+            const excl = new Set(step.columns)
+            const c2 = cols.filter(c => !excl.has(c))
+            return { cols: c2, types: Object.fromEntries(c2.map(c => [c, types[c] ?? ''])) }
+        }
+        case 'change_type': {
+            const t2 = { ...types }
+            step.changes.forEach(ch => { t2[ch.column] = ch.targetType })
+            return { cols, types: t2 }
+        }
+        case 'filter_rows':
+        case 'sort':
+        case 'top_n':
+        case 'fill_null':
+        case 'union':
+            return { cols, types }
+        case 'rename_columns': {
+            const c2 = [...cols]; const t2 = { ...types }
+            step.renames.forEach(r => {
+                const i = c2.indexOf(r.from); if (i < 0) return
+                c2[i] = r.to; t2[r.to] = t2[r.from] ?? ''; delete t2[r.from]
+            })
+            return { cols: c2, types: t2 }
+        }
+        case 'derive': {
+            const c2 = [...cols]; const t2 = { ...types }
+            step.columns.forEach(col => {
+                if (!c2.includes(col.name)) c2.push(col.name)
+                t2[col.name] = ''
+            })
+            return { cols: c2, types: t2 }
+        }
+        case 'group_by': {
+            const c2 = [...step.groupCols, ...step.aggregations.map(a => a.alias)]
+            const t2: Record<string, string> = {}
+            step.groupCols.forEach(c => { t2[c] = types[c] ?? '' })
+            step.aggregations.forEach(a => {
+                t2[a.alias] = ['count','count_distinct'].includes(a.fn) ? 'BIGINT'
+                    : ['sum','avg','mean','median','stddev'].includes(a.fn) ? 'DOUBLE'
+                    : a.fn === 'string_agg' ? 'VARCHAR' : (types[a.column] ?? '')
+            })
+            return { cols: c2, types: t2 }
+        }
+        case 'join': {
+            const right = step.selectRight === '*' ? [] : step.selectRight
+            const c2 = [...cols, ...right.filter(c => !cols.includes(c))]
+            const t2 = { ...types }; right.forEach(c => { if (!t2[c]) t2[c] = '' })
+            return { cols: c2, types: t2 }
+        }
+        case 'pivot':
+            return { cols: [...step.groupCols], types: Object.fromEntries(step.groupCols.map(c => [c, types[c] ?? ''])) }
+        case 'unpivot': {
+            const excl = new Set(step.columns)
+            const rem = cols.filter(c => !excl.has(c))
+            return { cols: [...rem, step.nameCol, step.valueCol], types: { ...Object.fromEntries(rem.map(c => [c, types[c] ?? ''])), [step.nameCol]: 'VARCHAR', [step.valueCol]: '' } }
+        }
+        case 'window': {
+            const c2 = [...cols, ...step.columns.map(w => w.alias)]
+            const t2 = { ...types }; step.columns.forEach(w => { t2[w.alias] = '' })
+            return { cols: c2, types: t2 }
+        }
+        case 'unnest':
+            return { cols: [...cols, step.alias], types: { ...types, [step.alias]: '' } }
+        case 'json_extract': {
+            const c2 = [...cols, ...step.extractions.map(e => e.alias)]
+            const t2 = { ...types }; step.extractions.forEach(e => { t2[e.alias] = e.targetType ?? 'VARCHAR' })
+            return { cols: c2, types: t2 }
+        }
+        case 'date_trunc': {
+            if (step.mode === 'replace') return { cols, types: { ...types, [step.column]: 'TIMESTAMP' } }
+            const alias = step.alias || `${step.column}_${step.granularity}`
+            return { cols: [...cols, alias], types: { ...types, [alias]: 'TIMESTAMP' } }
+        }
+    }
+}
+
 function computeStepSchemas(
     ast: SqlBlockAst,
     sourceColumns: { name: string; type: string }[]
@@ -82,31 +187,11 @@ function computeStepSchemas(
     const schemas: StepSchema[] = []
     let cols = sourceColumns.map(c => c.name)
     let types: Record<string, string> = Object.fromEntries(sourceColumns.map(c => [c.name, c.type]))
-
     for (const step of ast.steps) {
-        // Enregistrer le schéma EN ENTRÉE de cette étape
         schemas.push({ columns: [...cols], colTypes: { ...types } })
-
-        // Calculer la sortie de cette étape (= entrée de la suivante)
-        if (step.type === 'select_columns' && step.columns.length > 0) {
-            const kept = step.columns.filter(c => cols.includes(c))
-            const newTypes: Record<string, string> = {}
-            kept.forEach(c => { newTypes[c] = types[c] ?? '' })
-            cols = kept
-            types = newTypes
-        } else if (step.type === 'exclude_columns' && step.columns.length > 0) {
-            const excl = new Set(step.columns)
-            cols = cols.filter(c => !excl.has(c))
-            const newTypes: Record<string, string> = {}
-            cols.forEach(c => { newTypes[c] = types[c] ?? '' })
-            types = newTypes
-        } else if (step.type === 'change_type') {
-            for (const change of step.changes) {
-                if (cols.includes(change.column)) types[change.column] = change.targetType
-            }
-        }
+        const next = applyStepToSchema(step, cols, types)
+        cols = next.cols; types = next.types
     }
-
     return schemas
 }
 
@@ -351,6 +436,563 @@ function ChangeTypeStepUI({ step, availableCols, availableColTypes, onChange }: 
     )
 }
 
+// ─── Helpers UI partagés ──────────────────────────────────────────────────────
+
+function ColSelect({ value, cols, onChange, placeholder = '— colonne —', className = '' }: { value: string; cols: string[]; onChange: (v: string) => void; placeholder?: string; className?: string }) {
+    return (
+        <select className={`h-6 rounded border border-border bg-background px-1 text-xs font-mono ${className}`} value={value} onChange={e => onChange(e.target.value)}>
+            <option value="">{placeholder}</option>
+            {cols.map(c => <option key={c} value={c}>{c}</option>)}
+            {value && !cols.includes(value) && <option value={value}>{value}</option>}
+        </select>
+    )
+}
+
+function TxtInput({ value, onChange, placeholder = '', className = '' }: { value: string; onChange: (v: string) => void; placeholder?: string; className?: string }) {
+    return <input type="text" className={`h-6 rounded border border-border bg-background px-1.5 text-xs font-mono ${className}`} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} />
+}
+
+function AddRowBtn({ onClick, label = '+ Ajouter' }: { onClick: () => void; label?: string }) {
+    return <button onClick={onClick} className="flex items-center gap-1 text-xs text-primary hover:underline mt-1">{label}</button>
+}
+
+function RemoveBtn({ onClick }: { onClick: () => void }) {
+    return <button onClick={onClick} className="shrink-0 text-destructive hover:text-destructive/70 w-4 h-4 flex items-center justify-center text-xs leading-none">✕</button>
+}
+
+// ─── P1 step UIs ──────────────────────────────────────────────────────────────
+
+const FILTER_OPS: { op: FilterOp; label: string }[] = [
+    { op: '=', label: '=' }, { op: '!=', label: '≠' },
+    { op: '>', label: '>' }, { op: '<', label: '<' },
+    { op: '>=', label: '≥' }, { op: '<=', label: '≤' },
+    { op: 'in', label: 'IN' }, { op: 'not_in', label: 'NOT IN' },
+    { op: 'is_null', label: 'IS NULL' }, { op: 'not_null', label: 'NOT NULL' },
+    { op: 'like', label: 'LIKE' }, { op: 'ilike', label: 'ILIKE' },
+    { op: 'between', label: 'BETWEEN' },
+]
+
+function FilterRowsStepUI({ step, availableCols, onChange }: { step: FilterRowsStep; availableCols: string[]; onChange: (s: FilterRowsStep) => void }) {
+    function updateCond(i: number, patch: Partial<FilterCondition>) {
+        onChange({ ...step, conditions: step.conditions.map((c, idx) => idx === i ? { ...c, ...patch } : c) })
+    }
+    function addCond() { onChange({ ...step, conditions: [...step.conditions, { column: availableCols[0] ?? '', op: '=', value: '' }] }) }
+    function removeCond(i: number) { onChange({ ...step, conditions: step.conditions.filter((_, idx) => idx !== i) }) }
+
+    return (
+        <div className="flex flex-col gap-2">
+            {step.conditions.length > 1 && (
+                <div className="flex gap-1 text-xs">
+                    {(['AND', 'OR'] as const).map(op => (
+                        <button key={op} onClick={() => onChange({ ...step, logicOp: op })}
+                            className={`px-2 py-0.5 rounded border text-xs transition-colors ${step.logicOp === op ? 'bg-primary text-primary-foreground border-primary' : 'border-border hover:bg-muted'}`}>
+                            {op}
+                        </button>
+                    ))}
+                </div>
+            )}
+            {step.conditions.map((cond, i) => {
+                const noVal = cond.op === 'is_null' || cond.op === 'not_null'
+                const isBetween = cond.op === 'between'
+                const isMulti = cond.op === 'in' || cond.op === 'not_in'
+                return (
+                    <div key={i} className="flex flex-wrap items-center gap-1">
+                        <ColSelect value={cond.column} cols={availableCols} onChange={v => updateCond(i, { column: v })} className="flex-1 min-w-20" />
+                        <select className="h-6 rounded border border-border bg-background px-1 text-xs w-24" value={cond.op} onChange={e => updateCond(i, { op: e.target.value as FilterOp })}>
+                            {FILTER_OPS.map(o => <option key={o.op} value={o.op}>{o.label}</option>)}
+                        </select>
+                        {!noVal && !isBetween && !isMulti && (
+                            <TxtInput value={cond.value ?? ''} onChange={v => updateCond(i, { value: v })} placeholder="valeur" className="flex-1 min-w-16" />
+                        )}
+                        {isBetween && <>
+                            <TxtInput value={cond.value ?? ''} onChange={v => updateCond(i, { value: v })} placeholder="de" className="w-20" />
+                            <span className="text-xs text-muted-foreground">et</span>
+                            <TxtInput value={cond.valueTo ?? ''} onChange={v => updateCond(i, { valueTo: v })} placeholder="à" className="w-20" />
+                        </>}
+                        {isMulti && (
+                            <TxtInput value={(cond.values ?? []).join(', ')} onChange={v => updateCond(i, { values: v.split(',').map(x => x.trim()).filter(Boolean) })} placeholder="val1, val2…" className="flex-1 min-w-24" />
+                        )}
+                        <RemoveBtn onClick={() => removeCond(i)} />
+                    </div>
+                )
+            })}
+            <AddRowBtn onClick={addCond} label="+ Condition" />
+        </div>
+    )
+}
+
+function SortStepUI({ step, availableCols, onChange }: { step: SortStep; availableCols: string[]; onChange: (s: SortStep) => void }) {
+    function update(i: number, patch: Partial<SortKey>) {
+        onChange({ ...step, keys: step.keys.map((k, idx) => idx === i ? { ...k, ...patch } : k) })
+    }
+    return (
+        <div className="flex flex-col gap-1.5">
+            {step.keys.map((k, i) => (
+                <div key={i} className="flex items-center gap-1 flex-wrap">
+                    <ColSelect value={k.column} cols={availableCols} onChange={v => update(i, { column: v })} className="flex-1 min-w-24" />
+                    <div className="flex rounded border border-border overflow-hidden text-xs">
+                        {(['asc', 'desc'] as const).map(d => (
+                            <button key={d} onClick={() => update(i, { direction: d })}
+                                className={`px-2 py-0.5 transition-colors ${k.direction === d ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}>
+                                {d.toUpperCase()}
+                            </button>
+                        ))}
+                    </div>
+                    <div className="flex rounded border border-border overflow-hidden text-xs">
+                        {(['last', 'first'] as const).map(n => (
+                            <button key={n} onClick={() => update(i, { nulls: n })}
+                                className={`px-1.5 py-0.5 transition-colors ${k.nulls === n ? 'bg-muted-foreground/20 font-medium' : 'bg-background hover:bg-muted'} text-xs`}>
+                                NULL {n.toUpperCase()}
+                            </button>
+                        ))}
+                    </div>
+                    <RemoveBtn onClick={() => onChange({ ...step, keys: step.keys.filter((_, idx) => idx !== i) })} />
+                </div>
+            ))}
+            <AddRowBtn onClick={() => onChange({ ...step, keys: [...step.keys, { column: availableCols[0] ?? '', direction: 'asc', nulls: 'last' }] })} label="+ Clé de tri" />
+        </div>
+    )
+}
+
+function TopNStepUI({ step, onChange }: { step: TopNStep; onChange: (s: TopNStep) => void }) {
+    return (
+        <div className="flex flex-col gap-2">
+            <div className="flex gap-1">
+                {(['limit', 'sample_percent', 'sample_rows'] as const).map(m => (
+                    <button key={m} onClick={() => onChange({ ...step, mode: m })}
+                        className={`px-2 py-0.5 rounded border text-xs transition-colors ${step.mode === m ? 'bg-primary text-primary-foreground border-primary' : 'border-border hover:bg-muted'}`}>
+                        {m === 'limit' ? 'LIMIT' : m === 'sample_percent' ? 'SAMPLE %' : 'SAMPLE lignes'}
+                    </button>
+                ))}
+            </div>
+            <div className="flex items-center gap-2 flex-wrap">
+                <label className="text-xs text-muted-foreground shrink-0">N :</label>
+                <input type="number" min={0} className="w-24 h-6 rounded border border-border bg-background px-1.5 text-xs"
+                    value={step.n} onChange={e => onChange({ ...step, n: Number(e.target.value) })} />
+                {step.mode === 'limit' && <>
+                    <label className="text-xs text-muted-foreground shrink-0">Offset :</label>
+                    <input type="number" min={0} className="w-20 h-6 rounded border border-border bg-background px-1.5 text-xs"
+                        value={step.offset ?? ''} onChange={e => onChange({ ...step, offset: e.target.value ? Number(e.target.value) : undefined })} placeholder="0" />
+                </>}
+                {step.mode !== 'limit' && <>
+                    <label className="text-xs text-muted-foreground shrink-0">Méthode :</label>
+                    <select className="h-6 rounded border border-border bg-background px-1 text-xs"
+                        value={step.sampleMethod ?? ''} onChange={e => onChange({ ...step, sampleMethod: (e.target.value || undefined) as any })}>
+                        <option value="">défaut</option>
+                        <option value="reservoir">reservoir</option>
+                        <option value="bernoulli">bernoulli</option>
+                        <option value="system">system</option>
+                    </select>
+                </>}
+            </div>
+        </div>
+    )
+}
+
+function RenameColumnsStepUI({ step, availableCols, onChange }: { step: RenameColumnsStep; availableCols: string[]; onChange: (s: RenameColumnsStep) => void }) {
+    function update(i: number, patch: Partial<{ from: string; to: string }>) {
+        onChange({ ...step, renames: step.renames.map((r, idx) => idx === i ? { ...r, ...patch } : r) })
+    }
+    return (
+        <div className="flex flex-col gap-1.5">
+            {step.renames.map((r, i) => (
+                <div key={i} className="flex items-center gap-1">
+                    <ColSelect value={r.from} cols={availableCols} onChange={v => update(i, { from: v })} className="flex-1" />
+                    <span className="text-xs text-muted-foreground shrink-0">→</span>
+                    <TxtInput value={r.to} onChange={v => update(i, { to: v })} placeholder="nouveau nom" className="flex-1" />
+                    <RemoveBtn onClick={() => onChange({ ...step, renames: step.renames.filter((_, idx) => idx !== i) })} />
+                </div>
+            ))}
+            <AddRowBtn onClick={() => onChange({ ...step, renames: [...step.renames, { from: availableCols[0] ?? '', to: '' }] })} label="+ Renommage" />
+        </div>
+    )
+}
+
+function DeriveStepUI({ step, availableCols, onChange }: { step: DeriveStep; availableCols: string[]; onChange: (s: DeriveStep) => void }) {
+    function update(i: number, patch: Partial<{ name: string; expr: string; replace: boolean }>) {
+        onChange({ ...step, columns: step.columns.map((c, idx) => idx === i ? { ...c, ...patch } : c) })
+    }
+    return (
+        <div className="flex flex-col gap-2">
+            {step.columns.map((col, i) => (
+                <div key={i} className="flex flex-col gap-1 border border-border rounded p-1.5">
+                    <div className="flex items-center gap-1">
+                        <TxtInput value={col.name} onChange={v => update(i, { name: v })} placeholder="nom_colonne" className="flex-1" />
+                        <label className="flex items-center gap-1 text-xs text-muted-foreground cursor-pointer shrink-0">
+                            <input type="checkbox" checked={col.replace} onChange={e => update(i, { replace: e.target.checked })} className="w-3 h-3" />
+                            Remplacer
+                        </label>
+                        <RemoveBtn onClick={() => onChange({ ...step, columns: step.columns.filter((_, idx) => idx !== i) })} />
+                    </div>
+                    <textarea className="w-full rounded border border-border bg-background px-2 py-1 text-xs font-mono resize-none" rows={2}
+                        value={col.expr} onChange={e => update(i, { expr: e.target.value })} placeholder="UPPER(col) ou col * 2 ou …" />
+                </div>
+            ))}
+            <AddRowBtn onClick={() => onChange({ ...step, columns: [...step.columns, { name: '', expr: '', replace: false }] })} label="+ Colonne calculée" />
+        </div>
+    )
+}
+
+const FILL_STRATEGIES = [
+    { value: 'value', label: 'Valeur fixe' },
+    { value: 'zero', label: '0' },
+    { value: 'empty_string', label: 'Chaîne vide' },
+    { value: 'mean', label: 'Moyenne' },
+    { value: 'median', label: 'Médiane' },
+]
+
+function FillNullStepUI({ step, availableCols, onChange }: { step: FillNullStep; availableCols: string[]; onChange: (s: FillNullStep) => void }) {
+    function update(i: number, patch: any) {
+        onChange({ ...step, fills: step.fills.map((f, idx) => idx === i ? { ...f, ...patch } : f) })
+    }
+    return (
+        <div className="flex flex-col gap-1.5">
+            {step.fills.map((fill, i) => (
+                <div key={i} className="flex items-center gap-1 flex-wrap">
+                    <ColSelect value={fill.column} cols={availableCols} onChange={v => update(i, { column: v })} className="flex-1 min-w-20" />
+                    <select className="h-6 rounded border border-border bg-background px-1 text-xs w-28"
+                        value={fill.strategy} onChange={e => update(i, { strategy: e.target.value })}>
+                        {FILL_STRATEGIES.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
+                    </select>
+                    {fill.strategy === 'value' && (
+                        <TxtInput value={fill.value ?? ''} onChange={v => update(i, { value: v })} placeholder="valeur" className="flex-1 min-w-16" />
+                    )}
+                    <RemoveBtn onClick={() => onChange({ ...step, fills: step.fills.filter((_, idx) => idx !== i) })} />
+                </div>
+            ))}
+            <AddRowBtn onClick={() => onChange({ ...step, fills: [...step.fills, { column: availableCols[0] ?? '', strategy: 'value', value: '' }] })} label="+ Colonne" />
+        </div>
+    )
+}
+
+// ─── P2 step UIs ──────────────────────────────────────────────────────────────
+
+const AGG_FNS = ['count', 'count_distinct', 'sum', 'avg', 'min', 'max', 'median', 'stddev', 'string_agg', 'list']
+
+function GroupByStepUI({ step, availableCols, onChange }: { step: GroupByStep; availableCols: string[]; onChange: (s: GroupByStep) => void }) {
+    function updateAgg(i: number, patch: Partial<Aggregation>) {
+        onChange({ ...step, aggregations: step.aggregations.map((a, idx) => idx === i ? { ...a, ...patch } : a) })
+    }
+    const toggleGroup = (col: string) => {
+        const s = new Set(step.groupCols)
+        s.has(col) ? s.delete(col) : s.add(col)
+        onChange({ ...step, groupCols: availableCols.filter(c => s.has(c)) })
+    }
+    return (
+        <div className="flex flex-col gap-2">
+            <div>
+                <p className="text-xs text-muted-foreground mb-1">Grouper par :</p>
+                <div className="flex flex-wrap gap-1">
+                    {availableCols.map(c => (
+                        <label key={c} className={`flex items-center gap-1 px-2 py-0.5 rounded border cursor-pointer text-xs transition-colors ${step.groupCols.includes(c) ? 'bg-primary/10 border-primary text-primary' : 'border-border hover:bg-muted'}`}>
+                            <input type="checkbox" className="w-3 h-3" checked={step.groupCols.includes(c)} onChange={() => toggleGroup(c)} />
+                            {c}
+                        </label>
+                    ))}
+                    {availableCols.length === 0 && <span className="text-xs text-muted-foreground italic">Aucune colonne</span>}
+                </div>
+            </div>
+            <div>
+                <p className="text-xs text-muted-foreground mb-1">Agrégations :</p>
+                {step.aggregations.map((a, i) => (
+                    <div key={i} className="flex items-center gap-1 mb-1 flex-wrap">
+                        <ColSelect value={a.column} cols={['*', ...availableCols]} onChange={v => updateAgg(i, { column: v })} placeholder="colonne" className="flex-1 min-w-20" />
+                        <select className="h-6 rounded border border-border bg-background px-1 text-xs w-28"
+                            value={a.fn} onChange={e => updateAgg(i, { fn: e.target.value as any })}>
+                            {AGG_FNS.map(f => <option key={f} value={f}>{f.replace('_', ' ')}</option>)}
+                        </select>
+                        <span className="text-xs text-muted-foreground shrink-0">→</span>
+                        <TxtInput value={a.alias} onChange={v => updateAgg(i, { alias: v })} placeholder="alias" className="flex-1 min-w-16" />
+                        {a.fn === 'string_agg' && <TxtInput value={a.separator ?? ', '} onChange={v => updateAgg(i, { separator: v })} placeholder="séparateur" className="w-16" />}
+                        <RemoveBtn onClick={() => onChange({ ...step, aggregations: step.aggregations.filter((_, idx) => idx !== i) })} />
+                    </div>
+                ))}
+                <AddRowBtn onClick={() => onChange({ ...step, aggregations: [...step.aggregations, { column: availableCols[0] ?? '*', fn: 'count', alias: 'count' }] })} label="+ Agrégation" />
+            </div>
+        </div>
+    )
+}
+
+const JOIN_TYPES: { type: JoinStep['joinType']; label: string }[] = [
+    { type: 'left', label: 'LEFT' }, { type: 'inner', label: 'INNER' },
+    { type: 'right', label: 'RIGHT' }, { type: 'full', label: 'FULL' },
+    { type: 'anti', label: 'ANTI' },
+]
+
+function JoinStepUI({ step, availableCols, onChange }: { step: JoinStep; availableCols: string[]; onChange: (s: JoinStep) => void }) {
+    function updateOn(i: number, patch: Partial<JoinCondition>) {
+        onChange({ ...step, on: step.on.map((c, idx) => idx === i ? { ...c, ...patch } : c) })
+    }
+    const selRight = step.selectRight === '*' ? [] : step.selectRight
+    return (
+        <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+                <label className="text-xs text-muted-foreground shrink-0">Table :</label>
+                <TxtInput value={step.rightTable} onChange={v => onChange({ ...step, rightTable: v })} placeholder="nom_table" className="flex-1" />
+            </div>
+            <div className="flex gap-1 flex-wrap">
+                {JOIN_TYPES.map(jt => (
+                    <button key={jt.type} onClick={() => onChange({ ...step, joinType: jt.type })}
+                        className={`px-2 py-0.5 rounded border text-xs transition-colors ${step.joinType === jt.type ? 'bg-primary text-primary-foreground border-primary' : 'border-border hover:bg-muted'}`}>
+                        {jt.label}
+                    </button>
+                ))}
+            </div>
+            <div>
+                <p className="text-xs text-muted-foreground mb-1">Clés de jointure :</p>
+                {step.on.map((c, i) => (
+                    <div key={i} className="flex items-center gap-1 mb-1">
+                        <ColSelect value={c.left} cols={availableCols} onChange={v => updateOn(i, { left: v })} placeholder="col gauche" className="flex-1" />
+                        <span className="text-xs text-muted-foreground shrink-0">=</span>
+                        <TxtInput value={c.right} onChange={v => updateOn(i, { right: v })} placeholder="col droite" className="flex-1" />
+                        <RemoveBtn onClick={() => onChange({ ...step, on: step.on.filter((_, idx) => idx !== i) })} />
+                    </div>
+                ))}
+                <AddRowBtn onClick={() => onChange({ ...step, on: [...step.on, { left: availableCols[0] ?? '', right: '' }] })} label="+ Clé" />
+            </div>
+            <div>
+                <label className="flex items-center gap-1.5 text-xs cursor-pointer">
+                    <input type="checkbox" className="w-3 h-3" checked={step.selectRight === '*'}
+                        onChange={e => onChange({ ...step, selectRight: e.target.checked ? '*' : [] })} />
+                    Importer toutes les colonnes de droite
+                </label>
+                {step.selectRight !== '*' && (
+                    <div className="mt-1">
+                        <p className="text-xs text-muted-foreground mb-0.5">Colonnes à importer (noms) :</p>
+                        <TxtInput value={selRight.join(', ')} onChange={v => onChange({ ...step, selectRight: v.split(',').map(x => x.trim()).filter(Boolean) })}
+                            placeholder="col1, col2…" className="w-full" />
+                    </div>
+                )}
+            </div>
+        </div>
+    )
+}
+
+function UnionStepUI({ step, onChange }: { step: UnionStep; onChange: (s: UnionStep) => void }) {
+    return (
+        <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+                <label className="text-xs text-muted-foreground shrink-0">Table :</label>
+                <TxtInput value={step.table} onChange={v => onChange({ ...step, table: v })} placeholder="nom_table" className="flex-1" />
+            </div>
+            <div className="flex gap-1">
+                {(['all', 'distinct'] as const).map(m => (
+                    <button key={m} onClick={() => onChange({ ...step, mode: m })}
+                        className={`px-2 py-0.5 rounded border text-xs transition-colors ${step.mode === m ? 'bg-primary text-primary-foreground border-primary' : 'border-border hover:bg-muted'}`}>
+                        {m === 'all' ? 'UNION ALL' : 'UNION DISTINCT'}
+                    </button>
+                ))}
+            </div>
+        </div>
+    )
+}
+
+const AGG_FNS_PIVOT = ['SUM', 'COUNT', 'AVG', 'MIN', 'MAX', 'MEDIAN']
+
+function PivotStepUI({ step, availableCols, onChange }: { step: PivotStep; availableCols: string[]; onChange: (s: PivotStep) => void }) {
+    const toggleGroup = (col: string) => {
+        const s = new Set(step.groupCols)
+        s.has(col) ? s.delete(col) : s.add(col)
+        onChange({ ...step, groupCols: availableCols.filter(c => s.has(c)) })
+    }
+    return (
+        <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
+                <label className="text-xs text-muted-foreground shrink-0 w-20">Pivoter :</label>
+                <ColSelect value={step.onColumn} cols={availableCols} onChange={v => onChange({ ...step, onColumn: v })} className="flex-1" />
+            </div>
+            <div className="flex items-center gap-1 flex-wrap">
+                <label className="text-xs text-muted-foreground shrink-0 w-20">Valeur :</label>
+                <ColSelect value={step.valueColumn} cols={availableCols} onChange={v => onChange({ ...step, valueColumn: v })} className="flex-1" />
+                <select className="h-6 rounded border border-border bg-background px-1 text-xs w-20"
+                    value={step.valueFn} onChange={e => onChange({ ...step, valueFn: e.target.value })}>
+                    {AGG_FNS_PIVOT.map(f => <option key={f} value={f}>{f}</option>)}
+                </select>
+            </div>
+            <div>
+                <p className="text-xs text-muted-foreground mb-1 w-20">Lignes :</p>
+                <div className="flex flex-wrap gap-1">
+                    {availableCols.filter(c => c !== step.onColumn && c !== step.valueColumn).map(c => (
+                        <label key={c} className={`flex items-center gap-1 px-1.5 py-0.5 rounded border cursor-pointer text-xs transition-colors ${step.groupCols.includes(c) ? 'bg-primary/10 border-primary text-primary' : 'border-border hover:bg-muted'}`}>
+                            <input type="checkbox" className="w-3 h-3" checked={step.groupCols.includes(c)} onChange={() => toggleGroup(c)} />
+                            {c}
+                        </label>
+                    ))}
+                </div>
+            </div>
+        </div>
+    )
+}
+
+function UnpivotStepUI({ step, availableCols, onChange }: { step: UnpivotStep; availableCols: string[]; onChange: (s: UnpivotStep) => void }) {
+    const toggleCol = (col: string) => {
+        const s = new Set(step.columns)
+        s.has(col) ? s.delete(col) : s.add(col)
+        onChange({ ...step, columns: availableCols.filter(c => s.has(c)) })
+    }
+    return (
+        <div className="flex flex-col gap-2">
+            <div>
+                <p className="text-xs text-muted-foreground mb-1">Colonnes à fondre :</p>
+                <div className="flex flex-wrap gap-1">
+                    {availableCols.map(c => (
+                        <label key={c} className={`flex items-center gap-1 px-1.5 py-0.5 rounded border cursor-pointer text-xs transition-colors ${step.columns.includes(c) ? 'bg-primary/10 border-primary text-primary' : 'border-border hover:bg-muted'}`}>
+                            <input type="checkbox" className="w-3 h-3" checked={step.columns.includes(c)} onChange={() => toggleCol(c)} />
+                            {c}
+                        </label>
+                    ))}
+                </div>
+            </div>
+            <div className="flex items-center gap-2 flex-wrap">
+                <label className="text-xs text-muted-foreground shrink-0 w-24">Colonne labels :</label>
+                <TxtInput value={step.nameCol} onChange={v => onChange({ ...step, nameCol: v })} placeholder="category" className="flex-1" />
+            </div>
+            <div className="flex items-center gap-2 flex-wrap">
+                <label className="text-xs text-muted-foreground shrink-0 w-24">Colonne valeurs :</label>
+                <TxtInput value={step.valueCol} onChange={v => onChange({ ...step, valueCol: v })} placeholder="value" className="flex-1" />
+            </div>
+        </div>
+    )
+}
+
+// ─── P3 step UIs ──────────────────────────────────────────────────────────────
+
+const WINDOW_FNS = [
+    'ROW_NUMBER', 'RANK', 'DENSE_RANK', 'PERCENT_RANK', 'CUME_DIST', 'NTILE',
+    'SUM', 'AVG', 'COUNT', 'MIN', 'MAX', 'MEDIAN',
+    'LAG', 'LEAD', 'FIRST_VALUE', 'LAST_VALUE', 'NTH_VALUE',
+]
+const NO_COL_FNS = new Set(['ROW_NUMBER', 'RANK', 'DENSE_RANK', 'PERCENT_RANK', 'CUME_DIST'])
+
+function WindowStepUI({ step, availableCols, onChange }: { step: WindowStep; availableCols: string[]; onChange: (s: WindowStep) => void }) {
+    function update(i: number, patch: Partial<WindowColumn>) {
+        onChange({ ...step, columns: step.columns.map((w, idx) => idx === i ? { ...w, ...patch } : w) })
+    }
+    function addWin() {
+        onChange({ ...step, columns: [...step.columns, { fn: 'ROW_NUMBER', partitionBy: [], orderBy: [], alias: 'rn' }] })
+    }
+    return (
+        <div className="flex flex-col gap-2">
+            {step.columns.map((w, i) => (
+                <div key={i} className="flex flex-col gap-1 border border-border rounded p-1.5">
+                    <div className="flex items-center gap-1 flex-wrap">
+                        <select className="h-6 rounded border border-border bg-background px-1 text-xs w-32"
+                            value={w.fn} onChange={e => update(i, { fn: e.target.value })}>
+                            {WINDOW_FNS.map(f => <option key={f} value={f}>{f}</option>)}
+                        </select>
+                        {!NO_COL_FNS.has(w.fn) && (
+                            <ColSelect value={w.col ?? ''} cols={availableCols} onChange={v => update(i, { col: v })} placeholder="col" className="flex-1" />
+                        )}
+                        {(w.fn === 'LAG' || w.fn === 'LEAD') && (
+                            <input type="number" min={1} className="w-12 h-6 rounded border border-border bg-background px-1 text-xs"
+                                value={w.offset ?? 1} onChange={e => update(i, { offset: Number(e.target.value) })} title="décalage" />
+                        )}
+                        <span className="text-xs text-muted-foreground shrink-0">→</span>
+                        <TxtInput value={w.alias} onChange={v => update(i, { alias: v })} placeholder="alias" className="w-24" />
+                        <RemoveBtn onClick={() => onChange({ ...step, columns: step.columns.filter((_, idx) => idx !== i) })} />
+                    </div>
+                    <div className="flex items-center gap-1 flex-wrap text-xs text-muted-foreground">
+                        <span className="shrink-0">PARTITION BY :</span>
+                        <TxtInput value={w.partitionBy.join(', ')} onChange={v => update(i, { partitionBy: v.split(',').map(x => x.trim()).filter(Boolean) })} placeholder="col1, col2…" className="flex-1" />
+                    </div>
+                    <div className="flex items-center gap-1 flex-wrap text-xs text-muted-foreground">
+                        <span className="shrink-0">ORDER BY :</span>
+                        <TxtInput value={w.orderBy.map(k => `${k.column} ${k.direction.toUpperCase()}`).join(', ')} onChange={v => {
+                            const keys = v.split(',').map(x => x.trim()).filter(Boolean).map(x => {
+                                const [col, dir] = x.split(/\s+/)
+                                return { column: col, direction: (dir?.toLowerCase() === 'desc' ? 'desc' : 'asc') as 'asc' | 'desc', nulls: 'last' as const }
+                            })
+                            update(i, { orderBy: keys })
+                        }} placeholder="col ASC, col2 DESC…" className="flex-1" />
+                    </div>
+                </div>
+            ))}
+            <AddRowBtn onClick={addWin} label="+ Fonction fenêtre" />
+        </div>
+    )
+}
+
+function UnnestStepUI({ step, availableCols, onChange }: { step: UnnestStep; availableCols: string[]; onChange: (s: UnnestStep) => void }) {
+    return (
+        <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+                <label className="text-xs text-muted-foreground shrink-0">Colonne array :</label>
+                <ColSelect value={step.column} cols={availableCols} onChange={v => onChange({ ...step, column: v })} className="flex-1" />
+            </div>
+            <div className="flex items-center gap-2">
+                <label className="text-xs text-muted-foreground shrink-0">Nom sortie :</label>
+                <TxtInput value={step.alias} onChange={v => onChange({ ...step, alias: v })} placeholder="item" className="flex-1" />
+            </div>
+            <label className="flex items-center gap-1.5 text-xs cursor-pointer">
+                <input type="checkbox" className="w-3 h-3" checked={step.keepEmpty} onChange={e => onChange({ ...step, keepEmpty: e.target.checked })} />
+                Conserver les lignes sans valeur (LEFT JOIN)
+            </label>
+        </div>
+    )
+}
+
+function JsonExtractStepUI({ step, availableCols, onChange }: { step: JsonExtractStep; availableCols: string[]; onChange: (s: JsonExtractStep) => void }) {
+    function updateEx(i: number, patch: any) {
+        onChange({ ...step, extractions: step.extractions.map((e, idx) => idx === i ? { ...e, ...patch } : e) })
+    }
+    return (
+        <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+                <label className="text-xs text-muted-foreground shrink-0">Colonne JSON :</label>
+                <ColSelect value={step.column} cols={availableCols} onChange={v => onChange({ ...step, column: v })} className="flex-1" />
+            </div>
+            {step.extractions.map((ex, i) => (
+                <div key={i} className="flex items-center gap-1 flex-wrap">
+                    <TxtInput value={ex.path} onChange={v => updateEx(i, { path: v })} placeholder="$.user.name" className="flex-1 min-w-24" />
+                    <span className="text-xs text-muted-foreground shrink-0">→</span>
+                    <TxtInput value={ex.alias} onChange={v => updateEx(i, { alias: v })} placeholder="alias" className="w-24" />
+                    <select className="h-6 rounded border border-border bg-background px-1 text-xs w-20"
+                        value={ex.targetType ?? ''} onChange={e => updateEx(i, { targetType: e.target.value || undefined })}>
+                        <option value="">VARCHAR</option>
+                        {DUCKDB_TYPES.slice(2).map(t => <option key={t} value={t}>{t}</option>)}
+                    </select>
+                    <RemoveBtn onClick={() => onChange({ ...step, extractions: step.extractions.filter((_, idx) => idx !== i) })} />
+                </div>
+            ))}
+            <AddRowBtn onClick={() => onChange({ ...step, extractions: [...step.extractions, { path: '$.', alias: '' }] })} label="+ Extraction" />
+        </div>
+    )
+}
+
+const DATE_GRANULARITIES = ['second', 'minute', 'hour', 'day', 'week', 'month', 'quarter', 'year']
+
+function DateTruncStepUI({ step, availableCols, onChange }: { step: DateTruncStep; availableCols: string[]; onChange: (s: DateTruncStep) => void }) {
+    return (
+        <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
+                <label className="text-xs text-muted-foreground shrink-0 w-20">Colonne :</label>
+                <ColSelect value={step.column} cols={availableCols} onChange={v => onChange({ ...step, column: v })} className="flex-1" />
+            </div>
+            <div className="flex items-center gap-2 flex-wrap">
+                <label className="text-xs text-muted-foreground shrink-0 w-20">Granularité :</label>
+                <select className="h-6 rounded border border-border bg-background px-1 text-xs flex-1"
+                    value={step.granularity} onChange={e => onChange({ ...step, granularity: e.target.value as any })}>
+                    {DATE_GRANULARITIES.map(g => <option key={g} value={g}>{g}</option>)}
+                </select>
+            </div>
+            <div className="flex gap-1">
+                {(['replace', 'add'] as const).map(m => (
+                    <button key={m} onClick={() => onChange({ ...step, mode: m })}
+                        className={`px-2 py-0.5 rounded border text-xs transition-colors ${step.mode === m ? 'bg-primary text-primary-foreground border-primary' : 'border-border hover:bg-muted'}`}>
+                        {m === 'replace' ? 'Remplacer' : 'Nouvelle colonne'}
+                    </button>
+                ))}
+            </div>
+            {step.mode === 'add' && (
+                <div className="flex items-center gap-2">
+                    <label className="text-xs text-muted-foreground shrink-0 w-20">Nom :</label>
+                    <TxtInput value={step.alias ?? ''} onChange={v => onChange({ ...step, alias: v })} placeholder={`${step.column}_${step.granularity}`} className="flex-1" />
+                </div>
+            )}
+        </div>
+    )
+}
+
 // ─── StepItem ─────────────────────────────────────────────────────────────────
 
 function StepItem({ step, index, totalSteps, availableCols, availableColTypes,
@@ -414,18 +1056,24 @@ function StepItem({ step, index, totalSteps, availableCols, availableColTypes,
             {/* Corps step */}
             {open && !pendingDelete && (
                 <div className="px-3 pb-3 pt-1 border-t border-border">
-                    {step.type === 'select_columns' && (
-                        <SelectColumnsStepUI step={step} availableCols={availableCols}
-                            onChange={s => onUpdate(index, s)} />
-                    )}
-                    {step.type === 'exclude_columns' && (
-                        <ExcludeColumnsStepUI step={step} availableCols={availableCols}
-                            onChange={s => onUpdate(index, s)} />
-                    )}
-                    {step.type === 'change_type' && (
-                        <ChangeTypeStepUI step={step} availableCols={availableCols}
-                            availableColTypes={availableColTypes} onChange={s => onUpdate(index, s)} />
-                    )}
+                    {step.type === 'select_columns' && <SelectColumnsStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
+                    {step.type === 'exclude_columns' && <ExcludeColumnsStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
+                    {step.type === 'change_type' && <ChangeTypeStepUI step={step} availableCols={availableCols} availableColTypes={availableColTypes} onChange={s => onUpdate(index, s)} />}
+                    {step.type === 'filter_rows' && <FilterRowsStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
+                    {step.type === 'sort' && <SortStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
+                    {step.type === 'top_n' && <TopNStepUI step={step} onChange={s => onUpdate(index, s)} />}
+                    {step.type === 'rename_columns' && <RenameColumnsStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
+                    {step.type === 'derive' && <DeriveStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
+                    {step.type === 'fill_null' && <FillNullStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
+                    {step.type === 'group_by' && <GroupByStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
+                    {step.type === 'join' && <JoinStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
+                    {step.type === 'union' && <UnionStepUI step={step} onChange={s => onUpdate(index, s)} />}
+                    {step.type === 'pivot' && <PivotStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
+                    {step.type === 'unpivot' && <UnpivotStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
+                    {step.type === 'window' && <WindowStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
+                    {step.type === 'unnest' && <UnnestStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
+                    {step.type === 'json_extract' && <JsonExtractStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
+                    {step.type === 'date_trunc' && <DateTruncStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
                 </div>
             )}
         </div>
@@ -434,17 +1082,26 @@ function StepItem({ step, index, totalSteps, availableCols, availableColTypes,
 
 // ─── AddStepMenu ──────────────────────────────────────────────────────────────
 
-const STEP_TYPES: Array<{ type: SqlBlockStep['type']; label: string; description: string }> = [
-    { type: 'select_columns', label: 'Sélectionner des colonnes', description: 'Garde uniquement les colonnes choisies' },
-    { type: 'exclude_columns', label: 'Exclure des colonnes', description: 'Retire les colonnes choisies' },
-    { type: 'change_type', label: 'Changer le type', description: 'Convertit le type d\'une ou plusieurs colonnes' },
-]
-
 function defaultStep(type: SqlBlockStep['type']): SqlBlockStep {
     switch (type) {
-        case 'select_columns': return { type, columns: [] }
+        case 'select_columns':  return { type, columns: [] }
         case 'exclude_columns': return { type, columns: [] }
-        case 'change_type': return { type, changes: [] }
+        case 'change_type':     return { type, changes: [] }
+        case 'filter_rows':     return { type, conditions: [], logicOp: 'AND' }
+        case 'sort':            return { type, keys: [] }
+        case 'top_n':           return { type, mode: 'limit', n: 100 }
+        case 'rename_columns':  return { type, renames: [] }
+        case 'derive':          return { type, columns: [] }
+        case 'fill_null':       return { type, fills: [] }
+        case 'group_by':        return { type, groupCols: [], aggregations: [] }
+        case 'join':            return { type, rightTable: '', joinType: 'left', on: [], selectRight: '*' }
+        case 'union':           return { type, table: '', mode: 'all' }
+        case 'pivot':           return { type, onColumn: '', valueColumn: '', valueFn: 'SUM', groupCols: [] }
+        case 'unpivot':         return { type, columns: [], nameCol: 'category', valueCol: 'value' }
+        case 'window':          return { type, columns: [] }
+        case 'unnest':          return { type, column: '', alias: 'item', keepEmpty: false }
+        case 'json_extract':    return { type, column: '', extractions: [] }
+        case 'date_trunc':      return { type, column: '', granularity: 'month', mode: 'replace' }
     }
 }
 
@@ -462,10 +1119,8 @@ function AddStepMenu({ onAdd }: { onAdd: (step: SqlBlockStep) => void }) {
     useEffect(() => {
         if (!open) return
         function handleClick(e: MouseEvent) {
-            if (
-                menuRef.current && !menuRef.current.contains(e.target as Node) &&
-                btnRef.current && !btnRef.current.contains(e.target as Node)
-            ) setOpen(false)
+            if (menuRef.current && !menuRef.current.contains(e.target as Node) &&
+                btnRef.current && !btnRef.current.contains(e.target as Node)) setOpen(false)
         }
         document.addEventListener('mousedown', handleClick)
         return () => document.removeEventListener('mousedown', handleClick)
@@ -473,7 +1128,7 @@ function AddStepMenu({ onAdd }: { onAdd: (step: SqlBlockStep) => void }) {
 
     const menuStyle: React.CSSProperties = menuRect ? {
         position: 'fixed', top: menuRect.bottom + 4,
-        left: menuRect.left, width: menuRect.width, zIndex: 9999,
+        left: menuRect.left, minWidth: Math.max(menuRect.width, 260), zIndex: 9999,
     } : {}
 
     return (
@@ -484,13 +1139,19 @@ function AddStepMenu({ onAdd }: { onAdd: (step: SqlBlockStep) => void }) {
             </button>
             {open && menuRect && createPortal(
                 <div ref={menuRef} style={menuStyle}
-                    className="bg-popover border border-border rounded shadow-lg overflow-hidden">
-                    {STEP_TYPES.map(s => (
-                        <button key={s.type} className="w-full text-left px-3 py-2 hover:bg-muted transition-colors"
-                            onClick={() => { onAdd(defaultStep(s.type)); setOpen(false) }}>
-                            <div className="text-xs font-medium">{s.label}</div>
-                            <div className="text-xs text-muted-foreground">{s.description}</div>
-                        </button>
+                    className="bg-popover border border-border rounded-lg shadow-xl overflow-hidden">
+                    {STEP_CATEGORIES.map(cat => (
+                        <div key={cat.label}>
+                            <div className="px-3 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wide bg-muted/50 border-b border-border">
+                                {cat.label}
+                            </div>
+                            {cat.steps.map(type => (
+                                <button key={type} className="w-full text-left px-3 py-1.5 hover:bg-muted transition-colors flex items-center gap-2"
+                                    onClick={() => { onAdd(defaultStep(type)); setOpen(false) }}>
+                                    <span className="text-xs font-medium flex-1">{STEP_LABELS[type]}</span>
+                                </button>
+                            ))}
+                        </div>
                     ))}
                 </div>,
                 document.body
