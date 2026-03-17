@@ -6,6 +6,19 @@ export default defineConfig({
   // Base relative pour que les assets fonctionnent en standalone (file://)
   base: './',
 
+  // antlr4ts (dep of @malloydata/malloy) uses Node's `util` module for
+  // util.inspect.custom — pre-bundling forces esbuild to resolve it via the
+  // browser-compatible `util` shim.
+  optimizeDeps: {
+    include: ['antlr4ts'],
+    esbuildOptions: {
+      define: { 'process.env.NODE_ENV': '"production"' },
+    },
+  },
+  resolve: {
+    alias: { util: 'util/' },
+  },
+
   build: {
     outDir: 'dist',
     // Pas de minification agressive pour faciliter le debug Phase 1

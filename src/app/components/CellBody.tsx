@@ -18,6 +18,7 @@ import {
 import { DuckDBManager } from '../../lib/DuckDBManager'
 import DataTablePaginated from '@sqlrooms/data-table/dist/DataTablePaginated'
 import { SqlBlockEditor } from './sqlblock/SqlBlockEditor'
+import { MalloyBody } from './malloy/MalloyCellEditor'
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 function CellBodySkeleton() {
@@ -910,6 +911,8 @@ export function CellBody({ cell, path, cellIndex, group }: { cell: any, path: nu
                 return <PerspectiveBody cell={cell} path={path} cellIndex={cellIndex} />
             case 'sqlBlock':
                 return <SqlBlockBody cell={cell} path={path} cellIndex={cellIndex} />
+            case 'malloy':
+                return <MalloyBody cell={cell} path={path} cellIndex={cellIndex} />
             default: return null
         }
     }
