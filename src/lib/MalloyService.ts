@@ -83,16 +83,20 @@ export async function compileMalloy(
     // Connexion DuckDB déclarée pour le dialecte
     const connections: MI.Connection[] = [{ name: 'duckdb', dialect: 'duckdb' }]
 
-    let request: MI.CompileQueryRequest = {
-        model_url: 'internal://empty.malloy',
-        query_malloy: malloyText,
-        compiler_needs: { connections },
-    }
+    // Boucle d'itération : le compilateur demande les ressources manquantes.
+    // Le compilateur est STATELESS — chaque appel repart de zéro.
+    // On ACCUMULE toutes les réponses précédentes dans accumulatedNeeds pour
+    // ne pas perdre ce qu'on a déjà fourni (ex: files + table_schemas).
+    const accumulatedNeeds: MI.CompilerNeeds = { connections }
 
-    // Boucle d'itération : le compilateur demande les ressources manquantes
     let iterations = 0
     while (iterations < 10) {
         iterations++
+        const request: MI.CompileQueryRequest = {
+            model_url: 'internal://empty.malloy',
+            query_malloy: malloyText,
+            compiler_needs: accumulatedNeeds,
+        }
         const response = stateless.compileQuery(request)
 
         // Logs d'erreur fatale
@@ -118,57 +122,81 @@ export async function compileMalloy(
         // Le compilateur a besoin de ressources supplémentaires
         if (response.compiler_needs) {
             const needs = response.compiler_needs
-            const filledNeeds: MI.CompilerNeeds = { connections }
 
             // files : contenu d'URLs Malloy (ex: le model_url lui-même).
             // Pour internal://... le modèle de base est vide — tout le programme
             // est dans query_malloy.
             if (needs.files && needs.files.length > 0) {
-                filledNeeds.files = needs.files.map(f => ({
-                    url: f.url,
-                    contents: '',
-                }))
+                const existing = new Set((accumulatedNeeds.files ?? []).map(f => f.url))
+                const newFiles = needs.files
+                    .filter(f => !existing.has(f.url))
+                    .map(f => ({ url: f.url, contents: '' }))
+                if (newFiles.length > 0) {
+                    accumulatedNeeds.files = [...(accumulatedNeeds.files ?? []), ...newFiles]
+                }
             }
 
             // table_schemas : schémas des tables DuckDB demandées
             if (needs.table_schemas && needs.table_schemas.length > 0) {
-                filledNeeds.table_schemas = needs.table_schemas.map(t => {
-                    const tableName = t.name
-                    const tableInfo =
-                        duckdbTables[tableName] ??
-                        duckdbTables[tableName.replace(/^.*\/([^/]+)$/, '$1')] ??
-                        Object.entries(duckdbTables).find(([k]) =>
-                            k.toLowerCase() === tableName.toLowerCase()
-                        )?.[1]
+                const existing = new Set((accumulatedNeeds.table_schemas ?? []).map(t => t.name))
+                const newSchemas = needs.table_schemas
+                    .filter(t => !existing.has(t.name))
+                    .map(t => {
+                        const tableName = t.name
+                        const tableInfo =
+                            duckdbTables[tableName] ??
+                            duckdbTables[tableName.replace(/^.*\/([^/]+)$/, '$1')] ??
+                            Object.entries(duckdbTables).find(([k]) =>
+                                k.toLowerCase() === tableName.toLowerCase()
+                            )?.[1]
 
-                    if (tableInfo) {
-                        return {
-                            name: t.name,
-                            connection_name: t.connection_name,
-                            schema: buildSchema(tableInfo.columns),
+                        if (tableInfo) {
+                            return {
+                                name: t.name,
+                                connection_name: t.connection_name,
+                                schema: buildSchema(tableInfo.columns),
+                            }
                         }
-                    }
-                    console.warn(`[MalloyService] table introuvable: "${tableName}" (disponibles: ${Object.keys(duckdbTables).join(', ')})`)
-                    // Table inconnue : le compilateur générera une erreur
-                    return { name: t.name, connection_name: t.connection_name }
-                })
+                        console.warn(`[MalloyService] table introuvable: "${tableName}" (disponibles: ${Object.keys(duckdbTables).join(', ')})`)
+                        return { name: t.name, connection_name: t.connection_name }
+                    })
+                if (newSchemas.length > 0) {
+                    accumulatedNeeds.table_schemas = [...(accumulatedNeeds.table_schemas ?? []), ...newSchemas]
+                }
             }
 
             // sql_schemas (vues SQL inline)
-            if (needs.sql_schemas) {
-                filledNeeds.sql_schemas = needs.sql_schemas
+            if (needs.sql_schemas && needs.sql_schemas.length > 0) {
+                accumulatedNeeds.sql_schemas = [
+                    ...(accumulatedNeeds.sql_schemas ?? []),
+                    ...needs.sql_schemas,
+                ]
             }
 
             // translations : JSON pré-compilé d'un modèle (on n'en a pas)
             if (needs.translations && needs.translations.length > 0) {
-                filledNeeds.translations = needs.translations.map(t => ({ url: t.url }))
+                const existing = new Set((accumulatedNeeds.translations ?? []).map(t => t.url))
+                const newTranslations = needs.translations
+                    .filter(t => !existing.has(t.url))
+                    .map(t => ({ url: t.url }))
+                if (newTranslations.length > 0) {
+                    accumulatedNeeds.translations = [...(accumulatedNeeds.translations ?? []), ...newTranslations]
+                }
             }
 
-            request = {
-                model_url: 'internal://empty.malloy',
-                query_malloy: malloyText,
-                compiler_needs: filledNeeds,
+            // Si le compilateur ne demande rien de nouveau, on est bloqué
+            const hasNewNeeds =
+                (needs.files?.length ?? 0) > 0 ||
+                (needs.table_schemas?.length ?? 0) > 0 ||
+                (needs.sql_schemas?.length ?? 0) > 0 ||
+                (needs.translations?.length ?? 0) > 0
+            if (!hasNewNeeds) {
+                return {
+                    error: 'Compilation bloquée : le compilateur demande des ressources déjà fournies',
+                    logs,
+                }
             }
+
             continue
         }
 
