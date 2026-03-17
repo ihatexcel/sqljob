@@ -17,6 +17,7 @@
  */
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
 import { SqlMonacoEditor } from '@sqlrooms/sql-editor'
+import { useMonaco } from '@monaco-editor/react'
 import { useShallow } from 'zustand/react/shallow'
 import { useNotebookStore } from '../../store/notebookStore'
 import { SqlDataTable } from '../SqlDataTable'
@@ -391,6 +392,18 @@ function MalloyTextEditor({ cell, path, cellIndex, onSwitchToVisual }: any) {
 
     const tableSchemas = db?.schemaTrees ?? []
 
+    // ─── Monaco fallback (si jsDelivr CDN indisponible) ───────────────────────
+    // useMonaco() retourne l'instance Monaco si elle est chargée, sinon null.
+    // Si Monaco ne charge pas dans les 8 s (CDN bloqué, ad-blocker…),
+    // on bascule sur un <textarea> simple pour garder l'éditeur fonctionnel.
+    const monaco = useMonaco()
+    const [monacoTimedOut, setMonacoTimedOut] = useState(false)
+    useEffect(() => {
+        if (monaco) return
+        const t = setTimeout(() => setMonacoTimedOut(true), 8000)
+        return () => clearTimeout(t)
+    }, [monaco])
+
     // ─── Render ───────────────────────────────────────────────────────────────
 
     return (
@@ -437,26 +450,38 @@ function MalloyTextEditor({ cell, path, cellIndex, onSwitchToVisual }: any) {
                 </div>
             </div>
 
-            {/* ── Éditeur Monaco ── */}
-            <SqlMonacoEditor
-                key={cell._id + '_malloy'}
-                value={malloyText}
-                onChange={handleChange}
-                tableSchemas={tableSchemas}
-                language="sql"
-                className="border border-violet-200 dark:border-violet-800 rounded-md overflow-hidden"
-                options={{
-                    minimap: { enabled: false },
-                    lineNumbers: 'on',
-                    scrollBeyondLastLine: false,
-                    wordWrap: 'off',
-                    fontSize: 13,
-                    renderLineHighlight: 'line',
-                    overviewRulerLanes: 0,
-                    scrollbar: { vertical: 'auto', alwaysConsumeMouseWheel: false },
-                }}
-                height="200px"
-            />
+            {/* ── Éditeur Malloy (Monaco ou textarea de fallback) ── */}
+            {monacoTimedOut ? (
+                <textarea
+                    key={cell._id + '_malloy_ta'}
+                    value={malloyText}
+                    onChange={e => handleChange(e.target.value)}
+                    rows={12}
+                    spellCheck={false}
+                    className="w-full font-mono text-sm p-2 rounded-md border border-violet-200 dark:border-violet-800 bg-background text-foreground resize-y focus:outline-none focus:ring-1 focus:ring-violet-400"
+                    placeholder={DEFAULT_MALLOY_TEMPLATE}
+                />
+            ) : (
+                <SqlMonacoEditor
+                    key={cell._id + '_malloy'}
+                    value={malloyText}
+                    onChange={handleChange}
+                    tableSchemas={tableSchemas}
+                    language="sql"
+                    className="border border-violet-200 dark:border-violet-800 rounded-md overflow-hidden"
+                    options={{
+                        minimap: { enabled: false },
+                        lineNumbers: 'on',
+                        scrollBeyondLastLine: false,
+                        wordWrap: 'off',
+                        fontSize: 13,
+                        renderLineHighlight: 'line',
+                        overviewRulerLanes: 0,
+                        scrollbar: { vertical: 'auto', alwaysConsumeMouseWheel: false },
+                    }}
+                    height="200px"
+                />
+            )}
 
             {/* ── Logs de compilation ── */}
             {malloyLogs.length > 0 && (
