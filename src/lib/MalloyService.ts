@@ -93,7 +93,16 @@ export async function compileMalloy(
     let iterations = 0
     while (iterations < 10) {
         iterations++
+        console.log(`[MalloyService] iter ${iterations} — request:`, {
+            query_malloy: request.query_malloy?.slice(0, 120),
+            compiler_needs: request.compiler_needs,
+        })
         const response = stateless.compileQuery(request)
+        console.log(`[MalloyService] iter ${iterations} — response:`, {
+            result_sql: response.result?.sql?.slice(0, 120) ?? null,
+            compiler_needs: response.compiler_needs,
+            logs: response.logs,
+        })
 
         // Logs d'erreur fatale
         const logs = response.logs ?? []
@@ -122,6 +131,8 @@ export async function compileMalloy(
 
             // Résoudre table_schemas depuis _duckdbTables
             if (needs.table_schemas && needs.table_schemas.length > 0) {
+                console.log(`[MalloyService] iter ${iterations} — tables demandées:`, needs.table_schemas.map(t => `${t.connection_name}.${t.name}`))
+                console.log(`[MalloyService] iter ${iterations} — tables disponibles:`, Object.keys(duckdbTables))
                 filledNeeds.table_schemas = needs.table_schemas.map(t => {
                     // Le compilateur passe le nom de la table tel qu'écrit dans Malloy
                     // ex: duckdb.table('orders') → name='orders', connection_name='duckdb'
@@ -135,12 +146,14 @@ export async function compileMalloy(
                         )?.[1]
 
                     if (tableInfo) {
+                        console.log(`[MalloyService] iter ${iterations} — schema trouvé pour "${tableName}":`, tableInfo.columns.slice(0, 5))
                         return {
                             name: t.name,
                             connection_name: t.connection_name,
                             schema: buildSchema(tableInfo.columns),
                         }
                     }
+                    console.warn(`[MalloyService] iter ${iterations} — table introuvable: "${tableName}" (disponibles: ${Object.keys(duckdbTables).join(', ')})`)
                     // Table inconnue : on retourne sans schéma (le compilateur génèrera une erreur)
                     return { name: t.name, connection_name: t.connection_name }
                 })
@@ -148,6 +161,7 @@ export async function compileMalloy(
 
             // sql_schemas (vues SQL inline) — on ne les supporte pas ici
             if (needs.sql_schemas) {
+                console.log(`[MalloyService] iter ${iterations} — sql_schemas demandés:`, needs.sql_schemas)
                 filledNeeds.sql_schemas = needs.sql_schemas
             }
 
@@ -166,6 +180,7 @@ export async function compileMalloy(
         }
     }
 
+    console.error('[MalloyService] Boucle de compilation dépassée (10 itérations). Dernier request:', request)
     return {
         error: 'Trop d\'itérations de compilation Malloy (boucle infinie ?)',
         logs: [],
