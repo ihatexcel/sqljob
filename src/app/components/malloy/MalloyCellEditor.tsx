@@ -415,14 +415,16 @@ function MalloyTextEditor({ cell, path, cellIndex, onSwitchToVisual }: any) {
                     <span className="text-muted-foreground/60">→ DuckDB SQL</span>
                 </span>
                 <div className="flex gap-1 items-center">
-                    <button
-                        className="inline-flex items-center gap-1 px-2 py-1 text-xs rounded border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-                        title="Basculer en mode constructeur visuel"
-                        onClick={onSwitchToVisual}
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="9" /><rect x="14" y="3" width="7" height="5" /><rect x="14" y="12" width="7" height="9" /><rect x="3" y="16" width="7" height="5" /></svg>
-                        Mode visuel
-                    </button>
+                    {onSwitchToVisual && (
+                        <button
+                            className="inline-flex items-center gap-1 px-2 py-1 text-xs rounded border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                            title="Basculer en mode constructeur visuel"
+                            onClick={onSwitchToVisual}
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="9" /><rect x="14" y="3" width="7" height="5" /><rect x="14" y="12" width="7" height="9" /><rect x="3" y="16" width="7" height="5" /></svg>
+                            Mode visuel
+                        </button>
+                    )}
                     <button
                         className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded border border-violet-300 bg-violet-50 text-violet-700 hover:bg-violet-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors dark:border-violet-700 dark:bg-violet-950 dark:text-violet-300 dark:hover:bg-violet-900"
                         title="Compiler Malloy → SQL DuckDB (sans exécuter)"
@@ -541,8 +543,16 @@ function MalloyTextEditor({ cell, path, cellIndex, onSwitchToVisual }: any) {
 export function MalloyCellEditor({ cell, path, cellIndex }: any) {
     const forceUpdate = useNotebookStore(s => s.forceUpdate)
 
-    // Par défaut : mode visuel
+    // Par défaut : mode visuel (sauf si l'éditeur visuel s'est auto-désactivé)
     const mode: string = cell._composerMode ?? 'visual'
+
+    // Appelé par MalloyVisualEditor quand le mode visuel est indisponible (stub CDN).
+    // On mémorise l'indisponibilité sur la cellule pour cacher le bouton bascule.
+    const switchToTextUnavailable = useCallback(() => {
+        cell._composerMode = 'text'
+        cell._visualUnavailable = true
+        forceUpdate?.()
+    }, [cell, forceUpdate])
 
     const switchToText = useCallback(() => {
         cell._composerMode = 'text'
@@ -555,10 +565,17 @@ export function MalloyCellEditor({ cell, path, cellIndex }: any) {
     }, [cell, forceUpdate])
 
     if (mode === 'text') {
-        return <MalloyTextEditor cell={cell} path={path} cellIndex={cellIndex} onSwitchToVisual={switchToVisual} />
+        return (
+            <MalloyTextEditor
+                cell={cell}
+                path={path}
+                cellIndex={cellIndex}
+                onSwitchToVisual={cell._visualUnavailable ? null : switchToVisual}
+            />
+        )
     }
 
-    return <MalloyVisualEditor cell={cell} path={path} cellIndex={cellIndex} onSwitchToText={switchToText} />
+    return <MalloyVisualEditor cell={cell} path={path} cellIndex={cellIndex} onSwitchToText={switchToTextUnavailable} />
 }
 
 // ─── MalloyBody (wrapper selon devMode) ──────────────────────────────────────

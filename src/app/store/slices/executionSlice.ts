@@ -551,9 +551,12 @@ export const createExecutionSlice = (set: any, get: any) => ({
         get().setStatus('Exécution du SQL Malloy...', 'loading')
 
         try {
-            // Supprimer l'objet existant s'il est d'un type différent
-            try { await DuckDBManager.executeQuery(`DROP TABLE IF EXISTS "${cell.name}"`) } catch (_) {}
+            // Supprimer l'objet existant s'il est d'un type différent.
+            // On drop VIEW en premier car c'est toujours ce qu'on crée ensuite.
+            // DuckDB lève une vraie erreur (loggée dans le worker) si on tente
+            // DROP TABLE sur une VIEW (même avec IF EXISTS) → ordre VIEW→TABLE.
             try { await DuckDBManager.executeQuery(`DROP VIEW IF EXISTS "${cell.name}"`) } catch (_) {}
+            try { await DuckDBManager.executeQuery(`DROP TABLE IF EXISTS "${cell.name}"`) } catch (_) {}
 
             // Créer la VIEW dans DuckDB (accessible par les cellules en aval)
             const finalSql = get().parseQueryWithParameters(result.sql)
