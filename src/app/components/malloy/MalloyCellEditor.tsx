@@ -51,17 +51,13 @@ function IconCheck({ size = 14 }) {
 // ─── Template Malloy par défaut (mode texte) ──────────────────────────────────
 
 export const DEFAULT_MALLOY_TEMPLATE = `-- Malloy → DuckDB SQL
--- Inspiré de Malloy Composer (malloydata.github.io)
---
--- 1. Définir une source (remplacez 'ma_table' par votre table DuckDB)
+-- Remplacez 'ma_table' par le nom de votre table DuckDB.
+
 source: ma_source is duckdb.table('ma_table') extend {
-  -- Dimensions et mesures
   measure: nb_lignes is count()
 }
 
--- 2. Exécuter une requête
 run: ma_source -> {
-  group_by: -- votre_colonne
   aggregate: nb_lignes
   limit: 100
 }
