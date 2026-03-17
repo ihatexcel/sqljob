@@ -34,6 +34,7 @@ import {
 // IS_STUB is exported as `true` by the CDN stub, undefined in the real package.
 // This lets us detect CDN mode at module load time without persisting state on cells.
 const VISUAL_EDITOR_AVAILABLE = !IS_STUB
+console.log('[MalloyCellEditor] IS_STUB=', IS_STUB, '| VISUAL_EDITOR_AVAILABLE=', VISUAL_EDITOR_AVAILABLE)
 
 // ─── Icônes inline ────────────────────────────────────────────────────────────
 
@@ -159,7 +160,11 @@ function MalloyVisualEditor({ cell, path, cellIndex, onSwitchToText }: any) {
         'malloy://notebook',
     )
 
-    if (!queryWriter) return null
+    console.log('[MalloyVisualEditor] useQueryBuilder result | queryWriter=', queryWriter, '| querySummary=', querySummary)
+    if (!queryWriter) {
+        console.warn('[MalloyVisualEditor] queryWriter is null/undefined — stub actif ou modelDef invalide')
+        return null
+    }
 
     const isRunning = cell._status === 'running'
     const compiledSql: string | null = cell._compiledSql ?? null
@@ -546,6 +551,7 @@ export function MalloyCellEditor({ cell, path, cellIndex }: any) {
     // VISUAL_EDITOR_AVAILABLE est calculé au chargement du module (pas persisté sur la cellule).
     const defaultMode = VISUAL_EDITOR_AVAILABLE ? 'visual' : 'text'
     const mode: string = cell._composerMode ?? defaultMode
+    console.log('[MalloyCellEditor] render | mode=', mode, '| cell._composerMode=', cell._composerMode, '| VISUAL_EDITOR_AVAILABLE=', VISUAL_EDITOR_AVAILABLE)
 
     const switchToText = useCallback(() => {
         cell._composerMode = 'text'
