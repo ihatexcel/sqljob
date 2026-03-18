@@ -183,6 +183,59 @@ function generateMalloy(
 let _uid = 0
 function uid() { return String(++_uid) }
 
+// ─── Parse malloyText → état du constructeur visuel ───────────────────────────
+// Permet de restaurer l'UI depuis un malloyText chargé depuis le config JSON.
+
+interface ParsedQueryState {
+    tableName: string
+    dimensions: string[]
+    measures: MeasureConfig[]
+    limit: number
+    orderByAlias: string
+    orderDir: 'asc' | 'desc'
+}
+
+function parseMalloyToQueryState(malloyText: string, tableNames: string[]): ParsedQueryState | null {
+    if (!malloyText?.trim()) return null
+
+    const tableMatch = malloyText.match(/duckdb\.table\('([^']+)'\)/)
+    const tableName = tableMatch?.[1]
+    if (!tableName || !tableNames.includes(tableName)) return null
+
+    // Dimensions : group_by: field1, field2
+    const groupByMatch = malloyText.match(/group_by:\s*([^\n}]+)/)
+    const dimensions = groupByMatch
+        ? groupByMatch[1].split(',').map(s => s.trim().replace(/`/g, '')).filter(Boolean)
+        : []
+
+    // Mesures count()
+    const measures: MeasureConfig[] = []
+    const countRe = /measure:\s+(\w+)\s+is\s+count\(\)/g
+    let m: RegExpExecArray | null
+    while ((m = countRe.exec(malloyText)) !== null) {
+        measures.push({ id: uid(), fn: 'count', field: '*', alias: m[1] })
+    }
+    // Mesures sum/avg/min/max(field)
+    const aggRe = /measure:\s+(\w+)\s+is\s+(sum|avg|min|max)\(`?([^`)\n]+?)`?\)/g
+    while ((m = aggRe.exec(malloyText)) !== null) {
+        measures.push({ id: uid(), fn: m[2] as any, field: m[3].trim(), alias: m[1] })
+    }
+
+    const limitMatch = malloyText.match(/limit:\s*(\d+)/)
+    const limit = limitMatch ? parseInt(limitMatch[1]) : 100
+
+    const orderMatch = malloyText.match(/order_by:\s+(\S+)\s+(asc|desc)/)
+
+    return {
+        tableName,
+        dimensions,
+        measures: measures.length > 0 ? measures : [{ id: uid(), fn: 'count', field: '*', alias: 'nb_lignes' }],
+        limit,
+        orderByAlias: orderMatch?.[1] ?? '',
+        orderDir: (orderMatch?.[2] ?? 'desc') as 'asc' | 'desc',
+    }
+}
+
 function MalloyQueryBuilderUI({ cell, path, cellIndex, onSwitchToText }: any) {
     const { runCellAt, _duckdbTables, forceUpdate } = useNotebookStore(useShallow(s => ({
         runCellAt: s.runCellAt,
@@ -191,21 +244,40 @@ function MalloyQueryBuilderUI({ cell, path, cellIndex, onSwitchToText }: any) {
     })))
 
     const tableNames = Object.keys(_duckdbTables ?? {})
-    const [selectedTable, setSelectedTable] = useState<string>(cell._selectedTable ?? tableNames[0] ?? '')
+
+    // Si le _selectedTable en mémoire ne correspond pas à la table du malloyText
+    // (cas d'import de config), on parse le malloyText pour restaurer l'état correct.
+    const parsed = useMemo(() => parseMalloyToQueryState(cell.malloyText, tableNames), [cell.malloyText, tableNames.join(',')])
+    const savedTableMatchesMalloy = !cell.malloyText || !parsed || cell._selectedTable === parsed.tableName
+    const useQbState = savedTableMatchesMalloy && cell._qb_initialized
+
+    const [selectedTable, setSelectedTable] = useState<string>(() =>
+        useQbState ? (cell._selectedTable ?? tableNames[0] ?? '') : (parsed?.tableName ?? tableNames[0] ?? '')
+    )
     const columns: { name: string; type: string }[] = _duckdbTables?.[selectedTable]?.columns ?? []
     const numericCols = columns.filter(c => {
         const t = c.type.toUpperCase()
         return ['INT','FLOAT','DOUBLE','DECIMAL','NUMERIC','REAL','BIGINT','HUGEINT','UBIGINT'].some(k => t.includes(k))
     })
 
-    const defaultMeasures: MeasureConfig[] = [{ id: uid(), fn: 'count', field: '*', alias: 'nb_lignes' }]
+    const defaultMeasure: MeasureConfig = { id: uid(), fn: 'count', field: '*', alias: 'nb_lignes' }
 
-    const [dimensions, setDimensions] = useState<string[]>(() => cell._qb_dimensions ?? [])
-    const [measures, setMeasures] = useState<MeasureConfig[]>(() => cell._qb_measures ?? defaultMeasures)
+    const [dimensions, setDimensions] = useState<string[]>(() =>
+        useQbState ? (cell._qb_dimensions ?? []) : (parsed?.dimensions ?? [])
+    )
+    const [measures, setMeasures] = useState<MeasureConfig[]>(() =>
+        useQbState ? (cell._qb_measures ?? [defaultMeasure]) : (parsed?.measures ?? [defaultMeasure])
+    )
     const [filters, setFilters] = useState<FilterConfig[]>(() => cell._qb_filters ?? [])
-    const [limit, setLimit] = useState<number>(() => cell._qb_limit ?? 100)
-    const [orderByAlias, setOrderByAlias] = useState<string>(() => cell._qb_orderByAlias ?? '')
-    const [orderDir, setOrderDir] = useState<'asc' | 'desc'>(() => cell._qb_orderDir ?? 'desc')
+    const [limit, setLimit] = useState<number>(() =>
+        useQbState ? (cell._qb_limit ?? 100) : (parsed?.limit ?? 100)
+    )
+    const [orderByAlias, setOrderByAlias] = useState<string>(() =>
+        useQbState ? (cell._qb_orderByAlias ?? '') : (parsed?.orderByAlias ?? '')
+    )
+    const [orderDir, setOrderDir] = useState<'asc' | 'desc'>(() =>
+        useQbState ? (cell._qb_orderDir ?? 'desc') : (parsed?.orderDir ?? 'desc')
+    )
     const [malloyOpen, setMalloyOpen] = useState(false)
     const [copyDone, setCopyDone] = useState(false)
     const [compiling, setCompiling] = useState(false)
