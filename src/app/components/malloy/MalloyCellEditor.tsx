@@ -210,6 +210,9 @@ function MalloyQueryBuilderUI({ cell, path, cellIndex, onSwitchToText }: any) {
     const [copyDone, setCopyDone] = useState(false)
     const [compiling, setCompiling] = useState(false)
 
+    // Marque la cellule comme ayant été ouverte en mode visuel
+    useEffect(() => { cell._qb_initialized = true }, [])
+
     // Persiste l'état du constructeur sur la cellule pour survivre aux remounts
     useEffect(() => { cell._qb_dimensions = dimensions }, [dimensions])
     useEffect(() => { cell._qb_measures = measures }, [measures])
@@ -219,8 +222,13 @@ function MalloyQueryBuilderUI({ cell, path, cellIndex, onSwitchToText }: any) {
     useEffect(() => { cell._qb_orderDir = orderDir }, [orderDir])
 
     const malloyText = generateMalloy(selectedTable, dimensions, measures, filters, orderByAlias, orderDir, limit)
-    // Synchronise cell.malloyText en temps réel pour que le mode texte reflète le visuel
-    useEffect(() => { cell.malloyText = malloyText }, [malloyText])
+    // Synchronise cell.malloyText — mais pas au premier mount pour ne pas écraser
+    // un malloyText chargé depuis le config (le composant ne monte que si _qb_initialized)
+    const _syncMounted = useRef(false)
+    useEffect(() => {
+        if (!_syncMounted.current) { _syncMounted.current = true; return }
+        cell.malloyText = malloyText
+    }, [malloyText])
     const compiledSql: string | null = cell._compiledSql ?? null
     const malloyLogs: any[] = cell._malloyLogs ?? []
     const hasError = malloyLogs.some((l: any) => l.severity === 'error')
@@ -1023,7 +1031,11 @@ export function MalloyCellEditor({ cell, path, cellIndex }: any) {
     const forceUpdate = useNotebookStore(s => s.forceUpdate)
 
     // Par défaut : mode visuel (MalloyQueryBuilderUI en CDN, MalloyVisualEditor en dev)
-    const mode: string = cell._composerMode ?? 'visual'
+    // Exception : si la cellule a un malloyText chargé depuis le config mais n'a jamais
+    // été ouverte en mode visuel (_qb_initialized absent), on démarre en mode texte
+    // pour préserver le contenu chargé.
+    const defaultMode = (cell._qb_initialized || !cell.malloyText?.trim()) ? 'visual' : 'text'
+    const mode: string = cell._composerMode ?? defaultMode
 
     const switchToText = useCallback(() => {
         cell._composerMode = 'text'
