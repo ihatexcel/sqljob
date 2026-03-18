@@ -198,15 +198,25 @@ function MalloyQueryBuilderUI({ cell, path, cellIndex, onSwitchToText }: any) {
         return ['INT','FLOAT','DOUBLE','DECIMAL','NUMERIC','REAL','BIGINT','HUGEINT','UBIGINT'].some(k => t.includes(k))
     })
 
-    const [dimensions, setDimensions] = useState<string[]>([])
-    const [measures, setMeasures] = useState<MeasureConfig[]>([{ id: uid(), fn: 'count', field: '*', alias: 'nb_lignes' }])
-    const [filters, setFilters] = useState<FilterConfig[]>([])
-    const [limit, setLimit] = useState(100)
-    const [orderByAlias, setOrderByAlias] = useState('')
-    const [orderDir, setOrderDir] = useState<'asc' | 'desc'>('desc')
+    const defaultMeasures: MeasureConfig[] = [{ id: uid(), fn: 'count', field: '*', alias: 'nb_lignes' }]
+
+    const [dimensions, setDimensions] = useState<string[]>(() => cell._qb_dimensions ?? [])
+    const [measures, setMeasures] = useState<MeasureConfig[]>(() => cell._qb_measures ?? defaultMeasures)
+    const [filters, setFilters] = useState<FilterConfig[]>(() => cell._qb_filters ?? [])
+    const [limit, setLimit] = useState<number>(() => cell._qb_limit ?? 100)
+    const [orderByAlias, setOrderByAlias] = useState<string>(() => cell._qb_orderByAlias ?? '')
+    const [orderDir, setOrderDir] = useState<'asc' | 'desc'>(() => cell._qb_orderDir ?? 'desc')
     const [malloyOpen, setMalloyOpen] = useState(false)
     const [copyDone, setCopyDone] = useState(false)
     const [compiling, setCompiling] = useState(false)
+
+    // Persiste l'état du constructeur sur la cellule pour survivre aux remounts
+    useEffect(() => { cell._qb_dimensions = dimensions }, [dimensions])
+    useEffect(() => { cell._qb_measures = measures }, [measures])
+    useEffect(() => { cell._qb_filters = filters }, [filters])
+    useEffect(() => { cell._qb_limit = limit }, [limit])
+    useEffect(() => { cell._qb_orderByAlias = orderByAlias }, [orderByAlias])
+    useEffect(() => { cell._qb_orderDir = orderDir }, [orderDir])
 
     const malloyText = generateMalloy(selectedTable, dimensions, measures, filters, orderByAlias, orderDir, limit)
     // Synchronise cell.malloyText en temps réel pour que le mode texte reflète le visuel
@@ -223,6 +233,14 @@ function MalloyQueryBuilderUI({ cell, path, cellIndex, onSwitchToText }: any) {
         setMeasures([{ id: uid(), fn: 'count', field: '*', alias: 'nb_lignes' }])
         setFilters([])
         setOrderByAlias('')
+        setOrderDir('desc')
+        setLimit(100)
+        cell._qb_dimensions = []
+        cell._qb_measures = undefined
+        cell._qb_filters = []
+        cell._qb_orderByAlias = ''
+        cell._qb_orderDir = 'desc'
+        cell._qb_limit = 100
         cell._results = null
         cell._compiledSql = null
         cell._malloyLogs = []
