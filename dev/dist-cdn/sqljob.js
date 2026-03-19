@@ -144514,10 +144514,8 @@ const duckdbManagerConnector = createBaseDuckDbConnector(
     initializeInternal: async () => {
     },
     executeQueryInternal: async (At) => {
-      console.log("[duckdbBridge] query:", At.slice(0, 100));
       try {
-        const yt = await DuckDBManager.executeQueryArrow(At);
-        return console.log("[duckdbBridge] ok, rows:", yt == null ? void 0 : yt.numRows), yt;
+        return await DuckDBManager.executeQueryArrow(At);
       } catch (yt) {
         throw console.error("[duckdbBridge] error:", yt), yt;
       }
