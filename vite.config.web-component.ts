@@ -1,7 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
-import path from 'path'
 
 export default defineConfig({
     plugins: [
@@ -31,39 +30,6 @@ export default defineConfig({
     define: {
         'process.env.NODE_ENV': '"production"',
         'process.env': '{}',
-    },
-
-    // Resolve aliases for CDN build (mirrors vite.config.ts + stubs heavy deps).
-    resolve: {
-        alias: [
-            // Stub @malloydata/query-composer → prevents bundling vega/d3/styled-components
-            {
-                find: /^@malloydata\/query-composer$/,
-                replacement: path.resolve(__dirname, 'src/shims/malloy-query-composer-stub.ts'),
-            },
-            // @malloydata/malloy-real → package réel (pour briser la circularité dans le shim)
-            {
-                find: '@malloydata/malloy-real',
-                replacement: path.resolve(__dirname, 'node_modules/@malloydata/malloy/dist/index.js'),
-            },
-            // @malloydata/malloy/connection → sous-chemin réel (doit être AVANT l'alias malloy)
-            {
-                find: '@malloydata/malloy/connection',
-                replacement: path.resolve(__dirname, 'node_modules/@malloydata/malloy/dist/connection/index.js'),
-            },
-            // @malloydata/malloy → shim qui ajoute l'export Segment manquant
-            {
-                find: /^@malloydata\/malloy$/,
-                replacement: path.resolve(__dirname, 'src/shims/malloy-with-segment.ts'),
-            },
-            // @malloydata/render/webcomponent → stub vide
-            {
-                find: '@malloydata/render/webcomponent',
-                replacement: path.resolve(__dirname, 'src/shims/malloy-render-webcomponent.ts'),
-            },
-            // util → shim browser-compatible
-            { find: 'util', replacement: 'util/' },
-        ],
     },
 
     build: {

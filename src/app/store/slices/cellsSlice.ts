@@ -156,12 +156,6 @@ export const createCellsSlice = (set: any, get: any) => ({
         if (type === 'sqlBlock') {
             newCell.sqlBlockConfig = createDefaultSqlBlockConfig()
         }
-        if (type === 'malloy') {
-            // Le template par défaut est injecté lazily dans MalloyCellEditor
-            newCell.malloyText = null
-            newCell._compiledSql = null
-            newCell._malloyLogs = []
-        }
         return newCell
     },
 

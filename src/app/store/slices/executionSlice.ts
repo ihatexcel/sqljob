@@ -520,63 +520,6 @@ export const createExecutionSlice = (set: any, get: any) => ({
         }
     },
 
-    async executeMalloyCell(cell) {
-        const { compileMalloy, isCompileError } = await import('../../../lib/MalloyService')
-        const { DEFAULT_MALLOY_TEMPLATE } = await import('../../components/malloy/MalloyCellEditor')
-
-        if (!cell.malloyText?.trim()) {
-            cell.malloyText = DEFAULT_MALLOY_TEMPLATE
-            cell._resultInfo = 'Aucun code Malloy — modèle par défaut chargé.'
-            return
-        }
-
-        if (!cell.name?.trim()) {
-            throw new Error('La cellule Malloy doit avoir un nom (utilisé comme nom de VIEW dans DuckDB).')
-        }
-
-        get().setStatus('Compilation Malloy...', 'loading')
-
-        const duckdbTables = get()._duckdbTables ?? {}
-        const result = await compileMalloy(cell.malloyText, duckdbTables)
-
-        if (isCompileError(result)) {
-            cell._compiledSql = null
-            cell._malloyLogs = result.logs
-            throw new Error(result.error || 'Erreur de compilation Malloy')
-        }
-
-        cell._compiledSql = result.sql
-        cell._malloyLogs = result.logs ?? []
-
-        get().setStatus('Exécution du SQL Malloy...', 'loading')
-
-        try {
-            // Supprimer l'objet existant s'il est d'un type différent.
-            // On drop VIEW en premier car c'est toujours ce qu'on crée ensuite.
-            // DuckDB lève une vraie erreur (loggée dans le worker) si on tente
-            // DROP TABLE sur une VIEW (même avec IF EXISTS) → ordre VIEW→TABLE.
-            try { await DuckDBManager.executeQuery(`DROP VIEW IF EXISTS "${cell.name}"`) } catch (_) {}
-            try { await DuckDBManager.executeQuery(`DROP TABLE IF EXISTS "${cell.name}"`) } catch (_) {}
-
-            // Créer la VIEW dans DuckDB (accessible par les cellules en aval)
-            const finalSql = get().parseQueryWithParameters(result.sql)
-            await DuckDBManager.executeQuery(`CREATE OR REPLACE VIEW "${cell.name}" AS (${finalSql})`)
-
-            // Charger les résultats pour affichage
-            const { rows: results, schemaTypes } = await DuckDBManager.executeQueryWithSchema(
-                `SELECT * FROM "${cell.name}" LIMIT 1000`
-            )
-            cell._results = results
-            cell._schemaTypes = schemaTypes || {}
-            cell._resultInfo = `${results.length} ligne(s)${results.length === 1000 ? ' (limité à 1 000)' : ''} — VIEW "${cell.name}" créée`
-
-            await get().refreshDuckdbSchema?.()
-            get().setStatus('Malloy exécuté', 'success')
-        } catch (error) {
-            throw error
-        }
-    },
-
     showSqlEditorVisible(cell) {
         return get().devMode || ConfigManager.getCellQueryClientVisible(cell, 0)
     },

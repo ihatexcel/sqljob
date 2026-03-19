@@ -304,24 +304,6 @@ export const CELL_TYPE_SCHEMAS = {
                     bodyConfig: {},
                     bodyDisplay: { showSkeleton: { when: 'running' } }
                 },
-                malloy: {
-                    executeHandler: 'executeMalloyCell',
-                    defaultNamePrefix: 'malloy',
-                    showNameInHeader: true,
-                    exportFields: ['name', 'title', 'malloyText'],
-                    initProps: { _compiledSql: null, _malloyLogs: [] },
-                    commonParams: ['name', 'title'],
-                    queryCount: 0,
-                    queryNames: [],
-                    specificParams: [],
-                    defaults: {
-                        title: '',
-                        malloyText: null, // initialisé avec DEFAULT_MALLOY_TEMPLATE à la création
-                    },
-                    bodyFamily: 'malloy',
-                    bodyConfig: {},
-                    bodyDisplay: { showSkeleton: { when: 'running' } }
-                },
                 perspective: {
                     executeHandler: 'executePerspectiveCell',
                     defaultNamePrefix: 'perspective',
