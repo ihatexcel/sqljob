@@ -136083,7 +136083,7 @@ function UiParameterBody({ cell: At, path: yt, cellIndex: xt }) {
         /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "inline-flex items-center justify-center px-2 py-0.5 rounded text-xs font-mono bg-primary text-primary-foreground min-w-[3rem]", children: It })
       ] })
     ] }),
-    At._paramError && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-2 text-destructive text-sm bg-destructive/10 rounded", children: At._paramError }),
+    At._paramError && wt && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-2 text-destructive text-sm bg-destructive/10 rounded", children: At._paramError }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(ResultInfo, { cell: At, devOnly: !0 })
   ] });
 }
@@ -143904,8 +143904,11 @@ const createExecutionSlice = (At, yt) => ({
           throw new Error(`Erreur JS: ${St.message}`);
         }
       } else {
-        const Et = yt().parseQueryWithParameters(ConfigManager.getCellQuery(xt, 0) || "");
-        yt().setStatus("Exécution de la requête...", "loading"), kt = await DuckDBManager.executeQuery(Et);
+        const Et = ConfigManager.getCellQuery(xt, 0) || "", St = yt().findReferencedParams(Et), Tt = yt().getParameters();
+        if (/::(DATE|TIMESTAMP|TIME)\b/i.test(Et) && St.some((It) => !Tt[It]))
+          return;
+        const Lt = yt().parseQueryWithParameters(Et);
+        yt().setStatus("Exécution de la requête...", "loading"), kt = await DuckDBManager.executeQuery(Lt);
       }
       if (xt.paramType === "dropdown") {
         if (kt.length === 0) {
