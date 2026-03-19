@@ -713,7 +713,15 @@ export const createExecutionSlice = (set: any, get: any) => ({
                     throw new Error(`Erreur JS: ${jsError.message}`)
                 }
             } else {
-                const finalQuery = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '')
+                const rawQuery = ConfigManager.getCellQuery(cell, 0) || ''
+                const referencedParams = get().findReferencedParams(rawQuery)
+                const allParams = get().getParameters()
+                const DATE_CAST_RE = /::(DATE|TIMESTAMP|TIME)\b/i
+                if (DATE_CAST_RE.test(rawQuery) && referencedParams.some(p => !allParams[p])) {
+                    // Paramètre date référencé encore vide → skip silencieux
+                    return
+                }
+                const finalQuery = get().parseQueryWithParameters(rawQuery)
                 get().setStatus('Exécution de la requête...', 'loading')
                 results = await DuckDBManager.executeQuery(finalQuery)
             }
