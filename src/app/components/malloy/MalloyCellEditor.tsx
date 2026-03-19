@@ -126,11 +126,14 @@ function quoteIfNeeded(name: string): string {
 
 // ─── Malloy query builder (CDN-compatible, no @malloydata/query-composer) ────
 
+type MeasureFn = 'count' | 'count_distinct' | 'sum' | 'avg' | 'min' | 'max' | 'custom'
+
 interface MeasureConfig {
     id: string
-    fn: 'count' | 'sum' | 'avg' | 'min' | 'max'
-    field: string  // '*' for count
+    fn: MeasureFn
+    field: string      // '*' pour count, nom de colonne pour les autres
     alias: string
+    customExpr?: string // pour fn === 'custom'
 }
 
 interface FilterConfig {
@@ -140,10 +143,47 @@ interface FilterConfig {
     value: string
 }
 
+// Un bloc nest: imbriqué dans la query principale.
+// Chaque nest a ses propres group_by et aggregate (références aux alias de mesures sources).
+interface NestConfig {
+    id: string
+    alias: string
+    dimensions: string[]
+    measureAliases: string[]  // alias des mesures définies dans source
+    limit?: number
+}
+
+function measureToSourceLine(m: MeasureConfig): string {
+    switch (m.fn) {
+        case 'count':          return `  measure: ${m.alias} is count()`
+        case 'count_distinct': return `  measure: ${m.alias} is count(distinct ${quoteIfNeeded(m.field)})`
+        case 'custom':         return `  measure: ${m.alias} is ${m.customExpr?.trim() || 'count()'}`
+        default:               return `  measure: ${m.alias} is ${m.fn}(${quoteIfNeeded(m.field)})`
+    }
+}
+
+function filtersToCond(filters: FilterConfig[]): string {
+    return filters.filter(f => f.field && f.value.trim()).map(f => {
+        const fq = quoteIfNeeded(f.field)
+        if (f.op === '~') return `${fq} ~ '%${f.value}%'`
+        const isNum = /^-?\d+(\.\d+)?$/.test(f.value.trim())
+        return `${fq} ${f.op} ${isNum ? f.value.trim() : `'${f.value}'`}`
+    }).join(' and ')
+}
+
+function nestToMalloy(nest: NestConfig): string {
+    const lines: string[] = []
+    if (nest.dimensions.length > 0) lines.push(`    group_by: ${nest.dimensions.map(quoteIfNeeded).join(', ')}`)
+    if (nest.measureAliases.length > 0) lines.push(`    aggregate: ${nest.measureAliases.join(', ')}`)
+    if (nest.limit) lines.push(`    limit: ${nest.limit}`)
+    return `  nest: ${nest.alias} is {\n${lines.join('\n')}\n  }`
+}
+
 function generateMalloy(
     tableName: string,
     dimensions: string[],
     measures: MeasureConfig[],
+    nests: NestConfig[],
     filters: FilterConfig[],
     orderByAlias: string,
     orderDir: 'asc' | 'desc',
@@ -151,29 +191,18 @@ function generateMalloy(
 ): string {
     if (!tableName) return ''
     const q = quoteIfNeeded(tableName)
-    const measuresLines = measures.map(m =>
-        m.fn === 'count'
-            ? `  measure: ${m.alias} is count()`
-            : `  measure: ${m.alias} is ${m.fn}(${quoteIfNeeded(m.field)})`
-    )
-    const sourceBlock = measuresLines.length > 0
-        ? `source: ${q} is duckdb.table('${tableName}') extend {\n${measuresLines.join('\n')}\n}`
+
+    const measureLines = measures.map(measureToSourceLine)
+    const sourceBlock = measureLines.length > 0
+        ? `source: ${q} is duckdb.table('${tableName}') extend {\n${measureLines.join('\n')}\n}`
         : `source: ${q} is duckdb.table('${tableName}')`
 
     const parts: string[] = []
     if (dimensions.length > 0) parts.push(`  group_by: ${dimensions.map(quoteIfNeeded).join(', ')}`)
     if (measures.length > 0) parts.push(`  aggregate: ${measures.map(m => m.alias).join(', ')}`)
-    const activeFilters = filters.filter(f => f.field && f.value.trim())
-    if (activeFilters.length > 0) {
-        const conds = activeFilters.map(f => {
-            const fq = quoteIfNeeded(f.field)
-            if (f.op === '~') return `${fq} ~ '%${f.value}%'`
-            const isNum = /^-?\d+(\.\d+)?$/.test(f.value.trim())
-            const val = isNum ? f.value.trim() : `'${f.value}'`
-            return `${fq} ${f.op} ${val}`
-        })
-        parts.push(`  where: ${conds.join(' and ')}`)
-    }
+    const cond = filtersToCond(filters)
+    if (cond) parts.push(`  where: ${cond}`)
+    if (nests.length > 0) parts.push(...nests.map(nestToMalloy))
     if (orderByAlias) parts.push(`  order_by: ${orderByAlias} ${orderDir}`)
     parts.push(`  limit: ${limit}`)
 
@@ -190,9 +219,15 @@ interface ParsedQueryState {
     tableName: string
     dimensions: string[]
     measures: MeasureConfig[]
+    nests: NestConfig[]
     limit: number
     orderByAlias: string
     orderDir: 'asc' | 'desc'
+}
+
+function parseDimensions(block: string): string[] {
+    const m = block.match(/group_by:\s*([^\n}]+)/)
+    return m ? m[1].split(',').map(s => s.trim().replace(/`/g, '')).filter(Boolean) : []
 }
 
 function parseMalloyToQueryState(malloyText: string, tableNames: string[]): ParsedQueryState | null {
@@ -202,39 +237,126 @@ function parseMalloyToQueryState(malloyText: string, tableNames: string[]): Pars
     const tableName = tableMatch?.[1]
     if (!tableName || !tableNames.includes(tableName)) return null
 
-    // Dimensions : group_by: field1, field2
-    const groupByMatch = malloyText.match(/group_by:\s*([^\n}]+)/)
-    const dimensions = groupByMatch
-        ? groupByMatch[1].split(',').map(s => s.trim().replace(/`/g, '')).filter(Boolean)
-        : []
-
-    // Mesures count()
     const measures: MeasureConfig[] = []
-    const countRe = /measure:\s+(\w+)\s+is\s+count\(\)/g
     let m: RegExpExecArray | null
-    while ((m = countRe.exec(malloyText)) !== null) {
+    // count()
+    const countRe = /measure:\s+(\w+)\s+is\s+count\(\)/g
+    while ((m = countRe.exec(malloyText)) !== null)
         measures.push({ id: uid(), fn: 'count', field: '*', alias: m[1] })
-    }
-    // Mesures sum/avg/min/max(field)
+    // count(distinct field)
+    const cdRe = /measure:\s+(\w+)\s+is\s+count\(distinct\s+`?([^`)\n]+?)`?\)/g
+    while ((m = cdRe.exec(malloyText)) !== null)
+        measures.push({ id: uid(), fn: 'count_distinct', field: m[2].trim(), alias: m[1] })
+    // sum/avg/min/max
     const aggRe = /measure:\s+(\w+)\s+is\s+(sum|avg|min|max)\(`?([^`)\n]+?)`?\)/g
-    while ((m = aggRe.exec(malloyText)) !== null) {
-        measures.push({ id: uid(), fn: m[2] as any, field: m[3].trim(), alias: m[1] })
+    while ((m = aggRe.exec(malloyText)) !== null)
+        measures.push({ id: uid(), fn: m[2] as MeasureFn, field: m[3].trim(), alias: m[1] })
+
+    // Dimensions de la query principale (premier group_by hors nest)
+    const runBlockMatch = malloyText.match(/run:[^{]+\{([\s\S]*)\}/)
+    const runBlock = runBlockMatch?.[1] ?? ''
+    // Supprime les blocs nest pour ne parser que le group_by principal
+    const runBlockNoNest = runBlock.replace(/nest:\s*\w+\s+is\s*\{[^}]*\}/g, '')
+    const dimensions = parseDimensions(runBlockNoNest)
+
+    // Nests
+    const nests: NestConfig[] = []
+    const nestRe = /nest:\s+(\w+)\s+is\s+\{([^}]+)\}/g
+    while ((m = nestRe.exec(runBlock)) !== null) {
+        const nestAlias = m[1]
+        const nestBody = m[2]
+        const nestDims = parseDimensions(nestBody)
+        const aggMatch = nestBody.match(/aggregate:\s*([^\n}]+)/)
+        const nestAliases = aggMatch ? aggMatch[1].split(',').map(s => s.trim()).filter(Boolean) : []
+        const nestLimitMatch = nestBody.match(/limit:\s*(\d+)/)
+        nests.push({ id: uid(), alias: nestAlias, dimensions: nestDims, measureAliases: nestAliases, limit: nestLimitMatch ? parseInt(nestLimitMatch[1]) : undefined })
     }
 
-    const limitMatch = malloyText.match(/limit:\s*(\d+)/)
-    const limit = limitMatch ? parseInt(limitMatch[1]) : 100
-
-    const orderMatch = malloyText.match(/order_by:\s+(\S+)\s+(asc|desc)/)
+    const limitMatch = runBlockNoNest.match(/limit:\s*(\d+)/)
+    const orderMatch = runBlockNoNest.match(/order_by:\s+(\S+)\s+(asc|desc)/)
 
     return {
         tableName,
         dimensions,
         measures: measures.length > 0 ? measures : [{ id: uid(), fn: 'count', field: '*', alias: 'nb_lignes' }],
-        limit,
+        nests,
+        limit: limitMatch ? parseInt(limitMatch[1]) : 100,
         orderByAlias: orderMatch?.[1] ?? '',
         orderDir: (orderMatch?.[2] ?? 'desc') as 'asc' | 'desc',
     }
 }
+
+// ─── Sous-composant NestEditor ────────────────────────────────────────────────
+
+function NestEditor({ nest, columns, measures, onChange, onRemove }: {
+    nest: NestConfig
+    columns: { name: string; type: string }[]
+    measures: MeasureConfig[]
+    onChange: (upd: Partial<NestConfig>) => void
+    onRemove: () => void
+}) {
+    const [open, setOpen] = useState(true)
+    return (
+        <div className="border border-violet-200 dark:border-violet-800 rounded-md overflow-hidden">
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-violet-50/50 dark:bg-violet-950/20 border-b border-violet-200 dark:border-violet-800">
+                <button className="text-muted-foreground/50 hover:text-foreground" onClick={() => setOpen(o => !o)}>
+                    <IconChevron open={open} size={12} />
+                </button>
+                <span className="text-xs font-medium text-violet-700 dark:text-violet-300">nest:</span>
+                <input
+                    className="text-xs px-1.5 py-0.5 rounded border border-border bg-background text-foreground font-mono flex-1"
+                    value={nest.alias}
+                    onChange={e => onChange({ alias: e.target.value.replace(/\s/g, '_') })}
+                    placeholder="nom_du_nest"
+                />
+                <button className="text-muted-foreground/50 hover:text-red-500 transition-colors" onClick={onRemove}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            {open && (
+                <div className="grid grid-cols-2 gap-0 divide-x divide-border">
+                    {/* Dimensions du nest */}
+                    <div className="p-2">
+                        <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">group_by</div>
+                        <div className="max-h-36 overflow-y-auto flex flex-col gap-0.5">
+                            {columns.map(col => (
+                                <label key={col.name} className={`flex items-center gap-1.5 text-xs cursor-pointer px-1 py-0.5 rounded hover:bg-muted/50 ${nest.dimensions.includes(col.name) ? 'bg-violet-50 dark:bg-violet-950/30' : ''}`}>
+                                    <input type="checkbox" className="accent-violet-600" checked={nest.dimensions.includes(col.name)}
+                                        onChange={() => onChange({ dimensions: nest.dimensions.includes(col.name) ? nest.dimensions.filter(d => d !== col.name) : [...nest.dimensions, col.name] })} />
+                                    <span className="font-mono truncate">{col.name}</span>
+                                </label>
+                            ))}
+                        </div>
+                    </div>
+                    {/* Mesures du nest (référence aux alias de source) */}
+                    <div className="p-2">
+                        <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">aggregate</div>
+                        <div className="max-h-36 overflow-y-auto flex flex-col gap-0.5">
+                            {measures.length === 0 && <div className="text-xs text-muted-foreground/50 italic">Définissez des mesures</div>}
+                            {measures.map(m => (
+                                <label key={m.id} className={`flex items-center gap-1.5 text-xs cursor-pointer px-1 py-0.5 rounded hover:bg-muted/50 ${nest.measureAliases.includes(m.alias) ? 'bg-violet-50 dark:bg-violet-950/30' : ''}`}>
+                                    <input type="checkbox" className="accent-violet-600" checked={nest.measureAliases.includes(m.alias)}
+                                        onChange={() => onChange({ measureAliases: nest.measureAliases.includes(m.alias) ? nest.measureAliases.filter(a => a !== m.alias) : [...nest.measureAliases, m.alias] })} />
+                                    <span className="font-mono truncate">{m.alias}</span>
+                                </label>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+            {open && (
+                <div className="px-3 py-1.5 border-t border-border flex items-center gap-2">
+                    <span className="text-[10px] text-muted-foreground">limit :</span>
+                    <input type="number" min={1} max={1000} value={nest.limit ?? 10}
+                        onChange={e => onChange({ limit: Math.max(1, parseInt(e.target.value) || 10) })}
+                        className="w-16 text-xs px-1.5 py-0.5 rounded border border-border bg-background text-foreground" />
+                </div>
+            )}
+        </div>
+    )
+}
+
+// ─── MalloyQueryBuilderUI ─────────────────────────────────────────────────────
 
 function MalloyQueryBuilderUI({ cell, path, cellIndex, onSwitchToText }: any) {
     const { runCellAt, _duckdbTables, forceUpdate } = useNotebookStore(useShallow(s => ({
@@ -244,58 +366,48 @@ function MalloyQueryBuilderUI({ cell, path, cellIndex, onSwitchToText }: any) {
     })))
 
     const tableNames = Object.keys(_duckdbTables ?? {})
-
-    // Si le _selectedTable en mémoire ne correspond pas à la table du malloyText
-    // (cas d'import de config), on parse le malloyText pour restaurer l'état correct.
     const parsed = useMemo(() => parseMalloyToQueryState(cell.malloyText, tableNames), [cell.malloyText, tableNames.join(',')])
     const savedTableMatchesMalloy = !cell.malloyText || !parsed || cell._selectedTable === parsed.tableName
     const useQbState = savedTableMatchesMalloy && cell._qb_initialized
 
+    const defaultMeasure: MeasureConfig = { id: uid(), fn: 'count', field: '*', alias: 'nb_lignes' }
+
     const [selectedTable, setSelectedTable] = useState<string>(() =>
-        useQbState ? (cell._selectedTable ?? tableNames[0] ?? '') : (parsed?.tableName ?? tableNames[0] ?? '')
-    )
+        useQbState ? (cell._selectedTable ?? tableNames[0] ?? '') : (parsed?.tableName ?? tableNames[0] ?? ''))
+    const [dimensions, setDimensions] = useState<string[]>(() =>
+        useQbState ? (cell._qb_dimensions ?? []) : (parsed?.dimensions ?? []))
+    const [measures, setMeasures] = useState<MeasureConfig[]>(() =>
+        useQbState ? (cell._qb_measures ?? [defaultMeasure]) : (parsed?.measures ?? [defaultMeasure]))
+    const [nests, setNests] = useState<NestConfig[]>(() =>
+        useQbState ? (cell._qb_nests ?? []) : (parsed?.nests ?? []))
+    const [filters, setFilters] = useState<FilterConfig[]>(() =>
+        useQbState ? (cell._qb_filters ?? []) : [])
+    const [limit, setLimit] = useState<number>(() =>
+        useQbState ? (cell._qb_limit ?? 100) : (parsed?.limit ?? 100))
+    const [orderByAlias, setOrderByAlias] = useState<string>(() =>
+        useQbState ? (cell._qb_orderByAlias ?? '') : (parsed?.orderByAlias ?? ''))
+    const [orderDir, setOrderDir] = useState<'asc' | 'desc'>(() =>
+        useQbState ? (cell._qb_orderDir ?? 'desc') : (parsed?.orderDir ?? 'desc'))
+    const [malloyOpen, setMalloyOpen] = useState(false)
+    const [copyDone, setCopyDone] = useState(false)
+    const [compiling, setCompiling] = useState(false)
+
     const columns: { name: string; type: string }[] = _duckdbTables?.[selectedTable]?.columns ?? []
     const numericCols = columns.filter(c => {
         const t = c.type.toUpperCase()
         return ['INT','FLOAT','DOUBLE','DECIMAL','NUMERIC','REAL','BIGINT','HUGEINT','UBIGINT'].some(k => t.includes(k))
     })
 
-    const defaultMeasure: MeasureConfig = { id: uid(), fn: 'count', field: '*', alias: 'nb_lignes' }
-
-    const [dimensions, setDimensions] = useState<string[]>(() =>
-        useQbState ? (cell._qb_dimensions ?? []) : (parsed?.dimensions ?? [])
-    )
-    const [measures, setMeasures] = useState<MeasureConfig[]>(() =>
-        useQbState ? (cell._qb_measures ?? [defaultMeasure]) : (parsed?.measures ?? [defaultMeasure])
-    )
-    const [filters, setFilters] = useState<FilterConfig[]>(() => cell._qb_filters ?? [])
-    const [limit, setLimit] = useState<number>(() =>
-        useQbState ? (cell._qb_limit ?? 100) : (parsed?.limit ?? 100)
-    )
-    const [orderByAlias, setOrderByAlias] = useState<string>(() =>
-        useQbState ? (cell._qb_orderByAlias ?? '') : (parsed?.orderByAlias ?? '')
-    )
-    const [orderDir, setOrderDir] = useState<'asc' | 'desc'>(() =>
-        useQbState ? (cell._qb_orderDir ?? 'desc') : (parsed?.orderDir ?? 'desc')
-    )
-    const [malloyOpen, setMalloyOpen] = useState(false)
-    const [copyDone, setCopyDone] = useState(false)
-    const [compiling, setCompiling] = useState(false)
-
-    // Marque la cellule comme ayant été ouverte en mode visuel
     useEffect(() => { cell._qb_initialized = true }, [])
-
-    // Persiste l'état du constructeur sur la cellule pour survivre aux remounts
     useEffect(() => { cell._qb_dimensions = dimensions }, [dimensions])
     useEffect(() => { cell._qb_measures = measures }, [measures])
+    useEffect(() => { cell._qb_nests = nests }, [nests])
     useEffect(() => { cell._qb_filters = filters }, [filters])
     useEffect(() => { cell._qb_limit = limit }, [limit])
     useEffect(() => { cell._qb_orderByAlias = orderByAlias }, [orderByAlias])
     useEffect(() => { cell._qb_orderDir = orderDir }, [orderDir])
 
-    const malloyText = generateMalloy(selectedTable, dimensions, measures, filters, orderByAlias, orderDir, limit)
-    // Synchronise cell.malloyText — mais pas au premier mount pour ne pas écraser
-    // un malloyText chargé depuis le config (le composant ne monte que si _qb_initialized)
+    const malloyText = generateMalloy(selectedTable, dimensions, measures, nests, filters, orderByAlias, orderDir, limit)
     const _syncMounted = useRef(false)
     useEffect(() => {
         if (!_syncMounted.current) { _syncMounted.current = true; return }
@@ -317,6 +429,7 @@ function MalloyQueryBuilderUI({ cell, path, cellIndex, onSwitchToText }: any) {
         setLimit(100)
         cell._qb_dimensions = []
         cell._qb_measures = undefined
+        cell._qb_nests = []
         cell._qb_filters = []
         cell._qb_orderByAlias = ''
         cell._qb_orderDir = 'desc'
@@ -341,15 +454,36 @@ function MalloyQueryBuilderUI({ cell, path, cellIndex, onSwitchToText }: any) {
         setMeasures(prev => prev.map(m => {
             if (m.id !== id) return m
             const next = { ...m, ...upd }
+            // Auto-alias sauf si l'utilisateur l'a explicitement changé
             if ((upd.fn || upd.field) && !upd.alias) {
-                next.alias = next.fn === 'count' ? 'nb_lignes' : `${next.fn}_${next.field}`
+                if (next.fn === 'count') next.alias = 'nb_lignes'
+                else if (next.fn === 'count_distinct') next.alias = `dist_${next.field}`
+                else if (next.fn === 'custom') { /* garder l'alias courant */ }
+                else next.alias = `${next.fn}_${next.field}`
             }
             return next
         }))
     }, [])
 
     const removeMeasure = useCallback((id: string) => {
-        setMeasures(prev => prev.filter(m => m.id !== id))
+        // Retirer aussi les références dans les nests
+        setMeasures(prev => {
+            const removed = prev.find(m => m.id === id)?.alias
+            if (removed) setNests(ns => ns.map(n => ({ ...n, measureAliases: n.measureAliases.filter(a => a !== removed) })))
+            return prev.filter(m => m.id !== id)
+        })
+    }, [])
+
+    const addNest = useCallback(() => {
+        setNests(prev => [...prev, { id: uid(), alias: `nest_${prev.length + 1}`, dimensions: [], measureAliases: [], limit: 10 }])
+    }, [])
+
+    const updateNest = useCallback((id: string, upd: Partial<NestConfig>) => {
+        setNests(prev => prev.map(n => n.id === id ? { ...n, ...upd } : n))
+    }, [])
+
+    const removeNest = useCallback((id: string) => {
+        setNests(prev => prev.filter(n => n.id !== id))
     }, [])
 
     const addFilter = useCallback(() => {
@@ -474,65 +608,82 @@ function MalloyQueryBuilderUI({ cell, path, cellIndex, onSwitchToText }: any) {
                             </div>
                         </div>
 
-                        {/* Measures */}
+                        {/* Mesures */}
                         <div className="border border-border rounded-md overflow-hidden">
                             <div className="px-3 py-2 bg-muted/50 text-xs font-semibold text-muted-foreground border-b border-border flex items-center justify-between">
                                 <span className="flex items-center gap-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" /></svg>
-                                    Mesures <span className="font-normal">(aggregate)</span>
+                                    Mesures source <span className="font-normal">(measure:)</span>
                                 </span>
-                                <button
-                                    className="text-violet-600 hover:text-violet-700 text-xs font-medium px-1.5 py-0.5 rounded hover:bg-violet-100 dark:hover:bg-violet-900 transition-colors"
-                                    onClick={addMeasure}
-                                    title="Ajouter une mesure"
-                                >+ Ajouter</button>
+                                <button className="text-violet-600 hover:text-violet-700 text-xs font-medium px-1.5 py-0.5 rounded hover:bg-violet-100 dark:hover:bg-violet-900 transition-colors" onClick={addMeasure}>+ Ajouter</button>
                             </div>
-                            <div className="max-h-52 overflow-y-auto divide-y divide-border">
-                                {measures.length === 0 && (
-                                    <div className="text-xs text-muted-foreground italic px-3 py-2">Aucune mesure</div>
-                                )}
+                            <div className="max-h-64 overflow-y-auto divide-y divide-border">
+                                {measures.length === 0 && <div className="text-xs text-muted-foreground italic px-3 py-2">Aucune mesure</div>}
                                 {measures.map(m => (
-                                    <div key={m.id} className="flex items-center gap-1.5 px-2 py-1.5 flex-wrap">
-                                        <select
-                                            className="text-xs px-1.5 py-0.5 rounded border border-border bg-background text-foreground w-16 shrink-0"
-                                            value={m.fn}
-                                            onChange={e => updateMeasure(m.id, { fn: e.target.value as any })}
-                                        >
-                                            <option value="count">count</option>
-                                            <option value="sum">sum</option>
-                                            <option value="avg">avg</option>
-                                            <option value="min">min</option>
-                                            <option value="max">max</option>
-                                        </select>
-                                        {m.fn !== 'count' && (
-                                            <select
-                                                className="text-xs px-1.5 py-0.5 rounded border border-border bg-background text-foreground flex-1 min-w-0"
-                                                value={m.field}
-                                                onChange={e => updateMeasure(m.id, { field: e.target.value })}
-                                            >
-                                                {(numericCols.length > 0 ? numericCols : columns).map(c => (
-                                                    <option key={c.name} value={c.name}>{c.name}</option>
-                                                ))}
+                                    <div key={m.id} className="flex flex-col gap-1 px-2 py-1.5">
+                                        <div className="flex items-center gap-1.5">
+                                            {/* Fonction */}
+                                            <select className="text-xs px-1.5 py-0.5 rounded border border-border bg-background text-foreground shrink-0"
+                                                value={m.fn} onChange={e => updateMeasure(m.id, { fn: e.target.value as MeasureFn })}>
+                                                <option value="count">count()</option>
+                                                <option value="count_distinct">count(distinct)</option>
+                                                <option value="sum">sum</option>
+                                                <option value="avg">avg</option>
+                                                <option value="min">min</option>
+                                                <option value="max">max</option>
+                                                <option value="custom">expression…</option>
                                             </select>
+                                            {/* Champ (sauf count et custom) */}
+                                            {(m.fn !== 'count' && m.fn !== 'custom') && (
+                                                <select className="text-xs px-1.5 py-0.5 rounded border border-border bg-background text-foreground flex-1 min-w-0"
+                                                    value={m.field} onChange={e => updateMeasure(m.id, { field: e.target.value })}>
+                                                    {(m.fn === 'count_distinct' ? columns : (numericCols.length > 0 ? numericCols : columns)).map(c => (
+                                                        <option key={c.name} value={c.name}>{c.name}</option>
+                                                    ))}
+                                                </select>
+                                            )}
+                                            {/* Alias */}
+                                            <input className="text-xs px-1.5 py-0.5 rounded border border-border bg-background text-foreground w-24 font-mono shrink-0"
+                                                value={m.alias} onChange={e => updateMeasure(m.id, { alias: e.target.value })} placeholder="alias" title="Identifiant Malloy" />
+                                            <button className="text-muted-foreground/50 hover:text-red-500 transition-colors shrink-0" onClick={() => removeMeasure(m.id)}>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                            </button>
+                                        </div>
+                                        {/* Expression custom */}
+                                        {m.fn === 'custom' && (
+                                            <input className="text-xs px-1.5 py-0.5 rounded border border-violet-300 bg-background text-foreground font-mono w-full"
+                                                value={m.customExpr ?? ''} onChange={e => updateMeasure(m.id, { customExpr: e.target.value })}
+                                                placeholder="ex: sum(price) / count()" />
                                         )}
-                                        <input
-                                            className="text-xs px-1.5 py-0.5 rounded border border-border bg-background text-foreground w-24 font-mono shrink-0"
-                                            value={m.alias}
-                                            onChange={e => updateMeasure(m.id, { alias: e.target.value })}
-                                            placeholder="alias"
-                                            title="Nom de la mesure dans Malloy"
-                                        />
-                                        <button
-                                            className="text-muted-foreground/50 hover:text-red-500 transition-colors shrink-0"
-                                            onClick={() => removeMeasure(m.id)}
-                                            title="Supprimer"
-                                        >
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
-                                        </button>
                                     </div>
                                 ))}
                             </div>
                         </div>
+                    </div>
+
+                    {/* ── Nests (sous-requêtes imbriquées) ── */}
+                    <div className="border border-border rounded-md overflow-hidden">
+                        <div className="px-3 py-2 bg-muted/50 text-xs font-semibold text-muted-foreground border-b border-border flex items-center justify-between">
+                            <span className="flex items-center gap-1.5">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                                Nested queries <span className="font-normal">(nest:)</span>
+                                <span className="text-muted-foreground/50 font-normal text-[10px]">— sous-table dans chaque ligne</span>
+                            </span>
+                            <button className="text-violet-600 hover:text-violet-700 text-xs font-medium px-1.5 py-0.5 rounded hover:bg-violet-100 dark:hover:bg-violet-900 transition-colors" onClick={addNest}>+ Ajouter</button>
+                        </div>
+                        {nests.length === 0 ? (
+                            <div className="text-xs text-muted-foreground italic px-3 py-2">
+                                Aucun nest — <button className="text-violet-600 hover:underline" onClick={addNest}>ajouter une sous-requête</button>
+                            </div>
+                        ) : (
+                            <div className="p-2 flex flex-col gap-2">
+                                {nests.map(n => (
+                                    <NestEditor key={n.id} nest={n} columns={columns} measures={measures}
+                                        onChange={upd => updateNest(n.id, upd)}
+                                        onRemove={() => removeNest(n.id)} />
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     {/* ── Filtres ── */}
