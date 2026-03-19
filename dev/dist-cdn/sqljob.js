@@ -133788,10 +133788,10 @@ FROM ${At}` : `SELECT * FROM ${At}`;
   `)}
 ) FROM ${At}` : `SELECT * FROM ${At}`;
     case "filter_rows": {
-      const kt = ((xt = yt.groups) != null && xt.length ? yt.groups : (wt = yt.conditions) != null && wt.length ? [{ conditions: yt.conditions, logicOp: yt.logicOp ?? "AND" }] : []).filter((St) => St.conditions.length > 0);
+      const kt = ((xt = yt.groups) != null && xt.length ? yt.groups : (wt = yt.conditions) != null && wt.length ? [{ items: yt.conditions.map((St) => ({ kind: "cond", cond: St })), logicOp: yt.logicOp ?? "AND" }] : []).filter((St) => filterGroupHasContent(St));
       if (!kt.length) return `SELECT * FROM ${At}`;
       const Et = kt.map((St) => {
-        const Tt = St.conditions.map(conditionToSql).join(` ${St.logicOp} `);
+        const Tt = filterGroupToSql(St);
         return kt.length > 1 ? `(${Tt})` : Tt;
       }).join(`
   ${yt.groupLogicOp ?? "OR"} `);
@@ -133923,6 +133923,19 @@ FROM ${At}`;
       return `SELECT *, ${kt} AS ${quoteId(Et)} FROM ${At}`;
     }
   }
+}
+function filterGroupHasContent(At) {
+  var yt;
+  return (yt = At.conditions) != null && yt.length ? !0 : (At.items ?? []).some(
+    (xt) => xt.kind === "cond" ? !!xt.cond.column : filterGroupHasContent(xt.group)
+  );
+}
+function filterGroupToSql(At) {
+  var kt;
+  const xt = ((kt = At.items) != null && kt.length ? At.items : (At.conditions ?? []).map((Et) => ({ kind: "cond", cond: Et }))).filter((Et) => Et.kind === "cond" ? !!Et.cond.column : filterGroupHasContent(Et.group)).map((Et) => Et.kind === "cond" ? conditionToSql(Et.cond) : `(${filterGroupToSql(Et.group)})`);
+  if (!xt.length) return "1=1";
+  const wt = xt.join(` ${At.logicOp ?? "AND"} `), Ct = xt.length > 1 ? `(${wt})` : wt;
+  return At.negate ? `NOT ${Ct}` : Ct;
 }
 function conditionToSql(At) {
   const yt = quoteId(At.column);
@@ -134362,71 +134375,112 @@ function LogicOpBadge({ op: At, onChange: yt }) {
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 h-px bg-border" })
   ] });
 }
-function FilterRowsStepUI({ step: At, availableCols: yt, onChange: xt }) {
-  var Rt, Dt;
-  const wt = (Rt = At.groups) != null && Rt.length ? At.groups : (Dt = At.conditions) != null && Dt.length ? [{ conditions: At.conditions, logicOp: At.logicOp ?? "AND" }] : [{ conditions: [], logicOp: "AND" }], Ct = At.groupLogicOp ?? "OR";
-  function kt(jt) {
-    xt({ ...At, groups: jt, groupLogicOp: Ct, conditions: void 0, logicOp: void 0 });
+function normalizeFilterGroup(At) {
+  return At.items !== void 0 ? At : {
+    items: (At.conditions ?? []).map((yt) => ({ kind: "cond", cond: yt })),
+    logicOp: At.logicOp ?? "AND",
+    negate: At.negate
+  };
+}
+const GROUP_DEPTH_COLORS = [
+  "border-border",
+  "border-blue-500/40",
+  "border-purple-500/40",
+  "border-amber-500/40"
+];
+function FilterGroupUI({ group: At, onUpdate: yt, onRemove: xt, availableCols: wt, depth: Ct = 0 }) {
+  const kt = normalizeFilterGroup(At), Et = kt.items ?? [], St = GROUP_DEPTH_COLORS[Math.min(Ct, GROUP_DEPTH_COLORS.length - 1)];
+  function Tt(It) {
+    yt({ ...kt, items: It });
   }
-  function Et(jt, Nt) {
-    kt(wt.map((Mt, Ot) => Ot === jt ? { ...Mt, ...Nt } : Mt));
-  }
-  function St(jt, Nt, Mt) {
-    Et(jt, { conditions: wt[jt].conditions.map((Ot, Bt) => Bt === Nt ? { ...Ot, ...Mt } : Ot) });
-  }
-  function Tt(jt) {
-    Et(jt, { conditions: [...wt[jt].conditions, { column: yt[0] ?? "", op: "=", value: "" }] });
-  }
-  function $t(jt, Nt) {
-    Et(jt, { conditions: wt[jt].conditions.filter((Mt, Ot) => Ot !== Nt) });
+  function $t() {
+    Tt([...Et, { kind: "cond", cond: { column: wt[0] ?? "", op: "=", value: "" } }]);
   }
   function Lt() {
-    kt([...wt, { conditions: [], logicOp: "AND" }]);
+    Tt([...Et, { kind: "group", group: { items: [], logicOp: "AND", negate: !1 } }]);
   }
-  function It(jt) {
-    const Nt = wt.filter((Mt, Ot) => Ot !== jt);
-    kt(Nt.length ? Nt : [{ conditions: [], logicOp: "AND" }]);
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: `border ${St} rounded p-2 flex flex-col gap-1`, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1 mb-0.5", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex rounded border border-border overflow-hidden text-xs", children: ["AND", "OR"].map((It) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "button",
+        {
+          onClick: () => yt({ ...kt, logicOp: It }),
+          className: `px-1.5 py-0.5 transition-colors ${kt.logicOp === It ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"}`,
+          children: It
+        },
+        It
+      )) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "button",
+        {
+          onClick: () => yt({ ...kt, negate: !kt.negate }),
+          title: "Inverser le groupe (NOT)",
+          className: `px-1.5 py-0.5 rounded border text-xs font-mono transition-colors ${kt.negate ? "bg-destructive/80 text-destructive-foreground border-destructive" : "border-border text-muted-foreground hover:bg-muted"}`,
+          children: "NOT"
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex-1" }),
+      xt && /* @__PURE__ */ jsxRuntimeExports.jsx(RemoveBtn, { onClick: xt })
+    ] }),
+    Et.map((It, Rt) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+      Rt > 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-1 py-0.5 px-1", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-mono font-semibold text-muted-foreground/70 select-none", children: kt.logicOp }) }),
+      It.kind === "cond" ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+        FilterConditionRow,
+        {
+          cond: It.cond,
+          availableCols: wt,
+          onChange: (Dt) => Tt(Et.map((jt, Nt) => Nt === Rt ? { kind: "cond", cond: { ...jt.cond, ...Dt } } : jt)),
+          onRemove: () => Tt(Et.filter((Dt, jt) => jt !== Rt))
+        }
+      ) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+        FilterGroupUI,
+        {
+          group: It.group,
+          onUpdate: (Dt) => Tt(Et.map((jt, Nt) => Nt === Rt ? { kind: "group", group: Dt } : jt)),
+          onRemove: () => Tt(Et.filter((Dt, jt) => jt !== Rt)),
+          availableCols: wt,
+          depth: Ct + 1
+        }
+      )
+    ] }, Rt)),
+    Et.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground italic py-0.5", children: "Aucun filtre" }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-3 mt-0.5", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(AddRowBtn, { onClick: $t, label: "+ Condition" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(AddRowBtn, { onClick: Lt, label: "+ Sous-groupe" })
+    ] })
+  ] });
+}
+function FilterRowsStepUI({ step: At, availableCols: yt, onChange: xt }) {
+  var Tt, $t;
+  const wt = (Tt = At.groups) != null && Tt.length ? At.groups : ($t = At.conditions) != null && $t.length ? [{ items: At.conditions.map((Lt) => ({ kind: "cond", cond: Lt })), logicOp: At.logicOp ?? "AND" }] : [{ items: [], logicOp: "AND" }], Ct = At.groupLogicOp ?? "OR";
+  function kt(Lt) {
+    xt({ ...At, groups: Lt, groupLogicOp: Ct, conditions: void 0, logicOp: void 0 });
+  }
+  function Et() {
+    kt([...wt, { items: [], logicOp: "AND", negate: !1 }]);
+  }
+  function St(Lt) {
+    const It = wt.filter((Rt, Dt) => Dt !== Lt);
+    kt(It.length ? It : [{ items: [], logicOp: "AND" }]);
   }
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
-    wt.map((jt, Nt) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-      Nt > 0 && /* @__PURE__ */ jsxRuntimeExports.jsx(LogicOpBadge, { op: Ct, onChange: (Mt) => xt({ ...At, groups: wt, groupLogicOp: Mt }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "border border-border rounded p-2 flex flex-col gap-1.5 bg-background", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between mb-0.5", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs text-muted-foreground font-medium", children: [
-            "Groupe ",
-            Nt + 1
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
-            jt.conditions.length > 1 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex rounded border border-border overflow-hidden text-xs", children: ["AND", "OR"].map((Mt) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "button",
-              {
-                onClick: () => Et(Nt, { logicOp: Mt }),
-                className: `px-1.5 py-0.5 transition-colors ${jt.logicOp === Mt ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"}`,
-                children: Mt
-              },
-              Mt
-            )) }),
-            wt.length > 1 && /* @__PURE__ */ jsxRuntimeExports.jsx(RemoveBtn, { onClick: () => It(Nt) })
-          ] })
-        ] }),
-        jt.conditions.map((Mt, Ot) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-          FilterConditionRow,
-          {
-            cond: Mt,
-            availableCols: yt,
-            onChange: (Bt) => St(Nt, Ot, Bt),
-            onRemove: () => $t(Nt, Ot)
-          },
-          Ot
-        )),
-        jt.conditions.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground italic", children: "Aucune condition" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(AddRowBtn, { onClick: () => Tt(Nt), label: "+ Condition" })
-      ] })
-    ] }, Nt)),
+    wt.map((Lt, It) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+      It > 0 && /* @__PURE__ */ jsxRuntimeExports.jsx(LogicOpBadge, { op: Ct, onChange: (Rt) => xt({ ...At, groups: wt, groupLogicOp: Rt }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        FilterGroupUI,
+        {
+          group: Lt,
+          onUpdate: (Rt) => kt(wt.map((Dt, jt) => jt === It ? Rt : Dt)),
+          onRemove: wt.length > 1 ? () => St(It) : void 0,
+          availableCols: yt,
+          depth: 0
+        }
+      )
+    ] }, It)),
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       "button",
       {
-        onClick: Lt,
+        onClick: Et,
         className: "flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground border border-dashed border-border rounded px-2 py-1 hover:border-primary transition-colors",
         children: "+ Ajouter un groupe"
       }
@@ -134937,8 +134991,11 @@ function stepSummary(At) {
     case "change_type":
       return At.changes.length ? At.changes.map((wt) => `${wt.column}:${wt.targetType}`).join(", ") : "—";
     case "filter_rows": {
-      const wt = (yt = At.groups) != null && yt.length ? At.groups : (xt = At.conditions) != null && xt.length ? [{ conditions: At.conditions, logicOp: At.logicOp ?? "AND" }] : [], Ct = wt.reduce((kt, Et) => kt + Et.conditions.length, 0);
-      return Ct ? `${Ct} condition${Ct > 1 ? "s" : ""}${wt.length > 1 ? ` (${wt.length} groupes)` : ""}` : "—";
+      let wt = function(St) {
+        return (St.items ?? St.conditions ?? []).reduce((Tt, $t) => Tt + ($t.kind === "group" ? wt($t.group) : 1), 0);
+      };
+      const Ct = (yt = At.groups) != null && yt.length ? At.groups : (xt = At.conditions) != null && xt.length ? [{ items: At.conditions.map((St) => ({ kind: "cond", cond: St })) }] : [], kt = Ct.reduce((St, Tt) => St + wt(Tt), 0), Et = Ct.some((St) => St.negate);
+      return kt ? `${kt} condition${kt > 1 ? "s" : ""}${Ct.length > 1 ? ` (${Ct.length} groupes)` : ""}${Et ? " [NOT]" : ""}` : "—";
     }
     case "sort":
       return At.keys.length ? At.keys.map((wt) => `${wt.column} ${wt.direction === "asc" ? "↑" : "↓"}`).join(", ") : "—";
@@ -135134,7 +135191,7 @@ function defaultStep(At) {
     case "change_type":
       return { type: At, changes: [] };
     case "filter_rows":
-      return { type: At, groups: [{ conditions: [], logicOp: "AND" }], groupLogicOp: "OR" };
+      return { type: At, groups: [{ items: [], logicOp: "AND", negate: !1 }], groupLogicOp: "OR" };
     case "sort":
       return { type: At, keys: [] };
     case "top_n":
