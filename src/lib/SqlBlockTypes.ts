@@ -42,10 +42,21 @@ export interface FilterCondition {
     /** Borne haute (BETWEEN) */
     valueTo?: string;
 }
-export interface FilterRowsStep {
-    type: 'filter_rows';
+/** Un groupe de conditions liées entre elles par logicOp (AND/OR) */
+export interface FilterGroup {
     conditions: FilterCondition[];
     logicOp: 'AND' | 'OR';
+}
+export interface FilterRowsStep {
+    type: 'filter_rows';
+    /** Groupes de conditions (nouveau format) */
+    groups: FilterGroup[];
+    /** Opérateur entre les groupes */
+    groupLogicOp: 'AND' | 'OR';
+    /** @deprecated — rétrocompat ancien format */
+    conditions?: FilterCondition[];
+    /** @deprecated — rétrocompat ancien format */
+    logicOp?: 'AND' | 'OR';
 }
 
 export interface SortKey {
