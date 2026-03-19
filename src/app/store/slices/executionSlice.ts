@@ -9,6 +9,14 @@ import { EChartSqlParser } from '../../../lib/EChartSqlParser'
 import { formatValueForInputType } from '../../../lib/utils'
 import { FileHandler } from '../../../lib/FileHandler'
 
+/** Détecte si un SQL contient une instruction DDL (CREATE, DROP, ALTER, INSERT, UPDATE, DELETE…).
+ *  Utilisé pour décider si le schéma DuckDB doit être rafraîchi après exécution. */
+const DDL_RE = /^\s*(CREATE|DROP|ALTER|INSERT|UPDATE|DELETE|TRUNCATE|RENAME|COMMENT)\b/im
+function sqlIsDdl(sql: string): boolean {
+    // Vérifier chaque statement séparé par ';'
+    return sql.split(';').some(s => DDL_RE.test(s))
+}
+
 export const createExecutionSlice = (set: any, get: any) => ({
 
     async runGroupAtPath(path) {
@@ -427,6 +435,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
             }
 
             get().setStatus('SQL Recursive Parse exécuté', 'success')
+            if (sqlIsDdl(finalQuery)) await get().refreshDuckdbSchema?.()
         } catch (error) {
             throw error
         }
@@ -453,6 +462,59 @@ export const createExecutionSlice = (set: any, get: any) => ({
             cell._resultInfo = `${results.length} ligne(s)` + (truncated ? ` (limité à ${maxRows})` : '')
 
             get().setStatus('Tableau chargé', 'success')
+            if (sqlIsDdl(finalQuery)) await get().refreshDuckdbSchema?.()
+        } catch (error) {
+            throw error
+        }
+    },
+
+    async executeSqlBlockCell(cell) {
+        const { astToSql, getEffectiveSql, generateMaterializeQuery } = await import('../../../lib/SqlBlockService')
+        const { createDefaultSqlBlockConfig } = await import('../../../lib/SqlBlockTypes')
+
+        // Initialiser la config si elle n'existe pas
+        if (!cell.sqlBlockConfig) {
+            cell.sqlBlockConfig = createDefaultSqlBlockConfig()
+        }
+        const cfg = cell.sqlBlockConfig
+        const sql = getEffectiveSql(cfg)
+
+        if (!sql?.trim()) {
+            cell._resultInfo = 'Aucun SQL à exécuter — définissez une source et des steps.'
+            return
+        }
+
+        if (!cell.name?.trim()) {
+            throw new Error('La cellule sqlBlock doit avoir un nom (utilisé comme nom de VIEW/TABLE dans DuckDB).')
+        }
+
+        get().setStatus('Exécution du SQL Block...', 'loading')
+
+        try {
+            // Supprimer l'objet existant s'il est d'un type différent
+            // (DuckDB refuse CREATE OR REPLACE TABLE sur une VIEW existante et vice-versa)
+            const materialize = cfg.ast?.materialize ?? 'view'
+            const oppositeType = materialize === 'view' ? 'TABLE' : 'VIEW'
+            try {
+                await DuckDBManager.executeQuery(`DROP ${oppositeType} IF EXISTS ${cell.name}`)
+            } catch (_) { /* pas d'objet à supprimer, on continue */ }
+
+            // Créer la VIEW ou TABLE dans DuckDB (accessible par les cellules en aval)
+            const finalSql = get().parseQueryWithParameters(sql)
+            const materializeQuery = generateMaterializeQuery(cell.name, finalSql, materialize)
+            await DuckDBManager.executeQuery(materializeQuery)
+
+            // Charger les résultats pour l'affichage dans la cellule
+            const { rows: results, schemaTypes } = await DuckDBManager.executeQueryWithSchema(
+                `SELECT * FROM ${cell.name} LIMIT 1000`
+            )
+            cell._results = results
+            cell._schemaTypes = schemaTypes || {}
+            cell._resultInfo = `${results.length} ligne(s)${results.length === 1000 ? ' (limité à 1 000 pour l\'affichage)' : ''} — ${cfg.ast?.materialize === 'table' ? 'TABLE' : 'VIEW'} "${cell.name}" créée`
+
+            // Synchroniser le schéma DuckDB (panel + éditeur SQL)
+            await get().refreshDuckdbSchema?.()
+            get().setStatus('SQL Block exécuté', 'success')
         } catch (error) {
             throw error
         }
@@ -651,7 +713,15 @@ export const createExecutionSlice = (set: any, get: any) => ({
                     throw new Error(`Erreur JS: ${jsError.message}`)
                 }
             } else {
-                const finalQuery = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '')
+                const rawQuery = ConfigManager.getCellQuery(cell, 0) || ''
+                const referencedParams = get().findReferencedParams(rawQuery)
+                const allParams = get().getParameters()
+                const DATE_CAST_RE = /::(DATE|TIMESTAMP|TIME)\b/i
+                if (DATE_CAST_RE.test(rawQuery) && referencedParams.some(p => !allParams[p])) {
+                    // Paramètre date référencé encore vide → skip silencieux
+                    return
+                }
+                const finalQuery = get().parseQueryWithParameters(rawQuery)
                 get().setStatus('Exécution de la requête...', 'loading')
                 results = await DuckDBManager.executeQuery(finalQuery)
             }
@@ -710,8 +780,8 @@ export const createExecutionSlice = (set: any, get: any) => ({
 
             cell._userModified = false
         } catch (error) {
-            cell._paramError = 'Erreur: ' + error.message
-            get().setStatus('Erreur: ' + error.message, 'error')
+            console.error('[uiParameter]', ConfigManager.getCellReferenceName(cell), error.message)
+            if (get().devMode) get().setStatus('Erreur: ' + error.message, 'error')
         }
     },
 
@@ -981,6 +1051,9 @@ export const createExecutionSlice = (set: any, get: any) => ({
     async executePerspectiveCell(cell) {
         if (!ConfigManager.getCellQuery(cell, 0)?.trim()) {
             throw new Error('Requête SQL manquante')
+        }
+        if (DuckDBManager.currentEngine === 'ducklings') {
+            throw new Error('Les cellules Perspective nécessitent le moteur DuckDB WASM. Changez le moteur dans les paramètres.')
         }
 
         get().setStatus('Chargement de Perspective...', 'loading')

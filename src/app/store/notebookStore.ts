@@ -236,6 +236,7 @@ function buildInitialState() {
             { type: 'pdfme',              label: 'PDF (pdfme)',               icon: 'picture-as-pdf' },
             { type: 'echart',             label: 'EChart (Apache ECharts)',  icon: 'bar-chart' },
             { type: 'perspective',        label: 'Perspective Viewer',       icon: 'analytics' },
+            { type: 'sqlBlock',           label: 'SQL Block (visuel)',        icon: 'account-tree' },
         ],
 
         _tables: {},
@@ -255,10 +256,9 @@ const duckdbManagerConnector = createBaseDuckDbConnector(
             // DuckDB est déjà initialisé par helpersMixin.init() — rien à faire
         },
         executeQueryInternal: async (sql: string) => {
-            console.log('[duckdbBridge] query:', sql.slice(0, 100))
+            if (DuckDBManager.currentEngine === 'ducklings') return null
             try {
                 const result = await DuckDBManager.executeQueryArrow(sql)
-                console.log('[duckdbBridge] ok, rows:', result?.numRows)
                 return result
             } catch (err) {
                 console.error('[duckdbBridge] error:', err)
@@ -392,7 +392,9 @@ export const useNotebookStore = create<any>((set, get, api) => {
                 return { _roomFiles: [...existing, { name: file.name, tableName, size: file.size, source: 'dropzone' }] };
             });
             await get().refreshDuckdbTables();
-            try { await get().db.refreshTableSchemas(); } catch { /* ignore */ }
+            if (DuckDBManager.currentEngine !== 'ducklings') {
+                try { await get().db.refreshTableSchemas(); } catch { /* ignore */ }
+            }
         },
 
         // Overrides de méthodes mixin qui font des mutations profondes (this.X.Y = val)

@@ -24,9 +24,7 @@ import './styles.css'
 loader.config({
     paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.55.1/min/vs' },
 })
-loader.init().then(() => {
-    console.log('[sqljob] Monaco chargé depuis jsDelivr CDN ✓')
-}).catch((err) => {
+loader.init().catch((err) => {
     console.error('[sqljob] Échec chargement Monaco CDN:', err)
 })
 

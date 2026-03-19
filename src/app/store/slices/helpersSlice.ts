@@ -72,6 +72,18 @@ export const createHelpersSlice = (set: any, get: any) => ({
         }
     },
 
+    /**
+     * Rafraîchit le schéma DuckDB dans les deux systèmes :
+     * - _duckdbTables (DataSourcesPanel, SqlBlockEditor)
+     * - db.refreshTableSchemas() (autocomplétion de l'éditeur SQL sqlrooms)
+     */
+    async refreshDuckdbSchema() {
+        await get().refreshDuckdbTables()
+        if (DuckDBManager.currentEngine !== 'ducklings') {
+            try { await get().db?.refreshTableSchemas() } catch { /* ignoré si non prêt */ }
+        }
+    },
+
     async init() {
         try {
             await DuckDBManager.initDuckDB((msg: string, type: string) => get().setStatus(msg, type))
@@ -86,16 +98,19 @@ export const createHelpersSlice = (set: any, get: any) => ({
             }
             setTimeout(() => setTimeout(() => get().refreshMarkdownCellsForPage(0), 300), 0)
             await get().refreshDuckdbTables()
-            try {
-                await get().room.initialize()
-            } catch (err) {
-                console.warn('[sqljob] room.initialize() error:', err)
+            if (DuckDBManager.currentEngine !== 'ducklings') {
+                try {
+                    await get().room.initialize()
+                } catch (err) {
+                    console.warn('[sqljob] room.initialize() error:', err)
+                }
             }
-            try {
-                await get().db.refreshTableSchemas()
-
-            } catch (err) {
-                console.warn('[sqljob] refreshTableSchemas error:', err)
+            if (DuckDBManager.currentEngine !== 'ducklings') {
+                try {
+                    await get().db.refreshTableSchemas()
+                } catch (err) {
+                    console.warn('[sqljob] refreshTableSchemas error:', err)
+                }
             }
             get().room = { ...get().room, initialized: true }
         } catch (error: any) {

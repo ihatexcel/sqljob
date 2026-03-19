@@ -4,6 +4,7 @@ import { ConfigManager } from '../../../lib/ConfigManager'
 import { CellConfigService, initializeCell } from '../../../lib/CellConfigService'
 import { CELL_TYPE_SCHEMAS } from '../../../lib/cellTypeSchemas'
 import { useConfirmModal } from '../uiStores'
+import { createDefaultSqlBlockConfig } from '../../../lib/SqlBlockTypes'
 
 export const createCellsSlice = (set: any, get: any) => ({
 
@@ -151,6 +152,9 @@ export const createCellsSlice = (set: any, get: any) => ({
             newCell._perspectiveReady = false
             newCell._perspectiveWorker = null
             newCell._perspectiveTable = null
+        }
+        if (type === 'sqlBlock') {
+            newCell.sqlBlockConfig = createDefaultSqlBlockConfig()
         }
         return newCell
     },
