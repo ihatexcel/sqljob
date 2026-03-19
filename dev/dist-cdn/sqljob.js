@@ -141171,11 +141171,11 @@ const createHelpersSlice = (At, yt) => ({
    */
   async refreshDuckdbSchema() {
     var xt;
-    await yt().refreshDuckdbTables();
-    try {
-      await ((xt = yt().db) == null ? void 0 : xt.refreshTableSchemas());
-    } catch {
-    }
+    if (await yt().refreshDuckdbTables(), DuckDBManager.currentEngine !== "ducklings")
+      try {
+        await ((xt = yt().db) == null ? void 0 : xt.refreshTableSchemas());
+      } catch {
+      }
   },
   async init() {
     try {
@@ -141187,11 +141187,12 @@ const createHelpersSlice = (At, yt) => ({
       } catch (wt) {
         console.warn("[sqljob] room.initialize() error:", wt);
       }
-      try {
-        await yt().db.refreshTableSchemas();
-      } catch (wt) {
-        console.warn("[sqljob] refreshTableSchemas error:", wt);
-      }
+      if (DuckDBManager.currentEngine !== "ducklings")
+        try {
+          await yt().db.refreshTableSchemas();
+        } catch (wt) {
+          console.warn("[sqljob] refreshTableSchemas error:", wt);
+        }
       yt().room = { ...yt().room, initialized: !0 };
     } catch (xt) {
       yt().setStatus("Erreur d'initialisation: " + xt.message, "error");
@@ -143301,11 +143302,11 @@ SELECT * FROM read_parquet('${qt}')`);
         }
       Et._loaded = !0, Et._status = "success", Et._pendingFileLoad = !1, yt().setStatus(`${Et.name} chargé!`, "success");
       const Zt = yt()._roomFiles ?? [];
-      Zt.some((sr) => sr.tableName === Ot) || At({ _roomFiles: [...Zt, { name: xt.name, tableName: Ot, size: xt.size ?? 0, source: "source-cell" }] }), await yt().refreshDuckdbTables();
-      try {
-        await yt().db.refreshTableSchemas();
-      } catch {
-      }
+      if (Zt.some((sr) => sr.tableName === Ot) || At({ _roomFiles: [...Zt, { name: xt.name, tableName: Ot, size: xt.size ?? 0, source: "source-cell" }] }), await yt().refreshDuckdbTables(), DuckDBManager.currentEngine !== "ducklings")
+        try {
+          await yt().db.refreshTableSchemas();
+        } catch {
+        }
       St || (await yt().runCellsAfterWithStopConditions(wt, Ct, Et._id)).stopped || yt().setStatus("Exécution terminée", "success");
     } catch (Ot) {
       Et._status = "error", Et._importFailed = !0, yt().setStatus("Erreur: " + Ot.message, "error"), Et._fileName = "", Et._currentFile = null, Array.isArray(Et.files) && (Et.files = Et.files.filter((Bt) => Bt.slot !== "source")), delete Et.fileBase64, delete Et.fileName;
@@ -144110,6 +144111,8 @@ const createExecutionSlice = (At, yt) => ({
     var wt;
     if (!((wt = ConfigManager.getCellQuery(xt, 0)) != null && wt.trim()))
       throw new Error("Requête SQL manquante");
+    if (DuckDBManager.currentEngine === "ducklings")
+      throw new Error("Les cellules Perspective nécessitent le moteur DuckDB WASM. Changez le moteur dans les paramètres.");
     yt().setStatus("Chargement de Perspective...", "loading"), await CDNManager.loadPerspective(), yt().setStatus("Parsing de la requête SQL...", "loading");
     try {
       const Ct = yt().parseQueryWithParameters(ConfigManager.getCellQuery(xt, 0) || "");
@@ -144553,6 +144556,7 @@ const duckdbManagerConnector = createBaseDuckDbConnector(
     initializeInternal: async () => {
     },
     executeQueryInternal: async (At) => {
+      if (DuckDBManager.currentEngine === "ducklings") return null;
       try {
         return await DuckDBManager.executeQueryArrow(At);
       } catch (yt) {
@@ -144627,14 +144631,14 @@ const duckdbManagerConnector = createBaseDuckDbConnector(
       const rr = (qt.name.split(".").pop() ?? "").toLowerCase();
       await DuckDBManager.registerFile(qt.name, qt);
       let Zt;
-      rr === "csv" || rr === "tsv" ? Zt = `CREATE OR REPLACE TABLE "${Kt}" AS SELECT * FROM read_csv('${qt.name}', HEADER = true, AUTO_DETECT = true, SAMPLE_SIZE = -1)` : rr === "parquet" ? Zt = `CREATE OR REPLACE TABLE "${Kt}" AS SELECT * FROM read_parquet('${qt.name}')` : rr === "json" ? Zt = `CREATE OR REPLACE TABLE "${Kt}" AS SELECT * FROM read_json_auto('${qt.name}')` : Zt = `CREATE OR REPLACE TABLE "${Kt}" AS SELECT * FROM '${qt.name}'`, await DuckDBManager.executeQuery(Zt), At((sr) => {
+      if (rr === "csv" || rr === "tsv" ? Zt = `CREATE OR REPLACE TABLE "${Kt}" AS SELECT * FROM read_csv('${qt.name}', HEADER = true, AUTO_DETECT = true, SAMPLE_SIZE = -1)` : rr === "parquet" ? Zt = `CREATE OR REPLACE TABLE "${Kt}" AS SELECT * FROM read_parquet('${qt.name}')` : rr === "json" ? Zt = `CREATE OR REPLACE TABLE "${Kt}" AS SELECT * FROM read_json_auto('${qt.name}')` : Zt = `CREATE OR REPLACE TABLE "${Kt}" AS SELECT * FROM '${qt.name}'`, await DuckDBManager.executeQuery(Zt), At((sr) => {
         const kr = sr._roomFiles ?? [];
         return kr.some((Ur) => Ur.tableName === Kt) ? {} : { _roomFiles: [...kr, { name: qt.name, tableName: Kt, size: qt.size, source: "dropzone" }] };
-      }), await yt().refreshDuckdbTables();
-      try {
-        await yt().db.refreshTableSchemas();
-      } catch {
-      }
+      }), await yt().refreshDuckdbTables(), DuckDBManager.currentEngine !== "ducklings")
+        try {
+          await yt().db.refreshTableSchemas();
+        } catch {
+        }
     },
     // Overrides de méthodes mixin qui font des mutations profondes (this.X.Y = val)
     // que le proxy ne peut pas intercepter — on remplace par des set() Zustand directs.
@@ -145985,9 +145989,7 @@ function App() {
 loader$1.config({
   paths: { vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.55.1/min/vs" }
 });
-loader$1.init().then(() => {
-  console.log("[sqljob] Monaco chargé depuis jsDelivr CDN ✓");
-}).catch((At) => {
+loader$1.init().catch((At) => {
   console.error("[sqljob] Échec chargement Monaco CDN:", At);
 });
 window.__sqljobScriptUrl = import.meta.url;
