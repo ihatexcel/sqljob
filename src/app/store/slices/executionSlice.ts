@@ -780,8 +780,8 @@ export const createExecutionSlice = (set: any, get: any) => ({
 
             cell._userModified = false
         } catch (error) {
-            cell._paramError = 'Erreur: ' + error.message
-            get().setStatus('Erreur: ' + error.message, 'error')
+            console.error('[uiParameter]', ConfigManager.getCellReferenceName(cell), error.message)
+            if (get().devMode) get().setStatus('Erreur: ' + error.message, 'error')
         }
     },
 

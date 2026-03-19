@@ -590,9 +590,6 @@ function UiParameterBody({ cell, path, cellIndex }: any) {
                     </div>
                 </div>
             )}
-            {cell._paramError && devMode && (
-                <div className="p-2 text-destructive text-sm bg-destructive/10 rounded">{cell._paramError}</div>
-            )}
             <ResultInfo cell={cell} devOnly />
         </div>
     )
