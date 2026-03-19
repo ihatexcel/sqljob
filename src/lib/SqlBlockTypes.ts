@@ -42,16 +42,24 @@ export interface FilterCondition {
     /** Borne haute (BETWEEN) */
     valueTo?: string;
 }
-/** Un groupe de conditions liées entre elles par logicOp (AND/OR) */
+/** Élément d'un groupe : condition atomique ou sous-groupe (récursif) */
+export type FilterItem =
+    | { kind: 'cond'; cond: FilterCondition }
+    | { kind: 'group'; group: FilterGroup }
+/** Un groupe de filtres (récursif) : items liés par logicOp, avec NOT optionnel */
 export interface FilterGroup {
-    conditions: FilterCondition[];
+    items: FilterItem[];
     logicOp: 'AND' | 'OR';
+    /** Si true, le groupe est entouré de NOT(…) */
+    negate?: boolean;
+    /** @deprecated — rétrocompat : conditions du plat ancien format */
+    conditions?: FilterCondition[];
 }
 export interface FilterRowsStep {
     type: 'filter_rows';
-    /** Groupes de conditions (nouveau format) */
+    /** Groupes de premier niveau */
     groups: FilterGroup[];
-    /** Opérateur entre les groupes */
+    /** Opérateur entre les groupes de premier niveau */
     groupLogicOp: 'AND' | 'OR';
     /** @deprecated — rétrocompat ancien format */
     conditions?: FilterCondition[];

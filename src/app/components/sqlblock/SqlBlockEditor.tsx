@@ -39,6 +39,7 @@ import type {
     ChangeTypeStep,
     FilterRowsStep,
     FilterGroup,
+    FilterItem,
     FilterCondition,
     FilterOp,
     SortStep,
@@ -503,6 +504,7 @@ function FilterConditionRow({ cond, availableCols, onChange, onRemove }: {
     )
 }
 
+/** Badge AND/OR horizontal séparateur entre groupes de premier niveau */
 function LogicOpBadge({ op, onChange }: { op: 'AND' | 'OR'; onChange: (op: 'AND' | 'OR') => void }) {
     return (
         <div className="flex items-center gap-1 my-0.5">
@@ -520,11 +522,119 @@ function LogicOpBadge({ op, onChange }: { op: 'AND' | 'OR'; onChange: (op: 'AND'
     )
 }
 
+/** Normalise un FilterGroup vers le format items[] */
+function normalizeFilterGroup(g: FilterGroup): FilterGroup {
+    if (g.items !== undefined) return g
+    // rétrocompat ancien format conditions[]
+    return {
+        items: (g.conditions ?? []).map(c => ({ kind: 'cond' as const, cond: c })),
+        logicOp: g.logicOp ?? 'AND',
+        negate: g.negate,
+    }
+}
+
+/** Couleurs de border selon profondeur */
+const GROUP_DEPTH_COLORS = [
+    'border-border',
+    'border-blue-500/40',
+    'border-purple-500/40',
+    'border-amber-500/40',
+]
+
+/** Composant récursif : affiche un groupe avec ses items (conditions + sous-groupes) */
+function FilterGroupUI({ group, onUpdate, onRemove, availableCols, depth = 0 }: {
+    group: FilterGroup
+    onUpdate: (g: FilterGroup) => void
+    onRemove?: () => void
+    availableCols: string[]
+    depth?: number
+}) {
+    const g = normalizeFilterGroup(group)
+    const items = g.items ?? []
+    const borderCls = GROUP_DEPTH_COLORS[Math.min(depth, GROUP_DEPTH_COLORS.length - 1)]
+
+    function setItems(newItems) {
+        onUpdate({ ...g, items: newItems })
+    }
+
+    function addCond() {
+        setItems([...items, { kind: 'cond', cond: { column: availableCols[0] ?? '', op: '=', value: '' } }])
+    }
+
+    function addSubgroup() {
+        setItems([...items, { kind: 'group', group: { items: [], logicOp: 'AND', negate: false } }])
+    }
+
+    return (
+        <div className={`border ${borderCls} rounded p-2 flex flex-col gap-1`}>
+            {/* En-tête du groupe : AND/OR | NOT | ✕ */}
+            <div className="flex items-center gap-1 mb-0.5">
+                <div className="flex rounded border border-border overflow-hidden text-xs">
+                    {(['AND', 'OR'] as const).map(o => (
+                        <button key={o} onClick={() => onUpdate({ ...g, logicOp: o })}
+                            className={`px-1.5 py-0.5 transition-colors ${g.logicOp === o ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}>
+                            {o}
+                        </button>
+                    ))}
+                </div>
+                <button onClick={() => onUpdate({ ...g, negate: !g.negate })}
+                    title="Inverser le groupe (NOT)"
+                    className={`px-1.5 py-0.5 rounded border text-xs font-mono transition-colors ${g.negate
+                        ? 'bg-destructive/80 text-destructive-foreground border-destructive'
+                        : 'border-border text-muted-foreground hover:bg-muted'}`}>
+                    NOT
+                </button>
+                <span className="flex-1" />
+                {onRemove && <RemoveBtn onClick={onRemove} />}
+            </div>
+
+            {/* Items */}
+            {items.map((item, i) => (
+                <div key={i}>
+                    {i > 0 && (
+                        <div className="flex items-center gap-1 py-0.5 px-1">
+                            <span className="text-[10px] font-mono font-semibold text-muted-foreground/70 select-none">{g.logicOp}</span>
+                        </div>
+                    )}
+                    {item.kind === 'cond' ? (
+                        <FilterConditionRow
+                            cond={item.cond}
+                            availableCols={availableCols}
+                            onChange={patch => setItems(items.map((it, idx) => idx === i ? { kind: 'cond', cond: { ...it.cond, ...patch } } : it))}
+                            onRemove={() => setItems(items.filter((_, idx) => idx !== i))}
+                        />
+                    ) : (
+                        <FilterGroupUI
+                            group={item.group}
+                            onUpdate={g2 => setItems(items.map((it, idx) => idx === i ? { kind: 'group', group: g2 } : it))}
+                            onRemove={() => setItems(items.filter((_, idx) => idx !== i))}
+                            availableCols={availableCols}
+                            depth={depth + 1}
+                        />
+                    )}
+                </div>
+            ))}
+
+            {items.length === 0 && (
+                <p className="text-xs text-muted-foreground italic py-0.5">Aucun filtre</p>
+            )}
+
+            {/* Boutons d'ajout */}
+            <div className="flex gap-3 mt-0.5">
+                <AddRowBtn onClick={addCond} label="+ Condition" />
+                <AddRowBtn onClick={addSubgroup} label="+ Sous-groupe" />
+            </div>
+        </div>
+    )
+}
+
 function FilterRowsStepUI({ step, availableCols, onChange }: { step: FilterRowsStep; availableCols: string[]; onChange: (s: FilterRowsStep) => void }) {
-    // Normalise : rétrocompat ancien format → nouveau format groupes
+    // Normalise rétrocompat : ancien format conditions[] → groups
     const groups: FilterGroup[] = step.groups?.length
         ? step.groups
-        : (step.conditions?.length ? [{ conditions: step.conditions, logicOp: step.logicOp ?? 'AND' }] : [{ conditions: [], logicOp: 'AND' }])
+        : (step.conditions?.length
+            ? [{ items: step.conditions.map(c => ({ kind: 'cond' as const, cond: c })), logicOp: step.logicOp ?? 'AND' }]
+            : [{ items: [], logicOp: 'AND' }])
 
     const groupLogicOp = step.groupLogicOp ?? 'OR'
 
@@ -532,29 +642,13 @@ function FilterRowsStepUI({ step, availableCols, onChange }: { step: FilterRowsS
         onChange({ ...step, groups: newGroups, groupLogicOp, conditions: undefined, logicOp: undefined })
     }
 
-    function updateGroup(gi: number, patch: Partial<FilterGroup>) {
-        updateGroups(groups.map((g, i) => i === gi ? { ...g, ...patch } : g))
-    }
-
-    function updateCond(gi: number, ci: number, patch: Partial<FilterCondition>) {
-        updateGroup(gi, { conditions: groups[gi].conditions.map((c, i) => i === ci ? { ...c, ...patch } : c) })
-    }
-
-    function addCond(gi: number) {
-        updateGroup(gi, { conditions: [...groups[gi].conditions, { column: availableCols[0] ?? '', op: '=', value: '' }] })
-    }
-
-    function removeCond(gi: number, ci: number) {
-        updateGroup(gi, { conditions: groups[gi].conditions.filter((_, i) => i !== ci) })
-    }
-
     function addGroup() {
-        updateGroups([...groups, { conditions: [], logicOp: 'AND' }])
+        updateGroups([...groups, { items: [], logicOp: 'AND', negate: false }])
     }
 
     function removeGroup(gi: number) {
         const next = groups.filter((_, i) => i !== gi)
-        updateGroups(next.length ? next : [{ conditions: [], logicOp: 'AND' }])
+        updateGroups(next.length ? next : [{ items: [], logicOp: 'AND' }])
     }
 
     return (
@@ -564,35 +658,13 @@ function FilterRowsStepUI({ step, availableCols, onChange }: { step: FilterRowsS
                     {gi > 0 && (
                         <LogicOpBadge op={groupLogicOp} onChange={op => onChange({ ...step, groups, groupLogicOp: op })} />
                     )}
-                    <div className="border border-border rounded p-2 flex flex-col gap-1.5 bg-background">
-                        <div className="flex items-center justify-between mb-0.5">
-                            <span className="text-xs text-muted-foreground font-medium">Groupe {gi + 1}</span>
-                            <div className="flex items-center gap-2">
-                                {group.conditions.length > 1 && (
-                                    <div className="flex rounded border border-border overflow-hidden text-xs">
-                                        {(['AND', 'OR'] as const).map(o => (
-                                            <button key={o} onClick={() => updateGroup(gi, { logicOp: o })}
-                                                className={`px-1.5 py-0.5 transition-colors ${group.logicOp === o ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}>
-                                                {o}
-                                            </button>
-                                        ))}
-                                    </div>
-                                )}
-                                {groups.length > 1 && (
-                                    <RemoveBtn onClick={() => removeGroup(gi)} />
-                                )}
-                            </div>
-                        </div>
-                        {group.conditions.map((cond, ci) => (
-                            <FilterConditionRow key={ci} cond={cond} availableCols={availableCols}
-                                onChange={patch => updateCond(gi, ci, patch)}
-                                onRemove={() => removeCond(gi, ci)} />
-                        ))}
-                        {group.conditions.length === 0 && (
-                            <p className="text-xs text-muted-foreground italic">Aucune condition</p>
-                        )}
-                        <AddRowBtn onClick={() => addCond(gi)} label="+ Condition" />
-                    </div>
+                    <FilterGroupUI
+                        group={group}
+                        onUpdate={g => updateGroups(groups.map((gr, i) => i === gi ? g : gr))}
+                        onRemove={groups.length > 1 ? () => removeGroup(gi) : undefined}
+                        availableCols={availableCols}
+                        depth={0}
+                    />
                 </div>
             ))}
             <button onClick={addGroup}
@@ -1084,9 +1156,13 @@ function stepSummary(step: SqlBlockStep): string {
         case 'rename_columns':  return step.renames.length ? step.renames.map(r => `${r.from}→${r.to}`).join(', ') : '—'
         case 'change_type':     return step.changes.length ? step.changes.map(c => `${c.column}:${c.targetType}`).join(', ') : '—'
         case 'filter_rows': {
-            const groups = step.groups?.length ? step.groups : (step.conditions?.length ? [{ conditions: step.conditions, logicOp: step.logicOp ?? 'AND' }] : [])
-            const n = groups.reduce((s, g) => s + g.conditions.length, 0)
-            return n ? `${n} condition${n > 1 ? 's' : ''}${groups.length > 1 ? ` (${groups.length} groupes)` : ''}` : '—'
+            const groups = step.groups?.length ? step.groups : (step.conditions?.length ? [{ items: step.conditions.map(c => ({ kind: 'cond', cond: c })) }] : [])
+            function countItems(g): number {
+                return (g.items ?? g.conditions ?? []).reduce((s, it) => s + (it.kind === 'group' ? countItems(it.group) : 1), 0)
+            }
+            const n = groups.reduce((s, g) => s + countItems(g), 0)
+            const neg = groups.some(g => g.negate)
+            return n ? `${n} condition${n > 1 ? 's' : ''}${groups.length > 1 ? ` (${groups.length} groupes)` : ''}${neg ? ' [NOT]' : ''}` : '—'
         }
         case 'sort':            return step.keys.length ? step.keys.map(k => `${k.column} ${k.direction === 'asc' ? '↑' : '↓'}`).join(', ') : '—'
         case 'top_n':           return step.mode === 'limit' ? `${step.n} lignes` : `${step.n}% échantillon`
@@ -1249,7 +1325,7 @@ function defaultStep(type: SqlBlockStep['type']): SqlBlockStep {
         case 'select_columns':  return { type, columns: [] }
         case 'exclude_columns': return { type, columns: [] }
         case 'change_type':     return { type, changes: [] }
-        case 'filter_rows':     return { type, groups: [{ conditions: [], logicOp: 'AND' }], groupLogicOp: 'OR' }
+        case 'filter_rows':     return { type, groups: [{ items: [], logicOp: 'AND', negate: false }], groupLogicOp: 'OR' }
         case 'sort':            return { type, keys: [] }
         case 'top_n':           return { type, mode: 'limit', n: 100 }
         case 'rename_columns':  return { type, renames: [] }

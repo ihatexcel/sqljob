@@ -8,6 +8,8 @@ import type {
     SqlBlockStep,
     ChangeTypeChange,
     FilterCondition,
+    FilterGroup,
+    FilterItem,
     SqlBlockMaterialize,
     SqlBlockConfig,
 } from './SqlBlockTypes';
@@ -200,16 +202,18 @@ function singleStepToSql(source: string, step: SqlBlockStep): string {
         // ── P1 ──────────────────────────────────────────────────────────────
         case 'filter_rows': {
             // Migration rétrocompat : ancien format conditions[] → groups
-            const groups = step.groups?.length
+            const rawGroups = step.groups?.length
                 ? step.groups
-                : (step.conditions?.length ? [{ conditions: step.conditions, logicOp: step.logicOp ?? 'AND' }] : [])
-            const activeGroups = groups.filter(g => g.conditions.length > 0)
+                : (step.conditions?.length
+                    ? [{ items: step.conditions.map(c => ({ kind: 'cond' as const, cond: c })), logicOp: step.logicOp ?? 'AND' }]
+                    : [])
+            const activeGroups = rawGroups.filter(g => filterGroupHasContent(g))
             if (!activeGroups.length) return `SELECT * FROM ${source}`;
-            const groupSql = activeGroups.map(g => {
-                const conds = g.conditions.map(conditionToSql).join(` ${g.logicOp} `)
-                return activeGroups.length > 1 ? `(${conds})` : conds
+            const whereSql = activeGroups.map(g => {
+                const sql = filterGroupToSql(g)
+                return activeGroups.length > 1 ? `(${sql})` : sql
             }).join(`\n  ${step.groupLogicOp ?? 'OR'} `)
-            return `SELECT * FROM ${source}\nWHERE ${groupSql}`;
+            return `SELECT * FROM ${source}\nWHERE ${whereSql}`;
         }
         case 'sort': {
             if (!step.keys.length) return `SELECT * FROM ${source}`;
@@ -351,6 +355,34 @@ function singleStepToSql(source: string, step: SqlBlockStep): string {
 // ─────────────────────────────────────────────────────────────────────────────
 // Helpers
 // ─────────────────────────────────────────────────────────────────────────────
+
+function filterGroupHasContent(g: FilterGroup): boolean {
+    // Retrocompat: old format had conditions[]
+    if (g.conditions?.length) return true;
+    return (g.items ?? []).some(item =>
+        item.kind === 'cond' ? !!item.cond.column : filterGroupHasContent(item.group)
+    )
+}
+
+function filterGroupToSql(g: FilterGroup): string {
+    // Retrocompat: old format with conditions[]
+    const items: FilterItem[] = g.items?.length
+        ? g.items
+        : (g.conditions ?? []).map(c => ({ kind: 'cond' as const, cond: c }))
+
+    const parts = items
+        .filter(item => item.kind === 'cond' ? !!item.cond.column : filterGroupHasContent(item.group))
+        .map(item => {
+            if (item.kind === 'cond') return conditionToSql(item.cond)
+            const inner = filterGroupToSql(item.group)
+            return `(${inner})`
+        })
+
+    if (!parts.length) return '1=1'
+    const joined = parts.join(` ${g.logicOp ?? 'AND'} `)
+    const expr = parts.length > 1 ? `(${joined})` : joined
+    return g.negate ? `NOT ${expr}` : expr
+}
 
 function conditionToSql(c: FilterCondition): string {
     const col = quoteId(c.column);
