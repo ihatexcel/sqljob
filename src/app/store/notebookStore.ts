@@ -256,10 +256,8 @@ const duckdbManagerConnector = createBaseDuckDbConnector(
             // DuckDB est déjà initialisé par helpersMixin.init() — rien à faire
         },
         executeQueryInternal: async (sql: string) => {
-            console.log('[duckdbBridge] query:', sql.slice(0, 100))
             try {
                 const result = await DuckDBManager.executeQueryArrow(sql)
-                console.log('[duckdbBridge] ok, rows:', result?.numRows)
                 return result
             } catch (err) {
                 console.error('[duckdbBridge] error:', err)
