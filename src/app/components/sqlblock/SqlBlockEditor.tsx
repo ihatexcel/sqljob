@@ -401,6 +401,7 @@ function ChangeTypeStepUI({ step, availableCols, availableColTypes, onChange }: 
                             {allCols.map(c => <option key={c} value={c}>{c}</option>)}
                             {!allCols.includes(change.column) && <option value={change.column}>{change.column}</option>}
                         </select>
+                        <MoveBtns onUp={idx > 0 ? () => onChange({ ...step, changes: moveArr(step.changes, idx, -1) }) : undefined} onDown={idx < step.changes.length - 1 ? () => onChange({ ...step, changes: moveArr(step.changes, idx, 1) }) : undefined} />
                         <button onClick={() => onChange({ ...step, changes: step.changes.filter((_, i) => i !== idx) })}
                             className="shrink-0 text-destructive hover:text-destructive/80 w-5 h-5 flex items-center justify-center">✕</button>
                     </div>
@@ -462,6 +463,22 @@ function RemoveBtn({ onClick }: { onClick: () => void }) {
     return <button onClick={onClick} className="shrink-0 text-destructive hover:text-destructive/70 w-4 h-4 flex items-center justify-center text-xs leading-none">✕</button>
 }
 
+function MoveBtns({ onUp, onDown }: { onUp?: () => void; onDown?: () => void }) {
+    const btn = (label: string, handler?: () => void) => (
+        <button onClick={handler} disabled={!handler}
+            className={`w-3.5 h-3.5 flex items-center justify-center text-[9px] rounded leading-none transition-colors
+                ${handler ? 'text-muted-foreground hover:bg-muted hover:text-foreground' : 'text-muted-foreground/25 cursor-default'}`}>
+            {label}
+        </button>
+    )
+    return (
+        <div className="flex flex-col shrink-0 self-center gap-px">
+            {btn('▲', onUp)}
+            {btn('▼', onDown)}
+        </div>
+    )
+}
+
 // ─── P1 step UIs ──────────────────────────────────────────────────────────────
 
 const FILTER_OPS: { op: FilterOp; label: string }[] = [
@@ -474,10 +491,12 @@ const FILTER_OPS: { op: FilterOp; label: string }[] = [
     { op: 'between', label: 'BETWEEN' },
 ]
 
-function FilterConditionRow({ cond, availableCols, onChange, onRemove }: {
+function FilterConditionRow({ cond, availableCols, onChange, onRemove, onMoveUp, onMoveDown }: {
     cond: FilterCondition; availableCols: string[]
     onChange: (patch: Partial<FilterCondition>) => void
     onRemove: () => void
+    onMoveUp?: () => void
+    onMoveDown?: () => void
 }) {
     const noVal = cond.op === 'is_null' || cond.op === 'not_null'
     const isBetween = cond.op === 'between'
@@ -499,6 +518,7 @@ function FilterConditionRow({ cond, availableCols, onChange, onRemove }: {
             {isMulti && (
                 <TxtInput value={(cond.values ?? []).join(', ')} onChange={v => onChange({ values: v.split(',').map(x => x.trim()).filter(Boolean) })} placeholder="val1, val2…" className="flex-1 min-w-24" />
             )}
+            <MoveBtns onUp={onMoveUp} onDown={onMoveDown} />
             <RemoveBtn onClick={onRemove} />
         </div>
     )
@@ -542,10 +562,20 @@ const GROUP_DEPTH_COLORS = [
 ]
 
 /** Composant récursif : affiche un groupe avec ses items (conditions + sous-groupes) */
-function FilterGroupUI({ group, onUpdate, onRemove, availableCols, depth = 0 }: {
+function moveArr(arr: any[], i: number, delta: number) {
+    const next = [...arr]
+    const j = i + delta
+    if (j < 0 || j >= next.length) return next
+    ;[next[i], next[j]] = [next[j], next[i]]
+    return next
+}
+
+function FilterGroupUI({ group, onUpdate, onRemove, onMoveUp, onMoveDown, availableCols, depth = 0 }: {
     group: FilterGroup
     onUpdate: (g: FilterGroup) => void
     onRemove?: () => void
+    onMoveUp?: () => void
+    onMoveDown?: () => void
     availableCols: string[]
     depth?: number
 }) {
@@ -567,7 +597,7 @@ function FilterGroupUI({ group, onUpdate, onRemove, availableCols, depth = 0 }: 
 
     return (
         <div className={`border ${borderCls} rounded p-2 flex flex-col gap-1`}>
-            {/* En-tête du groupe : AND/OR | NOT | ✕ */}
+            {/* En-tête du groupe : AND/OR | NOT | ▲▼ | ✕ */}
             <div className="flex items-center gap-1 mb-0.5">
                 <div className="flex rounded border border-border overflow-hidden text-xs">
                     {(['AND', 'OR'] as const).map(o => (
@@ -585,6 +615,7 @@ function FilterGroupUI({ group, onUpdate, onRemove, availableCols, depth = 0 }: 
                     NOT
                 </button>
                 <span className="flex-1" />
+                <MoveBtns onUp={onMoveUp} onDown={onMoveDown} />
                 {onRemove && <RemoveBtn onClick={onRemove} />}
             </div>
 
@@ -602,12 +633,16 @@ function FilterGroupUI({ group, onUpdate, onRemove, availableCols, depth = 0 }: 
                             availableCols={availableCols}
                             onChange={patch => setItems(items.map((it, idx) => idx === i ? { kind: 'cond', cond: { ...it.cond, ...patch } } : it))}
                             onRemove={() => setItems(items.filter((_, idx) => idx !== i))}
+                            onMoveUp={i > 0 ? () => setItems(moveArr(items, i, -1)) : undefined}
+                            onMoveDown={i < items.length - 1 ? () => setItems(moveArr(items, i, 1)) : undefined}
                         />
                     ) : (
                         <FilterGroupUI
                             group={item.group}
                             onUpdate={g2 => setItems(items.map((it, idx) => idx === i ? { kind: 'group', group: g2 } : it))}
                             onRemove={() => setItems(items.filter((_, idx) => idx !== i))}
+                            onMoveUp={i > 0 ? () => setItems(moveArr(items, i, -1)) : undefined}
+                            onMoveDown={i < items.length - 1 ? () => setItems(moveArr(items, i, 1)) : undefined}
                             availableCols={availableCols}
                             depth={depth + 1}
                         />
@@ -662,6 +697,8 @@ function FilterRowsStepUI({ step, availableCols, onChange }: { step: FilterRowsS
                         group={group}
                         onUpdate={g => updateGroups(groups.map((gr, i) => i === gi ? g : gr))}
                         onRemove={groups.length > 1 ? () => removeGroup(gi) : undefined}
+                        onMoveUp={gi > 0 ? () => updateGroups(moveArr(groups, gi, -1)) : undefined}
+                        onMoveDown={gi < groups.length - 1 ? () => updateGroups(moveArr(groups, gi, 1)) : undefined}
                         availableCols={availableCols}
                         depth={0}
                     />
@@ -700,6 +737,7 @@ function SortStepUI({ step, availableCols, onChange }: { step: SortStep; availab
                             </button>
                         ))}
                     </div>
+                    <MoveBtns onUp={i > 0 ? () => onChange({ ...step, keys: moveArr(step.keys, i, -1) }) : undefined} onDown={i < step.keys.length - 1 ? () => onChange({ ...step, keys: moveArr(step.keys, i, 1) }) : undefined} />
                     <RemoveBtn onClick={() => onChange({ ...step, keys: step.keys.filter((_, idx) => idx !== i) })} />
                 </div>
             ))}
@@ -754,6 +792,7 @@ function RenameColumnsStepUI({ step, availableCols, onChange }: { step: RenameCo
                     <ColSelect value={r.from} cols={availableCols} onChange={v => update(i, { from: v })} className="flex-1" />
                     <span className="text-xs text-muted-foreground shrink-0">→</span>
                     <TxtInput value={r.to} onChange={v => update(i, { to: v })} placeholder="nouveau nom" className="flex-1" />
+                    <MoveBtns onUp={i > 0 ? () => onChange({ ...step, renames: moveArr(step.renames, i, -1) }) : undefined} onDown={i < step.renames.length - 1 ? () => onChange({ ...step, renames: moveArr(step.renames, i, 1) }) : undefined} />
                     <RemoveBtn onClick={() => onChange({ ...step, renames: step.renames.filter((_, idx) => idx !== i) })} />
                 </div>
             ))}
@@ -776,6 +815,7 @@ function DeriveStepUI({ step, availableCols, onChange }: { step: DeriveStep; ava
                             <input type="checkbox" checked={col.replace} onChange={e => update(i, { replace: e.target.checked })} className="w-3 h-3" />
                             Remplacer
                         </label>
+                        <MoveBtns onUp={i > 0 ? () => onChange({ ...step, columns: moveArr(step.columns, i, -1) }) : undefined} onDown={i < step.columns.length - 1 ? () => onChange({ ...step, columns: moveArr(step.columns, i, 1) }) : undefined} />
                         <RemoveBtn onClick={() => onChange({ ...step, columns: step.columns.filter((_, idx) => idx !== i) })} />
                     </div>
                     <textarea className="w-full rounded border border-border bg-background px-2 py-1 text-xs font-mono resize-none" rows={2}
@@ -811,6 +851,7 @@ function FillNullStepUI({ step, availableCols, onChange }: { step: FillNullStep;
                     {fill.strategy === 'value' && (
                         <TxtInput value={fill.value ?? ''} onChange={v => update(i, { value: v })} placeholder="valeur" className="flex-1 min-w-16" />
                     )}
+                    <MoveBtns onUp={i > 0 ? () => onChange({ ...step, fills: moveArr(step.fills, i, -1) }) : undefined} onDown={i < step.fills.length - 1 ? () => onChange({ ...step, fills: moveArr(step.fills, i, 1) }) : undefined} />
                     <RemoveBtn onClick={() => onChange({ ...step, fills: step.fills.filter((_, idx) => idx !== i) })} />
                 </div>
             ))}
@@ -858,6 +899,7 @@ function GroupByStepUI({ step, availableCols, onChange }: { step: GroupByStep; a
                         <span className="text-xs text-muted-foreground shrink-0">→</span>
                         <TxtInput value={a.alias} onChange={v => updateAgg(i, { alias: v })} placeholder="alias" className="flex-1 min-w-16" />
                         {a.fn === 'string_agg' && <TxtInput value={a.separator ?? ', '} onChange={v => updateAgg(i, { separator: v })} placeholder="séparateur" className="w-16" />}
+                        <MoveBtns onUp={i > 0 ? () => onChange({ ...step, aggregations: moveArr(step.aggregations, i, -1) }) : undefined} onDown={i < step.aggregations.length - 1 ? () => onChange({ ...step, aggregations: moveArr(step.aggregations, i, 1) }) : undefined} />
                         <RemoveBtn onClick={() => onChange({ ...step, aggregations: step.aggregations.filter((_, idx) => idx !== i) })} />
                     </div>
                 ))}
@@ -899,6 +941,7 @@ function JoinStepUI({ step, availableCols, onChange }: { step: JoinStep; availab
                         <ColSelect value={c.left} cols={availableCols} onChange={v => updateOn(i, { left: v })} placeholder="col gauche" className="flex-1" />
                         <span className="text-xs text-muted-foreground shrink-0">=</span>
                         <TxtInput value={c.right} onChange={v => updateOn(i, { right: v })} placeholder="col droite" className="flex-1" />
+                        <MoveBtns onUp={i > 0 ? () => onChange({ ...step, on: moveArr(step.on, i, -1) }) : undefined} onDown={i < step.on.length - 1 ? () => onChange({ ...step, on: moveArr(step.on, i, 1) }) : undefined} />
                         <RemoveBtn onClick={() => onChange({ ...step, on: step.on.filter((_, idx) => idx !== i) })} />
                     </div>
                 ))}
@@ -1043,6 +1086,7 @@ function WindowStepUI({ step, availableCols, onChange }: { step: WindowStep; ava
                         )}
                         <span className="text-xs text-muted-foreground shrink-0">→</span>
                         <TxtInput value={w.alias} onChange={v => update(i, { alias: v })} placeholder="alias" className="w-24" />
+                        <MoveBtns onUp={i > 0 ? () => onChange({ ...step, columns: moveArr(step.columns, i, -1) }) : undefined} onDown={i < step.columns.length - 1 ? () => onChange({ ...step, columns: moveArr(step.columns, i, 1) }) : undefined} />
                         <RemoveBtn onClick={() => onChange({ ...step, columns: step.columns.filter((_, idx) => idx !== i) })} />
                     </div>
                     <div className="flex items-center gap-1 flex-wrap text-xs text-muted-foreground">
@@ -1105,6 +1149,7 @@ function JsonExtractStepUI({ step, availableCols, onChange }: { step: JsonExtrac
                         <option value="">VARCHAR</option>
                         {DUCKDB_TYPES.slice(2).map(t => <option key={t} value={t}>{t}</option>)}
                     </select>
+                    <MoveBtns onUp={i > 0 ? () => onChange({ ...step, extractions: moveArr(step.extractions, i, -1) }) : undefined} onDown={i < step.extractions.length - 1 ? () => onChange({ ...step, extractions: moveArr(step.extractions, i, 1) }) : undefined} />
                     <RemoveBtn onClick={() => onChange({ ...step, extractions: step.extractions.filter((_, idx) => idx !== i) })} />
                 </div>
             ))}
