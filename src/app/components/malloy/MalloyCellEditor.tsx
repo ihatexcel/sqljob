@@ -1034,9 +1034,21 @@ function MalloyTextEditor({ cell, path, cellIndex, onSwitchToVisual }: any) {
                         fontSize: 13,
                         renderLineHighlight: 'line',
                         overviewRulerLanes: 0,
-                        scrollbar: { vertical: 'auto', alwaysConsumeMouseWheel: false },
+                        scrollbar: { vertical: 'hidden', alwaysConsumeMouseWheel: false },
+                        automaticLayout: true,
                     }}
-                    height="200px"
+                    onMount={(editor) => {
+                        const MIN_H = 80
+                        const MAX_H = 600
+                        const update = () => {
+                            const h = Math.min(MAX_H, Math.max(MIN_H, editor.getContentHeight()))
+                            editor.getDomNode()!.style.height = h + 'px'
+                            editor.layout()
+                        }
+                        update()
+                        editor.onDidContentSizeChange(update)
+                    }}
+                    height="80px"
                 />
             )}
 
