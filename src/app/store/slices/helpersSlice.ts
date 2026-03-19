@@ -79,7 +79,9 @@ export const createHelpersSlice = (set: any, get: any) => ({
      */
     async refreshDuckdbSchema() {
         await get().refreshDuckdbTables()
-        try { await get().db?.refreshTableSchemas() } catch { /* ignoré si non prêt */ }
+        if (DuckDBManager.currentEngine !== 'ducklings') {
+            try { await get().db?.refreshTableSchemas() } catch { /* ignoré si non prêt */ }
+        }
     },
 
     async init() {
@@ -101,11 +103,12 @@ export const createHelpersSlice = (set: any, get: any) => ({
             } catch (err) {
                 console.warn('[sqljob] room.initialize() error:', err)
             }
-            try {
-                await get().db.refreshTableSchemas()
-
-            } catch (err) {
-                console.warn('[sqljob] refreshTableSchemas error:', err)
+            if (DuckDBManager.currentEngine !== 'ducklings') {
+                try {
+                    await get().db.refreshTableSchemas()
+                } catch (err) {
+                    console.warn('[sqljob] refreshTableSchemas error:', err)
+                }
             }
             get().room = { ...get().room, initialized: true }
         } catch (error: any) {

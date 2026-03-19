@@ -256,6 +256,7 @@ const duckdbManagerConnector = createBaseDuckDbConnector(
             // DuckDB est déjà initialisé par helpersMixin.init() — rien à faire
         },
         executeQueryInternal: async (sql: string) => {
+            if (DuckDBManager.currentEngine === 'ducklings') return null
             try {
                 const result = await DuckDBManager.executeQueryArrow(sql)
                 return result
@@ -391,7 +392,9 @@ export const useNotebookStore = create<any>((set, get, api) => {
                 return { _roomFiles: [...existing, { name: file.name, tableName, size: file.size, source: 'dropzone' }] };
             });
             await get().refreshDuckdbTables();
-            try { await get().db.refreshTableSchemas(); } catch { /* ignore */ }
+            if (DuckDBManager.currentEngine !== 'ducklings') {
+                try { await get().db.refreshTableSchemas(); } catch { /* ignore */ }
+            }
         },
 
         // Overrides de méthodes mixin qui font des mutations profondes (this.X.Y = val)

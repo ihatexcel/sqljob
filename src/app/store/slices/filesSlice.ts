@@ -277,7 +277,9 @@ export const createFilesSlice = (set: any, get: any) => ({
                 set({ _roomFiles: [...existing, { name: file.name, tableName, size: file.size ?? 0, source: 'source-cell' }] })
             }
             await get().refreshDuckdbTables()
-            try { await get().db.refreshTableSchemas() } catch { /* ignore */ }
+            if (DuckDBManager.currentEngine !== 'ducklings') {
+                try { await get().db.refreshTableSchemas() } catch { /* ignore */ }
+            }
 
             if (!skipRunNextCells) {
                 const result = await get().runCellsAfterWithStopConditions(path, cellIndex, cell._id)

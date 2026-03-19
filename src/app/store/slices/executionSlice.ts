@@ -1052,6 +1052,9 @@ export const createExecutionSlice = (set: any, get: any) => ({
         if (!ConfigManager.getCellQuery(cell, 0)?.trim()) {
             throw new Error('Requête SQL manquante')
         }
+        if (DuckDBManager.currentEngine === 'ducklings') {
+            throw new Error('Les cellules Perspective nécessitent le moteur DuckDB WASM. Changez le moteur dans les paramètres.')
+        }
 
         get().setStatus('Chargement de Perspective...', 'loading')
         await CDNManager.loadPerspective()
