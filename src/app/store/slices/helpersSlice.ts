@@ -98,10 +98,12 @@ export const createHelpersSlice = (set: any, get: any) => ({
             }
             setTimeout(() => setTimeout(() => get().refreshMarkdownCellsForPage(0), 300), 0)
             await get().refreshDuckdbTables()
-            try {
-                await get().room.initialize()
-            } catch (err) {
-                console.warn('[sqljob] room.initialize() error:', err)
+            if (DuckDBManager.currentEngine !== 'ducklings') {
+                try {
+                    await get().room.initialize()
+                } catch (err) {
+                    console.warn('[sqljob] room.initialize() error:', err)
+                }
             }
             if (DuckDBManager.currentEngine !== 'ducklings') {
                 try {
