@@ -156,7 +156,7 @@ interface NestConfig {
 function measureToSourceLine(m: MeasureConfig): string {
     switch (m.fn) {
         case 'count':          return `  measure: ${m.alias} is count()`
-        case 'count_distinct': return `  measure: ${m.alias} is count(distinct ${quoteIfNeeded(m.field)})`
+        case 'count_distinct': return `  measure: ${m.alias} is count(${quoteIfNeeded(m.field)})`
         case 'custom':         return `  measure: ${m.alias} is ${m.customExpr?.trim() || 'count()'}`
         default:               return `  measure: ${m.alias} is ${m.fn}(${quoteIfNeeded(m.field)})`
     }
@@ -243,10 +243,15 @@ function parseMalloyToQueryState(malloyText: string, tableNames: string[]): Pars
     const countRe = /measure:\s+(\w+)\s+is\s+count\(\)/g
     while ((m = countRe.exec(malloyText)) !== null)
         measures.push({ id: uid(), fn: 'count', field: '*', alias: m[1] })
-    // count(distinct field)
+    // count(distinct field) — ancienne syntaxe (rétrocompat import)
     const cdRe = /measure:\s+(\w+)\s+is\s+count\(distinct\s+`?([^`)\n]+?)`?\)/g
     while ((m = cdRe.exec(malloyText)) !== null)
         measures.push({ id: uid(), fn: 'count_distinct', field: m[2].trim(), alias: m[1] })
+    // count(field) — nouvelle syntaxe Malloy (distinct implicite sur champ non-*)
+    const cFieldRe = /measure:\s+(\w+)\s+is\s+count\((`?\w[^`)\n]*`?)\)/g
+    while ((m = cFieldRe.exec(malloyText)) !== null)
+        if (!measures.find(x => x.alias === m![1]))
+            measures.push({ id: uid(), fn: 'count_distinct', field: m[2].replace(/`/g, '').trim(), alias: m[1] })
     // sum/avg/min/max
     const aggRe = /measure:\s+(\w+)\s+is\s+(sum|avg|min|max)\(`?([^`)\n]+?)`?\)/g
     while ((m = aggRe.exec(malloyText)) !== null)
@@ -626,7 +631,7 @@ function MalloyQueryBuilderUI({ cell, path, cellIndex, onSwitchToText }: any) {
                                             <select className="text-xs px-1.5 py-0.5 rounded border border-border bg-background text-foreground shrink-0"
                                                 value={m.fn} onChange={e => updateMeasure(m.id, { fn: e.target.value as MeasureFn })}>
                                                 <option value="count">count()</option>
-                                                <option value="count_distinct">count(distinct)</option>
+                                                <option value="count_distinct">count(field) distinct</option>
                                                 <option value="sum">sum</option>
                                                 <option value="avg">avg</option>
                                                 <option value="min">min</option>
