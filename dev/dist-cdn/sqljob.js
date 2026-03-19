@@ -141181,12 +141181,12 @@ const createHelpersSlice = (At, yt) => ({
     try {
       await DuckDBManager.initDuckDB((wt, Ct) => yt().setStatus(wt, Ct)), yt().ensureAllCellsHaveNames(), await yt().loadEmbeddedFiles(), await yt().loadPendingSourceFiles(), await yt().evaluateAllGroupIfQueries(), await yt().runAllGroups();
       const xt = yt().pages[0];
-      xt && At((wt) => ({ _pagesInitialized: /* @__PURE__ */ new Set([...wt._pagesInitialized, xt._id]) })), setTimeout(() => setTimeout(() => yt().refreshMarkdownCellsForPage(0), 300), 0), await yt().refreshDuckdbTables();
-      try {
-        await yt().room.initialize();
-      } catch (wt) {
-        console.warn("[sqljob] room.initialize() error:", wt);
-      }
+      if (xt && At((wt) => ({ _pagesInitialized: /* @__PURE__ */ new Set([...wt._pagesInitialized, xt._id]) })), setTimeout(() => setTimeout(() => yt().refreshMarkdownCellsForPage(0), 300), 0), await yt().refreshDuckdbTables(), DuckDBManager.currentEngine !== "ducklings")
+        try {
+          await yt().room.initialize();
+        } catch (wt) {
+          console.warn("[sqljob] room.initialize() error:", wt);
+        }
       if (DuckDBManager.currentEngine !== "ducklings")
         try {
           await yt().db.refreshTableSchemas();
