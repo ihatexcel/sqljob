@@ -136083,7 +136083,6 @@ function UiParameterBody({ cell: At, path: yt, cellIndex: xt }) {
         /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "inline-flex items-center justify-center px-2 py-0.5 rounded text-xs font-mono bg-primary text-primary-foreground min-w-[3rem]", children: It })
       ] })
     ] }),
-    At._paramError && wt && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-2 text-destructive text-sm bg-destructive/10 rounded", children: At._paramError }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(ResultInfo, { cell: At, devOnly: !0 })
   ] });
 }
@@ -143937,7 +143936,7 @@ const createExecutionSlice = (At, yt) => ({
       }
       xt._userModified = !1;
     } catch (Ct) {
-      xt._paramError = "Erreur: " + Ct.message, yt().setStatus("Erreur: " + Ct.message, "error");
+      console.error("[uiParameter]", ConfigManager.getCellReferenceName(xt), Ct.message), yt().devMode && yt().setStatus("Erreur: " + Ct.message, "error");
     }
   },
   async executePublipostageWordCell(xt) {
