@@ -134249,6 +134249,7 @@ function ChangeTypeStepUI({ step: At, availableCols: yt, availableColTypes: xt, 
             ]
           }
         ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(MoveBtns, { onUp: Lt > 0 ? () => wt({ ...At, changes: moveArr(At.changes, Lt, -1) }) : void 0, onDown: Lt < At.changes.length - 1 ? () => wt({ ...At, changes: moveArr(At.changes, Lt, 1) }) : void 0 }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "button",
           {
@@ -134330,6 +134331,22 @@ function AddRowBtn({ onClick: At, label: yt = "+ Ajouter" }) {
 function RemoveBtn({ onClick: At }) {
   return /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: At, className: "shrink-0 text-destructive hover:text-destructive/70 w-4 h-4 flex items-center justify-center text-xs leading-none", children: "✕" });
 }
+function MoveBtns({ onUp: At, onDown: yt }) {
+  const xt = (wt, Ct) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+    "button",
+    {
+      onClick: Ct,
+      disabled: !Ct,
+      className: `w-3.5 h-3.5 flex items-center justify-center text-[9px] rounded leading-none transition-colors
+                ${Ct ? "text-muted-foreground hover:bg-muted hover:text-foreground" : "text-muted-foreground/25 cursor-default"}`,
+      children: wt
+    }
+  );
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col shrink-0 self-center gap-px", children: [
+    xt("▲", At),
+    xt("▼", yt)
+  ] });
+}
 const FILTER_OPS = [
   { op: "=", label: "=" },
   { op: "!=", label: "≠" },
@@ -134345,18 +134362,19 @@ const FILTER_OPS = [
   { op: "ilike", label: "ILIKE" },
   { op: "between", label: "BETWEEN" }
 ];
-function FilterConditionRow({ cond: At, availableCols: yt, onChange: xt, onRemove: wt }) {
-  const Ct = At.op === "is_null" || At.op === "not_null", kt = At.op === "between", Et = At.op === "in" || At.op === "not_in";
+function FilterConditionRow({ cond: At, availableCols: yt, onChange: xt, onRemove: wt, onMoveUp: Ct, onMoveDown: kt }) {
+  const Et = At.op === "is_null" || At.op === "not_null", St = At.op === "between", Tt = At.op === "in" || At.op === "not_in";
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-1", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx(ColSelect, { value: At.column, cols: yt, onChange: (St) => xt({ column: St }), className: "flex-1 min-w-20" }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("select", { className: "h-6 rounded border border-border bg-background px-1 text-xs w-24", value: At.op, onChange: (St) => xt({ op: St.target.value }), children: FILTER_OPS.map((St) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: St.op, children: St.label }, St.op)) }),
-    !Ct && !kt && !Et && /* @__PURE__ */ jsxRuntimeExports.jsx(TxtInput, { value: At.value ?? "", onChange: (St) => xt({ value: St }), placeholder: "valeur", className: "flex-1 min-w-16" }),
-    kt && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(TxtInput, { value: At.value ?? "", onChange: (St) => xt({ value: St }), placeholder: "de", className: "w-20" }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(ColSelect, { value: At.column, cols: yt, onChange: ($t) => xt({ column: $t }), className: "flex-1 min-w-20" }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("select", { className: "h-6 rounded border border-border bg-background px-1 text-xs w-24", value: At.op, onChange: ($t) => xt({ op: $t.target.value }), children: FILTER_OPS.map(($t) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: $t.op, children: $t.label }, $t.op)) }),
+    !Et && !St && !Tt && /* @__PURE__ */ jsxRuntimeExports.jsx(TxtInput, { value: At.value ?? "", onChange: ($t) => xt({ value: $t }), placeholder: "valeur", className: "flex-1 min-w-16" }),
+    St && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(TxtInput, { value: At.value ?? "", onChange: ($t) => xt({ value: $t }), placeholder: "de", className: "w-20" }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs text-muted-foreground", children: "et" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(TxtInput, { value: At.valueTo ?? "", onChange: (St) => xt({ valueTo: St }), placeholder: "à", className: "w-20" })
+      /* @__PURE__ */ jsxRuntimeExports.jsx(TxtInput, { value: At.valueTo ?? "", onChange: ($t) => xt({ valueTo: $t }), placeholder: "à", className: "w-20" })
     ] }),
-    Et && /* @__PURE__ */ jsxRuntimeExports.jsx(TxtInput, { value: (At.values ?? []).join(", "), onChange: (St) => xt({ values: St.split(",").map((Tt) => Tt.trim()).filter(Boolean) }), placeholder: "val1, val2…", className: "flex-1 min-w-24" }),
+    Tt && /* @__PURE__ */ jsxRuntimeExports.jsx(TxtInput, { value: (At.values ?? []).join(", "), onChange: ($t) => xt({ values: $t.split(",").map((Lt) => Lt.trim()).filter(Boolean) }), placeholder: "val1, val2…", className: "flex-1 min-w-24" }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(MoveBtns, { onUp: Ct, onDown: kt }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(RemoveBtn, { onClick: wt })
   ] });
 }
@@ -134388,65 +134406,74 @@ const GROUP_DEPTH_COLORS = [
   "border-purple-500/40",
   "border-amber-500/40"
 ];
-function FilterGroupUI({ group: At, onUpdate: yt, onRemove: xt, availableCols: wt, depth: Ct = 0 }) {
-  const kt = normalizeFilterGroup(At), Et = kt.items ?? [], St = GROUP_DEPTH_COLORS[Math.min(Ct, GROUP_DEPTH_COLORS.length - 1)];
-  function Tt(It) {
-    yt({ ...kt, items: It });
+function moveArr(At, yt, xt) {
+  const wt = [...At], Ct = yt + xt;
+  return Ct < 0 || Ct >= wt.length || ([wt[yt], wt[Ct]] = [wt[Ct], wt[yt]]), wt;
+}
+function FilterGroupUI({ group: At, onUpdate: yt, onRemove: xt, onMoveUp: wt, onMoveDown: Ct, availableCols: kt, depth: Et = 0 }) {
+  const St = normalizeFilterGroup(At), Tt = St.items ?? [], $t = GROUP_DEPTH_COLORS[Math.min(Et, GROUP_DEPTH_COLORS.length - 1)];
+  function Lt(Dt) {
+    yt({ ...St, items: Dt });
   }
-  function $t() {
-    Tt([...Et, { kind: "cond", cond: { column: wt[0] ?? "", op: "=", value: "" } }]);
+  function It() {
+    Lt([...Tt, { kind: "cond", cond: { column: kt[0] ?? "", op: "=", value: "" } }]);
   }
-  function Lt() {
-    Tt([...Et, { kind: "group", group: { items: [], logicOp: "AND", negate: !1 } }]);
+  function Rt() {
+    Lt([...Tt, { kind: "group", group: { items: [], logicOp: "AND", negate: !1 } }]);
   }
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: `border ${St} rounded p-2 flex flex-col gap-1`, children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: `border ${$t} rounded p-2 flex flex-col gap-1`, children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1 mb-0.5", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex rounded border border-border overflow-hidden text-xs", children: ["AND", "OR"].map((It) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex rounded border border-border overflow-hidden text-xs", children: ["AND", "OR"].map((Dt) => /* @__PURE__ */ jsxRuntimeExports.jsx(
         "button",
         {
-          onClick: () => yt({ ...kt, logicOp: It }),
-          className: `px-1.5 py-0.5 transition-colors ${kt.logicOp === It ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"}`,
-          children: It
+          onClick: () => yt({ ...St, logicOp: Dt }),
+          className: `px-1.5 py-0.5 transition-colors ${St.logicOp === Dt ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"}`,
+          children: Dt
         },
-        It
+        Dt
       )) }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "button",
         {
-          onClick: () => yt({ ...kt, negate: !kt.negate }),
+          onClick: () => yt({ ...St, negate: !St.negate }),
           title: "Inverser le groupe (NOT)",
-          className: `px-1.5 py-0.5 rounded border text-xs font-mono transition-colors ${kt.negate ? "bg-destructive/80 text-destructive-foreground border-destructive" : "border-border text-muted-foreground hover:bg-muted"}`,
+          className: `px-1.5 py-0.5 rounded border text-xs font-mono transition-colors ${St.negate ? "bg-destructive/80 text-destructive-foreground border-destructive" : "border-border text-muted-foreground hover:bg-muted"}`,
           children: "NOT"
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex-1" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(MoveBtns, { onUp: wt, onDown: Ct }),
       xt && /* @__PURE__ */ jsxRuntimeExports.jsx(RemoveBtn, { onClick: xt })
     ] }),
-    Et.map((It, Rt) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-      Rt > 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-1 py-0.5 px-1", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-mono font-semibold text-muted-foreground/70 select-none", children: kt.logicOp }) }),
-      It.kind === "cond" ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+    Tt.map((Dt, jt) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+      jt > 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-1 py-0.5 px-1", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-mono font-semibold text-muted-foreground/70 select-none", children: St.logicOp }) }),
+      Dt.kind === "cond" ? /* @__PURE__ */ jsxRuntimeExports.jsx(
         FilterConditionRow,
         {
-          cond: It.cond,
-          availableCols: wt,
-          onChange: (Dt) => Tt(Et.map((jt, Nt) => Nt === Rt ? { kind: "cond", cond: { ...jt.cond, ...Dt } } : jt)),
-          onRemove: () => Tt(Et.filter((Dt, jt) => jt !== Rt))
+          cond: Dt.cond,
+          availableCols: kt,
+          onChange: (Nt) => Lt(Tt.map((Mt, Ot) => Ot === jt ? { kind: "cond", cond: { ...Mt.cond, ...Nt } } : Mt)),
+          onRemove: () => Lt(Tt.filter((Nt, Mt) => Mt !== jt)),
+          onMoveUp: jt > 0 ? () => Lt(moveArr(Tt, jt, -1)) : void 0,
+          onMoveDown: jt < Tt.length - 1 ? () => Lt(moveArr(Tt, jt, 1)) : void 0
         }
       ) : /* @__PURE__ */ jsxRuntimeExports.jsx(
         FilterGroupUI,
         {
-          group: It.group,
-          onUpdate: (Dt) => Tt(Et.map((jt, Nt) => Nt === Rt ? { kind: "group", group: Dt } : jt)),
-          onRemove: () => Tt(Et.filter((Dt, jt) => jt !== Rt)),
-          availableCols: wt,
-          depth: Ct + 1
+          group: Dt.group,
+          onUpdate: (Nt) => Lt(Tt.map((Mt, Ot) => Ot === jt ? { kind: "group", group: Nt } : Mt)),
+          onRemove: () => Lt(Tt.filter((Nt, Mt) => Mt !== jt)),
+          onMoveUp: jt > 0 ? () => Lt(moveArr(Tt, jt, -1)) : void 0,
+          onMoveDown: jt < Tt.length - 1 ? () => Lt(moveArr(Tt, jt, 1)) : void 0,
+          availableCols: kt,
+          depth: Et + 1
         }
       )
-    ] }, Rt)),
-    Et.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground italic py-0.5", children: "Aucun filtre" }),
+    ] }, jt)),
+    Tt.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground italic py-0.5", children: "Aucun filtre" }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-3 mt-0.5", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(AddRowBtn, { onClick: $t, label: "+ Condition" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(AddRowBtn, { onClick: Lt, label: "+ Sous-groupe" })
+      /* @__PURE__ */ jsxRuntimeExports.jsx(AddRowBtn, { onClick: It, label: "+ Condition" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(AddRowBtn, { onClick: Rt, label: "+ Sous-groupe" })
     ] })
   ] });
 }
@@ -134472,6 +134499,8 @@ function FilterRowsStepUI({ step: At, availableCols: yt, onChange: xt }) {
           group: Lt,
           onUpdate: (Rt) => kt(wt.map((Dt, jt) => jt === It ? Rt : Dt)),
           onRemove: wt.length > 1 ? () => St(It) : void 0,
+          onMoveUp: It > 0 ? () => kt(moveArr(wt, It, -1)) : void 0,
+          onMoveDown: It < wt.length - 1 ? () => kt(moveArr(wt, It, 1)) : void 0,
           availableCols: yt,
           depth: 0
         }
@@ -134515,6 +134544,7 @@ function SortStepUI({ step: At, availableCols: yt, onChange: xt }) {
         },
         Et
       )) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(MoveBtns, { onUp: kt > 0 ? () => xt({ ...At, keys: moveArr(At.keys, kt, -1) }) : void 0, onDown: kt < At.keys.length - 1 ? () => xt({ ...At, keys: moveArr(At.keys, kt, 1) }) : void 0 }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(RemoveBtn, { onClick: () => xt({ ...At, keys: At.keys.filter((Et, St) => St !== kt) }) })
     ] }, kt)),
     /* @__PURE__ */ jsxRuntimeExports.jsx(AddRowBtn, { onClick: () => xt({ ...At, keys: [...At.keys, { column: yt[0] ?? "", direction: "asc", nulls: "last" }] }), label: "+ Clé de tri" })
@@ -134586,6 +134616,7 @@ function RenameColumnsStepUI({ step: At, availableCols: yt, onChange: xt }) {
       /* @__PURE__ */ jsxRuntimeExports.jsx(ColSelect, { value: Ct.from, cols: yt, onChange: (Et) => wt(kt, { from: Et }), className: "flex-1" }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs text-muted-foreground shrink-0", children: "→" }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(TxtInput, { value: Ct.to, onChange: (Et) => wt(kt, { to: Et }), placeholder: "nouveau nom", className: "flex-1" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(MoveBtns, { onUp: kt > 0 ? () => xt({ ...At, renames: moveArr(At.renames, kt, -1) }) : void 0, onDown: kt < At.renames.length - 1 ? () => xt({ ...At, renames: moveArr(At.renames, kt, 1) }) : void 0 }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(RemoveBtn, { onClick: () => xt({ ...At, renames: At.renames.filter((Et, St) => St !== kt) }) })
     ] }, kt)),
     /* @__PURE__ */ jsxRuntimeExports.jsx(AddRowBtn, { onClick: () => xt({ ...At, renames: [...At.renames, { from: yt[0] ?? "", to: "" }] }), label: "+ Renommage" })
@@ -134603,6 +134634,7 @@ function DeriveStepUI({ step: At, availableCols: yt, onChange: xt }) {
           /* @__PURE__ */ jsxRuntimeExports.jsx("input", { type: "checkbox", checked: Ct.replace, onChange: (Et) => wt(kt, { replace: Et.target.checked }), className: "w-3 h-3" }),
           "Remplacer"
         ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(MoveBtns, { onUp: kt > 0 ? () => xt({ ...At, columns: moveArr(At.columns, kt, -1) }) : void 0, onDown: kt < At.columns.length - 1 ? () => xt({ ...At, columns: moveArr(At.columns, kt, 1) }) : void 0 }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(RemoveBtn, { onClick: () => xt({ ...At, columns: At.columns.filter((Et, St) => St !== kt) }) })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -134643,6 +134675,7 @@ function FillNullStepUI({ step: At, availableCols: yt, onChange: xt }) {
         }
       ),
       Ct.strategy === "value" && /* @__PURE__ */ jsxRuntimeExports.jsx(TxtInput, { value: Ct.value ?? "", onChange: (Et) => wt(kt, { value: Et }), placeholder: "valeur", className: "flex-1 min-w-16" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(MoveBtns, { onUp: kt > 0 ? () => xt({ ...At, fills: moveArr(At.fills, kt, -1) }) : void 0, onDown: kt < At.fills.length - 1 ? () => xt({ ...At, fills: moveArr(At.fills, kt, 1) }) : void 0 }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(RemoveBtn, { onClick: () => xt({ ...At, fills: At.fills.filter((Et, St) => St !== kt) }) })
     ] }, kt)),
     /* @__PURE__ */ jsxRuntimeExports.jsx(AddRowBtn, { onClick: () => xt({ ...At, fills: [...At.fills, { column: yt[0] ?? "", strategy: "value", value: "" }] }), label: "+ Colonne" })
@@ -134684,6 +134717,7 @@ function GroupByStepUI({ step: At, availableCols: yt, onChange: xt }) {
         /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs text-muted-foreground shrink-0", children: "→" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(TxtInput, { value: kt.alias, onChange: (St) => wt(Et, { alias: St }), placeholder: "alias", className: "flex-1 min-w-16" }),
         kt.fn === "string_agg" && /* @__PURE__ */ jsxRuntimeExports.jsx(TxtInput, { value: kt.separator ?? ", ", onChange: (St) => wt(Et, { separator: St }), placeholder: "séparateur", className: "w-16" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(MoveBtns, { onUp: Et > 0 ? () => xt({ ...At, aggregations: moveArr(At.aggregations, Et, -1) }) : void 0, onDown: Et < At.aggregations.length - 1 ? () => xt({ ...At, aggregations: moveArr(At.aggregations, Et, 1) }) : void 0 }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(RemoveBtn, { onClick: () => xt({ ...At, aggregations: At.aggregations.filter((St, Tt) => Tt !== Et) }) })
       ] }, Et)),
       /* @__PURE__ */ jsxRuntimeExports.jsx(AddRowBtn, { onClick: () => xt({ ...At, aggregations: [...At.aggregations, { column: yt[0] ?? "*", fn: "count", alias: "count" }] }), label: "+ Agrégation" })
@@ -134722,6 +134756,7 @@ function JoinStepUI({ step: At, availableCols: yt, onChange: xt }) {
         /* @__PURE__ */ jsxRuntimeExports.jsx(ColSelect, { value: kt.left, cols: yt, onChange: (St) => wt(Et, { left: St }), placeholder: "col gauche", className: "flex-1" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs text-muted-foreground shrink-0", children: "=" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(TxtInput, { value: kt.right, onChange: (St) => wt(Et, { right: St }), placeholder: "col droite", className: "flex-1" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(MoveBtns, { onUp: Et > 0 ? () => xt({ ...At, on: moveArr(At.on, Et, -1) }) : void 0, onDown: Et < At.on.length - 1 ? () => xt({ ...At, on: moveArr(At.on, Et, 1) }) : void 0 }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(RemoveBtn, { onClick: () => xt({ ...At, on: At.on.filter((St, Tt) => Tt !== Et) }) })
       ] }, Et)),
       /* @__PURE__ */ jsxRuntimeExports.jsx(AddRowBtn, { onClick: () => xt({ ...At, on: [...At.on, { left: yt[0] ?? "", right: "" }] }), label: "+ Clé" })
@@ -134879,6 +134914,7 @@ function WindowStepUI({ step: At, availableCols: yt, onChange: xt }) {
         ),
         /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs text-muted-foreground shrink-0", children: "→" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(TxtInput, { value: kt.alias, onChange: (St) => wt(Et, { alias: St }), placeholder: "alias", className: "w-24" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(MoveBtns, { onUp: Et > 0 ? () => xt({ ...At, columns: moveArr(At.columns, Et, -1) }) : void 0, onDown: Et < At.columns.length - 1 ? () => xt({ ...At, columns: moveArr(At.columns, Et, 1) }) : void 0 }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(RemoveBtn, { onClick: () => xt({ ...At, columns: At.columns.filter((St, Tt) => Tt !== Et) }) })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1 flex-wrap text-xs text-muted-foreground", children: [
@@ -134940,6 +134976,7 @@ function JsonExtractStepUI({ step: At, availableCols: yt, onChange: xt }) {
           ]
         }
       ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(MoveBtns, { onUp: kt > 0 ? () => xt({ ...At, extractions: moveArr(At.extractions, kt, -1) }) : void 0, onDown: kt < At.extractions.length - 1 ? () => xt({ ...At, extractions: moveArr(At.extractions, kt, 1) }) : void 0 }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(RemoveBtn, { onClick: () => xt({ ...At, extractions: At.extractions.filter((Et, St) => St !== kt) }) })
     ] }, kt)),
     /* @__PURE__ */ jsxRuntimeExports.jsx(AddRowBtn, { onClick: () => xt({ ...At, extractions: [...At.extractions, { path: "$.", alias: "" }] }), label: "+ Extraction" })
