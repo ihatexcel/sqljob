@@ -133773,6 +133773,7 @@ function parseCastList(At) {
   return xt.length > 0 ? xt : null;
 }
 function singleStepToSql(At, yt) {
+  var xt, wt;
   switch (yt.type) {
     case "select_columns":
       return yt.columns.length ? `SELECT
@@ -133783,112 +133784,117 @@ FROM ${At}` : `SELECT * FROM ${At}`;
       return yt.columns.length ? `SELECT * EXCLUDE (${yt.columns.map(quoteId).join(", ")}) FROM ${At}` : `SELECT * FROM ${At}`;
     case "change_type":
       return yt.changes.length ? `SELECT * REPLACE (
-  ${yt.changes.map((wt) => `CAST(${quoteId(wt.column)} AS ${wt.targetType}) AS ${quoteId(wt.column)}`).join(`,
+  ${yt.changes.map((kt) => `CAST(${quoteId(kt.column)} AS ${kt.targetType}) AS ${quoteId(kt.column)}`).join(`,
   `)}
 ) FROM ${At}` : `SELECT * FROM ${At}`;
     case "filter_rows": {
-      if (!yt.conditions.length) return `SELECT * FROM ${At}`;
-      const xt = yt.conditions.map(conditionToSql).join(` ${yt.logicOp} `);
+      const kt = ((xt = yt.groups) != null && xt.length ? yt.groups : (wt = yt.conditions) != null && wt.length ? [{ conditions: yt.conditions, logicOp: yt.logicOp ?? "AND" }] : []).filter((St) => St.conditions.length > 0);
+      if (!kt.length) return `SELECT * FROM ${At}`;
+      const Et = kt.map((St) => {
+        const Tt = St.conditions.map(conditionToSql).join(` ${St.logicOp} `);
+        return kt.length > 1 ? `(${Tt})` : Tt;
+      }).join(`
+  ${yt.groupLogicOp ?? "OR"} `);
       return `SELECT * FROM ${At}
-WHERE ${xt}`;
+WHERE ${Et}`;
     }
     case "sort": {
       if (!yt.keys.length) return `SELECT * FROM ${At}`;
-      const xt = yt.keys.map((wt) => `${quoteId(wt.column)} ${wt.direction.toUpperCase()} NULLS ${wt.nulls.toUpperCase()}`).join(", ");
+      const Ct = yt.keys.map((kt) => `${quoteId(kt.column)} ${kt.direction.toUpperCase()} NULLS ${kt.nulls.toUpperCase()}`).join(", ");
       return `SELECT * FROM ${At}
-ORDER BY ${xt}`;
+ORDER BY ${Ct}`;
     }
     case "top_n": {
       if (yt.mode === "limit") {
-        const Ct = yt.offset ? ` OFFSET ${yt.offset}` : "";
+        const Et = yt.offset ? ` OFFSET ${yt.offset}` : "";
         return `SELECT * FROM ${At}
-LIMIT ${yt.n}${Ct}`;
+LIMIT ${yt.n}${Et}`;
       }
-      const xt = yt.sampleMethod ? ` (${yt.sampleMethod})` : "", wt = yt.mode === "sample_percent" ? `${yt.n}%` : `${yt.n} ROWS`;
+      const Ct = yt.sampleMethod ? ` (${yt.sampleMethod})` : "", kt = yt.mode === "sample_percent" ? `${yt.n}%` : `${yt.n} ROWS`;
       return `SELECT * FROM ${At}
-USING SAMPLE ${wt}${xt}`;
+USING SAMPLE ${kt}${Ct}`;
     }
     case "rename_columns":
-      return yt.renames.length ? `SELECT * RENAME (${yt.renames.map((wt) => `${quoteId(wt.from)} AS ${quoteId(wt.to)}`).join(", ")}) FROM ${At}` : `SELECT * FROM ${At}`;
+      return yt.renames.length ? `SELECT * RENAME (${yt.renames.map((kt) => `${quoteId(kt.from)} AS ${quoteId(kt.to)}`).join(", ")}) FROM ${At}` : `SELECT * FROM ${At}`;
     case "derive": {
       if (!yt.columns.length) return `SELECT * FROM ${At}`;
-      const xt = yt.columns.filter((Et) => !Et.replace), wt = yt.columns.filter((Et) => Et.replace), Ct = wt.length ? ` EXCLUDE (${wt.map((Et) => quoteId(Et.name)).join(", ")})` : "", kt = [...wt, ...xt].map((Et) => `(${Et.expr}) AS ${quoteId(Et.name)}`).join(`,
+      const Ct = yt.columns.filter((Tt) => !Tt.replace), kt = yt.columns.filter((Tt) => Tt.replace), Et = kt.length ? ` EXCLUDE (${kt.map((Tt) => quoteId(Tt.name)).join(", ")})` : "", St = [...kt, ...Ct].map((Tt) => `(${Tt.expr}) AS ${quoteId(Tt.name)}`).join(`,
   `);
-      return `SELECT *${Ct},
-  ${kt}
+      return `SELECT *${Et},
+  ${St}
 FROM ${At}`;
     }
     case "fill_null":
       return yt.fills.length ? `SELECT * REPLACE (
-  ${yt.fills.map((wt) => {
-        const Ct = quoteId(wt.column);
-        switch (wt.strategy) {
+  ${yt.fills.map((kt) => {
+        const Et = quoteId(kt.column);
+        switch (kt.strategy) {
           case "value":
-            return `COALESCE(${Ct}, ${quoteSqlValue(wt.value || "")}) AS ${Ct}`;
+            return `COALESCE(${Et}, ${quoteSqlValue(kt.value || "")}) AS ${Et}`;
           case "zero":
-            return `COALESCE(${Ct}, 0) AS ${Ct}`;
+            return `COALESCE(${Et}, 0) AS ${Et}`;
           case "empty_string":
-            return `COALESCE(${Ct}, '') AS ${Ct}`;
+            return `COALESCE(${Et}, '') AS ${Et}`;
           case "mean":
-            return `COALESCE(${Ct}, AVG(${Ct}) OVER ()) AS ${Ct}`;
+            return `COALESCE(${Et}, AVG(${Et}) OVER ()) AS ${Et}`;
           case "median":
-            return `COALESCE(${Ct}, MEDIAN(${Ct}) OVER ()) AS ${Ct}`;
+            return `COALESCE(${Et}, MEDIAN(${Et}) OVER ()) AS ${Et}`;
         }
       }).join(`,
   `)}
 ) FROM ${At}` : `SELECT * FROM ${At}`;
     case "group_by": {
-      const xt = yt.groupCols.map(quoteId), wt = yt.aggregations.map((Et) => {
-        const St = Et.column === "*" ? "*" : quoteId(Et.column), Tt = Et.fn.toUpperCase();
-        switch (Et.fn) {
+      const Ct = yt.groupCols.map(quoteId), kt = yt.aggregations.map((Tt) => {
+        const $t = Tt.column === "*" ? "*" : quoteId(Tt.column), Lt = Tt.fn.toUpperCase();
+        switch (Tt.fn) {
           case "count":
-            return `COUNT(${St}) AS ${quoteId(Et.alias)}`;
+            return `COUNT(${$t}) AS ${quoteId(Tt.alias)}`;
           case "count_distinct":
-            return `COUNT(DISTINCT ${St}) AS ${quoteId(Et.alias)}`;
+            return `COUNT(DISTINCT ${$t}) AS ${quoteId(Tt.alias)}`;
           case "string_agg":
-            return `STRING_AGG(${St}, ${quoteSqlValue(Et.separator ?? ", ")}) AS ${quoteId(Et.alias)}`;
+            return `STRING_AGG(${$t}, ${quoteSqlValue(Tt.separator ?? ", ")}) AS ${quoteId(Tt.alias)}`;
           default:
-            return `${Tt}(${St}) AS ${quoteId(Et.alias)}`;
+            return `${Lt}(${$t}) AS ${quoteId(Tt.alias)}`;
         }
-      }), Ct = [...xt, ...wt], kt = xt.length ? `
-GROUP BY ${xt.join(", ")}` : "";
+      }), Et = [...Ct, ...kt], St = Ct.length ? `
+GROUP BY ${Ct.join(", ")}` : "";
       return `SELECT
-  ${Ct.join(`,
+  ${Et.join(`,
   `)}
-FROM ${At}${kt}`;
+FROM ${At}${St}`;
     }
     case "join": {
-      const xt = yt.joinType === "anti" ? "LEFT" : yt.joinType.toUpperCase(), wt = yt.on.map((Et) => `${At}.${quoteId(Et.left)} = _r.${quoteId(Et.right)}`).join(" AND "), Ct = yt.selectRight === "*" ? "_r.*" : yt.selectRight.map((Et) => `_r.${quoteId(Et)}`).join(", "), kt = yt.joinType === "anti" && yt.on[0] ? `
+      const Ct = yt.joinType === "anti" ? "LEFT" : yt.joinType.toUpperCase(), kt = yt.on.map((Tt) => `${At}.${quoteId(Tt.left)} = _r.${quoteId(Tt.right)}`).join(" AND "), Et = yt.selectRight === "*" ? "_r.*" : yt.selectRight.map((Tt) => `_r.${quoteId(Tt)}`).join(", "), St = yt.joinType === "anti" && yt.on[0] ? `
 WHERE _r.${quoteId(yt.on[0].right)} IS NULL` : "";
-      return `SELECT ${At}.*, ${Ct}
+      return `SELECT ${At}.*, ${Et}
 FROM ${At}
-${xt} JOIN ${quoteId(yt.rightTable)} AS _r
-  ON ${wt}${kt}`;
+${Ct} JOIN ${quoteId(yt.rightTable)} AS _r
+  ON ${kt}${St}`;
     }
     case "union": {
-      const xt = yt.mode === "all" ? "UNION ALL" : "UNION";
+      const Ct = yt.mode === "all" ? "UNION ALL" : "UNION";
       return `SELECT * FROM ${At}
-${xt}
+${Ct}
 SELECT * FROM ${quoteId(yt.table)}`;
     }
     case "pivot": {
-      const xt = yt.groupCols.length ? `
+      const Ct = yt.groupCols.length ? `
 GROUP BY ${yt.groupCols.map(quoteId).join(", ")}` : "";
       return `SELECT * FROM (PIVOT ${At}
   ON ${quoteId(yt.onColumn)}
-  USING ${yt.valueFn}(${quoteId(yt.valueColumn)})${xt})`;
+  USING ${yt.valueFn}(${quoteId(yt.valueColumn)})${Ct})`;
     }
     case "unpivot": {
-      const xt = yt.columns.map(quoteId).join(", ");
+      const Ct = yt.columns.map(quoteId).join(", ");
       return `SELECT * FROM (UNPIVOT ${At}
-  ON ${xt}
+  ON ${Ct}
   INTO NAME ${quoteId(yt.nameCol)} VALUE ${quoteId(yt.valueCol)})`;
     }
     case "window":
       return yt.columns.length ? `SELECT *,
-  ${yt.columns.map((wt) => {
-        const Ct = wt.col ? quoteId(wt.col) : "", kt = (wt.fn === "LAG" || wt.fn === "LEAD") && wt.offset ? `${wt.fn}(${Ct}, ${wt.offset})` : `${wt.fn}(${Ct})`, Et = wt.partitionBy.length ? `PARTITION BY ${wt.partitionBy.map(quoteId).join(", ")} ` : "", St = wt.orderBy.length ? `ORDER BY ${wt.orderBy.map(($t) => `${quoteId($t.column)} ${$t.direction.toUpperCase()}`).join(", ")} ` : "", Tt = wt.frame ? `${wt.frame} ` : "";
-        return `${kt} OVER (${Et}${St}${Tt}) AS ${quoteId(wt.alias)}`;
+  ${yt.columns.map((kt) => {
+        const Et = kt.col ? quoteId(kt.col) : "", St = (kt.fn === "LAG" || kt.fn === "LEAD") && kt.offset ? `${kt.fn}(${Et}, ${kt.offset})` : `${kt.fn}(${Et})`, Tt = kt.partitionBy.length ? `PARTITION BY ${kt.partitionBy.map(quoteId).join(", ")} ` : "", $t = kt.orderBy.length ? `ORDER BY ${kt.orderBy.map((It) => `${quoteId(It.column)} ${It.direction.toUpperCase()}`).join(", ")} ` : "", Lt = kt.frame ? `${kt.frame} ` : "";
+        return `${St} OVER (${Tt}${$t}${Lt}) AS ${quoteId(kt.alias)}`;
       }).join(`,
   `)}
 FROM ${At}` : `SELECT * FROM ${At}`;
@@ -133900,21 +133906,21 @@ FROM ${At},
 UNNEST(${At}.${quoteId(yt.column)}) AS _u(${quoteId(yt.alias)})`;
     case "json_extract": {
       if (!yt.extractions.length) return `SELECT * FROM ${At}`;
-      const xt = yt.extractions.map((wt) => {
-        const Ct = `json_extract_string(${At}.${quoteId(yt.column)}, '${wt.path}')`;
-        return `${wt.targetType ? `CAST(${Ct} AS ${wt.targetType})` : Ct} AS ${quoteId(wt.alias)}`;
+      const Ct = yt.extractions.map((kt) => {
+        const Et = `json_extract_string(${At}.${quoteId(yt.column)}, '${kt.path}')`;
+        return `${kt.targetType ? `CAST(${Et} AS ${kt.targetType})` : Et} AS ${quoteId(kt.alias)}`;
       });
       return `SELECT ${At}.*,
-  ${xt.join(`,
+  ${Ct.join(`,
   `)}
 FROM ${At}`;
     }
     case "date_trunc": {
-      const wt = `DATE_TRUNC(${`'${yt.granularity}'`}, ${quoteId(yt.column)})`;
+      const kt = `DATE_TRUNC(${`'${yt.granularity}'`}, ${quoteId(yt.column)})`;
       if (yt.mode === "replace")
-        return `SELECT * REPLACE (${wt} AS ${quoteId(yt.column)}) FROM ${At}`;
-      const Ct = yt.alias || `${yt.column}_${yt.granularity}`;
-      return `SELECT *, ${wt} AS ${quoteId(Ct)} FROM ${At}`;
+        return `SELECT * REPLACE (${kt} AS ${quoteId(yt.column)}) FROM ${At}`;
+      const Et = yt.alias || `${yt.column}_${yt.granularity}`;
+      return `SELECT *, ${kt} AS ${quoteId(Et)} FROM ${At}`;
     }
   }
 }
@@ -134326,42 +134332,105 @@ const FILTER_OPS = [
   { op: "ilike", label: "ILIKE" },
   { op: "between", label: "BETWEEN" }
 ];
-function FilterRowsStepUI({ step: At, availableCols: yt, onChange: xt }) {
-  function wt(Et, St) {
-    xt({ ...At, conditions: At.conditions.map((Tt, $t) => $t === Et ? { ...Tt, ...St } : Tt) });
-  }
-  function Ct() {
-    xt({ ...At, conditions: [...At.conditions, { column: yt[0] ?? "", op: "=", value: "" }] });
-  }
-  function kt(Et) {
-    xt({ ...At, conditions: At.conditions.filter((St, Tt) => Tt !== Et) });
-  }
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
-    At.conditions.length > 1 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex gap-1 text-xs", children: ["AND", "OR"].map((Et) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+function FilterConditionRow({ cond: At, availableCols: yt, onChange: xt, onRemove: wt }) {
+  const Ct = At.op === "is_null" || At.op === "not_null", kt = At.op === "between", Et = At.op === "in" || At.op === "not_in";
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-1", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(ColSelect, { value: At.column, cols: yt, onChange: (St) => xt({ column: St }), className: "flex-1 min-w-20" }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("select", { className: "h-6 rounded border border-border bg-background px-1 text-xs w-24", value: At.op, onChange: (St) => xt({ op: St.target.value }), children: FILTER_OPS.map((St) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: St.op, children: St.label }, St.op)) }),
+    !Ct && !kt && !Et && /* @__PURE__ */ jsxRuntimeExports.jsx(TxtInput, { value: At.value ?? "", onChange: (St) => xt({ value: St }), placeholder: "valeur", className: "flex-1 min-w-16" }),
+    kt && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(TxtInput, { value: At.value ?? "", onChange: (St) => xt({ value: St }), placeholder: "de", className: "w-20" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs text-muted-foreground", children: "et" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(TxtInput, { value: At.valueTo ?? "", onChange: (St) => xt({ valueTo: St }), placeholder: "à", className: "w-20" })
+    ] }),
+    Et && /* @__PURE__ */ jsxRuntimeExports.jsx(TxtInput, { value: (At.values ?? []).join(", "), onChange: (St) => xt({ values: St.split(",").map((Tt) => Tt.trim()).filter(Boolean) }), placeholder: "val1, val2…", className: "flex-1 min-w-24" }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(RemoveBtn, { onClick: wt })
+  ] });
+}
+function LogicOpBadge({ op: At, onChange: yt }) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1 my-0.5", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 h-px bg-border" }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex rounded border border-border overflow-hidden text-xs", children: ["AND", "OR"].map((xt) => /* @__PURE__ */ jsxRuntimeExports.jsx(
       "button",
       {
-        onClick: () => xt({ ...At, logicOp: Et }),
-        className: `px-2 py-0.5 rounded border text-xs transition-colors ${At.logicOp === Et ? "bg-primary text-primary-foreground border-primary" : "border-border hover:bg-muted"}`,
-        children: Et
+        onClick: () => yt(xt),
+        className: `px-2 py-0.5 transition-colors ${At === xt ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"}`,
+        children: xt
       },
-      Et
+      xt
     )) }),
-    At.conditions.map((Et, St) => {
-      const Tt = Et.op === "is_null" || Et.op === "not_null", $t = Et.op === "between", Lt = Et.op === "in" || Et.op === "not_in";
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-1", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(ColSelect, { value: Et.column, cols: yt, onChange: (It) => wt(St, { column: It }), className: "flex-1 min-w-20" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("select", { className: "h-6 rounded border border-border bg-background px-1 text-xs w-24", value: Et.op, onChange: (It) => wt(St, { op: It.target.value }), children: FILTER_OPS.map((It) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: It.op, children: It.label }, It.op)) }),
-        !Tt && !$t && !Lt && /* @__PURE__ */ jsxRuntimeExports.jsx(TxtInput, { value: Et.value ?? "", onChange: (It) => wt(St, { value: It }), placeholder: "valeur", className: "flex-1 min-w-16" }),
-        $t && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(TxtInput, { value: Et.value ?? "", onChange: (It) => wt(St, { value: It }), placeholder: "de", className: "w-20" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs text-muted-foreground", children: "et" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(TxtInput, { value: Et.valueTo ?? "", onChange: (It) => wt(St, { valueTo: It }), placeholder: "à", className: "w-20" })
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 h-px bg-border" })
+  ] });
+}
+function FilterRowsStepUI({ step: At, availableCols: yt, onChange: xt }) {
+  var Rt, Dt;
+  const wt = (Rt = At.groups) != null && Rt.length ? At.groups : (Dt = At.conditions) != null && Dt.length ? [{ conditions: At.conditions, logicOp: At.logicOp ?? "AND" }] : [{ conditions: [], logicOp: "AND" }], Ct = At.groupLogicOp ?? "OR";
+  function kt(jt) {
+    xt({ ...At, groups: jt, groupLogicOp: Ct, conditions: void 0, logicOp: void 0 });
+  }
+  function Et(jt, Nt) {
+    kt(wt.map((Mt, Ot) => Ot === jt ? { ...Mt, ...Nt } : Mt));
+  }
+  function St(jt, Nt, Mt) {
+    Et(jt, { conditions: wt[jt].conditions.map((Ot, Bt) => Bt === Nt ? { ...Ot, ...Mt } : Ot) });
+  }
+  function Tt(jt) {
+    Et(jt, { conditions: [...wt[jt].conditions, { column: yt[0] ?? "", op: "=", value: "" }] });
+  }
+  function $t(jt, Nt) {
+    Et(jt, { conditions: wt[jt].conditions.filter((Mt, Ot) => Ot !== Nt) });
+  }
+  function Lt() {
+    kt([...wt, { conditions: [], logicOp: "AND" }]);
+  }
+  function It(jt) {
+    const Nt = wt.filter((Mt, Ot) => Ot !== jt);
+    kt(Nt.length ? Nt : [{ conditions: [], logicOp: "AND" }]);
+  }
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
+    wt.map((jt, Nt) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+      Nt > 0 && /* @__PURE__ */ jsxRuntimeExports.jsx(LogicOpBadge, { op: Ct, onChange: (Mt) => xt({ ...At, groups: wt, groupLogicOp: Mt }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "border border-border rounded p-2 flex flex-col gap-1.5 bg-background", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between mb-0.5", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs text-muted-foreground font-medium", children: [
+            "Groupe ",
+            Nt + 1
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
+            jt.conditions.length > 1 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex rounded border border-border overflow-hidden text-xs", children: ["AND", "OR"].map((Mt) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "button",
+              {
+                onClick: () => Et(Nt, { logicOp: Mt }),
+                className: `px-1.5 py-0.5 transition-colors ${jt.logicOp === Mt ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"}`,
+                children: Mt
+              },
+              Mt
+            )) }),
+            wt.length > 1 && /* @__PURE__ */ jsxRuntimeExports.jsx(RemoveBtn, { onClick: () => It(Nt) })
+          ] })
         ] }),
-        Lt && /* @__PURE__ */ jsxRuntimeExports.jsx(TxtInput, { value: (Et.values ?? []).join(", "), onChange: (It) => wt(St, { values: It.split(",").map((Rt) => Rt.trim()).filter(Boolean) }), placeholder: "val1, val2…", className: "flex-1 min-w-24" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(RemoveBtn, { onClick: () => kt(St) })
-      ] }, St);
-    }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(AddRowBtn, { onClick: Ct, label: "+ Condition" })
+        jt.conditions.map((Mt, Ot) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          FilterConditionRow,
+          {
+            cond: Mt,
+            availableCols: yt,
+            onChange: (Bt) => St(Nt, Ot, Bt),
+            onRemove: () => $t(Nt, Ot)
+          },
+          Ot
+        )),
+        jt.conditions.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground italic", children: "Aucune condition" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(AddRowBtn, { onClick: () => Tt(Nt), label: "+ Condition" })
+      ] })
+    ] }, Nt)),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "button",
+      {
+        onClick: Lt,
+        className: "flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground border border-dashed border-border rounded px-2 py-1 hover:border-primary transition-colors",
+        children: "+ Ajouter un groupe"
+      }
+    )
   ] });
 }
 function SortStepUI({ step: At, availableCols: yt, onChange: xt }) {
@@ -134856,6 +134925,94 @@ function DateTruncStepUI({ step: At, availableCols: yt, onChange: xt }) {
     ] })
   ] });
 }
+function stepSummary(At) {
+  var yt, xt;
+  switch (At.type) {
+    case "select_columns":
+      return At.columns.length ? At.columns.join(", ") : "—";
+    case "exclude_columns":
+      return At.columns.length ? At.columns.join(", ") : "—";
+    case "rename_columns":
+      return At.renames.length ? At.renames.map((wt) => `${wt.from}→${wt.to}`).join(", ") : "—";
+    case "change_type":
+      return At.changes.length ? At.changes.map((wt) => `${wt.column}:${wt.targetType}`).join(", ") : "—";
+    case "filter_rows": {
+      const wt = (yt = At.groups) != null && yt.length ? At.groups : (xt = At.conditions) != null && xt.length ? [{ conditions: At.conditions, logicOp: At.logicOp ?? "AND" }] : [], Ct = wt.reduce((kt, Et) => kt + Et.conditions.length, 0);
+      return Ct ? `${Ct} condition${Ct > 1 ? "s" : ""}${wt.length > 1 ? ` (${wt.length} groupes)` : ""}` : "—";
+    }
+    case "sort":
+      return At.keys.length ? At.keys.map((wt) => `${wt.column} ${wt.direction === "asc" ? "↑" : "↓"}`).join(", ") : "—";
+    case "top_n":
+      return At.mode === "limit" ? `${At.n} lignes` : `${At.n}% échantillon`;
+    case "derive":
+      return At.columns.length ? At.columns.map((wt) => wt.name).join(", ") : "—";
+    case "fill_null":
+      return At.fills.length ? At.fills.map((wt) => wt.column).join(", ") : "—";
+    case "group_by":
+      return At.groupCols.length ? At.groupCols.join(", ") : "—";
+    case "join":
+      return At.rightTable || "—";
+    case "union":
+      return At.table || "—";
+    case "pivot":
+      return At.onColumn || "—";
+    case "unpivot":
+      return At.columns.length ? At.columns.join(", ") : "—";
+    case "window":
+      return At.columns.length ? `${At.columns.length} col.` : "—";
+    case "unnest":
+      return At.column || "—";
+    case "json_extract":
+      return At.column || "—";
+    case "date_trunc":
+      return At.column ? `${At.column} → ${At.granularity}` : "—";
+    default:
+      return "";
+  }
+}
+function StepConfigModal({ step: At, index: yt, availableCols: xt, availableColTypes: wt, onUpdate: Ct, onClose: kt }) {
+  return reactExports.useEffect(() => {
+    const Et = (St) => {
+      St.key === "Escape" && kt();
+    };
+    return document.addEventListener("keydown", Et), () => document.removeEventListener("keydown", Et);
+  }, [kt]), reactDomExports.createPortal(
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "fixed inset-0 z-[9998] flex items-center justify-center", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-black/50", onClick: kt }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative z-10 bg-popover border border-border rounded-xl shadow-2xl w-full max-w-lg mx-4 max-h-[85vh] flex flex-col", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 px-4 py-3 border-b border-border shrink-0", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs text-muted-foreground font-mono w-5", children: [
+            yt + 1,
+            "."
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-semibold text-sm flex-1", children: STEP_LABELS[At.type] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: kt, className: "text-muted-foreground hover:text-foreground w-6 h-6 flex items-center justify-center rounded hover:bg-muted text-lg leading-none", children: "×" })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "overflow-y-auto px-4 py-4 flex-1", children: [
+          At.type === "select_columns" && /* @__PURE__ */ jsxRuntimeExports.jsx(SelectColumnsStepUI, { step: At, availableCols: xt, onChange: (Et) => Ct(yt, Et) }),
+          At.type === "exclude_columns" && /* @__PURE__ */ jsxRuntimeExports.jsx(ExcludeColumnsStepUI, { step: At, availableCols: xt, onChange: (Et) => Ct(yt, Et) }),
+          At.type === "change_type" && /* @__PURE__ */ jsxRuntimeExports.jsx(ChangeTypeStepUI, { step: At, availableCols: xt, availableColTypes: wt, onChange: (Et) => Ct(yt, Et) }),
+          At.type === "filter_rows" && /* @__PURE__ */ jsxRuntimeExports.jsx(FilterRowsStepUI, { step: At, availableCols: xt, onChange: (Et) => Ct(yt, Et) }),
+          At.type === "sort" && /* @__PURE__ */ jsxRuntimeExports.jsx(SortStepUI, { step: At, availableCols: xt, onChange: (Et) => Ct(yt, Et) }),
+          At.type === "top_n" && /* @__PURE__ */ jsxRuntimeExports.jsx(TopNStepUI, { step: At, onChange: (Et) => Ct(yt, Et) }),
+          At.type === "rename_columns" && /* @__PURE__ */ jsxRuntimeExports.jsx(RenameColumnsStepUI, { step: At, availableCols: xt, onChange: (Et) => Ct(yt, Et) }),
+          At.type === "derive" && /* @__PURE__ */ jsxRuntimeExports.jsx(DeriveStepUI, { step: At, availableCols: xt, onChange: (Et) => Ct(yt, Et) }),
+          At.type === "fill_null" && /* @__PURE__ */ jsxRuntimeExports.jsx(FillNullStepUI, { step: At, availableCols: xt, onChange: (Et) => Ct(yt, Et) }),
+          At.type === "group_by" && /* @__PURE__ */ jsxRuntimeExports.jsx(GroupByStepUI, { step: At, availableCols: xt, onChange: (Et) => Ct(yt, Et) }),
+          At.type === "join" && /* @__PURE__ */ jsxRuntimeExports.jsx(JoinStepUI, { step: At, availableCols: xt, onChange: (Et) => Ct(yt, Et) }),
+          At.type === "union" && /* @__PURE__ */ jsxRuntimeExports.jsx(UnionStepUI, { step: At, onChange: (Et) => Ct(yt, Et) }),
+          At.type === "pivot" && /* @__PURE__ */ jsxRuntimeExports.jsx(PivotStepUI, { step: At, availableCols: xt, onChange: (Et) => Ct(yt, Et) }),
+          At.type === "unpivot" && /* @__PURE__ */ jsxRuntimeExports.jsx(UnpivotStepUI, { step: At, availableCols: xt, onChange: (Et) => Ct(yt, Et) }),
+          At.type === "window" && /* @__PURE__ */ jsxRuntimeExports.jsx(WindowStepUI, { step: At, availableCols: xt, onChange: (Et) => Ct(yt, Et) }),
+          At.type === "unnest" && /* @__PURE__ */ jsxRuntimeExports.jsx(UnnestStepUI, { step: At, availableCols: xt, onChange: (Et) => Ct(yt, Et) }),
+          At.type === "json_extract" && /* @__PURE__ */ jsxRuntimeExports.jsx(JsonExtractStepUI, { step: At, availableCols: xt, onChange: (Et) => Ct(yt, Et) }),
+          At.type === "date_trunc" && /* @__PURE__ */ jsxRuntimeExports.jsx(DateTruncStepUI, { step: At, availableCols: xt, onChange: (Et) => Ct(yt, Et) })
+        ] })
+      ] })
+    ] }),
+    document.body
+  );
+}
 function StepItem({
   step: At,
   index: yt,
@@ -134869,105 +135026,103 @@ function StepItem({
   onRemove: $t,
   onMove: Lt
 }) {
-  const [It, Rt] = reactExports.useState(!0), [Dt, jt] = reactExports.useState(!1);
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "border border-border rounded bg-card text-card-foreground", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs(
-      "div",
+  const [It, Rt] = reactExports.useState(!1), [Dt, jt] = reactExports.useState(!1), Nt = stepSummary(At);
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "border border-border rounded bg-card text-card-foreground", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5 px-2 py-1.5 select-none", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "button",
+        {
+          onClick: (Mt) => {
+            Mt.stopPropagation(), St();
+          },
+          className: `shrink-0 w-5 h-5 flex items-center justify-center rounded transition-colors ${kt ? "text-primary" : "text-muted-foreground hover:text-foreground"}`,
+          title: kt ? "Masquer l'aperçu" : "Voir l'aperçu de cette étape",
+          children: Et && kt ? /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { viewBox: "0 0 24 24", className: "w-3.5 h-3.5 animate-spin", fill: "none", stroke: "currentColor", strokeWidth: "2", children: /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M21 12a9 9 0 1 1-6.219-8.56" }) }) : /* @__PURE__ */ jsxRuntimeExports.jsx(EyeIcon, { open: kt, className: "w-3.5 h-3.5" })
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs text-muted-foreground font-mono w-4 shrink-0", children: [
+        yt + 1,
+        "."
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { className: "flex-1 text-left min-w-0", onClick: () => Rt(!0), children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-medium", children: STEP_LABELS[At.type] }),
+        Nt && Nt !== "—" && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "ml-1.5 text-xs text-muted-foreground truncate", children: Nt })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-0.5 ml-1 shrink-0", children: Dt ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs text-destructive", children: "Supprimer ?" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            onClick: () => {
+              $t(yt), jt(!1);
+            },
+            className: "px-1.5 h-5 rounded bg-destructive text-destructive-foreground text-xs",
+            children: "Oui"
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            onClick: () => jt(!1),
+            className: "px-1.5 h-5 rounded border border-border text-xs text-muted-foreground hover:text-foreground",
+            children: "Non"
+          }
+        )
+      ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            onClick: () => Rt(!0),
+            className: "text-muted-foreground hover:text-foreground w-6 h-6 flex items-center justify-center rounded hover:bg-muted transition-colors",
+            title: "Configurer ce step",
+            children: /* @__PURE__ */ jsxRuntimeExports.jsxs("svg", { xmlns: "http://www.w3.org/2000/svg", width: "13", height: "13", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("circle", { cx: "12", cy: "12", r: "3" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" })
+            ] })
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            onClick: () => Lt(yt, -1),
+            disabled: yt === 0,
+            className: "text-muted-foreground hover:text-foreground disabled:opacity-30 w-5 h-5 flex items-center justify-center text-xs",
+            title: "Monter",
+            children: "▲"
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            onClick: () => Lt(yt, 1),
+            disabled: yt === xt - 1,
+            className: "text-muted-foreground hover:text-foreground disabled:opacity-30 w-5 h-5 flex items-center justify-center text-xs",
+            title: "Descendre",
+            children: "▼"
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            onClick: () => jt(!0),
+            className: "text-destructive hover:text-destructive/80 w-5 h-5 flex items-center justify-center text-xs",
+            title: "Supprimer ce step",
+            children: "✕"
+          }
+        )
+      ] }) })
+    ] }) }),
+    It && /* @__PURE__ */ jsxRuntimeExports.jsx(
+      StepConfigModal,
       {
-        className: "flex items-center gap-1.5 px-2 py-1.5 cursor-pointer select-none",
-        onClick: () => !Dt && Rt((Nt) => !Nt),
-        children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "button",
-            {
-              onClick: (Nt) => {
-                Nt.stopPropagation(), St();
-              },
-              className: `shrink-0 w-5 h-5 flex items-center justify-center rounded transition-colors ${kt ? "text-primary" : "text-muted-foreground hover:text-foreground"}`,
-              title: kt ? "Masquer l'aperçu" : "Voir l'aperçu de cette étape",
-              children: Et && kt ? /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { viewBox: "0 0 24 24", className: "w-3.5 h-3.5 animate-spin", fill: "none", stroke: "currentColor", strokeWidth: "2", children: /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M21 12a9 9 0 1 1-6.219-8.56" }) }) : /* @__PURE__ */ jsxRuntimeExports.jsx(EyeIcon, { open: kt, className: "w-3.5 h-3.5" })
-            }
-          ),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs text-muted-foreground font-mono w-4 shrink-0", children: [
-            yt + 1,
-            "."
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex-1 text-xs font-medium", children: STEP_LABELS[At.type] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-1 ml-auto", onClick: (Nt) => Nt.stopPropagation(), children: Dt ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs text-destructive", children: "Supprimer ?" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "button",
-              {
-                onClick: () => {
-                  $t(yt), jt(!1);
-                },
-                className: "px-1.5 h-5 rounded bg-destructive text-destructive-foreground text-xs",
-                children: "Oui"
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "button",
-              {
-                onClick: () => jt(!1),
-                className: "px-1.5 h-5 rounded border border-border text-xs text-muted-foreground hover:text-foreground",
-                children: "Non"
-              }
-            )
-          ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "button",
-              {
-                onClick: () => Lt(yt, -1),
-                disabled: yt === 0,
-                className: "text-muted-foreground hover:text-foreground disabled:opacity-30 w-5 h-5 flex items-center justify-center text-xs",
-                title: "Monter",
-                children: "▲"
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "button",
-              {
-                onClick: () => Lt(yt, 1),
-                disabled: yt === xt - 1,
-                className: "text-muted-foreground hover:text-foreground disabled:opacity-30 w-5 h-5 flex items-center justify-center text-xs",
-                title: "Descendre",
-                children: "▼"
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "button",
-              {
-                onClick: () => jt(!0),
-                className: "text-destructive hover:text-destructive/80 w-5 h-5 flex items-center justify-center text-xs",
-                title: "Supprimer ce step",
-                children: "✕"
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-muted-foreground text-xs ml-1", children: It ? "▾" : "▸" })
-          ] }) })
-        ]
+        step: At,
+        index: yt,
+        availableCols: wt,
+        availableColTypes: Ct,
+        onUpdate: Tt,
+        onClose: () => Rt(!1)
       }
-    ),
-    It && !Dt && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "px-3 pb-3 pt-1 border-t border-border", children: [
-      At.type === "select_columns" && /* @__PURE__ */ jsxRuntimeExports.jsx(SelectColumnsStepUI, { step: At, availableCols: wt, onChange: (Nt) => Tt(yt, Nt) }),
-      At.type === "exclude_columns" && /* @__PURE__ */ jsxRuntimeExports.jsx(ExcludeColumnsStepUI, { step: At, availableCols: wt, onChange: (Nt) => Tt(yt, Nt) }),
-      At.type === "change_type" && /* @__PURE__ */ jsxRuntimeExports.jsx(ChangeTypeStepUI, { step: At, availableCols: wt, availableColTypes: Ct, onChange: (Nt) => Tt(yt, Nt) }),
-      At.type === "filter_rows" && /* @__PURE__ */ jsxRuntimeExports.jsx(FilterRowsStepUI, { step: At, availableCols: wt, onChange: (Nt) => Tt(yt, Nt) }),
-      At.type === "sort" && /* @__PURE__ */ jsxRuntimeExports.jsx(SortStepUI, { step: At, availableCols: wt, onChange: (Nt) => Tt(yt, Nt) }),
-      At.type === "top_n" && /* @__PURE__ */ jsxRuntimeExports.jsx(TopNStepUI, { step: At, onChange: (Nt) => Tt(yt, Nt) }),
-      At.type === "rename_columns" && /* @__PURE__ */ jsxRuntimeExports.jsx(RenameColumnsStepUI, { step: At, availableCols: wt, onChange: (Nt) => Tt(yt, Nt) }),
-      At.type === "derive" && /* @__PURE__ */ jsxRuntimeExports.jsx(DeriveStepUI, { step: At, availableCols: wt, onChange: (Nt) => Tt(yt, Nt) }),
-      At.type === "fill_null" && /* @__PURE__ */ jsxRuntimeExports.jsx(FillNullStepUI, { step: At, availableCols: wt, onChange: (Nt) => Tt(yt, Nt) }),
-      At.type === "group_by" && /* @__PURE__ */ jsxRuntimeExports.jsx(GroupByStepUI, { step: At, availableCols: wt, onChange: (Nt) => Tt(yt, Nt) }),
-      At.type === "join" && /* @__PURE__ */ jsxRuntimeExports.jsx(JoinStepUI, { step: At, availableCols: wt, onChange: (Nt) => Tt(yt, Nt) }),
-      At.type === "union" && /* @__PURE__ */ jsxRuntimeExports.jsx(UnionStepUI, { step: At, onChange: (Nt) => Tt(yt, Nt) }),
-      At.type === "pivot" && /* @__PURE__ */ jsxRuntimeExports.jsx(PivotStepUI, { step: At, availableCols: wt, onChange: (Nt) => Tt(yt, Nt) }),
-      At.type === "unpivot" && /* @__PURE__ */ jsxRuntimeExports.jsx(UnpivotStepUI, { step: At, availableCols: wt, onChange: (Nt) => Tt(yt, Nt) }),
-      At.type === "window" && /* @__PURE__ */ jsxRuntimeExports.jsx(WindowStepUI, { step: At, availableCols: wt, onChange: (Nt) => Tt(yt, Nt) }),
-      At.type === "unnest" && /* @__PURE__ */ jsxRuntimeExports.jsx(UnnestStepUI, { step: At, availableCols: wt, onChange: (Nt) => Tt(yt, Nt) }),
-      At.type === "json_extract" && /* @__PURE__ */ jsxRuntimeExports.jsx(JsonExtractStepUI, { step: At, availableCols: wt, onChange: (Nt) => Tt(yt, Nt) }),
-      At.type === "date_trunc" && /* @__PURE__ */ jsxRuntimeExports.jsx(DateTruncStepUI, { step: At, availableCols: wt, onChange: (Nt) => Tt(yt, Nt) })
-    ] })
+    )
   ] });
 }
 function defaultStep(At) {
@@ -134979,7 +135134,7 @@ function defaultStep(At) {
     case "change_type":
       return { type: At, changes: [] };
     case "filter_rows":
-      return { type: At, conditions: [], logicOp: "AND" };
+      return { type: At, groups: [{ conditions: [], logicOp: "AND" }], groupLogicOp: "OR" };
     case "sort":
       return { type: At, keys: [] };
     case "top_n":
@@ -135011,55 +135166,75 @@ function defaultStep(At) {
   }
 }
 function AddStepMenu({ onAdd: At }) {
-  const [yt, xt] = reactExports.useState(!1), [wt, Ct] = reactExports.useState(null), kt = reactExports.useRef(null), Et = reactExports.useRef(null);
-  function St() {
-    !yt && kt.current && Ct(kt.current.getBoundingClientRect()), xt(($t) => !$t);
+  const [yt, xt] = reactExports.useState(!1), [wt, Ct] = reactExports.useState(""), [kt, Et] = reactExports.useState(null), St = reactExports.useRef(null), Tt = reactExports.useRef(null), $t = reactExports.useRef(null);
+  function Lt() {
+    !yt && St.current && Et(St.current.getBoundingClientRect()), xt((jt) => !jt), yt || (Ct(""), setTimeout(() => {
+      var jt;
+      return (jt = $t.current) == null ? void 0 : jt.focus();
+    }, 50));
   }
   reactExports.useEffect(() => {
     if (!yt) return;
-    function $t(Lt) {
-      Et.current && !Et.current.contains(Lt.target) && kt.current && !kt.current.contains(Lt.target) && xt(!1);
+    function jt(Nt) {
+      Tt.current && !Tt.current.contains(Nt.target) && St.current && !St.current.contains(Nt.target) && xt(!1);
     }
-    return document.addEventListener("mousedown", $t), () => document.removeEventListener("mousedown", $t);
+    return document.addEventListener("mousedown", jt), () => document.removeEventListener("mousedown", jt);
   }, [yt]);
-  const Tt = wt ? {
+  const It = wt.toLowerCase().trim(), Rt = It ? [{ label: "Résultats", steps: STEP_CATEGORIES.flatMap((jt) => jt.steps).filter((jt) => STEP_LABELS[jt].toLowerCase().includes(It)) }] : STEP_CATEGORIES, Dt = kt ? {
     position: "fixed",
-    top: wt.bottom + 4,
-    left: wt.left,
-    minWidth: Math.max(wt.width, 260),
+    top: kt.bottom + 4,
+    left: kt.left,
+    minWidth: Math.max(kt.width, 280),
     zIndex: 9999
   } : {};
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       "button",
       {
-        ref: kt,
-        onClick: St,
+        ref: St,
+        onClick: Lt,
         className: "w-full flex items-center justify-center gap-2 px-3 py-1.5 rounded border border-dashed border-border hover:border-primary hover:text-primary text-xs text-muted-foreground transition-colors",
         children: "+ Ajouter un step"
       }
     ),
-    yt && wt && reactDomExports.createPortal(
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
+    yt && kt && reactDomExports.createPortal(
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "div",
         {
-          ref: Et,
-          style: Tt,
-          className: "bg-popover border border-border rounded-lg shadow-xl overflow-hidden",
-          children: STEP_CATEGORIES.map(($t) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "px-3 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wide bg-muted/50 border-b border-border", children: $t.label }),
-            $t.steps.map((Lt) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "button",
+          ref: Tt,
+          style: Dt,
+          className: "bg-popover border border-border rounded-lg shadow-xl overflow-hidden flex flex-col max-h-96",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "px-2 py-2 border-b border-border bg-muted/30", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "input",
               {
-                className: "w-full text-left px-3 py-1.5 hover:bg-muted transition-colors flex items-center gap-2",
-                onClick: () => {
-                  At(defaultStep(Lt)), xt(!1);
+                ref: $t,
+                value: wt,
+                onChange: (jt) => Ct(jt.target.value),
+                placeholder: "Filtrer les traitements…",
+                className: "w-full h-6 rounded border border-border bg-background px-2 text-xs focus:outline-none focus:ring-1 focus:ring-primary",
+                onKeyDown: (jt) => {
+                  var Nt;
+                  jt.key === "Escape" && xt(!1), jt.key === "Enter" && ((Nt = Rt[0]) != null && Nt.steps[0]) && (At(defaultStep(Rt[0].steps[0])), xt(!1));
+                }
+              }
+            ) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-y-auto", children: Rt.map((jt) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              (!It || jt.steps.length > 0) && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "px-3 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wide bg-muted/50 border-b border-border sticky top-0", children: jt.label }),
+              jt.steps.map((Nt) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "button",
+                {
+                  className: "w-full text-left px-3 py-1.5 hover:bg-muted transition-colors flex items-center gap-2",
+                  onClick: () => {
+                    At(defaultStep(Nt)), xt(!1), Ct("");
+                  },
+                  children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-medium flex-1", children: STEP_LABELS[Nt] })
                 },
-                children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-medium flex-1", children: STEP_LABELS[Lt] })
-              },
-              Lt
-            ))
-          ] }, $t.label))
+                Nt
+              )),
+              It && jt.steps.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "px-3 py-2 text-xs text-muted-foreground italic", children: "Aucun résultat" })
+            ] }, jt.label)) })
+          ]
         }
       ),
       document.body
