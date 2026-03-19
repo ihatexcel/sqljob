@@ -199,9 +199,17 @@ function singleStepToSql(source: string, step: SqlBlockStep): string {
 
         // ── P1 ──────────────────────────────────────────────────────────────
         case 'filter_rows': {
-            if (!step.conditions.length) return `SELECT * FROM ${source}`;
-            const where = step.conditions.map(conditionToSql).join(` ${step.logicOp} `);
-            return `SELECT * FROM ${source}\nWHERE ${where}`;
+            // Migration rétrocompat : ancien format conditions[] → groups
+            const groups = step.groups?.length
+                ? step.groups
+                : (step.conditions?.length ? [{ conditions: step.conditions, logicOp: step.logicOp ?? 'AND' }] : [])
+            const activeGroups = groups.filter(g => g.conditions.length > 0)
+            if (!activeGroups.length) return `SELECT * FROM ${source}`;
+            const groupSql = activeGroups.map(g => {
+                const conds = g.conditions.map(conditionToSql).join(` ${g.logicOp} `)
+                return activeGroups.length > 1 ? `(${conds})` : conds
+            }).join(`\n  ${step.groupLogicOp ?? 'OR'} `)
+            return `SELECT * FROM ${source}\nWHERE ${groupSql}`;
         }
         case 'sort': {
             if (!step.keys.length) return `SELECT * FROM ${source}`;

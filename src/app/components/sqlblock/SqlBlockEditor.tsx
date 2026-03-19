@@ -38,6 +38,7 @@ import type {
     ExcludeColumnsStep,
     ChangeTypeStep,
     FilterRowsStep,
+    FilterGroup,
     FilterCondition,
     FilterOp,
     SortStep,
@@ -472,51 +473,132 @@ const FILTER_OPS: { op: FilterOp; label: string }[] = [
     { op: 'between', label: 'BETWEEN' },
 ]
 
+function FilterConditionRow({ cond, availableCols, onChange, onRemove }: {
+    cond: FilterCondition; availableCols: string[]
+    onChange: (patch: Partial<FilterCondition>) => void
+    onRemove: () => void
+}) {
+    const noVal = cond.op === 'is_null' || cond.op === 'not_null'
+    const isBetween = cond.op === 'between'
+    const isMulti = cond.op === 'in' || cond.op === 'not_in'
+    return (
+        <div className="flex flex-wrap items-center gap-1">
+            <ColSelect value={cond.column} cols={availableCols} onChange={v => onChange({ column: v })} className="flex-1 min-w-20" />
+            <select className="h-6 rounded border border-border bg-background px-1 text-xs w-24" value={cond.op} onChange={e => onChange({ op: e.target.value as FilterOp })}>
+                {FILTER_OPS.map(o => <option key={o.op} value={o.op}>{o.label}</option>)}
+            </select>
+            {!noVal && !isBetween && !isMulti && (
+                <TxtInput value={cond.value ?? ''} onChange={v => onChange({ value: v })} placeholder="valeur" className="flex-1 min-w-16" />
+            )}
+            {isBetween && <>
+                <TxtInput value={cond.value ?? ''} onChange={v => onChange({ value: v })} placeholder="de" className="w-20" />
+                <span className="text-xs text-muted-foreground">et</span>
+                <TxtInput value={cond.valueTo ?? ''} onChange={v => onChange({ valueTo: v })} placeholder="à" className="w-20" />
+            </>}
+            {isMulti && (
+                <TxtInput value={(cond.values ?? []).join(', ')} onChange={v => onChange({ values: v.split(',').map(x => x.trim()).filter(Boolean) })} placeholder="val1, val2…" className="flex-1 min-w-24" />
+            )}
+            <RemoveBtn onClick={onRemove} />
+        </div>
+    )
+}
+
+function LogicOpBadge({ op, onChange }: { op: 'AND' | 'OR'; onChange: (op: 'AND' | 'OR') => void }) {
+    return (
+        <div className="flex items-center gap-1 my-0.5">
+            <div className="flex-1 h-px bg-border" />
+            <div className="flex rounded border border-border overflow-hidden text-xs">
+                {(['AND', 'OR'] as const).map(o => (
+                    <button key={o} onClick={() => onChange(o)}
+                        className={`px-2 py-0.5 transition-colors ${op === o ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}>
+                        {o}
+                    </button>
+                ))}
+            </div>
+            <div className="flex-1 h-px bg-border" />
+        </div>
+    )
+}
+
 function FilterRowsStepUI({ step, availableCols, onChange }: { step: FilterRowsStep; availableCols: string[]; onChange: (s: FilterRowsStep) => void }) {
-    function updateCond(i: number, patch: Partial<FilterCondition>) {
-        onChange({ ...step, conditions: step.conditions.map((c, idx) => idx === i ? { ...c, ...patch } : c) })
+    // Normalise : rétrocompat ancien format → nouveau format groupes
+    const groups: FilterGroup[] = step.groups?.length
+        ? step.groups
+        : (step.conditions?.length ? [{ conditions: step.conditions, logicOp: step.logicOp ?? 'AND' }] : [{ conditions: [], logicOp: 'AND' }])
+
+    const groupLogicOp = step.groupLogicOp ?? 'OR'
+
+    function updateGroups(newGroups: FilterGroup[]) {
+        onChange({ ...step, groups: newGroups, groupLogicOp, conditions: undefined, logicOp: undefined })
     }
-    function addCond() { onChange({ ...step, conditions: [...step.conditions, { column: availableCols[0] ?? '', op: '=', value: '' }] }) }
-    function removeCond(i: number) { onChange({ ...step, conditions: step.conditions.filter((_, idx) => idx !== i) }) }
+
+    function updateGroup(gi: number, patch: Partial<FilterGroup>) {
+        updateGroups(groups.map((g, i) => i === gi ? { ...g, ...patch } : g))
+    }
+
+    function updateCond(gi: number, ci: number, patch: Partial<FilterCondition>) {
+        updateGroup(gi, { conditions: groups[gi].conditions.map((c, i) => i === ci ? { ...c, ...patch } : c) })
+    }
+
+    function addCond(gi: number) {
+        updateGroup(gi, { conditions: [...groups[gi].conditions, { column: availableCols[0] ?? '', op: '=', value: '' }] })
+    }
+
+    function removeCond(gi: number, ci: number) {
+        updateGroup(gi, { conditions: groups[gi].conditions.filter((_, i) => i !== ci) })
+    }
+
+    function addGroup() {
+        updateGroups([...groups, { conditions: [], logicOp: 'AND' }])
+    }
+
+    function removeGroup(gi: number) {
+        const next = groups.filter((_, i) => i !== gi)
+        updateGroups(next.length ? next : [{ conditions: [], logicOp: 'AND' }])
+    }
 
     return (
         <div className="flex flex-col gap-2">
-            {step.conditions.length > 1 && (
-                <div className="flex gap-1 text-xs">
-                    {(['AND', 'OR'] as const).map(op => (
-                        <button key={op} onClick={() => onChange({ ...step, logicOp: op })}
-                            className={`px-2 py-0.5 rounded border text-xs transition-colors ${step.logicOp === op ? 'bg-primary text-primary-foreground border-primary' : 'border-border hover:bg-muted'}`}>
-                            {op}
-                        </button>
-                    ))}
-                </div>
-            )}
-            {step.conditions.map((cond, i) => {
-                const noVal = cond.op === 'is_null' || cond.op === 'not_null'
-                const isBetween = cond.op === 'between'
-                const isMulti = cond.op === 'in' || cond.op === 'not_in'
-                return (
-                    <div key={i} className="flex flex-wrap items-center gap-1">
-                        <ColSelect value={cond.column} cols={availableCols} onChange={v => updateCond(i, { column: v })} className="flex-1 min-w-20" />
-                        <select className="h-6 rounded border border-border bg-background px-1 text-xs w-24" value={cond.op} onChange={e => updateCond(i, { op: e.target.value as FilterOp })}>
-                            {FILTER_OPS.map(o => <option key={o.op} value={o.op}>{o.label}</option>)}
-                        </select>
-                        {!noVal && !isBetween && !isMulti && (
-                            <TxtInput value={cond.value ?? ''} onChange={v => updateCond(i, { value: v })} placeholder="valeur" className="flex-1 min-w-16" />
+            {groups.map((group, gi) => (
+                <div key={gi}>
+                    {gi > 0 && (
+                        <LogicOpBadge op={groupLogicOp} onChange={op => onChange({ ...step, groups, groupLogicOp: op })} />
+                    )}
+                    <div className="border border-border rounded p-2 flex flex-col gap-1.5 bg-background">
+                        <div className="flex items-center justify-between mb-0.5">
+                            <span className="text-xs text-muted-foreground font-medium">Groupe {gi + 1}</span>
+                            <div className="flex items-center gap-2">
+                                {group.conditions.length > 1 && (
+                                    <div className="flex rounded border border-border overflow-hidden text-xs">
+                                        {(['AND', 'OR'] as const).map(o => (
+                                            <button key={o} onClick={() => updateGroup(gi, { logicOp: o })}
+                                                className={`px-1.5 py-0.5 transition-colors ${group.logicOp === o ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}>
+                                                {o}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                                {groups.length > 1 && (
+                                    <RemoveBtn onClick={() => removeGroup(gi)} />
+                                )}
+                            </div>
+                        </div>
+                        {group.conditions.map((cond, ci) => (
+                            <FilterConditionRow key={ci} cond={cond} availableCols={availableCols}
+                                onChange={patch => updateCond(gi, ci, patch)}
+                                onRemove={() => removeCond(gi, ci)} />
+                        ))}
+                        {group.conditions.length === 0 && (
+                            <p className="text-xs text-muted-foreground italic">Aucune condition</p>
                         )}
-                        {isBetween && <>
-                            <TxtInput value={cond.value ?? ''} onChange={v => updateCond(i, { value: v })} placeholder="de" className="w-20" />
-                            <span className="text-xs text-muted-foreground">et</span>
-                            <TxtInput value={cond.valueTo ?? ''} onChange={v => updateCond(i, { valueTo: v })} placeholder="à" className="w-20" />
-                        </>}
-                        {isMulti && (
-                            <TxtInput value={(cond.values ?? []).join(', ')} onChange={v => updateCond(i, { values: v.split(',').map(x => x.trim()).filter(Boolean) })} placeholder="val1, val2…" className="flex-1 min-w-24" />
-                        )}
-                        <RemoveBtn onClick={() => removeCond(i)} />
+                        <AddRowBtn onClick={() => addCond(gi)} label="+ Condition" />
                     </div>
-                )
-            })}
-            <AddRowBtn onClick={addCond} label="+ Condition" />
+                </div>
+            ))}
+            <button onClick={addGroup}
+                className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground border border-dashed border-border rounded px-2 py-1 hover:border-primary transition-colors">
+                + Ajouter un groupe
+            </button>
         </div>
     )
 }
@@ -993,69 +1075,65 @@ function DateTruncStepUI({ step, availableCols, onChange }: { step: DateTruncSte
     )
 }
 
-// ─── StepItem ─────────────────────────────────────────────────────────────────
+// ─── Résumé inline d'un step ──────────────────────────────────────────────────
 
-function StepItem({ step, index, totalSteps, availableCols, availableColTypes,
-    eyeOpen, eyeLoading, onEyeToggle,
-    onUpdate, onRemove, onMove }: {
-    step: SqlBlockStep; index: number; totalSteps: number
+function stepSummary(step: SqlBlockStep): string {
+    switch (step.type) {
+        case 'select_columns':  return step.columns.length ? step.columns.join(', ') : '—'
+        case 'exclude_columns': return step.columns.length ? step.columns.join(', ') : '—'
+        case 'rename_columns':  return step.renames.length ? step.renames.map(r => `${r.from}→${r.to}`).join(', ') : '—'
+        case 'change_type':     return step.changes.length ? step.changes.map(c => `${c.column}:${c.targetType}`).join(', ') : '—'
+        case 'filter_rows': {
+            const groups = step.groups?.length ? step.groups : (step.conditions?.length ? [{ conditions: step.conditions, logicOp: step.logicOp ?? 'AND' }] : [])
+            const n = groups.reduce((s, g) => s + g.conditions.length, 0)
+            return n ? `${n} condition${n > 1 ? 's' : ''}${groups.length > 1 ? ` (${groups.length} groupes)` : ''}` : '—'
+        }
+        case 'sort':            return step.keys.length ? step.keys.map(k => `${k.column} ${k.direction === 'asc' ? '↑' : '↓'}`).join(', ') : '—'
+        case 'top_n':           return step.mode === 'limit' ? `${step.n} lignes` : `${step.n}% échantillon`
+        case 'derive':          return step.columns.length ? step.columns.map(c => c.name).join(', ') : '—'
+        case 'fill_null':       return step.fills.length ? step.fills.map(f => f.column).join(', ') : '—'
+        case 'group_by':        return step.groupCols.length ? step.groupCols.join(', ') : '—'
+        case 'join':            return step.rightTable || '—'
+        case 'union':           return step.table || '—'
+        case 'pivot':           return step.onColumn || '—'
+        case 'unpivot':         return step.columns.length ? step.columns.join(', ') : '—'
+        case 'window':          return step.columns.length ? `${step.columns.length} col.` : '—'
+        case 'unnest':          return step.column || '—'
+        case 'json_extract':    return step.column || '—'
+        case 'date_trunc':      return step.column ? `${step.column} → ${step.granularity}` : '—'
+        default:                return ''
+    }
+}
+
+// ─── StepConfigModal ──────────────────────────────────────────────────────────
+
+function StepConfigModal({ step, index, availableCols, availableColTypes, onUpdate, onClose }: {
+    step: SqlBlockStep; index: number
     availableCols: string[]; availableColTypes: Record<string, string>
-    eyeOpen: boolean; eyeLoading: boolean
-    onEyeToggle: () => void
     onUpdate: (idx: number, s: SqlBlockStep) => void
-    onRemove: (idx: number) => void
-    onMove: (idx: number, dir: -1 | 1) => void
+    onClose: () => void
 }) {
-    const [open, setOpen] = useState(true)
-    const [pendingDelete, setPendingDelete] = useState(false)
+    // Fermeture sur Échap
+    useEffect(() => {
+        const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+        document.addEventListener('keydown', handler)
+        return () => document.removeEventListener('keydown', handler)
+    }, [onClose])
 
-    return (
-        <div className="border border-border rounded bg-card text-card-foreground">
-            {/* Header */}
-            <div className="flex items-center gap-1.5 px-2 py-1.5 cursor-pointer select-none"
-                onClick={() => !pendingDelete && setOpen(o => !o)}>
-
-                {/* Bouton œil */}
-                <button
-                    onClick={e => { e.stopPropagation(); onEyeToggle() }}
-                    className={`shrink-0 w-5 h-5 flex items-center justify-center rounded transition-colors ${eyeOpen ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
-                    title={eyeOpen ? 'Masquer l\'aperçu' : 'Voir l\'aperçu de cette étape'}
-                >
-                    {eyeLoading && eyeOpen
-                        ? <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 animate-spin" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>
-                        : <EyeIcon open={eyeOpen} className="w-3.5 h-3.5" />
-                    }
-                </button>
-
-                <span className="text-xs text-muted-foreground font-mono w-4 shrink-0">{index + 1}.</span>
-                <span className="flex-1 text-xs font-medium">{STEP_LABELS[step.type]}</span>
-
-                <div className="flex items-center gap-1 ml-auto" onClick={e => e.stopPropagation()}>
-                    {pendingDelete ? (
-                        <div className="flex items-center gap-1">
-                            <span className="text-xs text-destructive">Supprimer ?</span>
-                            <button onClick={() => { onRemove(index); setPendingDelete(false) }}
-                                className="px-1.5 h-5 rounded bg-destructive text-destructive-foreground text-xs">Oui</button>
-                            <button onClick={() => setPendingDelete(false)}
-                                className="px-1.5 h-5 rounded border border-border text-xs text-muted-foreground hover:text-foreground">Non</button>
-                        </div>
-                    ) : (
-                        <>
-                            <button onClick={() => onMove(index, -1)} disabled={index === 0}
-                                className="text-muted-foreground hover:text-foreground disabled:opacity-30 w-5 h-5 flex items-center justify-center text-xs" title="Monter">▲</button>
-                            <button onClick={() => onMove(index, 1)} disabled={index === totalSteps - 1}
-                                className="text-muted-foreground hover:text-foreground disabled:opacity-30 w-5 h-5 flex items-center justify-center text-xs" title="Descendre">▼</button>
-                            <button onClick={() => setPendingDelete(true)}
-                                className="text-destructive hover:text-destructive/80 w-5 h-5 flex items-center justify-center text-xs" title="Supprimer ce step">✕</button>
-                            <span className="text-muted-foreground text-xs ml-1">{open ? '▾' : '▸'}</span>
-                        </>
-                    )}
+    return createPortal(
+        <div className="fixed inset-0 z-[9998] flex items-center justify-center">
+            {/* Backdrop */}
+            <div className="absolute inset-0 bg-black/50" onClick={onClose} />
+            {/* Modale */}
+            <div className="relative z-10 bg-popover border border-border rounded-xl shadow-2xl w-full max-w-lg mx-4 max-h-[85vh] flex flex-col">
+                {/* Header */}
+                <div className="flex items-center gap-2 px-4 py-3 border-b border-border shrink-0">
+                    <span className="text-xs text-muted-foreground font-mono w-5">{index + 1}.</span>
+                    <span className="font-semibold text-sm flex-1">{STEP_LABELS[step.type]}</span>
+                    <button onClick={onClose} className="text-muted-foreground hover:text-foreground w-6 h-6 flex items-center justify-center rounded hover:bg-muted text-lg leading-none">×</button>
                 </div>
-            </div>
-
-            {/* Corps step */}
-            {open && !pendingDelete && (
-                <div className="px-3 pb-3 pt-1 border-t border-border">
+                {/* Corps — scrollable */}
+                <div className="overflow-y-auto px-4 py-4 flex-1">
                     {step.type === 'select_columns' && <SelectColumnsStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
                     {step.type === 'exclude_columns' && <ExcludeColumnsStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
                     {step.type === 'change_type' && <ChangeTypeStepUI step={step} availableCols={availableCols} availableColTypes={availableColTypes} onChange={s => onUpdate(index, s)} />}
@@ -1075,8 +1153,92 @@ function StepItem({ step, index, totalSteps, availableCols, availableColTypes,
                     {step.type === 'json_extract' && <JsonExtractStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
                     {step.type === 'date_trunc' && <DateTruncStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
                 </div>
+            </div>
+        </div>,
+        document.body
+    )
+}
+
+// ─── StepItem ─────────────────────────────────────────────────────────────────
+
+function StepItem({ step, index, totalSteps, availableCols, availableColTypes,
+    eyeOpen, eyeLoading, onEyeToggle,
+    onUpdate, onRemove, onMove }: {
+    step: SqlBlockStep; index: number; totalSteps: number
+    availableCols: string[]; availableColTypes: Record<string, string>
+    eyeOpen: boolean; eyeLoading: boolean
+    onEyeToggle: () => void
+    onUpdate: (idx: number, s: SqlBlockStep) => void
+    onRemove: (idx: number) => void
+    onMove: (idx: number, dir: -1 | 1) => void
+}) {
+    const [configOpen, setConfigOpen] = useState(false)
+    const [pendingDelete, setPendingDelete] = useState(false)
+    const summary = stepSummary(step)
+
+    return (
+        <>
+            <div className="border border-border rounded bg-card text-card-foreground">
+                <div className="flex items-center gap-1.5 px-2 py-1.5 select-none">
+
+                    {/* Bouton œil */}
+                    <button
+                        onClick={e => { e.stopPropagation(); onEyeToggle() }}
+                        className={`shrink-0 w-5 h-5 flex items-center justify-center rounded transition-colors ${eyeOpen ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+                        title={eyeOpen ? 'Masquer l\'aperçu' : 'Voir l\'aperçu de cette étape'}
+                    >
+                        {eyeLoading && eyeOpen
+                            ? <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 animate-spin" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>
+                            : <EyeIcon open={eyeOpen} className="w-3.5 h-3.5" />
+                        }
+                    </button>
+
+                    <span className="text-xs text-muted-foreground font-mono w-4 shrink-0">{index + 1}.</span>
+                    {/* Nom + résumé — clic ouvre la config */}
+                    <button className="flex-1 text-left min-w-0" onClick={() => setConfigOpen(true)}>
+                        <span className="text-xs font-medium">{STEP_LABELS[step.type]}</span>
+                        {summary && summary !== '—' && (
+                            <span className="ml-1.5 text-xs text-muted-foreground truncate">{summary}</span>
+                        )}
+                    </button>
+
+                    <div className="flex items-center gap-0.5 ml-1 shrink-0">
+                        {pendingDelete ? (
+                            <div className="flex items-center gap-1">
+                                <span className="text-xs text-destructive">Supprimer ?</span>
+                                <button onClick={() => { onRemove(index); setPendingDelete(false) }}
+                                    className="px-1.5 h-5 rounded bg-destructive text-destructive-foreground text-xs">Oui</button>
+                                <button onClick={() => setPendingDelete(false)}
+                                    className="px-1.5 h-5 rounded border border-border text-xs text-muted-foreground hover:text-foreground">Non</button>
+                            </div>
+                        ) : (
+                            <>
+                                {/* Roue crantée — ouvre la modale de config */}
+                                <button onClick={() => setConfigOpen(true)}
+                                    className="text-muted-foreground hover:text-foreground w-6 h-6 flex items-center justify-center rounded hover:bg-muted transition-colors"
+                                    title="Configurer ce step">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                                    </svg>
+                                </button>
+                                <button onClick={() => onMove(index, -1)} disabled={index === 0}
+                                    className="text-muted-foreground hover:text-foreground disabled:opacity-30 w-5 h-5 flex items-center justify-center text-xs" title="Monter">▲</button>
+                                <button onClick={() => onMove(index, 1)} disabled={index === totalSteps - 1}
+                                    className="text-muted-foreground hover:text-foreground disabled:opacity-30 w-5 h-5 flex items-center justify-center text-xs" title="Descendre">▼</button>
+                                <button onClick={() => setPendingDelete(true)}
+                                    className="text-destructive hover:text-destructive/80 w-5 h-5 flex items-center justify-center text-xs" title="Supprimer ce step">✕</button>
+                            </>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            {configOpen && (
+                <StepConfigModal step={step} index={index}
+                    availableCols={availableCols} availableColTypes={availableColTypes}
+                    onUpdate={onUpdate} onClose={() => setConfigOpen(false)} />
             )}
-        </div>
+        </>
     )
 }
 
@@ -1087,7 +1249,7 @@ function defaultStep(type: SqlBlockStep['type']): SqlBlockStep {
         case 'select_columns':  return { type, columns: [] }
         case 'exclude_columns': return { type, columns: [] }
         case 'change_type':     return { type, changes: [] }
-        case 'filter_rows':     return { type, conditions: [], logicOp: 'AND' }
+        case 'filter_rows':     return { type, groups: [{ conditions: [], logicOp: 'AND' }], groupLogicOp: 'OR' }
         case 'sort':            return { type, keys: [] }
         case 'top_n':           return { type, mode: 'limit', n: 100 }
         case 'rename_columns':  return { type, renames: [] }
@@ -1107,13 +1269,16 @@ function defaultStep(type: SqlBlockStep['type']): SqlBlockStep {
 
 function AddStepMenu({ onAdd }: { onAdd: (step: SqlBlockStep) => void }) {
     const [open, setOpen] = useState(false)
+    const [search, setSearch] = useState('')
     const [menuRect, setMenuRect] = useState<DOMRect | null>(null)
     const btnRef = useRef<HTMLButtonElement>(null)
     const menuRef = useRef<HTMLDivElement>(null)
+    const searchRef = useRef<HTMLInputElement>(null)
 
     function handleToggle() {
         if (!open && btnRef.current) setMenuRect(btnRef.current.getBoundingClientRect())
         setOpen(o => !o)
+        if (!open) { setSearch(''); setTimeout(() => searchRef.current?.focus(), 50) }
     }
 
     useEffect(() => {
@@ -1126,9 +1291,15 @@ function AddStepMenu({ onAdd }: { onAdd: (step: SqlBlockStep) => void }) {
         return () => document.removeEventListener('mousedown', handleClick)
     }, [open])
 
+    const q = search.toLowerCase().trim()
+    // Filtrage : si recherche active, afficher tous les steps correspondants à plat
+    const filteredCats = q
+        ? [{ label: 'Résultats', steps: STEP_CATEGORIES.flatMap(c => c.steps).filter(t => STEP_LABELS[t].toLowerCase().includes(q)) }]
+        : STEP_CATEGORIES
+
     const menuStyle: React.CSSProperties = menuRect ? {
         position: 'fixed', top: menuRect.bottom + 4,
-        left: menuRect.left, minWidth: Math.max(menuRect.width, 260), zIndex: 9999,
+        left: menuRect.left, minWidth: Math.max(menuRect.width, 280), zIndex: 9999,
     } : {}
 
     return (
@@ -1139,20 +1310,40 @@ function AddStepMenu({ onAdd }: { onAdd: (step: SqlBlockStep) => void }) {
             </button>
             {open && menuRect && createPortal(
                 <div ref={menuRef} style={menuStyle}
-                    className="bg-popover border border-border rounded-lg shadow-xl overflow-hidden">
-                    {STEP_CATEGORIES.map(cat => (
-                        <div key={cat.label}>
-                            <div className="px-3 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wide bg-muted/50 border-b border-border">
-                                {cat.label}
+                    className="bg-popover border border-border rounded-lg shadow-xl overflow-hidden flex flex-col max-h-96">
+                    {/* Champ de recherche */}
+                    <div className="px-2 py-2 border-b border-border bg-muted/30">
+                        <input ref={searchRef} value={search} onChange={e => setSearch(e.target.value)}
+                            placeholder="Filtrer les traitements…"
+                            className="w-full h-6 rounded border border-border bg-background px-2 text-xs focus:outline-none focus:ring-1 focus:ring-primary"
+                            onKeyDown={e => {
+                                if (e.key === 'Escape') setOpen(false)
+                                if (e.key === 'Enter' && filteredCats[0]?.steps[0]) {
+                                    onAdd(defaultStep(filteredCats[0].steps[0])); setOpen(false)
+                                }
+                            }}
+                        />
+                    </div>
+                    <div className="overflow-y-auto">
+                        {filteredCats.map(cat => (
+                            <div key={cat.label}>
+                                {(!q || cat.steps.length > 0) && (
+                                    <div className="px-3 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wide bg-muted/50 border-b border-border sticky top-0">
+                                        {cat.label}
+                                    </div>
+                                )}
+                                {cat.steps.map(type => (
+                                    <button key={type} className="w-full text-left px-3 py-1.5 hover:bg-muted transition-colors flex items-center gap-2"
+                                        onClick={() => { onAdd(defaultStep(type)); setOpen(false); setSearch('') }}>
+                                        <span className="text-xs font-medium flex-1">{STEP_LABELS[type]}</span>
+                                    </button>
+                                ))}
+                                {q && cat.steps.length === 0 && (
+                                    <div className="px-3 py-2 text-xs text-muted-foreground italic">Aucun résultat</div>
+                                )}
                             </div>
-                            {cat.steps.map(type => (
-                                <button key={type} className="w-full text-left px-3 py-1.5 hover:bg-muted transition-colors flex items-center gap-2"
-                                    onClick={() => { onAdd(defaultStep(type)); setOpen(false) }}>
-                                    <span className="text-xs font-medium flex-1">{STEP_LABELS[type]}</span>
-                                </button>
-                            ))}
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>,
                 document.body
             )}
