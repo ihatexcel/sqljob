@@ -10,9 +10,34 @@ export const createCopyPasteSlice = (set: any, get: any) => ({
         return get()._clipboardItem !== null
     },
 
+    /**
+     * Sérialisation safe : ignore les nœuds DOM, les fonctions et les références circulaires.
+     * Nécessaire car les cells peuvent contenir des refs d'éditeur (CodeMirror, Monaco…)
+     * avec des back-pointers React (__reactFiber$…).
+     */
+    _safeSerialize(obj: any): any {
+        const seen = new WeakSet()
+        const replacer = (_key: string, value: any) => {
+            if (typeof value === 'function') return undefined
+            if (value !== null && typeof value === 'object') {
+                // Nœuds DOM / EventTarget
+                if (typeof Node !== 'undefined' && value instanceof Node) return undefined
+                if (typeof EventTarget !== 'undefined' && value instanceof EventTarget
+                    && !(value instanceof Window)) return undefined
+                // Référence circulaire
+                if (seen.has(value)) return undefined
+                seen.add(value)
+            }
+            return value
+        }
+        const json = JSON.stringify(obj, replacer)
+        return json !== undefined ? JSON.parse(json) : null
+    },
+
     /** Clone une cell en supprimant les props runtime */
     _cloneCellForCopy(cell: any) {
-        const clone = JSON.parse(JSON.stringify(cell))
+        const clone = get()._safeSerialize(cell)
+        if (!clone) return {}
         // Props runtime à supprimer
         delete clone._id
         delete clone._status
@@ -36,7 +61,8 @@ export const createCopyPasteSlice = (set: any, get: any) => ({
 
     /** Clone un groupe en supprimant les props runtime (récursif) */
     _cloneGroupForCopy(group: any) {
-        const clone = JSON.parse(JSON.stringify(group))
+        const clone = get()._safeSerialize(group)
+        if (!clone) return {}
         delete clone._id
         clone.cells = (clone.cells || []).map((c: any) => get()._cloneCellForCopy(c))
         clone.children = (clone.children || []).map((child: any) => get()._cloneGroupForCopy(child))
