@@ -6,6 +6,7 @@ import { Button, Badge, Accordion, AccordionContent, AccordionItem, AccordionTri
 import { CellHeader } from './CellHeader'
 import { CellBody } from './CellBody'
 import { Icon } from '../../lib/icons'
+import { ClipboardPaste } from 'lucide-react'
 
 // ─── CellItem ─────────────────────────────────────────────────────────────────
 function CellItem({ cell, cellIndex, path, group }: { cell: any, cellIndex: number, path: number[], group: any }) {
@@ -121,6 +122,7 @@ export function GroupContainer({
         runGroupAtPath, addNestedGroup, openAddCellToGroupModal,
         moveItemInGroup, deleteGroupAtPath,
         openLoopConfigModal, openGroupSettingsModal,
+        copyGroupAtPath, pasteToGroup, hasClipboardItem,
         isFirstInGroup, isLastInGroup, forceUpdate, _rev
     } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
@@ -137,11 +139,21 @@ export function GroupContainer({
         deleteGroupAtPath: s.deleteGroupAtPath,
         openLoopConfigModal: s.openLoopConfigModal,
         openGroupSettingsModal: s.openGroupSettingsModal,
+        copyGroupAtPath: s.copyGroupAtPath,
+        pasteToGroup: s.pasteToGroup,
+        hasClipboardItem: s.hasClipboardItem,
         isFirstInGroup: s.isFirstInGroup,
         isLastInGroup: s.isLastInGroup,
         forceUpdate: s.forceUpdate,
         _rev: s._rev
     })))
+
+    const [copyDone, setCopyDone] = useState(false)
+    const handleCopyGroup = () => {
+        copyGroupAtPath(path)
+        setCopyDone(true)
+        setTimeout(() => setCopyDone(false), 2000)
+    }
 
     const [accordionOpen, setAccordionOpen] = useState(group.accordionOpen !== false ? 'item' : '')
 
@@ -210,6 +222,13 @@ export function GroupContainer({
                                     <Icon name="arrow-downward" size={14} className="mr-2" /> Descendre
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
+                                <DropdownMenuItem onClick={handleCopyGroup}>
+                                    <Icon name={copyDone ? 'copy-check' : 'copy'} size={14} className={`mr-2 ${copyDone ? 'text-green-600' : ''}`} /> Copier le groupe
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => pasteToGroup?.(path)} disabled={!hasClipboardItem?.()}>
+                                    <ClipboardPaste size={14} className="mr-2" /> Coller ici
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
                                 <DropdownMenuItem onClick={() => deleteGroupAtPath?.(path)}
                                     className="text-destructive focus:text-destructive">
                                     <Icon name="delete" size={14} className="mr-2" /> Supprimer le groupe
@@ -256,6 +275,15 @@ export function GroupContainer({
                                     <Icon name="arrow-downward" size={16} />
                                 </button>
                             )}
+                            <button className="inline-flex items-center justify-center h-6 px-2 text-xs bg-background hover:bg-muted"
+                                onClick={handleCopyGroup} title="Copier le groupe">
+                                <Icon name={copyDone ? 'copy-check' : 'copy'} size={16} className={copyDone ? 'text-green-600' : ''} />
+                            </button>
+                            <button className="inline-flex items-center justify-center h-6 px-2 text-xs bg-background hover:bg-muted disabled:opacity-40"
+                                onClick={() => pasteToGroup?.(path)} title="Coller ici"
+                                disabled={!hasClipboardItem?.()}>
+                                <ClipboardPaste size={16} />
+                            </button>
                             <button className="inline-flex items-center justify-center h-6 px-2 text-xs bg-destructive text-destructive-foreground hover:bg-destructive/80"
                                 onClick={() => deleteGroupAtPath?.(path)} title="Supprimer le groupe">
                                 <Icon name="delete" size={16} />
