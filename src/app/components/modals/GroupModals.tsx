@@ -233,6 +233,7 @@ export function ChildGroupModal() {
     return (
         <Dialog open={open} onOpenChange={open => !open && closeChildGroupModal()}>
             <DialogContent className="w-screen h-screen max-w-none max-h-none rounded-none p-0 flex flex-col [&>button.absolute]:hidden" aria-describedby={undefined}>
+                <DialogTitle className="sr-only">Groupe enfant</DialogTitle>
                 {/* Header sticky */}
                 <div className="flex items-center justify-between bg-primary text-primary-foreground px-6 py-4 shadow-md flex-none">
                     <h3 className="text-xl font-bold flex items-center gap-2">
