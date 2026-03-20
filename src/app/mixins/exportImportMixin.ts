@@ -34,7 +34,7 @@ export function exportImportMixin() {
                         fileName: defaultFileName,
                         description: 'sqljob Notebook Configuration',
                         devMode: false,
-                        showLayout: this.showLayout,
+                        showLayout: false,
                         includeFiles: false,
                         encryptGist: false,
                         gistPassphrase: ''
@@ -44,7 +44,6 @@ export function exportImportMixin() {
                 async copyExportJson() {
                     const em = this.exportModal;
                     try {
-                        this.isLoading = true;
                         const config = await ConfigManager.buildConfigFromState(
                             this.pages,
                             em.devMode,
@@ -54,13 +53,21 @@ export function exportImportMixin() {
                             this.dbEngine,
                             this.directedAcyclicGraph
                         );
-                        await navigator.clipboard.writeText(JSON.stringify(config, null, 2));
-                        this.setStatus('Configuration JSON copiée dans le presse-papier', 'success');
+                        const json = JSON.stringify(config, null, 2);
+                        // Fallback textarea pour éviter la perte du contexte de geste utilisateur
+                        const ta = document.createElement('textarea');
+                        ta.value = json;
+                        ta.style.cssText = 'position:fixed;opacity:0;pointer-events:none';
+                        document.body.appendChild(ta);
+                        ta.focus();
+                        ta.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(ta);
+                        return true;
                     } catch (error) {
                         console.error('Erreur copie JSON:', error);
                         this.setStatus('Erreur: ' + error.message, 'error');
-                    } finally {
-                        this.isLoading = false;
+                        return false;
                     }
                 },
 

@@ -2,6 +2,7 @@
 /**
  * Modals d'export : ExportModal, GistTokenModal, GistResultModal, JsonPassphraseModal
  */
+import { useState, useRef } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import { useNotebookStore } from '../../store/notebookStore'
 import {
@@ -27,6 +28,8 @@ export function ExportModal() {
         copyExportJson: s.copyExportJson,
     })))
     const set = useNotebookStore.setState
+    const [copied, setCopied] = useState(false)
+    const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
     const em = exportModal
     const update = (patch: any) => set({ exportModal: { ...em, ...patch } })
@@ -144,9 +147,16 @@ export function ExportModal() {
                 <DialogFooter>
                     <Button variant="ghost" onClick={cancelExport}>Annuler</Button>
                     {em.type === 'json' && (
-                        <Button variant="outline" onClick={copyExportJson} disabled={isLoading}>
-                            <Icon name="content-copy" size={16} />
-                            Copier
+                        <Button variant="outline" disabled={isLoading} onClick={async () => {
+                            const ok = await copyExportJson()
+                            if (ok) {
+                                setCopied(true)
+                                if (copyTimerRef.current) clearTimeout(copyTimerRef.current)
+                                copyTimerRef.current = setTimeout(() => setCopied(false), 2000)
+                            }
+                        }}>
+                            <Icon name={copied ? 'check' : 'content-copy'} size={16} />
+                            {copied ? 'Copié !' : 'Copier'}
                         </Button>
                     )}
                     <Button onClick={executeExport}>
