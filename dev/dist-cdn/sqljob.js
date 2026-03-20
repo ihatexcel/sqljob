@@ -145176,47 +145176,47 @@ function ExportModal() {
     cancelExport: xt,
     executeExport: wt,
     copyExportJson: Ct
-  } = useNotebookStore(useShallow(($t) => ({
-    exportModal: $t.exportModal,
-    isLoading: $t.isLoading,
-    cancelExport: $t.cancelExport,
-    executeExport: $t.executeExport,
-    copyExportJson: $t.copyExportJson
-  }))), kt = useNotebookStore.setState, Et = At, St = ($t) => kt({ exportModal: { ...Et, ...$t } }), Tt = {
+  } = useNotebookStore(useShallow((Rt) => ({
+    exportModal: Rt.exportModal,
+    isLoading: Rt.isLoading,
+    cancelExport: Rt.cancelExport,
+    executeExport: Rt.executeExport,
+    copyExportJson: Rt.copyExportJson
+  }))), kt = useNotebookStore.setState, [Et, St] = reactExports.useState(!1), Tt = reactExports.useRef(null), $t = At, Lt = (Rt) => kt({ exportModal: { ...$t, ...Rt } }), It = {
     gist: "Partager via GitHub Gist",
     json: "Export JSON",
     base64: "Export Base64",
     html: "Export HTML",
     "html-client": "Export HTML Client"
   };
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open: !!Et.show, onOpenChange: ($t) => !$t && xt(), children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { className: "max-w-lg max-h-[90vh] overflow-y-auto", "aria-describedby": void 0, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx(DialogHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, { children: Tt[Et.type] || Et.type }) }),
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open: !!$t.show, onOpenChange: (Rt) => !Rt && xt(), children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { className: "max-w-lg max-h-[90vh] overflow-y-auto", "aria-describedby": void 0, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(DialogHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, { children: It[$t.type] || $t.type }) }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
-      Et.type === "gist" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
+      $t.type === "gist" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(Label$3, { children: "Description" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           Input,
           {
-            value: Et.description,
-            onChange: ($t) => St({ description: $t.target.value }),
+            value: $t.description,
+            onChange: (Rt) => Lt({ description: Rt.target.value }),
             placeholder: "sqljob Notebook Configuration",
-            onKeyDown: ($t) => $t.key === "Enter" && wt()
+            onKeyDown: (Rt) => Rt.key === "Enter" && wt()
           }
         )
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Label$3, { children: Et.type === "html" ? "Nom du fichier HTML" : Et.type === "base64" ? "Nom du fichier Base64" : "Nom du fichier JSON" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Label$3, { children: $t.type === "html" ? "Nom du fichier HTML" : $t.type === "base64" ? "Nom du fichier Base64" : "Nom du fichier JSON" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           Input,
           {
-            value: Et.fileName,
-            onChange: ($t) => St({ fileName: $t.target.value }),
+            value: $t.fileName,
+            onChange: (Rt) => Lt({ fileName: Rt.target.value }),
             placeholder: "sqljob_yyyymmdd_hhmmss",
             className: "font-mono text-sm",
-            onKeyDown: ($t) => $t.key === "Enter" && wt()
+            onKeyDown: (Rt) => Rt.key === "Enter" && wt()
           }
         ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground", children: Et.type === "base64" ? "Extension .txt sera ajoutée automatiquement" : Et.type === "html" ? "Extension .html sera ajoutée automatiquement" : "Extension .json sera ajoutée automatiquement si absente" })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground", children: $t.type === "base64" ? "Extension .txt sera ajoutée automatiquement" : $t.type === "html" ? "Extension .html sera ajoutée automatiquement" : "Extension .json sera ajoutée automatiquement si absente" })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(Separator$2, {}),
       /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-medium text-muted-foreground", children: "Paramètres de la configuration" }),
@@ -145228,23 +145228,23 @@ function ExportModal() {
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground", children: "Attention vos données seront partagées si coché" })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Switch, { checked: !!Et.includeFiles, onCheckedChange: ($t) => St({ includeFiles: $t }) })
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Switch, { checked: !!$t.includeFiles, onCheckedChange: (Rt) => Lt({ includeFiles: Rt }) })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-3", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(Label$3, { className: "font-semibold", children: "Mode développeur" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground", children: "Afficher les contrôles d'édition des cellules et groupes" })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Switch, { checked: !!Et.devMode, onCheckedChange: ($t) => St({ devMode: $t, showLayout: $t }) })
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Switch, { checked: !!$t.devMode, onCheckedChange: (Rt) => Lt({ devMode: Rt, showLayout: Rt }) })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-3", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(Label$3, { className: "font-semibold", children: "Afficher l'entête et pied de page" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground", children: "Décocher pour partager votre notebook sous forme d'iframe" })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Switch, { checked: !!Et.showLayout, onCheckedChange: ($t) => St({ showLayout: $t }) })
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Switch, { checked: !!$t.showLayout, onCheckedChange: (Rt) => Lt({ showLayout: Rt }) })
       ] }),
-      ["gist", "json", "html"].includes(Et.type) && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+      ["gist", "json", "html"].includes($t.type) && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-3", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs(Label$3, { className: "font-semibold flex items-center gap-2", children: [
@@ -145256,40 +145256,42 @@ function ExportModal() {
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             Switch,
             {
-              checked: Et.encryptGist,
-              onCheckedChange: ($t) => {
-                const Lt = window.GistEncrypt;
-                St({
-                  encryptGist: $t,
-                  gistPassphrase: $t && !Et.gistPassphrase ? (Lt == null ? void 0 : Lt.generatePassphrase()) || "" : Et.gistPassphrase
+              checked: $t.encryptGist,
+              onCheckedChange: (Rt) => {
+                const Dt = window.GistEncrypt;
+                Lt({
+                  encryptGist: Rt,
+                  gistPassphrase: Rt && !$t.gistPassphrase ? (Dt == null ? void 0 : Dt.generatePassphrase()) || "" : $t.gistPassphrase
                 });
               }
             }
           )
         ] }),
-        Et.encryptGist && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
+        $t.encryptGist && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(Label$3, { children: "Mot de passe (à partager pour déchiffrer)" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             Input,
             {
-              value: Et.gistPassphrase,
-              onChange: ($t) => St({ gistPassphrase: $t.target.value }),
+              value: $t.gistPassphrase,
+              onChange: (Rt) => Lt({ gistPassphrase: Rt.target.value }),
               placeholder: "68cd597ba5da05ceba24fb975c05384f",
               className: "font-mono text-sm",
-              onKeyDown: ($t) => $t.key === "Enter" && wt()
+              onKeyDown: (Rt) => Rt.key === "Enter" && wt()
             }
           )
         ] })
       ] }),
-      Et.type === "gist" && /* @__PURE__ */ jsxRuntimeExports.jsx(Alert, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(AlertDescription, { className: "text-sm", children: "Ne partagez pas de données confidentielles. Le Gist sera accessible via le lien partagé." }) })
+      $t.type === "gist" && /* @__PURE__ */ jsxRuntimeExports.jsx(Alert, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(AlertDescription, { className: "text-sm", children: "Ne partagez pas de données confidentielles. Le Gist sera accessible via le lien partagé." }) })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogFooter, { children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "ghost", onClick: xt, children: "Annuler" }),
-      Et.type === "json" && /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { variant: "outline", onClick: Ct, disabled: yt, children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "content-copy", size: 16 }),
-        "Copier"
+      $t.type === "json" && /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { variant: "outline", disabled: yt, onClick: async () => {
+        await Ct() && (St(!0), Tt.current && clearTimeout(Tt.current), Tt.current = setTimeout(() => St(!1), 2e3));
+      }, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: Et ? "check" : "content-copy", size: 16 }),
+        Et ? "Copié !" : "Copier"
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { onClick: wt, children: Et.type === "gist" ? "Créer le Gist" : "Exporter" })
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { onClick: wt, children: $t.type === "gist" ? "Créer le Gist" : "Exporter" })
     ] })
   ] }) });
 }
