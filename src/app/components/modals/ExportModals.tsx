@@ -98,8 +98,7 @@ export function ExportModal() {
 
                     <div className="flex items-center justify-between gap-3">
                         <div>
-                            <Label className="font-semibold">Afficher l'entête et pied de page</Label>
-                            <p className="text-xs text-muted-foreground">Décocher pour partager votre notebook sous forme d'iframe</p>
+                            <Label className="font-semibold">Afficher la barre horizontale</Label>
                         </div>
                         <Switch checked={!!em.showLayout} onCheckedChange={v => update({ showLayout: v })} />
                     </div>
