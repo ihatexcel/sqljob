@@ -122,7 +122,7 @@ export function GroupContainer({
         runGroupAtPath, addNestedGroup, openAddCellToGroupModal,
         moveItemInGroup, deleteGroupAtPath,
         openLoopConfigModal, openGroupSettingsModal,
-        copyGroupAtPath, pasteToGroup, hasClipboardItem,
+        copyGroupAtPath, pasteToGroup, _clipboardItem,
         isFirstInGroup, isLastInGroup, forceUpdate, _rev
     } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
@@ -141,7 +141,7 @@ export function GroupContainer({
         openGroupSettingsModal: s.openGroupSettingsModal,
         copyGroupAtPath: s.copyGroupAtPath,
         pasteToGroup: s.pasteToGroup,
-        hasClipboardItem: s.hasClipboardItem,
+        _clipboardItem: s._clipboardItem,
         isFirstInGroup: s.isFirstInGroup,
         isLastInGroup: s.isLastInGroup,
         forceUpdate: s.forceUpdate,
@@ -225,7 +225,7 @@ export function GroupContainer({
                                 <DropdownMenuItem onClick={handleCopyGroup}>
                                     <Icon name={copyDone ? 'copy-check' : 'copy'} size={14} className={`mr-2 ${copyDone ? 'text-green-600' : ''}`} /> Copier le groupe
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => pasteToGroup?.(path)} disabled={!hasClipboardItem?.()}>
+                                <DropdownMenuItem onClick={() => pasteToGroup?.(path)} disabled={!_clipboardItem}>
                                     <ClipboardPaste size={14} className="mr-2" /> Coller ici
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
@@ -281,7 +281,7 @@ export function GroupContainer({
                             </button>
                             <button className="inline-flex items-center justify-center h-6 px-2 text-xs bg-background hover:bg-muted disabled:opacity-40"
                                 onClick={() => pasteToGroup?.(path)} title="Coller ici"
-                                disabled={!hasClipboardItem?.()}>
+                                disabled={!_clipboardItem}>
                                 <ClipboardPaste size={16} />
                             </button>
                             <button className="inline-flex items-center justify-center h-6 px-2 text-xs bg-destructive text-destructive-foreground hover:bg-destructive/80"
