@@ -92234,10 +92234,10 @@ function cell(At, yt, xt) {
     for (let Tt = 0; Tt < Ct; ++Tt) kt[Tt].init();
   }, wt;
 }
-function Window(At) {
+function Window$1(At) {
   Transform$1.call(this, {}, At), this._mlen = 0, this._mods = [];
 }
-Window.Definition = {
+Window$1.Definition = {
   type: "Window",
   metadata: {
     modifies: !0
@@ -92287,7 +92287,7 @@ Window.Definition = {
     default: !1
   }]
 };
-inherits$1(Window, Transform$1, {
+inherits$1(Window$1, Transform$1, {
   transform(At, yt) {
     this.stamp = yt.stamp;
     const xt = At.modified(), wt = stableCompare(At.sort), Ct = groupkey(At.groupby), kt = (St) => this.group(Ct(St));
@@ -92364,7 +92364,7 @@ const tx = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   timeunit: TimeUnit,
   tupleindex: TupleIndex,
   values: Values$1,
-  window: Window
+  window: Window$1
 }, Symbol.toStringTag, { value: "Module" }));
 function domCanvas(At, yt) {
   if (typeof document < "u" && document.createElement) {
@@ -144482,15 +144482,32 @@ const createExecutionSlice = (At, yt) => ({
   hasClipboardItem() {
     return yt()._clipboardItem !== null;
   },
+  /**
+   * Sérialisation safe : ignore les nœuds DOM, les fonctions et les références circulaires.
+   * Nécessaire car les cells peuvent contenir des refs d'éditeur (CodeMirror, Monaco…)
+   * avec des back-pointers React (__reactFiber$…).
+   */
+  _safeSerialize(xt) {
+    const wt = /* @__PURE__ */ new WeakSet(), kt = JSON.stringify(xt, (Et, St) => {
+      if (typeof St != "function") {
+        if (St !== null && typeof St == "object") {
+          if (typeof Node < "u" && St instanceof Node || typeof EventTarget < "u" && St instanceof EventTarget && !(St instanceof Window) || wt.has(St)) return;
+          wt.add(St);
+        }
+        return St;
+      }
+    });
+    return kt !== void 0 ? JSON.parse(kt) : null;
+  },
   /** Clone une cell en supprimant les props runtime */
   _cloneCellForCopy(xt) {
-    const wt = JSON.parse(JSON.stringify(xt));
-    return delete wt._id, delete wt._status, delete wt._results, delete wt._resultInfo, delete wt._loaded, delete wt._currentFile, delete wt._isDragging, delete wt._value, delete wt._options, delete wt._initialized, delete wt._userModified, delete wt._perspectiveReady, delete wt._perspectiveWorker, delete wt._perspectiveTable, wt;
+    const wt = yt()._safeSerialize(xt);
+    return wt ? (delete wt._id, delete wt._status, delete wt._results, delete wt._resultInfo, delete wt._loaded, delete wt._currentFile, delete wt._isDragging, delete wt._value, delete wt._options, delete wt._initialized, delete wt._userModified, delete wt._perspectiveReady, delete wt._perspectiveWorker, delete wt._perspectiveTable, wt) : {};
   },
   /** Clone un groupe en supprimant les props runtime (récursif) */
   _cloneGroupForCopy(xt) {
-    const wt = JSON.parse(JSON.stringify(xt));
-    return delete wt._id, wt.cells = (wt.cells || []).map((Ct) => yt()._cloneCellForCopy(Ct)), wt.children = (wt.children || []).map((Ct) => yt()._cloneGroupForCopy(Ct)), wt;
+    const wt = yt()._safeSerialize(xt);
+    return wt ? (delete wt._id, wt.cells = (wt.cells || []).map((Ct) => yt()._cloneCellForCopy(Ct)), wt.children = (wt.children || []).map((Ct) => yt()._cloneGroupForCopy(Ct)), wt) : {};
   },
   /** Collecte tous les noms de cellules utilisés dans toutes les pages */
   _collectUsedCellNames() {
