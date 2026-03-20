@@ -41,6 +41,29 @@ export function exportImportMixin() {
                     };
                 },
 
+                async copyExportJson() {
+                    const em = this.exportModal;
+                    try {
+                        this.isLoading = true;
+                        const config = await ConfigManager.buildConfigFromState(
+                            this.pages,
+                            em.devMode,
+                            em.showLayout,
+                            !!em.includeFiles,
+                            this.currentTheme,
+                            this.dbEngine,
+                            this.directedAcyclicGraph
+                        );
+                        await navigator.clipboard.writeText(JSON.stringify(config, null, 2));
+                        this.setStatus('Configuration JSON copiée dans le presse-papier', 'success');
+                    } catch (error) {
+                        console.error('Erreur copie JSON:', error);
+                        this.setStatus('Erreur: ' + error.message, 'error');
+                    } finally {
+                        this.isLoading = false;
+                    }
+                },
+
                 async executeExport() {
                     const type = this.exportModal.type;
                     const fileName = this.exportModal.fileName || 'notebook-config.json';

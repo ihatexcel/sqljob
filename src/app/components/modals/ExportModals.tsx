@@ -18,12 +18,13 @@ import { Icon } from '../../../lib/icons'
 export function ExportModal() {
     const {
         exportModal, isLoading,
-        cancelExport, executeExport
+        cancelExport, executeExport, copyExportJson
     } = useNotebookStore(useShallow(s => ({
         exportModal: s.exportModal,
         isLoading: s.isLoading,
         cancelExport: s.cancelExport,
-        executeExport: s.executeExport
+        executeExport: s.executeExport,
+        copyExportJson: s.copyExportJson,
     })))
     const set = useNotebookStore.setState
 
@@ -89,7 +90,7 @@ export function ExportModal() {
                             <Label className="font-semibold">Mode développeur</Label>
                             <p className="text-xs text-muted-foreground">Afficher les contrôles d'édition des cellules et groupes</p>
                         </div>
-                        <Switch checked={!!em.devMode} onCheckedChange={v => update({ devMode: v })} />
+                        <Switch checked={!!em.devMode} onCheckedChange={v => update({ devMode: v, showLayout: v })} />
                     </div>
 
                     <div className="flex items-center justify-between gap-3">
@@ -142,6 +143,12 @@ export function ExportModal() {
                 </div>
                 <DialogFooter>
                     <Button variant="ghost" onClick={cancelExport}>Annuler</Button>
+                    {em.type === 'json' && (
+                        <Button variant="outline" onClick={copyExportJson} disabled={isLoading}>
+                            <Icon name="content-copy" size={16} />
+                            Copier
+                        </Button>
+                    )}
                     <Button onClick={executeExport}>
                         {em.type === 'gist' ? 'Créer le Gist' : 'Exporter'}
                     </Button>
