@@ -41,14 +41,14 @@ export function AddGroupModal() {
 
     return (
         <Dialog open={showAddGroupModal} onOpenChange={open => !open && set({ showAddGroupModal: false })}>
-            <DialogContent aria-describedby={undefined}>
+            <DialogContent aria-describedby={undefined} className="flex flex-col max-h-[90dvh]">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                         <Icon name="add" size={20} />
                         Ajouter un groupe
                     </DialogTitle>
                 </DialogHeader>
-                <div>
+                <div className="overflow-y-auto flex-1 min-h-0">
                     <p className="text-sm text-muted-foreground mb-4">Choisissez le type de cellule pour le nouveau groupe :</p>
                     <CellTypeGrid onSelect={type => { addGroup(type); set({ showAddGroupModal: false }) }} />
                 </div>
@@ -67,14 +67,14 @@ export function InsertGroupModal() {
 
     return (
         <Dialog open={insertGroupModal.open} onOpenChange={open => !open && set({ insertGroupModal: { ...insertGroupModal, open: false } })}>
-            <DialogContent aria-describedby={undefined}>
+            <DialogContent aria-describedby={undefined} className="flex flex-col max-h-[90dvh]">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                         <Icon name="add" size={20} />
                         Insérer un groupe à la position {(insertGroupModal.atIndex ?? 0) + 1}
                     </DialogTitle>
                 </DialogHeader>
-                <div>
+                <div className="overflow-y-auto flex-1 min-h-0">
                     <p className="text-sm text-muted-foreground mb-4">Choisissez le type de cellule pour le nouveau groupe :</p>
                     <CellTypeGrid onSelect={type => {
                         insertGroupAt(insertGroupModal.atIndex, type)
@@ -96,17 +96,19 @@ export function InsertCellModal() {
 
     return (
         <Dialog open={insertCellModal.open} onOpenChange={open => !open && set({ insertCellModal: { ...insertCellModal, open: false } })}>
-            <DialogContent aria-describedby={undefined}>
+            <DialogContent aria-describedby={undefined} className="flex flex-col max-h-[90dvh]">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                         <Icon name="add" size={20} />
                         Insérer une cellule à la position {(insertCellModal.atCellIndex ?? 0) + 1}
                     </DialogTitle>
                 </DialogHeader>
-                <CellTypeGrid onSelect={type => {
-                    insertCellAt(insertCellModal.groupIndex, insertCellModal.atCellIndex, type)
-                    set({ insertCellModal: { ...insertCellModal, open: false } })
-                }} />
+                <div className="overflow-y-auto flex-1 min-h-0">
+                    <CellTypeGrid onSelect={type => {
+                        insertCellAt(insertCellModal.groupIndex, insertCellModal.atCellIndex, type)
+                        set({ insertCellModal: { ...insertCellModal, open: false } })
+                    }} />
+                </div>
             </DialogContent>
         </Dialog>
     )
@@ -122,17 +124,19 @@ export function AddCellToGroupModal() {
 
     return (
         <Dialog open={addCellToGroupModal.open} onOpenChange={open => !open && set({ addCellToGroupModal: { ...addCellToGroupModal, open: false } })}>
-            <DialogContent aria-describedby={undefined}>
+            <DialogContent aria-describedby={undefined} className="flex flex-col max-h-[90dvh]">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                         <Icon name="add" size={20} />
                         Ajouter une cellule au groupe
                     </DialogTitle>
                 </DialogHeader>
-                <CellTypeGrid onSelect={type => {
-                    addCellToGroup(addCellToGroupModal.path ?? addCellToGroupModal.groupIndex, type)
-                    set({ addCellToGroupModal: { ...addCellToGroupModal, open: false } })
-                }} />
+                <div className="overflow-y-auto flex-1 min-h-0">
+                    <CellTypeGrid onSelect={type => {
+                        addCellToGroup(addCellToGroupModal.path ?? addCellToGroupModal.groupIndex, type)
+                        set({ addCellToGroupModal: { ...addCellToGroupModal, open: false } })
+                    }} />
+                </div>
             </DialogContent>
         </Dialog>
     )
