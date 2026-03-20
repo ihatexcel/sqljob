@@ -145013,12 +145013,12 @@ function AddGroupModal() {
     showAddGroupModal: wt.showAddGroupModal,
     addGroup: wt.addGroup
   }))), xt = useNotebookStore.setState;
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open: At, onOpenChange: (wt) => !wt && xt({ showAddGroupModal: !1 }), children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { "aria-describedby": void 0, children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open: At, onOpenChange: (wt) => !wt && xt({ showAddGroupModal: !1 }), children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { "aria-describedby": void 0, className: "flex flex-col max-h-[90dvh]", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(DialogHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogTitle, { className: "flex items-center gap-2", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "add", size: 20 }),
       "Ajouter un groupe"
     ] }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "overflow-y-auto flex-1 min-h-0", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground mb-4", children: "Choisissez le type de cellule pour le nouveau groupe :" }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(CellTypeGrid, { onSelect: (wt) => {
         yt(wt), xt({ showAddGroupModal: !1 });
@@ -145031,13 +145031,13 @@ function InsertGroupModal() {
     insertGroupModal: wt.insertGroupModal,
     insertGroupAt: wt.insertGroupAt
   }))), xt = useNotebookStore.setState;
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open: At.open, onOpenChange: (wt) => !wt && xt({ insertGroupModal: { ...At, open: !1 } }), children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { "aria-describedby": void 0, children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open: At.open, onOpenChange: (wt) => !wt && xt({ insertGroupModal: { ...At, open: !1 } }), children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { "aria-describedby": void 0, className: "flex flex-col max-h-[90dvh]", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(DialogHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogTitle, { className: "flex items-center gap-2", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "add", size: 20 }),
       "Insérer un groupe à la position ",
       (At.atIndex ?? 0) + 1
     ] }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "overflow-y-auto flex-1 min-h-0", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground mb-4", children: "Choisissez le type de cellule pour le nouveau groupe :" }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(CellTypeGrid, { onSelect: (wt) => {
         yt(At.atIndex, wt), xt({ insertGroupModal: { ...At, open: !1 } });
@@ -145050,15 +145050,15 @@ function InsertCellModal() {
     insertCellModal: wt.insertCellModal,
     insertCellAt: wt.insertCellAt
   }))), xt = useNotebookStore.setState;
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open: At.open, onOpenChange: (wt) => !wt && xt({ insertCellModal: { ...At, open: !1 } }), children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { "aria-describedby": void 0, children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open: At.open, onOpenChange: (wt) => !wt && xt({ insertCellModal: { ...At, open: !1 } }), children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { "aria-describedby": void 0, className: "flex flex-col max-h-[90dvh]", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(DialogHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogTitle, { className: "flex items-center gap-2", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "add", size: 20 }),
       "Insérer une cellule à la position ",
       (At.atCellIndex ?? 0) + 1
     ] }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(CellTypeGrid, { onSelect: (wt) => {
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-y-auto flex-1 min-h-0", children: /* @__PURE__ */ jsxRuntimeExports.jsx(CellTypeGrid, { onSelect: (wt) => {
       yt(At.groupIndex, At.atCellIndex, wt), xt({ insertCellModal: { ...At, open: !1 } });
-    } })
+    } }) })
   ] }) });
 }
 function AddCellToGroupModal() {
@@ -145066,14 +145066,14 @@ function AddCellToGroupModal() {
     addCellToGroupModal: wt.addCellToGroupModal,
     addCellToGroup: wt.addCellToGroup
   }))), xt = useNotebookStore.setState;
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open: At.open, onOpenChange: (wt) => !wt && xt({ addCellToGroupModal: { ...At, open: !1 } }), children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { "aria-describedby": void 0, children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open: At.open, onOpenChange: (wt) => !wt && xt({ addCellToGroupModal: { ...At, open: !1 } }), children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { "aria-describedby": void 0, className: "flex flex-col max-h-[90dvh]", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(DialogHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogTitle, { className: "flex items-center gap-2", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "add", size: 20 }),
       "Ajouter une cellule au groupe"
     ] }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(CellTypeGrid, { onSelect: (wt) => {
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-y-auto flex-1 min-h-0", children: /* @__PURE__ */ jsxRuntimeExports.jsx(CellTypeGrid, { onSelect: (wt) => {
       yt(At.path ?? At.groupIndex, wt), xt({ addCellToGroupModal: { ...At, open: !1 } });
-    } })
+    } }) })
   ] }) });
 }
 function DbEngineModal() {
@@ -145918,7 +145918,7 @@ function ChildGroupModal() {
     openAddCellToGroupModal: $t.openAddCellToGroupModal,
     runGroupAtPath: $t.runGroupAtPath
   }))), Tt = !!(At.open && At.group);
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open: Tt, onOpenChange: ($t) => !$t && wt(), children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { className: "w-screen h-screen max-w-none max-h-none rounded-none p-0 flex flex-col", "aria-describedby": void 0, children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open: Tt, onOpenChange: ($t) => !$t && wt(), children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { className: "w-screen h-screen max-w-none max-h-none rounded-none p-0 flex flex-col [&>button.absolute]:hidden", "aria-describedby": void 0, children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between bg-primary text-primary-foreground px-6 py-4 shadow-md flex-none", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-xl font-bold flex items-center gap-2", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "export-notes-outline-sharp", size: 24 }) }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "ghost", size: "icon", className: "text-primary-foreground hover:bg-primary-foreground/20", onClick: wt, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "close", size: 16 }) })
