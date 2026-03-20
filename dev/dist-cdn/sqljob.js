@@ -142362,20 +142362,19 @@ const createExportSlice = (At, yt) => ({
     );
   },
   openExportModal(xt) {
-    const wt = yt();
-    if (xt === "gist" && !GitHubGistManager.hasAccessToken()) {
+    if (yt(), xt === "gist" && !GitHubGistManager.hasAccessToken()) {
       At({ showGistTokenModal: !0 });
       return;
     }
-    const Ct = /* @__PURE__ */ new Date(), kt = Ct.toISOString().slice(0, 10).replace(/-/g, ""), Et = Ct.toTimeString().slice(0, 8).replace(/:/g, ""), St = `sqljob_${kt}_${Et}`;
+    const wt = /* @__PURE__ */ new Date(), Ct = wt.toISOString().slice(0, 10).replace(/-/g, ""), kt = wt.toTimeString().slice(0, 8).replace(/:/g, ""), Et = `sqljob_${Ct}_${kt}`;
     At({
       exportModal: {
         show: !0,
         type: xt,
-        fileName: St,
+        fileName: Et,
         description: "sqljob Notebook Configuration",
         devMode: !1,
-        showLayout: wt.showLayout,
+        showLayout: !1,
         includeFiles: !1,
         encryptGist: !1,
         gistPassphrase: ""
@@ -142494,6 +142493,19 @@ ${It}${$t}</head>
 </body>
 </html>`, Nt = new Blob([jt], { type: "text/html;charset=utf-8" });
     FileHandler.downloadFile(Nt, wt);
+  },
+  async copyExportJson() {
+    const { exportModal: xt, buildExportConfig: wt, setStatus: Ct } = yt();
+    try {
+      const kt = await wt({
+        devMode: xt.devMode,
+        showLayout: xt.showLayout,
+        includeFileData: !!xt.includeFiles
+      }), Et = JSON.stringify(kt, null, 2), St = document.createElement("textarea");
+      return St.value = Et, St.style.cssText = "position:fixed;opacity:0;pointer-events:none", document.body.appendChild(St), St.focus(), St.select(), document.execCommand("copy"), document.body.removeChild(St), !0;
+    } catch (kt) {
+      return console.error("Erreur copie JSON:", kt), yt().setStatus("Erreur: " + kt.message, "error"), !1;
+    }
   },
   cancelExport() {
     At((xt) => ({ exportModal: { ...xt.exportModal, show: !1 } }));
@@ -145238,10 +145250,7 @@ function ExportModal() {
         /* @__PURE__ */ jsxRuntimeExports.jsx(Switch, { checked: !!$t.devMode, onCheckedChange: (Rt) => Lt({ devMode: Rt, showLayout: Rt }) })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-3", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Label$3, { className: "font-semibold", children: "Afficher l'entête et pied de page" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground", children: "Décocher pour partager votre notebook sous forme d'iframe" })
-        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(Label$3, { className: "font-semibold", children: "Afficher la barre horizontale" }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(Switch, { checked: !!$t.showLayout, onCheckedChange: (Rt) => Lt({ showLayout: Rt }) })
       ] }),
       ["gist", "json", "html"].includes($t.type) && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
