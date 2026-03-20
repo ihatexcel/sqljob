@@ -17,7 +17,7 @@ export function CellHeader({ cell, path, cellIndex, group }: Props) {
     const {
         devMode, isLoading,
         runCellAt, openCellConfig, openChildGroupModal,
-        moveItemInGroup, deleteCellAt,
+        moveItemInGroup, deleteCellAt, copyCellAt,
         isFirstInGroup, isLastInGroup,
         validateCellName, forceUpdate, _rev
     } = useNotebookStore(useShallow(s => ({
@@ -28,12 +28,20 @@ export function CellHeader({ cell, path, cellIndex, group }: Props) {
         openChildGroupModal: s.openChildGroupModal,
         moveItemInGroup: s.moveItemInGroup,
         deleteCellAt: s.deleteCellAt,
+        copyCellAt: s.copyCellAt,
         isFirstInGroup: s.isFirstInGroup,
         isLastInGroup: s.isLastInGroup,
         validateCellName: s.validateCellName,
         forceUpdate: s.forceUpdate,
         _rev: s._rev
     })))
+
+    const [copyDone, setCopyDone] = useState(false)
+    const handleCopyCell = () => {
+        copyCellAt(path, cellIndex)
+        setCopyDone(true)
+        setTimeout(() => setCopyDone(false), 2000)
+    }
 
     const schema = CELL_TYPE_SCHEMAS?.types[cell?.type]
     const hasNameDisplay = !!(schema?.showNameInHeader || schema?.useNameAsReference)
@@ -124,6 +132,11 @@ export function CellHeader({ cell, path, cellIndex, group }: Props) {
                         title="Déplacer à droite">
                         <Icon name="arrow-forward" size={16} />
                     </button>
+                    <button className="inline-flex items-center justify-center h-6 px-2 text-xs bg-background hover:bg-muted"
+                        onClick={handleCopyCell}
+                        title="Copier la cellule">
+                        <Icon name={copyDone ? 'copy-check' : 'copy'} size={16} className={copyDone ? 'text-green-600' : ''} />
+                    </button>
                     <button className="inline-flex items-center justify-center h-6 px-2 text-xs bg-destructive text-destructive-foreground hover:bg-destructive/80"
                         onClick={() => deleteCellAt(path, cellIndex)}
                         title="Supprimer">
@@ -157,6 +170,10 @@ export function CellHeader({ cell, path, cellIndex, group }: Props) {
                         <DropdownMenuItem onClick={() => moveItemInGroup(path, 'cell', cellIndex, 1)}
                             disabled={isLastInGroup(group, 'cell', cellIndex)}>
                             <Icon name="arrow-forward" size={14} className="mr-2" /> Déplacer à droite
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={handleCopyCell}>
+                            <Icon name={copyDone ? 'copy-check' : 'copy'} size={14} className={`mr-2 ${copyDone ? 'text-green-600' : ''}`} /> Copier
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={() => deleteCellAt(path, cellIndex)}

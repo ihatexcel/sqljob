@@ -6,7 +6,7 @@
  */
 import {
     Activity, ArrowDown, ArrowLeft, ArrowLeftRight, ArrowRight, ArrowUp,
-    ArrowUpDown, BookHeart, Braces, ChartBar, CircleCheck, CirclePlay, Copy, Database,
+    ArrowUpDown, BookHeart, Braces, ChartBar, CircleCheck, CirclePlay, ClipboardPaste, Copy, CopyCheck, Database,
     Download, Ellipsis, EllipsisVertical, Eye, FileOutput, FileText, FileType, FolderOpen, FolderPlus,
     Globe, Lock, Network, Newspaper, Paintbrush, PenLine, Play, Plus, RefreshCw,
     Save, Settings, Share2, SlidersHorizontal, Table2, Trash2, TrendingUp, X, Zap,
@@ -46,6 +46,9 @@ const ICON_MAP: Record<string, any> = {
     'create-new-folder':            FolderPlus,
     'check-circle':                 CircleCheck,
     'content-copy':                 Copy,
+    'copy':                         Copy,
+    'copy-check':                   CopyCheck,
+    'clipboard-paste':              ClipboardPaste,
     'share':                        Share2,
     'data-object':                  Braces,
     'account-tree':                 Network,
