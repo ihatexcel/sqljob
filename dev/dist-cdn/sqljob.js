@@ -145919,6 +145919,7 @@ function ChildGroupModal() {
     runGroupAtPath: $t.runGroupAtPath
   }))), Tt = !!(At.open && At.group);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open: Tt, onOpenChange: ($t) => !$t && wt(), children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { className: "w-screen h-screen max-w-none max-h-none rounded-none p-0 flex flex-col [&>button.absolute]:hidden", "aria-describedby": void 0, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, { className: "sr-only", children: "Groupe enfant" }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between bg-primary text-primary-foreground px-6 py-4 shadow-md flex-none", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-xl font-bold flex items-center gap-2", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "export-notes-outline-sharp", size: 24 }) }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "ghost", size: "icon", className: "text-primary-foreground hover:bg-primary-foreground/20", onClick: wt, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "close", size: 16 }) })
