@@ -143002,7 +143002,11 @@ FROM source1 LIMIT 10;`;
   },
   insertGroupAt(xt, wt) {
     const Ct = yt().createNewGroup("row");
-    Ct.cells = [yt().createNewCell(wt)], yt().getGroups().splice(xt, 0, Ct), At({ insertGroupModal: { open: !1, atIndex: null } }), At((kt) => ({ _rev: kt._rev + 1 }));
+    Ct.cells = [yt().createNewCell(wt)];
+    const kt = yt().getGroups();
+    [...kt].sort((St, Tt) => (St._order ?? 0) - (Tt._order ?? 0)).forEach((St, Tt) => {
+      St._order = Tt >= xt ? Tt + 1 : Tt;
+    }), Ct._order = xt, kt.push(Ct), At({ insertGroupModal: { open: !1, atIndex: null } }), At((St) => ({ _rev: St._rev + 1 }));
   },
   openInsertCellModal(xt, wt) {
     const Ct = Array.isArray(xt) ? xt : [xt];
