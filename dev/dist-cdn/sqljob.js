@@ -136526,7 +136526,7 @@ function GroupContainer({
     openGroupSettingsModal: qt,
     copyGroupAtPath: Kt,
     pasteToGroup: er,
-    hasClipboardItem: Zt,
+    _clipboardItem: Zt,
     isFirstInGroup: sr,
     isLastInGroup: Cr,
     forceUpdate: Dr,
@@ -136548,7 +136548,7 @@ function GroupContainer({
     openGroupSettingsModal: En.openGroupSettingsModal,
     copyGroupAtPath: En.copyGroupAtPath,
     pasteToGroup: En.pasteToGroup,
-    hasClipboardItem: En.hasClipboardItem,
+    _clipboardItem: En._clipboardItem,
     isFirstInGroup: En.isFirstInGroup,
     isLastInGroup: En.isLastInGroup,
     forceUpdate: En.forceUpdate,
@@ -136608,7 +136608,7 @@ function GroupContainer({
             /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: qr ? "copy-check" : "copy", size: 14, className: `mr-2 ${qr ? "text-green-600" : ""}` }),
             " Copier le groupe"
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuItem, { onClick: () => er == null ? void 0 : er(yt), disabled: !(Zt != null && Zt()), children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuItem, { onClick: () => er == null ? void 0 : er(yt), disabled: !Zt, children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(ClipboardPaste, { size: 14, className: "mr-2" }),
             " Coller ici"
           ] }),
@@ -136717,7 +136717,7 @@ function GroupContainer({
             className: "inline-flex items-center justify-center h-6 px-2 text-xs bg-background hover:bg-muted disabled:opacity-40",
             onClick: () => er == null ? void 0 : er(yt),
             title: "Coller ici",
-            disabled: !(Zt != null && Zt()),
+            disabled: !Zt,
             children: /* @__PURE__ */ jsxRuntimeExports.jsx(ClipboardPaste, { size: 16 })
           }
         ),
