@@ -134145,6 +134145,8 @@ function applyStepToSchema(At, yt, xt) {
       const wt = At.alias || `${At.column}_${At.granularity}`;
       return { cols: [...yt, wt], types: { ...xt, [wt]: "TIMESTAMP" } };
     }
+    default:
+      return { cols: yt, types: xt };
   }
 }
 function computeStepSchemas(At, yt) {
