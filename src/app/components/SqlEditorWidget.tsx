@@ -95,7 +95,7 @@ export function SqlEditorWidget({
                                 title={`Insérer un template ${isJs ? 'JavaScript' : 'SQL'}`}
                                 onClick={openTemplates}
                             >
-                                📋 Templates
+                                <Icon name="book-marked" size={14} />
                             </button>
                         )}
                         {path != null && cellIndex != null && (

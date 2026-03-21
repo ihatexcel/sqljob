@@ -182,7 +182,7 @@ export const useTemplateModal = create<TemplateModalState>((set, get) => ({
     },
 
     getModalTitle() {
-        return get().currentLanguageType === 'js' ? '📋 Templates JavaScript' : '📋 Templates SQL'
+        return get().currentLanguageType === 'js' ? 'Templates JavaScript' : 'Templates SQL'
     },
 
     filterTemplates() {
