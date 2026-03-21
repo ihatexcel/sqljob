@@ -135327,7 +135327,7 @@ function StepConfigModal({ step: At, index: yt, availableCols: xt, availableColT
   }, [kt]), reactDomExports.createPortal(
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "fixed inset-0 z-[9998] flex items-center justify-center", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-black/50", onClick: kt }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative z-10 bg-popover border border-border rounded-xl shadow-2xl w-full max-w-lg mx-4 max-h-[85vh] flex flex-col", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative z-10 bg-popover border border-border rounded-xl shadow-2xl w-full max-w-lg mx-4 max-h-[96vh] flex flex-col", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 px-4 py-3 border-b border-border shrink-0", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs text-muted-foreground font-mono w-5", children: [
             yt + 1,
