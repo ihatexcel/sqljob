@@ -23,9 +23,12 @@ import { DuckDBManager } from '../../../lib/DuckDBManager'
 import {
     astToSql,
     sqlToAst,
+    sqlToAstSmart,
     getEffectiveSql,
     generateMaterializeQuery,
     stepSql,
+    quoteId,
+    getAutoCteName,
 } from '../../../lib/SqlBlockService'
 import {
     DUCKDB_TYPES,
@@ -1653,7 +1656,7 @@ function StepConfigModal({ step, index, availableCols, availableColTypes, onUpda
                                 type="text"
                                 value={nameValue}
                                 onChange={e => onUpdate(index, { ...step, name: e.target.value || undefined })}
-                                placeholder={`_sqlblock_s${index} (auto)`}
+                                placeholder={`${getAutoCteName(step, index)} (auto)`}
                                 className={`w-full px-2 py-1 text-xs border rounded bg-background font-mono ${nameConflict ? 'border-destructive' : 'border-border'}`}
                                 spellCheck={false}
                             />
@@ -1957,7 +1960,7 @@ function AddStepModal({ onAdd, availableCols, availableColTypes, fetchDistinctVa
                                             <input type="text"
                                                 value={draftStep.name ?? ''}
                                                 onChange={e => setDraftStep({ ...draftStep, name: e.target.value || undefined })}
-                                                placeholder={`_sqlblock_s${stepIndex} (auto)`}
+                                                placeholder={`${getAutoCteName(draftStep, stepIndex)} (auto)`}
                                                 className={`w-full px-2 py-1 text-xs border rounded bg-background font-mono ${nameConflict ? 'border-destructive' : 'border-border'}`}
                                                 spellCheck={false}
                                             />
@@ -2223,12 +2226,13 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
 
     function handleManualSqlEdit(rawSql: string) {
         const newSql = stripMaterializePrefix(rawSql)
-        const result = sqlToAst(newSql, ast.materialize)
+        const result = sqlToAstSmart(newSql, ast.materialize)
         if (result.compatible && result.ast) {
             const cfg = getOrInitConfig(cell)
             cfg.ast = result.ast; cfg.degraded = false; cfg.manualSql = null
-            if (!cell.queries) cell.queries = [{ name: 'main', sql: newSql, engine: 'sql', clientVisible: false }]
-            else cell.queries[0] = { ...cell.queries[0], sql: newSql }
+            const genSql = astToSql(result.ast)
+            if (!cell.queries) cell.queries = [{ name: 'main', sql: genSql, engine: 'sql', clientVisible: false }]
+            else cell.queries[0] = { ...cell.queries[0], sql: genSql }
             forceUpdate()
         } else {
             setPendingDegradedSql(newSql)
@@ -2247,7 +2251,7 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
     function tryRestoreFromDegraded() {
         const cfg = getOrInitConfig(cell)
         const sql = stripMaterializePrefix(cfg.manualSql || selectSql)
-        const result = sqlToAst(sql, ast.materialize)
+        const result = sqlToAstSmart(sql, ast.materialize)
         if (result.compatible && result.ast) {
             cfg.ast = result.ast; cfg.degraded = false; cfg.manualSql = null
             const genSql = astToSql(result.ast)
