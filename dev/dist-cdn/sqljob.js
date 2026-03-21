@@ -133727,16 +133727,24 @@ function getCteName(At, yt) {
   var xt;
   return ((xt = At.name) == null ? void 0 : xt.trim()) || `${CTE_PREFIX}${yt}`;
 }
+function escapeBlockComment(At) {
+  return At.replace(/\*\//g, "* /").replace(/\r\n/g, " ").replace(/\r/g, " ");
+}
 function astToSql(At) {
-  var kt;
+  var kt, Et, St;
   const { source: yt, steps: xt } = At;
   if (!xt || xt.length === 0) return `SELECT * FROM ${quoteId(yt)}`;
-  if (xt.length === 1 && !((kt = xt[0].name) != null && kt.trim())) return singleStepToSql(quoteId(yt), xt[0]);
+  if (xt.length === 1 && !((kt = xt[0].name) != null && kt.trim())) {
+    const Tt = singleStepToSql(quoteId(yt), xt[0]), $t = (Et = xt[0].description) == null ? void 0 : Et.trim();
+    return $t ? `/* ${escapeBlockComment($t)} */
+${Tt}` : Tt;
+  }
   const wt = [];
-  for (let Et = 0; Et < xt.length; Et++) {
-    const St = quoteId(Et === 0 ? yt : getCteName(xt[Et - 1], Et - 1)), Tt = singleStepToSql(St, xt[Et]), $t = quoteId(getCteName(xt[Et], Et));
-    wt.push(`  ${$t} AS (
-    ${Tt.replace(/\n/g, `
+  for (let Tt = 0; Tt < xt.length; Tt++) {
+    const $t = quoteId(Tt === 0 ? yt : getCteName(xt[Tt - 1], Tt - 1)), Lt = singleStepToSql($t, xt[Tt]), It = quoteId(getCteName(xt[Tt], Tt)), Rt = (St = xt[Tt].description) == null ? void 0 : St.trim(), Dt = Rt ? `/* ${escapeBlockComment(Rt)} */
+    ` : "";
+    wt.push(`  ${It} AS (
+    ${Dt}${Lt.replace(/\n/g, `
     `)}
   )`);
   }
