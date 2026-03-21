@@ -597,11 +597,33 @@ function DistinctDropdown({ multi = false, value = '', onChangeSingle, values = 
                 <div className="absolute z-50 mt-0.5 left-0 right-0 bg-popover border border-border rounded shadow-lg flex flex-col max-h-56 text-xs"
                     onClick={e => e.stopPropagation()}
                     onMouseDown={e => e.stopPropagation()}>
-                    {/* Recherche (multi seulement) */}
+                    {/* Recherche + coche tout/rien (multi seulement) */}
                     {multi && (
-                        <div className="px-2 py-1 border-b border-border">
-                            <input autoFocus className="w-full h-5 bg-transparent outline-none placeholder:text-muted-foreground"
+                        <div className="px-2 py-1 border-b border-border flex items-center gap-1.5">
+                            <input autoFocus className="flex-1 h-5 bg-transparent outline-none placeholder:text-muted-foreground min-w-0"
                                 placeholder="Rechercher…" value={search} onChange={e => setSearch(e.target.value)} />
+                            {filtered.length > 0 && (() => {
+                                const allChecked = filtered.every(v => values.includes(v))
+                                const someChecked = !allChecked && filtered.some(v => values.includes(v))
+                                return (
+                                    <button
+                                        className="shrink-0 w-4 h-4 flex items-center justify-center rounded border border-border hover:bg-muted"
+                                        title={allChecked ? 'Désélectionner tout l\'affiché' : 'Sélectionner tout l\'affiché'}
+                                        onMouseDown={e => {
+                                            e.preventDefault()
+                                            if (allChecked) {
+                                                onChangeMulti?.(values.filter(v => !filtered.includes(v)))
+                                            } else {
+                                                const toAdd = filtered.filter(v => !values.includes(v))
+                                                onChangeMulti?.([...values, ...toAdd])
+                                            }
+                                        }}>
+                                        <span className={`text-[10px] leading-none ${allChecked ? 'text-primary' : someChecked ? 'text-primary/50' : 'text-muted-foreground'}`}>
+                                            {allChecked ? '✓' : someChecked ? '–' : '☐'}
+                                        </span>
+                                    </button>
+                                )
+                            })()}
                         </div>
                     )}
                     {/* Liste */}
