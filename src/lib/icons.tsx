@@ -6,7 +6,7 @@
  */
 import {
     Activity, ArrowDown, ArrowLeft, ArrowLeftRight, ArrowRight, ArrowUp,
-    ArrowUpDown, BookHeart, Braces, ChartBar, CircleCheck, CirclePlay, ClipboardPaste, Copy, CopyCheck, Database,
+    ArrowUpDown, BookHeart, BookMarked, Braces, ChartBar, CircleCheck, CirclePlay, ClipboardPaste, Copy, CopyCheck, Database,
     Download, Ellipsis, EllipsisVertical, Eye, FileOutput, FileText, FileType, FolderOpen, FolderPlus,
     Globe, Lock, Network, Newspaper, Paintbrush, PenLine, Play, Plus, RefreshCw,
     Save, Settings, Share2, SlidersHorizontal, Table2, Trash2, TrendingUp, X, Zap,
@@ -57,6 +57,7 @@ const ICON_MAP: Record<string, any> = {
     'bolt':                         Zap,
     'palette':                      Paintbrush,
     'book-heart':                   BookHeart,
+    'book-marked':                  BookMarked,
     'ellipsis':                     Ellipsis,
     'ellipsis-vertical':            EllipsisVertical,
 }
