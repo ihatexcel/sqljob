@@ -133832,9 +133832,9 @@ function extractCtes(At) {
   for (; (wt = xt.exec(At)) !== null; ) {
     const Ct = extractParenContent(At, wt.index + wt[0].length - 1);
     if (!Ct) return null;
-    const St = Ct.replace(/[ \t\r\n]+/g, " ").trim().match(/^SELECT\s+(.+?)\s+FROM\s+((?:"[^"]*"|\S)+)\s*;?\s*$/is);
-    if (!St) return null;
-    yt.push({ body: St[1].trim(), source: St[2].trim() });
+    const Et = Ct.replace(/[ \t\r\n]+/g, " ").trim().replace(/^\/\*.*?\*\/\s*/s, "").trim().match(/^SELECT\s+(.+?)\s+FROM\s+((?:"[^"]*"|\S)+)\s*;?\s*$/is);
+    if (!Et) return null;
+    yt.push({ body: Et[1].trim(), source: Et[2].trim() });
   }
   return yt.length > 0 ? yt : null;
 }
@@ -134099,8 +134099,8 @@ function extractCtesWithFullBody(At) {
   for (; (wt = xt.exec(At)) !== null; ) {
     const Ct = wt[1], St = wt.index + wt[0].length - 1, Et = extractParenContent(At, St);
     if (!Et) return null;
-    const Tt = Et.replace(/[ \t\r\n]+/g, " ").trim().replace(/^\/\*.*?\*\/\s*/s, "").trim(), $t = Tt.match(/\bFROM\s+((?:"[^"]*"|\S)+)/i), Lt = $t ? unquoteId($t[1]) : "";
-    yt.push({ name: Ct, fullBody: Tt, source: Lt });
+    const kt = Et.replace(/[ \t\r\n]+/g, " ").trim(), Tt = kt.match(/^\/\*(.*?)\*\//s), $t = Tt ? Tt[1].trim() : void 0, Lt = kt.replace(/^\/\*.*?\*\/\s*/s, "").trim(), It = Lt.match(/\bFROM\s+((?:"[^"]*"|\S)+)/i), Rt = It ? unquoteId(It[1]) : "";
+    yt.push({ name: Ct, fullBody: Lt, source: Rt, description: $t });
   }
   return yt.length > 0 ? yt : null;
 }
@@ -134303,7 +134303,7 @@ function tryParseCteChainSmart(At, yt) {
   const wt = xt[0].source, Ct = [];
   for (const St of xt) {
     const Et = stepTypeFromCteName(St.name), kt = parseCteBodyToStep(St.fullBody, Et, St.source);
-    kt !== null && Ct.push(kt);
+    kt !== null && (St.description && (kt.description = St.description), /^_sqlblock_s\d+(?:_[a-z]+)?$/.test(St.name) || (kt.name = St.name), Ct.push(kt));
   }
   return { source: wt, steps: Ct, materialize: yt };
 }
