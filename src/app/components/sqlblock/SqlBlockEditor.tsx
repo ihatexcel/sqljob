@@ -1463,7 +1463,63 @@ function CustomSqlStepUI({ step, onChange }: { step: CustomSqlStep; onChange: (s
     )
 }
 
-// ─── StepConfigModal ──────────────────────────────────────────────────────────
+// ─── useStepInputSchemas ──────────────────────────────────────────────────────
+// Récupère dynamiquement depuis DuckDB le schéma réel en entrée de chaque step
+// quand sa modale s'ouvre (stepSql(ast, N-1) LIMIT 0).
+// Fallback : dérivation statique computeStepSchemas.
+
+interface DynamicSchema { columns: string[]; colTypes: Record<string, string> }
+
+function useStepInputSchemas(ast: SqlBlockAst) {
+    const [dynamicSchemas, setDynamicSchemas] = useState<Record<number, DynamicSchema>>({})
+    const cacheRef = useRef<Map<string, DynamicSchema>>(new Map())
+    const astRef = useRef(ast)
+    astRef.current = ast
+
+    const fetchSchemaForStep = useCallback(async (stepIdx: number) => {
+        const a = astRef.current
+        if (!a.source) return
+        // La clé ne dépend que des steps en AMONT (entrée du step stepIdx)
+        const cacheKey = JSON.stringify({ src: a.source, steps: a.steps.slice(0, stepIdx) })
+
+        const cached = cacheRef.current.get(cacheKey)
+        if (cached) {
+            setDynamicSchemas(prev => ({ ...prev, [stepIdx]: cached }))
+            return
+        }
+
+        try {
+            const inputSql = stepIdx === 0
+                ? `SELECT * FROM ${quoteId(a.source)}`
+                : stepSql(a, stepIdx - 1)
+            if (!inputSql) return
+            const { schemaTypes } = await DuckDBManager.executeQueryWithSchema(
+                `SELECT * FROM (${inputSql}) AS __schema__ LIMIT 0`
+            )
+            if (!schemaTypes) return
+            const result: DynamicSchema = { columns: Object.keys(schemaTypes), colTypes: schemaTypes }
+            cacheRef.current.set(cacheKey, result)
+            setDynamicSchemas(prev => ({ ...prev, [stepIdx]: result }))
+        } catch (err) {
+            console.warn('[sqlblock input-schema]', err)
+        }
+    }, [])
+
+    /** Invalide le cache pour les steps >= dirtyFromStep (AST a changé) */
+    const invalidateFrom = useCallback((dirtyFromStep: number, a: SqlBlockAst) => {
+        for (const [key] of cacheRef.current) {
+            try {
+                const parsed = JSON.parse(key) as { src: string; steps: unknown[] }
+                if (parsed.src !== a.source || parsed.steps.length >= dirtyFromStep)
+                    cacheRef.current.delete(key)
+            } catch { cacheRef.current.delete(key) }
+        }
+    }, [])
+
+    return { dynamicSchemas, fetchSchemaForStep, invalidateFrom }
+}
+
+
 
 function StepConfigModal({ step, index, availableCols, availableColTypes, onUpdate, onClose, fetchDistinctValues, otherStepNames }: {
     step: SqlBlockStep; index: number
@@ -1879,6 +1935,9 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
         ast.source ? (_duckdbTables?.[ast.source]?.columns ?? []) : []
     const stepSchemas = computeStepSchemas(ast, sourceColumns)
 
+    // Schémas dynamiques : récupérés via DuckDB à l'ouverture de chaque modale
+    const { dynamicSchemas, fetchSchemaForStep, invalidateFrom } = useStepInputSchemas(ast)
+
     // tableSchemas pour l'autocomplétion Monaco
     const tableSchemas = db?.schemaTrees ?? []
 
@@ -1910,8 +1969,9 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
     }, [cell, forceUpdate])
 
     const handleStepUpdate = useCallback((idx: number, newStep: SqlBlockStep) => {
+        invalidateFrom(idx + 1, ast)   // les schémas en aval sont périmés
         commitAstUpdate(cell, { steps: ast.steps.map((s, i) => i === idx ? newStep : s) }, forceUpdate)
-    }, [cell, ast.steps, forceUpdate])
+    }, [cell, ast, forceUpdate, invalidateFrom])
 
     const handleStepRemove = useCallback((idx: number) => {
         commitAstUpdate(cell, { steps: ast.steps.filter((_, i) => i !== idx) }, forceUpdate)
@@ -1930,28 +1990,34 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
         setConfigOpenIdx(newSteps.length - 1)
     }, [cell, ast.steps, forceUpdate])
 
-    // ─── Distinct values pour le filtre ────────────────────────────────────
+    // ─── Distinct values pour le filtre (par step) ─────────────────────────
+    // Fabrique une fonction fetchDistinctValues qui interroge la sous-requête
+    // réelle en entrée du step (stepSql(ast, stepIdx-1)), pas juste ast.source.
 
-    const fetchDistinctValues = useCallback(async (column: string, selectLimit: number, fromLimit: number): Promise<{ values: string[]; hasMore: boolean }> => {
-        if (!ast.source || !column) return { values: [], hasMore: false }
-        try {
-            const col = `"${column.replace(/"/g, '""')}"`
-            const tbl = `"${ast.source.replace(/"/g, '""')}"`
-            // Source : table entière ou sous-requête avec FROM limit
-            const src = fromLimit > 0
-                ? `(SELECT ${col} FROM ${tbl} WHERE ${col} IS NOT NULL LIMIT ${fromLimit}) _sub`
-                : `${tbl} WHERE ${col} IS NOT NULL`
-            // SELECT : avec ou sans LIMIT
-            const sql = selectLimit > 0
-                ? `SELECT DISTINCT ${col} FROM ${src} ORDER BY 1 LIMIT ${selectLimit + 1}`
-                : `SELECT DISTINCT ${col} FROM ${src} ORDER BY 1`
-            const rows = await DuckDBManager.executeQuery(sql)
-            const hasMore = selectLimit > 0 && rows.length > selectLimit
-            return { values: rows.slice(0, selectLimit > 0 ? selectLimit : undefined).map(r => String(r[column] ?? '')), hasMore }
-        } catch {
-            return { values: [], hasMore: false }
+    const makeStepDistinctValues = useCallback((stepIdx: number) => {
+        return async (column: string, selectLimit: number, fromLimit: number): Promise<{ values: string[]; hasMore: boolean }> => {
+            if (!ast.source || !column) return { values: [], hasMore: false }
+            try {
+                const inputSql = stepIdx === 0
+                    ? `SELECT * FROM ${quoteId(ast.source)}`
+                    : stepSql(ast, stepIdx - 1)
+                if (!inputSql) return { values: [], hasMore: false }
+                const col = `"${column.replace(/"/g, '""')}"`
+                // Applique le fromLimit en sous-couche pour éviter de scanner toute la table
+                const inner = fromLimit > 0
+                    ? `(SELECT ${col} FROM (${inputSql}) __fdv__ WHERE ${col} IS NOT NULL LIMIT ${fromLimit}) _sub`
+                    : `(${inputSql}) __fdv__ WHERE ${col} IS NOT NULL`
+                const sql = selectLimit > 0
+                    ? `SELECT DISTINCT ${col} FROM ${inner} ORDER BY 1 LIMIT ${selectLimit + 1}`
+                    : `SELECT DISTINCT ${col} FROM ${inner} ORDER BY 1`
+                const rows = await DuckDBManager.executeQuery(sql)
+                const hasMore = selectLimit > 0 && rows.length > selectLimit
+                return { values: rows.slice(0, selectLimit > 0 ? selectLimit : undefined).map(r => String(r[column] ?? '')), hasMore }
+            } catch {
+                return { values: [], hasMore: false }
+            }
         }
-    }, [ast.source])
+    }, [ast])
 
     // ─── Handlers SQL manuel ───────────────────────────────────────────────
 
@@ -2109,7 +2175,9 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
                             </p>
                         )}
                         {ast.steps.map((step, idx) => {
-                            const schema = stepSchemas[idx] ?? { columns: sourceColumns.map(c => c.name), colTypes: Object.fromEntries(sourceColumns.map(c => [c.name, c.type])) }
+                            const staticSchema = stepSchemas[idx] ?? { columns: sourceColumns.map(c => c.name), colTypes: Object.fromEntries(sourceColumns.map(c => [c.name, c.type])) }
+                            // Schéma dynamique (réel DuckDB) en priorité, fallback statique
+                            const schema = dynamicSchemas[idx] ?? staticSchema
                             const otherStepNames = ast.steps.filter((_, i) => i !== idx).map(s => s.name?.trim()).filter(Boolean) as string[]
                             return (
                                 <StepItem
@@ -2124,9 +2192,9 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
                                     onRemove={handleStepRemove}
                                     onMove={handleStepMove}
                                     configOpen={configOpenIdx === idx}
-                                    onConfigOpen={() => setConfigOpenIdx(idx)}
+                                    onConfigOpen={() => { setConfigOpenIdx(idx); fetchSchemaForStep(idx) }}
                                     onConfigClose={() => setConfigOpenIdx(null)}
-                                    fetchDistinctValues={fetchDistinctValues}
+                                    fetchDistinctValues={makeStepDistinctValues(idx)}
                                     otherStepNames={otherStepNames}
                                 />
                             )
