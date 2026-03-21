@@ -219,15 +219,15 @@ let sqlblockSchemaEnsured = false
 
 async function ensureSqlblockSchema() {
     if (sqlblockSchemaEnsured) return
+    await DuckDBManager.executeQuery(`CREATE SCHEMA IF NOT EXISTS "${SQLBLOCK_SCHEMA}"`)
+    sqlblockSchemaEnsured = true
+}
 
 /** Nom de la table temp DuckDB pour le step idx d'une cellule. */
 function makeTableRef(cellId: string, idx: number): string {
     const safeId = cellId.replace(/[^a-zA-Z0-9]/g, '_')
     const name = `sb_${safeId}_s${idx < 0 ? 'src' : idx}`
     return `"${SQLBLOCK_SCHEMA}"."${name}"`
-}
-    await DuckDBManager.executeQuery(`CREATE SCHEMA IF NOT EXISTS "${SQLBLOCK_SCHEMA}"`)
-    sqlblockSchemaEnsured = true
 }
 
 function useStepEyeData(cell: any, ast: SqlBlockAst) {
