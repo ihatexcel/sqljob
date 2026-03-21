@@ -134094,15 +134094,34 @@ function unquoteId(At) {
   return At.startsWith('"') && At.endsWith('"') ? At.slice(1, -1).replace(/""/g, '"') : At;
 }
 function extractCtesWithFullBody(At) {
-  const yt = [], xt = /(_sqlblock_s\d+(?:_[a-z]+)?)\s+AS\s*\(/gi;
-  let wt;
-  for (; (wt = xt.exec(At)) !== null; ) {
-    const Ct = wt[1], St = wt.index + wt[0].length - 1, Et = extractParenContent(At, St);
-    if (!Et) return null;
-    const kt = Et.replace(/[ \t\r\n]+/g, " ").trim(), Tt = kt.match(/^\/\*(.*?)\*\//s), $t = Tt ? Tt[1].trim() : void 0, Lt = kt.replace(/^\/\*.*?\*\/\s*/s, "").trim(), It = Lt.match(/\bFROM\s+((?:"[^"]*"|\S)+)/i), Rt = It ? unquoteId(It[1]) : "";
-    yt.push({ name: Ct, fullBody: Lt, source: Rt, description: $t });
+  const yt = At.match(/^WITH\s+/i);
+  if (!yt) return null;
+  const xt = [];
+  let wt = yt[0].length;
+  for (; wt < At.length; ) {
+    for (; wt < At.length && /\s/.test(At[wt]); ) wt++;
+    if (/^SELECT\b/i.test(At.slice(wt))) break;
+    let Ct;
+    if (At[wt] === '"') {
+      const jt = At.indexOf('"', wt + 1);
+      if (jt < 0) return null;
+      Ct = At.slice(wt + 1, jt).replace(/""/g, '"'), wt = jt + 1;
+    } else {
+      const jt = At.slice(wt).match(/^([_a-zA-Z][_a-zA-Z0-9]*)/);
+      if (!jt) return null;
+      Ct = jt[1], wt += jt[1].length;
+    }
+    for (; wt < At.length && /\s/.test(At[wt]); ) wt++;
+    const St = At.slice(wt).match(/^AS\s*\(/i);
+    if (!St) return null;
+    wt = wt + St[0].length - 1;
+    const kt = extractParenContent(At, wt);
+    if (!kt) return null;
+    wt += kt.length + 2;
+    const Tt = kt.replace(/[ \t\r\n]+/g, " ").trim(), $t = Tt.match(/^\/\*(.*?)\*\//s), Lt = $t ? $t[1].trim() : void 0, It = Tt.replace(/^\/\*.*?\*\/\s*/s, "").trim(), Rt = It.match(/\bFROM\s+((?:"[^"]*"|\S)+)/i), Dt = Rt ? unquoteId(Rt[1]) : "";
+    for (xt.push({ name: Ct, fullBody: It, source: Dt, description: Lt }); wt < At.length && /[\s,]/.test(At[wt]); ) wt++;
   }
-  return yt.length > 0 ? yt : null;
+  return xt.length > 0 ? xt : null;
 }
 function escapeRegex(At) {
   return At.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -134297,7 +134316,7 @@ function parseCteBodyToStep(At, yt, xt) {
   return { type: "custom_sql", sql: wt.replace(new RegExp(`\\bFROM\\s+${escapeRegex(Et)}\\b`, "g"), "FROM {{subquery}}").replace(new RegExp(`\\bFROM\\s+${escapeRegex(xt)}\\b`, "g"), "FROM {{subquery}}") };
 }
 function tryParseCteChainSmart(At, yt) {
-  if (!/^WITH\s+_sqlblock_s/i.test(At)) return null;
+  if (!/^WITH\b/i.test(At) || !/_sqlblock_s\d+/i.test(At)) return null;
   const xt = extractCtesWithFullBody(At);
   if (!(xt != null && xt.length)) return null;
   const wt = xt[0].source, Ct = [];
