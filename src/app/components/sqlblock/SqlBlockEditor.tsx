@@ -751,7 +751,15 @@ function FilterConditionRow({ cond, availableCols, onChange, onRemove, onMoveUp,
     return (
         <div className="flex flex-wrap items-center gap-1">
             <ColSelect value={cond.column} cols={availableCols} onChange={v => onChange({ column: v })} className="flex-1 min-w-20" />
-            <select className="h-6 rounded border border-border bg-background px-1 text-xs w-24" value={cond.op} onChange={e => onChange({ op: e.target.value as FilterOp })}>
+            <select className="h-6 rounded border border-border bg-background px-1 text-xs w-24" value={cond.op} onChange={e => {
+                const newOp = e.target.value as FilterOp
+                const wasMulti = cond.op === 'in' || cond.op === 'not_in'
+                const isNowMulti = newOp === 'in' || newOp === 'not_in'
+                const patch: Partial<FilterCondition> = { op: newOp }
+                if (!wasMulti && isNowMulti && cond.value) patch.values = [cond.value]
+                if (wasMulti && !isNowMulti && cond.values?.length) patch.value = cond.values[0]
+                onChange(patch)
+            }}>
                 {FILTER_OPS.map(o => <option key={o.op} value={o.op}>{o.label}</option>)}
             </select>
             {!noVal && !isBetween && !isMulti && (
@@ -1822,82 +1830,183 @@ function defaultStep(type: SqlBlockStep['type']): SqlBlockStep {
     }
 }
 
-function AddStepMenu({ onAdd }: { onAdd: (step: SqlBlockStep) => void }) {
+function AddStepModal({ onAdd, availableCols, availableColTypes, fetchDistinctValues, otherStepNames, stepIndex, onOpen }: {
+    onAdd: (step: SqlBlockStep) => void
+    availableCols: string[]; availableColTypes: Record<string, string>
+    fetchDistinctValues?: (col: string, selectLimit: number, fromLimit: number) => Promise<{ values: string[]; hasMore: boolean }>
+    otherStepNames: string[]
+    stepIndex: number
+    onOpen?: () => void
+}) {
     const [open, setOpen] = useState(false)
+    const [selectedType, setSelectedType] = useState<string | null>(null)
+    const [draftStep, setDraftStep] = useState<SqlBlockStep | null>(null)
     const [search, setSearch] = useState('')
-    const [menuRect, setMenuRect] = useState<DOMRect | null>(null)
-    const btnRef = useRef<HTMLButtonElement>(null)
-    const menuRef = useRef<HTMLDivElement>(null)
     const searchRef = useRef<HTMLInputElement>(null)
 
-    function handleToggle() {
-        if (!open && btnRef.current) setMenuRect(btnRef.current.getBoundingClientRect())
-        setOpen(o => !o)
-        if (!open) { setSearch(''); setTimeout(() => searchRef.current?.focus(), 50) }
+    function handleOpen() {
+        setOpen(true)
+        setSelectedType(null)
+        setDraftStep(null)
+        setSearch('')
+        onOpen?.()
+        setTimeout(() => searchRef.current?.focus(), 50)
+    }
+
+    function handleClose() { setOpen(false) }
+
+    function handleSelectType(type: string) {
+        setSelectedType(type)
+        setDraftStep(defaultStep(type) as SqlBlockStep)
+    }
+
+    function handleDraftUpdate(_idx: number, s: SqlBlockStep) { setDraftStep(s) }
+
+    function handleConfirm() {
+        if (draftStep) { onAdd(draftStep); setOpen(false) }
     }
 
     useEffect(() => {
         if (!open) return
-        function handleClick(e: MouseEvent) {
-            if (menuRef.current && !menuRef.current.contains(e.target as Node) &&
-                btnRef.current && !btnRef.current.contains(e.target as Node)) setOpen(false)
+        function onKey(e: KeyboardEvent) {
+            if (e.key === 'Escape') {
+                if (selectedType) { setSelectedType(null); setDraftStep(null) }
+                else setOpen(false)
+            }
         }
-        document.addEventListener('mousedown', handleClick)
-        return () => document.removeEventListener('mousedown', handleClick)
-    }, [open])
+        document.addEventListener('keydown', onKey)
+        return () => document.removeEventListener('keydown', onKey)
+    }, [open, selectedType])
 
     const q = search.toLowerCase().trim()
-    // Filtrage : si recherche active, afficher tous les steps correspondants à plat
     const filteredCats = q
         ? [{ label: 'Résultats', steps: STEP_CATEGORIES.flatMap(c => c.steps).filter(t => STEP_LABELS[t].toLowerCase().includes(q)) }]
         : STEP_CATEGORIES
 
-    const menuStyle: React.CSSProperties = menuRect ? {
-        position: 'fixed', top: menuRect.bottom + 4,
-        left: menuRect.left, minWidth: Math.max(menuRect.width, 280), zIndex: 9999,
-    } : {}
+    const nameConflict = !!(draftStep?.name?.trim() && otherStepNames.includes(draftStep.name.trim()))
 
     return (
         <>
-            <button ref={btnRef} onClick={handleToggle}
+            <button onClick={handleOpen}
                 className="w-full flex items-center justify-center gap-2 px-3 py-1.5 rounded border border-dashed border-border hover:border-primary hover:text-primary text-xs text-muted-foreground transition-colors">
-                + Ajouter un step
+                + Ajouter une étape
             </button>
-            {open && menuRect && createPortal(
-                <div ref={menuRef} style={menuStyle}
-                    className="bg-popover border border-border rounded-lg shadow-xl overflow-hidden flex flex-col max-h-96">
-                    {/* Champ de recherche */}
-                    <div className="px-2 py-2 border-b border-border bg-muted/30">
-                        <input ref={searchRef} value={search} onChange={e => setSearch(e.target.value)}
-                            placeholder="Filtrer les traitements…"
-                            className="w-full h-6 rounded border border-border bg-background px-2 text-xs focus:outline-none focus:ring-1 focus:ring-primary"
-                            onKeyDown={e => {
-                                if (e.key === 'Escape') setOpen(false)
-                                if (e.key === 'Enter' && filteredCats[0]?.steps[0]) {
-                                    onAdd(defaultStep(filteredCats[0].steps[0])); setOpen(false)
-                                }
-                            }}
-                        />
-                    </div>
-                    <div className="overflow-y-auto">
-                        {filteredCats.map(cat => (
-                            <div key={cat.label}>
-                                {(!q || cat.steps.length > 0) && (
-                                    <div className="px-3 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wide bg-muted/50 border-b border-border sticky top-0">
-                                        {cat.label}
+            {open && createPortal(
+                <div className="fixed inset-0 z-[9998] flex items-center justify-center">
+                    <div className="absolute inset-0 bg-black/50" onClick={handleClose} />
+                    <div className="relative z-10 bg-popover border border-border rounded-xl shadow-2xl w-full max-w-lg mx-4 h-[96vh] flex flex-col">
+
+                        {/* Header */}
+                        <div className="flex items-center gap-2 px-4 py-3 border-b border-border shrink-0">
+                            {selectedType && (
+                                <button onClick={() => { setSelectedType(null); setDraftStep(null) }}
+                                    className="text-muted-foreground hover:text-foreground text-sm px-1 leading-none" title="Changer de type">←</button>
+                            )}
+                            <span className="font-semibold text-sm flex-1">
+                                {selectedType ? STEP_LABELS[selectedType] : 'Ajouter une étape'}
+                            </span>
+                            <button onClick={handleClose}
+                                className="text-muted-foreground hover:text-foreground w-6 h-6 flex items-center justify-center rounded hover:bg-muted text-lg leading-none">×</button>
+                        </div>
+
+                        {!selectedType ? (
+                            /* ── Phase 1 : sélection du type ── */
+                            <>
+                                <div className="px-2 py-2 border-b border-border bg-muted/30 shrink-0">
+                                    <input ref={searchRef} value={search} onChange={e => setSearch(e.target.value)}
+                                        placeholder="Filtrer les traitements…"
+                                        className="w-full h-6 rounded border border-border bg-background px-2 text-xs focus:outline-none focus:ring-1 focus:ring-primary"
+                                        onKeyDown={e => {
+                                            if (e.key === 'Enter' && filteredCats[0]?.steps[0]) handleSelectType(filteredCats[0].steps[0])
+                                        }}
+                                    />
+                                </div>
+                                <div className="overflow-y-auto flex-1">
+                                    {filteredCats.map(cat => (
+                                        <div key={cat.label}>
+                                            {(!q || cat.steps.length > 0) && (
+                                                <div className="px-3 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wide bg-muted/50 border-b border-border sticky top-0">
+                                                    {cat.label}
+                                                </div>
+                                            )}
+                                            {cat.steps.map(type => (
+                                                <button key={type}
+                                                    className="w-full text-left px-3 py-1.5 hover:bg-muted transition-colors flex items-center gap-2"
+                                                    onClick={() => handleSelectType(type)}>
+                                                    <span className="text-xs font-medium flex-1">{STEP_LABELS[type]}</span>
+                                                </button>
+                                            ))}
+                                            {q && cat.steps.length === 0 && (
+                                                <div className="px-3 py-2 text-xs text-muted-foreground italic">Aucun résultat</div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            </>
+                        ) : draftStep ? (
+                            /* ── Phase 2 : configuration ── */
+                            <>
+                                <div className="overflow-y-auto px-4 py-4 flex-1 flex flex-col gap-4">
+                                    {/* Nom et description */}
+                                    <div className="flex flex-col gap-2 pb-3 border-b border-border">
+                                        <div>
+                                            <label className="text-xs text-muted-foreground mb-1 block">Nom de la sous-requête</label>
+                                            <input type="text"
+                                                value={draftStep.name ?? ''}
+                                                onChange={e => setDraftStep({ ...draftStep, name: e.target.value || undefined })}
+                                                placeholder={`_sqlblock_s${stepIndex} (auto)`}
+                                                className={`w-full px-2 py-1 text-xs border rounded bg-background font-mono ${nameConflict ? 'border-destructive' : 'border-border'}`}
+                                                spellCheck={false}
+                                            />
+                                            {nameConflict && <p className="text-xs text-destructive mt-0.5">Ce nom est déjà utilisé par un autre step.</p>}
+                                        </div>
+                                        <div>
+                                            <label className="text-xs text-muted-foreground mb-1 block">Description</label>
+                                            <textarea
+                                                value={draftStep.description ?? ''}
+                                                onChange={e => setDraftStep({ ...draftStep, description: e.target.value || undefined })}
+                                                placeholder="Description de cette étape…"
+                                                rows={2}
+                                                className="w-full px-2 py-1 text-xs border border-border rounded bg-background resize-none"
+                                            />
+                                        </div>
                                     </div>
-                                )}
-                                {cat.steps.map(type => (
-                                    <button key={type} className="w-full text-left px-3 py-1.5 hover:bg-muted transition-colors flex items-center gap-2"
-                                        onClick={() => { onAdd(defaultStep(type)); setOpen(false); setSearch('') }}>
-                                        <span className="text-xs font-medium flex-1">{STEP_LABELS[type]}</span>
+                                    {/* Config spécifique au type */}
+                                    <div>
+                                        {draftStep.type === 'select_columns' && <SelectColumnsStepUI step={draftStep} availableCols={availableCols} onChange={s => handleDraftUpdate(0, s)} />}
+                                        {draftStep.type === 'exclude_columns' && <ExcludeColumnsStepUI step={draftStep} availableCols={availableCols} onChange={s => handleDraftUpdate(0, s)} />}
+                                        {draftStep.type === 'change_type' && <ChangeTypeStepUI step={draftStep} availableCols={availableCols} availableColTypes={availableColTypes} onChange={s => handleDraftUpdate(0, s)} />}
+                                        {draftStep.type === 'filter_rows' && <FilterRowsStepUI step={draftStep} availableCols={availableCols} onChange={s => handleDraftUpdate(0, s)} fetchDistinctValues={fetchDistinctValues} />}
+                                        {draftStep.type === 'sort' && <SortStepUI step={draftStep} availableCols={availableCols} onChange={s => handleDraftUpdate(0, s)} />}
+                                        {draftStep.type === 'top_n' && <TopNStepUI step={draftStep} onChange={s => handleDraftUpdate(0, s)} />}
+                                        {draftStep.type === 'rename_columns' && <RenameColumnsStepUI step={draftStep} availableCols={availableCols} onChange={s => handleDraftUpdate(0, s)} />}
+                                        {draftStep.type === 'derive' && <DeriveStepUI step={draftStep} availableCols={availableCols} onChange={s => handleDraftUpdate(0, s)} />}
+                                        {draftStep.type === 'fill_null' && <FillNullStepUI step={draftStep} availableCols={availableCols} onChange={s => handleDraftUpdate(0, s)} />}
+                                        {draftStep.type === 'group_by' && <GroupByStepUI step={draftStep} availableCols={availableCols} onChange={s => handleDraftUpdate(0, s)} />}
+                                        {draftStep.type === 'join' && <JoinStepUI step={draftStep} availableCols={availableCols} onChange={s => handleDraftUpdate(0, s)} />}
+                                        {draftStep.type === 'union' && <UnionStepUI step={draftStep} onChange={s => handleDraftUpdate(0, s)} />}
+                                        {draftStep.type === 'pivot' && <PivotStepUI step={draftStep} availableCols={availableCols} onChange={s => handleDraftUpdate(0, s)} />}
+                                        {draftStep.type === 'unpivot' && <UnpivotStepUI step={draftStep} availableCols={availableCols} onChange={s => handleDraftUpdate(0, s)} />}
+                                        {draftStep.type === 'window' && <WindowStepUI step={draftStep} availableCols={availableCols} onChange={s => handleDraftUpdate(0, s)} />}
+                                        {draftStep.type === 'unnest' && <UnnestStepUI step={draftStep} availableCols={availableCols} onChange={s => handleDraftUpdate(0, s)} />}
+                                        {draftStep.type === 'json_extract' && <JsonExtractStepUI step={draftStep} availableCols={availableCols} onChange={s => handleDraftUpdate(0, s)} />}
+                                        {draftStep.type === 'date_trunc' && <DateTruncStepUI step={draftStep} availableCols={availableCols} onChange={s => handleDraftUpdate(0, s)} />}
+                                        {draftStep.type === 'custom_sql' && <CustomSqlStepUI step={draftStep} onChange={s => handleDraftUpdate(0, s)} />}
+                                    </div>
+                                </div>
+                                {/* Footer */}
+                                <div className="px-4 py-3 border-t border-border flex justify-end gap-2 shrink-0">
+                                    <button onClick={handleClose}
+                                        className="px-3 py-1.5 text-xs rounded border border-border hover:bg-muted transition-colors">
+                                        Annuler
                                     </button>
-                                ))}
-                                {q && cat.steps.length === 0 && (
-                                    <div className="px-3 py-2 text-xs text-muted-foreground italic">Aucun résultat</div>
-                                )}
-                            </div>
-                        ))}
+                                    <button onClick={handleConfirm} disabled={nameConflict}
+                                        className="px-3 py-1.5 text-xs rounded bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50">
+                                        Ajouter l'étape
+                                    </button>
+                                </div>
+                            </>
+                        ) : null}
                     </div>
                 </div>,
                 document.body
@@ -2044,6 +2153,14 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
         commitAstUpdate(cell, { source: v }, forceUpdate)
     }, [cell, forceUpdate])
 
+    // Auto-sélection de la première table lors de la création d'une cellule sans source
+    useEffect(() => {
+        if (!ast.source) {
+            const tables = Object.keys(_duckdbTables ?? {}).filter(t => !t.startsWith('_sqlblock.'))
+            if (tables.length > 0) commitAstUpdate(cell, { source: tables[0] }, forceUpdate)
+        }
+    }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
     const handleMaterializeChange = useCallback((mat: SqlBlockMaterialize) => {
         commitAstUpdate(cell, { materialize: mat }, forceUpdate)
     }, [cell, forceUpdate])
@@ -2067,7 +2184,7 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
     const handleStepAdd = useCallback((step: SqlBlockStep) => {
         const newSteps = [...ast.steps, step]
         commitAstUpdate(cell, { steps: newSteps }, forceUpdate)
-        setConfigOpenIdx(newSteps.length - 1)
+        // Pas d'ouverture auto du modal de config — l'étape a déjà été configurée dans AddStepModal
     }, [cell, ast.steps, forceUpdate])
 
     // ─── Distinct values pour le filtre (par step) ─────────────────────────
@@ -2163,19 +2280,20 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
             <div className="flex items-center gap-3 flex-wrap shrink-0">
                 <div className="flex items-center gap-2 flex-1 min-w-40">
                     <label className="text-xs text-muted-foreground shrink-0">Source :</label>
-                    <input type="text"
+                    <select
                         className="flex-1 h-7 rounded border border-border bg-background px-2 text-xs font-mono"
                         value={ast.source}
                         onChange={e => handleSourceChange(e.target.value)}
-                        placeholder="nom_de_table"
-                        list={`sqlblock-source-list-${cell._id}`}
                         disabled={cfg.degraded}
-                    />
-                    <datalist id={`sqlblock-source-list-${cell._id}`}>
+                    >
+                        {!ast.source && <option value="">— choisir une source —</option>}
                         {Object.keys(_duckdbTables ?? {})
                             .filter(t => !t.startsWith('_sqlblock.'))
-                            .map(t => <option key={t} value={t} />)}
-                    </datalist>
+                            .map(t => <option key={t} value={t}>{t}</option>)}
+                        {ast.source && !Object.keys(_duckdbTables ?? {}).filter(t => !t.startsWith('_sqlblock.')).includes(ast.source) && (
+                            <option value={ast.source}>{ast.source}</option>
+                        )}
+                    </select>
                 </div>
                 <div className="flex items-center gap-2">
                     <label className="text-xs text-muted-foreground shrink-0">Résultat :</label>
@@ -2250,10 +2368,10 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
 
                     {/* Colonne Steps */}
                     <div className="flex flex-col gap-2 w-64 shrink-0 overflow-y-auto">
-                        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide shrink-0">Steps</span>
+                        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide shrink-0">Étapes</span>
                         {ast.steps.length === 0 && (
                             <p className="text-xs text-muted-foreground italic px-1">
-                                Aucun step — SELECT * FROM {ast.source || '…'}
+                                Aucune étape — SELECT * FROM {ast.source || '…'}
                             </p>
                         )}
                         {ast.steps.map((step, idx) => {
@@ -2281,7 +2399,26 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
                                 />
                             )
                         })}
-                        <AddStepMenu onAdd={handleStepAdd} />
+                        {(() => {
+                            // Schéma d'entrée pour la nouvelle étape = sortie de la dernière étape existante
+                            const n = ast.steps.length
+                            const newStepInputSchema = dynamicSchemas[n] ?? (
+                                n === 0
+                                    ? { columns: sourceColumns.map(c => c.name), colTypes: Object.fromEntries(sourceColumns.map(c => [c.name, c.type])) }
+                                    : (stepSchemas[n - 1] ?? { columns: sourceColumns.map(c => c.name), colTypes: {} })
+                            )
+                            return (
+                                <AddStepModal
+                                    onAdd={handleStepAdd}
+                                    availableCols={newStepInputSchema.columns}
+                                    availableColTypes={newStepInputSchema.colTypes}
+                                    fetchDistinctValues={makeStepDistinctValues(n)}
+                                    otherStepNames={ast.steps.map(s => s.name?.trim()).filter(Boolean) as string[]}
+                                    stepIndex={n}
+                                    onOpen={() => fetchSchemaForStep(n)}
+                                />
+                            )
+                        })()}
                     </div>
                 </div>
             ) : (
