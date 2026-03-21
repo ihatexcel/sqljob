@@ -349,6 +349,11 @@ function singleStepToSql(source: string, step: SqlBlockStep): string {
             const alias = step.alias || `${step.column}_${step.granularity}`;
             return `SELECT *, ${expr} AS ${quoteId(alias)} FROM ${source}`;
         }
+
+        case 'custom_sql': {
+            const sql = step.sql?.trim() || `SELECT * FROM {{subquery}}`;
+            return sql.replace(/\{\{subquery\}\}/g, source);
+        }
     }
 }
 

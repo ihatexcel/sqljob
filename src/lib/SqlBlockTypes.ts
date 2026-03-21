@@ -206,6 +206,11 @@ export interface DateTruncStep {
     alias?: string;
 }
 
+export interface CustomSqlStep {
+    type: 'custom_sql';
+    sql: string;
+}
+
 // ─── Union de tous les steps ───────────────────────────────────────────────────
 
 export type SqlBlockStep =
@@ -226,7 +231,8 @@ export type SqlBlockStep =
     | WindowStep
     | UnnestStep
     | JsonExtractStep
-    | DateTruncStep;
+    | DateTruncStep
+    | CustomSqlStep;
 
 // ─── AST root ─────────────────────────────────────────────────────────────────
 
@@ -271,6 +277,7 @@ export const STEP_LABELS: Record<SqlBlockStep['type'], string> = {
     unnest:          'Exploser un tableau (UNNEST)',
     json_extract:    'Extraire du JSON',
     date_trunc:      'Tronquer une date',
+    custom_sql:      'SQL personnalisé',
 };
 
 export const STEP_ICONS: Record<SqlBlockStep['type'], string> = {
@@ -292,6 +299,7 @@ export const STEP_ICONS: Record<SqlBlockStep['type'], string> = {
     unnest:          'material-symbols-light:unarchive',
     json_extract:    'material-symbols-light:data-object',
     date_trunc:      'material-symbols-light:date-range',
+    custom_sql:      'material-symbols-light:code',
 };
 
 export const STEP_CATEGORIES = [
@@ -314,6 +322,10 @@ export const STEP_CATEGORIES = [
     {
         label: 'DuckDB avancé',
         steps: ['window', 'unnest', 'json_extract', 'date_trunc'] as SqlBlockStep['type'][],
+    },
+    {
+        label: 'Personnalisé',
+        steps: ['custom_sql'] as SqlBlockStep['type'][],
     },
 ] as const;
 

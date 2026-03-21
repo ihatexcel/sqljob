@@ -117,9 +117,16 @@ export function CellConfigModal() {
                                         </div>
                                         <Input className="h-8 text-sm"
                                             value={cell.name || ''}
-                                            onChange={e => { cell.name = e.target.value; forceUpdate() }}
+                                            onChange={e => {
+                                                const v = e.target.value
+                                                if (cell.type === 'uiParameter' && v.trim().toLowerCase() === 'subquery') return
+                                                cell.name = v; forceUpdate()
+                                            }}
                                             onBlur={() => validateCellName(cellConfigModal.path, cellConfigModal.cellIndex)}
                                             placeholder="Identifiant unique de la cellule" />
+                                        {cell.type === 'uiParameter' && (cell.name || '').trim().toLowerCase() === 'subquery' && (
+                                            <p className="text-xs text-destructive">« subquery » est réservé au step SQL personnalisé.</p>
+                                        )}
                                     </div>
                                 ) : ['title', 'subtitle', 'icon', 'buttonLabel'].includes(paramKey) ? (
                                     <div className="space-y-1">
