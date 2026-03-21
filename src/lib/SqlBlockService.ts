@@ -502,24 +502,57 @@ interface CteFullInfo {
 }
 
 function extractCtesWithFullBody(sql: string): CteFullInfo[] | null {
+    // Parser séquentiel : lit TOUS les CTEs du bloc WITH (noms auto ET custom)
+    const withM = sql.match(/^WITH\s+/i);
+    if (!withM) return null;
+
     const ctes: CteFullInfo[] = [];
-    const re = /(_sqlblock_s\d+(?:_[a-z]+)?)\s+AS\s*\(/gi;
-    let match: RegExpExecArray | null;
-    while ((match = re.exec(sql)) !== null) {
-        const name = match[1];
-        const openParen = match.index + match[0].length - 1;
-        const inner = extractParenContent(sql, openParen);
+    let pos = withM[0].length;
+
+    while (pos < sql.length) {
+        // Saute les espaces
+        while (pos < sql.length && /\s/.test(sql[pos])) pos++;
+        // Fin du bloc WITH = SELECT final
+        if (/^SELECT\b/i.test(sql.slice(pos))) break;
+
+        // Lit le nom du CTE (avec ou sans guillemets)
+        let name: string;
+        if (sql[pos] === '"') {
+            const end = sql.indexOf('"', pos + 1);
+            if (end < 0) return null;
+            name = sql.slice(pos + 1, end).replace(/""/g, '"');
+            pos = end + 1;
+        } else {
+            const m = sql.slice(pos).match(/^([_a-zA-Z][_a-zA-Z0-9]*)/);
+            if (!m) return null;
+            name = m[1];
+            pos += m[1].length;
+        }
+
+        // Saute les espaces puis vérifie AS (
+        while (pos < sql.length && /\s/.test(sql[pos])) pos++;
+        const asM = sql.slice(pos).match(/^AS\s*\(/i);
+        if (!asM) return null;
+        const openParen = pos + asM[0].length - 1;
+        pos = openParen;
+
+        // Extrait le corps entre parenthèses
+        const inner = extractParenContent(sql, pos);
         if (!inner) return null;
+        pos += inner.length + 2; // saute ( corps )
+
         const normalized = inner.replace(/[ \t\r\n]+/g, ' ').trim();
-        // Extrait la description du commentaire /* ... */ en début de corps
         const descM = normalized.match(/^\/\*(.*?)\*\//s);
         const description = descM ? descM[1].trim() : undefined;
         const bodyNoComment = normalized.replace(/^\/\*.*?\*\/\s*/s, '').trim();
-        // Extrait la première source (FROM)
         const srcM = bodyNoComment.match(/\bFROM\s+((?:"[^"]*"|\S)+)/i);
         const source = srcM ? unquoteId(srcM[1]) : '';
         ctes.push({ name, fullBody: bodyNoComment, source, description });
+
+        // Saute la virgule séparatrice
+        while (pos < sql.length && /[\s,]/.test(sql[pos])) pos++;
     }
+
     return ctes.length > 0 ? ctes : null;
 }
 
@@ -811,7 +844,8 @@ function parseCteBodyToStep(
 
 /** Parser par CTE : chaque CTE est parsé indépendamment (fallback custom_sql). */
 function tryParseCteChainSmart(sql: string, materialize: SqlBlockMaterialize): SqlBlockAst | null {
-    if (!/^WITH\s+_sqlblock_s/i.test(sql)) return null;
+    // Accepte tout WITH contenant au moins un CTE _sqlblock_s (même si d'autres ont un nom custom)
+    if (!/^WITH\b/i.test(sql) || !/_sqlblock_s\d+/i.test(sql)) return null;
     const ctes = extractCtesWithFullBody(sql);
     if (!ctes?.length) return null;
 
