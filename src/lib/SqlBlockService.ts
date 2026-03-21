@@ -167,8 +167,10 @@ function extractCtes(sql: string): CteInfo[] | null {
     while ((match = re.exec(sql)) !== null) {
         const innerSql = extractParenContent(sql, match.index + match[0].length - 1);
         if (!innerSql) return null;
-        const m = innerSql.replace(/[ \t\r\n]+/g, ' ').trim()
-            .match(/^SELECT\s+(.+?)\s+FROM\s+((?:"[^"]*"|\S)+)\s*;?\s*$/is);
+        // Ignore le commentaire de description /* ... */ en début de corps
+        const stripped = innerSql.replace(/[ \t\r\n]+/g, ' ').trim()
+            .replace(/^\/\*.*?\*\/\s*/s, '').trim();
+        const m = stripped.match(/^SELECT\s+(.+?)\s+FROM\s+((?:"[^"]*"|\S)+)\s*;?\s*$/is);
         if (!m) return null;
         ctes.push({ body: m[1].trim(), source: m[2].trim() });
     }
@@ -493,9 +495,10 @@ function unquoteId(name: string): string {
 // ─────────────────────────────────────────────────────────────────────────────
 
 interface CteFullInfo {
-    name: string;       // nom du CTE (sans quotes)
-    fullBody: string;   // corps normalisé sans commentaire initial
-    source: string;     // nom de la source (unquoted) dans ce CTE
+    name: string;        // nom du CTE (sans quotes)
+    fullBody: string;    // corps normalisé sans commentaire initial
+    source: string;      // nom de la source (unquoted) dans ce CTE
+    description?: string;// texte extrait du /* commentaire */ initial
 }
 
 function extractCtesWithFullBody(sql: string): CteFullInfo[] | null {
@@ -508,12 +511,14 @@ function extractCtesWithFullBody(sql: string): CteFullInfo[] | null {
         const inner = extractParenContent(sql, openParen);
         if (!inner) return null;
         const normalized = inner.replace(/[ \t\r\n]+/g, ' ').trim();
-        // Retire le commentaire de description en début de corps
+        // Extrait la description du commentaire /* ... */ en début de corps
+        const descM = normalized.match(/^\/\*(.*?)\*\//s);
+        const description = descM ? descM[1].trim() : undefined;
         const bodyNoComment = normalized.replace(/^\/\*.*?\*\/\s*/s, '').trim();
         // Extrait la première source (FROM)
         const srcM = bodyNoComment.match(/\bFROM\s+((?:"[^"]*"|\S)+)/i);
         const source = srcM ? unquoteId(srcM[1]) : '';
-        ctes.push({ name, fullBody: bodyNoComment, source });
+        ctes.push({ name, fullBody: bodyNoComment, source, description });
     }
     return ctes.length > 0 ? ctes : null;
 }
@@ -816,7 +821,12 @@ function tryParseCteChainSmart(sql: string, materialize: SqlBlockMaterialize): S
     for (const cte of ctes) {
         const typeHint = stepTypeFromCteName(cte.name);
         const step = parseCteBodyToStep(cte.fullBody, typeHint, cte.source);
-        if (step !== null) steps.push(step);
+        if (step === null) continue;
+        // Réattache la description extraite du commentaire /* ... */
+        if (cte.description) step.description = cte.description;
+        // Préserve le nom custom (pas auto-généré)
+        if (!/^_sqlblock_s\d+(?:_[a-z]+)?$/.test(cte.name)) step.name = cte.name;
+        steps.push(step);
     }
 
     return { source, steps, materialize };
