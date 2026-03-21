@@ -574,6 +574,117 @@ function DistinctValueInput({ value, onChange, column, fetchDistinctValues, plac
     )
 }
 
+function DistinctMultiInput({ values, onChange, column, fetchDistinctValues, className = '' }: {
+    values: string[]; onChange: (v: string[]) => void
+    column: string
+    fetchDistinctValues?: (col: string, limit: number) => Promise<{ values: string[]; hasMore: boolean }>
+    className?: string
+}) {
+    const [open, setOpen] = useState(false)
+    const [search, setSearch] = useState('')
+    const [distinctValues, setDistinctValues] = useState<string[]>([])
+    const [hasMore, setHasMore] = useState(false)
+    const [limit, setLimit] = useState(DISTINCT_INITIAL_LIMIT)
+    const [loading, setLoading] = useState(false)
+    const wrapRef = useRef<HTMLDivElement>(null)
+
+    async function load(lim: number) {
+        if (!fetchDistinctValues || !column) return
+        setLoading(true)
+        try {
+            const res = await fetchDistinctValues(column, lim)
+            setDistinctValues(res.values)
+            setHasMore(res.hasMore)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        if (open) { setLimit(DISTINCT_INITIAL_LIMIT); load(DISTINCT_INITIAL_LIMIT) }
+    }, [open, column])
+
+    useEffect(() => {
+        if (!open) return
+        function handleClick(e: MouseEvent) {
+            if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false)
+        }
+        document.addEventListener('mousedown', handleClick)
+        return () => document.removeEventListener('mousedown', handleClick)
+    }, [open])
+
+    async function handleLoadMore() {
+        const newLim = limit * 10
+        setLimit(newLim)
+        await load(newLim)
+    }
+
+    function toggle(v: string) {
+        onChange(values.includes(v) ? values.filter(x => x !== v) : [...values, v])
+    }
+
+    const filtered = distinctValues.filter(v => !search || v.toLowerCase().includes(search.toLowerCase()))
+
+    return (
+        <div ref={wrapRef} className={`relative ${className}`}>
+            {/* Chips des valeurs sélectionnées + bouton ouvrir */}
+            <div
+                className="min-h-6 flex flex-wrap gap-0.5 items-center rounded border border-border bg-background px-1.5 py-0.5 cursor-pointer text-xs"
+                onClick={() => setOpen(o => !o)}
+            >
+                {values.length === 0
+                    ? <span className="text-muted-foreground italic">Sélectionner…</span>
+                    : values.map(v => (
+                        <span key={v} className="inline-flex items-center gap-0.5 bg-primary/15 text-primary rounded px-1 py-0 font-mono">
+                            {v}
+                            <button className="hover:text-destructive leading-none" onMouseDown={e => { e.stopPropagation(); toggle(v) }}>×</button>
+                        </span>
+                    ))
+                }
+            </div>
+            {open && (
+                <div className="absolute z-50 mt-0.5 left-0 right-0 bg-popover border border-border rounded shadow-lg flex flex-col max-h-52 text-xs">
+                    <div className="px-2 py-1 border-b border-border">
+                        <input
+                            autoFocus
+                            className="w-full h-5 bg-transparent text-xs outline-none placeholder:text-muted-foreground"
+                            placeholder="Rechercher…"
+                            value={search}
+                            onChange={e => setSearch(e.target.value)}
+                        />
+                    </div>
+                    <div className="overflow-y-auto flex-1">
+                        {loading && <div className="px-2 py-1 text-muted-foreground italic">Chargement…</div>}
+                        {!loading && filtered.length === 0 && <div className="px-2 py-1 text-muted-foreground italic">Aucune valeur</div>}
+                        {filtered.map(v => {
+                            const checked = values.includes(v)
+                            return (
+                                <button key={v}
+                                    className={`w-full text-left px-2 py-0.5 flex items-center gap-1.5 hover:bg-muted ${checked ? 'font-medium text-primary' : ''}`}
+                                    onMouseDown={e => { e.preventDefault(); toggle(v) }}>
+                                    <span className="w-3 shrink-0">{checked ? '✓' : ''}</span>
+                                    <span className="truncate">{v}</span>
+                                </button>
+                            )
+                        })}
+                        {!loading && hasMore && (
+                            <button className="w-full text-left px-2 py-1 text-primary hover:bg-muted border-t border-border font-medium"
+                                onMouseDown={e => { e.preventDefault(); handleLoadMore() }}>
+                                Charger plus…
+                            </button>
+                        )}
+                    </div>
+                    {values.length > 0 && (
+                        <div className="px-2 py-1 border-t border-border text-muted-foreground">
+                            {values.length} valeur{values.length > 1 ? 's' : ''} sélectionnée{values.length > 1 ? 's' : ''}
+                        </div>
+                    )}
+                </div>
+            )}
+        </div>
+    )
+}
+
 function FilterConditionRow({ cond, availableCols, onChange, onRemove, onMoveUp, onMoveDown, fetchDistinctValues }: {
     cond: FilterCondition; availableCols: string[]
     onChange: (patch: Partial<FilterCondition>) => void
@@ -607,7 +718,13 @@ function FilterConditionRow({ cond, availableCols, onChange, onRemove, onMoveUp,
                 <DistinctValueInput value={cond.valueTo ?? ''} onChange={v => onChange({ valueTo: v })} column={cond.column} fetchDistinctValues={fetchDistinctValues} placeholder="à" className="w-20" />
             </>}
             {isMulti && (
-                <TxtInput value={(cond.values ?? []).join(', ')} onChange={v => onChange({ values: v.split(',').map(x => x.trim()).filter(Boolean) })} placeholder="val1, val2…" className="flex-1 min-w-24" />
+                <DistinctMultiInput
+                    values={cond.values ?? []}
+                    onChange={v => onChange({ values: v })}
+                    column={cond.column}
+                    fetchDistinctValues={fetchDistinctValues}
+                    className="flex-1 min-w-32"
+                />
             )}
             <MoveBtns onUp={onMoveUp} onDown={onMoveDown} />
             <RemoveBtn onClick={onRemove} />
