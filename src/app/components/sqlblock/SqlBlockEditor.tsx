@@ -1194,12 +1194,17 @@ function DateTruncStepUI({ step, availableCols, onChange }: { step: DateTruncSte
 
 // ─── Résumé inline d'un step ──────────────────────────────────────────────────
 
+function truncateCols(items: string[], max = 4): string {
+    if (items.length <= max) return items.join(', ')
+    return items.slice(0, max).join(', ') + '…'
+}
+
 function stepSummary(step: SqlBlockStep): string {
     switch (step.type) {
-        case 'select_columns':  return step.columns.length ? step.columns.join(', ') : '—'
-        case 'exclude_columns': return step.columns.length ? step.columns.join(', ') : '—'
-        case 'rename_columns':  return step.renames.length ? step.renames.map(r => `${r.from}→${r.to}`).join(', ') : '—'
-        case 'change_type':     return step.changes.length ? step.changes.map(c => `${c.column}:${c.targetType}`).join(', ') : '—'
+        case 'select_columns':  return step.columns.length ? truncateCols(step.columns) : '—'
+        case 'exclude_columns': return step.columns.length ? truncateCols(step.columns) : '—'
+        case 'rename_columns':  return step.renames.length ? truncateCols(step.renames.map(r => `${r.from}→${r.to}`)) : '—'
+        case 'change_type':     return step.changes.length ? truncateCols(step.changes.map(c => `${c.column}:${c.targetType}`)) : '—'
         case 'filter_rows': {
             const groups = step.groups?.length ? step.groups : (step.conditions?.length ? [{ items: step.conditions.map(c => ({ kind: 'cond', cond: c })) }] : [])
             function countItems(g): number {
@@ -1209,15 +1214,15 @@ function stepSummary(step: SqlBlockStep): string {
             const neg = groups.some(g => g.negate)
             return n ? `${n} condition${n > 1 ? 's' : ''}${groups.length > 1 ? ` (${groups.length} groupes)` : ''}${neg ? ' [NOT]' : ''}` : '—'
         }
-        case 'sort':            return step.keys.length ? step.keys.map(k => `${k.column} ${k.direction === 'asc' ? '↑' : '↓'}`).join(', ') : '—'
+        case 'sort':            return step.keys.length ? truncateCols(step.keys.map(k => `${k.column} ${k.direction === 'asc' ? '↑' : '↓'}`)) : '—'
         case 'top_n':           return step.mode === 'limit' ? `${step.n} lignes` : `${step.n}% échantillon`
-        case 'derive':          return step.columns.length ? step.columns.map(c => c.name).join(', ') : '—'
-        case 'fill_null':       return step.fills.length ? step.fills.map(f => f.column).join(', ') : '—'
-        case 'group_by':        return step.groupCols.length ? step.groupCols.join(', ') : '—'
+        case 'derive':          return step.columns.length ? truncateCols(step.columns.map(c => c.name)) : '—'
+        case 'fill_null':       return step.fills.length ? truncateCols(step.fills.map(f => f.column)) : '—'
+        case 'group_by':        return step.groupCols.length ? truncateCols(step.groupCols) : '—'
         case 'join':            return step.rightTable || '—'
         case 'union':           return step.table || '—'
         case 'pivot':           return step.onColumn || '—'
-        case 'unpivot':         return step.columns.length ? step.columns.join(', ') : '—'
+        case 'unpivot':         return step.columns.length ? truncateCols(step.columns) : '—'
         case 'window':          return step.columns.length ? `${step.columns.length} col.` : '—'
         case 'unnest':          return step.column || '—'
         case 'json_extract':    return step.column || '—'
@@ -1319,7 +1324,7 @@ function StepItem({ step, index, totalSteps, availableCols, availableColTypes,
                     <button className="flex-1 text-left min-w-0" onClick={() => setConfigOpen(true)}>
                         <span className="text-xs font-medium">{STEP_LABELS[step.type]}</span>
                         {summary && summary !== '—' && (
-                            <span className="ml-1.5 text-xs text-muted-foreground truncate">{summary}</span>
+                            <span className="block text-xs text-muted-foreground truncate">{summary}</span>
                         )}
                     </button>
 
