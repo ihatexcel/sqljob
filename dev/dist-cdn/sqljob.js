@@ -132299,10 +132299,11 @@ ORDER BY ordinal_position;`
   {
     name: "SELECT DISTINCT dynamique",
     description: "Génère un SELECT DISTINCT avec toutes les colonnes",
-    code: `SELECT DISTINCT {{ SELECT column_name FROM information_schema.columns
+    code: `SELECT
+    column_name
+FROM information_schema.columns
 WHERE table_name = 'source1'
-ORDER BY ordinal_position;
-}} FROM source1;`
+ORDER BY ordinal_position;`
   },
   {
     name: "Valeurs Ajouter/Enlever",
