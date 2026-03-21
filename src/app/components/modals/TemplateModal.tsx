@@ -27,7 +27,10 @@ export function TemplateModal() {
         <Dialog open={isOpen} onOpenChange={open => !open && close()}>
             <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col p-0 gap-0" aria-describedby={undefined}>
                 <DialogHeader className="p-4 border-b border-border">
-                    <DialogTitle>{getModalTitle()}</DialogTitle>
+                    <DialogTitle className="flex items-center gap-2">
+                        <Icon name="book-marked" size={18} />
+                        {getModalTitle()}
+                    </DialogTitle>
                 </DialogHeader>
                 <div className="p-4 border-b border-border">
                     <Input
