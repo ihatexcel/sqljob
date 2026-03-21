@@ -60,6 +60,7 @@ import type {
     UnnestStep,
     JsonExtractStep,
     DateTruncStep,
+    CustomSqlStep,
     SqlBlockMaterialize,
 } from '../../../lib/SqlBlockTypes'
 import { SqlDataTable } from '../SqlDataTable'
@@ -491,12 +492,95 @@ const FILTER_OPS: { op: FilterOp; label: string }[] = [
     { op: 'between', label: 'BETWEEN' },
 ]
 
-function FilterConditionRow({ cond, availableCols, onChange, onRemove, onMoveUp, onMoveDown }: {
+const DISTINCT_INITIAL_LIMIT = 100
+
+function DistinctValueInput({ value, onChange, column, fetchDistinctValues, placeholder = 'valeur', className = '' }: {
+    value: string; onChange: (v: string) => void
+    column: string
+    fetchDistinctValues?: (col: string, limit: number) => Promise<{ values: string[]; hasMore: boolean }>
+    placeholder?: string; className?: string
+}) {
+    const [open, setOpen] = useState(false)
+    const [distinctValues, setDistinctValues] = useState<string[]>([])
+    const [hasMore, setHasMore] = useState(false)
+    const [limit, setLimit] = useState(DISTINCT_INITIAL_LIMIT)
+    const [loading, setLoading] = useState(false)
+    const wrapRef = useRef<HTMLDivElement>(null)
+
+    async function load(lim: number) {
+        if (!fetchDistinctValues || !column) return
+        setLoading(true)
+        try {
+            const res = await fetchDistinctValues(column, lim)
+            setDistinctValues(res.values)
+            setHasMore(res.hasMore)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    // Recharger quand la colonne change ou dropdown s'ouvre
+    useEffect(() => {
+        if (open) { setLimit(DISTINCT_INITIAL_LIMIT); load(DISTINCT_INITIAL_LIMIT) }
+    }, [open, column])
+
+    // Fermer si clic dehors
+    useEffect(() => {
+        if (!open) return
+        function handleClick(e: MouseEvent) {
+            if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false)
+        }
+        document.addEventListener('mousedown', handleClick)
+        return () => document.removeEventListener('mousedown', handleClick)
+    }, [open])
+
+    async function handleLoadMore() {
+        const newLim = limit * 10
+        setLimit(newLim)
+        await load(newLim)
+    }
+
+    const filtered = distinctValues.filter(v => !value || v.toLowerCase().includes(value.toLowerCase()))
+
+    return (
+        <div ref={wrapRef} className={`relative ${className}`}>
+            <input
+                type="text"
+                className="w-full h-6 rounded border border-border bg-background px-1.5 text-xs font-mono"
+                value={value}
+                onChange={e => onChange(e.target.value)}
+                placeholder={placeholder}
+                onFocus={() => fetchDistinctValues && setOpen(true)}
+            />
+            {open && fetchDistinctValues && (
+                <div className="absolute z-50 mt-0.5 left-0 right-0 bg-popover border border-border rounded shadow-lg max-h-40 overflow-y-auto text-xs">
+                    {loading && <div className="px-2 py-1 text-muted-foreground italic">Chargement…</div>}
+                    {!loading && filtered.length === 0 && <div className="px-2 py-1 text-muted-foreground italic">Aucune valeur</div>}
+                    {filtered.map(v => (
+                        <button key={v} className="w-full text-left px-2 py-0.5 hover:bg-muted truncate"
+                            onMouseDown={e => { e.preventDefault(); onChange(v); setOpen(false) }}>
+                            {v}
+                        </button>
+                    ))}
+                    {!loading && hasMore && (
+                        <button className="w-full text-left px-2 py-1 text-primary hover:bg-muted border-t border-border text-xs font-medium"
+                            onMouseDown={e => { e.preventDefault(); handleLoadMore() }}>
+                            Charger plus…
+                        </button>
+                    )}
+                </div>
+            )}
+        </div>
+    )
+}
+
+function FilterConditionRow({ cond, availableCols, onChange, onRemove, onMoveUp, onMoveDown, fetchDistinctValues }: {
     cond: FilterCondition; availableCols: string[]
     onChange: (patch: Partial<FilterCondition>) => void
     onRemove: () => void
     onMoveUp?: () => void
     onMoveDown?: () => void
+    fetchDistinctValues?: (col: string, limit: number) => Promise<{ values: string[]; hasMore: boolean }>
 }) {
     const noVal = cond.op === 'is_null' || cond.op === 'not_null'
     const isBetween = cond.op === 'between'
@@ -508,12 +592,19 @@ function FilterConditionRow({ cond, availableCols, onChange, onRemove, onMoveUp,
                 {FILTER_OPS.map(o => <option key={o.op} value={o.op}>{o.label}</option>)}
             </select>
             {!noVal && !isBetween && !isMulti && (
-                <TxtInput value={cond.value ?? ''} onChange={v => onChange({ value: v })} placeholder="valeur" className="flex-1 min-w-16" />
+                <DistinctValueInput
+                    value={cond.value ?? ''}
+                    onChange={v => onChange({ value: v })}
+                    column={cond.column}
+                    fetchDistinctValues={fetchDistinctValues}
+                    placeholder="valeur"
+                    className="flex-1 min-w-16"
+                />
             )}
             {isBetween && <>
-                <TxtInput value={cond.value ?? ''} onChange={v => onChange({ value: v })} placeholder="de" className="w-20" />
+                <DistinctValueInput value={cond.value ?? ''} onChange={v => onChange({ value: v })} column={cond.column} fetchDistinctValues={fetchDistinctValues} placeholder="de" className="w-20" />
                 <span className="text-xs text-muted-foreground">et</span>
-                <TxtInput value={cond.valueTo ?? ''} onChange={v => onChange({ valueTo: v })} placeholder="à" className="w-20" />
+                <DistinctValueInput value={cond.valueTo ?? ''} onChange={v => onChange({ valueTo: v })} column={cond.column} fetchDistinctValues={fetchDistinctValues} placeholder="à" className="w-20" />
             </>}
             {isMulti && (
                 <TxtInput value={(cond.values ?? []).join(', ')} onChange={v => onChange({ values: v.split(',').map(x => x.trim()).filter(Boolean) })} placeholder="val1, val2…" className="flex-1 min-w-24" />
@@ -570,7 +661,7 @@ function moveArr(arr: any[], i: number, delta: number) {
     return next
 }
 
-function FilterGroupUI({ group, onUpdate, onRemove, onMoveUp, onMoveDown, availableCols, depth = 0 }: {
+function FilterGroupUI({ group, onUpdate, onRemove, onMoveUp, onMoveDown, availableCols, depth = 0, fetchDistinctValues }: {
     group: FilterGroup
     onUpdate: (g: FilterGroup) => void
     onRemove?: () => void
@@ -578,6 +669,7 @@ function FilterGroupUI({ group, onUpdate, onRemove, onMoveUp, onMoveDown, availa
     onMoveDown?: () => void
     availableCols: string[]
     depth?: number
+    fetchDistinctValues?: (col: string, limit: number) => Promise<{ values: string[]; hasMore: boolean }>
 }) {
     const g = normalizeFilterGroup(group)
     const items = g.items ?? []
@@ -635,6 +727,7 @@ function FilterGroupUI({ group, onUpdate, onRemove, onMoveUp, onMoveDown, availa
                             onRemove={() => setItems(items.filter((_, idx) => idx !== i))}
                             onMoveUp={i > 0 ? () => setItems(moveArr(items, i, -1)) : undefined}
                             onMoveDown={i < items.length - 1 ? () => setItems(moveArr(items, i, 1)) : undefined}
+                            fetchDistinctValues={fetchDistinctValues}
                         />
                     ) : (
                         <FilterGroupUI
@@ -645,6 +738,7 @@ function FilterGroupUI({ group, onUpdate, onRemove, onMoveUp, onMoveDown, availa
                             onMoveDown={i < items.length - 1 ? () => setItems(moveArr(items, i, 1)) : undefined}
                             availableCols={availableCols}
                             depth={depth + 1}
+                            fetchDistinctValues={fetchDistinctValues}
                         />
                     )}
                 </div>
@@ -663,7 +757,7 @@ function FilterGroupUI({ group, onUpdate, onRemove, onMoveUp, onMoveDown, availa
     )
 }
 
-function FilterRowsStepUI({ step, availableCols, onChange }: { step: FilterRowsStep; availableCols: string[]; onChange: (s: FilterRowsStep) => void }) {
+function FilterRowsStepUI({ step, availableCols, onChange, fetchDistinctValues }: { step: FilterRowsStep; availableCols: string[]; onChange: (s: FilterRowsStep) => void; fetchDistinctValues?: (col: string, limit: number) => Promise<{ values: string[]; hasMore: boolean }> }) {
     // Normalise rétrocompat : ancien format conditions[] → groups
     const groups: FilterGroup[] = step.groups?.length
         ? step.groups
@@ -701,6 +795,7 @@ function FilterRowsStepUI({ step, availableCols, onChange }: { step: FilterRowsS
                         onMoveDown={gi < groups.length - 1 ? () => updateGroups(moveArr(groups, gi, 1)) : undefined}
                         availableCols={availableCols}
                         depth={0}
+                        fetchDistinctValues={fetchDistinctValues}
                     />
                 </div>
             ))}
@@ -1227,17 +1322,38 @@ function stepSummary(step: SqlBlockStep): string {
         case 'unnest':          return step.column || '—'
         case 'json_extract':    return step.column || '—'
         case 'date_trunc':      return step.column ? `${step.column} → ${step.granularity}` : '—'
+        case 'custom_sql':      return step.sql ? step.sql.slice(0, 40).replace(/\n/g, ' ') + (step.sql.length > 40 ? '…' : '') : '—'
         default:                return ''
     }
 }
 
+// ─── CustomSqlStepUI ──────────────────────────────────────────────────────────
+
+function CustomSqlStepUI({ step, onChange }: { step: CustomSqlStep; onChange: (s: CustomSqlStep) => void }) {
+    return (
+        <div className="flex flex-col gap-3">
+            <p className="text-xs text-muted-foreground">
+                Écrivez du SQL libre. Utilisez <code className="bg-muted px-1 rounded font-mono">{'{{subquery}}'}</code> pour référencer le résultat de l'étape précédente (ou la source si c'est la première étape).
+            </p>
+            <textarea
+                className="w-full h-48 text-xs font-mono rounded-md border border-border bg-background p-2 resize-none focus:outline-none focus:ring-1 focus:ring-primary"
+                value={step.sql}
+                onChange={e => onChange({ ...step, sql: e.target.value })}
+                spellCheck={false}
+                placeholder="SELECT * FROM {{subquery}} WHERE ..."
+            />
+        </div>
+    )
+}
+
 // ─── StepConfigModal ──────────────────────────────────────────────────────────
 
-function StepConfigModal({ step, index, availableCols, availableColTypes, onUpdate, onClose }: {
+function StepConfigModal({ step, index, availableCols, availableColTypes, onUpdate, onClose, fetchDistinctValues }: {
     step: SqlBlockStep; index: number
     availableCols: string[]; availableColTypes: Record<string, string>
     onUpdate: (idx: number, s: SqlBlockStep) => void
     onClose: () => void
+    fetchDistinctValues?: (col: string, limit: number) => Promise<{ values: string[]; hasMore: boolean }>
 }) {
     // Fermeture sur Échap
     useEffect(() => {
@@ -1263,7 +1379,7 @@ function StepConfigModal({ step, index, availableCols, availableColTypes, onUpda
                     {step.type === 'select_columns' && <SelectColumnsStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
                     {step.type === 'exclude_columns' && <ExcludeColumnsStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
                     {step.type === 'change_type' && <ChangeTypeStepUI step={step} availableCols={availableCols} availableColTypes={availableColTypes} onChange={s => onUpdate(index, s)} />}
-                    {step.type === 'filter_rows' && <FilterRowsStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
+                    {step.type === 'filter_rows' && <FilterRowsStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} fetchDistinctValues={fetchDistinctValues} />}
                     {step.type === 'sort' && <SortStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
                     {step.type === 'top_n' && <TopNStepUI step={step} onChange={s => onUpdate(index, s)} />}
                     {step.type === 'rename_columns' && <RenameColumnsStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
@@ -1278,6 +1394,7 @@ function StepConfigModal({ step, index, availableCols, availableColTypes, onUpda
                     {step.type === 'unnest' && <UnnestStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
                     {step.type === 'json_extract' && <JsonExtractStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
                     {step.type === 'date_trunc' && <DateTruncStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
+                    {step.type === 'custom_sql' && <CustomSqlStepUI step={step} onChange={s => onUpdate(index, s)} />}
                 </div>
             </div>
         </div>,
@@ -1289,7 +1406,8 @@ function StepConfigModal({ step, index, availableCols, availableColTypes, onUpda
 
 function StepItem({ step, index, totalSteps, availableCols, availableColTypes,
     eyeOpen, eyeLoading, onEyeToggle,
-    onUpdate, onRemove, onMove }: {
+    onUpdate, onRemove, onMove,
+    configOpen, onConfigOpen, onConfigClose, fetchDistinctValues }: {
     step: SqlBlockStep; index: number; totalSteps: number
     availableCols: string[]; availableColTypes: Record<string, string>
     eyeOpen: boolean; eyeLoading: boolean
@@ -1297,8 +1415,11 @@ function StepItem({ step, index, totalSteps, availableCols, availableColTypes,
     onUpdate: (idx: number, s: SqlBlockStep) => void
     onRemove: (idx: number) => void
     onMove: (idx: number, dir: -1 | 1) => void
+    configOpen: boolean
+    onConfigOpen: () => void
+    onConfigClose: () => void
+    fetchDistinctValues?: (col: string, limit: number) => Promise<{ values: string[]; hasMore: boolean }>
 }) {
-    const [configOpen, setConfigOpen] = useState(false)
     const [pendingDelete, setPendingDelete] = useState(false)
     const summary = stepSummary(step)
 
@@ -1321,7 +1442,7 @@ function StepItem({ step, index, totalSteps, availableCols, availableColTypes,
 
                     <span className="text-xs text-muted-foreground font-mono w-4 shrink-0">{index + 1}.</span>
                     {/* Nom + résumé — clic ouvre la config */}
-                    <button className="flex-1 text-left min-w-0" onClick={() => setConfigOpen(true)}>
+                    <button className="flex-1 text-left min-w-0" onClick={onConfigOpen}>
                         <span className="text-xs font-medium">{STEP_LABELS[step.type]}</span>
                         {summary && summary !== '—' && (
                             <span className="block text-xs text-muted-foreground truncate">{summary}</span>
@@ -1340,7 +1461,7 @@ function StepItem({ step, index, totalSteps, availableCols, availableColTypes,
                         ) : (
                             <>
                                 {/* Roue crantée — ouvre la modale de config */}
-                                <button onClick={() => setConfigOpen(true)}
+                                <button onClick={onConfigOpen}
                                     className="text-muted-foreground hover:text-foreground w-6 h-6 flex items-center justify-center rounded hover:bg-muted transition-colors"
                                     title="Configurer ce step">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -1362,7 +1483,8 @@ function StepItem({ step, index, totalSteps, availableCols, availableColTypes,
             {configOpen && (
                 <StepConfigModal step={step} index={index}
                     availableCols={availableCols} availableColTypes={availableColTypes}
-                    onUpdate={onUpdate} onClose={() => setConfigOpen(false)} />
+                    onUpdate={onUpdate} onClose={onConfigClose}
+                    fetchDistinctValues={fetchDistinctValues} />
             )}
         </>
     )
@@ -1390,6 +1512,7 @@ function defaultStep(type: SqlBlockStep['type']): SqlBlockStep {
         case 'unnest':          return { type, column: '', alias: 'item', keepEmpty: false }
         case 'json_extract':    return { type, column: '', extractions: [] }
         case 'date_trunc':      return { type, column: '', granularity: 'month', mode: 'replace' }
+        case 'custom_sql':      return { type, sql: 'SELECT * FROM {{subquery}}' }
     }
 }
 
@@ -1598,6 +1721,9 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
     // SQL généré visible ?
     const [showSql, setShowSql] = useState(false)
 
+    // Index du step dont la modale de config est ouverte
+    const [configOpenIdx, setConfigOpenIdx] = useState<number | null>(null)
+
     const selectSql = getEffectiveSql(cfg)
     const displaySql = cell.name?.trim()
         ? generateMaterializeQuery(cell.name, selectSql, ast.materialize ?? 'view')
@@ -1629,8 +1755,26 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
     }, [cell, ast.steps, forceUpdate])
 
     const handleStepAdd = useCallback((step: SqlBlockStep) => {
-        commitAstUpdate(cell, { steps: [...ast.steps, step] }, forceUpdate)
+        const newSteps = [...ast.steps, step]
+        commitAstUpdate(cell, { steps: newSteps }, forceUpdate)
+        setConfigOpenIdx(newSteps.length - 1)
     }, [cell, ast.steps, forceUpdate])
+
+    // ─── Distinct values pour le filtre ────────────────────────────────────
+
+    const fetchDistinctValues = useCallback(async (column: string, limit: number): Promise<{ values: string[]; hasMore: boolean }> => {
+        if (!ast.source || !column) return { values: [], hasMore: false }
+        try {
+            const col = `"${column.replace(/"/g, '""')}"`
+            const tbl = `"${ast.source.replace(/"/g, '""')}"`
+            const sql = `SELECT DISTINCT ${col} FROM ${tbl} WHERE ${col} IS NOT NULL ORDER BY 1 LIMIT ${limit + 1}`
+            const rows = await DuckDBManager.executeQuery(sql)
+            const hasMore = rows.length > limit
+            return { values: rows.slice(0, limit).map(r => String(r[column] ?? '')), hasMore }
+        } catch {
+            return { values: [], hasMore: false }
+        }
+    }, [ast.source])
 
     // ─── Handlers SQL manuel ───────────────────────────────────────────────
 
@@ -1801,6 +1945,10 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
                                     onUpdate={handleStepUpdate}
                                     onRemove={handleStepRemove}
                                     onMove={handleStepMove}
+                                    configOpen={configOpenIdx === idx}
+                                    onConfigOpen={() => setConfigOpenIdx(idx)}
+                                    onConfigClose={() => setConfigOpenIdx(null)}
+                                    fetchDistinctValues={fetchDistinctValues}
                                 />
                             )
                         })}
