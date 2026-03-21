@@ -286,24 +286,6 @@ export const CELL_TYPE_SCHEMAS = {
                     bodyConfig: { minHeight: '350px' },
                     bodyDisplay: { showSkeleton: { excludeWhenSqlEditor: true } }
                 },
-                sqlBlock: {
-                    executeHandler: 'executeSqlBlockCell',
-                    defaultNamePrefix: 'sqlBlock',
-                    showNameInHeader: true,
-                    exportFields: ['name', 'json', 'queries'],
-                    initProps: { _availableColumns: [] },
-                    commonParams: ['name', 'title'],
-                    queryCount: 1,
-                    queryNames: ['main'],
-                    specificParams: [],
-                    defaults: {
-                        title: '',
-                        json: null, // initialisé dynamiquement à la création
-                    },
-                    bodyFamily: 'sqlBlock',
-                    bodyConfig: {},
-                    bodyDisplay: { showSkeleton: { when: 'running' } }
-                },
                 perspective: {
                     executeHandler: 'executePerspectiveCell',
                     defaultNamePrefix: 'perspective',

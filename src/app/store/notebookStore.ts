@@ -238,7 +238,6 @@ function buildInitialState() {
             { type: 'pdfme',              label: 'PDF (pdfme)',               icon: 'picture-as-pdf' },
             { type: 'echart',             label: 'EChart (Apache ECharts)',  icon: 'bar-chart' },
             { type: 'perspective',        label: 'Perspective Viewer',       icon: 'analytics' },
-            { type: 'sqlBlock',           label: 'SQL Block (visuel)',        icon: 'account-tree' },
         ],
 
         _tables: {},

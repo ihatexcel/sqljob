@@ -2,7 +2,6 @@
 import { CELL_TYPE_SCHEMAS, CELL_TYPE_HANDLERS } from './cellTypeSchemas'
 import { GistEncrypt } from './GistEncrypt'
 import { FileHandler } from './FileHandler'
-import { createDefaultSqlBlockConfig } from './SqlBlockTypes'
 
         export class ConfigManager {
             static SQLJOB_VERSION = '0.1';
@@ -94,11 +93,7 @@ import { createDefaultSqlBlockConfig } from './SqlBlockTypes'
                 if (c.type === 'pdfme' && typeof c.json === 'object' && c.json !== null) {
                     c.json = JSON.stringify(c.json, null, 2);
                 }
-                // sqlBlock: initialiser la config si absente (rétro-compat)
-                if (c.type === 'sqlBlock' && !c.json) {
-                    c.json = createDefaultSqlBlockConfig();
-                }
-                return c;
+return c;
             }
 
             /**
