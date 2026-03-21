@@ -134178,6 +134178,10 @@ let sqlblockSchemaEnsured = !1;
 async function ensureSqlblockSchema() {
   sqlblockSchemaEnsured || (await DuckDBManager.executeQuery(`CREATE SCHEMA IF NOT EXISTS "${SQLBLOCK_SCHEMA}"`), sqlblockSchemaEnsured = !0);
 }
+function makeTableRef(At, yt) {
+  const wt = `sb_${At.replace(/[^a-zA-Z0-9]/g, "_")}_s${yt < 0 ? "src" : yt}`;
+  return `"${SQLBLOCK_SCHEMA}"."${wt}"`;
+}
 function useStepEyeData(At, yt) {
   const [xt, wt] = reactExports.useState(null), [Ct, kt] = reactExports.useState(!1), [, Et] = reactExports.useState(0), St = reactExports.useRef(yt);
   St.current = yt;
