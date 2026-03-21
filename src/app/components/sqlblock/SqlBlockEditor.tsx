@@ -497,7 +497,7 @@ const DISTINCT_INITIAL_LIMIT = 100
 function DistinctValueInput({ value, onChange, column, fetchDistinctValues, placeholder = 'valeur', className = '' }: {
     value: string; onChange: (v: string) => void
     column: string
-    fetchDistinctValues?: (col: string, limit: number) => Promise<{ values: string[]; hasMore: boolean }>
+    fetchDistinctValues?: (col: string, selectLimit: number, fromLimit: number) => Promise<{ values: string[]; hasMore: boolean }>
     placeholder?: string; className?: string
 }) {
     const [open, setOpen] = useState(false)
@@ -511,7 +511,7 @@ function DistinctValueInput({ value, onChange, column, fetchDistinctValues, plac
         if (!fetchDistinctValues || !column) return
         setLoading(true)
         try {
-            const res = await fetchDistinctValues(column, lim)
+            const res = await fetchDistinctValues(column, lim, 0)
             setDistinctValues(res.values)
             setHasMore(res.hasMore)
         } finally {
@@ -577,22 +577,23 @@ function DistinctValueInput({ value, onChange, column, fetchDistinctValues, plac
 function DistinctMultiInput({ values, onChange, column, fetchDistinctValues, className = '' }: {
     values: string[]; onChange: (v: string[]) => void
     column: string
-    fetchDistinctValues?: (col: string, limit: number) => Promise<{ values: string[]; hasMore: boolean }>
+    fetchDistinctValues?: (col: string, selectLimit: number, fromLimit: number) => Promise<{ values: string[]; hasMore: boolean }>
     className?: string
 }) {
     const [open, setOpen] = useState(false)
     const [search, setSearch] = useState('')
     const [distinctValues, setDistinctValues] = useState<string[]>([])
     const [hasMore, setHasMore] = useState(false)
-    const [limit, setLimit] = useState(DISTINCT_INITIAL_LIMIT)
     const [loading, setLoading] = useState(false)
+    const [selectLimitStr, setSelectLimitStr] = useState(String(DISTINCT_INITIAL_LIMIT))
+    const [fromLimitStr, setFromLimitStr] = useState('0')
     const wrapRef = useRef<HTMLDivElement>(null)
 
-    async function load(lim: number) {
+    async function load(selectLim: number, fromLim: number) {
         if (!fetchDistinctValues || !column) return
         setLoading(true)
         try {
-            const res = await fetchDistinctValues(column, lim)
+            const res = await fetchDistinctValues(column, selectLim, fromLim)
             setDistinctValues(res.values)
             setHasMore(res.hasMore)
         } finally {
@@ -601,7 +602,11 @@ function DistinctMultiInput({ values, onChange, column, fetchDistinctValues, cla
     }
 
     useEffect(() => {
-        if (open) { setLimit(DISTINCT_INITIAL_LIMIT); load(DISTINCT_INITIAL_LIMIT) }
+        if (open) {
+            setSelectLimitStr(String(DISTINCT_INITIAL_LIMIT))
+            setFromLimitStr('0')
+            load(DISTINCT_INITIAL_LIMIT, 0)
+        }
     }, [open, column])
 
     useEffect(() => {
@@ -613,10 +618,20 @@ function DistinctMultiInput({ values, onChange, column, fetchDistinctValues, cla
         return () => document.removeEventListener('mousedown', handleClick)
     }, [open])
 
-    async function handleLoadMore() {
-        const newLim = limit * 10
-        setLimit(newLim)
-        await load(newLim)
+    function applyLimits() {
+        const sel = Math.max(0, parseInt(selectLimitStr) || 0)
+        const frm = Math.max(0, parseInt(fromLimitStr) || 0)
+        load(sel, frm)
+    }
+
+    function handleLimitKeyDown(e: React.KeyboardEvent) {
+        if (e.key === 'Enter') { e.preventDefault(); applyLimits() }
+    }
+
+    async function loadAll() {
+        setSelectLimitStr('0')
+        setFromLimitStr('0')
+        await load(0, 0)
     }
 
     function toggle(v: string) {
@@ -643,7 +658,10 @@ function DistinctMultiInput({ values, onChange, column, fetchDistinctValues, cla
                 }
             </div>
             {open && (
-                <div className="absolute z-50 mt-0.5 left-0 right-0 bg-popover border border-border rounded shadow-lg flex flex-col max-h-52 text-xs">
+                /* stopPropagation empêche le clic dans le panel de remonter au div parent qui toggle open */
+                <div className="absolute z-50 mt-0.5 left-0 right-0 bg-popover border border-border rounded shadow-lg flex flex-col max-h-64 text-xs"
+                    onClick={e => e.stopPropagation()}>
+                    {/* Barre de recherche */}
                     <div className="px-2 py-1 border-b border-border">
                         <input
                             autoFocus
@@ -653,6 +671,7 @@ function DistinctMultiInput({ values, onChange, column, fetchDistinctValues, cla
                             onChange={e => setSearch(e.target.value)}
                         />
                     </div>
+                    {/* Liste */}
                     <div className="overflow-y-auto flex-1">
                         {loading && <div className="px-2 py-1 text-muted-foreground italic">Chargement…</div>}
                         {!loading && filtered.length === 0 && <div className="px-2 py-1 text-muted-foreground italic">Aucune valeur</div>}
@@ -663,22 +682,57 @@ function DistinctMultiInput({ values, onChange, column, fetchDistinctValues, cla
                                     className={`w-full text-left px-2 py-0.5 flex items-center gap-1.5 hover:bg-muted ${checked ? 'font-medium text-primary' : ''}`}
                                     onMouseDown={e => { e.preventDefault(); toggle(v) }}>
                                     <span className="w-3 shrink-0">{checked ? '✓' : ''}</span>
-                                    <span className="truncate">{v}</span>
+                                    <span className="truncate font-mono">{v}</span>
                                 </button>
                             )
                         })}
-                        {!loading && hasMore && (
-                            <button className="w-full text-left px-2 py-1 text-primary hover:bg-muted border-t border-border font-medium"
-                                onMouseDown={e => { e.preventDefault(); handleLoadMore() }}>
-                                Charger plus…
-                            </button>
+                    </div>
+                    {/* Footer : limites éditables + actions */}
+                    <div className="border-t border-border px-2 py-1 flex flex-wrap items-center gap-1.5 text-muted-foreground">
+                        <span className="shrink-0">SELECT</span>
+                        <input
+                            className="w-14 h-5 rounded border border-border bg-background px-1 text-xs font-mono text-center"
+                            value={selectLimitStr}
+                            onChange={e => setSelectLimitStr(e.target.value)}
+                            onBlur={applyLimits}
+                            onKeyDown={handleLimitKeyDown}
+                            title="Limite sur le nombre de valeurs distinctes (0 = sans limite)"
+                        />
+                        <span className="shrink-0">lignes</span>
+                        <span className="shrink-0 text-muted-foreground/50">|</span>
+                        <span className="shrink-0">FROM</span>
+                        <input
+                            className="w-14 h-5 rounded border border-border bg-background px-1 text-xs font-mono text-center"
+                            value={fromLimitStr}
+                            onChange={e => setFromLimitStr(e.target.value)}
+                            onBlur={applyLimits}
+                            onKeyDown={handleLimitKeyDown}
+                            title="Limite sur les lignes sources avant DISTINCT (0 = sans limite)"
+                        />
+                        <span className="shrink-0">lignes</span>
+                        <button
+                            className="ml-auto shrink-0 px-1.5 py-0.5 rounded bg-muted hover:bg-muted/80 text-xs"
+                            onMouseDown={e => { e.preventDefault(); applyLimits() }}
+                            title="Recharger avec ces limites">
+                            ↺
+                        </button>
+                        <button
+                            className="shrink-0 px-1.5 py-0.5 rounded bg-primary/10 hover:bg-primary/20 text-primary text-xs font-medium"
+                            onMouseDown={e => { e.preventDefault(); loadAll() }}
+                            title="Charger toutes les valeurs (sans limite)">
+                            Tout
+                        </button>
+                        {hasMore && (
+                            <span className="w-full text-[10px] text-amber-500 dark:text-amber-400">
+                                Liste tronquée — augmentez les limites ou cliquez Tout
+                            </span>
+                        )}
+                        {values.length > 0 && (
+                            <span className="w-full text-[10px]">
+                                {values.length} sélectionnée{values.length > 1 ? 's' : ''}
+                            </span>
                         )}
                     </div>
-                    {values.length > 0 && (
-                        <div className="px-2 py-1 border-t border-border text-muted-foreground">
-                            {values.length} valeur{values.length > 1 ? 's' : ''} sélectionnée{values.length > 1 ? 's' : ''}
-                        </div>
-                    )}
                 </div>
             )}
         </div>
@@ -691,7 +745,7 @@ function FilterConditionRow({ cond, availableCols, onChange, onRemove, onMoveUp,
     onRemove: () => void
     onMoveUp?: () => void
     onMoveDown?: () => void
-    fetchDistinctValues?: (col: string, limit: number) => Promise<{ values: string[]; hasMore: boolean }>
+    fetchDistinctValues?: (col: string, selectLimit: number, fromLimit: number) => Promise<{ values: string[]; hasMore: boolean }>
 }) {
     const noVal = cond.op === 'is_null' || cond.op === 'not_null'
     const isBetween = cond.op === 'between'
@@ -1879,15 +1933,22 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
 
     // ─── Distinct values pour le filtre ────────────────────────────────────
 
-    const fetchDistinctValues = useCallback(async (column: string, limit: number): Promise<{ values: string[]; hasMore: boolean }> => {
+    const fetchDistinctValues = useCallback(async (column: string, selectLimit: number, fromLimit: number): Promise<{ values: string[]; hasMore: boolean }> => {
         if (!ast.source || !column) return { values: [], hasMore: false }
         try {
             const col = `"${column.replace(/"/g, '""')}"`
             const tbl = `"${ast.source.replace(/"/g, '""')}"`
-            const sql = `SELECT DISTINCT ${col} FROM ${tbl} WHERE ${col} IS NOT NULL ORDER BY 1 LIMIT ${limit + 1}`
+            // Source : table entière ou sous-requête avec FROM limit
+            const src = fromLimit > 0
+                ? `(SELECT ${col} FROM ${tbl} WHERE ${col} IS NOT NULL LIMIT ${fromLimit}) _sub`
+                : `${tbl} WHERE ${col} IS NOT NULL`
+            // SELECT : avec ou sans LIMIT
+            const sql = selectLimit > 0
+                ? `SELECT DISTINCT ${col} FROM ${src} ORDER BY 1 LIMIT ${selectLimit + 1}`
+                : `SELECT DISTINCT ${col} FROM ${src} ORDER BY 1`
             const rows = await DuckDBManager.executeQuery(sql)
-            const hasMore = rows.length > limit
-            return { values: rows.slice(0, limit).map(r => String(r[column] ?? '')), hasMore }
+            const hasMore = selectLimit > 0 && rows.length > selectLimit
+            return { values: rows.slice(0, selectLimit > 0 ? selectLimit : undefined).map(r => String(r[column] ?? '')), hasMore }
         } catch {
             return { values: [], hasMore: false }
         }
