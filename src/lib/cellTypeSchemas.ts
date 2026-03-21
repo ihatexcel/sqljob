@@ -77,7 +77,7 @@ export const CELL_TYPE_SCHEMAS = {
                     executeHandler: 'executeSqlRecursiveParseCell',
                     defaultNamePrefix: 'sql',
                     hideInViewMode: true,
-                    exportFields: ['queries'],
+                    exportFields: ['queries', 'materialize'],
                     initProps: {},
                     commonParams: ['name', 'queries'],
                     queryCount: 1,

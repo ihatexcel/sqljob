@@ -347,7 +347,7 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
     const {
         devMode, hasCellHeight,
         showSqlEditorVisible, isSqlResultTabular, isSqlResultText,
-        getSqlResultAsText,
+        getSqlResultAsText, forceUpdate,
     } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         hasCellHeight: s.hasCellHeight,
@@ -355,6 +355,7 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
         isSqlResultTabular: s.isSqlResultTabular,
         isSqlResultText: s.isSqlResultText,
         getSqlResultAsText: s.getSqlResultAsText,
+        forceUpdate: s.forceUpdate,
     })))
 
     const [sqlBlockUiMode, setSqlBlockUiMode] = useState(false)
@@ -378,6 +379,20 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
 
     return (
         <div className={hasHeight ? 'flex-1 min-h-0 flex flex-col' : ''}>
+            {devMode && cell.type === 'sqlRecursiveParse' && (
+                <div className="flex items-center gap-2 mb-1 shrink-0">
+                    <label className="text-xs text-muted-foreground shrink-0">Résultat :</label>
+                    <div className="flex rounded border border-border overflow-hidden text-xs">
+                        {(['select', 'view', 'table'] as const).map(m => (
+                            <button key={m} onClick={() => { cell.materialize = m; forceUpdate() }}
+                                className={`px-2 py-0.5 transition-colors ${(cell.materialize ?? 'select') === m ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}
+                                title={m === 'select' ? 'SELECT simple (sans créer de vue ni de table)' : m === 'view' ? 'Créer une Vue DuckDB (lazy)' : 'Créer une TABLE matérialisée'}>
+                                {m.toUpperCase()}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            )}
             {devMode && showSqlEditorVisible?.(cell) && (
                 <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
                     placeholder="SELECT * FROM source1 LIMIT 100"
