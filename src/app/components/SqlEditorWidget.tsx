@@ -91,7 +91,7 @@ export function SqlEditorWidget({
                     <div className="flex gap-1 items-center">
                         {devMode && !isText && (
                             <button
-                                className="px-2 py-1 border border-border bg-muted text-muted-foreground rounded cursor-pointer text-xs transition-all hover:border-primary hover:text-foreground"
+                                className="p-1 text-muted-foreground cursor-pointer transition-colors hover:text-foreground"
                                 title={`Insérer un template ${isJs ? 'JavaScript' : 'SQL'}`}
                                 onClick={openTemplates}
                             >
