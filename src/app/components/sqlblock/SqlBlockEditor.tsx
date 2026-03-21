@@ -1465,12 +1465,13 @@ function CustomSqlStepUI({ step, onChange }: { step: CustomSqlStep; onChange: (s
 
 // ─── StepConfigModal ──────────────────────────────────────────────────────────
 
-function StepConfigModal({ step, index, availableCols, availableColTypes, onUpdate, onClose, fetchDistinctValues }: {
+function StepConfigModal({ step, index, availableCols, availableColTypes, onUpdate, onClose, fetchDistinctValues, otherStepNames }: {
     step: SqlBlockStep; index: number
     availableCols: string[]; availableColTypes: Record<string, string>
     onUpdate: (idx: number, s: SqlBlockStep) => void
     onClose: () => void
     fetchDistinctValues?: (col: string, limit: number) => Promise<{ values: string[]; hasMore: boolean }>
+    otherStepNames: string[]
 }) {
     // Fermeture sur Échap
     useEffect(() => {
@@ -1478,6 +1479,10 @@ function StepConfigModal({ step, index, availableCols, availableColTypes, onUpda
         document.addEventListener('keydown', handler)
         return () => document.removeEventListener('keydown', handler)
     }, [onClose])
+
+    const nameValue = step.name ?? ''
+    const descValue = step.description ?? ''
+    const nameConflict = nameValue.trim() !== '' && otherStepNames.includes(nameValue.trim())
 
     return createPortal(
         <div className="fixed inset-0 z-[9998] flex items-center justify-center">
@@ -1492,26 +1497,56 @@ function StepConfigModal({ step, index, availableCols, availableColTypes, onUpda
                     <button onClick={onClose} className="text-muted-foreground hover:text-foreground w-6 h-6 flex items-center justify-center rounded hover:bg-muted text-lg leading-none">×</button>
                 </div>
                 {/* Corps — scrollable */}
-                <div className="overflow-y-auto px-4 py-4 flex-1">
-                    {step.type === 'select_columns' && <SelectColumnsStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
-                    {step.type === 'exclude_columns' && <ExcludeColumnsStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
-                    {step.type === 'change_type' && <ChangeTypeStepUI step={step} availableCols={availableCols} availableColTypes={availableColTypes} onChange={s => onUpdate(index, s)} />}
-                    {step.type === 'filter_rows' && <FilterRowsStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} fetchDistinctValues={fetchDistinctValues} />}
-                    {step.type === 'sort' && <SortStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
-                    {step.type === 'top_n' && <TopNStepUI step={step} onChange={s => onUpdate(index, s)} />}
-                    {step.type === 'rename_columns' && <RenameColumnsStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
-                    {step.type === 'derive' && <DeriveStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
-                    {step.type === 'fill_null' && <FillNullStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
-                    {step.type === 'group_by' && <GroupByStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
-                    {step.type === 'join' && <JoinStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
-                    {step.type === 'union' && <UnionStepUI step={step} onChange={s => onUpdate(index, s)} />}
-                    {step.type === 'pivot' && <PivotStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
-                    {step.type === 'unpivot' && <UnpivotStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
-                    {step.type === 'window' && <WindowStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
-                    {step.type === 'unnest' && <UnnestStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
-                    {step.type === 'json_extract' && <JsonExtractStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
-                    {step.type === 'date_trunc' && <DateTruncStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
-                    {step.type === 'custom_sql' && <CustomSqlStepUI step={step} onChange={s => onUpdate(index, s)} />}
+                <div className="overflow-y-auto px-4 py-4 flex-1 flex flex-col gap-4">
+                    {/* Nom et description */}
+                    <div className="flex flex-col gap-2 pb-3 border-b border-border">
+                        <div>
+                            <label className="text-xs text-muted-foreground mb-1 block">Nom de la sous-requête</label>
+                            <input
+                                type="text"
+                                value={nameValue}
+                                onChange={e => onUpdate(index, { ...step, name: e.target.value || undefined })}
+                                placeholder={`_sqlblock_s${index} (auto)`}
+                                className={`w-full px-2 py-1 text-xs border rounded bg-background font-mono ${nameConflict ? 'border-destructive' : 'border-border'}`}
+                                spellCheck={false}
+                            />
+                            {nameConflict && (
+                                <p className="text-xs text-destructive mt-0.5">Ce nom est déjà utilisé par un autre step.</p>
+                            )}
+                        </div>
+                        <div>
+                            <label className="text-xs text-muted-foreground mb-1 block">Description</label>
+                            <textarea
+                                value={descValue}
+                                onChange={e => onUpdate(index, { ...step, description: e.target.value || undefined })}
+                                placeholder="Description de cette étape…"
+                                rows={2}
+                                className="w-full px-2 py-1 text-xs border border-border rounded bg-background resize-none"
+                            />
+                        </div>
+                    </div>
+                    {/* Config spécifique au type de step */}
+                    <div>
+                        {step.type === 'select_columns' && <SelectColumnsStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
+                        {step.type === 'exclude_columns' && <ExcludeColumnsStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
+                        {step.type === 'change_type' && <ChangeTypeStepUI step={step} availableCols={availableCols} availableColTypes={availableColTypes} onChange={s => onUpdate(index, s)} />}
+                        {step.type === 'filter_rows' && <FilterRowsStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} fetchDistinctValues={fetchDistinctValues} />}
+                        {step.type === 'sort' && <SortStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
+                        {step.type === 'top_n' && <TopNStepUI step={step} onChange={s => onUpdate(index, s)} />}
+                        {step.type === 'rename_columns' && <RenameColumnsStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
+                        {step.type === 'derive' && <DeriveStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
+                        {step.type === 'fill_null' && <FillNullStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
+                        {step.type === 'group_by' && <GroupByStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
+                        {step.type === 'join' && <JoinStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
+                        {step.type === 'union' && <UnionStepUI step={step} onChange={s => onUpdate(index, s)} />}
+                        {step.type === 'pivot' && <PivotStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
+                        {step.type === 'unpivot' && <UnpivotStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
+                        {step.type === 'window' && <WindowStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
+                        {step.type === 'unnest' && <UnnestStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
+                        {step.type === 'json_extract' && <JsonExtractStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
+                        {step.type === 'date_trunc' && <DateTruncStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
+                        {step.type === 'custom_sql' && <CustomSqlStepUI step={step} onChange={s => onUpdate(index, s)} />}
+                    </div>
                 </div>
             </div>
         </div>,
@@ -1524,7 +1559,7 @@ function StepConfigModal({ step, index, availableCols, availableColTypes, onUpda
 function StepItem({ step, index, totalSteps, availableCols, availableColTypes,
     eyeOpen, eyeLoading, onEyeToggle,
     onUpdate, onRemove, onMove,
-    configOpen, onConfigOpen, onConfigClose, fetchDistinctValues }: {
+    configOpen, onConfigOpen, onConfigClose, fetchDistinctValues, otherStepNames }: {
     step: SqlBlockStep; index: number; totalSteps: number
     availableCols: string[]; availableColTypes: Record<string, string>
     eyeOpen: boolean; eyeLoading: boolean
@@ -1536,9 +1571,12 @@ function StepItem({ step, index, totalSteps, availableCols, availableColTypes,
     onConfigOpen: () => void
     onConfigClose: () => void
     fetchDistinctValues?: (col: string, limit: number) => Promise<{ values: string[]; hasMore: boolean }>
+    otherStepNames: string[]
 }) {
     const [pendingDelete, setPendingDelete] = useState(false)
     const summary = stepSummary(step)
+    const customName = step.name?.trim()
+    const hasDesc = !!step.description?.trim()
 
     return (
         <>
@@ -1560,9 +1598,23 @@ function StepItem({ step, index, totalSteps, availableCols, availableColTypes,
                     <span className="text-xs text-muted-foreground font-mono w-4 shrink-0">{index + 1}.</span>
                     {/* Nom + résumé — clic ouvre la config */}
                     <button className="flex-1 text-left min-w-0" onClick={onConfigOpen}>
-                        <span className="text-xs font-medium">{STEP_LABELS[step.type]}</span>
-                        {summary && summary !== '—' && (
-                            <span className="block text-xs text-muted-foreground truncate">{summary}</span>
+                        <div className="flex items-center gap-1 flex-wrap">
+                            <span className="text-xs font-medium">{STEP_LABELS[step.type]}</span>
+                            {customName && (
+                                <span className="text-[10px] font-mono text-primary/80 bg-primary/10 px-1 rounded leading-4 shrink-0" title="Nom de la sous-requête">{customName}</span>
+                            )}
+                            {hasDesc && !customName && (
+                                <span className="text-muted-foreground opacity-60" title={step.description}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                </span>
+                            )}
+                        </div>
+                        {hasDesc ? (
+                            <span className="block text-xs text-muted-foreground truncate italic">{step.description}</span>
+                        ) : (
+                            summary && summary !== '—' && (
+                                <span className="block text-xs text-muted-foreground truncate">{summary}</span>
+                            )
                         )}
                     </button>
 
@@ -1601,7 +1653,8 @@ function StepItem({ step, index, totalSteps, availableCols, availableColTypes,
                 <StepConfigModal step={step} index={index}
                     availableCols={availableCols} availableColTypes={availableColTypes}
                     onUpdate={onUpdate} onClose={onConfigClose}
-                    fetchDistinctValues={fetchDistinctValues} />
+                    fetchDistinctValues={fetchDistinctValues}
+                    otherStepNames={otherStepNames} />
             )}
         </>
     )
@@ -2057,6 +2110,7 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
                         )}
                         {ast.steps.map((step, idx) => {
                             const schema = stepSchemas[idx] ?? { columns: sourceColumns.map(c => c.name), colTypes: Object.fromEntries(sourceColumns.map(c => [c.name, c.type])) }
+                            const otherStepNames = ast.steps.filter((_, i) => i !== idx).map(s => s.name?.trim()).filter(Boolean) as string[]
                             return (
                                 <StepItem
                                     key={idx}
@@ -2073,6 +2127,7 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
                                     onConfigOpen={() => setConfigOpenIdx(idx)}
                                     onConfigClose={() => setConfigOpenIdx(null)}
                                     fetchDistinctValues={fetchDistinctValues}
+                                    otherStepNames={otherStepNames}
                                 />
                             )
                         })}

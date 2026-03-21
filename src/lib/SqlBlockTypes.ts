@@ -211,9 +211,18 @@ export interface CustomSqlStep {
     sql: string;
 }
 
+// ─── Métadonnées communes à tous les steps ────────────────────────────────────
+
+export interface SqlBlockStepMeta {
+    /** Nom de la sous-requête (CTE) — doit être unique parmi les steps */
+    name?: string;
+    /** Description libre de cette étape */
+    description?: string;
+}
+
 // ─── Union de tous les steps ───────────────────────────────────────────────────
 
-export type SqlBlockStep =
+export type SqlBlockStep = (
     | SelectColumnsStep
     | ExcludeColumnsStep
     | ChangeTypeStep
@@ -232,7 +241,8 @@ export type SqlBlockStep =
     | UnnestStep
     | JsonExtractStep
     | DateTruncStep
-    | CustomSqlStep;
+    | CustomSqlStep
+) & SqlBlockStepMeta;
 
 // ─── AST root ─────────────────────────────────────────────────────────────────
 

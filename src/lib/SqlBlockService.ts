@@ -16,6 +16,11 @@ import type {
 
 const CTE_PREFIX = '_sqlblock_s';
 
+/** Retourne le nom de CTE d'un step : son nom personnalisé ou le nom auto `_sqlblock_sN`. */
+function getCteName(step: SqlBlockAst['steps'][number], index: number): string {
+    return step.name?.trim() || `${CTE_PREFIX}${index}`;
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // AST → SQL
 // ─────────────────────────────────────────────────────────────────────────────
@@ -23,15 +28,18 @@ const CTE_PREFIX = '_sqlblock_s';
 export function astToSql(ast: SqlBlockAst): string {
     const { source, steps } = ast;
     if (!steps || steps.length === 0) return `SELECT * FROM ${quoteId(source)}`;
-    if (steps.length === 1) return singleStepToSql(quoteId(source), steps[0]);
+    // Step unique sans nom : forme simple (pas de CTE)
+    if (steps.length === 1 && !steps[0].name?.trim()) return singleStepToSql(quoteId(source), steps[0]);
 
     const ctes: string[] = [];
     for (let i = 0; i < steps.length; i++) {
-        const prevSrc = i === 0 ? quoteId(source) : `${CTE_PREFIX}${i - 1}`;
+        const prevSrc = i === 0 ? quoteId(source) : quoteId(getCteName(steps[i - 1], i - 1));
         const inner = singleStepToSql(prevSrc, steps[i]);
-        ctes.push(`  ${CTE_PREFIX}${i} AS (\n    ${inner.replace(/\n/g, '\n    ')}\n  )`);
+        const cteName = quoteId(getCteName(steps[i], i));
+        ctes.push(`  ${cteName} AS (\n    ${inner.replace(/\n/g, '\n    ')}\n  )`);
     }
-    return `WITH\n${ctes.join(',\n')}\nSELECT * FROM ${CTE_PREFIX}${steps.length - 1}`;
+    const lastName = quoteId(getCteName(steps[steps.length - 1], steps.length - 1));
+    return `WITH\n${ctes.join(',\n')}\nSELECT * FROM ${lastName}`;
 }
 
 export function generateMaterializeQuery(name: string, sql: string, materialize: SqlBlockMaterialize): string {
