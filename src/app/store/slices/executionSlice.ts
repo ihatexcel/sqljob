@@ -469,7 +469,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
     },
 
     async executeSqlBlockCell(cell) {
-        const { astToSql, getEffectiveSql, generateMaterializeQuery } = await import('../../../lib/SqlBlockService')
+        const { getEffectiveSql, generateMaterializeQuery } = await import('../../../lib/SqlBlockService')
         const { createDefaultSqlBlockConfig } = await import('../../../lib/SqlBlockTypes')
 
         // Initialiser la config si elle n'existe pas
@@ -477,7 +477,18 @@ export const createExecutionSlice = (set: any, get: any) => ({
             cell.json = createDefaultSqlBlockConfig()
         }
         const cfg = cell.json
-        const sql = getEffectiveSql(cfg)
+
+        // En devMode : dérive le SQL depuis l'AST et le synchronise dans queries[0].
+        // En mode client : utilise directement la query pré-calculée (queries[0].sql).
+        const devMode = get().devMode
+        const astSql = getEffectiveSql(cfg)
+        if (devMode || !cell.queries?.length) {
+            // Synchro queries[0] avec le SQL généré depuis l'AST (devMode ou init)
+            if (!cell.queries?.length) cell.queries = [{ name: 'main', sql: astSql, engine: 'sql', clientVisible: false }]
+            else cell.queries[0] = { ...cell.queries[0], sql: astSql }
+        }
+        const precomputed = ConfigManager.getCellQuery(cell, 0)
+        const sql = (!devMode && precomputed?.trim()) ? precomputed : astSql
 
         if (!sql?.trim()) {
             cell._resultInfo = 'Aucun SQL à exécuter — définissez une source et des steps.'
