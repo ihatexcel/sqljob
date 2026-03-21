@@ -134173,7 +134173,7 @@ function computeStepSchemas(At, yt) {
   }
   return xt;
 }
-const SQLBLOCK_SCHEMA = "_sqlblock";
+const SQLBLOCK_SCHEMA = "_sqlblock", SUBCELL_LIMIT = 50;
 let sqlblockSchemaEnsured = !1;
 async function ensureSqlblockSchema() {
   sqlblockSchemaEnsured || (await DuckDBManager.executeQuery(`CREATE SCHEMA IF NOT EXISTS "${SQLBLOCK_SCHEMA}"`), sqlblockSchemaEnsured = !0);
@@ -134184,48 +134184,60 @@ function useStepEyeData(At, yt) {
   const Tt = reactExports.useRef(At);
   Tt.current = At;
   const $t = reactExports.useRef(null), Lt = reactExports.useRef(/* @__PURE__ */ new Map());
-  function It(Mt) {
-    const Ot = St.current;
-    return JSON.stringify({ src: Ot.source, steps: Ot.steps.slice(0, Mt + 1) });
+  function It(Ot) {
+    const Bt = St.current;
+    return JSON.stringify({ src: Bt.source, steps: Bt.steps.slice(0, Ot + 1) });
   }
-  function Rt(Mt) {
-    const Bt = `sb_${Tt.current._id.replace(/[^a-zA-Z0-9]/g, "_")}_s${Mt < 0 ? "src" : Mt}`;
-    return `"${SQLBLOCK_SCHEMA}"."${Bt}"`;
-  }
-  async function Dt(Mt) {
-    var Bt;
-    const Ot = It(Mt);
-    if (((Bt = Lt.current.get(Mt)) == null ? void 0 : Bt.hash) !== Ot) {
-      kt(!0);
+  const Rt = (Ot) => makeTableRef(Tt.current._id, Ot);
+  async function Dt(Ot, Bt = !1) {
+    var qt;
+    const Ht = It(Ot);
+    if (((qt = Lt.current.get(Ot)) == null ? void 0 : qt.hash) !== Ht) {
+      Bt || kt(!0);
       try {
         await ensureSqlblockSchema();
-        const Ht = St.current, qt = Rt(Mt), Kt = stepSql(Ht, Mt);
+        const Kt = St.current;
+        if (!Kt.source) return;
+        const er = Rt(Ot), Zt = stepSql(Kt, Ot);
         await DuckDBManager.executeQuery(
-          `CREATE OR REPLACE TABLE ${qt} AS (${Kt} LIMIT 10)`
+          `CREATE OR REPLACE TABLE ${er} AS SELECT * FROM (${Zt}) __sub__ LIMIT ${SUBCELL_LIMIT}`
         );
-        const { rows: er, schemaTypes: Zt } = await DuckDBManager.executeQueryWithSchema(
-          `SELECT * FROM ${qt}`
+        const { rows: sr, schemaTypes: Cr } = await DuckDBManager.executeQueryWithSchema(
+          `SELECT * FROM ${er}`
         );
-        Lt.current.set(Mt, { rows: er, schemaTypes: Zt || {}, hash: Ot }), Et((sr) => sr + 1);
-      } catch (Ht) {
-        console.warn("[sqlblock eye]", Ht);
+        Lt.current.set(Ot, { rows: sr, schemaTypes: Cr || {}, hash: Ht }), Et((Rr) => Rr + 1);
+      } catch (Kt) {
+        console.warn("[sqlblock eye]", Kt);
       } finally {
-        kt(!1);
+        Bt || kt(!1);
       }
     }
   }
-  function jt(Mt) {
-    const Ot = $t.current === Mt ? null : Mt;
-    $t.current = Ot, wt(Ot), Ot !== null && Dt(Ot);
+  function jt(Ot) {
+    const Bt = $t.current === Ot ? null : Ot;
+    $t.current = Bt, wt(Bt), Bt !== null && Dt(Bt);
   }
-  const Nt = xt !== null ? JSON.stringify([yt.source, ...yt.steps.slice(0, xt + 1)]) : null;
+  const Nt = JSON.stringify({ src: yt.source, steps: yt.steps });
+  reactExports.useEffect(() => {
+    if (!yt.source || !yt.steps.length) return;
+    let Ot = !1;
+    return (async () => {
+      await ensureSqlblockSchema();
+      for (let Ht = 0; Ht < St.current.steps.length && !Ot; Ht++)
+        await Dt(Ht, !0);
+    })(), () => {
+      Ot = !0;
+    };
+  }, [Nt]);
+  const Mt = xt !== null ? JSON.stringify([yt.source, ...yt.steps.slice(0, xt + 1)]) : null;
   return reactExports.useEffect(() => {
     xt !== null && Dt(xt);
-  }, [Nt, xt]), {
+  }, [Mt, xt]), {
     eyeOpen: xt,
     toggleEye: jt,
     loading: Ct,
-    getEyeData: (Mt) => Lt.current.get(Mt) ?? null
+    getEyeData: (Ot) => Lt.current.get(Ot) ?? null,
+    cellTableRef: Rt
   };
 }
 function EyeIcon({ open: At, className: yt = "" }) {
@@ -135355,39 +135367,49 @@ function CustomSqlStepUI({ step: At, onChange: yt }) {
     )
   ] });
 }
-function useStepInputSchemas(At) {
-  const [yt, xt] = reactExports.useState({}), wt = reactExports.useRef(/* @__PURE__ */ new Map()), Ct = reactExports.useRef(At);
-  Ct.current = At;
-  const kt = reactExports.useCallback(async (St) => {
-    const Tt = Ct.current;
-    if (!Tt.source) return;
-    const $t = JSON.stringify({ src: Tt.source, steps: Tt.steps.slice(0, St) }), Lt = wt.current.get($t);
-    if (Lt) {
-      xt((It) => ({ ...It, [St]: Lt }));
+function useStepInputSchemas(At, yt) {
+  const [xt, wt] = reactExports.useState({}), Ct = reactExports.useRef(/* @__PURE__ */ new Map()), kt = reactExports.useRef(At);
+  kt.current = At;
+  const Et = reactExports.useCallback(async (Tt) => {
+    const $t = kt.current;
+    if (!$t.source) return;
+    const Lt = JSON.stringify({ src: $t.source, steps: $t.steps.slice(0, Tt) }), It = Ct.current.get(Lt);
+    if (It) {
+      wt((Rt) => ({ ...Rt, [Tt]: It }));
       return;
     }
     try {
-      const It = St === 0 ? `SELECT * FROM ${quoteId(Tt.source)}` : stepSql(Tt, St - 1);
-      if (!It) return;
-      const { schemaTypes: Rt } = await DuckDBManager.executeQueryWithSchema(
-        `SELECT * FROM (${It}) AS __schema__ LIMIT 0`
-      );
+      let Rt;
+      if (Tt > 0) {
+        const jt = makeTableRef(yt, Tt - 1);
+        try {
+          Rt = (await DuckDBManager.executeQueryWithSchema(`SELECT * FROM ${jt} LIMIT 0`)).schemaTypes ?? void 0;
+        } catch {
+        }
+      }
+      if (!Rt) {
+        const jt = Tt === 0 ? `SELECT * FROM ${quoteId($t.source)}` : stepSql($t, Tt - 1);
+        if (!jt) return;
+        Rt = (await DuckDBManager.executeQueryWithSchema(
+          `SELECT * FROM (${jt}) AS __schema__ LIMIT 0`
+        )).schemaTypes ?? void 0;
+      }
       if (!Rt) return;
       const Dt = { columns: Object.keys(Rt), colTypes: Rt };
-      wt.current.set($t, Dt), xt((jt) => ({ ...jt, [St]: Dt }));
-    } catch (It) {
-      console.warn("[sqlblock input-schema]", It);
+      Ct.current.set(Lt, Dt), wt((jt) => ({ ...jt, [Tt]: Dt }));
+    } catch (Rt) {
+      console.warn("[sqlblock input-schema]", Rt);
     }
-  }, []), Et = reactExports.useCallback((St, Tt) => {
-    for (const [$t] of wt.current)
+  }, [yt]), St = reactExports.useCallback((Tt, $t) => {
+    for (const [Lt] of Ct.current)
       try {
-        const Lt = JSON.parse($t);
-        (Lt.src !== Tt.source || Lt.steps.length >= St) && wt.current.delete($t);
+        const It = JSON.parse(Lt);
+        (It.src !== $t.source || It.steps.length >= Tt) && Ct.current.delete(Lt);
       } catch {
-        wt.current.delete($t);
+        Ct.current.delete(Lt);
       }
   }, []);
-  return { dynamicSchemas: yt, fetchSchemaForStep: kt, invalidateFrom: Et };
+  return { dynamicSchemas: xt, fetchSchemaForStep: Et, invalidateFrom: St };
 }
 function StepConfigModal({ step: At, index: yt, availableCols: xt, availableColTypes: wt, onUpdate: Ct, onClose: kt, fetchDistinctValues: Et, otherStepNames: St }) {
   reactExports.useEffect(() => {
@@ -135795,7 +135817,7 @@ function SqlBlockEditor({ cell: At, path: yt, cellIndex: xt }) {
     forceUpdate: Uo.forceUpdate,
     _duckdbTables: Uo._duckdbTables,
     db: Uo.db
-  }))), Et = getOrInitConfig(At), St = Et.ast, Tt = St.source ? ((bo = Ct == null ? void 0 : Ct[St.source]) == null ? void 0 : bo.columns) ?? [] : [], $t = computeStepSchemas(St, Tt), { dynamicSchemas: Lt, fetchSchemaForStep: It, invalidateFrom: Rt } = useStepInputSchemas(St), Dt = (kt == null ? void 0 : kt.schemaTrees) ?? [], { eyeOpen: jt, toggleEye: Nt, loading: Mt, getEyeData: Ot } = useStepEyeData(At, St), [Bt, Ht] = reactExports.useState(null), [qt, Kt] = reactExports.useState(!1), [er, Zt] = reactExports.useState(null), sr = getEffectiveSql(Et), Cr = (ho = At.name) != null && ho.trim() ? generateMaterializeQuery(At.name, sr, St.materialize ?? "view") : sr, Rr = reactExports.useCallback((Uo) => {
+  }))), Et = getOrInitConfig(At), St = Et.ast, Tt = St.source ? ((bo = Ct == null ? void 0 : Ct[St.source]) == null ? void 0 : bo.columns) ?? [] : [], $t = computeStepSchemas(St, Tt), { dynamicSchemas: Lt, fetchSchemaForStep: It, invalidateFrom: Rt } = useStepInputSchemas(St, At._id), Dt = (kt == null ? void 0 : kt.schemaTrees) ?? [], { eyeOpen: jt, toggleEye: Nt, loading: Mt, getEyeData: Ot } = useStepEyeData(At, St), [Bt, Ht] = reactExports.useState(null), [qt, Kt] = reactExports.useState(!1), [er, Zt] = reactExports.useState(null), sr = getEffectiveSql(Et), Cr = (ho = At.name) != null && ho.trim() ? generateMaterializeQuery(At.name, sr, St.materialize ?? "view") : sr, Rr = reactExports.useCallback((Uo) => {
     commitAstUpdate(At, { source: Uo }, wt);
   }, [At, wt]), Ur = reactExports.useCallback((Uo) => {
     commitAstUpdate(At, { materialize: Uo }, wt);
