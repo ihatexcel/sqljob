@@ -255,7 +255,8 @@ function useStepEyeData(cell: any, ast: SqlBlockAst) {
     /**
      * Matérialise le step idx dans une table temp DuckDB.
      * Toujours créée en TABLE avec LIMIT, indépendamment de ast.materialize.
-     * Wrapping subquery propre pour gérer les CTEs sans double-LIMIT.
+     * On append simplement LIMIT N à la fin du SQL généré (CTE ou SELECT plat),
+     * sans wrapper subquery qui pose problème avec les CTEs inline dans DuckDB WASM.
      */
     async function doLoad(idx: number, silent = false) {
         const hash = getHash(idx)
@@ -264,22 +265,30 @@ function useStepEyeData(cell: any, ast: SqlBlockAst) {
         if (!silent) setLoading(true)
         try {
             await ensureSqlblockSchema()
-            const ast = astRef.current
-            if (!ast.source) return
+            const a = astRef.current
+            if (!a.source) return
             const tRef = cellTableRef(idx)
-            const sql = stepSql(ast, idx)
-            // Wrapping en SELECT * FROM (...) pour éviter les problèmes DuckDB
-            // avec CTEs + LIMIT quand la requête a déjà un ORDER BY ou LIMIT interne.
+            const sql = stepSql(a, idx)
+            if (!sql) return
+            // Append LIMIT directement — fonctionne pour SELECT plat et CTE chain.
+            // On strip un éventuel ; final et on n'ajoute pas de second LIMIT si déjà présent.
+            const bare = sql.trimEnd().replace(/;+\s*$/, '')
+            const hasLimit = /\bLIMIT\s+\d/i.test(bare.replace(/\([\s\S]*?\)/g, ''))
+            const sqlWithLimit = hasLimit ? bare : `${bare}\nLIMIT ${SUBCELL_LIMIT}`
             await DuckDBManager.executeQuery(
-                `CREATE OR REPLACE TABLE ${tRef} AS SELECT * FROM (${sql}) __sub__ LIMIT ${SUBCELL_LIMIT}`
+                `CREATE OR REPLACE TABLE ${tRef} AS ${sqlWithLimit}`
             )
-            const { rows, schemaTypes } = await DuckDBManager.executeQueryWithSchema(
-                `SELECT * FROM ${tRef}`
-            )
-            cache.current.set(idx, { rows, schemaTypes: schemaTypes || {}, hash })
+            const conn = DuckDBManager.getConnection()
+            const result = await conn.query(`SELECT * FROM ${tRef}`)
+            const rows = result.toArray().map((row: any) => Object.fromEntries(row))
+            const schemaTypes: Record<string, string> = {}
+            for (const field of result.schema.fields) {
+                schemaTypes[field.name] = String(field.type)
+            }
+            cache.current.set(idx, { rows, schemaTypes, hash })
             bumpRender(n => n + 1)
         } catch (err) {
-            console.warn('[sqlblock eye]', err)
+            console.error('[sqlblock eye]', err)
         } finally {
             if (!silent) setLoading(false)
         }
@@ -1529,21 +1538,33 @@ function useStepInputSchemas(ast: SqlBlockAst, cellId: string) {
             if (stepIdx > 0) {
                 const tRef = makeTableRef(cellId, stepIdx - 1)
                 try {
-                    const r = await DuckDBManager.executeQueryWithSchema(`SELECT * FROM ${tRef} LIMIT 0`)
-                    schemaTypes = r.schemaTypes ?? undefined
+                    const conn = DuckDBManager.getConnection()
+                    if (conn) {
+                        const result = await conn.query(`SELECT * FROM ${tRef} LIMIT 0`)
+                        schemaTypes = {}
+                        for (const field of result.schema.fields) {
+                            schemaTypes[field.name] = String(field.type)
+                        }
+                    }
                 } catch { /* table pas encore créée → fallback */ }
             }
 
-            // 2. Fallback : requête SQL LIMIT 0 sur la sous-requête amont
+            // 2. Fallback : LIMIT 0 directement sur le SQL amont (sans wrapper subquery)
             if (!schemaTypes) {
                 const inputSql = stepIdx === 0
                     ? `SELECT * FROM ${quoteId(a.source)}`
                     : stepSql(a, stepIdx - 1)
                 if (!inputSql) return
-                const r = await DuckDBManager.executeQueryWithSchema(
-                    `SELECT * FROM (${inputSql}) AS __schema__ LIMIT 0`
-                )
-                schemaTypes = r.schemaTypes ?? undefined
+                const bare = inputSql.trimEnd().replace(/;+\s*$/, '')
+                const hasLimit = /\bLIMIT\s+\d/i.test(bare.replace(/\([\s\S]*?\)/g, ''))
+                const sql0 = hasLimit ? bare : `${bare}\nLIMIT 0`
+                const conn = DuckDBManager.getConnection()
+                if (!conn) return
+                const result = await conn.query(sql0)
+                for (const field of result.schema.fields) {
+                    if (!schemaTypes) schemaTypes = {}
+                    schemaTypes[field.name] = String(field.type)
+                }
             }
 
             if (!schemaTypes) return
