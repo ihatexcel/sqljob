@@ -135061,17 +135061,20 @@ function DateTruncStepUI({ step: At, availableCols: yt, onChange: xt }) {
     ] })
   ] });
 }
+function truncateCols(At, yt = 4) {
+  return At.length <= yt ? At.join(", ") : At.slice(0, yt).join(", ") + "…";
+}
 function stepSummary(At) {
   var yt, xt;
   switch (At.type) {
     case "select_columns":
-      return At.columns.length ? At.columns.join(", ") : "—";
+      return At.columns.length ? truncateCols(At.columns) : "—";
     case "exclude_columns":
-      return At.columns.length ? At.columns.join(", ") : "—";
+      return At.columns.length ? truncateCols(At.columns) : "—";
     case "rename_columns":
-      return At.renames.length ? At.renames.map((wt) => `${wt.from}→${wt.to}`).join(", ") : "—";
+      return At.renames.length ? truncateCols(At.renames.map((wt) => `${wt.from}→${wt.to}`)) : "—";
     case "change_type":
-      return At.changes.length ? At.changes.map((wt) => `${wt.column}:${wt.targetType}`).join(", ") : "—";
+      return At.changes.length ? truncateCols(At.changes.map((wt) => `${wt.column}:${wt.targetType}`)) : "—";
     case "filter_rows": {
       let wt = function(St) {
         return (St.items ?? St.conditions ?? []).reduce((Tt, $t) => Tt + ($t.kind === "group" ? wt($t.group) : 1), 0);
@@ -135080,15 +135083,15 @@ function stepSummary(At) {
       return kt ? `${kt} condition${kt > 1 ? "s" : ""}${Ct.length > 1 ? ` (${Ct.length} groupes)` : ""}${Et ? " [NOT]" : ""}` : "—";
     }
     case "sort":
-      return At.keys.length ? At.keys.map((wt) => `${wt.column} ${wt.direction === "asc" ? "↑" : "↓"}`).join(", ") : "—";
+      return At.keys.length ? truncateCols(At.keys.map((wt) => `${wt.column} ${wt.direction === "asc" ? "↑" : "↓"}`)) : "—";
     case "top_n":
       return At.mode === "limit" ? `${At.n} lignes` : `${At.n}% échantillon`;
     case "derive":
-      return At.columns.length ? At.columns.map((wt) => wt.name).join(", ") : "—";
+      return At.columns.length ? truncateCols(At.columns.map((wt) => wt.name)) : "—";
     case "fill_null":
-      return At.fills.length ? At.fills.map((wt) => wt.column).join(", ") : "—";
+      return At.fills.length ? truncateCols(At.fills.map((wt) => wt.column)) : "—";
     case "group_by":
-      return At.groupCols.length ? At.groupCols.join(", ") : "—";
+      return At.groupCols.length ? truncateCols(At.groupCols) : "—";
     case "join":
       return At.rightTable || "—";
     case "union":
@@ -135096,7 +135099,7 @@ function stepSummary(At) {
     case "pivot":
       return At.onColumn || "—";
     case "unpivot":
-      return At.columns.length ? At.columns.join(", ") : "—";
+      return At.columns.length ? truncateCols(At.columns) : "—";
     case "window":
       return At.columns.length ? `${At.columns.length} col.` : "—";
     case "unnest":
@@ -135185,7 +135188,7 @@ function StepItem({
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { className: "flex-1 text-left min-w-0", onClick: () => Rt(!0), children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-medium", children: STEP_LABELS[At.type] }),
-        Nt && Nt !== "—" && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "ml-1.5 text-xs text-muted-foreground truncate", children: Nt })
+        Nt && Nt !== "—" && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "block text-xs text-muted-foreground truncate", children: Nt })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-0.5 ml-1 shrink-0", children: Dt ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs text-destructive", children: "Supprimer ?" }),
@@ -145542,6 +145545,7 @@ function CellConfigModal() {
                 /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "source", children: "Source" }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "uiParameter", children: "Paramètre UI" }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "buttonRunNextCells", children: "Bouton Exécuter" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "sqlBlock", children: "SQL Block" }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "sqlRecursiveParse", children: "SQL" }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "table", children: "Tableau" }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "iframe", children: "HTML/Iframe" }),
