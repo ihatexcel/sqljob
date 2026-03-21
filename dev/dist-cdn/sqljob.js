@@ -24827,11 +24827,11 @@ FROM (VALUES
       executeHandler: "executeSqlBlockCell",
       defaultNamePrefix: "sqlBlock",
       showNameInHeader: !0,
-      exportFields: ["name", "json"],
+      exportFields: ["name", "json", "queries"],
       initProps: { _availableColumns: [] },
       commonParams: ["name", "title"],
-      queryCount: 0,
-      queryNames: [],
+      queryCount: 1,
+      queryNames: ["main"],
       specificParams: [],
       defaults: {
         title: "",
@@ -144651,31 +144651,33 @@ const createExecutionSlice = (At, yt) => ({
     }
   },
   async executeSqlBlockCell(xt) {
-    var $t, Lt, It, Rt, Dt;
-    const { astToSql: wt, getEffectiveSql: Ct, generateMaterializeQuery: St } = await Promise.resolve().then(() => SqlBlockService), { createDefaultSqlBlockConfig: Et } = await Promise.resolve().then(() => SqlBlockTypes);
-    xt.json || (xt.json = Et());
-    const kt = xt.json, Tt = Ct(kt);
-    if (!(Tt != null && Tt.trim())) {
+    var It, Rt, Dt, jt, Nt, Mt, Ot;
+    const { getEffectiveSql: wt, generateMaterializeQuery: Ct } = await Promise.resolve().then(() => SqlBlockService), { createDefaultSqlBlockConfig: St } = await Promise.resolve().then(() => SqlBlockTypes);
+    xt.json || (xt.json = St());
+    const Et = xt.json, kt = yt().devMode, Tt = wt(Et);
+    (kt || !((It = xt.queries) != null && It.length)) && ((Rt = xt.queries) != null && Rt.length ? xt.queries[0] = { ...xt.queries[0], sql: Tt } : xt.queries = [{ name: "main", sql: Tt, engine: "sql", clientVisible: !1 }]);
+    const $t = ConfigManager.getCellQuery(xt, 0), Lt = !kt && ($t != null && $t.trim()) ? $t : Tt;
+    if (!(Lt != null && Lt.trim())) {
       xt._resultInfo = "Aucun SQL à exécuter — définissez une source et des steps.";
       return;
     }
-    if (!(($t = xt.name) != null && $t.trim()))
+    if (!((Dt = xt.name) != null && Dt.trim()))
       throw new Error("La cellule sqlBlock doit avoir un nom (utilisé comme nom de VIEW/TABLE dans DuckDB).");
     yt().setStatus("Exécution du SQL Block...", "loading");
     try {
-      const jt = ((Lt = kt.ast) == null ? void 0 : Lt.materialize) ?? "view", Nt = jt === "view" ? "TABLE" : "VIEW";
+      const Bt = ((jt = Et.ast) == null ? void 0 : jt.materialize) ?? "view", Ht = Bt === "view" ? "TABLE" : "VIEW";
       try {
-        await DuckDBManager.executeQuery(`DROP ${Nt} IF EXISTS ${xt.name}`);
+        await DuckDBManager.executeQuery(`DROP ${Ht} IF EXISTS ${xt.name}`);
       } catch {
       }
-      const Mt = yt().parseQueryWithParameters(Tt), Ot = St(xt.name, Mt, jt);
-      await DuckDBManager.executeQuery(Ot);
-      const { rows: Bt, schemaTypes: Ht } = await DuckDBManager.executeQueryWithSchema(
+      const qt = yt().parseQueryWithParameters(Lt), Kt = Ct(xt.name, qt, Bt);
+      await DuckDBManager.executeQuery(Kt);
+      const { rows: Jt, schemaTypes: Zt } = await DuckDBManager.executeQueryWithSchema(
         `SELECT * FROM ${xt.name} LIMIT 1000`
       );
-      xt._results = Bt, xt._schemaTypes = Ht || {}, xt._resultInfo = `${Bt.length} ligne(s)${Bt.length === 1e3 ? " (limité à 1 000 pour l'affichage)" : ""} — ${((It = kt.ast) == null ? void 0 : It.materialize) === "table" ? "TABLE" : "VIEW"} "${xt.name}" créée`, await ((Dt = (Rt = yt()).refreshDuckdbSchema) == null ? void 0 : Dt.call(Rt)), yt().setStatus("SQL Block exécuté", "success");
-    } catch (jt) {
-      throw jt;
+      xt._results = Jt, xt._schemaTypes = Zt || {}, xt._resultInfo = `${Jt.length} ligne(s)${Jt.length === 1e3 ? " (limité à 1 000 pour l'affichage)" : ""} — ${((Nt = Et.ast) == null ? void 0 : Nt.materialize) === "table" ? "TABLE" : "VIEW"} "${xt.name}" créée`, await ((Ot = (Mt = yt()).refreshDuckdbSchema) == null ? void 0 : Ot.call(Mt)), yt().setStatus("SQL Block exécuté", "success");
+    } catch (Bt) {
+      throw Bt;
     }
   },
   showSqlEditorVisible(xt) {
