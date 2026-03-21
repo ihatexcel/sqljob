@@ -1459,7 +1459,7 @@ function StepConfigModal({ step, index, availableCols, availableColTypes, onUpda
             {/* Backdrop */}
             <div className="absolute inset-0 bg-black/50" onClick={onClose} />
             {/* Modale */}
-            <div className="relative z-10 bg-popover border border-border rounded-xl shadow-2xl w-full max-w-lg mx-4 max-h-[85vh] flex flex-col">
+            <div className="relative z-10 bg-popover border border-border rounded-xl shadow-2xl w-full max-w-lg mx-4 max-h-[96vh] flex flex-col">
                 {/* Header */}
                 <div className="flex items-center gap-2 px-4 py-3 border-b border-border shrink-0">
                     <span className="text-xs text-muted-foreground font-mono w-5">{index + 1}.</span>
