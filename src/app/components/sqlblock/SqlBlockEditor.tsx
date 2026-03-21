@@ -15,6 +15,9 @@ import { useState, useCallback, useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { SqlMonacoEditor } from '@sqlrooms/sql-editor'
 import { useShallow } from 'zustand/react/shallow'
+import {
+    Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from '@sqlrooms/ui'
 import { useNotebookStore } from '../../store/notebookStore'
 import { DuckDBManager } from '../../../lib/DuckDBManager'
 import {
@@ -2267,6 +2270,22 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
         ? { _id: `eye_${eyeOpen}_${cell._id}`, _results: eyeData.rows, _schemaTypes: eyeData.schemaTypes }
         : cell
 
+    // ─── Layout responsive (ResizeObserver) ─────────────────────────────
+    // Breakpoints :
+    //   ≥ 680px : [datatable | sql | étapes] côte à côte
+    //   440–679 : [sql | étapes] en haut  +  [datatable] en bas
+    //   < 440   : [étapes] en haut  +  [datatable + sql] empilés en bas
+    const bodyRef = useRef<HTMLDivElement>(null)
+    const [bodyWidth, setBodyWidth] = useState(9999)
+    useEffect(() => {
+        const el = bodyRef.current
+        if (!el) return
+        const obs = new ResizeObserver(([e]) => setBodyWidth(e.contentRect.width))
+        obs.observe(el)
+        return () => obs.disconnect()
+    }, [])
+    const layout = bodyWidth >= 680 ? 'wide' : bodyWidth >= 440 ? 'medium' : 'narrow'
+
     // ─── Render ────────────────────────────────────────────────────────────
 
     return (
@@ -2280,20 +2299,22 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
             <div className="flex items-center gap-3 flex-wrap shrink-0">
                 <div className="flex items-center gap-2 flex-1 min-w-40">
                     <label className="text-xs text-muted-foreground shrink-0">Source :</label>
-                    <select
-                        className="flex-1 h-7 rounded border border-border bg-background px-2 text-xs font-mono"
-                        value={ast.source}
-                        onChange={e => handleSourceChange(e.target.value)}
-                        disabled={cfg.degraded}
-                    >
-                        {!ast.source && <option value="">— choisir une source —</option>}
-                        {Object.keys(_duckdbTables ?? {})
-                            .filter(t => !t.startsWith('_sqlblock.'))
-                            .map(t => <option key={t} value={t}>{t}</option>)}
-                        {ast.source && !Object.keys(_duckdbTables ?? {}).filter(t => !t.startsWith('_sqlblock.')).includes(ast.source) && (
-                            <option value={ast.source}>{ast.source}</option>
-                        )}
-                    </select>
+                    {(() => {
+                        const mainTables = Object.keys(_duckdbTables ?? {}).filter(t => !t.startsWith('_sqlblock.'))
+                        return (
+                            <Select value={ast.source || ''} onValueChange={handleSourceChange} disabled={cfg.degraded}>
+                                <SelectTrigger className="flex-1 h-7 text-xs font-mono min-w-0">
+                                    <SelectValue placeholder="— choisir une source —" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {mainTables.map(t => <SelectItem key={t} value={t} className="text-xs font-mono">{t}</SelectItem>)}
+                                    {ast.source && !mainTables.includes(ast.source) && (
+                                        <SelectItem value={ast.source} className="text-xs font-mono">{ast.source}</SelectItem>
+                                    )}
+                                </SelectContent>
+                            </Select>
+                        )
+                    })()}
                 </div>
                 <div className="flex items-center gap-2">
                     <label className="text-xs text-muted-foreground shrink-0">Résultat :</label>
@@ -2308,24 +2329,16 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
                 </div>
             </div>
 
-            {/* Corps principal — hauteur étirée */}
-            {!cfg.degraded ? (
-                <div className="flex gap-3 min-h-[280px]" style={{ height: 'calc(100% - 40px)' }}>
-
-                    {/* Colonne gauche : DataTable (résultat cell ou aperçu step) */}
-                    <div className="flex-1 min-w-0 flex flex-col gap-1">
+            {/* Corps principal — responsive */}
+            {!cfg.degraded ? (() => {
+                // ── Sections réutilisables ──────────────────────────────
+                const dtSection = (
+                    <>
                         {showingEye && (
                             <div className="flex items-center gap-1.5 shrink-0">
-                                <span className="text-xs text-primary font-medium">
-                                    Aperçu étape {eyeOpen! + 1}
-                                </span>
-                                {eyeLoading && (
-                                    <svg viewBox="0 0 24 24" className="w-3 h-3 animate-spin text-muted-foreground" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>
-                                )}
-                                <button onClick={() => toggleEye(eyeOpen!)}
-                                    className="ml-auto text-xs text-muted-foreground hover:text-foreground underline">
-                                    ✕ fermer
-                                </button>
+                                <span className="text-xs text-primary font-medium">Aperçu étape {eyeOpen! + 1}</span>
+                                {eyeLoading && <svg viewBox="0 0 24 24" className="w-3 h-3 animate-spin text-muted-foreground" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>}
+                                <button onClick={() => toggleEye(eyeOpen!)} className="ml-auto text-xs text-muted-foreground hover:text-foreground underline">✕ fermer</button>
                             </div>
                         )}
                         {showingEye ? (
@@ -2335,93 +2348,88 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
                                     ? <div className="flex items-center justify-center h-16 text-xs text-muted-foreground italic">Chargement…</div>
                                     : <div className="flex items-center justify-center h-16 text-xs text-muted-foreground italic border border-dashed border-border rounded">Résultat vide</div>
                         ) : hasResults ? (
-                            <>
-                                {cell._resultInfo && <div className="text-xs text-muted-foreground shrink-0">{cell._resultInfo}</div>}
-                                <SqlDataTable cell={cell} />
-                            </>
+                            <>{cell._resultInfo && <div className="text-xs text-muted-foreground shrink-0">{cell._resultInfo}</div>}<SqlDataTable cell={cell} /></>
                         ) : (
-                            <div className="flex items-center justify-center h-16 text-xs text-muted-foreground italic border border-dashed border-border rounded">
-                                Aucun résultat — exécutez la cellule
-                            </div>
+                            <div className="flex items-center justify-center h-16 text-xs text-muted-foreground italic border border-dashed border-border rounded">Aucun résultat — exécutez la cellule</div>
                         )}
                         {cell._status === 'error' && cell._resultInfo && !showingEye && (
                             <div className="p-2 rounded bg-destructive/10 text-destructive text-xs shrink-0">{cell._resultInfo}</div>
                         )}
-                    </div>
+                    </>
+                )
 
-                    {/* Colonne SQL Monaco (toggle, étirée) */}
-                    <div className={`flex flex-col min-h-0 ${showSql ? 'w-64 shrink-0' : ''}`}>
-                        <button onClick={() => setShowSql(s => !s)}
-                            className="flex items-center gap-1 text-xs font-medium text-muted-foreground uppercase tracking-wide hover:text-foreground transition-colors whitespace-nowrap shrink-0 mb-1">
-                            SQL généré <span className="ml-0.5">{showSql ? '▾' : '▸'}</span>
-                        </button>
-                        {showSql && (
-                            <SqlPreview
-                                sql={displaySql}
-                                editable={true}
-                                onEdit={handleManualSqlEdit}
-                                tableSchemas={tableSchemas}
-                                cellId={cell._id}
-                            />
-                        )}
-                    </div>
+                const sqlToggle = (
+                    <button onClick={() => setShowSql(s => !s)}
+                        className="flex items-center gap-1 text-xs font-medium text-muted-foreground uppercase tracking-wide hover:text-foreground transition-colors whitespace-nowrap shrink-0 mb-1">
+                        SQL généré <span className="ml-0.5">{showSql ? '▾' : '▸'}</span>
+                    </button>
+                )
+                const sqlPreviewEl = showSql && (
+                    <SqlPreview sql={displaySql} editable={true} onEdit={handleManualSqlEdit} tableSchemas={tableSchemas} cellId={cell._id} />
+                )
 
-                    {/* Colonne Steps */}
-                    <div className="flex flex-col gap-2 w-64 shrink-0 overflow-y-auto">
+                const n = ast.steps.length
+                const newStepInputSchema = dynamicSchemas[n] ?? (
+                    n === 0
+                        ? { columns: sourceColumns.map(c => c.name), colTypes: Object.fromEntries(sourceColumns.map(c => [c.name, c.type])) }
+                        : (stepSchemas[n - 1] ?? { columns: sourceColumns.map(c => c.name), colTypes: {} })
+                )
+                const stepsSection = (
+                    <>
                         <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide shrink-0">Étapes</span>
-                        {ast.steps.length === 0 && (
-                            <p className="text-xs text-muted-foreground italic px-1">
-                                Aucune étape — SELECT * FROM {ast.source || '…'}
-                            </p>
-                        )}
+                        {ast.steps.length === 0 && <p className="text-xs text-muted-foreground italic px-1">Aucune étape — SELECT * FROM {ast.source || '…'}</p>}
                         {ast.steps.map((step, idx) => {
                             const staticSchema = stepSchemas[idx] ?? { columns: sourceColumns.map(c => c.name), colTypes: Object.fromEntries(sourceColumns.map(c => [c.name, c.type])) }
-                            // Schéma dynamique (réel DuckDB) en priorité, fallback statique
                             const schema = dynamicSchemas[idx] ?? staticSchema
                             const otherStepNames = ast.steps.filter((_, i) => i !== idx).map(s => s.name?.trim()).filter(Boolean) as string[]
                             return (
-                                <StepItem
-                                    key={idx}
-                                    step={step} index={idx} totalSteps={ast.steps.length}
-                                    availableCols={schema.columns}
-                                    availableColTypes={schema.colTypes}
-                                    eyeOpen={eyeOpen === idx}
-                                    eyeLoading={eyeLoading && eyeOpen === idx}
-                                    onEyeToggle={() => toggleEye(idx)}
-                                    onUpdate={handleStepUpdate}
-                                    onRemove={handleStepRemove}
-                                    onMove={handleStepMove}
+                                <StepItem key={idx} step={step} index={idx} totalSteps={ast.steps.length}
+                                    availableCols={schema.columns} availableColTypes={schema.colTypes}
+                                    eyeOpen={eyeOpen === idx} eyeLoading={eyeLoading && eyeOpen === idx}
+                                    onEyeToggle={() => toggleEye(idx)} onUpdate={handleStepUpdate}
+                                    onRemove={handleStepRemove} onMove={handleStepMove}
                                     configOpen={configOpenIdx === idx}
                                     onConfigOpen={() => { setConfigOpenIdx(idx); fetchSchemaForStep(idx) }}
                                     onConfigClose={() => setConfigOpenIdx(null)}
-                                    fetchDistinctValues={makeStepDistinctValues(idx)}
-                                    otherStepNames={otherStepNames}
+                                    fetchDistinctValues={makeStepDistinctValues(idx)} otherStepNames={otherStepNames}
                                 />
                             )
                         })}
-                        {(() => {
-                            // Schéma d'entrée pour la nouvelle étape = sortie de la dernière étape existante
-                            const n = ast.steps.length
-                            const newStepInputSchema = dynamicSchemas[n] ?? (
-                                n === 0
-                                    ? { columns: sourceColumns.map(c => c.name), colTypes: Object.fromEntries(sourceColumns.map(c => [c.name, c.type])) }
-                                    : (stepSchemas[n - 1] ?? { columns: sourceColumns.map(c => c.name), colTypes: {} })
-                            )
-                            return (
-                                <AddStepModal
-                                    onAdd={handleStepAdd}
-                                    availableCols={newStepInputSchema.columns}
-                                    availableColTypes={newStepInputSchema.colTypes}
-                                    fetchDistinctValues={makeStepDistinctValues(n)}
-                                    otherStepNames={ast.steps.map(s => s.name?.trim()).filter(Boolean) as string[]}
-                                    stepIndex={n}
-                                    onOpen={() => fetchSchemaForStep(n)}
-                                />
-                            )
-                        })()}
+                        <AddStepModal onAdd={handleStepAdd}
+                            availableCols={newStepInputSchema.columns} availableColTypes={newStepInputSchema.colTypes}
+                            fetchDistinctValues={makeStepDistinctValues(n)}
+                            otherStepNames={ast.steps.map(s => s.name?.trim()).filter(Boolean) as string[]}
+                            stepIndex={n} onOpen={() => fetchSchemaForStep(n)}
+                        />
+                    </>
+                )
+
+                // ── Rendu selon la largeur ──────────────────────────────
+                if (layout === 'wide') return (
+                    <div ref={bodyRef} className="flex flex-row gap-3 min-h-[280px]" style={{ height: 'calc(100% - 40px)' }}>
+                        <div className="flex-1 min-w-0 flex flex-col gap-1">{dtSection}</div>
+                        <div className={`flex flex-col min-h-0 ${showSql ? 'w-64 shrink-0' : ''}`}>{sqlToggle}{sqlPreviewEl}</div>
+                        <div className="flex flex-col gap-2 w-64 shrink-0 overflow-y-auto">{stepsSection}</div>
                     </div>
-                </div>
-            ) : (
+                )
+                if (layout === 'medium') return (
+                    <div ref={bodyRef} className="flex flex-col gap-2">
+                        <div className="flex flex-row gap-3 min-h-[280px]">
+                            <div className={`flex flex-col min-h-0 ${showSql ? 'flex-1 min-w-0' : ''}`}>{sqlToggle}{sqlPreviewEl}</div>
+                            <div className="flex flex-col gap-2 w-64 shrink-0 overflow-y-auto">{stepsSection}</div>
+                        </div>
+                        <div className="flex flex-col gap-1 min-h-[180px]">{dtSection}</div>
+                    </div>
+                )
+                // narrow
+                return (
+                    <div ref={bodyRef} className="flex flex-col gap-2">
+                        <div className="flex flex-col gap-2 overflow-y-auto">{stepsSection}</div>
+                        <div className="flex flex-col gap-1 min-h-[180px]">{dtSection}</div>
+                        <div className={`flex flex-col ${showSql ? 'min-h-[180px]' : ''}`}>{sqlToggle}{sqlPreviewEl}</div>
+                    </div>
+                )
+            })() : (
                 <div className="flex gap-3 min-h-[280px]">
                     <div className="flex-1 min-w-0 flex flex-col gap-1">
                         {hasResults ? (
