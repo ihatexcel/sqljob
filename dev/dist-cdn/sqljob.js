@@ -132648,7 +132648,7 @@ function SqlEditorWidget({
         $t && !Bt && /* @__PURE__ */ jsxRuntimeExports.jsx(
           "button",
           {
-            className: "px-2 py-1 border border-border bg-muted text-muted-foreground rounded cursor-pointer text-xs transition-all hover:border-primary hover:text-foreground",
+            className: "p-1 text-muted-foreground cursor-pointer transition-colors hover:text-foreground",
             title: `Insérer un template ${Ot ? "JavaScript" : "SQL"}`,
             onClick: Cr,
             children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "book-marked", size: 14 })
