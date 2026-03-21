@@ -1,7 +1,6 @@
 // ─── SqlBlockService ──────────────────────────────────────────────────────────
 // Conversion bidirectionnelle entre AST SqlBlock et SQL DuckDB.
-// Note: Le parser SQL est volontairement limité aux patterns P0 générés.
-// Tout SQL non reconnu (P1+) → mode dégradé (SQL libre, UI désactivée).
+// Parser standard (P0) + parser intelligent par CTE (P1+) avec fallback custom_sql.
 
 import type {
     SqlBlockAst,
@@ -12,13 +11,56 @@ import type {
     FilterItem,
     SqlBlockMaterialize,
     SqlBlockConfig,
+    SortKey,
+    FilterOp,
 } from './SqlBlockTypes';
 
 const CTE_PREFIX = '_sqlblock_s';
 
-/** Retourne le nom de CTE d'un step : son nom personnalisé ou le nom auto `_sqlblock_sN`. */
+/** Slug court par type de step — inclus dans le nom auto des CTEs. */
+const STEP_TYPE_SLUG: Record<string, string> = {
+    select_columns:  'select',
+    exclude_columns: 'exclude',
+    change_type:     'cast',
+    filter_rows:     'filter',
+    sort:            'sort',
+    top_n:           'limit',
+    rename_columns:  'rename',
+    derive:          'derive',
+    fill_null:       'fill',
+    group_by:        'group',
+    join:            'join',
+    union:           'union',
+    pivot:           'pivot',
+    unpivot:         'unpivot',
+    window:          'window',
+    unnest:          'unnest',
+    json_extract:    'json',
+    date_trunc:      'date',
+    custom_sql:      'sql',
+};
+const SLUG_TO_STEP_TYPE: Record<string, string> = Object.fromEntries(
+    Object.entries(STEP_TYPE_SLUG).map(([k, v]) => [v, k])
+);
+
+/** Retourne le nom de CTE d'un step : son nom personnalisé ou le nom auto `_sqlblock_sN_slug`. */
 function getCteName(step: SqlBlockAst['steps'][number], index: number): string {
-    return step.name?.trim() || `${CTE_PREFIX}${index}`;
+    if (step.name?.trim()) return step.name.trim();
+    const slug = STEP_TYPE_SLUG[step.type] ?? step.type;
+    return `${CTE_PREFIX}${index}_${slug}`;
+}
+
+/** Retourne le nom CTE auto qui serait généré pour ce step/index (pour affichage placeholder). */
+export function getAutoCteName(step: SqlBlockStep, index: number): string {
+    const slug = STEP_TYPE_SLUG[step.type] ?? step.type;
+    return `${CTE_PREFIX}${index}_${slug}`;
+}
+
+/** Déduit le type de step depuis le nom d'un CTE (_sqlblock_sN_slug → type). */
+function stepTypeFromCteName(name: string): SqlBlockStep['type'] | null {
+    const m = name.match(/_sqlblock_s\d+_([a-z]+)$/i);
+    if (!m) return null;
+    return (SLUG_TO_STEP_TYPE[m[1]] as SqlBlockStep['type']) ?? null;
 }
 
 /** Échappe la séquence `* /` pour qu'elle ne ferme pas un commentaire bloc SQL. */
@@ -120,7 +162,7 @@ interface CteInfo { body: string; source: string }
 
 function extractCtes(sql: string): CteInfo[] | null {
     const ctes: CteInfo[] = [];
-    const re = /_sqlblock_s\d+\s+AS\s*\(/gi;
+    const re = /_sqlblock_s\d+(?:_[a-z]+)?\s+AS\s*\(/gi;
     let match: RegExpExecArray | null;
     while ((match = re.exec(sql)) !== null) {
         const innerSql = extractParenContent(sql, match.index + match[0].length - 1);
@@ -442,4 +484,373 @@ export function quoteId(name: string): string {
 function unquoteId(name: string): string {
     if (name.startsWith('"') && name.endsWith('"')) return name.slice(1, -1).replace(/""/g, '"');
     return name;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Parser intelligent par CTE — sqlToAstSmart
+// Tente de parser chaque CTE indépendamment ; les CTEs non parsables deviennent
+// des steps custom_sql. Évite le basculement en mode dégradé global.
+// ─────────────────────────────────────────────────────────────────────────────
+
+interface CteFullInfo {
+    name: string;       // nom du CTE (sans quotes)
+    fullBody: string;   // corps normalisé sans commentaire initial
+    source: string;     // nom de la source (unquoted) dans ce CTE
+}
+
+function extractCtesWithFullBody(sql: string): CteFullInfo[] | null {
+    const ctes: CteFullInfo[] = [];
+    const re = /(_sqlblock_s\d+(?:_[a-z]+)?)\s+AS\s*\(/gi;
+    let match: RegExpExecArray | null;
+    while ((match = re.exec(sql)) !== null) {
+        const name = match[1];
+        const openParen = match.index + match[0].length - 1;
+        const inner = extractParenContent(sql, openParen);
+        if (!inner) return null;
+        const normalized = inner.replace(/[ \t\r\n]+/g, ' ').trim();
+        // Retire le commentaire de description en début de corps
+        const bodyNoComment = normalized.replace(/^\/\*.*?\*\/\s*/s, '').trim();
+        // Extrait la première source (FROM)
+        const srcM = bodyNoComment.match(/\bFROM\s+((?:"[^"]*"|\S)+)/i);
+        const source = srcM ? unquoteId(srcM[1]) : '';
+        ctes.push({ name, fullBody: bodyNoComment, source });
+    }
+    return ctes.length > 0 ? ctes : null;
+}
+
+function escapeRegex(s: string): string {
+    return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/** Parse une valeur SQL littérale (chaîne quotée ou numérique/booléen). */
+function parseSqlLiteral(s: string): string {
+    s = s.trim();
+    if (s.startsWith("'") && s.endsWith("'")) return s.slice(1, -1).replace(/''/g, "'");
+    return s;
+}
+
+/** Parse une liste de valeurs SQL séparées par virgule (pour IN/NOT IN). */
+function parseSqlValueList(s: string): string[] | null {
+    const values: string[] = [];
+    let current = '';
+    let inStr = false;
+    for (let i = 0; i < s.length; i++) {
+        const c = s[i];
+        if (c === "'" && !inStr) { inStr = true; current += c; continue; }
+        if (c === "'" && inStr) {
+            if (s[i + 1] === "'") { current += "''"; i++; continue; }
+            inStr = false; current += c; continue;
+        }
+        if (c === ',' && !inStr) {
+            values.push(parseSqlLiteral(current.trim()));
+            current = '';
+            continue;
+        }
+        current += c;
+    }
+    if (current.trim()) values.push(parseSqlLiteral(current.trim()));
+    return values.length > 0 ? values : null;
+}
+
+const COL_PAT = '(?:"[^"]*"|[a-zA-Z_][a-zA-Z0-9_]*)';
+
+/** Parse une condition atomique SQL (col OP valeur). */
+function parseCondition(s: string): FilterCondition | null {
+    s = s.trim();
+    let m: RegExpMatchArray | null;
+
+    // IS NOT NULL
+    m = s.match(new RegExp(`^(${COL_PAT})\\s+IS\\s+NOT\\s+NULL\\s*$`, 'i'));
+    if (m) return { column: unquoteId(m[1]), op: 'not_null' };
+
+    // IS NULL
+    m = s.match(new RegExp(`^(${COL_PAT})\\s+IS\\s+NULL\\s*$`, 'i'));
+    if (m) return { column: unquoteId(m[1]), op: 'is_null' };
+
+    // BETWEEN ... AND ...
+    m = s.match(new RegExp(`^(${COL_PAT})\\s+BETWEEN\\s+(.+?)\\s+AND\\s+(.+?)\\s*$`, 'i'));
+    if (m) return { column: unquoteId(m[1]), op: 'between', value: parseSqlLiteral(m[2]), valueTo: parseSqlLiteral(m[3]) };
+
+    // NOT IN
+    m = s.match(new RegExp(`^(${COL_PAT})\\s+NOT\\s+IN\\s*\\((.+)\\)\\s*$`, 'i'));
+    if (m) {
+        const values = parseSqlValueList(m[2]);
+        if (!values) return null;
+        return { column: unquoteId(m[1]), op: 'not_in', values };
+    }
+
+    // IN
+    m = s.match(new RegExp(`^(${COL_PAT})\\s+IN\\s*\\((.+)\\)\\s*$`, 'i'));
+    if (m) {
+        const values = parseSqlValueList(m[2]);
+        if (!values) return null;
+        return { column: unquoteId(m[1]), op: 'in', values };
+    }
+
+    // ILIKE
+    m = s.match(new RegExp(`^(${COL_PAT})\\s+ILIKE\\s+('(?:[^']|'')*')\\s*$`, 'i'));
+    if (m) return { column: unquoteId(m[1]), op: 'ilike', value: parseSqlLiteral(m[2]) };
+
+    // LIKE
+    m = s.match(new RegExp(`^(${COL_PAT})\\s+LIKE\\s+('(?:[^']|'')*')\\s*$`, 'i'));
+    if (m) return { column: unquoteId(m[1]), op: 'like', value: parseSqlLiteral(m[2]) };
+
+    // Comparaison : =, !=, >=, <=, >, <
+    m = s.match(new RegExp(`^(${COL_PAT})\\s*(!=|>=|<=|>|<|=)\\s*(.+?)\\s*$`));
+    if (m) return { column: unquoteId(m[1]), op: m[2] as FilterOp, value: parseSqlLiteral(m[3]) };
+
+    return null;
+}
+
+/**
+ * Découpe une chaîne SQL par un séparateur de mots-clés (AND/OR) au niveau 0
+ * (pas dans des parenthèses ni des chaînes littérales), en ignorant l'AND
+ * qui fait partie d'un BETWEEN.
+ */
+function splitTopLevelBy(s: string, sepRe: RegExp): string[] {
+    const parts: string[] = [];
+    let depth = 0;
+    let inStr = false;
+    let start = 0;
+    let i = 0;
+    while (i < s.length) {
+        const c = s[i];
+        if (c === "'" && !inStr) { inStr = true; i++; continue; }
+        if (c === "'" && inStr) {
+            if (s[i + 1] === "'") { i += 2; continue; }
+            inStr = false; i++; continue;
+        }
+        if (!inStr) {
+            if (c === '(') { depth++; i++; continue; }
+            if (c === ')') { depth--; i++; continue; }
+            if (depth === 0) {
+                const slice = s.slice(i);
+                const m = slice.match(sepRe);
+                if (m && m.index === 0) {
+                    // Vérifie si cet AND est la 2e partie d'un BETWEEN
+                    if (/^AND\b/i.test(m[0])) {
+                        const before = s.slice(start, i).trim();
+                        const betweenCount = (before.match(/\bBETWEEN\b/gi) ?? []).length;
+                        const andCount = (before.match(/\bAND\b/gi) ?? []).length;
+                        if (betweenCount > andCount) { i += m[0].length; continue; }
+                    }
+                    parts.push(s.slice(start, i).trim());
+                    i += m[0].length;
+                    start = i;
+                    continue;
+                }
+            }
+        }
+        i++;
+    }
+    parts.push(s.slice(start).trim());
+    return parts.filter(Boolean);
+}
+
+/** Parse un groupe de filtre récursif (avec AND/OR/NOT/parens). */
+function parseSingleFilterGroup(s: string): FilterGroup | null {
+    let negate = false;
+    let inner = s.trim();
+
+    // NOT préfixe
+    if (/^NOT\s+/i.test(inner)) {
+        negate = true;
+        inner = inner.replace(/^NOT\s+/i, '').trim();
+    }
+
+    // Déplie les parenthèses extérieures si l'expression entière est entourée
+    if (inner.startsWith('(')) {
+        const content = extractParenContent(inner, 0);
+        if (content !== null && inner === `(${content})`) inner = content.trim();
+    }
+
+    // Essaie de séparer par AND
+    let parts = splitTopLevelBy(inner, /^AND\b/i);
+    let logicOp: 'AND' | 'OR' = 'AND';
+
+    // Si une seule partie, essaie OR
+    if (parts.length === 1) {
+        const orParts = splitTopLevelBy(inner, /^OR\b/i);
+        if (orParts.length > 1) { parts = orParts; logicOp = 'OR'; }
+    }
+
+    const items: FilterItem[] = [];
+    for (const part of parts) {
+        const t = part.trim();
+        // Sous-groupe entre parenthèses avec NOT ?
+        if (/^NOT\s*\(/i.test(t) || (t.startsWith('(') && t.endsWith(')'))) {
+            const g = parseSingleFilterGroup(t);
+            if (!g) return null;
+            items.push({ kind: 'group', group: g });
+        } else {
+            const cond = parseCondition(t);
+            if (!cond) return null;
+            items.push({ kind: 'cond', cond });
+        }
+    }
+
+    return { items, logicOp, negate };
+}
+
+/** Parse une clause WHERE complète en tableau de FilterGroup. */
+function parseWhereToGroups(where: string): FilterGroup[] | null {
+    // Les groupes de premier niveau sont séparés par le groupLogicOp (OR par défaut)
+    const topParts = splitTopLevelBy(where, /^OR\b/i);
+    const groups: FilterGroup[] = [];
+    for (const part of topParts) {
+        const g = parseSingleFilterGroup(part.trim());
+        if (!g) return null;
+        groups.push(g);
+    }
+    return groups.length > 0 ? groups : null;
+}
+
+/** Parse une liste ORDER BY en SortKey[]. */
+function parseOrderByKeys(orderBy: string): SortKey[] | null {
+    const parts = orderBy.split(',');
+    const keys: SortKey[] = [];
+    for (const part of parts) {
+        const p = part.trim();
+        // "col" ASC NULLS LAST
+        let m = p.match(new RegExp(`^(${COL_PAT})\\s+(ASC|DESC)\\s+NULLS\\s+(FIRST|LAST)\\s*$`, 'i'));
+        if (m) { keys.push({ column: unquoteId(m[1]), direction: m[2].toLowerCase() as 'asc'|'desc', nulls: m[3].toLowerCase() as 'first'|'last' }); continue; }
+        // "col" ASC / DESC (sans NULLS)
+        m = p.match(new RegExp(`^(${COL_PAT})\\s*(ASC|DESC)?\\s*$`, 'i'));
+        if (!m) return null;
+        keys.push({ column: unquoteId(m[1]), direction: (m[2]?.toLowerCase() ?? 'asc') as 'asc'|'desc', nulls: 'last' });
+    }
+    return keys;
+}
+
+/** Parse une liste RENAME (old AS new, ...) en tableau de renames. */
+function parseRenameList(s: string): { from: string; to: string }[] | null {
+    const parts = s.split(',');
+    const renames: { from: string; to: string }[] = [];
+    for (const part of parts) {
+        const m = part.trim().match(new RegExp(`^(${COL_PAT})\\s+AS\\s+(${COL_PAT})\\s*$`, 'i'));
+        if (!m) return null;
+        renames.push({ from: unquoteId(m[1]), to: unquoteId(m[2]) });
+    }
+    return renames;
+}
+
+/**
+ * Parse le corps d'un CTE en un SqlBlockStep.
+ * - Retourne null si c'est un SELECT * passthrough (pas de step).
+ * - Retourne un step structuré si le pattern est reconnu.
+ * - Retourne un custom_sql step (avec {{subquery}}) sinon.
+ */
+function parseCteBodyToStep(
+    fullBody: string,
+    typeHint: SqlBlockStep['type'] | null,
+    sourceName: string,
+): SqlBlockStep | null {
+    const b = fullBody.trim();
+
+    // ── Patterns P0 (SELECT body FROM src) ──────────────────────────────────
+    const selectM = b.match(/^SELECT\s+(.+?)\s+FROM\s+(?:"[^"]*"|\S+)\s*;?\s*$/is);
+    if (selectM) {
+        const parsed = parseSelectBody(selectM[1].trim());
+        if (parsed !== null) return parsed.step; // null = SELECT * = passthrough
+    }
+
+    // ── RENAME ───────────────────────────────────────────────────────────────
+    const renameM = b.match(/^SELECT\s+\*\s+RENAME\s*\((.+)\)\s+FROM\s+(?:"[^"]*"|\S+)\s*;?\s*$/is);
+    if (renameM) {
+        const renames = parseRenameList(renameM[1]);
+        if (renames) return { type: 'rename_columns', renames };
+    }
+
+    // ── filter_rows (WHERE) ───────────────────────────────────────────────────
+    if (!typeHint || typeHint === 'filter_rows') {
+        const filterM = b.match(/^SELECT\s+\*\s+FROM\s+(?:"[^"]*"|\S+)\s+WHERE\s+([\s\S]+?)\s*;?\s*$/i);
+        if (filterM) {
+            const groups = parseWhereToGroups(filterM[1].trim());
+            if (groups) return { type: 'filter_rows', groups, groupLogicOp: 'OR' };
+        }
+    }
+
+    // ── sort (ORDER BY) ───────────────────────────────────────────────────────
+    if (!typeHint || typeHint === 'sort') {
+        const sortM = b.match(/^SELECT\s+\*\s+FROM\s+(?:"[^"]*"|\S+)\s+ORDER\s+BY\s+([\s\S]+?)\s*;?\s*$/i);
+        if (sortM) {
+            const keys = parseOrderByKeys(sortM[1].trim());
+            if (keys?.length) return { type: 'sort', keys };
+        }
+    }
+
+    // ── top_n (LIMIT / USING SAMPLE) ──────────────────────────────────────────
+    if (!typeHint || typeHint === 'top_n') {
+        const limitM = b.match(/^SELECT\s+\*\s+FROM\s+(?:"[^"]*"|\S+)\s+LIMIT\s+(\d+)(?:\s+OFFSET\s+(\d+))?\s*;?\s*$/i);
+        if (limitM) {
+            const step: SqlBlockStep = { type: 'top_n', mode: 'limit', n: parseInt(limitM[1]) };
+            if (limitM[2]) (step as any).offset = parseInt(limitM[2]);
+            return step;
+        }
+        const sampleM = b.match(/^SELECT\s+\*\s+FROM\s+(?:"[^"]*"|\S+)\s+USING\s+SAMPLE\s+(\d+)(%|\s+ROWS?)(?:\s*\((\w+)\))?\s*;?\s*$/i);
+        if (sampleM) {
+            const isPercent = sampleM[2].trim() === '%';
+            const step: SqlBlockStep = { type: 'top_n', mode: isPercent ? 'sample_percent' : 'sample_rows', n: parseInt(sampleM[1]) };
+            if (sampleM[3]) (step as any).sampleMethod = sampleM[3];
+            return step;
+        }
+    }
+
+    // ── Fallback : custom_sql (source → {{subquery}}) ─────────────────────────
+    const srcQ = quoteId(sourceName);
+    const sqlWithPlaceholder = b
+        .replace(new RegExp(`\\bFROM\\s+${escapeRegex(srcQ)}\\b`, 'g'), 'FROM {{subquery}}')
+        .replace(new RegExp(`\\bFROM\\s+${escapeRegex(sourceName)}\\b`, 'g'), 'FROM {{subquery}}');
+    return { type: 'custom_sql', sql: sqlWithPlaceholder };
+}
+
+/** Parser par CTE : chaque CTE est parsé indépendamment (fallback custom_sql). */
+function tryParseCteChainSmart(sql: string, materialize: SqlBlockMaterialize): SqlBlockAst | null {
+    if (!/^WITH\s+_sqlblock_s/i.test(sql)) return null;
+    const ctes = extractCtesWithFullBody(sql);
+    if (!ctes?.length) return null;
+
+    const source = ctes[0].source; // source originale
+    const steps: SqlBlockStep[] = [];
+
+    for (const cte of ctes) {
+        const typeHint = stepTypeFromCteName(cte.name);
+        const step = parseCteBodyToStep(cte.fullBody, typeHint, cte.source);
+        if (step !== null) steps.push(step);
+    }
+
+    return { source, steps, materialize };
+}
+
+/** Parser simple SELECT (hors CTE) étendu aux patterns P1 (WHERE, ORDER BY, LIMIT). */
+function tryParseSimpleSmart(sql: string, materialize: SqlBlockMaterialize): SqlBlockAst | null {
+    const srcM = sql.match(/^SELECT\s+(?:[\s\S]+?)\s+FROM\s+((?:"[^"]*"|\S+))/i);
+    if (!srcM) return null;
+    const source = unquoteId(srcM[1]);
+    const step = parseCteBodyToStep(sql, null, source);
+    if (step === null) return { source, steps: [], materialize }; // SELECT *
+    if (step.type === 'custom_sql') return null; // ne peut pas être parsé proprement
+    return { source, steps: [step], materialize };
+}
+
+/**
+ * Parser amélioré : essaie d'abord sqlToAst (P0), puis le parsing intelligent
+ * par CTE (P1+). Les CTEs non parsables deviennent des steps custom_sql.
+ */
+export function sqlToAstSmart(sql: string, materialize: SqlBlockMaterialize = 'view'): SqlParseResult {
+    // 1. Parser standard (P0)
+    const standard = sqlToAst(sql, materialize);
+    if (standard.compatible && standard.ast) return standard;
+
+    // 2. Parser par CTE intelligent
+    const normalized = sql.replace(/[ \t]+/g, ' ').trim();
+    const smartCte = tryParseCteChainSmart(normalized, materialize);
+    if (smartCte) return { ast: smartCte, compatible: true };
+
+    // 3. Parser simple SELECT étendu (sans CTE)
+    const smartSimple = tryParseSimpleSmart(normalized, materialize);
+    if (smartSimple) return { ast: smartSimple, compatible: true };
+
+    // 4. Échec : retourne l'erreur d'origine
+    return standard;
 }
