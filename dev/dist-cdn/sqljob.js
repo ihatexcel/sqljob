@@ -132547,7 +132547,7 @@ if ($param1 === "Type A") {
     return yt().currentLanguageType === "js" ? yt().jsTemplates : yt().sqlTemplates;
   },
   getModalTitle() {
-    return yt().currentLanguageType === "js" ? "📋 Templates JavaScript" : "📋 Templates SQL";
+    return yt().currentLanguageType === "js" ? "Templates JavaScript" : "Templates SQL";
   },
   filterTemplates() {
     const xt = yt().searchQuery.toLowerCase().trim(), wt = yt().getCurrentTemplates();
@@ -132634,7 +132634,7 @@ function SqlEditorWidget({
             className: "px-2 py-1 border border-border bg-muted text-muted-foreground rounded cursor-pointer text-xs transition-all hover:border-primary hover:text-foreground",
             title: `Insérer un template ${Ot ? "JavaScript" : "SQL"}`,
             onClick: Cr,
-            children: "📋 Templates"
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "book-marked", size: 14 })
           }
         ),
         yt != null && xt != null && /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -144985,7 +144985,10 @@ function TemplateModal() {
     });
   }
   return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open: At, onOpenChange: (Lt) => !Lt && kt(), children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { className: "max-w-3xl max-h-[90vh] flex flex-col p-0 gap-0", "aria-describedby": void 0, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx(DialogHeader, { className: "p-4 border-b border-border", children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, { children: wt() }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(DialogHeader, { className: "p-4 border-b border-border", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogTitle, { className: "flex items-center gap-2", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: "book-marked", size: 18 }),
+      wt()
+    ] }) }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-4 border-b border-border", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         Input,
