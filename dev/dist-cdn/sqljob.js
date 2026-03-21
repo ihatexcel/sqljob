@@ -24823,25 +24823,6 @@ FROM (VALUES
       bodyConfig: { minHeight: "350px" },
       bodyDisplay: { showSkeleton: { excludeWhenSqlEditor: !0 } }
     },
-    sqlBlock: {
-      executeHandler: "executeSqlBlockCell",
-      defaultNamePrefix: "sqlBlock",
-      showNameInHeader: !0,
-      exportFields: ["name", "json", "queries"],
-      initProps: { _availableColumns: [] },
-      commonParams: ["name", "title"],
-      queryCount: 1,
-      queryNames: ["main"],
-      specificParams: [],
-      defaults: {
-        title: "",
-        json: null
-        // initialisé dynamiquement à la création
-      },
-      bodyFamily: "sqlBlock",
-      bodyConfig: {},
-      bodyDisplay: { showSkeleton: { when: "running" } }
-    },
     perspective: {
       executeHandler: "executePerspectiveCell",
       defaultNamePrefix: "perspective",
@@ -44866,84 +44847,7 @@ class FileHandler {
     Ct.href = wt, Ct.download = xt, document.body.appendChild(Ct), Ct.click(), document.body.removeChild(Ct), URL.revokeObjectURL(wt);
   }
 }
-const DUCKDB_TYPES = [
-  "VARCHAR",
-  "TEXT",
-  "INTEGER",
-  "BIGINT",
-  "SMALLINT",
-  "TINYINT",
-  "HUGEINT",
-  "FLOAT",
-  "DOUBLE",
-  "DECIMAL",
-  "BOOLEAN",
-  "DATE",
-  "TIME",
-  "TIMESTAMP",
-  "INTERVAL",
-  "BLOB",
-  "JSON"
-], STEP_LABELS = {
-  select_columns: "Sélectionner des colonnes",
-  exclude_columns: "Exclure des colonnes",
-  change_type: "Changer le type",
-  filter_rows: "Filtrer les lignes",
-  sort: "Trier",
-  top_n: "Limiter / Échantillonner",
-  rename_columns: "Renommer des colonnes",
-  derive: "Calculer une colonne",
-  fill_null: "Remplacer les nulls",
-  group_by: "Grouper / Agréger",
-  join: "Joindre une table",
-  union: "Empiler (UNION)",
-  pivot: "Pivoter (PIVOT)",
-  unpivot: "Dépivoter (UNPIVOT)",
-  window: "Fenêtre (WINDOW)",
-  unnest: "Exploser un tableau (UNNEST)",
-  json_extract: "Extraire du JSON",
-  date_trunc: "Tronquer une date",
-  custom_sql: "SQL personnalisé"
-}, STEP_CATEGORIES = [
-  {
-    label: "Filtrage & Tri",
-    steps: ["filter_rows", "sort", "top_n"]
-  },
-  {
-    label: "Colonnes",
-    steps: ["select_columns", "exclude_columns", "rename_columns", "derive", "change_type", "fill_null"]
-  },
-  {
-    label: "Agrégation & Reshape",
-    steps: ["group_by", "pivot", "unpivot"]
-  },
-  {
-    label: "Combinaison",
-    steps: ["join", "union"]
-  },
-  {
-    label: "DuckDB avancé",
-    steps: ["window", "unnest", "json_extract", "date_trunc"]
-  },
-  {
-    label: "Personnalisé",
-    steps: ["custom_sql"]
-  }
-];
-function createDefaultSqlBlockConfig(At = "") {
-  return {
-    ast: { source: At, steps: [], materialize: "view" },
-    degraded: !1,
-    manualSql: null
-  };
-}
-const SqlBlockTypes = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
-  __proto__: null,
-  DUCKDB_TYPES,
-  STEP_CATEGORIES,
-  STEP_LABELS,
-  createDefaultSqlBlockConfig
-}, Symbol.toStringTag, { value: "Module" })), T_ = class T_ {
+const T_ = class T_ {
   static getDefaultConfig() {
     var yt;
     try {
@@ -45010,7 +44914,7 @@ const SqlBlockTypes = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defin
         sql: Et.sql || Et.query || ""
       }));
     }
-    return wt.type === "pdfme" && typeof wt.json == "object" && wt.json !== null && (wt.json = JSON.stringify(wt.json, null, 2)), wt.type === "sqlBlock" && !wt.json && (wt.json = createDefaultSqlBlockConfig()), wt;
+    return wt.type === "pdfme" && typeof wt.json == "object" && wt.json !== null && (wt.json = JSON.stringify(wt.json, null, 2)), wt;
   }
   /**
    * Normalise un groupe (schéma unifié). Migre les queries de condition d'affichage sans name.
@@ -133249,7 +133153,77 @@ const SqlBlockService = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.def
   sqlToAst,
   sqlToAstSmart,
   stepSql
-}, Symbol.toStringTag, { value: "Module" }));
+}, Symbol.toStringTag, { value: "Module" })), DUCKDB_TYPES = [
+  "VARCHAR",
+  "TEXT",
+  "INTEGER",
+  "BIGINT",
+  "SMALLINT",
+  "TINYINT",
+  "HUGEINT",
+  "FLOAT",
+  "DOUBLE",
+  "DECIMAL",
+  "BOOLEAN",
+  "DATE",
+  "TIME",
+  "TIMESTAMP",
+  "INTERVAL",
+  "BLOB",
+  "JSON"
+], STEP_LABELS = {
+  select_columns: "Sélectionner des colonnes",
+  exclude_columns: "Exclure des colonnes",
+  change_type: "Changer le type",
+  filter_rows: "Filtrer les lignes",
+  sort: "Trier",
+  top_n: "Limiter / Échantillonner",
+  rename_columns: "Renommer des colonnes",
+  derive: "Calculer une colonne",
+  fill_null: "Remplacer les nulls",
+  group_by: "Grouper / Agréger",
+  join: "Joindre une table",
+  union: "Empiler (UNION)",
+  pivot: "Pivoter (PIVOT)",
+  unpivot: "Dépivoter (UNPIVOT)",
+  window: "Fenêtre (WINDOW)",
+  unnest: "Exploser un tableau (UNNEST)",
+  json_extract: "Extraire du JSON",
+  date_trunc: "Tronquer une date",
+  custom_sql: "SQL personnalisé"
+}, STEP_CATEGORIES = [
+  {
+    label: "Filtrage & Tri",
+    steps: ["filter_rows", "sort", "top_n"]
+  },
+  {
+    label: "Colonnes",
+    steps: ["select_columns", "exclude_columns", "rename_columns", "derive", "change_type", "fill_null"]
+  },
+  {
+    label: "Agrégation & Reshape",
+    steps: ["group_by", "pivot", "unpivot"]
+  },
+  {
+    label: "Combinaison",
+    steps: ["join", "union"]
+  },
+  {
+    label: "DuckDB avancé",
+    steps: ["window", "unnest", "json_extract", "date_trunc"]
+  },
+  {
+    label: "Personnalisé",
+    steps: ["custom_sql"]
+  }
+];
+function createDefaultSqlBlockConfig(At = "") {
+  return {
+    ast: { source: At, steps: [], materialize: "view" },
+    degraded: !1,
+    manualSql: null
+  };
+}
 function SqlEditorWidget({
   cell: At,
   path: yt,
@@ -137259,12 +137233,6 @@ function PerspectiveBody({ cell: At, path: yt, cellIndex: xt }) {
     /* @__PURE__ */ jsxRuntimeExports.jsx(ResultInfo, { cell: At, devOnly: !0 })
   ] });
 }
-function SqlBlockBody({ cell: At, path: yt, cellIndex: xt }) {
-  return useNotebookStore((Ct) => Ct.devMode) ? /* @__PURE__ */ jsxRuntimeExports.jsx(SqlBlockEditor, { cell: At, path: yt, cellIndex: xt }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
-    At._results && Array.isArray(At._results) && At._results.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsx(SqlDataTable, { cell: At }),
-    At._resultInfo && /* @__PURE__ */ jsxRuntimeExports.jsx(ResultInfo, { cell: At })
-  ] });
-}
 function CellBody({ cell: At, path: yt, cellIndex: xt, group: wt }) {
   const {
     devMode: Ct,
@@ -137311,8 +137279,6 @@ function CellBody({ cell: At, path: yt, cellIndex: xt, group: wt }) {
         return /* @__PURE__ */ jsxRuntimeExports.jsx(PdfmeBody, { cell: At, path: yt, cellIndex: xt });
       case "perspective":
         return /* @__PURE__ */ jsxRuntimeExports.jsx(PerspectiveBody, { cell: At, path: yt, cellIndex: xt });
-      case "sqlBlock":
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(SqlBlockBody, { cell: At, path: yt, cellIndex: xt });
       default:
         return null;
     }
@@ -143885,7 +143851,7 @@ FROM source1 LIMIT 10;`;
         { name: "header", type: "text", position: { x: 20, y: 20 }, width: 170, height: 10, content: "ENTÊTE DU DOCUMENT", fontSize: 16, fontColor: "#6366f1", alignment: "center" },
         { name: "datatable", type: "table", position: { x: 20, y: 35 }, width: 170, height: 50, content: '[["A","B","C"]]', showHead: !0, repeatHead: !0, head: ["Col1", "Col2", "Col3"], headWidthPercentages: [33, 33, 34], tableStyles: { borderWidth: 0.3, borderColor: "#000000" }, headStyles: { fontSize: 10, fontColor: "#ffffff", backgroundColor: "#6366f1" }, bodyStyles: { fontSize: 9, fontColor: "#333333", alternateBackgroundColor: "#f5f5f5" }, columnStyles: {} }
       ]]
-    }, null, 2)), xt === "perspective" && (wt._perspectiveReady = !1, wt._perspectiveWorker = null, wt._perspectiveTable = null), xt === "sqlBlock" && (wt.json = createDefaultSqlBlockConfig()), wt;
+    }, null, 2)), xt === "perspective" && (wt._perspectiveReady = !1, wt._perspectiveWorker = null, wt._perspectiveTable = null), wt;
   },
   addGroup(xt) {
     const wt = yt().createNewGroup("row");
@@ -144747,47 +144713,6 @@ ${It}
       } catch (Et) {
         throw Et;
       }
-    }
-  },
-  async executeSqlBlockCell(xt) {
-    var It, Rt, Dt, jt, Nt, Mt;
-    const { getEffectiveSql: wt, generateMaterializeQuery: Ct } = await Promise.resolve().then(() => SqlBlockService), { createDefaultSqlBlockConfig: St } = await Promise.resolve().then(() => SqlBlockTypes);
-    xt.json || (xt.json = St());
-    const Et = xt.json, kt = yt().devMode, Tt = wt(Et);
-    (kt || !((It = xt.queries) != null && It.length)) && ((Rt = xt.queries) != null && Rt.length ? xt.queries[0] = { ...xt.queries[0], sql: Tt } : xt.queries = [{ name: "main", sql: Tt, engine: "sql", clientVisible: !1 }]);
-    const $t = ConfigManager.getCellQuery(xt, 0), Lt = !kt && ($t != null && $t.trim()) ? $t : Tt;
-    if (!(Lt != null && Lt.trim())) {
-      xt._resultInfo = "Aucun SQL à exécuter — définissez une source et des steps.";
-      return;
-    }
-    if (!((Dt = xt.name) != null && Dt.trim()))
-      throw new Error("La cellule sqlBlock doit avoir un nom (utilisé comme nom de VIEW/TABLE dans DuckDB).");
-    yt().setStatus("Exécution du SQL Block...", "loading");
-    try {
-      const Ot = ((jt = Et.ast) == null ? void 0 : jt.materialize) ?? "view", Bt = yt().parseQueryWithParameters(Lt);
-      if (Ot === "select") {
-        const { rows: Ht, schemaTypes: qt } = await DuckDBManager.executeQueryWithSchema(
-          `SELECT * FROM (
-${Bt}
-) _sb_r LIMIT 1000`
-        );
-        xt._results = Ht, xt._schemaTypes = qt || {}, xt._resultInfo = `${Ht.length} ligne(s)${Ht.length === 1e3 ? " (limité à 1 000)" : ""} — SELECT`;
-      } else {
-        const Ht = Ot === "view" ? "TABLE" : "VIEW";
-        try {
-          await DuckDBManager.executeQuery(`DROP ${Ht} IF EXISTS ${xt.name}`);
-        } catch {
-        }
-        const qt = Ct(xt.name, Bt, Ot);
-        await DuckDBManager.executeQuery(qt);
-        const { rows: Kt, schemaTypes: Jt } = await DuckDBManager.executeQueryWithSchema(
-          `SELECT * FROM ${xt.name} LIMIT 1000`
-        );
-        xt._results = Kt, xt._schemaTypes = Jt || {}, xt._resultInfo = `${Kt.length} ligne(s)${Kt.length === 1e3 ? " (limité à 1 000 pour l'affichage)" : ""} — ${Ot === "table" ? "TABLE" : "VIEW"} "${xt.name}" créée`;
-      }
-      await ((Mt = (Nt = yt()).refreshDuckdbSchema) == null ? void 0 : Mt.call(Nt)), yt().setStatus("SQL Block exécuté", "success");
-    } catch (Ot) {
-      throw Ot;
     }
   },
   showSqlEditorVisible(xt) {
@@ -145677,8 +145602,7 @@ function buildInitialState() {
       { type: "publipostageWord", label: "Publipostage Word", icon: "description" },
       { type: "pdfme", label: "PDF (pdfme)", icon: "picture-as-pdf" },
       { type: "echart", label: "EChart (Apache ECharts)", icon: "bar-chart" },
-      { type: "perspective", label: "Perspective Viewer", icon: "analytics" },
-      { type: "sqlBlock", label: "SQL Block (visuel)", icon: "account-tree" }
+      { type: "perspective", label: "Perspective Viewer", icon: "analytics" }
     ],
     _tables: {},
     _duckdbTables: {},
@@ -146485,7 +146409,6 @@ function CellConfigModal() {
                 /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "source", children: "Source" }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "uiParameter", children: "Paramètre UI" }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "buttonRunNextCells", children: "Bouton Exécuter" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "sqlBlock", children: "SQL Block" }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "sqlRecursiveParse", children: "SQL" }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "table", children: "Tableau" }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "iframe", children: "HTML/Iframe" }),
