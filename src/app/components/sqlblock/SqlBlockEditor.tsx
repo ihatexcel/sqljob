@@ -235,6 +235,9 @@ function useStepEyeData(cell: any, ast: SqlBlockAst) {
     const [loading, setLoading] = useState(false)
     const [, bumpRender] = useState(0)
 
+    // Accès direct au store pour appeler refreshDuckdbSchema après matérialisation
+    const refreshDuckdbSchema = useNotebookStore(s => s.refreshDuckdbSchema)
+
     // Refs pour accéder aux valeurs fraîches sans stale-closure
     const astRef = useRef(ast)
     astRef.current = ast
@@ -274,9 +277,11 @@ function useStepEyeData(cell: any, ast: SqlBlockAst) {
             // On strip un éventuel ; final et on n'ajoute pas de second LIMIT si déjà présent.
             const bare = sql.trimEnd().replace(/;+\s*$/, '')
             const hasLimit = /\bLIMIT\s+\d/i.test(bare.replace(/\([\s\S]*?\)/g, ''))
-            const sqlWithLimit = hasLimit ? bare : `${bare}\nLIMIT ${SUBCELL_LIMIT}`
+            // Même pattern que generateMaterializeQuery : sql enveloppé dans des parenthèses.
+            // Le LIMIT est injecté à l'intérieur avant de fermer la parenthèse.
+            const innerSql = hasLimit ? bare : `${bare}\nLIMIT ${SUBCELL_LIMIT}`
             await DuckDBManager.executeQuery(
-                `CREATE OR REPLACE TABLE ${tRef} AS ${sqlWithLimit}`
+                `CREATE OR REPLACE TABLE ${tRef} AS (\n${innerSql}\n)`
             )
             const conn = DuckDBManager.getConnection()
             const result = await conn.query(`SELECT * FROM ${tRef}`)
@@ -314,6 +319,10 @@ function useStepEyeData(cell: any, ast: SqlBlockAst) {
             for (let i = 0; i < astRef.current.steps.length; i++) {
                 if (cancelled) break
                 await doLoad(i, true)   // silent : pas de setLoading
+            }
+            // Rafraîchir le schéma DuckDB affiché dans le layout (panel + autocomplete)
+            if (!cancelled) {
+                try { await refreshDuckdbSchema?.() } catch { /* ignore */ }
             }
         }
         run()
@@ -2163,7 +2172,9 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
                         disabled={cfg.degraded}
                     />
                     <datalist id={`sqlblock-source-list-${cell._id}`}>
-                        {Object.keys(_duckdbTables ?? {}).map(t => <option key={t} value={t} />)}
+                        {Object.keys(_duckdbTables ?? {})
+                            .filter(t => !t.startsWith('_sqlblock.'))
+                            .map(t => <option key={t} value={t} />)}
                     </datalist>
                 </div>
                 <div className="flex items-center gap-2">
