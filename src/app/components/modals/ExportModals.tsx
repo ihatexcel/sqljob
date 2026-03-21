@@ -98,7 +98,7 @@ export function ExportModal() {
 
                     <div className="flex items-center justify-between gap-3">
                         <div>
-                            <Label className="font-semibold">Afficher la barre horizontale</Label>
+                            <Label className="font-semibold">Afficher la barre de configuration</Label>
                         </div>
                         <Switch checked={!!em.showLayout} onCheckedChange={v => update({ showLayout: v })} />
                     </div>
