@@ -142495,16 +142495,16 @@ ${It}${$t}</head>
     FileHandler.downloadFile(Nt, wt);
   },
   async copyExportJson() {
-    const { exportModal: xt, buildExportConfig: wt, setStatus: Ct } = yt();
+    const { exportModal: xt, buildExportConfig: wt } = yt();
     try {
-      const kt = await wt({
+      const Ct = await wt({
         devMode: xt.devMode,
         showLayout: xt.showLayout,
         includeFileData: !!xt.includeFiles
-      }), Et = JSON.stringify(kt, null, 2), St = document.createElement("textarea");
-      return St.value = Et, St.style.cssText = "position:fixed;opacity:0;pointer-events:none", document.body.appendChild(St), St.focus(), St.select(), document.execCommand("copy"), document.body.removeChild(St), !0;
-    } catch (kt) {
-      return console.error("Erreur copie JSON:", kt), yt().setStatus("Erreur: " + kt.message, "error"), !1;
+      }), kt = JSON.stringify(Ct, null, 2);
+      return await navigator.clipboard.writeText(kt), !0;
+    } catch (Ct) {
+      return console.error("Erreur copie JSON:", Ct), yt().setStatus("Erreur: " + Ct.message, "error"), !1;
     }
   },
   cancelExport() {
@@ -145250,7 +145250,7 @@ function ExportModal() {
         /* @__PURE__ */ jsxRuntimeExports.jsx(Switch, { checked: !!$t.devMode, onCheckedChange: (Rt) => Lt({ devMode: Rt, showLayout: Rt }) })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-3", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(Label$3, { className: "font-semibold", children: "Afficher la barre horizontale" }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(Label$3, { className: "font-semibold", children: "Afficher la barre de configuration" }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(Switch, { checked: !!$t.showLayout, onCheckedChange: (Rt) => Lt({ showLayout: Rt }) })
       ] }),
       ["gist", "json", "html"].includes($t.type) && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
