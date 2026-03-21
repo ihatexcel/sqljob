@@ -24827,7 +24827,7 @@ FROM (VALUES
       executeHandler: "executeSqlBlockCell",
       defaultNamePrefix: "sqlBlock",
       showNameInHeader: !0,
-      exportFields: ["name", "sqlBlockConfig"],
+      exportFields: ["name", "json"],
       initProps: { _availableColumns: [] },
       commonParams: ["name", "title"],
       queryCount: 0,
@@ -24835,7 +24835,7 @@ FROM (VALUES
       specificParams: [],
       defaults: {
         title: "",
-        sqlBlockConfig: null
+        json: null
         // initialisé dynamiquement à la création
       },
       bodyFamily: "sqlBlock",
@@ -45005,7 +45005,7 @@ const SqlBlockTypes = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defin
         sql: Et.sql || Et.query || ""
       }));
     }
-    return wt.type === "pdfme" && typeof wt.json == "object" && wt.json !== null && (wt.json = JSON.stringify(wt.json, null, 2)), wt.type === "sqlBlock" && !wt.sqlBlockConfig && (wt.sqlBlockConfig = createDefaultSqlBlockConfig()), wt;
+    return wt.type === "pdfme" && typeof wt.json == "object" && wt.json !== null && (wt.json = JSON.stringify(wt.json, null, 2)), wt.type === "sqlBlock" && !wt.json && (wt.json = createDefaultSqlBlockConfig()), wt;
   }
   /**
    * Normalise un groupe (schéma unifié). Migre les queries de condition d'affichage sans name.
@@ -134033,7 +134033,7 @@ const SqlBlockService = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.def
 }, Symbol.toStringTag, { value: "Module" }));
 function getOrInitConfig(At) {
   var yt, xt;
-  return At.sqlBlockConfig || (At.sqlBlockConfig = createDefaultSqlBlockConfig(((xt = (yt = At.sqlBlockConfig) == null ? void 0 : yt.ast) == null ? void 0 : xt.source) || "")), At.sqlBlockConfig;
+  return At.json || (At.json = createDefaultSqlBlockConfig(((xt = (yt = At.json) == null ? void 0 : yt.ast) == null ? void 0 : xt.source) || "")), At.json;
 }
 function commitAstUpdate(At, yt, xt) {
   const wt = getOrInitConfig(At);
@@ -142993,7 +142993,7 @@ FROM source1 LIMIT 10;`;
         { name: "header", type: "text", position: { x: 20, y: 20 }, width: 170, height: 10, content: "ENTÊTE DU DOCUMENT", fontSize: 16, fontColor: "#6366f1", alignment: "center" },
         { name: "datatable", type: "table", position: { x: 20, y: 35 }, width: 170, height: 50, content: '[["A","B","C"]]', showHead: !0, repeatHead: !0, head: ["Col1", "Col2", "Col3"], headWidthPercentages: [33, 33, 34], tableStyles: { borderWidth: 0.3, borderColor: "#000000" }, headStyles: { fontSize: 10, fontColor: "#ffffff", backgroundColor: "#6366f1" }, bodyStyles: { fontSize: 9, fontColor: "#333333", alternateBackgroundColor: "#f5f5f5" }, columnStyles: {} }
       ]]
-    }, null, 2)), xt === "perspective" && (wt._perspectiveReady = !1, wt._perspectiveWorker = null, wt._perspectiveTable = null), xt === "sqlBlock" && (wt.sqlBlockConfig = createDefaultSqlBlockConfig()), wt;
+    }, null, 2)), xt === "perspective" && (wt._perspectiveReady = !1, wt._perspectiveWorker = null, wt._perspectiveTable = null), xt === "sqlBlock" && (wt.json = createDefaultSqlBlockConfig()), wt;
   },
   addGroup(xt) {
     const wt = yt().createNewGroup("row");
@@ -143841,8 +143841,8 @@ const createExecutionSlice = (At, yt) => ({
   async executeSqlBlockCell(xt) {
     var $t, Lt, It, Rt, Dt;
     const { astToSql: wt, getEffectiveSql: Ct, generateMaterializeQuery: kt } = await Promise.resolve().then(() => SqlBlockService), { createDefaultSqlBlockConfig: Et } = await Promise.resolve().then(() => SqlBlockTypes);
-    xt.sqlBlockConfig || (xt.sqlBlockConfig = Et());
-    const St = xt.sqlBlockConfig, Tt = Ct(St);
+    xt.json || (xt.json = Et());
+    const St = xt.json, Tt = Ct(St);
     if (!(Tt != null && Tt.trim())) {
       xt._resultInfo = "Aucun SQL à exécuter — définissez une source et des steps.";
       return;
@@ -144973,38 +144973,51 @@ function TemplateModal() {
     searchQuery: xt,
     getModalTitle: wt,
     filterTemplates: Ct,
-    selectTemplate: kt,
-    close: Et
-  } = useTemplateModal();
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open: At, onOpenChange: (St) => !St && Et(), children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { className: "max-w-3xl max-h-[90vh] flex flex-col p-0 gap-0", "aria-describedby": void 0, children: [
+    close: kt
+  } = useTemplateModal(), [Et, St] = reactExports.useState(null), Tt = reactExports.useRef(null);
+  function $t(Lt, It) {
+    navigator.clipboard.writeText(Lt).then(() => {
+      St(It), Tt.current && clearTimeout(Tt.current), Tt.current = setTimeout(() => St(null), 2e3);
+    });
+  }
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open: At, onOpenChange: (Lt) => !Lt && kt(), children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { className: "max-w-3xl max-h-[90vh] flex flex-col p-0 gap-0", "aria-describedby": void 0, children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(DialogHeader, { className: "p-4 border-b border-border", children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, { children: wt() }) }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-4 border-b border-border", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         Input,
         {
           value: xt,
-          onChange: (St) => {
-            useTemplateModal.setState({ searchQuery: St.target.value }), Ct();
+          onChange: (Lt) => {
+            useTemplateModal.setState({ searchQuery: Lt.target.value }), Ct();
           },
           placeholder: "🔍 Rechercher un template..."
         }
       ),
       yt.length === 0 && xt && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm text-muted-foreground mt-2", children: "Aucun template trouvé" })
     ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-4 overflow-y-auto flex-1", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-3", children: yt.map((St, Tt) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
-      "div",
-      {
-        className: "rounded-lg border border-border bg-muted hover:bg-accent cursor-pointer transition-colors p-4",
-        onClick: () => kt(St.originalIndex),
-        children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "font-medium", children: St.name }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground mt-1", children: St.description }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-2", children: /* @__PURE__ */ jsxRuntimeExports.jsx("pre", { className: "bg-background p-3 rounded text-xs overflow-x-auto border border-border", children: /* @__PURE__ */ jsxRuntimeExports.jsx("code", { children: St.code }) }) })
-        ]
-      },
-      Tt
-    )) }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(DialogFooter, { className: "p-4 border-t border-border", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "ghost", onClick: Et, children: "Annuler" }) })
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-4 overflow-y-auto flex-1", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-3", children: yt.map((Lt, It) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "rounded-lg border border-border bg-muted transition-colors p-4", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-start justify-between gap-2", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-w-0", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "font-medium", children: Lt.name }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground mt-1", children: Lt.description })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          Button,
+          {
+            size: "sm",
+            variant: Et === It ? "default" : "outline",
+            className: "shrink-0",
+            onClick: () => $t(Lt.code, It),
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Icon$1, { name: Et === It ? "check" : "content-copy", size: 14 }),
+              Et === It ? "Copié !" : "Copier"
+            ]
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-2", children: /* @__PURE__ */ jsxRuntimeExports.jsx("pre", { className: "bg-background p-3 rounded text-xs overflow-x-auto border border-border", children: /* @__PURE__ */ jsxRuntimeExports.jsx("code", { children: Lt.code }) }) })
+    ] }, It)) }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(DialogFooter, { className: "p-4 border-t border-border", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "ghost", onClick: kt, children: "Fermer" }) })
   ] }) });
 }
 const CellTypeGrid = reactExports.memo(function({ onSelect: yt }) {
