@@ -202,8 +202,10 @@ function computeStepSchemas(
 }
 
 // ─── useStepEyeData ───────────────────────────────────────────────────────────
-// Gère les tables DuckDB intermédiaires _sqlblock."sb_<cellId>_s<i>" (LIMIT 10).
+// Gère les tables DuckDB intermédiaires _sqlblock."sb_<cellId>_s<i>".
 // Hash-based : seules les étapes dont les prédécesseurs ont changé sont recalculées.
+// Matérialisation proactive : toutes les étapes sont pré-calculées en arrière-plan
+// dès que l'AST ou la source changent.
 
 interface EyeEntry {
     rows: Record<string, any>[]
@@ -212,10 +214,18 @@ interface EyeEntry {
 }
 
 const SQLBLOCK_SCHEMA = '_sqlblock'
+const SUBCELL_LIMIT = 50   // lignes dans les tables intermédiaires
 let sqlblockSchemaEnsured = false
 
 async function ensureSqlblockSchema() {
     if (sqlblockSchemaEnsured) return
+
+/** Nom de la table temp DuckDB pour le step idx d'une cellule. */
+function makeTableRef(cellId: string, idx: number): string {
+    const safeId = cellId.replace(/[^a-zA-Z0-9]/g, '_')
+    const name = `sb_${safeId}_s${idx < 0 ? 'src' : idx}`
+    return `"${SQLBLOCK_SCHEMA}"."${name}"`
+}
     await DuckDBManager.executeQuery(`CREATE SCHEMA IF NOT EXISTS "${SQLBLOCK_SCHEMA}"`)
     sqlblockSchemaEnsured = true
 }
@@ -240,24 +250,28 @@ function useStepEyeData(cell: any, ast: SqlBlockAst) {
         return JSON.stringify({ src: a.source, steps: a.steps.slice(0, idx + 1) })
     }
 
-    function tableRef(idx: number): string {
-        const safeId = cellRef.current._id.replace(/[^a-zA-Z0-9]/g, '_')
-        const name = `sb_${safeId}_s${idx < 0 ? 'src' : idx}`
-        return `"${SQLBLOCK_SCHEMA}"."${name}"`
-    }
+    const cellTableRef = (idx: number) => makeTableRef(cellRef.current._id, idx)
 
-    async function doLoad(idx: number) {
+    /**
+     * Matérialise le step idx dans une table temp DuckDB.
+     * Toujours créée en TABLE avec LIMIT, indépendamment de ast.materialize.
+     * Wrapping subquery propre pour gérer les CTEs sans double-LIMIT.
+     */
+    async function doLoad(idx: number, silent = false) {
         const hash = getHash(idx)
         if (cache.current.get(idx)?.hash === hash) return  // Cache valide
 
-        setLoading(true)
+        if (!silent) setLoading(true)
         try {
             await ensureSqlblockSchema()
             const ast = astRef.current
-            const tRef = tableRef(idx)
+            if (!ast.source) return
+            const tRef = cellTableRef(idx)
             const sql = stepSql(ast, idx)
+            // Wrapping en SELECT * FROM (...) pour éviter les problèmes DuckDB
+            // avec CTEs + LIMIT quand la requête a déjà un ORDER BY ou LIMIT interne.
             await DuckDBManager.executeQuery(
-                `CREATE OR REPLACE TABLE ${tRef} AS (${sql} LIMIT 10)`
+                `CREATE OR REPLACE TABLE ${tRef} AS SELECT * FROM (${sql}) __sub__ LIMIT ${SUBCELL_LIMIT}`
             )
             const { rows, schemaTypes } = await DuckDBManager.executeQueryWithSchema(
                 `SELECT * FROM ${tRef}`
@@ -267,7 +281,7 @@ function useStepEyeData(cell: any, ast: SqlBlockAst) {
         } catch (err) {
             console.warn('[sqlblock eye]', err)
         } finally {
-            setLoading(false)
+            if (!silent) setLoading(false)
         }
     }
 
@@ -278,6 +292,25 @@ function useStepEyeData(cell: any, ast: SqlBlockAst) {
         if (next !== null) doLoad(next)
     }
 
+    // ── Matérialisation proactive en arrière-plan ─────────────────────────
+    // Dès que la source ou les steps changent, on (re)matérialise toutes les
+    // étapes séquentiellement (silent=true → pas de spinner global).
+    // Résultat : eye instant, schéma toujours à jour, indépendant du mode VIEW/TABLE.
+    const bgKey = JSON.stringify({ src: ast.source, steps: ast.steps })
+    useEffect(() => {
+        if (!ast.source || !ast.steps.length) return
+        let cancelled = false
+        const run = async () => {
+            await ensureSqlblockSchema()
+            for (let i = 0; i < astRef.current.steps.length; i++) {
+                if (cancelled) break
+                await doLoad(i, true)   // silent : pas de setLoading
+            }
+        }
+        run()
+        return () => { cancelled = true }
+    }, [bgKey])     // eslint-disable-line react-hooks/exhaustive-deps
+
     // Auto-refresh si l'œil est ouvert et que les prédécesseurs changent
     const upstreamKey = eyeOpen !== null
         ? JSON.stringify([ast.source, ...ast.steps.slice(0, eyeOpen + 1)])
@@ -286,13 +319,14 @@ function useStepEyeData(cell: any, ast: SqlBlockAst) {
     useEffect(() => {
         if (eyeOpen === null) return
         doLoad(eyeOpen)
-    }, [upstreamKey, eyeOpen])
+    }, [upstreamKey, eyeOpen])  // eslint-disable-line react-hooks/exhaustive-deps
 
     return {
         eyeOpen,
         toggleEye,
         loading,
         getEyeData: (idx: number): EyeEntry | null => cache.current.get(idx) ?? null,
+        cellTableRef,
     }
 }
 
@@ -1464,13 +1498,13 @@ function CustomSqlStepUI({ step, onChange }: { step: CustomSqlStep; onChange: (s
 }
 
 // ─── useStepInputSchemas ──────────────────────────────────────────────────────
-// Récupère dynamiquement depuis DuckDB le schéma réel en entrée de chaque step
-// quand sa modale s'ouvre (stepSql(ast, N-1) LIMIT 0).
-// Fallback : dérivation statique computeStepSchemas.
+// Récupère le schéma réel en entrée de chaque step.
+// Stratégie : lit d'abord la table temp déjà matérialisée par useStepEyeData
+// (makeTableRef(cellId, N-1)), fallback sur une requête SQL LIMIT 0.
 
 interface DynamicSchema { columns: string[]; colTypes: Record<string, string> }
 
-function useStepInputSchemas(ast: SqlBlockAst) {
+function useStepInputSchemas(ast: SqlBlockAst, cellId: string) {
     const [dynamicSchemas, setDynamicSchemas] = useState<Record<number, DynamicSchema>>({})
     const cacheRef = useRef<Map<string, DynamicSchema>>(new Map())
     const astRef = useRef(ast)
@@ -1479,7 +1513,6 @@ function useStepInputSchemas(ast: SqlBlockAst) {
     const fetchSchemaForStep = useCallback(async (stepIdx: number) => {
         const a = astRef.current
         if (!a.source) return
-        // La clé ne dépend que des steps en AMONT (entrée du step stepIdx)
         const cacheKey = JSON.stringify({ src: a.source, steps: a.steps.slice(0, stepIdx) })
 
         const cached = cacheRef.current.get(cacheKey)
@@ -1489,13 +1522,30 @@ function useStepInputSchemas(ast: SqlBlockAst) {
         }
 
         try {
-            const inputSql = stepIdx === 0
-                ? `SELECT * FROM ${quoteId(a.source)}`
-                : stepSql(a, stepIdx - 1)
-            if (!inputSql) return
-            const { schemaTypes } = await DuckDBManager.executeQueryWithSchema(
-                `SELECT * FROM (${inputSql}) AS __schema__ LIMIT 0`
-            )
+            let schemaTypes: Record<string, string> | undefined
+
+            // 1. Essaie la table temp déjà matérialisée (makeTableRef(cellId, stepIdx-1))
+            //    Elle existe si la matérialisation proactive a tourné.
+            if (stepIdx > 0) {
+                const tRef = makeTableRef(cellId, stepIdx - 1)
+                try {
+                    const r = await DuckDBManager.executeQueryWithSchema(`SELECT * FROM ${tRef} LIMIT 0`)
+                    schemaTypes = r.schemaTypes ?? undefined
+                } catch { /* table pas encore créée → fallback */ }
+            }
+
+            // 2. Fallback : requête SQL LIMIT 0 sur la sous-requête amont
+            if (!schemaTypes) {
+                const inputSql = stepIdx === 0
+                    ? `SELECT * FROM ${quoteId(a.source)}`
+                    : stepSql(a, stepIdx - 1)
+                if (!inputSql) return
+                const r = await DuckDBManager.executeQueryWithSchema(
+                    `SELECT * FROM (${inputSql}) AS __schema__ LIMIT 0`
+                )
+                schemaTypes = r.schemaTypes ?? undefined
+            }
+
             if (!schemaTypes) return
             const result: DynamicSchema = { columns: Object.keys(schemaTypes), colTypes: schemaTypes }
             cacheRef.current.set(cacheKey, result)
@@ -1503,7 +1553,7 @@ function useStepInputSchemas(ast: SqlBlockAst) {
         } catch (err) {
             console.warn('[sqlblock input-schema]', err)
         }
-    }, [])
+    }, [cellId])
 
     /** Invalide le cache pour les steps >= dirtyFromStep (AST a changé) */
     const invalidateFrom = useCallback((dirtyFromStep: number, a: SqlBlockAst) => {
@@ -1935,8 +1985,8 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
         ast.source ? (_duckdbTables?.[ast.source]?.columns ?? []) : []
     const stepSchemas = computeStepSchemas(ast, sourceColumns)
 
-    // Schémas dynamiques : récupérés via DuckDB à l'ouverture de chaque modale
-    const { dynamicSchemas, fetchSchemaForStep, invalidateFrom } = useStepInputSchemas(ast)
+    // Schémas dynamiques : priorité table temp déjà matérialisée, fallback SQL LIMIT 0
+    const { dynamicSchemas, fetchSchemaForStep, invalidateFrom } = useStepInputSchemas(ast, cell._id)
 
     // tableSchemas pour l'autocomplétion Monaco
     const tableSchemas = db?.schemaTrees ?? []
