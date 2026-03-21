@@ -24596,7 +24596,7 @@ const CELL_TYPE_SCHEMAS = {
       executeHandler: "executeSqlRecursiveParseCell",
       defaultNamePrefix: "sql",
       hideInViewMode: !0,
-      exportFields: ["queries"],
+      exportFields: ["queries", "materialize"],
       initProps: {},
       commonParams: ["name", "queries"],
       queryCount: 1,
@@ -136808,25 +136808,42 @@ function SqlTableBody({ cell: At, path: yt, cellIndex: xt, showTextResult: wt = 
     showSqlEditorVisible: Et,
     isSqlResultTabular: kt,
     isSqlResultText: Tt,
-    getSqlResultAsText: $t
-  } = useNotebookStore(useShallow((Nt) => ({
-    devMode: Nt.devMode,
-    hasCellHeight: Nt.hasCellHeight,
-    showSqlEditorVisible: Nt.showSqlEditorVisible,
-    isSqlResultTabular: Nt.isSqlResultTabular,
-    isSqlResultText: Nt.isSqlResultText,
-    getSqlResultAsText: Nt.getSqlResultAsText
-  }))), [Lt, It] = reactExports.useState(!1), Rt = St(At), Dt = At._status === "running", jt = At.type === "table";
-  return Ct && At.type === "sqlRecursiveParse" && Lt ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+    getSqlResultAsText: $t,
+    forceUpdate: Lt
+  } = useNotebookStore(useShallow((Mt) => ({
+    devMode: Mt.devMode,
+    hasCellHeight: Mt.hasCellHeight,
+    showSqlEditorVisible: Mt.showSqlEditorVisible,
+    isSqlResultTabular: Mt.isSqlResultTabular,
+    isSqlResultText: Mt.isSqlResultText,
+    getSqlResultAsText: Mt.getSqlResultAsText,
+    forceUpdate: Mt.forceUpdate
+  }))), [It, Rt] = reactExports.useState(!1), Dt = St(At), jt = At._status === "running", Nt = At.type === "table";
+  return Ct && At.type === "sqlRecursiveParse" && It ? /* @__PURE__ */ jsxRuntimeExports.jsx(
     SqlBlockEditor,
     {
       cell: At,
       path: yt,
       cellIndex: xt,
       fromSqlCell: !0,
-      onExitUiMode: () => It(!1)
+      onExitUiMode: () => Rt(!1)
     }
-  ) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: Rt ? "flex-1 min-h-0 flex flex-col" : "", children: [
+  ) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: Dt ? "flex-1 min-h-0 flex flex-col" : "", children: [
+    Ct && At.type === "sqlRecursiveParse" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 mb-1 shrink-0", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-xs text-muted-foreground shrink-0", children: "Résultat :" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex rounded border border-border overflow-hidden text-xs", children: ["select", "view", "table"].map((Mt) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "button",
+        {
+          onClick: () => {
+            At.materialize = Mt, Lt();
+          },
+          className: `px-2 py-0.5 transition-colors ${(At.materialize ?? "select") === Mt ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"}`,
+          title: Mt === "select" ? "SELECT simple (sans créer de vue ni de table)" : Mt === "view" ? "Créer une Vue DuckDB (lazy)" : "Créer une TABLE matérialisée",
+          children: Mt.toUpperCase()
+        },
+        Mt
+      )) })
+    ] }),
     Ct && (Et == null ? void 0 : Et(At)) && /* @__PURE__ */ jsxRuntimeExports.jsx(
       SqlEditorWidget,
       {
@@ -136834,13 +136851,13 @@ function SqlTableBody({ cell: At, path: yt, cellIndex: xt, showTextResult: wt = 
         path: yt,
         cellIndex: xt,
         placeholder: "SELECT * FROM source1 LIMIT 100",
-        onEnterUiMode: At.type === "sqlRecursiveParse" ? () => It(!0) : null
+        onEnterUiMode: At.type === "sqlRecursiveParse" ? () => Rt(!0) : null
       }
     ),
     wt ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-      (Et == null ? void 0 : Et(At)) && (kt == null ? void 0 : kt(At)) && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `relative rounded-lg mt-2 ${Rt ? "flex-1 min-h-0 overflow-auto" : ""}`, children: Dt ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-background rounded-lg overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsx(TableSkeleton, {}) }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-background rounded-lg overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsx(SqlDataTable, { cell: At, searchable: jt }) }) }),
+      (Et == null ? void 0 : Et(At)) && (kt == null ? void 0 : kt(At)) && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `relative rounded-lg mt-2 ${Dt ? "flex-1 min-h-0 overflow-auto" : ""}`, children: jt ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-background rounded-lg overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsx(TableSkeleton, {}) }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-background rounded-lg overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsx(SqlDataTable, { cell: At, searchable: Nt }) }) }),
       (Et == null ? void 0 : Et(At)) && (Tt == null ? void 0 : Tt(At)) && /* @__PURE__ */ jsxRuntimeExports.jsx("textarea", { className: "flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-mono mt-2 min-h-[120px]", readOnly: !0, value: ($t == null ? void 0 : $t(At)) || "" })
-    ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: Rt ? "flex-1 min-h-0 overflow-auto" : "", children: Dt ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-background rounded-lg overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsx(TableSkeleton, {}) }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-background rounded-lg overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsx(SqlDataTable, { cell: At, searchable: jt }) }) }),
+    ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: Dt ? "flex-1 min-h-0 overflow-auto" : "", children: jt ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-background rounded-lg overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsx(TableSkeleton, {}) }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-background rounded-lg overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsx(SqlDataTable, { cell: At, searchable: Nt }) }) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(ResultInfo, { cell: At, devOnly: !0 })
   ] });
 }
@@ -144589,114 +144606,133 @@ const createExecutionSlice = (At, yt) => ({
     return await yt().runGroupAtPath(wt);
   },
   async executeSqlRecursiveParseCell(xt) {
-    var wt, Ct, St, Et, kt;
+    var wt, Ct, St, Et, kt, Tt, $t, Lt;
     if (!((wt = ConfigManager.getCellQuery(xt, 0)) != null && wt.trim())) {
       console.warn("❌ cell.query est vide ou undefined!");
       return;
     }
     try {
-      const Tt = yt().parseQueryWithParameters(ConfigManager.getCellQuery(xt, 0) || "");
+      const It = yt().parseQueryWithParameters(ConfigManager.getCellQuery(xt, 0) || "");
       yt().setStatus("Exécution de la requête...", "loading");
-      const $t = /COPY\s+[\s\S]+\bTO\s+'([^']+)'/i, Lt = Tt.match($t);
-      if (Lt) {
+      const Rt = /COPY\s+[\s\S]+\bTO\s+'([^']+)'/i, Dt = It.match(Rt);
+      if (Dt) {
         yt().setStatus("Export du fichier...", "loading");
-        const It = Lt[1];
+        const jt = Dt[1];
         try {
-          await DuckDBManager.executeQuery(Tt);
-          const Rt = It.toLowerCase().split(".").pop(), Dt = ["xlsx", "xls", "parquet", "pq", "arrow", "ipc", "avro"].includes(Rt), jt = Dt ? 15 : 10, Nt = Dt ? 300 : 200, Mt = await DuckDBManager.waitForFile(It, jt, Nt);
-          if (((Mt == null ? void 0 : Mt.byteLength) ?? 0) > 0) {
-            const Zt = Mt instanceof ArrayBuffer ? new Uint8Array(Mt) : new Uint8Array(Mt.buffer || Mt);
-            Rt === "xlsx" && (Zt[0] !== 80 || Zt[1] !== 75) && console.warn(`⚠️ [EXPORT] XLSX invalide: doit commencer par PK (0x50 0x4B), trouvé: 0x${(Ct = Zt[0]) == null ? void 0 : Ct.toString(16)} 0x${(St = Zt[1]) == null ? void 0 : St.toString(16)}`);
+          await DuckDBManager.executeQuery(It);
+          const Nt = jt.toLowerCase().split(".").pop(), Mt = ["xlsx", "xls", "parquet", "pq", "arrow", "ipc", "avro"].includes(Nt), Ot = Mt ? 15 : 10, Bt = Mt ? 300 : 200, Ht = await DuckDBManager.waitForFile(jt, Ot, Bt);
+          if (((Ht == null ? void 0 : Ht.byteLength) ?? 0) > 0) {
+            const Rr = Ht instanceof ArrayBuffer ? new Uint8Array(Ht) : new Uint8Array(Ht.buffer || Ht);
+            Nt === "xlsx" && (Rr[0] !== 80 || Rr[1] !== 75) && console.warn(`⚠️ [EXPORT] XLSX invalide: doit commencer par PK (0x50 0x4B), trouvé: 0x${(Ct = Rr[0]) == null ? void 0 : Ct.toString(16)} 0x${(St = Rr[1]) == null ? void 0 : St.toString(16)}`);
           }
-          let Bt = "text/csv;charset=utf-8;";
-          switch (Rt) {
+          let Kt = "text/csv;charset=utf-8;";
+          switch (Nt) {
             case "parquet":
             case "pq":
-              Bt = "application/octet-stream";
+              Kt = "application/octet-stream";
               break;
             case "xlsx":
-              Bt = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+              Kt = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
               break;
             case "xls":
-              Bt = "application/vnd.ms-excel";
+              Kt = "application/vnd.ms-excel";
               break;
             case "json":
             case "jsonl":
             case "ndjson":
-              Bt = "application/json;charset=utf-8;";
+              Kt = "application/json;charset=utf-8;";
               break;
             case "txt":
-              Bt = "text/plain;charset=utf-8;";
+              Kt = "text/plain;charset=utf-8;";
               break;
             case "tsv":
-              Bt = "text/tab-separated-values;charset=utf-8;";
+              Kt = "text/tab-separated-values;charset=utf-8;";
               break;
             case "csv":
-              Bt = "text/csv;charset=utf-8;";
+              Kt = "text/csv;charset=utf-8;";
               break;
             case "xml":
-              Bt = "application/xml;charset=utf-8;";
+              Kt = "application/xml;charset=utf-8;";
               break;
             case "bin":
             case "dat":
             case "blob":
-              Bt = "application/octet-stream";
+              Kt = "application/octet-stream";
               break;
             case "arrow":
             case "ipc":
-              Bt = "application/vnd.apache.arrow.stream";
+              Kt = "application/vnd.apache.arrow.stream";
               break;
             case "avro":
-              Bt = "application/avro";
+              Kt = "application/avro";
               break;
             case "gz":
             case "gzip":
-              Bt = "application/gzip";
+              Kt = "application/gzip";
               break;
             case "zip":
-              Bt = "application/zip";
+              Kt = "application/zip";
               break;
             case "zst":
             case "zstd":
-              Bt = "application/zstd";
+              Kt = "application/zstd";
               break;
             default:
-              Bt = "application/octet-stream";
+              Kt = "application/octet-stream";
               break;
           }
-          let Ht = Mt instanceof ArrayBuffer ? new Uint8Array(Mt) : new Uint8Array(Mt.buffer ?? Mt, Mt.byteOffset ?? 0, Mt.byteLength);
-          Rt === "xlsx" && Ht.length >= 3 && Ht[0] !== 80 && Ht[1] === 80 && Ht[2] === 75 && (Ht = Ht.slice(1));
-          const qt = Ht.slice(0), Kt = new Blob([qt], { type: Bt }), Jt = It.split("/").pop();
-          yt().downloadOrZipFile(Jt, Kt, Bt), xt._results = [], xt._resultInfo = `✅ Fichier exporté: ${It} (${Mt.byteLength} octets)`;
-        } catch (Rt) {
-          console.error("❌ Erreur lors de la récupération du fichier exporté:", Rt), yt().setStatus("Récupération alternative des résultats...", "loading");
-          const Dt = Tt.match(/COPY\s+\(([\s\S]+)\)\s+TO\s+/i);
-          if (Dt) {
-            const jt = Dt[1], Nt = await DuckDBManager.executeQuery(jt);
-            if (Nt.length > 0) {
-              const Mt = Object.keys(Nt[0]), Ot = [
-                Mt.join("	"),
-                ...Nt.map((qt) => Mt.map((Kt) => qt[Kt] ?? "").join("	"))
+          let Jt = Ht instanceof ArrayBuffer ? new Uint8Array(Ht) : new Uint8Array(Ht.buffer ?? Ht, Ht.byteOffset ?? 0, Ht.byteLength);
+          Nt === "xlsx" && Jt.length >= 3 && Jt[0] !== 80 && Jt[1] === 80 && Jt[2] === 75 && (Jt = Jt.slice(1));
+          const Zt = Jt.slice(0), sr = new Blob([Zt], { type: Kt }), Cr = jt.split("/").pop();
+          yt().downloadOrZipFile(Cr, sr, Kt), xt._results = [], xt._resultInfo = `✅ Fichier exporté: ${jt} (${Ht.byteLength} octets)`;
+        } catch (Nt) {
+          console.error("❌ Erreur lors de la récupération du fichier exporté:", Nt), yt().setStatus("Récupération alternative des résultats...", "loading");
+          const Mt = It.match(/COPY\s+\(([\s\S]+)\)\s+TO\s+/i);
+          if (Mt) {
+            const Ot = Mt[1], Bt = await DuckDBManager.executeQuery(Ot);
+            if (Bt.length > 0) {
+              const Ht = Object.keys(Bt[0]), qt = [
+                Ht.join("	"),
+                ...Bt.map((Zt) => Ht.map((sr) => Zt[sr] ?? "").join("	"))
               ].join(`
-`), Bt = new Blob([Ot], { type: "text/plain;charset=utf-8;" }), Ht = It.split("/").pop();
-              yt().downloadOrZipFile(Ht, Bt, "text/plain;charset=utf-8;"), xt._results = [], xt._resultInfo = `✅ Fichier exporté (mode alternatif): ${It} - ${Nt.length} ligne(s)`;
+`), Kt = new Blob([qt], { type: "text/plain;charset=utf-8;" }), Jt = jt.split("/").pop();
+              yt().downloadOrZipFile(Jt, Kt, "text/plain;charset=utf-8;"), xt._results = [], xt._resultInfo = `✅ Fichier exporté (mode alternatif): ${jt} - ${Bt.length} ligne(s)`;
             } else
               throw new Error("Aucun résultat à exporter");
           } else
-            throw Rt;
+            throw Nt;
         } finally {
-          await DuckDBManager.dropFile(It);
+          await DuckDBManager.dropFile(jt);
         }
       } else {
-        const It = await DuckDBManager.executeQuery(Tt);
-        if (xt._results = It, xt._resultInfo = `✅ ${It.length} ligne(s)`, yt().isSqlResultTabular(xt)) {
-          const Rt = xt.maxRows || 1e5, Dt = It.length > Rt, jt = It.slice(0, Rt);
-          rawTableDataStore.set(xt._id, jt), xt._results = jt, Dt && (xt._resultInfo = `✅ ${It.length} ligne(s) (limité à ${Rt})`);
+        const jt = xt.materialize ?? "select";
+        if (jt !== "select" && ((Et = xt.name) != null && Et.trim())) {
+          const { quoteId: Nt } = await Promise.resolve().then(() => SqlBlockService), Mt = Nt(xt.name), Ot = jt === "view" ? "TABLE" : "VIEW";
+          try {
+            await DuckDBManager.executeQuery(`DROP ${Ot} IF EXISTS ${Mt}`);
+          } catch {
+          }
+          const Bt = jt === "table" ? `CREATE OR REPLACE TABLE ${Mt} AS (
+${It}
+)` : `CREATE OR REPLACE VIEW ${Mt} AS (
+${It}
+)`;
+          await DuckDBManager.executeQuery(Bt);
+          const { rows: Ht, schemaTypes: qt } = await DuckDBManager.executeQueryWithSchema(
+            `SELECT * FROM ${Mt} LIMIT 1000`
+          );
+          xt._results = Ht, xt._schemaTypes = qt || {}, xt._resultInfo = `${Ht.length} ligne(s)${Ht.length === 1e3 ? " (limité à 1 000)" : ""} — ${jt === "table" ? "TABLE" : "VIEW"} "${xt.name}" créée`, await ((Tt = (kt = yt()).refreshDuckdbSchema) == null ? void 0 : Tt.call(kt));
+        } else {
+          const Nt = await DuckDBManager.executeQuery(It);
+          if (xt._results = Nt, xt._resultInfo = `✅ ${Nt.length} ligne(s)`, yt().isSqlResultTabular(xt)) {
+            const Mt = xt.maxRows || 1e5, Ot = Nt.length > Mt, Bt = Nt.slice(0, Mt);
+            rawTableDataStore.set(xt._id, Bt), xt._results = Bt, Ot && (xt._resultInfo = `✅ ${Nt.length} ligne(s) (limité à ${Mt})`);
+          }
         }
       }
-      yt().setStatus("SQL Recursive Parse exécuté", "success"), sqlIsDdl(Tt) && await ((kt = (Et = yt()).refreshDuckdbSchema) == null ? void 0 : kt.call(Et));
-    } catch (Tt) {
-      throw Tt;
+      yt().setStatus("SQL Recursive Parse exécuté", "success"), sqlIsDdl(It) && await ((Lt = ($t = yt()).refreshDuckdbSchema) == null ? void 0 : Lt.call($t));
+    } catch (It) {
+      throw It;
     }
   },
   async executeTableCell(xt) {
