@@ -21,6 +21,11 @@ function getCteName(step: SqlBlockAst['steps'][number], index: number): string {
     return step.name?.trim() || `${CTE_PREFIX}${index}`;
 }
 
+/** Échappe la séquence `* /` pour qu'elle ne ferme pas un commentaire bloc SQL. */
+function escapeBlockComment(s: string): string {
+    return s.replace(/\*\//g, '* /').replace(/\r\n/g, ' ').replace(/\r/g, ' ');
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // AST → SQL
 // ─────────────────────────────────────────────────────────────────────────────
@@ -29,14 +34,20 @@ export function astToSql(ast: SqlBlockAst): string {
     const { source, steps } = ast;
     if (!steps || steps.length === 0) return `SELECT * FROM ${quoteId(source)}`;
     // Step unique sans nom : forme simple (pas de CTE)
-    if (steps.length === 1 && !steps[0].name?.trim()) return singleStepToSql(quoteId(source), steps[0]);
+    if (steps.length === 1 && !steps[0].name?.trim()) {
+        const sql = singleStepToSql(quoteId(source), steps[0]);
+        const desc = steps[0].description?.trim();
+        return desc ? `/* ${escapeBlockComment(desc)} */\n${sql}` : sql;
+    }
 
     const ctes: string[] = [];
     for (let i = 0; i < steps.length; i++) {
         const prevSrc = i === 0 ? quoteId(source) : quoteId(getCteName(steps[i - 1], i - 1));
         const inner = singleStepToSql(prevSrc, steps[i]);
         const cteName = quoteId(getCteName(steps[i], i));
-        ctes.push(`  ${cteName} AS (\n    ${inner.replace(/\n/g, '\n    ')}\n  )`);
+        const desc = steps[i].description?.trim();
+        const comment = desc ? `/* ${escapeBlockComment(desc)} */\n    ` : '';
+        ctes.push(`  ${cteName} AS (\n    ${comment}${inner.replace(/\n/g, '\n    ')}\n  )`);
     }
     const lastName = quoteId(getCteName(steps[steps.length - 1], steps.length - 1));
     return `WITH\n${ctes.join(',\n')}\nSELECT * FROM ${lastName}`;
