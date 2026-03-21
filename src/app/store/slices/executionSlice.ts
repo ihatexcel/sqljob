@@ -421,16 +421,37 @@ export const createExecutionSlice = (set: any, get: any) => ({
                     await DuckDBManager.dropFile(fileName)
                 }
             } else {
-                const finalResults = await DuckDBManager.executeQuery(finalQuery)
-                cell._results = finalResults
-                cell._resultInfo = `✅ ${finalResults.length} ligne(s)`
-                if (get().isSqlResultTabular(cell)) {
-                    const maxRows = cell.maxRows || 100000
-                    const truncated = finalResults.length > maxRows
-                    const rawResults = finalResults.slice(0, maxRows)
-                    _rawTableDataStore.set(cell._id, rawResults)
-                    cell._results = rawResults
-                    if (truncated) cell._resultInfo = `✅ ${finalResults.length} ligne(s) (limité à ${maxRows})`
+                const materialize = cell.materialize ?? 'select'
+
+                if (materialize !== 'select' && cell.name?.trim()) {
+                    // Créer une VIEW ou TABLE DuckDB depuis le SQL
+                    const { quoteId } = await import('../../../lib/SqlBlockService')
+                    const q = quoteId(cell.name)
+                    const oppositeType = materialize === 'view' ? 'TABLE' : 'VIEW'
+                    try { await DuckDBManager.executeQuery(`DROP ${oppositeType} IF EXISTS ${q}`) } catch (_) { /* ok */ }
+                    const createSql = materialize === 'table'
+                        ? `CREATE OR REPLACE TABLE ${q} AS (\n${finalQuery}\n)`
+                        : `CREATE OR REPLACE VIEW ${q} AS (\n${finalQuery}\n)`
+                    await DuckDBManager.executeQuery(createSql)
+                    const { rows: results, schemaTypes } = await DuckDBManager.executeQueryWithSchema(
+                        `SELECT * FROM ${q} LIMIT 1000`
+                    )
+                    cell._results = results
+                    cell._schemaTypes = schemaTypes || {}
+                    cell._resultInfo = `${results.length} ligne(s)${results.length === 1000 ? ' (limité à 1 000)' : ''} — ${materialize === 'table' ? 'TABLE' : 'VIEW'} "${cell.name}" créée`
+                    await get().refreshDuckdbSchema?.()
+                } else {
+                    const finalResults = await DuckDBManager.executeQuery(finalQuery)
+                    cell._results = finalResults
+                    cell._resultInfo = `✅ ${finalResults.length} ligne(s)`
+                    if (get().isSqlResultTabular(cell)) {
+                        const maxRows = cell.maxRows || 100000
+                        const truncated = finalResults.length > maxRows
+                        const rawResults = finalResults.slice(0, maxRows)
+                        _rawTableDataStore.set(cell._id, rawResults)
+                        cell._results = rawResults
+                        if (truncated) cell._resultInfo = `✅ ${finalResults.length} ligne(s) (limité à ${maxRows})`
+                    }
                 }
             }
 
