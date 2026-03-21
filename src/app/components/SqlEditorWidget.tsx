@@ -14,6 +14,8 @@ import { useTemplateModal } from '../store/uiStores'
 import { ConfigManager } from '../../lib/ConfigManager'
 import { CELL_TYPE_SCHEMAS } from '../../lib/cellTypeSchemas'
 import { Icon } from '../../lib/icons'
+import { sqlToAstSmart } from '../../lib/SqlBlockService'
+import { createDefaultSqlBlockConfig } from '../../lib/SqlBlockTypes'
 
 // ─── SqlEditorWidget ──────────────────────────────────────────────────────────
 export function SqlEditorWidget({
@@ -26,6 +28,7 @@ export function SqlEditorWidget({
     languageIcon = null,
     badgeClass = null,
     applySourceDefaultIfEmpty = false,
+    onEnterUiMode = null,
 }: any) {
     const { devMode, isLoading, runCellAt, db } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
@@ -73,6 +76,22 @@ export function SqlEditorWidget({
         useTemplateModal.getState().open(cell._id, queryType, languageType)
     }
 
+    function enterUiMode() {
+        const text = ConfigManager.getCellQuery(cell, queryName) || ''
+        const result = sqlToAstSmart(text)
+        if (!cell.json) cell.json = createDefaultSqlBlockConfig()
+        if (result.compatible && result.ast) {
+            cell.json.ast = result.ast
+            cell.json.degraded = false
+            cell.json.manualSql = null
+        } else {
+            // SQL incompatible : mode dégradé avec le SQL brut
+            cell.json.degraded = true
+            cell.json.manualSql = text
+        }
+        onEnterUiMode?.()
+    }
+
     function handleMonacoChange(value: string | undefined) {
         ConfigManager.setCellQuery(cell, queryName, value ?? '')
     }
@@ -89,6 +108,15 @@ export function SqlEditorWidget({
                         </span>
                     </span>
                     <div className="flex gap-1 items-center">
+                        {devMode && isSql && onEnterUiMode && (
+                            <button
+                                className="p-1 text-muted-foreground cursor-pointer transition-colors hover:text-foreground"
+                                title="Passer en mode UI visuel"
+                                onClick={enterUiMode}
+                            >
+                                <Icon name="square-mouse-pointer" size={14} />
+                            </button>
+                        )}
                         {devMode && !isText && (
                             <button
                                 className="p-1 text-muted-foreground cursor-pointer transition-colors hover:text-foreground"

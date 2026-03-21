@@ -96,6 +96,7 @@ export function astToSql(ast: SqlBlockAst): string {
 }
 
 export function generateMaterializeQuery(name: string, sql: string, materialize: SqlBlockMaterialize): string {
+    if (materialize === 'select') return sql;
     const q = quoteId(name);
     return materialize === 'table'
         ? `CREATE OR REPLACE TABLE ${q} AS (\n${sql}\n)`
