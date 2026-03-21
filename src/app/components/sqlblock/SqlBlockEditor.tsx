@@ -180,6 +180,9 @@ function applyStepToSchema(step: SqlBlockStep, cols: string[], types: Record<str
             const alias = step.alias || `${step.column}_${step.granularity}`
             return { cols: [...cols, alias], types: { ...types, [alias]: 'TIMESTAMP' } }
         }
+        default:
+            // custom_sql ou type inconnu : schéma non dérivable statiquement, on conserve l'entrée
+            return { cols, types }
     }
 }
 
