@@ -2,7 +2,7 @@
 // L'AST est la source de vérité pour les cellules sqlBlock.
 // sql <-> ast <-> ui : toute modification UI ou SQL passe par l'AST.
 
-export type SqlBlockMaterialize = 'view' | 'table';
+export type SqlBlockMaterialize = 'view' | 'table' | 'select';
 
 // ─── P0 — Sélection de colonnes ───────────────────────────────────────────────
 

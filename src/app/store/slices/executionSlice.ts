@@ -502,26 +502,37 @@ export const createExecutionSlice = (set: any, get: any) => ({
         get().setStatus('Exécution du SQL Block...', 'loading')
 
         try {
-            // Supprimer l'objet existant s'il est d'un type différent
-            // (DuckDB refuse CREATE OR REPLACE TABLE sur une VIEW existante et vice-versa)
             const materialize = cfg.ast?.materialize ?? 'view'
-            const oppositeType = materialize === 'view' ? 'TABLE' : 'VIEW'
-            try {
-                await DuckDBManager.executeQuery(`DROP ${oppositeType} IF EXISTS ${cell.name}`)
-            } catch (_) { /* pas d'objet à supprimer, on continue */ }
-
-            // Créer la VIEW ou TABLE dans DuckDB (accessible par les cellules en aval)
             const finalSql = get().parseQueryWithParameters(sql)
-            const materializeQuery = generateMaterializeQuery(cell.name, finalSql, materialize)
-            await DuckDBManager.executeQuery(materializeQuery)
 
-            // Charger les résultats pour l'affichage dans la cellule
-            const { rows: results, schemaTypes } = await DuckDBManager.executeQueryWithSchema(
-                `SELECT * FROM ${cell.name} LIMIT 1000`
-            )
-            cell._results = results
-            cell._schemaTypes = schemaTypes || {}
-            cell._resultInfo = `${results.length} ligne(s)${results.length === 1000 ? ' (limité à 1 000 pour l\'affichage)' : ''} — ${cfg.ast?.materialize === 'table' ? 'TABLE' : 'VIEW'} "${cell.name}" créée`
+            if (materialize === 'select') {
+                // Pas de VIEW/TABLE : on exécute la requête directement
+                const { rows: results, schemaTypes } = await DuckDBManager.executeQueryWithSchema(
+                    `SELECT * FROM (\n${finalSql}\n) _sb_r LIMIT 1000`
+                )
+                cell._results = results
+                cell._schemaTypes = schemaTypes || {}
+                cell._resultInfo = `${results.length} ligne(s)${results.length === 1000 ? ' (limité à 1 000)' : ''} — SELECT`
+            } else {
+                // Supprimer l'objet existant s'il est d'un type différent
+                // (DuckDB refuse CREATE OR REPLACE TABLE sur une VIEW existante et vice-versa)
+                const oppositeType = materialize === 'view' ? 'TABLE' : 'VIEW'
+                try {
+                    await DuckDBManager.executeQuery(`DROP ${oppositeType} IF EXISTS ${cell.name}`)
+                } catch (_) { /* pas d'objet à supprimer, on continue */ }
+
+                // Créer la VIEW ou TABLE dans DuckDB (accessible par les cellules en aval)
+                const materializeQuery = generateMaterializeQuery(cell.name, finalSql, materialize)
+                await DuckDBManager.executeQuery(materializeQuery)
+
+                // Charger les résultats pour l'affichage dans la cellule
+                const { rows: results, schemaTypes } = await DuckDBManager.executeQueryWithSchema(
+                    `SELECT * FROM ${cell.name} LIMIT 1000`
+                )
+                cell._results = results
+                cell._schemaTypes = schemaTypes || {}
+                cell._resultInfo = `${results.length} ligne(s)${results.length === 1000 ? ' (limité à 1 000 pour l\'affichage)' : ''} — ${materialize === 'table' ? 'TABLE' : 'VIEW'} "${cell.name}" créée`
+            }
 
             // Synchroniser le schéma DuckDB (panel + éditeur SQL)
             await get().refreshDuckdbSchema?.()

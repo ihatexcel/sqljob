@@ -357,15 +357,32 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
         getSqlResultAsText: s.getSqlResultAsText,
     })))
 
+    const [sqlBlockUiMode, setSqlBlockUiMode] = useState(false)
+
     const hasHeight = hasCellHeight(cell)
     const isRunning = cell._status === 'running'
     const searchable = cell.type === 'table'
+
+    // Mode UI visuel (sqlBlock) pour les cellules sqlRecursiveParse
+    if (devMode && cell.type === 'sqlRecursiveParse' && sqlBlockUiMode) {
+        return (
+            <SqlBlockEditor
+                cell={cell}
+                path={path}
+                cellIndex={cellIndex}
+                fromSqlCell={true}
+                onExitUiMode={() => setSqlBlockUiMode(false)}
+            />
+        )
+    }
 
     return (
         <div className={hasHeight ? 'flex-1 min-h-0 flex flex-col' : ''}>
             {devMode && showSqlEditorVisible?.(cell) && (
                 <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
-                    placeholder="SELECT * FROM source1 LIMIT 100" />
+                    placeholder="SELECT * FROM source1 LIMIT 100"
+                    onEnterUiMode={cell.type === 'sqlRecursiveParse' ? () => setSqlBlockUiMode(true) : null}
+                />
             )}
             {showTextResult ? (
                 <>

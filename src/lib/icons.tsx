@@ -9,7 +9,7 @@ import {
     ArrowUpDown, BookHeart, BookMarked, Braces, ChartBar, CircleCheck, CirclePlay, ClipboardPaste, Copy, CopyCheck, Database,
     Download, Ellipsis, EllipsisVertical, Eye, FileOutput, FileText, FileType, FolderOpen, FolderPlus,
     Globe, Lock, Network, Newspaper, Paintbrush, PenLine, Play, Plus, RefreshCw,
-    Save, Settings, Share2, SlidersHorizontal, Table2, Trash2, TrendingUp, X, Zap,
+    Save, Settings, Share2, SlidersHorizontal, SquareMousePointer, Table2, Trash2, TrendingUp, X, Zap,
 } from 'lucide-react'
 
 /** Map depuis le nom d'icône material-symbols-light (sans préfixe) vers Lucide */
@@ -58,6 +58,7 @@ const ICON_MAP: Record<string, any> = {
     'palette':                      Paintbrush,
     'book-heart':                   BookHeart,
     'book-marked':                  BookMarked,
+    'square-mouse-pointer':         SquareMousePointer,
     'ellipsis':                     Ellipsis,
     'ellipsis-vertical':            EllipsisVertical,
 }
