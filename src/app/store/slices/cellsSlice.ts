@@ -154,7 +154,7 @@ export const createCellsSlice = (set: any, get: any) => ({
             newCell._perspectiveTable = null
         }
         if (type === 'sqlBlock') {
-            newCell.sqlBlockConfig = createDefaultSqlBlockConfig()
+            newCell.json = createDefaultSqlBlockConfig()
         }
         return newCell
     },

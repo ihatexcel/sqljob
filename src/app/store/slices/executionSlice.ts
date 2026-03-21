@@ -473,10 +473,10 @@ export const createExecutionSlice = (set: any, get: any) => ({
         const { createDefaultSqlBlockConfig } = await import('../../../lib/SqlBlockTypes')
 
         // Initialiser la config si elle n'existe pas
-        if (!cell.sqlBlockConfig) {
-            cell.sqlBlockConfig = createDefaultSqlBlockConfig()
+        if (!cell.json) {
+            cell.json = createDefaultSqlBlockConfig()
         }
-        const cfg = cell.sqlBlockConfig
+        const cfg = cell.json
         const sql = getEffectiveSql(cfg)
 
         if (!sql?.trim()) {

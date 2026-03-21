@@ -95,8 +95,8 @@ import { createDefaultSqlBlockConfig } from './SqlBlockTypes'
                     c.json = JSON.stringify(c.json, null, 2);
                 }
                 // sqlBlock: initialiser la config si absente (rétro-compat)
-                if (c.type === 'sqlBlock' && !c.sqlBlockConfig) {
-                    c.sqlBlockConfig = createDefaultSqlBlockConfig();
+                if (c.type === 'sqlBlock' && !c.json) {
+                    c.json = createDefaultSqlBlockConfig();
                 }
                 return c;
             }

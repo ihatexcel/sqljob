@@ -67,10 +67,10 @@ import { SqlDataTable } from '../SqlDataTable'
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function getOrInitConfig(cell: any): SqlBlockConfig {
-    if (!cell.sqlBlockConfig) {
-        cell.sqlBlockConfig = createDefaultSqlBlockConfig(cell.sqlBlockConfig?.ast?.source || '')
+    if (!cell.json) {
+        cell.json = createDefaultSqlBlockConfig(cell.json?.ast?.source || '')
     }
-    return cell.sqlBlockConfig
+    return cell.json
 }
 
 function commitAstUpdate(cell: any, newAst: Partial<SqlBlockAst>, forceUpdate: () => void) {

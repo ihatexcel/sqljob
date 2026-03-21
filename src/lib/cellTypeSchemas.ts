@@ -290,7 +290,7 @@ export const CELL_TYPE_SCHEMAS = {
                     executeHandler: 'executeSqlBlockCell',
                     defaultNamePrefix: 'sqlBlock',
                     showNameInHeader: true,
-                    exportFields: ['name', 'sqlBlockConfig'],
+                    exportFields: ['name', 'json'],
                     initProps: { _availableColumns: [] },
                     commonParams: ['name', 'title'],
                     queryCount: 0,
@@ -298,7 +298,7 @@ export const CELL_TYPE_SCHEMAS = {
                     specificParams: [],
                     defaults: {
                         title: '',
-                        sqlBlockConfig: null, // initialisé dynamiquement à la création
+                        json: null, // initialisé dynamiquement à la création
                     },
                     bodyFamily: 'sqlBlock',
                     bodyConfig: {},
