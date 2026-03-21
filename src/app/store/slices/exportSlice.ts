@@ -249,7 +249,7 @@ ${configScriptTag}${embeddedScripts}</head>
     },
 
     async copyExportJson() {
-        const { exportModal, buildExportConfig, setStatus } = get()
+        const { exportModal, buildExportConfig } = get()
         try {
             const config = await buildExportConfig({
                 devMode: exportModal.devMode,
@@ -257,14 +257,7 @@ ${configScriptTag}${embeddedScripts}</head>
                 includeFileData: !!exportModal.includeFiles,
             })
             const json = JSON.stringify(config, null, 2)
-            const ta = document.createElement('textarea')
-            ta.value = json
-            ta.style.cssText = 'position:fixed;opacity:0;pointer-events:none'
-            document.body.appendChild(ta)
-            ta.focus()
-            ta.select()
-            document.execCommand('copy')
-            document.body.removeChild(ta)
+            await navigator.clipboard.writeText(json)
             return true
         } catch (error: any) {
             console.error('Erreur copie JSON:', error)
