@@ -141884,6 +141884,10 @@ ${yt.trim()}
 }`), xt.textContent = wt.join(`
 `);
 }
+function initCustomTheme() {
+  const At = localStorage.getItem(STORAGE_LIGHT) || "", yt = localStorage.getItem(STORAGE_DARK) || "";
+  (At || yt) && applyCustomTheme(At, yt);
+}
 function applyThemeFromConfig(At) {
   const yt = At == null ? void 0 : At.theme;
   if (!(!yt || yt === "light" || yt === "dark"))
@@ -144673,7 +144677,7 @@ function buildInitialState() {
   const Ct = ((It = At.ui) == null ? void 0 : It.devMode) !== !1, kt = ((Rt = At.ui) == null ? void 0 : Rt.showLayout) ?? !1, Et = typeof localStorage < "u" ? localStorage.getItem("sqljob-theme") : null, St = ((Dt = At.ui) == null ? void 0 : Dt.theme) || Et || "light";
   if (typeof document < "u") {
     const Ot = St === "dark" ? "dark" : "light";
-    document.documentElement.classList.remove("light", "dark"), document.documentElement.classList.add(Ot), localStorage.setItem("sqljob-theme", Ot), (jt = At.ui) != null && jt.theme && applyThemeFromConfig(At.ui);
+    document.documentElement.classList.remove("light", "dark"), document.documentElement.classList.add(Ot), localStorage.setItem("sqljob-theme", Ot), (jt = At.ui) != null && jt.theme ? applyThemeFromConfig(At.ui) : initCustomTheme();
   }
   const Tt = typeof localStorage < "u" ? localStorage.getItem("sqljob-dbEngine") : null, $t = ((Nt = At.ui) == null ? void 0 : Nt.dbEngine) || Tt || "duckdb-wasm";
   return DuckDBManager.setEngine($t), {
