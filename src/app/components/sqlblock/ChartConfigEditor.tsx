@@ -246,34 +246,47 @@ export function ChartConfigEditor({ chartConfig, availableColumns, availableColT
 
     return (
         <div className="border border-border rounded-md bg-background/50 shrink-0">
-            {/* Header — toggle */}
-            <div className="flex items-center gap-2 px-3 py-2 cursor-pointer select-none" onClick={() => setOpen(o => !o)}>
-                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    <span className="iconify mr-1" data-icon="material-symbols-light:bar-chart" />
-                    Visualisation
-                </span>
-                {/* Toggle activer/désactiver */}
+            {/* Header */}
+            <div className="flex items-center gap-1.5 px-2 py-1.5 select-none">
+                {/* Œil — à gauche, même style que les étapes */}
                 <button
                     type="button"
-                    onClick={e => { e.stopPropagation(); handleToggle() }}
-                    className={`relative inline-flex h-4 w-7 items-center rounded-full transition-colors ml-1 shrink-0 ${isActive ? 'bg-primary' : 'bg-muted'}`}
-                    title={isActive ? 'Désactiver le graphique' : 'Activer le graphique'}
+                    onClick={e => { e.stopPropagation(); onEyeToggle?.() }}
+                    disabled={!isActive || !onEyeToggle}
+                    className={`shrink-0 w-5 h-5 flex items-center justify-center rounded transition-colors ${!isActive || !onEyeToggle ? 'invisible' : eyeOpen ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+                    title={eyeOpen ? "Fermer l'aperçu graphique" : 'Aperçu graphique (exécute la cellule)'}
                 >
-                    <span className={`inline-block h-3 w-3 rounded-full bg-white shadow transition-transform ${isActive ? 'translate-x-3.5' : 'translate-x-0.5'}`} />
+                    {eyeOpen ? (
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                            <circle cx="12" cy="12" r="3" />
+                        </svg>
+                    ) : (
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
+                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                            <line x1="1" y1="1" x2="23" y2="23" />
+                        </svg>
+                    )}
                 </button>
-                <span className="text-xs text-muted-foreground ml-1">{isActive ? 'Activé' : 'Désactivé'}</span>
-                {/* Œil — aperçu graphique dans le panel gauche */}
-                {isActive && onEyeToggle && (
+
+                {/* Titre + collapse — clic sur toute la zone */}
+                <div className="flex items-center gap-2 flex-1 cursor-pointer" onClick={() => setOpen(o => !o)}>
+                    <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                        <span className="iconify mr-1" data-icon="material-symbols-light:bar-chart" />
+                        Visualisation
+                    </span>
+                    {/* Toggle activer/désactiver */}
                     <button
                         type="button"
-                        onClick={e => { e.stopPropagation(); onEyeToggle() }}
-                        title={eyeOpen ? 'Fermer l\'aperçu graphique' : 'Aperçu graphique'}
-                        className={`ml-1 p-0.5 rounded transition-colors ${eyeOpen ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+                        onClick={e => { e.stopPropagation(); handleToggle() }}
+                        className={`relative inline-flex h-4 w-7 items-center rounded-full transition-colors ml-1 shrink-0 ${isActive ? 'bg-primary' : 'bg-muted'}`}
+                        title={isActive ? 'Désactiver le graphique' : 'Activer le graphique'}
                     >
-                        <span className="iconify w-3.5 h-3.5" data-icon={eyeOpen ? 'material-symbols-light:visibility' : 'material-symbols-light:visibility-outline'} />
+                        <span className={`inline-block h-3 w-3 rounded-full bg-white shadow transition-transform ${isActive ? 'translate-x-3.5' : 'translate-x-0.5'}`} />
                     </button>
-                )}
-                <span className="ml-auto text-muted-foreground text-xs">{open ? '▾' : '▸'}</span>
+                    <span className="text-xs text-muted-foreground">{isActive ? 'Activé' : 'Désactivé'}</span>
+                    <span className="ml-auto text-muted-foreground text-xs">{open ? '▾' : '▸'}</span>
+                </div>
             </div>
 
             {/* Body — affiché uniquement si ouvert ET actif */}
