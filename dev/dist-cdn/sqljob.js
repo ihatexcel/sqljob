@@ -132569,7 +132569,7 @@ function astToSql(At) {
   var St, Et, kt;
   const { source: yt, steps: xt } = At;
   if (!xt || xt.length === 0) return `SELECT * FROM ${quoteId(yt)}`;
-  if (xt.length === 1 && !((St = xt[0].name) != null && St.trim())) {
+  if (xt.length === 1 && !((St = xt[0].name) != null && St.trim()) && xt[0].type !== "custom_sql") {
     const Tt = singleStepToSql(quoteId(yt), xt[0]), $t = (Et = xt[0].description) == null ? void 0 : Et.trim();
     return $t ? `/* ${escapeBlockComment($t)} */
 ${Tt}` : Tt;
@@ -133141,7 +133141,7 @@ function tryParseSimpleSmart(At, yt) {
   const xt = At.match(/^SELECT\s+(?:[\s\S]+?)\s+FROM\s+((?:"[^"]*"|\S+))/i);
   if (!xt) return null;
   const wt = unquoteId(xt[1]), Ct = parseCteBodyToStep(At, null, wt);
-  return Ct === null ? { source: wt, steps: [], materialize: yt } : Ct.type === "custom_sql" ? null : { source: wt, steps: [Ct], materialize: yt };
+  return Ct === null ? { source: wt, steps: [], materialize: yt } : { source: wt, steps: [Ct], materialize: yt };
 }
 function sqlToAstSmart(At, yt = "view") {
   const xt = sqlToAst(At, yt);
@@ -133149,7 +133149,10 @@ function sqlToAstSmart(At, yt = "view") {
   const wt = At.replace(/[ \t]+/g, " ").trim(), Ct = tryParseCteChainSmart(wt, yt);
   if (Ct) return { ast: Ct, compatible: !0 };
   const St = tryParseSimpleSmart(wt, yt);
-  return St ? { ast: St, compatible: !0 } : xt;
+  return St ? { ast: St, compatible: !0 } : wt ? {
+    ast: { source: "", steps: [{ type: "custom_sql", sql: wt }], materialize: yt },
+    compatible: !0
+  } : xt;
 }
 const SqlBlockService = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
@@ -133204,7 +133207,7 @@ function SqlEditorWidget({
   }
   function Ur() {
     var En;
-    const ln = ConfigManager.getCellQuery(At, Mt) || "", tn = stripMaterializePrefix(ln), Vr = At.materialize && At.materialize !== "select" ? At.materialize : "view", sn = sqlToAstSmart(tn, Vr);
+    const ln = ConfigManager.getCellQuery(At, Mt) || "", tn = stripMaterializePrefix(ln), Vr = At.materialize ?? "select", sn = sqlToAstSmart(tn, Vr);
     (En = At.queries) != null && En.length || (At.queries = [{ name: "main", sql: ln, engine: "sql", clientVisible: !1 }]);
     const An = At.queries[0];
     sn.compatible && sn.ast ? (An.ast = sn.ast, An.degraded = !1, An.manualSql = null) : (An.ast = null, An.degraded = !0, An.manualSql = tn), $t == null || $t();
@@ -136892,18 +136895,28 @@ function IframeBody({ cell: At, path: yt, cellIndex: xt }) {
   ] });
 }
 function SqlStatBody({ cell: At, path: yt, cellIndex: xt }) {
-  const { devMode: wt, showSqlEditorVisible: Ct } = useNotebookStore(useShallow((St) => ({
-    devMode: St.devMode,
-    showSqlEditorVisible: St.showSqlEditorVisible
-  })));
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+  const { devMode: wt, showSqlEditorVisible: Ct } = useNotebookStore(useShallow((kt) => ({
+    devMode: kt.devMode,
+    showSqlEditorVisible: kt.showSqlEditorVisible
+  }))), [St, Et] = reactExports.useState(!1);
+  return wt && St ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+    SqlBlockEditor,
+    {
+      cell: At,
+      path: yt,
+      cellIndex: xt,
+      fromSqlCell: !0,
+      onExitUiMode: () => Et(!1)
+    }
+  ) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
     wt && (Ct == null ? void 0 : Ct(At)) && /* @__PURE__ */ jsxRuntimeExports.jsx(
       SqlEditorWidget,
       {
         cell: At,
         path: yt,
         cellIndex: xt,
-        placeholder: "SELECT 42 AS value, 'Titre' AS title, 'info' AS type"
+        placeholder: "SELECT 42 AS value, 'Titre' AS title, 'info' AS type",
+        onEnterUiMode: () => Et(!0)
       }
     ),
     At._results && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center py-1", children: [
@@ -137203,49 +137216,59 @@ function PdfmeBody({ cell: At, path: yt, cellIndex: xt }) {
   ] });
 }
 function PerspectiveBody({ cell: At, path: yt, cellIndex: xt }) {
-  const { devMode: wt, showSqlEditorVisible: Ct, hasCellHeight: St, renderPerspectiveInContainer: Et, _rev: kt } = useNotebookStore(useShallow((Lt) => ({
-    devMode: Lt.devMode,
-    showSqlEditorVisible: Lt.showSqlEditorVisible,
-    hasCellHeight: Lt.hasCellHeight,
-    renderPerspectiveInContainer: Lt.renderPerspectiveInContainer,
-    _rev: Lt._rev
-  })));
+  const { devMode: wt, showSqlEditorVisible: Ct, hasCellHeight: St, renderPerspectiveInContainer: Et, _rev: kt } = useNotebookStore(useShallow((Rt) => ({
+    devMode: Rt.devMode,
+    showSqlEditorVisible: Rt.showSqlEditorVisible,
+    hasCellHeight: Rt.hasCellHeight,
+    renderPerspectiveInContainer: Rt.renderPerspectiveInContainer,
+    _rev: Rt._rev
+  }))), [Tt, $t] = reactExports.useState(!1);
   reactExports.useEffect(() => {
-    !At._perspectiveReady || !document.getElementById("perspective-" + At._id) || At._arrowTable && !At._perspectiveScheduled && !At._perspectiveRendering && !At._perspectiveTable && Et(At).catch((It) => {
-      At._perspectiveReady = !1, At._resultInfo = "❌ " + It.message;
+    !At._perspectiveReady || !document.getElementById("perspective-" + At._id) || At._arrowTable && !At._perspectiveScheduled && !At._perspectiveRendering && !At._perspectiveTable && Et(At).catch((Dt) => {
+      At._perspectiveReady = !1, At._resultInfo = "❌ " + Dt.message;
     });
   }, [kt]);
-  const Tt = "400px", $t = St == null ? void 0 : St(At);
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: $t ? "flex-1 min-h-0 flex flex-col" : "flex flex-col gap-2", children: [
+  const Lt = "400px", It = St == null ? void 0 : St(At);
+  return wt && Tt ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+    SqlBlockEditor,
+    {
+      cell: At,
+      path: yt,
+      cellIndex: xt,
+      fromSqlCell: !0,
+      onExitUiMode: () => $t(!1)
+    }
+  ) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: It ? "flex-1 min-h-0 flex flex-col" : "flex flex-col gap-2", children: [
     (Ct == null ? void 0 : Ct(At)) && /* @__PURE__ */ jsxRuntimeExports.jsx(
       SqlEditorWidget,
       {
         cell: At,
         path: yt,
         cellIndex: xt,
-        queryType: "query"
+        queryType: "query",
+        onEnterUiMode: wt ? () => $t(!0) : null
       }
     ),
     At._status === "running" && !At._perspectiveReady && /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
-        className: $t ? "flex-1 min-h-0 rounded-lg bg-background overflow-hidden" : "rounded-lg bg-background overflow-hidden",
-        style: $t ? {} : { minHeight: Tt },
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "animate-pulse h-full w-full bg-muted rounded-lg", style: { minHeight: Tt } })
+        className: It ? "flex-1 min-h-0 rounded-lg bg-background overflow-hidden" : "rounded-lg bg-background overflow-hidden",
+        style: It ? {} : { minHeight: Lt },
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "animate-pulse h-full w-full bg-muted rounded-lg", style: { minHeight: Lt } })
       }
     ),
     At._perspectiveReady && /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
-        className: $t ? "flex-1 min-h-0 flex flex-col perspective-fill-height" : "",
-        style: $t ? {} : { minHeight: Tt },
+        className: It ? "flex-1 min-h-0 flex flex-col perspective-fill-height" : "",
+        style: It ? {} : { minHeight: Lt },
         children: /* @__PURE__ */ jsxRuntimeExports.jsx(
           "perspective-viewer",
           {
             id: `perspective-${At._id}`,
             theme: "Pro Light",
-            class: $t ? "flex-1 min-h-0 w-full rounded-lg" : "w-full rounded-lg",
-            style: $t ? {} : { minHeight: Tt }
+            class: It ? "flex-1 min-h-0 w-full rounded-lg" : "w-full rounded-lg",
+            style: It ? {} : { minHeight: Lt }
           }
         )
       }
