@@ -133203,11 +133203,11 @@ function SqlEditorWidget({
     useTemplateModal.getState().open(At._id, Ct, Ot);
   }
   function Ur() {
-    var An;
-    const ln = ConfigManager.getCellQuery(At, Mt) || "", tn = stripMaterializePrefix(ln), Vr = sqlToAstSmart(tn);
-    (An = At.queries) != null && An.length || (At.queries = [{ name: "main", sql: ln, engine: "sql", clientVisible: !1 }]);
-    const sn = At.queries[0];
-    Vr.compatible && Vr.ast ? (sn.ast = Vr.ast, sn.degraded = !1, sn.manualSql = null) : (sn.ast = null, sn.degraded = !0, sn.manualSql = tn), $t == null || $t();
+    var En;
+    const ln = ConfigManager.getCellQuery(At, Mt) || "", tn = stripMaterializePrefix(ln), Vr = At.materialize && At.materialize !== "select" ? At.materialize : "view", sn = sqlToAstSmart(tn, Vr);
+    (En = At.queries) != null && En.length || (At.queries = [{ name: "main", sql: ln, engine: "sql", clientVisible: !1 }]);
+    const An = At.queries[0];
+    sn.compatible && sn.ast ? (An.ast = sn.ast, An.degraded = !1, An.manualSql = null) : (An.ast = null, An.degraded = !0, An.manualSql = tn), $t == null || $t();
   }
   function qr(ln) {
     ConfigManager.setCellQuery(At, Mt, ln ?? "");
@@ -136826,8 +136826,8 @@ function SqlTableBody({ cell: At, path: yt, cellIndex: xt, showTextResult: wt = 
             At.materialize = Mt;
             const Ot = (Bt = At.queries) == null ? void 0 : Bt[0];
             if (Ot) {
-              const Ht = Ot.sql || "", qt = Ot.ast ? Ot.degraded && Ot.manualSql ? Ot.manualSql : astToSql(Ot.ast) : stripMaterializePrefix(Ht);
-              Ot.sql = buildDisplaySql(At.name, qt, Mt), Ot.ast && (Ot.ast = { ...Ot.ast, materialize: Mt });
+              const Ht = stripMaterializePrefix(Ot.sql || "");
+              Ot.sql = buildDisplaySql(At.name, Ht, Mt), Ot.ast && (Ot.ast = { ...Ot.ast, materialize: Mt });
             }
             Lt();
           },
@@ -144696,29 +144696,28 @@ const createExecutionSlice = (At, yt) => ({
           await DuckDBManager.dropFile(Ot);
         }
       } else {
-        const Ot = xt.materialize ?? "select";
+        const Ot = xt.materialize ?? "select", { quoteId: Bt, stripMaterializePrefix: Ht } = await Promise.resolve().then(() => SqlBlockService), Kt = /^CREATE\s+OR\s+REPLACE\s+/i.test(jt.trim()) ? Ht(jt) : jt;
         if (Ot !== "select" && (($t = xt.name) != null && $t.trim())) {
-          const { quoteId: Bt, stripMaterializePrefix: Ht } = await Promise.resolve().then(() => SqlBlockService), qt = Bt(xt.name), Kt = Ot === "view" ? "TABLE" : "VIEW";
+          const Jt = Bt(xt.name), Zt = Ot === "view" ? "TABLE" : "VIEW";
           try {
-            await DuckDBManager.executeQuery(`DROP ${Kt} IF EXISTS ${qt}`);
+            await DuckDBManager.executeQuery(`DROP ${Zt} IF EXISTS ${Jt}`);
           } catch {
           }
-          const Jt = /^CREATE\s+OR\s+REPLACE\s+/i.test(jt.trim());
-          let Zt;
-          Jt ? Zt = jt : Zt = Ot === "table" ? `CREATE OR REPLACE TABLE ${qt} AS (
-${jt}
-)` : `CREATE OR REPLACE VIEW ${qt} AS (
-${jt}
-)`, await DuckDBManager.executeQuery(Zt);
-          const { rows: sr, schemaTypes: Cr } = await DuckDBManager.executeQueryWithSchema(
-            `SELECT * FROM ${qt} LIMIT 1000`
+          const sr = Ot === "table" ? `CREATE OR REPLACE TABLE ${Jt} AS (
+${Kt}
+)` : `CREATE OR REPLACE VIEW ${Jt} AS (
+${Kt}
+)`;
+          await DuckDBManager.executeQuery(sr);
+          const { rows: Cr, schemaTypes: Rr } = await DuckDBManager.executeQueryWithSchema(
+            `SELECT * FROM ${Jt} LIMIT 1000`
           );
-          xt._results = sr, xt._schemaTypes = Cr || {}, xt._resultInfo = `${sr.length} ligne(s)${sr.length === 1e3 ? " (limité à 1 000)" : ""} — ${Ot === "table" ? "TABLE" : "VIEW"} "${xt.name}" créée`, await ((It = (Lt = yt()).refreshDuckdbSchema) == null ? void 0 : It.call(Lt));
+          xt._results = Cr, xt._schemaTypes = Rr || {}, xt._resultInfo = `${Cr.length} ligne(s)${Cr.length === 1e3 ? " (limité à 1 000)" : ""} — ${Ot === "table" ? "TABLE" : "VIEW"} "${xt.name}" créée`, await ((It = (Lt = yt()).refreshDuckdbSchema) == null ? void 0 : It.call(Lt));
         } else {
-          const Bt = await DuckDBManager.executeQuery(jt);
-          if (xt._results = Bt, xt._resultInfo = `✅ ${Bt.length} ligne(s)`, yt().isSqlResultTabular(xt)) {
-            const Ht = xt.maxRows || 1e5, qt = Bt.length > Ht, Kt = Bt.slice(0, Ht);
-            rawTableDataStore.set(xt._id, Kt), xt._results = Kt, qt && (xt._resultInfo = `✅ ${Bt.length} ligne(s) (limité à ${Ht})`);
+          const Jt = await DuckDBManager.executeQuery(jt);
+          if (xt._results = Jt, xt._resultInfo = `✅ ${Jt.length} ligne(s)`, yt().isSqlResultTabular(xt)) {
+            const Zt = xt.maxRows || 1e5, sr = Jt.length > Zt, Cr = Jt.slice(0, Zt);
+            rawTableDataStore.set(xt._id, Cr), xt._results = Cr, sr && (xt._resultInfo = `✅ ${Jt.length} ligne(s) (limité à ${Zt})`);
           }
         }
       }
