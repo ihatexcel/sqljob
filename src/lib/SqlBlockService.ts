@@ -13,6 +13,8 @@ import type {
     SqlBlockConfig,
     SortKey,
     FilterOp,
+    ChartConfig,
+    ChartColumnRole,
 } from './SqlBlockTypes';
 
 const CTE_PREFIX = '_sqlblock_s';
@@ -72,15 +74,99 @@ function escapeBlockComment(s: string): string {
 // AST → SQL
 // ─────────────────────────────────────────────────────────────────────────────
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Chart SQL — génération et parsing du SELECT final avec annotations TaleShape
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** Rôles TaleShape reconnus pour la détection chart dans le SELECT final. */
+const CHART_ROLES_ORDERED = [
+    'BARCHART_STACKED_PERCENT', 'BARCHART_STACKED', 'BARCHART_PERCENT', 'BARCHART',
+    'LINECHART_PERCENT', 'LINECHART',
+    'PIECHART_PERCENT', 'PIECHART',
+    'DONUTCHART_PERCENT', 'DONUTCHART',
+    'GAUGE_PERCENT', 'GAUGE',
+    'BOXPLOT',
+    'XAXIS', 'YAXIS', 'CATEGORY',
+    'COLOR', 'COLORS', 'LABELS', 'RANGE',
+    'LABEL', 'PERCENT', 'COMPARE', 'TREND', 'XLINE', 'YLINE',
+];
+const CHART_ROLES_SET = new Set(CHART_ROLES_ORDERED);
+
+/**
+ * Génère un SELECT final avec annotations ::ROLE à partir d'une ChartConfig.
+ * Ex: SELECT "date"::XAXIS, "revenue"::BARCHART AS "Revenue" FROM "last_cte"
+ */
+export function buildChartFinalSelect(fromSource: string, cfg: ChartConfig): string {
+    const parts = cfg.columns.map(col => {
+        const quotedCol = quoteId(col.column);
+        const role = col.role.toUpperCase();
+        const alias = col.label?.trim() ? ` AS ${quoteId(col.label)}` : '';
+        return `  ${quotedCol}::${role}${alias}`;
+    });
+    return `SELECT\n${parts.join(',\n')}\nFROM ${fromSource}`;
+}
+
+/**
+ * Parse un SELECT final pour extraire une ChartConfig.
+ * Reconnaît la syntaxe: col::ROLE [AS "alias"], ...
+ * Retourne null si aucun rôle chart n'est trouvé.
+ */
+export function parseChartFinalSelect(selectSql: string): ChartConfig | null {
+    const rolesPattern = CHART_ROLES_ORDERED.join('|');
+    // Match: ("col" | col)::ROLE [AS ("label" | label)]
+    const re = new RegExp(
+        `(?:"([^"]+)"|([\\w]+))\\s*::\\s*(${rolesPattern})(?:\\s+AS\\s+(?:"([^"]+)"|([\\w]+)))?`,
+        'gi'
+    );
+    const columns: ChartColumnRole[] = [];
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(selectSql)) !== null) {
+        const column = m[1] ?? m[2];
+        const role = m[3].toUpperCase();
+        const label = m[4] ?? m[5] ?? undefined;
+        if (column && CHART_ROLES_SET.has(role)) {
+            columns.push({ column, role, label });
+        }
+    }
+    if (!columns.length) return null;
+
+    // Déduire le chartType depuis les rôles présents (même logique que EChartSqlParser)
+    const roleSet = new Set(columns.map(c => c.role));
+    const has = (r: string) => roleSet.has(r);
+    let chartType = 'bar';
+    if (has('BARCHART_STACKED_PERCENT')) chartType = 'bar';
+    else if (has('BARCHART_PERCENT')) chartType = 'bar';
+    else if (has('BARCHART_STACKED')) chartType = 'bar';
+    else if (has('BARCHART') && has('LINECHART')) chartType = 'bar+line';
+    else if (has('BARCHART')) chartType = has('YAXIS') && !has('XAXIS') ? 'bar' : 'bar';
+    else if (has('LINECHART_PERCENT') || has('LINECHART')) chartType = 'line';
+    else if (has('PIECHART_PERCENT') || has('PIECHART')) chartType = 'pie';
+    else if (has('DONUTCHART_PERCENT') || has('DONUTCHART')) chartType = 'donut';
+    else if (has('GAUGE_PERCENT') || has('GAUGE')) chartType = 'gauge';
+    else if (has('BOXPLOT')) chartType = 'boxplot';
+    else if (has('LABEL') || has('PERCENT') || has('COMPARE') || has('TREND')) chartType = 'kpi';
+
+    return { chartType, columns };
+}
+
 export function astToSql(ast: SqlBlockAst): string {
-    const { source, steps } = ast;
-    if (!steps || steps.length === 0) return `SELECT * FROM ${quoteId(source)}`;
+    const { source, steps, chartConfig } = ast;
+
+    if (!steps || steps.length === 0) {
+        const from = quoteId(source);
+        if (chartConfig?.columns?.length) return buildChartFinalSelect(from, chartConfig);
+        return `SELECT * FROM ${from}`;
+    }
     // Step unique sans nom : forme simple (pas de CTE)
     // Exception : custom_sql → toujours en CTE pour préserver la structure (SQL non standard)
     if (steps.length === 1 && !steps[0].name?.trim() && steps[0].type !== 'custom_sql') {
         const sql = singleStepToSql(quoteId(source), steps[0]);
         const desc = steps[0].description?.trim();
-        return desc ? `/* ${escapeBlockComment(desc)} */\n${sql}` : sql;
+        // Pas de forme simple quand chartConfig présent : on passe par CTE pour pouvoir
+        // ajouter le SELECT final avec annotations
+        if (!chartConfig?.columns?.length) {
+            return desc ? `/* ${escapeBlockComment(desc)} */\n${sql}` : sql;
+        }
     }
 
     const ctes: string[] = [];
@@ -93,7 +179,10 @@ export function astToSql(ast: SqlBlockAst): string {
         ctes.push(`  ${cteName} AS (\n    ${comment}${inner.replace(/\n/g, '\n    ')}\n  )`);
     }
     const lastName = quoteId(getCteName(steps[steps.length - 1], steps.length - 1));
-    return `WITH\n${ctes.join(',\n')}\nSELECT * FROM ${lastName}`;
+    const finalSelect = chartConfig?.columns?.length
+        ? buildChartFinalSelect(lastName, chartConfig)
+        : `SELECT * FROM ${lastName}`;
+    return `WITH\n${ctes.join(',\n')}\n${finalSelect}`;
 }
 
 export function generateMaterializeQuery(name: string, sql: string, materialize: SqlBlockMaterialize): string {
@@ -159,6 +248,22 @@ function tryParseSimpleSelect(sql: string, materialize: SqlBlockMaterialize): Sq
     return { source: unquoteId(m[2].trim()), steps: parsed.step ? [parsed.step] : [], materialize };
 }
 
+/** Extrait le SELECT final d'un WITH query (le SELECT qui suit tous les CTEs, à profondeur 0). */
+function extractFinalSelectFromWithQuery(sql: string): string | null {
+    const withM = sql.match(/^WITH\s+/i);
+    if (!withM) return null;
+    let pos = withM[0].length;
+    let depth = 0;
+    while (pos < sql.length) {
+        const ch = sql[pos];
+        if (ch === '(') { depth++; pos++; continue; }
+        if (ch === ')') { depth--; pos++; continue; }
+        if (depth === 0 && /^SELECT\b/i.test(sql.slice(pos))) return sql.slice(pos).trim();
+        pos++;
+    }
+    return null;
+}
+
 function tryParseCteChain(sql: string, materialize: SqlBlockMaterialize): SqlBlockAst | null {
     if (!/^WITH\s+_sqlblock_s/i.test(sql)) return null;
     const ctes = extractCtes(sql);
@@ -170,7 +275,9 @@ function tryParseCteChain(sql: string, materialize: SqlBlockMaterialize): SqlBlo
         if (!parsed) return null;
         if (parsed.step) steps.push(parsed.step);
     }
-    return { source: unquoteId(ctes[0].source), steps, materialize };
+    const finalSql = extractFinalSelectFromWithQuery(sql);
+    const chartConfig = finalSql ? parseChartFinalSelect(finalSql) ?? undefined : undefined;
+    return { source: unquoteId(ctes[0].source), steps, materialize, ...(chartConfig ? { chartConfig } : {}) };
 }
 
 interface CteInfo { body: string; source: string }
@@ -878,7 +985,9 @@ function tryParseCteChainSmart(sql: string, materialize: SqlBlockMaterialize): S
         steps.push(step);
     }
 
-    return { source, steps, materialize };
+    const finalSql = extractFinalSelectFromWithQuery(sql);
+    const chartConfig = finalSql ? parseChartFinalSelect(finalSql) ?? undefined : undefined;
+    return { source, steps, materialize, ...(chartConfig ? { chartConfig } : {}) };
 }
 
 /** Parser simple SELECT (hors CTE) étendu aux patterns P1 (WHERE, ORDER BY, LIMIT).
@@ -887,6 +996,11 @@ function tryParseSimpleSmart(sql: string, materialize: SqlBlockMaterialize): Sql
     const srcM = sql.match(/^SELECT\s+(?:[\s\S]+?)\s+FROM\s+((?:"[^"]*"|\S+))/i);
     if (!srcM) return null;
     const source = unquoteId(srcM[1]);
+
+    // Si le SELECT contient des annotations ::ROLE, c'est un SELECT final de visualisation
+    const chartConfig = parseChartFinalSelect(sql) ?? undefined;
+    if (chartConfig) return { source, steps: [], materialize, chartConfig };
+
     const step = parseCteBodyToStep(sql, null, source);
     if (step === null) return { source, steps: [], materialize }; // SELECT *
     // custom_sql ou step reconnu → on crée un AST avec ce step (pas de perte de données)

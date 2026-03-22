@@ -32,6 +32,8 @@ import {
     quoteId,
     getAutoCteName,
 } from '../../../lib/SqlBlockService'
+import { ChartConfigEditor } from './ChartConfigEditor'
+import type { ChartConfig } from '../../../lib/SqlBlockTypes'
 import {
     DUCKDB_TYPES,
     STEP_LABELS,
@@ -2202,6 +2204,10 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
         // Pas d'ouverture auto du modal de config — l'étape a déjà été configurée dans AddStepModal
     }, [cell, ast.steps, forceUpdate])
 
+    const handleChartConfigChange = useCallback((cfg: ChartConfig | null) => {
+        commitAstUpdate(cell, { chartConfig: cfg ?? undefined }, forceUpdate)
+    }, [cell, forceUpdate])
+
     // ─── Distinct values pour le filtre (par step) ─────────────────────────
     // Fabrique une fonction fetchDistinctValues qui interroge la sous-requête
     // réelle en entrée du step (stepSql(ast, stepIdx-1)), pas juste ast.source.
@@ -2426,6 +2432,13 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
                             otherStepNames={ast.steps.map(s => s.name?.trim()).filter(Boolean) as string[]}
                             stepIndex={n} onOpen={() => fetchSchemaForStep(n)}
                         />
+                        {fromSqlCell && (ast.materialize ?? 'select') === 'select' && (
+                            <ChartConfigEditor
+                                chartConfig={ast.chartConfig}
+                                availableColumns={newStepInputSchema.columns}
+                                onChange={handleChartConfigChange}
+                            />
+                        )}
                     </>
                 )
 

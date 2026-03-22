@@ -452,16 +452,44 @@ export const createExecutionSlice = (set: any, get: any) => ({
                     cell._resultInfo = `${results.length} ligne(s)${results.length === 1000 ? ' (limité à 1 000)' : ''} — ${materialize === 'table' ? 'TABLE' : 'VIEW'} "${cell.name}" créée`
                     await get().refreshDuckdbSchema?.()
                 } else {
-                    const finalResults = await DuckDBManager.executeQuery(finalQuery)
-                    cell._results = finalResults
-                    cell._resultInfo = `✅ ${finalResults.length} ligne(s)`
-                    if (get().isSqlResultTabular(cell)) {
+                    const chartConfig = q0?.ast?.chartConfig
+                    if (chartConfig?.columns?.length) {
+                        // Mode graphique : initChartTypes + strip des annotations + EChartSqlParser
+                        get().setStatus('Chargement ECharts...', 'loading')
+                        await CDNManager.loadECharts()
+                        await DuckDBManager.initChartTypes()
+                        get().setStatus('Exécution de la requête...', 'loading')
+                        const { rows, columnTypes, schemaTypes } = await DuckDBManager.executeQueryWithSchema(finalQuery)
                         const maxRows = cell.maxRows || 100000
-                        const truncated = finalResults.length > maxRows
-                        const rawResults = finalResults.slice(0, maxRows)
+                        const rawResults = rows.slice(0, maxRows)
                         _rawTableDataStore.set(cell._id, rawResults)
                         cell._results = rawResults
-                        if (truncated) cell._resultInfo = `✅ ${finalResults.length} ligne(s) (limité à ${maxRows})`
+                        cell._schemaTypes = schemaTypes || {}
+                        cell._columnTypes = columnTypes
+                        cell._resultInfo = `✅ ${rows.length} ligne(s)`
+                        const parsed = EChartSqlParser.parseColumnRoles(rows, columnTypes)
+                        if (parsed.chartType === 'kpi') {
+                            cell._kpiHtml = EChartSqlParser.buildKpiHtml(rows, parsed)
+                            cell._echartsOption = null
+                        } else {
+                            cell._echartsOption = EChartSqlParser.buildEChartsOption(rows, parsed) ?? null
+                            cell._kpiHtml = null
+                        }
+                    } else {
+                        cell._echartsOption = null
+                        cell._kpiHtml = null
+                        const { rows: finalResults, schemaTypes } = await DuckDBManager.executeQueryWithSchema(finalQuery)
+                        cell._results = finalResults
+                        cell._schemaTypes = schemaTypes || {}
+                        cell._resultInfo = `✅ ${finalResults.length} ligne(s)`
+                        if (get().isSqlResultTabular(cell)) {
+                            const maxRows = cell.maxRows || 100000
+                            const truncated = finalResults.length > maxRows
+                            const rawResults = finalResults.slice(0, maxRows)
+                            _rawTableDataStore.set(cell._id, rawResults)
+                            cell._results = rawResults
+                            if (truncated) cell._resultInfo = `✅ ${finalResults.length} ligne(s) (limité à ${maxRows})`
+                        }
                     }
                 }
             }

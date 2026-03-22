@@ -244,12 +244,28 @@ export type SqlBlockStep = (
     | CustomSqlStep
 ) & SqlBlockStepMeta;
 
+// ─── Visualisation graphique (TaleShape) ──────────────────────────────────────
+
+/** Mapping colonne → rôle visuel dans le SELECT final (dernier SELECT du pipeline). */
+export interface ChartColumnRole {
+    column: string;    // nom de colonne source (non quoté)
+    role: string;      // XAXIS | BARCHART | LINECHART | PIECHART | CATEGORY | …
+    label?: string;    // alias AS "Label" (légende ECharts)
+}
+
+/** Configuration de visualisation graphique associée à l'AST. */
+export interface ChartConfig {
+    chartType: string;          // 'bar' | 'line' | 'bar+line' | 'pie' | 'donut' | 'gauge' | 'boxplot' | 'kpi'
+    columns: ChartColumnRole[]; // rôles dans l'ordre du SELECT final
+}
+
 // ─── AST root ─────────────────────────────────────────────────────────────────
 
 export interface SqlBlockAst {
     source: string;
     steps: SqlBlockStep[];
     materialize: SqlBlockMaterialize;
+    chartConfig?: ChartConfig;  // optionnel : active le mode graphique sur le dernier SELECT
 }
 
 // ─── Config cellule ───────────────────────────────────────────────────────────

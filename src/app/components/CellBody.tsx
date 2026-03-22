@@ -343,6 +343,26 @@ function ButtonRunBody({ cell, path, cellIndex }: any) {
     )
 }
 
+// ─── EChartRenderer — rendu ECharts/KPI partagé ──────────────────────────────
+function EChartRenderer({ cell, hasHeight }: { cell: any; hasHeight: boolean }) {
+    const { _rev } = useNotebookStore(useShallow(s => ({ _rev: s._rev })))
+    const chartRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        if (!chartRef.current || !cell._echartsOption) return
+        CDNManager.loadECharts?.().then(() => {
+            const echarts = (window as any).echarts
+            if (!echarts || !chartRef.current) return
+            let chart = echarts.getInstanceByDom(chartRef.current) || echarts.init(chartRef.current)
+            chart.clear()
+            chart.setOption(cell._echartsOption)
+        })
+    }, [_rev, cell._echartsOption])
+
+    if (cell._kpiHtml) return <div dangerouslySetInnerHTML={{ __html: cell._kpiHtml }} />
+    return <div ref={chartRef} className={hasHeight ? 'flex-1 min-h-0' : 'min-h-[300px]'} />
+}
+
 // ─── SqlTableBody ─────────────────────────────────────────────────────────────
 function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
     const {
@@ -360,10 +380,15 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
     })))
 
     const [sqlBlockUiMode, setSqlBlockUiMode] = useState(false)
+    const [vizMode, setVizMode] = useState<'table' | 'chart'>('table')
 
     const hasHeight = hasCellHeight(cell)
     const isRunning = cell._status === 'running'
     const searchable = cell.type === 'table'
+    const hasChart = !!(cell._echartsOption || cell._kpiHtml)
+
+    // Revenir au tableau si le graphique disparaît (ex: changement de mode)
+    if (vizMode === 'chart' && !hasChart) setVizMode('table')
 
     // Mode UI visuel (sqlBlock) pour les cellules sqlRecursiveParse
     if (devMode && cell.type === 'sqlRecursiveParse' && sqlBlockUiMode) {
@@ -402,6 +427,32 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
                             </button>
                         ))}
                     </div>
+                    {/* Toggle Tableau / Graphique */}
+                    {hasChart && (
+                        <div className="flex rounded border border-border overflow-hidden text-xs ml-2">
+                            <button onClick={() => setVizMode('table')}
+                                className={`px-2 py-0.5 transition-colors ${vizMode === 'table' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}>
+                                Tableau
+                            </button>
+                            <button onClick={() => setVizMode('chart')}
+                                className={`px-2 py-0.5 transition-colors ${vizMode === 'chart' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}>
+                                Graphique
+                            </button>
+                        </div>
+                    )}
+                </div>
+            )}
+            {/* Toggle visible en mode client si la cellule a un graphique */}
+            {!devMode && hasChart && cell.type === 'sqlRecursiveParse' && (
+                <div className="flex rounded border border-border overflow-hidden text-xs mb-1 shrink-0 self-start">
+                    <button onClick={() => setVizMode('table')}
+                        className={`px-2 py-0.5 transition-colors ${vizMode === 'table' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}>
+                        Tableau
+                    </button>
+                    <button onClick={() => setVizMode('chart')}
+                        className={`px-2 py-0.5 transition-colors ${vizMode === 'chart' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}>
+                        Graphique
+                    </button>
                 </div>
             )}
             {showSqlEditorVisible?.(cell) && (
@@ -410,7 +461,14 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
                     onEnterUiMode={cell.type === 'sqlRecursiveParse' ? () => setSqlBlockUiMode(true) : null}
                 />
             )}
-            {showTextResult ? (
+            {/* Mode graphique */}
+            {vizMode === 'chart' && hasChart && (
+                <div className={hasHeight ? 'flex-1 min-h-0 flex flex-col' : ''}>
+                    <EChartRenderer cell={cell} hasHeight={hasHeight} />
+                </div>
+            )}
+            {/* Mode tableau */}
+            {vizMode === 'table' && (showTextResult ? (
                 <>
                     {showSqlEditorVisible?.(cell) && isSqlResultTabular?.(cell) && (
                         <div className={`relative rounded-lg mt-2 ${hasHeight ? 'flex-1 min-h-0 overflow-auto' : ''}`}>
@@ -431,7 +489,7 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
                         : <div className="bg-background rounded-lg overflow-x-auto"><SqlDataTable cell={cell} searchable={searchable} /></div>
                     }
                 </div>
-            )}
+            ))}
             <ResultInfo cell={cell} devOnly />
         </div>
     )
@@ -524,25 +582,11 @@ function SqlStatBody({ cell, path, cellIndex }: any) {
 
 // ─── EChartBody ───────────────────────────────────────────────────────────────
 function EChartBody({ cell, path, cellIndex }: any) {
-    const { devMode, showSqlEditorVisible, hasCellHeight, _rev } = useNotebookStore(useShallow(s => ({
+    const { devMode, showSqlEditorVisible, hasCellHeight } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         showSqlEditorVisible: s.showSqlEditorVisible,
         hasCellHeight: s.hasCellHeight,
-        _rev: s._rev,
     })))
-
-    const chartRef = useRef<HTMLDivElement>(null)
-
-    useEffect(() => {
-        if (!chartRef.current || !cell._echartsOption) return
-        CDNManager.loadECharts?.().then(() => {
-            const echarts = (window as any).echarts
-            if (!echarts || !chartRef.current) return
-            let chart = echarts.getInstanceByDom(chartRef.current) || echarts.init(chartRef.current)
-            chart.clear()
-            chart.setOption(cell._echartsOption)
-        })
-    }, [_rev, cell._echartsOption])
 
     const hasHeight = hasCellHeight(cell)
 
@@ -552,10 +596,7 @@ function EChartBody({ cell, path, cellIndex }: any) {
                 <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
                     placeholder="SELECT month::XAXIS, revenue::BARCHART AS &quot;Revenue&quot; FROM source1" />
             )}
-            {cell._kpiHtml
-                ? <div dangerouslySetInnerHTML={{ __html: cell._kpiHtml }} />
-                : <div ref={chartRef} className={hasHeight ? 'flex-1 min-h-0' : 'min-h-[300px]'} />
-            }
+            <EChartRenderer cell={cell} hasHeight={hasHeight} />
             <ResultInfo cell={cell} devOnly />
         </div>
     )
