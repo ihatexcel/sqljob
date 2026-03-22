@@ -14,6 +14,7 @@ import { useTemplateModal } from '../store/uiStores'
 import { ConfigManager } from '../../lib/ConfigManager'
 import { CELL_TYPE_SCHEMAS } from '../../lib/cellTypeSchemas'
 import { Icon } from '../../lib/icons'
+import { sqlToAstSmart, stripMaterializePrefix, buildDisplaySql } from '../../lib/SqlBlockService'
 
 // ─── SqlEditorWidget ──────────────────────────────────────────────────────────
 export function SqlEditorWidget({
@@ -26,6 +27,7 @@ export function SqlEditorWidget({
     languageIcon = null,
     badgeClass = null,
     applySourceDefaultIfEmpty = false,
+    onEnterUiMode = null,
 }: any) {
     const { devMode, isLoading, runCellAt, db } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
@@ -73,6 +75,25 @@ export function SqlEditorWidget({
         useTemplateModal.getState().open(cell._id, queryType, languageType)
     }
 
+    function enterUiMode() {
+        const fullSql = ConfigManager.getCellQuery(cell, queryName) || ''
+        const stripped = stripMaterializePrefix(fullSql)
+        const mat = (cell.materialize && cell.materialize !== 'select') ? cell.materialize : 'view'
+        const result = sqlToAstSmart(stripped, mat)
+        if (!cell.queries?.length) cell.queries = [{ name: 'main', sql: fullSql, engine: 'sql', clientVisible: false }]
+        const q = cell.queries[0]
+        if (result.compatible && result.ast) {
+            q.ast = result.ast
+            q.degraded = false
+            q.manualSql = null
+        } else {
+            q.ast = null
+            q.degraded = true
+            q.manualSql = stripped
+        }
+        onEnterUiMode?.()
+    }
+
     function handleMonacoChange(value: string | undefined) {
         ConfigManager.setCellQuery(cell, queryName, value ?? '')
     }
@@ -89,13 +110,22 @@ export function SqlEditorWidget({
                         </span>
                     </span>
                     <div className="flex gap-1 items-center">
+                        {devMode && isSql && onEnterUiMode && (
+                            <button
+                                className="p-1 text-muted-foreground cursor-pointer transition-colors hover:text-foreground"
+                                title="Passer en mode UI visuel"
+                                onClick={enterUiMode}
+                            >
+                                <Icon name="square-mouse-pointer" size={14} />
+                            </button>
+                        )}
                         {devMode && !isText && (
                             <button
-                                className="px-2 py-1 border border-border bg-muted text-muted-foreground rounded cursor-pointer text-xs transition-all hover:border-primary hover:text-foreground"
+                                className="p-1 text-muted-foreground cursor-pointer transition-colors hover:text-foreground"
                                 title={`Insérer un template ${isJs ? 'JavaScript' : 'SQL'}`}
                                 onClick={openTemplates}
                             >
-                                📋 Templates
+                                <Icon name="book-marked" size={14} />
                             </button>
                         )}
                         {path != null && cellIndex != null && (

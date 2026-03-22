@@ -28,8 +28,9 @@ import { createGroupsSlice } from './slices/groupsSlice'
 import { createCellsSlice } from './slices/cellsSlice'
 import { createFilesSlice } from './slices/filesSlice'
 import { createExecutionSlice } from './slices/executionSlice'
+import { createCopyPasteSlice } from './slices/copyPasteSlice'
 import { ConfigManager } from '../../lib/ConfigManager'
-import { applyThemeFromConfig } from '../components/modals/ThemeCustomModal'
+import { applyThemeFromConfig, initCustomTheme } from '../components/modals/ThemeCustomModal'
 import { DuckDBManager } from '../../lib/DuckDBManager'
 import { CellConfigService, initializeCell } from '../../lib/CellConfigService'
 import { EChartSqlParser } from '../../lib/EChartSqlParser'
@@ -145,6 +146,7 @@ function buildInitialState() {
         localStorage.setItem('sqljob-theme', theme)
         // Appliquer le preset ou CSS custom issu de la config (gist URL, import JSON…)
         if (config.ui?.theme) applyThemeFromConfig(config.ui)
+        else initCustomTheme() // config vide → relire le preset/custom depuis localStorage
     }
     const savedDbEngine = typeof localStorage !== 'undefined' ? localStorage.getItem('sqljob-dbEngine') : null
     const initialDbEngine = config.ui?.dbEngine || savedDbEngine || 'duckdb-wasm'
@@ -255,10 +257,9 @@ const duckdbManagerConnector = createBaseDuckDbConnector(
             // DuckDB est déjà initialisé par helpersMixin.init() — rien à faire
         },
         executeQueryInternal: async (sql: string) => {
-            console.log('[duckdbBridge] query:', sql.slice(0, 100))
+            if (DuckDBManager.currentEngine === 'ducklings') return null
             try {
                 const result = await DuckDBManager.executeQueryArrow(sql)
-                console.log('[duckdbBridge] ok, rows:', result?.numRows)
                 return result
             } catch (err) {
                 console.error('[duckdbBridge] error:', err)
@@ -315,6 +316,7 @@ export const useNotebookStore = create<any>((set, get, api) => {
     const cellsActions = createCellsSlice(set, get)
     const filesActions = createFilesSlice(set, get)
     const executionActions = createExecutionSlice(set, get)
+    const copyPasteActions = createCopyPasteSlice(set, get)
 
     // Helper : vérifie si le panneau 'data' est actuellement visible dans le layout
     function isDataPanelVisible() {
@@ -363,6 +365,7 @@ export const useNotebookStore = create<any>((set, get, api) => {
         ...cellsActions,
         ...filesActions,
         ...executionActions,
+        ...copyPasteActions,
 
         // db.schemaTrees démarre undefined dans DuckDbSlice.
         // deepEquals([], []) bloque la mise à jour si aucune table → schemaTrees reste undefined.
@@ -392,7 +395,9 @@ export const useNotebookStore = create<any>((set, get, api) => {
                 return { _roomFiles: [...existing, { name: file.name, tableName, size: file.size, source: 'dropzone' }] };
             });
             await get().refreshDuckdbTables();
-            try { await get().db.refreshTableSchemas(); } catch { /* ignore */ }
+            if (DuckDBManager.currentEngine !== 'ducklings') {
+                try { await get().db.refreshTableSchemas(); } catch { /* ignore */ }
+            }
         },
 
         // Overrides de méthodes mixin qui font des mutations profondes (this.X.Y = val)

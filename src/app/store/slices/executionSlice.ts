@@ -9,6 +9,14 @@ import { EChartSqlParser } from '../../../lib/EChartSqlParser'
 import { formatValueForInputType } from '../../../lib/utils'
 import { FileHandler } from '../../../lib/FileHandler'
 
+/** Détecte si un SQL contient une instruction DDL (CREATE, DROP, ALTER, INSERT, UPDATE, DELETE…).
+ *  Utilisé pour décider si le schéma DuckDB doit être rafraîchi après exécution. */
+const DDL_RE = /^\s*(CREATE|DROP|ALTER|INSERT|UPDATE|DELETE|TRUNCATE|RENAME|COMMENT)\b/im
+function sqlIsDdl(sql: string): boolean {
+    // Vérifier chaque statement séparé par ';'
+    return sql.split(';').some(s => DDL_RE.test(s))
+}
+
 export const createExecutionSlice = (set: any, get: any) => ({
 
     async runGroupAtPath(path) {
@@ -273,6 +281,14 @@ export const createExecutionSlice = (set: any, get: any) => ({
     },
 
     async executeSqlRecursiveParseCell(cell) {
+        // Si queries[0].sql est vide mais qu'un AST est disponible, reconstituer le SQL
+        const q0 = cell.queries?.[0]
+        if (q0?.ast && !q0.sql?.trim()) {
+            const { astToSql, buildDisplaySql } = await import('../../../lib/SqlBlockService')
+            const selectSql = q0.degraded && q0.manualSql ? q0.manualSql : astToSql(q0.ast)
+            q0.sql = buildDisplaySql(cell.name, selectSql, cell.materialize ?? q0.ast.materialize ?? 'select')
+        }
+
         if (!ConfigManager.getCellQuery(cell, 0)?.trim()) {
             console.warn('❌ cell.query est vide ou undefined!')
             return
@@ -413,20 +429,45 @@ export const createExecutionSlice = (set: any, get: any) => ({
                     await DuckDBManager.dropFile(fileName)
                 }
             } else {
-                const finalResults = await DuckDBManager.executeQuery(finalQuery)
-                cell._results = finalResults
-                cell._resultInfo = `✅ ${finalResults.length} ligne(s)`
-                if (get().isSqlResultTabular(cell)) {
-                    const maxRows = cell.maxRows || 100000
-                    const truncated = finalResults.length > maxRows
-                    const rawResults = finalResults.slice(0, maxRows)
-                    _rawTableDataStore.set(cell._id, rawResults)
-                    cell._results = rawResults
-                    if (truncated) cell._resultInfo = `✅ ${finalResults.length} ligne(s) (limité à ${maxRows})`
+                const materialize = cell.materialize ?? 'select'
+                const { quoteId, stripMaterializePrefix } = await import('../../../lib/SqlBlockService')
+                // Normalise le SQL : retire le préfixe DDL éventuel pour obtenir le SELECT brut
+                const isDdl = /^CREATE\s+OR\s+REPLACE\s+/i.test(finalQuery.trim())
+                const selectSql = isDdl ? stripMaterializePrefix(finalQuery) : finalQuery
+
+                if (materialize !== 'select' && cell.name?.trim()) {
+                    // Créer une VIEW ou TABLE DuckDB depuis le SELECT
+                    const qid = quoteId(cell.name)
+                    const oppositeType = materialize === 'view' ? 'TABLE' : 'VIEW'
+                    try { await DuckDBManager.executeQuery(`DROP ${oppositeType} IF EXISTS ${qid}`) } catch (_) { /* ok */ }
+                    const createSql = materialize === 'table'
+                        ? `CREATE OR REPLACE TABLE ${qid} AS (\n${selectSql}\n)`
+                        : `CREATE OR REPLACE VIEW ${qid} AS (\n${selectSql}\n)`
+                    await DuckDBManager.executeQuery(createSql)
+                    const { rows: results, schemaTypes } = await DuckDBManager.executeQueryWithSchema(
+                        `SELECT * FROM ${qid} LIMIT 1000`
+                    )
+                    cell._results = results
+                    cell._schemaTypes = schemaTypes || {}
+                    cell._resultInfo = `${results.length} ligne(s)${results.length === 1000 ? ' (limité à 1 000)' : ''} — ${materialize === 'table' ? 'TABLE' : 'VIEW'} "${cell.name}" créée`
+                    await get().refreshDuckdbSchema?.()
+                } else {
+                    const finalResults = await DuckDBManager.executeQuery(finalQuery)
+                    cell._results = finalResults
+                    cell._resultInfo = `✅ ${finalResults.length} ligne(s)`
+                    if (get().isSqlResultTabular(cell)) {
+                        const maxRows = cell.maxRows || 100000
+                        const truncated = finalResults.length > maxRows
+                        const rawResults = finalResults.slice(0, maxRows)
+                        _rawTableDataStore.set(cell._id, rawResults)
+                        cell._results = rawResults
+                        if (truncated) cell._resultInfo = `✅ ${finalResults.length} ligne(s) (limité à ${maxRows})`
+                    }
                 }
             }
 
             get().setStatus('SQL Recursive Parse exécuté', 'success')
+            if (sqlIsDdl(finalQuery)) await get().refreshDuckdbSchema?.()
         } catch (error) {
             throw error
         }
@@ -453,6 +494,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
             cell._resultInfo = `${results.length} ligne(s)` + (truncated ? ` (limité à ${maxRows})` : '')
 
             get().setStatus('Tableau chargé', 'success')
+            if (sqlIsDdl(finalQuery)) await get().refreshDuckdbSchema?.()
         } catch (error) {
             throw error
         }
@@ -651,7 +693,15 @@ export const createExecutionSlice = (set: any, get: any) => ({
                     throw new Error(`Erreur JS: ${jsError.message}`)
                 }
             } else {
-                const finalQuery = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '')
+                const rawQuery = ConfigManager.getCellQuery(cell, 0) || ''
+                const referencedParams = get().findReferencedParams(rawQuery)
+                const allParams = get().getParameters()
+                const DATE_CAST_RE = /::(DATE|TIMESTAMP|TIME)\b/i
+                if (DATE_CAST_RE.test(rawQuery) && referencedParams.some(p => !allParams[p])) {
+                    // Paramètre date référencé encore vide → skip silencieux
+                    return
+                }
+                const finalQuery = get().parseQueryWithParameters(rawQuery)
                 get().setStatus('Exécution de la requête...', 'loading')
                 results = await DuckDBManager.executeQuery(finalQuery)
             }
@@ -710,8 +760,8 @@ export const createExecutionSlice = (set: any, get: any) => ({
 
             cell._userModified = false
         } catch (error) {
-            cell._paramError = 'Erreur: ' + error.message
-            get().setStatus('Erreur: ' + error.message, 'error')
+            console.error('[uiParameter]', ConfigManager.getCellReferenceName(cell), error.message)
+            if (get().devMode) get().setStatus('Erreur: ' + error.message, 'error')
         }
     },
 
@@ -981,6 +1031,9 @@ export const createExecutionSlice = (set: any, get: any) => ({
     async executePerspectiveCell(cell) {
         if (!ConfigManager.getCellQuery(cell, 0)?.trim()) {
             throw new Error('Requête SQL manquante')
+        }
+        if (DuckDBManager.currentEngine === 'ducklings') {
+            throw new Error('Les cellules Perspective nécessitent le moteur DuckDB WASM. Changez le moteur dans les paramètres.')
         }
 
         get().setStatus('Chargement de Perspective...', 'loading')

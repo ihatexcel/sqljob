@@ -50,25 +50,47 @@ export const createHelpersSlice = (set: any, get: any) => ({
 
     async refreshDuckdbTables() {
         try {
-            const tableRows = await DuckDBManager.executeQuery('SHOW TABLES')
-            const result: Record<string, { rowCount: number; columns: { name: string; type: string }[] }> = {}
-            for (const row of tableRows) {
-                const name = row.name ?? row.table_name
+            // Utilise information_schema pour lister toutes les tables de tous les schémas,
+            // y compris le schéma interne _sqlblock qui contient les tables intermédiaires
+            // des SqlBlock (subcells). Les schémas système sont exclus.
+            const allRows = await DuckDBManager.executeQuery(
+                `SELECT table_schema, table_name FROM information_schema.tables WHERE table_schema NOT IN ('information_schema', 'pg_catalog') ORDER BY table_schema, table_name`
+            )
+            const result: Record<string, { rowCount: number; columns: { name: string; type: string }[]; schema?: string }> = {}
+            for (const row of allRows) {
+                const schema = row.table_schema as string
+                const name = row.table_name as string
                 if (!name) continue
+                // Clé : nom simple pour le schéma principal, "schema.name" pour les autres
+                const key = (schema === 'main' || !schema) ? name : `${schema}.${name}`
+                const ref = (schema === 'main' || !schema) ? `"${name}"` : `"${schema}"."${name}"`
                 try {
-                    const countRows = await DuckDBManager.executeQuery(`SELECT COUNT(*) as cnt FROM "${name}"`)
-                    const descRows = await DuckDBManager.executeQuery(`DESCRIBE "${name}"`)
-                    result[name] = {
+                    const countRows = await DuckDBManager.executeQuery(`SELECT COUNT(*) as cnt FROM ${ref}`)
+                    const descRows = await DuckDBManager.executeQuery(`DESCRIBE ${ref}`)
+                    result[key] = {
                         rowCount: Number(countRows[0]?.cnt ?? 0),
                         columns: descRows.map((r: any) => ({ name: r.column_name, type: r.column_type })),
+                        schema,
                     }
                 } catch {
-                    result[name] = { rowCount: 0, columns: [] }
+                    result[key] = { rowCount: 0, columns: [], schema }
                 }
             }
             set({ _duckdbTables: result })
         } catch {
             // DuckDB pas encore prêt, on ignore silencieusement
+        }
+    },
+
+    /**
+     * Rafraîchit le schéma DuckDB dans les deux systèmes :
+     * - _duckdbTables (DataSourcesPanel, SqlBlockEditor)
+     * - db.refreshTableSchemas() (autocomplétion de l'éditeur SQL sqlrooms)
+     */
+    async refreshDuckdbSchema() {
+        await get().refreshDuckdbTables()
+        if (DuckDBManager.currentEngine !== 'ducklings') {
+            try { await get().db?.refreshTableSchemas() } catch { /* ignoré si non prêt */ }
         }
     },
 
@@ -86,16 +108,19 @@ export const createHelpersSlice = (set: any, get: any) => ({
             }
             setTimeout(() => setTimeout(() => get().refreshMarkdownCellsForPage(0), 300), 0)
             await get().refreshDuckdbTables()
-            try {
-                await get().room.initialize()
-            } catch (err) {
-                console.warn('[sqljob] room.initialize() error:', err)
+            if (DuckDBManager.currentEngine !== 'ducklings') {
+                try {
+                    await get().room.initialize()
+                } catch (err) {
+                    console.warn('[sqljob] room.initialize() error:', err)
+                }
             }
-            try {
-                await get().db.refreshTableSchemas()
-
-            } catch (err) {
-                console.warn('[sqljob] refreshTableSchemas error:', err)
+            if (DuckDBManager.currentEngine !== 'ducklings') {
+                try {
+                    await get().db.refreshTableSchemas()
+                } catch (err) {
+                    console.warn('[sqljob] refreshTableSchemas error:', err)
+                }
             }
             get().room = { ...get().room, initialized: true }
         } catch (error: any) {

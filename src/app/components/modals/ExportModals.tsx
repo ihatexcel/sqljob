@@ -2,6 +2,7 @@
 /**
  * Modals d'export : ExportModal, GistTokenModal, GistResultModal, JsonPassphraseModal
  */
+import { useState, useRef } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import { useNotebookStore } from '../../store/notebookStore'
 import {
@@ -18,14 +19,17 @@ import { Icon } from '../../../lib/icons'
 export function ExportModal() {
     const {
         exportModal, isLoading,
-        cancelExport, executeExport
+        cancelExport, executeExport, copyExportJson
     } = useNotebookStore(useShallow(s => ({
         exportModal: s.exportModal,
         isLoading: s.isLoading,
         cancelExport: s.cancelExport,
-        executeExport: s.executeExport
+        executeExport: s.executeExport,
+        copyExportJson: s.copyExportJson,
     })))
     const set = useNotebookStore.setState
+    const [copied, setCopied] = useState(false)
+    const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
     const em = exportModal
     const update = (patch: any) => set({ exportModal: { ...em, ...patch } })
@@ -89,13 +93,12 @@ export function ExportModal() {
                             <Label className="font-semibold">Mode développeur</Label>
                             <p className="text-xs text-muted-foreground">Afficher les contrôles d'édition des cellules et groupes</p>
                         </div>
-                        <Switch checked={!!em.devMode} onCheckedChange={v => update({ devMode: v })} />
+                        <Switch checked={!!em.devMode} onCheckedChange={v => update({ devMode: v, showLayout: v })} />
                     </div>
 
                     <div className="flex items-center justify-between gap-3">
                         <div>
-                            <Label className="font-semibold">Afficher l'entête et pied de page</Label>
-                            <p className="text-xs text-muted-foreground">Décocher pour partager votre notebook sous forme d'iframe</p>
+                            <Label className="font-semibold">Afficher la barre de configuration</Label>
                         </div>
                         <Switch checked={!!em.showLayout} onCheckedChange={v => update({ showLayout: v })} />
                     </div>
@@ -142,6 +145,19 @@ export function ExportModal() {
                 </div>
                 <DialogFooter>
                     <Button variant="ghost" onClick={cancelExport}>Annuler</Button>
+                    {em.type === 'json' && (
+                        <Button variant="outline" disabled={isLoading} onClick={async () => {
+                            const ok = await copyExportJson()
+                            if (ok) {
+                                setCopied(true)
+                                if (copyTimerRef.current) clearTimeout(copyTimerRef.current)
+                                copyTimerRef.current = setTimeout(() => setCopied(false), 2000)
+                            }
+                        }}>
+                            <Icon name={copied ? 'check' : 'content-copy'} size={16} />
+                            {copied ? 'Copié !' : 'Copier'}
+                        </Button>
+                    )}
                     <Button onClick={executeExport}>
                         {em.type === 'gist' ? 'Créer le Gist' : 'Exporter'}
                     </Button>

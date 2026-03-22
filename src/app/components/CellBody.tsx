@@ -11,12 +11,14 @@ import { CDNManager } from '../../lib/CDNManager'
 import { SqlEditorWidget } from './SqlEditorWidget'
 import { SqlDataTable } from './SqlDataTable'
 import { Icon } from '../../lib/icons'
+import { buildDisplaySql, stripMaterializePrefix } from '../../lib/SqlBlockService'
 import {
     Accordion, AccordionItem, AccordionTrigger, AccordionContent,
     Dialog, DialogContent, DialogHeader, DialogTitle,
 } from '@sqlrooms/ui'
 import { DuckDBManager } from '../../lib/DuckDBManager'
 import DataTablePaginated from '@sqlrooms/data-table/dist/DataTablePaginated'
+import { SqlBlockEditor } from './sqlblock/SqlBlockEditor'
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 function CellBodySkeleton() {
@@ -346,7 +348,7 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
     const {
         devMode, hasCellHeight,
         showSqlEditorVisible, isSqlResultTabular, isSqlResultText,
-        getSqlResultAsText,
+        getSqlResultAsText, forceUpdate,
     } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         hasCellHeight: s.hasCellHeight,
@@ -354,17 +356,59 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
         isSqlResultTabular: s.isSqlResultTabular,
         isSqlResultText: s.isSqlResultText,
         getSqlResultAsText: s.getSqlResultAsText,
+        forceUpdate: s.forceUpdate,
     })))
+
+    const [sqlBlockUiMode, setSqlBlockUiMode] = useState(false)
 
     const hasHeight = hasCellHeight(cell)
     const isRunning = cell._status === 'running'
     const searchable = cell.type === 'table'
 
+    // Mode UI visuel (sqlBlock) pour les cellules sqlRecursiveParse
+    if (devMode && cell.type === 'sqlRecursiveParse' && sqlBlockUiMode) {
+        return (
+            <SqlBlockEditor
+                cell={cell}
+                path={path}
+                cellIndex={cellIndex}
+                fromSqlCell={true}
+                onExitUiMode={() => setSqlBlockUiMode(false)}
+            />
+        )
+    }
+
     return (
         <div className={hasHeight ? 'flex-1 min-h-0 flex flex-col' : ''}>
+            {devMode && cell.type === 'sqlRecursiveParse' && (
+                <div className="flex items-center gap-2 mb-1 shrink-0">
+                    <label className="text-xs text-muted-foreground shrink-0">Résultat :</label>
+                    <div className="flex rounded border border-border overflow-hidden text-xs">
+                        {(['select', 'view', 'table'] as const).map(m => (
+                            <button key={m} onClick={() => {
+                                cell.materialize = m
+                                const q = cell.queries?.[0]
+                                if (q) {
+                                    // Toujours dériver le SELECT depuis q.sql courant (pas l'AST qui peut être périmé)
+                                    const selectSql = stripMaterializePrefix(q.sql || '')
+                                    q.sql = buildDisplaySql(cell.name, selectSql, m)
+                                    if (q.ast) q.ast = { ...q.ast, materialize: m }
+                                }
+                                forceUpdate()
+                            }}
+                                className={`px-2 py-0.5 transition-colors ${(cell.materialize ?? 'select') === m ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}
+                                title={m === 'select' ? 'SELECT simple (sans créer de vue ni de table)' : m === 'view' ? 'Créer une Vue DuckDB (lazy)' : 'Créer une TABLE matérialisée'}>
+                                {m.toUpperCase()}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            )}
             {devMode && showSqlEditorVisible?.(cell) && (
                 <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
-                    placeholder="SELECT * FROM source1 LIMIT 100" />
+                    placeholder="SELECT * FROM source1 LIMIT 100"
+                    onEnterUiMode={cell.type === 'sqlRecursiveParse' ? () => setSqlBlockUiMode(true) : null}
+                />
             )}
             {showTextResult ? (
                 <>
@@ -588,9 +632,6 @@ function UiParameterBody({ cell, path, cellIndex }: any) {
                         <span className="inline-flex items-center justify-center px-2 py-0.5 rounded text-xs font-mono bg-primary text-primary-foreground min-w-[3rem]">{localValue}</span>
                     </div>
                 </div>
-            )}
-            {cell._paramError && (
-                <div className="p-2 text-destructive text-sm bg-destructive/10 rounded">{cell._paramError}</div>
             )}
             <ResultInfo cell={cell} devOnly />
         </div>

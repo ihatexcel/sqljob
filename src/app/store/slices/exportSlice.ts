@@ -65,7 +65,7 @@ export const createExportSlice = (set: any, get: any) => ({
                 fileName: defaultFileName,
                 description: 'sqljob Notebook Configuration',
                 devMode: false,
-                showLayout: s.showLayout,
+                showLayout: false,
                 includeFiles: false,
                 encryptGist: false,
                 gistPassphrase: ''
@@ -246,6 +246,24 @@ ${configScriptTag}${embeddedScripts}</head>
 
         const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' })
         FileHandler.downloadFile(blob, fileName)
+    },
+
+    async copyExportJson() {
+        const { exportModal, buildExportConfig } = get()
+        try {
+            const config = await buildExportConfig({
+                devMode: exportModal.devMode,
+                showLayout: exportModal.showLayout,
+                includeFileData: !!exportModal.includeFiles,
+            })
+            const json = JSON.stringify(config, null, 2)
+            await navigator.clipboard.writeText(json)
+            return true
+        } catch (error: any) {
+            console.error('Erreur copie JSON:', error)
+            get().setStatus('Erreur: ' + error.message, 'error')
+            return false
+        }
     },
 
     cancelExport() {

@@ -93,7 +93,7 @@ import { FileHandler } from './FileHandler'
                 if (c.type === 'pdfme' && typeof c.json === 'object' && c.json !== null) {
                     c.json = JSON.stringify(c.json, null, 2);
                 }
-                return c;
+return c;
             }
 
             /**
@@ -571,12 +571,18 @@ import { FileHandler } from './FileHandler'
             static _buildQueriesForClean(cell) {
                 if (Array.isArray(cell.queries) && cell.queries.length > 0) {
                     const schema = CELL_TYPE_SCHEMAS?.types[cell?.type];
-                    return cell.queries.map((q, i) => ({
-                        name: q.name || schema?.queryNames?.[i] || (i === 0 ? 'main' : i === 1 ? 'filename' : 'query' + i),
-                        query: q.sql || '',
-                        engine: q.engine || ConfigManager.getDefaultEngineForType(cell?.type, i),
-                        clientVisible: q.clientVisible === true
-                    }));
+                    return cell.queries.map((q, i) => {
+                        const entry: any = {
+                            name: q.name || schema?.queryNames?.[i] || (i === 0 ? 'main' : i === 1 ? 'filename' : 'query' + i),
+                            query: q.sql || '',
+                            engine: q.engine || ConfigManager.getDefaultEngineForType(cell?.type, i),
+                            clientVisible: q.clientVisible === true,
+                        };
+                        if (q.ast !== undefined) entry.ast = q.ast;
+                        if (q.degraded) entry.degraded = q.degraded;
+                        if (q.manualSql) entry.manualSql = q.manualSql;
+                        return entry;
+                    });
                 }
                 const arr = [];
                 const qMain = ConfigManager.getCellQuery(cell, 'main');
