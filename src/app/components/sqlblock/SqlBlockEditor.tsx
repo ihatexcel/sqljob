@@ -26,6 +26,8 @@ import {
     sqlToAstSmart,
     getEffectiveSql,
     generateMaterializeQuery,
+    buildDisplaySql,
+    stripMaterializePrefix,
     stepSql,
     quoteId,
     getAutoCteName,
@@ -73,11 +75,23 @@ import { SqlDataTable } from '../SqlDataTable'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
+/** Retourne queries[0] (avec migration depuis cell.json si nécessaire). */
 function getOrInitConfig(cell: any): SqlBlockConfig {
-    if (!cell.json) {
-        cell.json = createDefaultSqlBlockConfig(cell.json?.ast?.source || '')
+    if (!cell.queries?.length) {
+        cell.queries = [{ name: 'main', sql: '', engine: 'sql', clientVisible: false }]
     }
-    return cell.json
+    const q = cell.queries[0]
+    // Migration depuis cell.json (anciens sqlBlock)
+    if (cell.json?.ast && !q.ast) {
+        q.ast = cell.json.ast
+        q.degraded = cell.json.degraded ?? false
+        q.manualSql = cell.json.manualSql ?? null
+        delete cell.json
+    }
+    if (!q.ast) q.ast = createDefaultSqlBlockConfig().ast
+    if (q.degraded === undefined) q.degraded = false
+    if (q.manualSql === undefined) q.manualSql = null
+    return q
 }
 
 function commitAstUpdate(cell: any, newAst: Partial<SqlBlockAst>, forceUpdate: () => void) {
@@ -85,16 +99,11 @@ function commitAstUpdate(cell: any, newAst: Partial<SqlBlockAst>, forceUpdate: (
     cfg.ast = { ...cfg.ast, ...newAst }
     cfg.degraded = false
     cfg.manualSql = null
-    const sql = astToSql(cfg.ast)
-    if (!cell.queries) cell.queries = [{ name: 'main', sql, engine: 'sql', clientVisible: false }]
-    else cell.queries[0] = { ...cell.queries[0], sql }
+    const selectSql = astToSql(cfg.ast)
+    cfg.sql = buildDisplaySql(cell.name, selectSql, cfg.ast.materialize ?? 'select')
+    // Sync cell.materialize avec l'AST
+    if (newAst.materialize !== undefined) cell.materialize = newAst.materialize
     forceUpdate()
-}
-
-function stripMaterializePrefix(sql: string): string {
-    const m = sql.match(/^CREATE\s+OR\s+REPLACE\s+(?:VIEW|TABLE)\s+(?:"[^"]*"|\S+)\s+AS\s*\(\s*([\s\S]*?)\s*\)\s*;?\s*$/i)
-    if (m) return m[1].trim()
-    return sql.trim()
 }
 
 // ─── computeStepSchemas ───────────────────────────────────────────────────────
@@ -2231,8 +2240,7 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
             const cfg = getOrInitConfig(cell)
             cfg.ast = result.ast; cfg.degraded = false; cfg.manualSql = null
             const genSql = astToSql(result.ast)
-            if (!cell.queries) cell.queries = [{ name: 'main', sql: genSql, engine: 'sql', clientVisible: false }]
-            else cell.queries[0] = { ...cell.queries[0], sql: genSql }
+            cfg.sql = buildDisplaySql(cell.name, genSql, result.ast.materialize ?? 'select')
             forceUpdate()
         } else {
             setPendingDegradedSql(newSql)
@@ -2243,8 +2251,7 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
         if (!pendingDegradedSql) return
         const cfg = getOrInitConfig(cell)
         cfg.degraded = true; cfg.manualSql = pendingDegradedSql
-        if (!cell.queries) cell.queries = [{ name: 'main', sql: pendingDegradedSql, engine: 'sql', clientVisible: false }]
-        else cell.queries[0] = { ...cell.queries[0], sql: pendingDegradedSql }
+        cfg.sql = buildDisplaySql(cell.name, pendingDegradedSql, cfg.ast?.materialize ?? 'select')
         setPendingDegradedSql(null); forceUpdate()
     }
 
@@ -2255,8 +2262,7 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
         if (result.compatible && result.ast) {
             cfg.ast = result.ast; cfg.degraded = false; cfg.manualSql = null
             const genSql = astToSql(result.ast)
-            if (!cell.queries) cell.queries = [{ name: 'main', sql: genSql, engine: 'sql', clientVisible: false }]
-            else cell.queries[0] = { ...cell.queries[0], sql: genSql }
+            cfg.sql = buildDisplaySql(cell.name, genSql, result.ast.materialize ?? 'select')
             forceUpdate()
         } else {
             alert(`Impossible de restaurer l'AST : ${result.error || 'SQL incompatible'}`)

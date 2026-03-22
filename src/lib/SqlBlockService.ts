@@ -103,6 +103,19 @@ export function generateMaterializeQuery(name: string, sql: string, materialize:
         : `CREATE OR REPLACE VIEW ${q} AS (\n${sql}\n)`;
 }
 
+/** Construit le SQL affiché dans l'éditeur : avec CREATE OR REPLACE pour VIEW/TABLE, SQL brut pour SELECT. */
+export function buildDisplaySql(name: string | null | undefined, selectSql: string, materialize: SqlBlockMaterialize): string {
+    if (!name?.trim() || materialize === 'select') return selectSql;
+    return generateMaterializeQuery(name, selectSql, materialize);
+}
+
+/** Retire le préfixe CREATE OR REPLACE VIEW/TABLE d'un SQL pour extraire le SELECT interne. */
+export function stripMaterializePrefix(sql: string): string {
+    const m = sql.match(/^CREATE\s+OR\s+REPLACE\s+(?:VIEW|TABLE)\s+(?:"[^"]*"|\S+)\s+AS\s*\(\s*([\s\S]*?)\s*\)\s*;?\s*$/i);
+    if (m) return m[1].trim();
+    return sql.trim();
+}
+
 export function stepSql(ast: SqlBlockAst, stepIndex: number): string {
     if (!ast.source) return '';
     if (stepIndex < 0 || !ast.steps?.length) return `SELECT * FROM ${quoteId(ast.source)}`;

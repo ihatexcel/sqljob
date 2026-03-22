@@ -11,6 +11,7 @@ import { CDNManager } from '../../lib/CDNManager'
 import { SqlEditorWidget } from './SqlEditorWidget'
 import { SqlDataTable } from './SqlDataTable'
 import { Icon } from '../../lib/icons'
+import { astToSql, buildDisplaySql, stripMaterializePrefix } from '../../lib/SqlBlockService'
 import {
     Accordion, AccordionItem, AccordionTrigger, AccordionContent,
     Dialog, DialogContent, DialogHeader, DialogTitle,
@@ -384,7 +385,20 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
                     <label className="text-xs text-muted-foreground shrink-0">Résultat :</label>
                     <div className="flex rounded border border-border overflow-hidden text-xs">
                         {(['select', 'view', 'table'] as const).map(m => (
-                            <button key={m} onClick={() => { cell.materialize = m; forceUpdate() }}
+                            <button key={m} onClick={() => {
+                                cell.materialize = m
+                                // Sync queries[0].sql avec le bon préfixe CREATE OR REPLACE
+                                const q = cell.queries?.[0]
+                                if (q) {
+                                    const currentSql = q.sql || ''
+                                    const selectSql = q.ast
+                                        ? (q.degraded && q.manualSql ? q.manualSql : astToSql(q.ast))
+                                        : stripMaterializePrefix(currentSql)
+                                    q.sql = buildDisplaySql(cell.name, selectSql, m)
+                                    if (q.ast) q.ast = { ...q.ast, materialize: m }
+                                }
+                                forceUpdate()
+                            }}
                                 className={`px-2 py-0.5 transition-colors ${(cell.materialize ?? 'select') === m ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}
                                 title={m === 'select' ? 'SELECT simple (sans créer de vue ni de table)' : m === 'view' ? 'Créer une Vue DuckDB (lazy)' : 'Créer une TABLE matérialisée'}>
                                 {m.toUpperCase()}

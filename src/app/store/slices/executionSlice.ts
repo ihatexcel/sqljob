@@ -281,6 +281,14 @@ export const createExecutionSlice = (set: any, get: any) => ({
     },
 
     async executeSqlRecursiveParseCell(cell) {
+        // Si queries[0].sql est vide mais qu'un AST est disponible, reconstituer le SQL
+        const q0 = cell.queries?.[0]
+        if (q0?.ast && !q0.sql?.trim()) {
+            const { astToSql, buildDisplaySql } = await import('../../../lib/SqlBlockService')
+            const selectSql = q0.degraded && q0.manualSql ? q0.manualSql : astToSql(q0.ast)
+            q0.sql = buildDisplaySql(cell.name, selectSql, cell.materialize ?? q0.ast.materialize ?? 'select')
+        }
+
         if (!ConfigManager.getCellQuery(cell, 0)?.trim()) {
             console.warn('❌ cell.query est vide ou undefined!')
             return
@@ -425,16 +433,23 @@ export const createExecutionSlice = (set: any, get: any) => ({
 
                 if (materialize !== 'select' && cell.name?.trim()) {
                     // Créer une VIEW ou TABLE DuckDB depuis le SQL
-                    const { quoteId } = await import('../../../lib/SqlBlockService')
-                    const q = quoteId(cell.name)
+                    const { quoteId, stripMaterializePrefix } = await import('../../../lib/SqlBlockService')
+                    const qid = quoteId(cell.name)
                     const oppositeType = materialize === 'view' ? 'TABLE' : 'VIEW'
-                    try { await DuckDBManager.executeQuery(`DROP ${oppositeType} IF EXISTS ${q}`) } catch (_) { /* ok */ }
-                    const createSql = materialize === 'table'
-                        ? `CREATE OR REPLACE TABLE ${q} AS (\n${finalQuery}\n)`
-                        : `CREATE OR REPLACE VIEW ${q} AS (\n${finalQuery}\n)`
+                    try { await DuckDBManager.executeQuery(`DROP ${oppositeType} IF EXISTS ${qid}`) } catch (_) { /* ok */ }
+                    // Si finalQuery est déjà un DDL (CREATE OR REPLACE), l'utiliser directement
+                    const isDdl = /^CREATE\s+OR\s+REPLACE\s+/i.test(finalQuery.trim())
+                    let createSql: string
+                    if (isDdl) {
+                        createSql = finalQuery
+                    } else {
+                        createSql = materialize === 'table'
+                            ? `CREATE OR REPLACE TABLE ${qid} AS (\n${finalQuery}\n)`
+                            : `CREATE OR REPLACE VIEW ${qid} AS (\n${finalQuery}\n)`
+                    }
                     await DuckDBManager.executeQuery(createSql)
                     const { rows: results, schemaTypes } = await DuckDBManager.executeQueryWithSchema(
-                        `SELECT * FROM ${q} LIMIT 1000`
+                        `SELECT * FROM ${qid} LIMIT 1000`
                     )
                     cell._results = results
                     cell._schemaTypes = schemaTypes || {}
