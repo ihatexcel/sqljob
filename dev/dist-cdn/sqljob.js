@@ -134616,16 +134616,6 @@ function ChartConfigEditor({ chartConfig: At, availableColumns: yt, availableCol
                   onChange: (Zt) => Zt && Mt(zt.role, Jt, "column", Zt)
                 }
               ),
-              zt.hasLabel && /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "input",
-                {
-                  type: "text",
-                  value: Kt.label ?? "",
-                  placeholder: "Libellé",
-                  onChange: (Zt) => Mt(zt.role, Jt, "label", Zt.target.value),
-                  className: "h-6 text-xs px-1.5 border border-border rounded bg-background min-w-0 w-24"
-                }
-              ),
               /* @__PURE__ */ jsxRuntimeExports.jsx(
                 "button",
                 {
@@ -135638,9 +135628,13 @@ function FillNullStepUI({ step: At, availableCols: yt, onChange: xt }) {
   ] });
 }
 const AGG_FNS = ["count", "count_distinct", "sum", "avg", "min", "max", "median", "stddev", "string_agg", "list"];
+function autoAlias(At, yt) {
+  return `${At}_${yt === "*" ? "all" : yt}`;
+}
 function GroupByStepUI({ step: At, availableCols: yt, onChange: xt }) {
   function wt(St, Et) {
-    xt({ ...At, aggregations: At.aggregations.map((kt, Tt) => Tt === St ? { ...kt, ...Et } : kt) });
+    const Tt = { ...At.aggregations[St], ...Et };
+    ("fn" in Et || "column" in Et) && (Tt.alias = autoAlias(Tt.fn, Tt.column)), xt({ ...At, aggregations: At.aggregations.map(($t, Lt) => Lt === St ? Tt : $t) });
   }
   const Ct = (St) => {
     const Et = new Set(At.groupCols);
@@ -135676,7 +135670,10 @@ function GroupByStepUI({ step: At, availableCols: yt, onChange: xt }) {
         /* @__PURE__ */ jsxRuntimeExports.jsx(MoveBtns, { onUp: Et > 0 ? () => xt({ ...At, aggregations: moveArr(At.aggregations, Et, -1) }) : void 0, onDown: Et < At.aggregations.length - 1 ? () => xt({ ...At, aggregations: moveArr(At.aggregations, Et, 1) }) : void 0 }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(RemoveBtn, { onClick: () => xt({ ...At, aggregations: At.aggregations.filter((kt, Tt) => Tt !== Et) }) })
       ] }, Et)),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(AddRowBtn, { onClick: () => xt({ ...At, aggregations: [...At.aggregations, { column: yt[0] ?? "*", fn: "count", alias: "count" }] }), label: "+ Agrégation" })
+      /* @__PURE__ */ jsxRuntimeExports.jsx(AddRowBtn, { onClick: () => {
+        const St = yt[0] ?? "*";
+        xt({ ...At, aggregations: [...At.aggregations, { column: St, fn: "count", alias: autoAlias("count", St) }] });
+      }, label: "+ Agrégation" })
     ] })
   ] });
 }
@@ -136048,7 +136045,7 @@ function useStepInputSchemas(At, yt) {
   const [xt, wt] = reactExports.useState({}), Ct = reactExports.useRef(/* @__PURE__ */ new Map()), St = reactExports.useRef(At);
   St.current = At;
   const Et = reactExports.useCallback(async (Tt) => {
-    const $t = St.current;
+    const $t = { ...St.current, chartConfig: void 0 };
     if (!$t.source) return;
     const Lt = JSON.stringify({ src: $t.source, steps: $t.steps.slice(0, Tt) }), It = Ct.current.get(Lt);
     if (It) {
@@ -136071,14 +136068,14 @@ function useStepInputSchemas(At, yt) {
         }
       }
       if (!Rt) {
-        const jt = { ...$t, chartConfig: void 0 }, Nt = Tt === 0 ? `SELECT * FROM ${quoteId($t.source)}` : stepSql(jt, Tt - 1);
-        if (!Nt) return;
-        const Mt = Nt.trimEnd().replace(/;+\s*$/, ""), Bt = /\bLIMIT\s+\d/i.test(Mt.replace(/\([\s\S]*?\)/g, "")) ? Mt : `${Mt}
-LIMIT 0`, zt = DuckDBManager.getConnection();
-        if (!zt) return;
-        const Yt = await zt.query(Bt);
-        for (const Kt of Yt.schema.fields)
-          Rt || (Rt = {}), Rt[Kt.name] = String(Kt.type);
+        const jt = Tt === 0 ? `SELECT * FROM ${quoteId($t.source)}` : stepSql($t, Tt - 1);
+        if (!jt) return;
+        const Nt = jt.trimEnd().replace(/;+\s*$/, ""), Ot = /\bLIMIT\s+\d/i.test(Nt.replace(/\([\s\S]*?\)/g, "")) ? Nt : `${Nt}
+LIMIT 0`, Bt = DuckDBManager.getConnection();
+        if (!Bt) return;
+        const zt = await Bt.query(Ot);
+        for (const Yt of zt.schema.fields)
+          Rt || (Rt = {}), Rt[Yt.name] = String(Yt.type);
       }
       if (!Rt) return;
       const Dt = { columns: Object.keys(Rt), colTypes: Rt };
@@ -136094,6 +136091,12 @@ LIMIT 0`, zt = DuckDBManager.getConnection();
       } catch {
         Ct.current.delete(Lt);
       }
+    wt((Lt) => {
+      const It = {};
+      for (const [Rt, Dt] of Object.entries(Lt))
+        Number(Rt) < Tt && (It[Number(Rt)] = Dt);
+      return It;
+    });
   }, []);
   return { dynamicSchemas: xt, fetchSchemaForStep: Et, invalidateFrom: kt };
 }
@@ -136641,8 +136644,8 @@ function SqlBlockEditor({ cell: At, path: yt, cellIndex: xt, onExitUiMode: wt, f
     const Cl = [...Lt.steps, Ps];
     commitAstUpdate(At, { steps: Cl }, St);
   }, [At, Lt.steps, St]), fn = reactExports.useCallback((Ps) => {
-    Nt(0, Lt), commitAstUpdate(At, { chartConfig: Ps ?? void 0 }, St);
-  }, [At, Lt, St, Nt]), Mn = reactExports.useCallback((Ps) => async (Cl, Gu, wl) => {
+    Nt(0, Lt), commitAstUpdate(At, { chartConfig: Ps ?? void 0 }, St), Ps && Tt(yt, xt);
+  }, [At, Lt, St, Nt, Tt, yt, xt]), Mn = reactExports.useCallback((Ps) => async (Cl, Gu, wl) => {
     if (!Lt.source || !Cl) return { values: [], hasMore: !1 };
     try {
       const Al = Ps === 0 ? `SELECT * FROM ${quoteId(Lt.source)}` : stepSql(Lt, Ps - 1);
