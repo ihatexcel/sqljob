@@ -134480,37 +134480,54 @@ function defaultConfigForType(At, yt) {
   }
   return { chartType: At, columns: wt };
 }
+const SELECT_CLASS = "h-6 text-xs px-1.5 border border-border rounded bg-background min-w-[120px] max-w-[160px] cursor-pointer", SELECT_TYPE_CLASS = "h-6 text-xs px-1.5 border border-border rounded bg-background min-w-[140px] cursor-pointer";
 function ColSelect$1({ value: At, availableColumns: yt, optional: xt, onChange: wt }) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs(Select, { value: At || NONE_VALUE, onValueChange: (Ct) => wt(Ct === NONE_VALUE ? null : Ct), children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx(SelectTrigger, { className: "h-6 text-xs min-w-[120px] max-w-[160px]", children: /* @__PURE__ */ jsxRuntimeExports.jsx(SelectValue, { placeholder: "-- colonne --" }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs(SelectContent, { children: [
-      xt && /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: NONE_VALUE, children: /* @__PURE__ */ jsxRuntimeExports.jsx("em", { className: "text-muted-foreground", children: "-- aucune --" }) }),
-      yt.map((Ct) => /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: Ct, children: Ct }, Ct))
-    ] })
-  ] });
+  const Ct = (St) => {
+    const Et = St.target.value;
+    console.log("[ChartConfigEditor] ColSelect change →", Et), wt(Et === NONE_VALUE ? null : Et);
+  };
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    "select",
+    {
+      value: At || NONE_VALUE,
+      onChange: Ct,
+      className: SELECT_CLASS,
+      children: [
+        xt && /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: NONE_VALUE, children: "-- aucune --" }),
+        yt.map((St) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: St, children: St }, St))
+      ]
+    }
+  );
 }
 function ChartConfigEditor({ chartConfig: At, availableColumns: yt, onChange: xt }) {
-  const [wt, Ct] = reactExports.useState(!!At), St = !!At, Et = (At == null ? void 0 : At.chartType) ?? "bar", kt = (At == null ? void 0 : At.columns) ?? [], Tt = CHART_TYPE_CONFIGS[Et] ?? CHART_TYPE_CONFIGS.bar, $t = reactExports.useCallback(() => {
+  const [wt, Ct] = reactExports.useState(!!At), St = !!At, Et = (At == null ? void 0 : At.chartType) ?? "bar", kt = (At == null ? void 0 : At.columns) ?? [], Tt = CHART_TYPE_CONFIGS[Et] ?? CHART_TYPE_CONFIGS.bar;
+  reactExports.useEffect(() => (console.log("[ChartConfigEditor] MOUNTED"), () => console.log("[ChartConfigEditor] UNMOUNTED")), []), console.log("[ChartConfigEditor] render", { isActive: St, open: wt, chartType: Et, columnsCount: kt.length, availableColumns: yt });
+  const $t = reactExports.useCallback(() => {
     if (St)
-      xt(null), Ct(!1);
+      console.log("[ChartConfigEditor] toggle OFF → onChange(null)"), xt(null), Ct(!1);
     else {
       const Nt = defaultConfigForType("bar", yt);
-      xt(Nt), Ct(!0);
+      console.log("[ChartConfigEditor] toggle ON → onChange", Nt), xt(Nt), Ct(!0);
     }
   }, [St, yt, xt]), Lt = reactExports.useCallback((Nt) => {
+    console.log("[ChartConfigEditor] type change →", Nt);
     const Mt = defaultConfigForType(Nt, yt);
     xt(Mt);
   }, [yt, xt]), It = reactExports.useCallback((Nt, Mt) => {
-    xt({ chartType: Et, columns: replaceRoleEntries(kt, Nt, Mt ? [{ column: Mt, role: Nt }] : []) });
+    console.log("[ChartConfigEditor] single role change", Nt, "→", Mt), xt({ chartType: Et, columns: replaceRoleEntries(kt, Nt, Mt ? [{ column: Mt, role: Nt }] : []) });
   }, [Et, kt, xt]), Rt = reactExports.useCallback((Nt, Mt, Ot, Bt) => {
+    console.log("[ChartConfigEditor] multi role change", Nt, Mt, Ot, "→", Bt);
     const Ht = getEntriesForRole(kt, Nt).map(
       (qt, Kt) => Kt === Mt ? { ...qt, [Ot]: Bt } : qt
     );
     xt({ chartType: Et, columns: replaceRoleEntries(kt, Nt, Ht) });
   }, [Et, kt, xt]), Dt = reactExports.useCallback((Nt) => {
-    const Mt = yt[0] ?? "", Ot = [...getEntriesForRole(kt, Nt), { column: Mt, role: Nt, label: Mt }];
+    const Mt = yt[0] ?? "";
+    console.log("[ChartConfigEditor] multi role add", Nt, "→", Mt);
+    const Ot = [...getEntriesForRole(kt, Nt), { column: Mt, role: Nt, label: Mt }];
     xt({ chartType: Et, columns: replaceRoleEntries(kt, Nt, Ot) });
   }, [Et, kt, yt, xt]), jt = reactExports.useCallback((Nt, Mt) => {
+    console.log("[ChartConfigEditor] multi role remove", Nt, Mt);
     const Ot = getEntriesForRole(kt, Nt).filter((Bt, Ht) => Ht !== Mt);
     xt({ chartType: Et, columns: replaceRoleEntries(kt, Nt, Ot) });
   }, [Et, kt, xt]);
@@ -134538,13 +134555,15 @@ function ChartConfigEditor({ chartConfig: At, availableColumns: yt, onChange: xt
     wt && St && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2 px-3 pb-3 border-t border-border", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 mt-2", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs text-muted-foreground w-28 shrink-0", children: "Type" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(Select, { value: Et, onValueChange: Lt, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(SelectTrigger, { className: "h-6 text-xs min-w-[140px]", children: /* @__PURE__ */ jsxRuntimeExports.jsx(SelectValue, {}) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(SelectContent, { children: Object.entries(CHART_TYPE_CONFIGS).map(([Nt, Mt]) => /* @__PURE__ */ jsxRuntimeExports.jsxs(SelectItem, { value: Nt, children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "iconify mr-1", "data-icon": Mt.icon }),
-            Mt.label
-          ] }, Nt)) })
-        ] })
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "select",
+          {
+            value: Et,
+            onChange: (Nt) => Lt(Nt.target.value),
+            className: SELECT_TYPE_CLASS,
+            children: Object.entries(CHART_TYPE_CONFIGS).map(([Nt, Mt]) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: Nt, children: Mt.label }, Nt))
+          }
+        )
       ] }),
       Tt.roles.map((Nt) => {
         if (Nt.multiple) {
