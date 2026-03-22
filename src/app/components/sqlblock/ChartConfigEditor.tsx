@@ -175,9 +175,12 @@ export interface ChartConfigEditorProps {
     onChange: (cfg: ChartConfig | null) => void
     /** Appelé au montage pour déclencher le fetch du schéma dynamique (colonnes réelles après la dernière étape). */
     onMount?: () => void
+    /** Aperçu graphique dans le panel dtSection */
+    eyeOpen?: boolean
+    onEyeToggle?: () => void
 }
 
-export function ChartConfigEditor({ chartConfig, availableColumns, availableColTypes, onChange, onMount }: ChartConfigEditorProps) {
+export function ChartConfigEditor({ chartConfig, availableColumns, availableColTypes, onChange, onMount, eyeOpen, onEyeToggle }: ChartConfigEditorProps) {
     const [open, setOpen] = useState(!!chartConfig)
 
     const isActive = !!chartConfig
@@ -259,6 +262,17 @@ export function ChartConfigEditor({ chartConfig, availableColumns, availableColT
                     <span className={`inline-block h-3 w-3 rounded-full bg-white shadow transition-transform ${isActive ? 'translate-x-3.5' : 'translate-x-0.5'}`} />
                 </button>
                 <span className="text-xs text-muted-foreground ml-1">{isActive ? 'Activé' : 'Désactivé'}</span>
+                {/* Œil — aperçu graphique dans le panel gauche */}
+                {isActive && onEyeToggle && (
+                    <button
+                        type="button"
+                        onClick={e => { e.stopPropagation(); onEyeToggle() }}
+                        title={eyeOpen ? 'Fermer l\'aperçu graphique' : 'Aperçu graphique'}
+                        className={`ml-1 p-0.5 rounded transition-colors ${eyeOpen ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+                    >
+                        <span className="iconify w-3.5 h-3.5" data-icon={eyeOpen ? 'material-symbols-light:visibility' : 'material-symbols-light:visibility-outline'} />
+                    </button>
+                )}
                 <span className="ml-auto text-muted-foreground text-xs">{open ? '▾' : '▸'}</span>
             </div>
 

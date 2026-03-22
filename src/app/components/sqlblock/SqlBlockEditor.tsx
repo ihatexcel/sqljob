@@ -11,7 +11,7 @@
  * Aperçu par étape (œil) : table DuckDB temporaire _sb_<cellId>_s<i> LIMIT 10.
  *   → Seules les étapes dont les prédécesseurs ont changé sont recalculées.
  */
-import { useState, useCallback, useRef, useEffect } from 'react'
+import { useState, useCallback, useRef, useEffect, useMemo } from 'react'
 import { createPortal } from 'react-dom'
 import { SqlMonacoEditor } from '@sqlrooms/sql-editor'
 import { useShallow } from 'zustand/react/shallow'
@@ -20,6 +20,7 @@ import {
 } from '@sqlrooms/ui'
 import { useNotebookStore } from '../../store/notebookStore'
 import { DuckDBManager } from '../../../lib/DuckDBManager'
+import { CDNManager } from '../../../lib/CDNManager'
 import {
     astToSql,
     sqlToAst,
@@ -2124,6 +2125,27 @@ function IncompatibleConfirmModal({ onConfirm, onCancel }: { onConfirm: () => vo
     )
 }
 
+// ─── ChartPreviewInEditor — aperçu ECharts/KPI dans le panel dtSection ────────
+
+function ChartPreviewInEditor({ cell }: { cell: any }) {
+    const { _rev } = useNotebookStore(useShallow(s => ({ _rev: s._rev })))
+    const chartRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        if (!chartRef.current || !cell._echartsOption) return
+        CDNManager.loadECharts?.().then(() => {
+            const echarts = (window as any).echarts
+            if (!echarts || !chartRef.current) return
+            let chart = echarts.getInstanceByDom(chartRef.current) || echarts.init(chartRef.current)
+            chart.clear()
+            chart.setOption(cell._echartsOption)
+        })
+    }, [_rev, cell._echartsOption])
+
+    if (cell._kpiHtml) return <div className="overflow-auto" dangerouslySetInnerHTML={{ __html: cell._kpiHtml }} />
+    return <div ref={chartRef} className="flex-1 min-h-0 min-h-[200px]" />
+}
+
 // ─── SqlBlockEditor (composant principal) ─────────────────────────────────────
 
 export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCell }: { cell: any; path: number[]; cellIndex: number; onExitUiMode?: () => void; fromSqlCell?: boolean }) {
@@ -2282,11 +2304,28 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
     const eyeData = eyeOpen !== null ? getEyeData(eyeOpen) : null
     const showingEye = eyeOpen !== null
     const hasResults = cell._results && Array.isArray(cell._results) && cell._results.length > 0
+    const hasChart = !!(cell._echartsOption || cell._kpiHtml)
+
+    // Aperçu graphique dans dtSection (remplace le datatable)
+    const [chartEyeOpen, setChartEyeOpen] = useState(false)
 
     // cellule factice pour SqlDataTable quand on affiche un aperçu step
     const displayCell = showingEye && eyeData
         ? { _id: `eye_${eyeOpen}_${cell._id}`, _results: eyeData.rows, _schemaTypes: eyeData.schemaTypes }
         : cell
+
+    // Quand le graphique disparaît, ferme l'aperçu chart
+    useEffect(() => { if (chartEyeOpen && !hasChart) setChartEyeOpen(false) }, [hasChart]) // eslint-disable-line
+
+    // Re-fetch le schéma de sortie de la dernière étape quand les steps changent
+    // (pour mettre à jour les colonnes disponibles dans ChartConfigEditor)
+    const stepsKey = useMemo(() => JSON.stringify(ast.steps), [ast.steps])
+    useEffect(() => {
+        if (!fromSqlCell || (ast.materialize ?? 'select') !== 'select') return
+        const n = ast.steps.length
+        invalidateFrom(n, ast)
+        fetchSchemaForStep(n)
+    }, [stepsKey]) // eslint-disable-line
 
     // ─── Layout responsive (ResizeObserver) ─────────────────────────────
     // Breakpoints :
@@ -2367,14 +2406,24 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
                 // ── Sections réutilisables ──────────────────────────────
                 const dtSection = (
                     <>
-                        {showingEye && (
+                        {chartEyeOpen && (
+                            <div className="flex items-center gap-1.5 shrink-0">
+                                <span className="text-xs text-primary font-medium">Aperçu graphique</span>
+                                <button onClick={() => setChartEyeOpen(false)} className="ml-auto text-xs text-muted-foreground hover:text-foreground underline">✕ fermer</button>
+                            </div>
+                        )}
+                        {!chartEyeOpen && showingEye && (
                             <div className="flex items-center gap-1.5 shrink-0">
                                 <span className="text-xs text-primary font-medium">Aperçu étape {eyeOpen! + 1}</span>
                                 {eyeLoading && <svg viewBox="0 0 24 24" className="w-3 h-3 animate-spin text-muted-foreground" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>}
                                 <button onClick={() => toggleEye(eyeOpen!)} className="ml-auto text-xs text-muted-foreground hover:text-foreground underline">✕ fermer</button>
                             </div>
                         )}
-                        {showingEye ? (
+                        {chartEyeOpen ? (
+                            hasChart
+                                ? <ChartPreviewInEditor cell={cell} />
+                                : <div className="flex items-center justify-center h-16 text-xs text-muted-foreground italic border border-dashed border-border rounded">Exécutez la cellule pour voir le graphique</div>
+                        ) : showingEye ? (
                             eyeData && eyeData.rows.length > 0
                                 ? <SqlDataTable cell={displayCell} />
                                 : eyeLoading
@@ -2385,7 +2434,7 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
                         ) : (
                             <div className="flex items-center justify-center h-16 text-xs text-muted-foreground italic border border-dashed border-border rounded">Aucun résultat — exécutez la cellule</div>
                         )}
-                        {cell._status === 'error' && cell._resultInfo && !showingEye && (
+                        {cell._status === 'error' && cell._resultInfo && !showingEye && !chartEyeOpen && (
                             <div className="p-2 rounded bg-destructive/10 text-destructive text-xs shrink-0">{cell._resultInfo}</div>
                         )}
                     </>
@@ -2441,6 +2490,8 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
                                 availableColTypes={newStepInputSchema.colTypes}
                                 onMount={() => fetchSchemaForStep(n)}
                                 onChange={handleChartConfigChange}
+                                eyeOpen={chartEyeOpen}
+                                onEyeToggle={() => { setChartEyeOpen(o => !o) }}
                             />
                         )}
                     </>
