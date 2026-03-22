@@ -78,7 +78,8 @@ export function SqlEditorWidget({
     function enterUiMode() {
         const fullSql = ConfigManager.getCellQuery(cell, queryName) || ''
         const stripped = stripMaterializePrefix(fullSql)
-        const result = sqlToAstSmart(stripped)
+        const mat = (cell.materialize && cell.materialize !== 'select') ? cell.materialize : 'view'
+        const result = sqlToAstSmart(stripped, mat)
         if (!cell.queries?.length) cell.queries = [{ name: 'main', sql: fullSql, engine: 'sql', clientVisible: false }]
         const q = cell.queries[0]
         if (result.compatible && result.ast) {
