@@ -3,12 +3,12 @@
  * ChartConfigEditor — Éditeur de configuration de visualisation graphique.
  * Placé après les étapes SQL dans SqlBlockEditor (mode SELECT uniquement).
  * Bidirectionnel : ChartConfig ↔ UI, synchronisé avec l'AST via onChange.
+ *
+ * NOTE: Uses native <select> (not Radix UI Select) to avoid React portal
+ * removeChild conflicts when the component unmounts or hides.
  */
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import type { ChartConfig, ChartColumnRole } from '../../../lib/SqlBlockTypes'
-import {
-    Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from '@sqlrooms/ui'
 
 // ─── Config des types de graphique ────────────────────────────────────────────
 
@@ -134,7 +134,12 @@ function defaultConfigForType(chartType: string, availableColumns: string[]): Ch
     return { chartType, columns }
 }
 
-// ─── Sous-composants ──────────────────────────────────────────────────────────
+// ─── Styles communs pour native <select> ──────────────────────────────────────
+
+const SELECT_CLASS = 'h-6 text-xs px-1.5 border border-border rounded bg-background min-w-[120px] max-w-[160px] cursor-pointer'
+const SELECT_TYPE_CLASS = 'h-6 text-xs px-1.5 border border-border rounded bg-background min-w-[140px] cursor-pointer'
+
+// ─── Sous-composant ColSelect (native <select>) ────────────────────────────────
 
 function ColSelect({ value, availableColumns, optional, onChange }: {
     value: string
@@ -142,18 +147,22 @@ function ColSelect({ value, availableColumns, optional, onChange }: {
     optional: boolean
     onChange: (col: string | null) => void
 }) {
+    const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const v = e.target.value
+        console.log('[ChartConfigEditor] ColSelect change →', v)
+        onChange(v === NONE_VALUE ? null : v)
+    }
     return (
-        <Select value={value || NONE_VALUE} onValueChange={v => onChange(v === NONE_VALUE ? null : v)}>
-            <SelectTrigger className="h-6 text-xs min-w-[120px] max-w-[160px]">
-                <SelectValue placeholder="-- colonne --" />
-            </SelectTrigger>
-            <SelectContent>
-                {optional && <SelectItem value={NONE_VALUE}><em className="text-muted-foreground">-- aucune --</em></SelectItem>}
-                {availableColumns.map(col => (
-                    <SelectItem key={col} value={col}>{col}</SelectItem>
-                ))}
-            </SelectContent>
-        </Select>
+        <select
+            value={value || NONE_VALUE}
+            onChange={handleChange}
+            className={SELECT_CLASS}
+        >
+            {optional && <option value={NONE_VALUE}>-- aucune --</option>}
+            {availableColumns.map(col => (
+                <option key={col} value={col}>{col}</option>
+            ))}
+        </select>
     )
 }
 
@@ -173,28 +182,42 @@ export function ChartConfigEditor({ chartConfig, availableColumns, onChange }: C
     const columns: ChartColumnRole[] = chartConfig?.columns ?? []
     const typeConfig = CHART_TYPE_CONFIGS[chartType] ?? CHART_TYPE_CONFIGS.bar
 
+    // Debug lifecycle
+    useEffect(() => {
+        console.log('[ChartConfigEditor] MOUNTED')
+        return () => console.log('[ChartConfigEditor] UNMOUNTED')
+    }, [])
+
+    // Debug render
+    console.log('[ChartConfigEditor] render', { isActive, open, chartType, columnsCount: columns.length, availableColumns })
+
     const handleToggle = useCallback(() => {
         if (isActive) {
+            console.log('[ChartConfigEditor] toggle OFF → onChange(null)')
             onChange(null)
             setOpen(false)
         } else {
             const newCfg = defaultConfigForType('bar', availableColumns)
+            console.log('[ChartConfigEditor] toggle ON → onChange', newCfg)
             onChange(newCfg)
             setOpen(true)
         }
     }, [isActive, availableColumns, onChange])
 
     const handleTypeChange = useCallback((newType: string) => {
+        console.log('[ChartConfigEditor] type change →', newType)
         const newCfg = defaultConfigForType(newType, availableColumns)
         onChange(newCfg)
     }, [availableColumns, onChange])
 
     const handleSingleRoleChange = useCallback((role: string, col: string | null) => {
+        console.log('[ChartConfigEditor] single role change', role, '→', col)
         const entries = col ? [{ column: col, role }] : []
         onChange({ chartType, columns: replaceRoleEntries(columns, role, entries) })
     }, [chartType, columns, onChange])
 
     const handleMultiRoleChange = useCallback((role: string, idx: number, field: 'column' | 'label', value: string) => {
+        console.log('[ChartConfigEditor] multi role change', role, idx, field, '→', value)
         const entries = getEntriesForRole(columns, role).map((e, i) =>
             i === idx ? { ...e, [field]: value } : e
         )
@@ -203,11 +226,13 @@ export function ChartConfigEditor({ chartConfig, availableColumns, onChange }: C
 
     const handleMultiRoleAdd = useCallback((role: string) => {
         const col = availableColumns[0] ?? ''
+        console.log('[ChartConfigEditor] multi role add', role, '→', col)
         const entries = [...getEntriesForRole(columns, role), { column: col, role, label: col }]
         onChange({ chartType, columns: replaceRoleEntries(columns, role, entries) })
     }, [chartType, columns, availableColumns, onChange])
 
     const handleMultiRoleRemove = useCallback((role: string, idx: number) => {
+        console.log('[ChartConfigEditor] multi role remove', role, idx)
         const entries = getEntriesForRole(columns, role).filter((_, i) => i !== idx)
         onChange({ chartType, columns: replaceRoleEntries(columns, role, entries) })
     }, [chartType, columns, onChange])
@@ -236,22 +261,18 @@ export function ChartConfigEditor({ chartConfig, availableColumns, onChange }: C
             {/* Body — affiché uniquement si ouvert ET actif */}
             {open && isActive && (
                 <div className="flex flex-col gap-2 px-3 pb-3 border-t border-border">
-                    {/* Type de graphique */}
+                    {/* Type de graphique — native <select> */}
                     <div className="flex items-center gap-2 mt-2">
                         <span className="text-xs text-muted-foreground w-28 shrink-0">Type</span>
-                        <Select value={chartType} onValueChange={handleTypeChange}>
-                            <SelectTrigger className="h-6 text-xs min-w-[140px]">
-                                <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {Object.entries(CHART_TYPE_CONFIGS).map(([key, cfg]) => (
-                                    <SelectItem key={key} value={key}>
-                                        <span className="iconify mr-1" data-icon={cfg.icon} />
-                                        {cfg.label}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+                        <select
+                            value={chartType}
+                            onChange={e => handleTypeChange(e.target.value)}
+                            className={SELECT_TYPE_CLASS}
+                        >
+                            {Object.entries(CHART_TYPE_CONFIGS).map(([key, cfg]) => (
+                                <option key={key} value={key}>{cfg.label}</option>
+                            ))}
+                        </select>
                     </div>
 
                     {/* Slots de rôles */}
