@@ -136841,7 +136841,7 @@ function SqlTableBody({ cell: At, path: yt, cellIndex: xt, showTextResult: wt = 
         Mt
       )) })
     ] }),
-    Ct && (Et == null ? void 0 : Et(At)) && /* @__PURE__ */ jsxRuntimeExports.jsx(
+    (Et == null ? void 0 : Et(At)) && /* @__PURE__ */ jsxRuntimeExports.jsx(
       SqlEditorWidget,
       {
         cell: At,
@@ -136874,7 +136874,7 @@ function IframeBody({ cell: At, path: yt, cellIndex: xt }) {
   }, [At._htmlContent, Et]);
   const Tt = Ct(At);
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: Tt ? "flex-1 min-h-0 flex flex-col" : "", children: [
-    wt && (St == null ? void 0 : St(At)) && /* @__PURE__ */ jsxRuntimeExports.jsx(
+    (St == null ? void 0 : St(At)) && /* @__PURE__ */ jsxRuntimeExports.jsx(
       SqlEditorWidget,
       {
         cell: At,
@@ -136909,14 +136909,14 @@ function SqlStatBody({ cell: At, path: yt, cellIndex: xt }) {
       onExitUiMode: () => Et(!1)
     }
   ) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-    wt && (Ct == null ? void 0 : Ct(At)) && /* @__PURE__ */ jsxRuntimeExports.jsx(
+    (Ct == null ? void 0 : Ct(At)) && /* @__PURE__ */ jsxRuntimeExports.jsx(
       SqlEditorWidget,
       {
         cell: At,
         path: yt,
         cellIndex: xt,
         placeholder: "SELECT 42 AS value, 'Titre' AS title, 'info' AS type",
-        onEnterUiMode: () => Et(!0)
+        onEnterUiMode: wt ? () => Et(!0) : null
       }
     ),
     At._results && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center py-1", children: [
@@ -136946,7 +136946,7 @@ function EChartBody({ cell: At, path: yt, cellIndex: xt }) {
   }, [Et, At._echartsOption]);
   const Tt = St(At);
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: Tt ? "flex-1 min-h-0 flex flex-col" : "", children: [
-    wt && (Ct == null ? void 0 : Ct(At)) && /* @__PURE__ */ jsxRuntimeExports.jsx(
+    (Ct == null ? void 0 : Ct(At)) && /* @__PURE__ */ jsxRuntimeExports.jsx(
       SqlEditorWidget,
       {
         cell: At,
