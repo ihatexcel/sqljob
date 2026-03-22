@@ -392,21 +392,32 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
         if (vizMode === 'chart' && !hasChart) setVizMode('table')
     }, [hasChart]) // eslint-disable-line react-hooks/exhaustive-deps
 
-    // Mode UI visuel (sqlBlock) pour les cellules sqlRecursiveParse
-    if (devMode && cell.type === 'sqlRecursiveParse' && sqlBlockUiMode) {
-        return (
-            <SqlBlockEditor
-                cell={cell}
-                path={path}
-                cellIndex={cellIndex}
-                fromSqlCell={true}
-                onExitUiMode={() => setSqlBlockUiMode(false)}
-            />
-        )
-    }
+    // Mode UI visuel (sqlBlock) pour les cellules sqlRecursiveParse.
+    // IMPORTANT: on utilise display:none au lieu de démontage conditionnel pour éviter
+    // le bug React "removeChild not a child" : quand SqlBlockEditor est démonté brutalement,
+    // les portals Radix (Select, StepConfigModal) ont déjà été supprimés de document.body
+    // par leurs propres handlers pointerdown, et React échoue à les removeChild une 2ème fois.
+    // En gardant SqlBlockEditor toujours monté (juste caché), aucun cleanup de portal n'est déclenché.
+    const showSqlBlockEditor = devMode && cell.type === 'sqlRecursiveParse'
 
     return (
         <div className={hasHeight ? 'flex-1 min-h-0 flex flex-col' : ''}>
+            {/* SqlBlockEditor — toujours monté quand disponible, caché via display:none */}
+            {showSqlBlockEditor && (
+                <div style={sqlBlockUiMode ? undefined : { display: 'none' }}>
+                    <SqlBlockEditor
+                        cell={cell}
+                        path={path}
+                        cellIndex={cellIndex}
+                        fromSqlCell={true}
+                        onExitUiMode={() => setSqlBlockUiMode(false)}
+                    />
+                </div>
+            )}
+
+            {/* Contenu normal — caché quand en mode UI */}
+            <div style={sqlBlockUiMode ? { display: 'none' } : undefined}
+                className={hasHeight ? 'flex-1 min-h-0 flex flex-col' : ''}>
             {devMode && cell.type === 'sqlRecursiveParse' && (
                 <div className="flex items-center gap-2 mb-1 shrink-0">
                     <label className="text-xs text-muted-foreground shrink-0">Résultat :</label>
@@ -493,6 +504,7 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
                 </div>
             ))}
             <ResultInfo cell={cell} devOnly />
+            </div>
         </div>
     )
 }
@@ -546,38 +558,35 @@ function SqlStatBody({ cell, path, cellIndex }: any) {
 
     const [sqlBlockUiMode, setSqlBlockUiMode] = useState(false)
 
-    if (devMode && sqlBlockUiMode) {
-        return (
-            <SqlBlockEditor
-                cell={cell}
-                path={path}
-                cellIndex={cellIndex}
-                fromSqlCell={true}
-                onExitUiMode={() => setSqlBlockUiMode(false)}
-            />
-        )
-    }
-
     return (
         <div>
-            {showSqlEditorVisible?.(cell) && (
-                <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
-                    placeholder="SELECT 42 AS value, 'Titre' AS title, 'info' AS type"
-                    onEnterUiMode={devMode ? () => setSqlBlockUiMode(true) : null} />
-            )}
-            {cell._results && (
-                <div className="flex flex-col items-center py-1">
-                    {cell.icon && (
-                        <div className="text-muted-foreground">
-                            <span className="iconify inline-block h-8 w-8" data-icon={cell.icon}></span>
-                        </div>
-                    )}
-                    <div className="text-sm text-muted-foreground">{cell.title || 'Stat'}</div>
-                    <div className="text-4xl font-bold">{cell._statValue || '-'}</div>
-                    <div className="text-xs text-muted-foreground">{cell.subtitle || ''}</div>
+            {/* SqlBlockEditor — toujours monté, caché via display:none (évite removeChild portal bug) */}
+            {devMode && (
+                <div style={sqlBlockUiMode ? undefined : { display: 'none' }}>
+                    <SqlBlockEditor cell={cell} path={path} cellIndex={cellIndex}
+                        fromSqlCell={true} onExitUiMode={() => setSqlBlockUiMode(false)} />
                 </div>
             )}
-            <ResultInfo cell={cell} devOnly />
+            <div style={sqlBlockUiMode ? { display: 'none' } : undefined}>
+                {showSqlEditorVisible?.(cell) && (
+                    <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
+                        placeholder="SELECT 42 AS value, 'Titre' AS title, 'info' AS type"
+                        onEnterUiMode={devMode ? () => setSqlBlockUiMode(true) : null} />
+                )}
+                {cell._results && (
+                    <div className="flex flex-col items-center py-1">
+                        {cell.icon && (
+                            <div className="text-muted-foreground">
+                                <span className="iconify inline-block h-8 w-8" data-icon={cell.icon}></span>
+                            </div>
+                        )}
+                        <div className="text-sm text-muted-foreground">{cell.title || 'Stat'}</div>
+                        <div className="text-4xl font-bold">{cell._statValue || '-'}</div>
+                        <div className="text-xs text-muted-foreground">{cell.subtitle || ''}</div>
+                    </div>
+                )}
+                <ResultInfo cell={cell} devOnly />
+            </div>
         </div>
     )
 }
@@ -897,43 +906,41 @@ function PerspectiveBody({ cell, path, cellIndex }: any) {
     const mh = '400px'
     const hasHeight = hasCellHeight?.(cell)
 
-    if (devMode && sqlBlockUiMode) {
-        return (
-            <SqlBlockEditor
-                cell={cell}
-                path={path}
-                cellIndex={cellIndex}
-                fromSqlCell={true}
-                onExitUiMode={() => setSqlBlockUiMode(false)}
-            />
-        )
-    }
-
     return (
         <div className={hasHeight ? 'flex-1 min-h-0 flex flex-col' : 'flex flex-col gap-2'}>
-            {showSqlEditorVisible?.(cell) && (
-                <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
-                    queryType="query"
-                    onEnterUiMode={devMode ? () => setSqlBlockUiMode(true) : null} />
-            )}
-            {cell._status === 'running' && !cell._perspectiveReady && (
-                <div className={hasHeight ? 'flex-1 min-h-0 rounded-lg bg-background overflow-hidden' : 'rounded-lg bg-background overflow-hidden'}
-                    style={hasHeight ? {} : { minHeight: mh }}>
-                    <div className="animate-pulse h-full w-full bg-muted rounded-lg" style={{ minHeight: mh }}></div>
+            {/* SqlBlockEditor — toujours monté, caché via display:none (évite removeChild portal bug) */}
+            {devMode && (
+                <div style={sqlBlockUiMode ? undefined : { display: 'none' }}>
+                    <SqlBlockEditor cell={cell} path={path} cellIndex={cellIndex}
+                        fromSqlCell={true} onExitUiMode={() => setSqlBlockUiMode(false)} />
                 </div>
             )}
-            {cell._perspectiveReady && (
-                <div className={hasHeight ? 'flex-1 min-h-0 flex flex-col perspective-fill-height' : ''}
-                    style={hasHeight ? {} : { minHeight: mh }}>
-                    <perspective-viewer
-                        id={`perspective-${cell._id}`}
-                        theme="Pro Light"
-                        class={hasHeight ? 'flex-1 min-h-0 w-full rounded-lg' : 'w-full rounded-lg'}
-                        style={hasHeight ? {} : { minHeight: mh }}
-                    ></perspective-viewer>
-                </div>
-            )}
-            <ResultInfo cell={cell} devOnly />
+            <div style={sqlBlockUiMode ? { display: 'none' } : undefined}
+                className={hasHeight ? 'flex-1 min-h-0 flex flex-col' : 'flex flex-col gap-2'}>
+                {showSqlEditorVisible?.(cell) && (
+                    <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
+                        queryType="query"
+                        onEnterUiMode={devMode ? () => setSqlBlockUiMode(true) : null} />
+                )}
+                {cell._status === 'running' && !cell._perspectiveReady && (
+                    <div className={hasHeight ? 'flex-1 min-h-0 rounded-lg bg-background overflow-hidden' : 'rounded-lg bg-background overflow-hidden'}
+                        style={hasHeight ? {} : { minHeight: mh }}>
+                        <div className="animate-pulse h-full w-full bg-muted rounded-lg" style={{ minHeight: mh }}></div>
+                    </div>
+                )}
+                {cell._perspectiveReady && (
+                    <div className={hasHeight ? 'flex-1 min-h-0 flex flex-col perspective-fill-height' : ''}
+                        style={hasHeight ? {} : { minHeight: mh }}>
+                        <perspective-viewer
+                            id={`perspective-${cell._id}`}
+                            theme="Pro Light"
+                            class={hasHeight ? 'flex-1 min-h-0 w-full rounded-lg' : 'w-full rounded-lg'}
+                            style={hasHeight ? {} : { minHeight: mh }}
+                        ></perspective-viewer>
+                    </div>
+                )}
+                <ResultInfo cell={cell} devOnly />
+            </div>
         </div>
     )
 }
