@@ -1586,9 +1586,11 @@ function useStepInputSchemas(ast: SqlBlockAst, cellId: string) {
 
             // 2. Fallback : LIMIT 0 directement sur le SQL amont (sans wrapper subquery)
             if (!schemaTypes) {
+                // Utiliser un AST sans chartConfig pour éviter les colonnes CAST(x AS XAXIS) etc.
+                const cleanAst = { ...a, chartConfig: undefined }
                 const inputSql = stepIdx === 0
                     ? `SELECT * FROM ${quoteId(a.source)}`
-                    : stepSql(a, stepIdx - 1)
+                    : stepSql(cleanAst, stepIdx - 1)
                 if (!inputSql) return
                 const bare = inputSql.trimEnd().replace(/;+\s*$/, '')
                 const hasLimit = /\bLIMIT\s+\d/i.test(bare.replace(/\([\s\S]*?\)/g, ''))
@@ -2230,8 +2232,11 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
     }, [cell, ast.steps, forceUpdate])
 
     const handleChartConfigChange = useCallback((cfg: ChartConfig | null) => {
+        // Invalide le cache des schémas dynamiques : chartConfig change le SQL final
+        // donc les entrées cached avec annotations chart doivent être purgées
+        invalidateFrom(0, ast)
         commitAstUpdate(cell, { chartConfig: cfg ?? undefined }, forceUpdate)
-    }, [cell, forceUpdate])
+    }, [cell, ast, forceUpdate, invalidateFrom])
 
     // ─── Distinct values pour le filtre (par step) ─────────────────────────
     // Fabrique une fonction fetchDistinctValues qui interroge la sous-requête
