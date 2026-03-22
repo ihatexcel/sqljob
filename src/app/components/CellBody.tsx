@@ -484,11 +484,26 @@ function SqlStatBody({ cell, path, cellIndex }: any) {
         showSqlEditorVisible: s.showSqlEditorVisible
     })))
 
+    const [sqlBlockUiMode, setSqlBlockUiMode] = useState(false)
+
+    if (devMode && sqlBlockUiMode) {
+        return (
+            <SqlBlockEditor
+                cell={cell}
+                path={path}
+                cellIndex={cellIndex}
+                fromSqlCell={true}
+                onExitUiMode={() => setSqlBlockUiMode(false)}
+            />
+        )
+    }
+
     return (
         <div>
             {devMode && showSqlEditorVisible?.(cell) && (
                 <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
-                    placeholder="SELECT 42 AS value, 'Titre' AS title, 'info' AS type" />
+                    placeholder="SELECT 42 AS value, 'Titre' AS title, 'info' AS type"
+                    onEnterUiMode={() => setSqlBlockUiMode(true)} />
             )}
             {cell._results && (
                 <div className="flex flex-col items-center py-1">
@@ -820,6 +835,8 @@ function PerspectiveBody({ cell, path, cellIndex }: any) {
         _rev: s._rev
     })))
 
+    const [sqlBlockUiMode, setSqlBlockUiMode] = useState(false)
+
     // Equivalent Alpine x-init: déclencher le rendu quand le viewer est monté et données prêtes
     // (cas rechargement de page où _arrowTable existe déjà, _perspectiveScheduled = false)
     useEffect(() => {
@@ -837,11 +854,24 @@ function PerspectiveBody({ cell, path, cellIndex }: any) {
     const mh = '400px'
     const hasHeight = hasCellHeight?.(cell)
 
+    if (devMode && sqlBlockUiMode) {
+        return (
+            <SqlBlockEditor
+                cell={cell}
+                path={path}
+                cellIndex={cellIndex}
+                fromSqlCell={true}
+                onExitUiMode={() => setSqlBlockUiMode(false)}
+            />
+        )
+    }
+
     return (
         <div className={hasHeight ? 'flex-1 min-h-0 flex flex-col' : 'flex flex-col gap-2'}>
             {showSqlEditorVisible?.(cell) && (
                 <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
-                    queryType="query" />
+                    queryType="query"
+                    onEnterUiMode={devMode ? () => setSqlBlockUiMode(true) : null} />
             )}
             {cell._status === 'running' && !cell._perspectiveReady && (
                 <div className={hasHeight ? 'flex-1 min-h-0 rounded-lg bg-background overflow-hidden' : 'rounded-lg bg-background overflow-hidden'}
