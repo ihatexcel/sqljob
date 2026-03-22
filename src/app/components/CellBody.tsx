@@ -404,7 +404,7 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
                     </div>
                 </div>
             )}
-            {devMode && showSqlEditorVisible?.(cell) && (
+            {showSqlEditorVisible?.(cell) && (
                 <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
                     placeholder="SELECT * FROM source1 LIMIT 100"
                     onEnterUiMode={cell.type === 'sqlRecursiveParse' ? () => setSqlBlockUiMode(true) : null}
@@ -463,7 +463,7 @@ function IframeBody({ cell, path, cellIndex }: any) {
 
     return (
         <div className={hasHeight ? 'flex-1 min-h-0 flex flex-col' : ''}>
-            {devMode && showSqlEditorVisible?.(cell) && (
+            {showSqlEditorVisible?.(cell) && (
                 <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
                     placeholder="SELECT '<h1>Hello</h1>'" />
             )}
@@ -500,10 +500,10 @@ function SqlStatBody({ cell, path, cellIndex }: any) {
 
     return (
         <div>
-            {devMode && showSqlEditorVisible?.(cell) && (
+            {showSqlEditorVisible?.(cell) && (
                 <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
                     placeholder="SELECT 42 AS value, 'Titre' AS title, 'info' AS type"
-                    onEnterUiMode={() => setSqlBlockUiMode(true)} />
+                    onEnterUiMode={devMode ? () => setSqlBlockUiMode(true) : null} />
             )}
             {cell._results && (
                 <div className="flex flex-col items-center py-1">
@@ -548,7 +548,7 @@ function EChartBody({ cell, path, cellIndex }: any) {
 
     return (
         <div className={hasHeight ? 'flex-1 min-h-0 flex flex-col' : ''}>
-            {devMode && showSqlEditorVisible?.(cell) && (
+            {showSqlEditorVisible?.(cell) && (
                 <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
                     placeholder="SELECT month::XAXIS, revenue::BARCHART AS &quot;Revenue&quot; FROM source1" />
             )}
@@ -911,7 +911,7 @@ function GenericHtmlBody({ cell, path, cellIndex }: any) {
 
     return (
         <div>
-            {devMode && showSqlEditorVisible?.(cell) && (
+            {showSqlEditorVisible?.(cell) && (
                 <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
                     placeholder="SELECT 1" />
             )}
