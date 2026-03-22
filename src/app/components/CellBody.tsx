@@ -11,7 +11,7 @@ import { CDNManager } from '../../lib/CDNManager'
 import { SqlEditorWidget } from './SqlEditorWidget'
 import { SqlDataTable } from './SqlDataTable'
 import { Icon } from '../../lib/icons'
-import { astToSql, buildDisplaySql, stripMaterializePrefix } from '../../lib/SqlBlockService'
+import { buildDisplaySql, stripMaterializePrefix } from '../../lib/SqlBlockService'
 import {
     Accordion, AccordionItem, AccordionTrigger, AccordionContent,
     Dialog, DialogContent, DialogHeader, DialogTitle,
@@ -387,13 +387,10 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
                         {(['select', 'view', 'table'] as const).map(m => (
                             <button key={m} onClick={() => {
                                 cell.materialize = m
-                                // Sync queries[0].sql avec le bon préfixe CREATE OR REPLACE
                                 const q = cell.queries?.[0]
                                 if (q) {
-                                    const currentSql = q.sql || ''
-                                    const selectSql = q.ast
-                                        ? (q.degraded && q.manualSql ? q.manualSql : astToSql(q.ast))
-                                        : stripMaterializePrefix(currentSql)
+                                    // Toujours dériver le SELECT depuis q.sql courant (pas l'AST qui peut être périmé)
+                                    const selectSql = stripMaterializePrefix(q.sql || '')
                                     q.sql = buildDisplaySql(cell.name, selectSql, m)
                                     if (q.ast) q.ast = { ...q.ast, materialize: m }
                                 }
