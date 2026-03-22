@@ -14,8 +14,7 @@ import { useTemplateModal } from '../store/uiStores'
 import { ConfigManager } from '../../lib/ConfigManager'
 import { CELL_TYPE_SCHEMAS } from '../../lib/cellTypeSchemas'
 import { Icon } from '../../lib/icons'
-import { sqlToAstSmart } from '../../lib/SqlBlockService'
-import { createDefaultSqlBlockConfig } from '../../lib/SqlBlockTypes'
+import { sqlToAstSmart, stripMaterializePrefix, buildDisplaySql } from '../../lib/SqlBlockService'
 
 // ─── SqlEditorWidget ──────────────────────────────────────────────────────────
 export function SqlEditorWidget({
@@ -77,17 +76,19 @@ export function SqlEditorWidget({
     }
 
     function enterUiMode() {
-        const text = ConfigManager.getCellQuery(cell, queryName) || ''
-        const result = sqlToAstSmart(text)
-        if (!cell.json) cell.json = createDefaultSqlBlockConfig()
+        const fullSql = ConfigManager.getCellQuery(cell, queryName) || ''
+        const stripped = stripMaterializePrefix(fullSql)
+        const result = sqlToAstSmart(stripped)
+        if (!cell.queries?.length) cell.queries = [{ name: 'main', sql: fullSql, engine: 'sql', clientVisible: false }]
+        const q = cell.queries[0]
         if (result.compatible && result.ast) {
-            cell.json.ast = result.ast
-            cell.json.degraded = false
-            cell.json.manualSql = null
+            q.ast = result.ast
+            q.degraded = false
+            q.manualSql = null
         } else {
-            // SQL incompatible : mode dégradé avec le SQL brut
-            cell.json.degraded = true
-            cell.json.manualSql = text
+            q.ast = null
+            q.degraded = true
+            q.manualSql = stripped
         }
         onEnterUiMode?.()
     }
