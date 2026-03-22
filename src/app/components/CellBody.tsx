@@ -388,7 +388,9 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
     const hasChart = !!(cell._echartsOption || cell._kpiHtml)
 
     // Revenir au tableau si le graphique disparaît (ex: changement de mode)
-    if (vizMode === 'chart' && !hasChart) setVizMode('table')
+    useEffect(() => {
+        if (vizMode === 'chart' && !hasChart) setVizMode('table')
+    }, [hasChart]) // eslint-disable-line react-hooks/exhaustive-deps
 
     // Mode UI visuel (sqlBlock) pour les cellules sqlRecursiveParse
     if (devMode && cell.type === 'sqlRecursiveParse' && sqlBlockUiMode) {

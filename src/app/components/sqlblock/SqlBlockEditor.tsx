@@ -2188,10 +2188,12 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
     }, [cell, ast, forceUpdate, invalidateFrom])
 
     const handleStepRemove = useCallback((idx: number) => {
+        setConfigOpenIdx(null) // ferme la modale avant de supprimer le step (évite removeChild sur portal)
         commitAstUpdate(cell, { steps: ast.steps.filter((_, i) => i !== idx) }, forceUpdate)
     }, [cell, ast.steps, forceUpdate])
 
     const handleStepMove = useCallback((idx: number, dir: -1 | 1) => {
+        setConfigOpenIdx(null) // ferme la modale avant de déplacer le step
         const s = [...ast.steps]; const swap = idx + dir
         if (swap < 0 || swap >= s.length) return
         ;[s[idx], s[swap]] = [s[swap], s[idx]]
@@ -2315,7 +2317,7 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
             <div className="flex items-center gap-3 flex-wrap shrink-0">
                 {onExitUiMode && (
                     <button
-                        onClick={onExitUiMode}
+                        onClick={() => { setConfigOpenIdx(null); onExitUiMode() }}
                         className="flex items-center gap-1 px-2 py-1 text-xs text-muted-foreground border border-border rounded hover:bg-muted transition-colors shrink-0"
                         title="Retour à l'éditeur SQL"
                     >
