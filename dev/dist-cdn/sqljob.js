@@ -136071,14 +136071,14 @@ function useStepInputSchemas(At, yt) {
         }
       }
       if (!Rt) {
-        const jt = Tt === 0 ? `SELECT * FROM ${quoteId($t.source)}` : stepSql($t, Tt - 1);
-        if (!jt) return;
-        const Nt = jt.trimEnd().replace(/;+\s*$/, ""), Ot = /\bLIMIT\s+\d/i.test(Nt.replace(/\([\s\S]*?\)/g, "")) ? Nt : `${Nt}
-LIMIT 0`, Bt = DuckDBManager.getConnection();
-        if (!Bt) return;
-        const zt = await Bt.query(Ot);
-        for (const Yt of zt.schema.fields)
-          Rt || (Rt = {}), Rt[Yt.name] = String(Yt.type);
+        const jt = { ...$t, chartConfig: void 0 }, Nt = Tt === 0 ? `SELECT * FROM ${quoteId($t.source)}` : stepSql(jt, Tt - 1);
+        if (!Nt) return;
+        const Mt = Nt.trimEnd().replace(/;+\s*$/, ""), Bt = /\bLIMIT\s+\d/i.test(Mt.replace(/\([\s\S]*?\)/g, "")) ? Mt : `${Mt}
+LIMIT 0`, zt = DuckDBManager.getConnection();
+        if (!zt) return;
+        const Yt = await zt.query(Bt);
+        for (const Kt of Yt.schema.fields)
+          Rt || (Rt = {}), Rt[Kt.name] = String(Kt.type);
       }
       if (!Rt) return;
       const Dt = { columns: Object.keys(Rt), colTypes: Rt };
@@ -136641,8 +136641,8 @@ function SqlBlockEditor({ cell: At, path: yt, cellIndex: xt, onExitUiMode: wt, f
     const Cl = [...Lt.steps, Ps];
     commitAstUpdate(At, { steps: Cl }, St);
   }, [At, Lt.steps, St]), fn = reactExports.useCallback((Ps) => {
-    commitAstUpdate(At, { chartConfig: Ps ?? void 0 }, St);
-  }, [At, St]), Mn = reactExports.useCallback((Ps) => async (Cl, Gu, wl) => {
+    Nt(0, Lt), commitAstUpdate(At, { chartConfig: Ps ?? void 0 }, St);
+  }, [At, Lt, St, Nt]), Mn = reactExports.useCallback((Ps) => async (Cl, Gu, wl) => {
     if (!Lt.source || !Cl) return { values: [], hasMore: !1 };
     try {
       const Al = Ps === 0 ? `SELECT * FROM ${quoteId(Lt.source)}` : stepSql(Lt, Ps - 1);
