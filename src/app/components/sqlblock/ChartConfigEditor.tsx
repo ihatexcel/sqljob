@@ -171,10 +171,13 @@ function ColSelect({ value, availableColumns, optional, onChange }: {
 export interface ChartConfigEditorProps {
     chartConfig: ChartConfig | undefined
     availableColumns: string[]
+    availableColTypes?: Record<string, string>
     onChange: (cfg: ChartConfig | null) => void
+    /** Appelé au montage pour déclencher le fetch du schéma dynamique (colonnes réelles après la dernière étape). */
+    onMount?: () => void
 }
 
-export function ChartConfigEditor({ chartConfig, availableColumns, onChange }: ChartConfigEditorProps) {
+export function ChartConfigEditor({ chartConfig, availableColumns, availableColTypes, onChange, onMount }: ChartConfigEditorProps) {
     const [open, setOpen] = useState(!!chartConfig)
 
     const isActive = !!chartConfig
@@ -182,14 +185,15 @@ export function ChartConfigEditor({ chartConfig, availableColumns, onChange }: C
     const columns: ChartColumnRole[] = chartConfig?.columns ?? []
     const typeConfig = CHART_TYPE_CONFIGS[chartType] ?? CHART_TYPE_CONFIGS.bar
 
-    // Debug lifecycle
+    // Debug lifecycle + déclenche le fetch du schéma dynamique (colonnes réelles de la dernière étape)
     useEffect(() => {
         console.log('[ChartConfigEditor] MOUNTED')
+        onMount?.()
         return () => console.log('[ChartConfigEditor] UNMOUNTED')
-    }, [])
+    }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
     // Debug render
-    console.log('[ChartConfigEditor] render', { isActive, open, chartType, columnsCount: columns.length, availableColumns })
+    console.log('[ChartConfigEditor] render', { isActive, open, chartType, columnsCount: columns.length, availableColumns, availableColTypes })
 
     const handleToggle = useCallback(() => {
         if (isActive) {

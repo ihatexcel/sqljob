@@ -2438,6 +2438,8 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
                             <ChartConfigEditor
                                 chartConfig={ast.chartConfig}
                                 availableColumns={newStepInputSchema.columns}
+                                availableColTypes={newStepInputSchema.colTypes}
+                                onMount={() => fetchSchemaForStep(n)}
                                 onChange={handleChartConfigChange}
                             />
                         )}
