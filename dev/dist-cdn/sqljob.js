@@ -137143,101 +137143,113 @@ function SqlTableBody({ cell: At, path: yt, cellIndex: xt, showTextResult: wt = 
     isSqlResultText: Tt,
     getSqlResultAsText: $t,
     forceUpdate: Lt
-  } = useNotebookStore(useShallow((Ht) => ({
-    devMode: Ht.devMode,
-    hasCellHeight: Ht.hasCellHeight,
-    showSqlEditorVisible: Ht.showSqlEditorVisible,
-    isSqlResultTabular: Ht.isSqlResultTabular,
-    isSqlResultText: Ht.isSqlResultText,
-    getSqlResultAsText: Ht.getSqlResultAsText,
-    forceUpdate: Ht.forceUpdate
+  } = useNotebookStore(useShallow((qt) => ({
+    devMode: qt.devMode,
+    hasCellHeight: qt.hasCellHeight,
+    showSqlEditorVisible: qt.showSqlEditorVisible,
+    isSqlResultTabular: qt.isSqlResultTabular,
+    isSqlResultText: qt.isSqlResultText,
+    getSqlResultAsText: qt.getSqlResultAsText,
+    forceUpdate: qt.forceUpdate
   }))), [It, Rt] = reactExports.useState(!1), [Dt, jt] = reactExports.useState("table"), Nt = St(At), Mt = At._status === "running", Ot = At.type === "table", Bt = !!(At._echartsOption || At._kpiHtml);
-  return reactExports.useEffect(() => {
+  reactExports.useEffect(() => {
     Dt === "chart" && !Bt && jt("table");
-  }, [Bt]), Ct && At.type === "sqlRecursiveParse" && It ? /* @__PURE__ */ jsxRuntimeExports.jsx(
-    SqlBlockEditor,
-    {
-      cell: At,
-      path: yt,
-      cellIndex: xt,
-      fromSqlCell: !0,
-      onExitUiMode: () => Rt(!1)
-    }
-  ) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: Nt ? "flex-1 min-h-0 flex flex-col" : "", children: [
-    Ct && At.type === "sqlRecursiveParse" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 mb-1 shrink-0", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-xs text-muted-foreground shrink-0", children: "Résultat :" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex rounded border border-border overflow-hidden text-xs", children: ["select", "view", "table"].map((Ht) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "button",
-        {
-          onClick: () => {
-            var Kt;
-            At.materialize = Ht;
-            const qt = (Kt = At.queries) == null ? void 0 : Kt[0];
-            if (qt) {
-              const Jt = stripMaterializePrefix(qt.sql || "");
-              qt.sql = buildDisplaySql(At.name, Jt, Ht), qt.ast && (qt.ast = { ...qt.ast, materialize: Ht });
-            }
-            Lt();
-          },
-          className: `px-2 py-0.5 transition-colors ${(At.materialize ?? "select") === Ht ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"}`,
-          title: Ht === "select" ? "SELECT simple (sans créer de vue ni de table)" : Ht === "view" ? "Créer une Vue DuckDB (lazy)" : "Créer une TABLE matérialisée",
-          children: Ht.toUpperCase()
-        },
-        Ht
-      )) }),
-      Bt && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex rounded border border-border overflow-hidden text-xs ml-2", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "button",
-          {
-            onClick: () => jt("table"),
-            className: `px-2 py-0.5 transition-colors ${Dt === "table" ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"}`,
-            children: "Tableau"
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "button",
-          {
-            onClick: () => jt("chart"),
-            className: `px-2 py-0.5 transition-colors ${Dt === "chart" ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"}`,
-            children: "Graphique"
-          }
-        )
-      ] })
-    ] }),
-    !Ct && Bt && At.type === "sqlRecursiveParse" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex rounded border border-border overflow-hidden text-xs mb-1 shrink-0 self-start", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "button",
-        {
-          onClick: () => jt("table"),
-          className: `px-2 py-0.5 transition-colors ${Dt === "table" ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"}`,
-          children: "Tableau"
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "button",
-        {
-          onClick: () => jt("chart"),
-          className: `px-2 py-0.5 transition-colors ${Dt === "chart" ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"}`,
-          children: "Graphique"
-        }
-      )
-    ] }),
-    (Et == null ? void 0 : Et(At)) && /* @__PURE__ */ jsxRuntimeExports.jsx(
-      SqlEditorWidget,
+  }, [Bt]);
+  const Ht = Ct && At.type === "sqlRecursiveParse";
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: Nt ? "flex-1 min-h-0 flex flex-col" : "", children: [
+    Ht && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: It ? void 0 : { display: "none" }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+      SqlBlockEditor,
       {
         cell: At,
         path: yt,
         cellIndex: xt,
-        placeholder: "SELECT * FROM source1 LIMIT 100",
-        onEnterUiMode: At.type === "sqlRecursiveParse" ? () => Rt(!0) : null
+        fromSqlCell: !0,
+        onExitUiMode: () => Rt(!1)
       }
-    ),
-    Dt === "chart" && Bt && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: Nt ? "flex-1 min-h-0 flex flex-col" : "", children: /* @__PURE__ */ jsxRuntimeExports.jsx(EChartRenderer, { cell: At, hasHeight: Nt }) }),
-    Dt === "table" && (wt ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-      (Et == null ? void 0 : Et(At)) && (kt == null ? void 0 : kt(At)) && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `relative rounded-lg mt-2 ${Nt ? "flex-1 min-h-0 overflow-auto" : ""}`, children: Mt ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-background rounded-lg overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsx(TableSkeleton, {}) }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-background rounded-lg overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsx(SqlDataTable, { cell: At, searchable: Ot }) }) }),
-      (Et == null ? void 0 : Et(At)) && (Tt == null ? void 0 : Tt(At)) && /* @__PURE__ */ jsxRuntimeExports.jsx("textarea", { className: "flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-mono mt-2 min-h-[120px]", readOnly: !0, value: ($t == null ? void 0 : $t(At)) || "" })
-    ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: Nt ? "flex-1 min-h-0 overflow-auto" : "", children: Mt ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-background rounded-lg overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsx(TableSkeleton, {}) }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-background rounded-lg overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsx(SqlDataTable, { cell: At, searchable: Ot }) }) })),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(ResultInfo, { cell: At, devOnly: !0 })
+    ) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      "div",
+      {
+        style: It ? { display: "none" } : void 0,
+        className: Nt ? "flex-1 min-h-0 flex flex-col" : "",
+        children: [
+          Ct && At.type === "sqlRecursiveParse" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 mb-1 shrink-0", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-xs text-muted-foreground shrink-0", children: "Résultat :" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex rounded border border-border overflow-hidden text-xs", children: ["select", "view", "table"].map((qt) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "button",
+              {
+                onClick: () => {
+                  var Jt;
+                  At.materialize = qt;
+                  const Kt = (Jt = At.queries) == null ? void 0 : Jt[0];
+                  if (Kt) {
+                    const Zt = stripMaterializePrefix(Kt.sql || "");
+                    Kt.sql = buildDisplaySql(At.name, Zt, qt), Kt.ast && (Kt.ast = { ...Kt.ast, materialize: qt });
+                  }
+                  Lt();
+                },
+                className: `px-2 py-0.5 transition-colors ${(At.materialize ?? "select") === qt ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"}`,
+                title: qt === "select" ? "SELECT simple (sans créer de vue ni de table)" : qt === "view" ? "Créer une Vue DuckDB (lazy)" : "Créer une TABLE matérialisée",
+                children: qt.toUpperCase()
+              },
+              qt
+            )) }),
+            Bt && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex rounded border border-border overflow-hidden text-xs ml-2", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "button",
+                {
+                  onClick: () => jt("table"),
+                  className: `px-2 py-0.5 transition-colors ${Dt === "table" ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"}`,
+                  children: "Tableau"
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "button",
+                {
+                  onClick: () => jt("chart"),
+                  className: `px-2 py-0.5 transition-colors ${Dt === "chart" ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"}`,
+                  children: "Graphique"
+                }
+              )
+            ] })
+          ] }),
+          !Ct && Bt && At.type === "sqlRecursiveParse" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex rounded border border-border overflow-hidden text-xs mb-1 shrink-0 self-start", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "button",
+              {
+                onClick: () => jt("table"),
+                className: `px-2 py-0.5 transition-colors ${Dt === "table" ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"}`,
+                children: "Tableau"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "button",
+              {
+                onClick: () => jt("chart"),
+                className: `px-2 py-0.5 transition-colors ${Dt === "chart" ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"}`,
+                children: "Graphique"
+              }
+            )
+          ] }),
+          (Et == null ? void 0 : Et(At)) && /* @__PURE__ */ jsxRuntimeExports.jsx(
+            SqlEditorWidget,
+            {
+              cell: At,
+              path: yt,
+              cellIndex: xt,
+              placeholder: "SELECT * FROM source1 LIMIT 100",
+              onEnterUiMode: At.type === "sqlRecursiveParse" ? () => Rt(!0) : null
+            }
+          ),
+          Dt === "chart" && Bt && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: Nt ? "flex-1 min-h-0 flex flex-col" : "", children: /* @__PURE__ */ jsxRuntimeExports.jsx(EChartRenderer, { cell: At, hasHeight: Nt }) }),
+          Dt === "table" && (wt ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+            (Et == null ? void 0 : Et(At)) && (kt == null ? void 0 : kt(At)) && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `relative rounded-lg mt-2 ${Nt ? "flex-1 min-h-0 overflow-auto" : ""}`, children: Mt ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-background rounded-lg overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsx(TableSkeleton, {}) }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-background rounded-lg overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsx(SqlDataTable, { cell: At, searchable: Ot }) }) }),
+            (Et == null ? void 0 : Et(At)) && (Tt == null ? void 0 : Tt(At)) && /* @__PURE__ */ jsxRuntimeExports.jsx("textarea", { className: "flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-mono mt-2 min-h-[120px]", readOnly: !0, value: ($t == null ? void 0 : $t(At)) || "" })
+          ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: Nt ? "flex-1 min-h-0 overflow-auto" : "", children: Mt ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-background rounded-lg overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsx(TableSkeleton, {}) }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-background rounded-lg overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsx(SqlDataTable, { cell: At, searchable: Ot }) }) })),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(ResultInfo, { cell: At, devOnly: !0 })
+        ]
+      }
+    )
   ] });
 }
 function IframeBody({ cell: At, path: yt, cellIndex: xt }) {
@@ -137281,33 +137293,36 @@ function SqlStatBody({ cell: At, path: yt, cellIndex: xt }) {
     devMode: kt.devMode,
     showSqlEditorVisible: kt.showSqlEditorVisible
   }))), [St, Et] = reactExports.useState(!1);
-  return wt && St ? /* @__PURE__ */ jsxRuntimeExports.jsx(
-    SqlBlockEditor,
-    {
-      cell: At,
-      path: yt,
-      cellIndex: xt,
-      fromSqlCell: !0,
-      onExitUiMode: () => Et(!1)
-    }
-  ) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-    (Ct == null ? void 0 : Ct(At)) && /* @__PURE__ */ jsxRuntimeExports.jsx(
-      SqlEditorWidget,
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+    wt && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: St ? void 0 : { display: "none" }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+      SqlBlockEditor,
       {
         cell: At,
         path: yt,
         cellIndex: xt,
-        placeholder: "SELECT 42 AS value, 'Titre' AS title, 'info' AS type",
-        onEnterUiMode: wt ? () => Et(!0) : null
+        fromSqlCell: !0,
+        onExitUiMode: () => Et(!1)
       }
-    ),
-    At._results && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center py-1", children: [
-      At.icon && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-muted-foreground", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "iconify inline-block h-8 w-8", "data-icon": At.icon }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm text-muted-foreground", children: At.title || "Stat" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-4xl font-bold", children: At._statValue || "-" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs text-muted-foreground", children: At.subtitle || "" })
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(ResultInfo, { cell: At, devOnly: !0 })
+    ) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: St ? { display: "none" } : void 0, children: [
+      (Ct == null ? void 0 : Ct(At)) && /* @__PURE__ */ jsxRuntimeExports.jsx(
+        SqlEditorWidget,
+        {
+          cell: At,
+          path: yt,
+          cellIndex: xt,
+          placeholder: "SELECT 42 AS value, 'Titre' AS title, 'info' AS type",
+          onEnterUiMode: wt ? () => Et(!0) : null
+        }
+      ),
+      At._results && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center py-1", children: [
+        At.icon && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-muted-foreground", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "iconify inline-block h-8 w-8", "data-icon": At.icon }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm text-muted-foreground", children: At.title || "Stat" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-4xl font-bold", children: At._statValue || "-" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs text-muted-foreground", children: At.subtitle || "" })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(ResultInfo, { cell: At, devOnly: !0 })
+    ] })
   ] });
 }
 function EChartBody({ cell: At, path: yt, cellIndex: xt }) {
@@ -137600,51 +137615,61 @@ function PerspectiveBody({ cell: At, path: yt, cellIndex: xt }) {
     });
   }, [kt]);
   const Lt = "400px", It = St == null ? void 0 : St(At);
-  return wt && Tt ? /* @__PURE__ */ jsxRuntimeExports.jsx(
-    SqlBlockEditor,
-    {
-      cell: At,
-      path: yt,
-      cellIndex: xt,
-      fromSqlCell: !0,
-      onExitUiMode: () => $t(!1)
-    }
-  ) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: It ? "flex-1 min-h-0 flex flex-col" : "flex flex-col gap-2", children: [
-    (Ct == null ? void 0 : Ct(At)) && /* @__PURE__ */ jsxRuntimeExports.jsx(
-      SqlEditorWidget,
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: It ? "flex-1 min-h-0 flex flex-col" : "flex flex-col gap-2", children: [
+    wt && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: Tt ? void 0 : { display: "none" }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+      SqlBlockEditor,
       {
         cell: At,
         path: yt,
         cellIndex: xt,
-        queryType: "query",
-        onEnterUiMode: wt ? () => $t(!0) : null
+        fromSqlCell: !0,
+        onExitUiMode: () => $t(!1)
       }
-    ),
-    At._status === "running" && !At._perspectiveReady && /* @__PURE__ */ jsxRuntimeExports.jsx(
+    ) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "div",
       {
-        className: It ? "flex-1 min-h-0 rounded-lg bg-background overflow-hidden" : "rounded-lg bg-background overflow-hidden",
-        style: It ? {} : { minHeight: Lt },
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "animate-pulse h-full w-full bg-muted rounded-lg", style: { minHeight: Lt } })
+        style: Tt ? { display: "none" } : void 0,
+        className: It ? "flex-1 min-h-0 flex flex-col" : "flex flex-col gap-2",
+        children: [
+          (Ct == null ? void 0 : Ct(At)) && /* @__PURE__ */ jsxRuntimeExports.jsx(
+            SqlEditorWidget,
+            {
+              cell: At,
+              path: yt,
+              cellIndex: xt,
+              queryType: "query",
+              onEnterUiMode: wt ? () => $t(!0) : null
+            }
+          ),
+          At._status === "running" && !At._perspectiveReady && /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "div",
+            {
+              className: It ? "flex-1 min-h-0 rounded-lg bg-background overflow-hidden" : "rounded-lg bg-background overflow-hidden",
+              style: It ? {} : { minHeight: Lt },
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "animate-pulse h-full w-full bg-muted rounded-lg", style: { minHeight: Lt } })
+            }
+          ),
+          At._perspectiveReady && /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "div",
+            {
+              className: It ? "flex-1 min-h-0 flex flex-col perspective-fill-height" : "",
+              style: It ? {} : { minHeight: Lt },
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "perspective-viewer",
+                {
+                  id: `perspective-${At._id}`,
+                  theme: "Pro Light",
+                  class: It ? "flex-1 min-h-0 w-full rounded-lg" : "w-full rounded-lg",
+                  style: It ? {} : { minHeight: Lt }
+                }
+              )
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(ResultInfo, { cell: At, devOnly: !0 })
+        ]
       }
-    ),
-    At._perspectiveReady && /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "div",
-      {
-        className: It ? "flex-1 min-h-0 flex flex-col perspective-fill-height" : "",
-        style: It ? {} : { minHeight: Lt },
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "perspective-viewer",
-          {
-            id: `perspective-${At._id}`,
-            theme: "Pro Light",
-            class: It ? "flex-1 min-h-0 w-full rounded-lg" : "w-full rounded-lg",
-            style: It ? {} : { minHeight: Lt }
-          }
-        )
-      }
-    ),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(ResultInfo, { cell: At, devOnly: !0 })
+    )
   ] });
 }
 function CellBody({ cell: At, path: yt, cellIndex: xt, group: wt }) {
