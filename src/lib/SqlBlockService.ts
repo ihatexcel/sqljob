@@ -76,7 +76,8 @@ export function astToSql(ast: SqlBlockAst): string {
     const { source, steps } = ast;
     if (!steps || steps.length === 0) return `SELECT * FROM ${quoteId(source)}`;
     // Step unique sans nom : forme simple (pas de CTE)
-    if (steps.length === 1 && !steps[0].name?.trim()) {
+    // Exception : custom_sql → toujours en CTE pour préserver la structure (SQL non standard)
+    if (steps.length === 1 && !steps[0].name?.trim() && steps[0].type !== 'custom_sql') {
         const sql = singleStepToSql(quoteId(source), steps[0]);
         const desc = steps[0].description?.trim();
         return desc ? `/* ${escapeBlockComment(desc)} */\n${sql}` : sql;
@@ -880,14 +881,15 @@ function tryParseCteChainSmart(sql: string, materialize: SqlBlockMaterialize): S
     return { source, steps, materialize };
 }
 
-/** Parser simple SELECT (hors CTE) étendu aux patterns P1 (WHERE, ORDER BY, LIMIT). */
+/** Parser simple SELECT (hors CTE) étendu aux patterns P1 (WHERE, ORDER BY, LIMIT).
+ * Les patterns non reconnus deviennent un step custom_sql (préserve le SQL sans perte). */
 function tryParseSimpleSmart(sql: string, materialize: SqlBlockMaterialize): SqlBlockAst | null {
     const srcM = sql.match(/^SELECT\s+(?:[\s\S]+?)\s+FROM\s+((?:"[^"]*"|\S+))/i);
     if (!srcM) return null;
     const source = unquoteId(srcM[1]);
     const step = parseCteBodyToStep(sql, null, source);
     if (step === null) return { source, steps: [], materialize }; // SELECT *
-    if (step.type === 'custom_sql') return null; // ne peut pas être parsé proprement
+    // custom_sql ou step reconnu → on crée un AST avec ce step (pas de perte de données)
     return { source, steps: [step], materialize };
 }
 
@@ -909,6 +911,15 @@ export function sqlToAstSmart(sql: string, materialize: SqlBlockMaterialize = 'v
     const smartSimple = tryParseSimpleSmart(normalized, materialize);
     if (smartSimple) return { ast: smartSimple, compatible: true };
 
-    // 4. Échec : retourne l'erreur d'origine
+    // 4. Fallback ultime : SQL non reconnu → étape custom_sql sans source
+    //    Préserve le SQL intégralement, sans perte de données.
+    if (normalized) {
+        return {
+            ast: { source: '', steps: [{ type: 'custom_sql', sql: normalized }], materialize },
+            compatible: true,
+        };
+    }
+
+    // 5. Échec : retourne l'erreur d'origine
     return standard;
 }
