@@ -11,6 +11,7 @@ import { CDNManager } from '../../lib/CDNManager'
 import { SqlEditorWidget } from './SqlEditorWidget'
 import { SqlDataTable } from './SqlDataTable'
 import { Icon } from '../../lib/icons'
+import { buildDisplaySql, stripMaterializePrefix } from '../../lib/SqlBlockService'
 import {
     Accordion, AccordionItem, AccordionTrigger, AccordionContent,
     Dialog, DialogContent, DialogHeader, DialogTitle,
@@ -347,7 +348,7 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
     const {
         devMode, hasCellHeight,
         showSqlEditorVisible, isSqlResultTabular, isSqlResultText,
-        getSqlResultAsText,
+        getSqlResultAsText, forceUpdate,
     } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         hasCellHeight: s.hasCellHeight,
@@ -355,17 +356,59 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
         isSqlResultTabular: s.isSqlResultTabular,
         isSqlResultText: s.isSqlResultText,
         getSqlResultAsText: s.getSqlResultAsText,
+        forceUpdate: s.forceUpdate,
     })))
+
+    const [sqlBlockUiMode, setSqlBlockUiMode] = useState(false)
 
     const hasHeight = hasCellHeight(cell)
     const isRunning = cell._status === 'running'
     const searchable = cell.type === 'table'
 
+    // Mode UI visuel (sqlBlock) pour les cellules sqlRecursiveParse
+    if (devMode && cell.type === 'sqlRecursiveParse' && sqlBlockUiMode) {
+        return (
+            <SqlBlockEditor
+                cell={cell}
+                path={path}
+                cellIndex={cellIndex}
+                fromSqlCell={true}
+                onExitUiMode={() => setSqlBlockUiMode(false)}
+            />
+        )
+    }
+
     return (
         <div className={hasHeight ? 'flex-1 min-h-0 flex flex-col' : ''}>
+            {devMode && cell.type === 'sqlRecursiveParse' && (
+                <div className="flex items-center gap-2 mb-1 shrink-0">
+                    <label className="text-xs text-muted-foreground shrink-0">Résultat :</label>
+                    <div className="flex rounded border border-border overflow-hidden text-xs">
+                        {(['select', 'view', 'table'] as const).map(m => (
+                            <button key={m} onClick={() => {
+                                cell.materialize = m
+                                const q = cell.queries?.[0]
+                                if (q) {
+                                    // Toujours dériver le SELECT depuis q.sql courant (pas l'AST qui peut être périmé)
+                                    const selectSql = stripMaterializePrefix(q.sql || '')
+                                    q.sql = buildDisplaySql(cell.name, selectSql, m)
+                                    if (q.ast) q.ast = { ...q.ast, materialize: m }
+                                }
+                                forceUpdate()
+                            }}
+                                className={`px-2 py-0.5 transition-colors ${(cell.materialize ?? 'select') === m ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}
+                                title={m === 'select' ? 'SELECT simple (sans créer de vue ni de table)' : m === 'view' ? 'Créer une Vue DuckDB (lazy)' : 'Créer une TABLE matérialisée'}>
+                                {m.toUpperCase()}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            )}
             {devMode && showSqlEditorVisible?.(cell) && (
                 <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
-                    placeholder="SELECT * FROM source1 LIMIT 100" />
+                    placeholder="SELECT * FROM source1 LIMIT 100"
+                    onEnterUiMode={cell.type === 'sqlRecursiveParse' ? () => setSqlBlockUiMode(true) : null}
+                />
             )}
             {showTextResult ? (
                 <>
@@ -848,23 +891,6 @@ function GenericHtmlBody({ cell, path, cellIndex }: any) {
     )
 }
 
-// ─── SqlBlockBody ─────────────────────────────────────────────────────────────
-function SqlBlockBody({ cell, path, cellIndex }: any) {
-    const devMode = useNotebookStore(s => s.devMode)
-    if (!devMode) {
-        // En mode client : afficher seulement les résultats
-        return (
-            <div className="flex flex-col gap-2">
-                {cell._results && Array.isArray(cell._results) && cell._results.length > 0 && (
-                    <SqlDataTable cell={cell} />
-                )}
-                {cell._resultInfo && <ResultInfo cell={cell} />}
-            </div>
-        )
-    }
-    return <SqlBlockEditor cell={cell} path={path} cellIndex={cellIndex} />
-}
-
 // ─── CellBody principal ───────────────────────────────────────────────────────
 export function CellBody({ cell, path, cellIndex, group }: { cell: any, path: number[], cellIndex: number, group: any }) {
     const {
@@ -905,8 +931,6 @@ export function CellBody({ cell, path, cellIndex, group }: { cell: any, path: nu
                 return <PdfmeBody cell={cell} path={path} cellIndex={cellIndex} />
             case 'perspective':
                 return <PerspectiveBody cell={cell} path={path} cellIndex={cellIndex} />
-            case 'sqlBlock':
-                return <SqlBlockBody cell={cell} path={path} cellIndex={cellIndex} />
             default: return null
         }
     }

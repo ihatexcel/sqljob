@@ -20,7 +20,7 @@ const SQL_TEMPLATES = [
     {
         name: "SELECT DISTINCT dynamique",
         description: "Génère un SELECT DISTINCT avec toutes les colonnes",
-        code: "SELECT DISTINCT {{ SELECT column_name FROM information_schema.columns\nWHERE table_name = 'source1'\nORDER BY ordinal_position;\n}} FROM source1;"
+        code: "SELECT\n    column_name\nFROM information_schema.columns\nWHERE table_name = 'source1'\nORDER BY ordinal_position;"
     },
     {
         name: "Valeurs Ajouter/Enlever",
@@ -182,7 +182,7 @@ export const useTemplateModal = create<TemplateModalState>((set, get) => ({
     },
 
     getModalTitle() {
-        return get().currentLanguageType === 'js' ? '📋 Templates JavaScript' : '📋 Templates SQL'
+        return get().currentLanguageType === 'js' ? 'Templates JavaScript' : 'Templates SQL'
     },
 
     filterTemplates() {

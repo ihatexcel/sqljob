@@ -28,8 +28,9 @@ import { createGroupsSlice } from './slices/groupsSlice'
 import { createCellsSlice } from './slices/cellsSlice'
 import { createFilesSlice } from './slices/filesSlice'
 import { createExecutionSlice } from './slices/executionSlice'
+import { createCopyPasteSlice } from './slices/copyPasteSlice'
 import { ConfigManager } from '../../lib/ConfigManager'
-import { applyThemeFromConfig } from '../components/modals/ThemeCustomModal'
+import { applyThemeFromConfig, initCustomTheme } from '../components/modals/ThemeCustomModal'
 import { DuckDBManager } from '../../lib/DuckDBManager'
 import { CellConfigService, initializeCell } from '../../lib/CellConfigService'
 import { EChartSqlParser } from '../../lib/EChartSqlParser'
@@ -145,6 +146,7 @@ function buildInitialState() {
         localStorage.setItem('sqljob-theme', theme)
         // Appliquer le preset ou CSS custom issu de la config (gist URL, import JSON…)
         if (config.ui?.theme) applyThemeFromConfig(config.ui)
+        else initCustomTheme() // config vide → relire le preset/custom depuis localStorage
     }
     const savedDbEngine = typeof localStorage !== 'undefined' ? localStorage.getItem('sqljob-dbEngine') : null
     const initialDbEngine = config.ui?.dbEngine || savedDbEngine || 'duckdb-wasm'
@@ -236,7 +238,6 @@ function buildInitialState() {
             { type: 'pdfme',              label: 'PDF (pdfme)',               icon: 'picture-as-pdf' },
             { type: 'echart',             label: 'EChart (Apache ECharts)',  icon: 'bar-chart' },
             { type: 'perspective',        label: 'Perspective Viewer',       icon: 'analytics' },
-            { type: 'sqlBlock',           label: 'SQL Block (visuel)',        icon: 'account-tree' },
         ],
 
         _tables: {},
@@ -315,6 +316,7 @@ export const useNotebookStore = create<any>((set, get, api) => {
     const cellsActions = createCellsSlice(set, get)
     const filesActions = createFilesSlice(set, get)
     const executionActions = createExecutionSlice(set, get)
+    const copyPasteActions = createCopyPasteSlice(set, get)
 
     // Helper : vérifie si le panneau 'data' est actuellement visible dans le layout
     function isDataPanelVisible() {
@@ -363,6 +365,7 @@ export const useNotebookStore = create<any>((set, get, api) => {
         ...cellsActions,
         ...filesActions,
         ...executionActions,
+        ...copyPasteActions,
 
         // db.schemaTrees démarre undefined dans DuckDbSlice.
         // deepEquals([], []) bloque la mise à jour si aucune table → schemaTrees reste undefined.

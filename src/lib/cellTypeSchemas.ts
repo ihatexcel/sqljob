@@ -77,7 +77,7 @@ export const CELL_TYPE_SCHEMAS = {
                     executeHandler: 'executeSqlRecursiveParseCell',
                     defaultNamePrefix: 'sql',
                     hideInViewMode: true,
-                    exportFields: ['queries'],
+                    exportFields: ['queries', 'materialize'],
                     initProps: {},
                     commonParams: ['name', 'queries'],
                     queryCount: 1,
@@ -285,24 +285,6 @@ export const CELL_TYPE_SCHEMAS = {
                     bodyFamily: 'sqlWithEchart',
                     bodyConfig: { minHeight: '350px' },
                     bodyDisplay: { showSkeleton: { excludeWhenSqlEditor: true } }
-                },
-                sqlBlock: {
-                    executeHandler: 'executeSqlBlockCell',
-                    defaultNamePrefix: 'sqlBlock',
-                    showNameInHeader: true,
-                    exportFields: ['name', 'sqlBlockConfig'],
-                    initProps: { _availableColumns: [] },
-                    commonParams: ['name', 'title'],
-                    queryCount: 0,
-                    queryNames: [],
-                    specificParams: [],
-                    defaults: {
-                        title: '',
-                        sqlBlockConfig: null, // initialisé dynamiquement à la création
-                    },
-                    bodyFamily: 'sqlBlock',
-                    bodyConfig: {},
-                    bodyDisplay: { showSkeleton: { when: 'running' } }
                 },
                 perspective: {
                     executeHandler: 'executePerspectiveCell',

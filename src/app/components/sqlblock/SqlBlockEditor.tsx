@@ -15,14 +15,22 @@ import { useState, useCallback, useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { SqlMonacoEditor } from '@sqlrooms/sql-editor'
 import { useShallow } from 'zustand/react/shallow'
+import {
+    Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from '@sqlrooms/ui'
 import { useNotebookStore } from '../../store/notebookStore'
 import { DuckDBManager } from '../../../lib/DuckDBManager'
 import {
     astToSql,
     sqlToAst,
+    sqlToAstSmart,
     getEffectiveSql,
     generateMaterializeQuery,
+    buildDisplaySql,
+    stripMaterializePrefix,
     stepSql,
+    quoteId,
+    getAutoCteName,
 } from '../../../lib/SqlBlockService'
 import {
     DUCKDB_TYPES,
@@ -60,17 +68,30 @@ import type {
     UnnestStep,
     JsonExtractStep,
     DateTruncStep,
+    CustomSqlStep,
     SqlBlockMaterialize,
 } from '../../../lib/SqlBlockTypes'
 import { SqlDataTable } from '../SqlDataTable'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
+/** Retourne queries[0] (avec migration depuis cell.json si nécessaire). */
 function getOrInitConfig(cell: any): SqlBlockConfig {
-    if (!cell.sqlBlockConfig) {
-        cell.sqlBlockConfig = createDefaultSqlBlockConfig(cell.sqlBlockConfig?.ast?.source || '')
+    if (!cell.queries?.length) {
+        cell.queries = [{ name: 'main', sql: '', engine: 'sql', clientVisible: false }]
     }
-    return cell.sqlBlockConfig
+    const q = cell.queries[0]
+    // Migration depuis cell.json (anciens sqlBlock)
+    if (cell.json?.ast && !q.ast) {
+        q.ast = cell.json.ast
+        q.degraded = cell.json.degraded ?? false
+        q.manualSql = cell.json.manualSql ?? null
+        delete cell.json
+    }
+    if (!q.ast) q.ast = createDefaultSqlBlockConfig().ast
+    if (q.degraded === undefined) q.degraded = false
+    if (q.manualSql === undefined) q.manualSql = null
+    return q
 }
 
 function commitAstUpdate(cell: any, newAst: Partial<SqlBlockAst>, forceUpdate: () => void) {
@@ -78,16 +99,11 @@ function commitAstUpdate(cell: any, newAst: Partial<SqlBlockAst>, forceUpdate: (
     cfg.ast = { ...cfg.ast, ...newAst }
     cfg.degraded = false
     cfg.manualSql = null
-    const sql = astToSql(cfg.ast)
-    if (!cell.queries) cell.queries = [{ name: 'main', sql, engine: 'sql', clientVisible: false }]
-    else cell.queries[0] = { ...cell.queries[0], sql }
+    const selectSql = astToSql(cfg.ast)
+    cfg.sql = buildDisplaySql(cell.name, selectSql, cfg.ast.materialize ?? 'select')
+    // Sync cell.materialize avec l'AST
+    if (newAst.materialize !== undefined) cell.materialize = newAst.materialize
     forceUpdate()
-}
-
-function stripMaterializePrefix(sql: string): string {
-    const m = sql.match(/^CREATE\s+OR\s+REPLACE\s+(?:VIEW|TABLE)\s+(?:"[^"]*"|\S+)\s+AS\s*\(\s*([\s\S]*?)\s*\)\s*;?\s*$/i)
-    if (m) return m[1].trim()
-    return sql.trim()
 }
 
 // ─── computeStepSchemas ───────────────────────────────────────────────────────
@@ -179,6 +195,9 @@ function applyStepToSchema(step: SqlBlockStep, cols: string[], types: Record<str
             const alias = step.alias || `${step.column}_${step.granularity}`
             return { cols: [...cols, alias], types: { ...types, [alias]: 'TIMESTAMP' } }
         }
+        default:
+            // custom_sql ou type inconnu : schéma non dérivable statiquement, on conserve l'entrée
+            return { cols, types }
     }
 }
 
@@ -198,8 +217,10 @@ function computeStepSchemas(
 }
 
 // ─── useStepEyeData ───────────────────────────────────────────────────────────
-// Gère les tables DuckDB intermédiaires _sqlblock."sb_<cellId>_s<i>" (LIMIT 10).
+// Gère les tables DuckDB intermédiaires _sqlblock."sb_<cellId>_s<i>".
 // Hash-based : seules les étapes dont les prédécesseurs ont changé sont recalculées.
+// Matérialisation proactive : toutes les étapes sont pré-calculées en arrière-plan
+// dès que l'AST ou la source changent.
 
 interface EyeEntry {
     rows: Record<string, any>[]
@@ -208,6 +229,7 @@ interface EyeEntry {
 }
 
 const SQLBLOCK_SCHEMA = '_sqlblock'
+const SUBCELL_LIMIT = 50   // lignes dans les tables intermédiaires
 let sqlblockSchemaEnsured = false
 
 async function ensureSqlblockSchema() {
@@ -216,10 +238,20 @@ async function ensureSqlblockSchema() {
     sqlblockSchemaEnsured = true
 }
 
+/** Nom de la table temp DuckDB pour le step idx d'une cellule. */
+function makeTableRef(cellId: string, idx: number): string {
+    const safeId = cellId.replace(/[^a-zA-Z0-9]/g, '_')
+    const name = `sb_${safeId}_s${idx < 0 ? 'src' : idx}`
+    return `"${SQLBLOCK_SCHEMA}"."${name}"`
+}
+
 function useStepEyeData(cell: any, ast: SqlBlockAst) {
     const [eyeOpen, setEyeOpenState] = useState<number | null>(null)
     const [loading, setLoading] = useState(false)
     const [, bumpRender] = useState(0)
+
+    // Accès direct au store pour appeler refreshDuckdbSchema après matérialisation
+    const refreshDuckdbSchema = useNotebookStore(s => s.refreshDuckdbSchema)
 
     // Refs pour accéder aux valeurs fraîches sans stale-closure
     const astRef = useRef(ast)
@@ -236,34 +268,49 @@ function useStepEyeData(cell: any, ast: SqlBlockAst) {
         return JSON.stringify({ src: a.source, steps: a.steps.slice(0, idx + 1) })
     }
 
-    function tableRef(idx: number): string {
-        const safeId = cellRef.current._id.replace(/[^a-zA-Z0-9]/g, '_')
-        const name = `sb_${safeId}_s${idx < 0 ? 'src' : idx}`
-        return `"${SQLBLOCK_SCHEMA}"."${name}"`
-    }
+    const cellTableRef = (idx: number) => makeTableRef(cellRef.current._id, idx)
 
-    async function doLoad(idx: number) {
+    /**
+     * Matérialise le step idx dans une table temp DuckDB.
+     * Toujours créée en TABLE avec LIMIT, indépendamment de ast.materialize.
+     * On append simplement LIMIT N à la fin du SQL généré (CTE ou SELECT plat),
+     * sans wrapper subquery qui pose problème avec les CTEs inline dans DuckDB WASM.
+     */
+    async function doLoad(idx: number, silent = false) {
         const hash = getHash(idx)
         if (cache.current.get(idx)?.hash === hash) return  // Cache valide
 
-        setLoading(true)
+        if (!silent) setLoading(true)
         try {
             await ensureSqlblockSchema()
-            const ast = astRef.current
-            const tRef = tableRef(idx)
-            const sql = stepSql(ast, idx)
+            const a = astRef.current
+            if (!a.source) return
+            const tRef = cellTableRef(idx)
+            const sql = stepSql(a, idx)
+            if (!sql) return
+            // Append LIMIT directement — fonctionne pour SELECT plat et CTE chain.
+            // On strip un éventuel ; final et on n'ajoute pas de second LIMIT si déjà présent.
+            const bare = sql.trimEnd().replace(/;+\s*$/, '')
+            const hasLimit = /\bLIMIT\s+\d/i.test(bare.replace(/\([\s\S]*?\)/g, ''))
+            // Même pattern que generateMaterializeQuery : sql enveloppé dans des parenthèses.
+            // Le LIMIT est injecté à l'intérieur avant de fermer la parenthèse.
+            const innerSql = hasLimit ? bare : `${bare}\nLIMIT ${SUBCELL_LIMIT}`
             await DuckDBManager.executeQuery(
-                `CREATE OR REPLACE TABLE ${tRef} AS (${sql} LIMIT 10)`
+                `CREATE OR REPLACE TABLE ${tRef} AS (\n${innerSql}\n)`
             )
-            const { rows, schemaTypes } = await DuckDBManager.executeQueryWithSchema(
-                `SELECT * FROM ${tRef}`
-            )
-            cache.current.set(idx, { rows, schemaTypes: schemaTypes || {}, hash })
+            const conn = DuckDBManager.getConnection()
+            const result = await conn.query(`SELECT * FROM ${tRef}`)
+            const rows = result.toArray().map((row: any) => Object.fromEntries(row))
+            const schemaTypes: Record<string, string> = {}
+            for (const field of result.schema.fields) {
+                schemaTypes[field.name] = String(field.type)
+            }
+            cache.current.set(idx, { rows, schemaTypes, hash })
             bumpRender(n => n + 1)
         } catch (err) {
-            console.warn('[sqlblock eye]', err)
+            console.error('[sqlblock eye]', err)
         } finally {
-            setLoading(false)
+            if (!silent) setLoading(false)
         }
     }
 
@@ -274,6 +321,29 @@ function useStepEyeData(cell: any, ast: SqlBlockAst) {
         if (next !== null) doLoad(next)
     }
 
+    // ── Matérialisation proactive en arrière-plan ─────────────────────────
+    // Dès que la source ou les steps changent, on (re)matérialise toutes les
+    // étapes séquentiellement (silent=true → pas de spinner global).
+    // Résultat : eye instant, schéma toujours à jour, indépendant du mode VIEW/TABLE.
+    const bgKey = JSON.stringify({ src: ast.source, steps: ast.steps })
+    useEffect(() => {
+        if (!ast.source || !ast.steps.length) return
+        let cancelled = false
+        const run = async () => {
+            await ensureSqlblockSchema()
+            for (let i = 0; i < astRef.current.steps.length; i++) {
+                if (cancelled) break
+                await doLoad(i, true)   // silent : pas de setLoading
+            }
+            // Rafraîchir le schéma DuckDB affiché dans le layout (panel + autocomplete)
+            if (!cancelled) {
+                try { await refreshDuckdbSchema?.() } catch { /* ignore */ }
+            }
+        }
+        run()
+        return () => { cancelled = true }
+    }, [bgKey])     // eslint-disable-line react-hooks/exhaustive-deps
+
     // Auto-refresh si l'œil est ouvert et que les prédécesseurs changent
     const upstreamKey = eyeOpen !== null
         ? JSON.stringify([ast.source, ...ast.steps.slice(0, eyeOpen + 1)])
@@ -282,13 +352,14 @@ function useStepEyeData(cell: any, ast: SqlBlockAst) {
     useEffect(() => {
         if (eyeOpen === null) return
         doLoad(eyeOpen)
-    }, [upstreamKey, eyeOpen])
+    }, [upstreamKey, eyeOpen])  // eslint-disable-line react-hooks/exhaustive-deps
 
     return {
         eyeOpen,
         toggleEye,
         loading,
         getEyeData: (idx: number): EyeEntry | null => cache.current.get(idx) ?? null,
+        cellTableRef,
     }
 }
 
@@ -491,12 +562,203 @@ const FILTER_OPS: { op: FilterOp; label: string }[] = [
     { op: 'between', label: 'BETWEEN' },
 ]
 
-function FilterConditionRow({ cond, availableCols, onChange, onRemove, onMoveUp, onMoveDown }: {
+const DISTINCT_INITIAL_SELECT_LIMIT = 100
+const DISTINCT_INITIAL_FROM_LIMIT = 10000
+
+/** Dropdown distinct values — mono (=, between) ou multi (IN, NOT IN) */
+function DistinctDropdown({ multi = false, value = '', onChangeSingle, values = [], onChangeMulti, column, fetchDistinctValues, placeholder = 'valeur', className = '' }: {
+    multi?: boolean
+    value?: string; onChangeSingle?: (v: string) => void
+    values?: string[]; onChangeMulti?: (v: string[]) => void
+    column: string
+    fetchDistinctValues?: (col: string, selectLimit: number, fromLimit: number) => Promise<{ values: string[]; hasMore: boolean }>
+    placeholder?: string; className?: string
+}) {
+    const [open, setOpen] = useState(false)
+    const [search, setSearch] = useState('')
+    const [distinctValues, setDistinctValues] = useState<string[]>([])
+    const [hasMore, setHasMore] = useState(false)
+    // loading = chargement initial (liste vide), refreshing = rechargement (garde la liste)
+    const [loading, setLoading] = useState(false)
+    const [refreshing, setRefreshing] = useState(false)
+    const [selectLim, setSelectLim] = useState(DISTINCT_INITIAL_SELECT_LIMIT)
+    const [fromLim, setFromLim] = useState(DISTINCT_INITIAL_FROM_LIMIT)
+    const wrapRef = useRef<HTMLDivElement>(null)
+
+    async function load(sl: number, fl: number, isInitial = false) {
+        if (!fetchDistinctValues || !column) return
+        if (isInitial) setLoading(true); else setRefreshing(true)
+        try {
+            const res = await fetchDistinctValues(column, sl, fl)
+            setDistinctValues(res.values)
+            setHasMore(res.hasMore)
+        } finally {
+            setLoading(false)
+            setRefreshing(false)
+        }
+    }
+
+    useEffect(() => {
+        if (open) {
+            setDistinctValues([])
+            setSelectLim(DISTINCT_INITIAL_SELECT_LIMIT)
+            setFromLim(DISTINCT_INITIAL_FROM_LIMIT)
+            load(DISTINCT_INITIAL_SELECT_LIMIT, DISTINCT_INITIAL_FROM_LIMIT, true)
+        }
+    }, [open, column])
+
+    useEffect(() => {
+        if (!open) return
+        function onMouseDown(e: MouseEvent) {
+            if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false)
+        }
+        document.addEventListener('mousedown', onMouseDown)
+        return () => document.removeEventListener('mousedown', onMouseDown)
+    }, [open])
+
+    function handleLoadMore(e: React.MouseEvent) {
+        e.preventDefault(); e.stopPropagation()
+        const newSl = selectLim === 0 ? 0 : selectLim * 2
+        const newFl = fromLim === 0 ? 0 : fromLim * 10
+        setSelectLim(newSl); setFromLim(newFl)
+        load(newSl, newFl)
+    }
+
+    function handleLoadAll(e: React.MouseEvent) {
+        e.preventDefault(); e.stopPropagation()
+        setSelectLim(0); setFromLim(0)
+        load(0, 0)
+    }
+
+    function toggle(v: string) {
+        onChangeMulti?.(values.includes(v) ? values.filter(x => x !== v) : [...values, v])
+    }
+
+    const filtered = multi
+        ? distinctValues.filter(v => !search || v.toLowerCase().includes(search.toLowerCase()))
+        : distinctValues.filter(v => !value || v.toLowerCase().includes(value.toLowerCase()))
+
+    return (
+        <div ref={wrapRef} className={`relative ${className}`}>
+            {/* Déclencheur */}
+            {multi ? (
+                <div className="min-h-6 flex flex-wrap gap-0.5 items-center rounded border border-border bg-background px-1.5 py-0.5 cursor-pointer text-xs"
+                    onClick={() => setOpen(o => !o)}>
+                    {values.length === 0
+                        ? <span className="text-muted-foreground italic">Sélectionner…</span>
+                        : values.map(v => (
+                            <span key={v} className="inline-flex items-center gap-0.5 bg-primary/15 text-primary rounded px-1 py-0 font-mono">
+                                {v}
+                                <button className="hover:text-destructive leading-none"
+                                    onMouseDown={e => { e.stopPropagation(); toggle(v) }}>×</button>
+                            </span>
+                        ))}
+                </div>
+            ) : (
+                <input type="text"
+                    className="w-full h-6 rounded border border-border bg-background px-1.5 text-xs font-mono"
+                    value={value} onChange={e => onChangeSingle?.(e.target.value)}
+                    placeholder={placeholder}
+                    onFocus={() => fetchDistinctValues && setOpen(true)} />
+            )}
+
+            {/* Dropdown panel */}
+            {open && fetchDistinctValues && (
+                <div className="absolute z-50 mt-0.5 left-0 right-0 bg-popover border border-border rounded shadow-lg flex flex-col max-h-56 text-xs"
+                    onClick={e => e.stopPropagation()}
+                    onMouseDown={e => e.stopPropagation()}>
+                    {/* Recherche + coche tout/rien (multi seulement) */}
+                    {multi && (
+                        <div className="px-2 py-1 border-b border-border flex items-center gap-1.5">
+                            <input autoFocus className="flex-1 h-5 bg-transparent outline-none placeholder:text-muted-foreground min-w-0"
+                                placeholder="Rechercher…" value={search} onChange={e => setSearch(e.target.value)} />
+                            {filtered.length > 0 && (() => {
+                                const allChecked = filtered.every(v => values.includes(v))
+                                const someChecked = !allChecked && filtered.some(v => values.includes(v))
+                                return (
+                                    <button
+                                        className="shrink-0 w-4 h-4 flex items-center justify-center rounded border border-border hover:bg-muted"
+                                        title={allChecked ? 'Désélectionner tout l\'affiché' : 'Sélectionner tout l\'affiché'}
+                                        onMouseDown={e => {
+                                            e.preventDefault()
+                                            if (allChecked) {
+                                                onChangeMulti?.(values.filter(v => !filtered.includes(v)))
+                                            } else {
+                                                const toAdd = filtered.filter(v => !values.includes(v))
+                                                onChangeMulti?.([...values, ...toAdd])
+                                            }
+                                        }}>
+                                        <span className={`text-[10px] leading-none ${allChecked ? 'text-primary' : someChecked ? 'text-primary/50' : 'text-muted-foreground'}`}>
+                                            {allChecked ? '✓' : someChecked ? '–' : '☐'}
+                                        </span>
+                                    </button>
+                                )
+                            })()}
+                        </div>
+                    )}
+                    {/* Liste */}
+                    <div className="overflow-y-auto flex-1">
+                        {loading && <div className="px-2 py-1 text-muted-foreground italic">Chargement…</div>}
+                        {!loading && filtered.length === 0 && <div className="px-2 py-1 text-muted-foreground italic">Aucune valeur</div>}
+                        {!loading && filtered.map(v => multi ? (
+                            <button key={v}
+                                className={`w-full text-left px-2 py-0.5 flex items-center gap-1.5 hover:bg-muted ${values.includes(v) ? 'font-medium text-primary' : ''}`}
+                                onMouseDown={e => { e.preventDefault(); toggle(v) }}>
+                                <span className="w-3 shrink-0">{values.includes(v) ? '✓' : ''}</span>
+                                <span className="truncate font-mono">{v}</span>
+                            </button>
+                        ) : (
+                            <button key={v} className="w-full text-left px-2 py-0.5 hover:bg-muted truncate font-mono"
+                                onMouseDown={e => { e.preventDefault(); onChangeSingle?.(v); setOpen(false) }}>
+                                {v}
+                            </button>
+                        ))}
+                    </div>
+                    {/* Footer */}
+                    <div className="border-t border-border px-2 py-0.5 flex items-center gap-2 text-muted-foreground shrink-0">
+                        <span className="text-[10px]">{filtered.length} valeur{filtered.length !== 1 ? 's' : ''}</span>
+                        {multi && values.length > 0 && (
+                            <span className="text-[10px] text-primary">{values.length} sélectionnée{values.length > 1 ? 's' : ''}</span>
+                        )}
+                        {refreshing && <span className="text-[10px] italic ml-1">Chargement…</span>}
+                        {!loading && hasMore && (
+                            <>
+                                <button className="ml-auto text-primary hover:underline font-medium" onMouseDown={handleLoadMore}>Charger plus…</button>
+                                <button className="text-primary hover:underline font-medium" onMouseDown={handleLoadAll}>Tout</button>
+                            </>
+                        )}
+                    </div>
+                </div>
+            )}
+        </div>
+    )
+}
+
+function DistinctValueInput({ value, onChange, column, fetchDistinctValues, placeholder = 'valeur', className = '' }: {
+    value: string; onChange: (v: string) => void
+    column: string
+    fetchDistinctValues?: (col: string, selectLimit: number, fromLimit: number) => Promise<{ values: string[]; hasMore: boolean }>
+    placeholder?: string; className?: string
+}) {
+    return <DistinctDropdown value={value} onChangeSingle={onChange} column={column} fetchDistinctValues={fetchDistinctValues} placeholder={placeholder} className={className} />
+}
+
+function DistinctMultiInput({ values, onChange, column, fetchDistinctValues, className = '' }: {
+    values: string[]; onChange: (v: string[]) => void
+    column: string
+    fetchDistinctValues?: (col: string, selectLimit: number, fromLimit: number) => Promise<{ values: string[]; hasMore: boolean }>
+    className?: string
+}) {
+    return <DistinctDropdown multi values={values} onChangeMulti={onChange} column={column} fetchDistinctValues={fetchDistinctValues} className={className} />
+}
+
+function FilterConditionRow({ cond, availableCols, onChange, onRemove, onMoveUp, onMoveDown, fetchDistinctValues }: {
     cond: FilterCondition; availableCols: string[]
     onChange: (patch: Partial<FilterCondition>) => void
     onRemove: () => void
     onMoveUp?: () => void
     onMoveDown?: () => void
+    fetchDistinctValues?: (col: string, selectLimit: number, fromLimit: number) => Promise<{ values: string[]; hasMore: boolean }>
 }) {
     const noVal = cond.op === 'is_null' || cond.op === 'not_null'
     const isBetween = cond.op === 'between'
@@ -504,19 +766,40 @@ function FilterConditionRow({ cond, availableCols, onChange, onRemove, onMoveUp,
     return (
         <div className="flex flex-wrap items-center gap-1">
             <ColSelect value={cond.column} cols={availableCols} onChange={v => onChange({ column: v })} className="flex-1 min-w-20" />
-            <select className="h-6 rounded border border-border bg-background px-1 text-xs w-24" value={cond.op} onChange={e => onChange({ op: e.target.value as FilterOp })}>
+            <select className="h-6 rounded border border-border bg-background px-1 text-xs w-24" value={cond.op} onChange={e => {
+                const newOp = e.target.value as FilterOp
+                const wasMulti = cond.op === 'in' || cond.op === 'not_in'
+                const isNowMulti = newOp === 'in' || newOp === 'not_in'
+                const patch: Partial<FilterCondition> = { op: newOp }
+                if (!wasMulti && isNowMulti && cond.value) patch.values = [cond.value]
+                if (wasMulti && !isNowMulti && cond.values?.length) patch.value = cond.values[0]
+                onChange(patch)
+            }}>
                 {FILTER_OPS.map(o => <option key={o.op} value={o.op}>{o.label}</option>)}
             </select>
             {!noVal && !isBetween && !isMulti && (
-                <TxtInput value={cond.value ?? ''} onChange={v => onChange({ value: v })} placeholder="valeur" className="flex-1 min-w-16" />
+                <DistinctValueInput
+                    value={cond.value ?? ''}
+                    onChange={v => onChange({ value: v })}
+                    column={cond.column}
+                    fetchDistinctValues={fetchDistinctValues}
+                    placeholder="valeur"
+                    className="flex-1 min-w-16"
+                />
             )}
             {isBetween && <>
-                <TxtInput value={cond.value ?? ''} onChange={v => onChange({ value: v })} placeholder="de" className="w-20" />
+                <DistinctValueInput value={cond.value ?? ''} onChange={v => onChange({ value: v })} column={cond.column} fetchDistinctValues={fetchDistinctValues} placeholder="de" className="w-20" />
                 <span className="text-xs text-muted-foreground">et</span>
-                <TxtInput value={cond.valueTo ?? ''} onChange={v => onChange({ valueTo: v })} placeholder="à" className="w-20" />
+                <DistinctValueInput value={cond.valueTo ?? ''} onChange={v => onChange({ valueTo: v })} column={cond.column} fetchDistinctValues={fetchDistinctValues} placeholder="à" className="w-20" />
             </>}
             {isMulti && (
-                <TxtInput value={(cond.values ?? []).join(', ')} onChange={v => onChange({ values: v.split(',').map(x => x.trim()).filter(Boolean) })} placeholder="val1, val2…" className="flex-1 min-w-24" />
+                <DistinctMultiInput
+                    values={cond.values ?? []}
+                    onChange={v => onChange({ values: v })}
+                    column={cond.column}
+                    fetchDistinctValues={fetchDistinctValues}
+                    className="flex-1 min-w-32"
+                />
             )}
             <MoveBtns onUp={onMoveUp} onDown={onMoveDown} />
             <RemoveBtn onClick={onRemove} />
@@ -570,7 +853,7 @@ function moveArr(arr: any[], i: number, delta: number) {
     return next
 }
 
-function FilterGroupUI({ group, onUpdate, onRemove, onMoveUp, onMoveDown, availableCols, depth = 0 }: {
+function FilterGroupUI({ group, onUpdate, onRemove, onMoveUp, onMoveDown, availableCols, depth = 0, fetchDistinctValues }: {
     group: FilterGroup
     onUpdate: (g: FilterGroup) => void
     onRemove?: () => void
@@ -578,6 +861,7 @@ function FilterGroupUI({ group, onUpdate, onRemove, onMoveUp, onMoveDown, availa
     onMoveDown?: () => void
     availableCols: string[]
     depth?: number
+    fetchDistinctValues?: (col: string, limit: number) => Promise<{ values: string[]; hasMore: boolean }>
 }) {
     const g = normalizeFilterGroup(group)
     const items = g.items ?? []
@@ -635,6 +919,7 @@ function FilterGroupUI({ group, onUpdate, onRemove, onMoveUp, onMoveDown, availa
                             onRemove={() => setItems(items.filter((_, idx) => idx !== i))}
                             onMoveUp={i > 0 ? () => setItems(moveArr(items, i, -1)) : undefined}
                             onMoveDown={i < items.length - 1 ? () => setItems(moveArr(items, i, 1)) : undefined}
+                            fetchDistinctValues={fetchDistinctValues}
                         />
                     ) : (
                         <FilterGroupUI
@@ -645,6 +930,7 @@ function FilterGroupUI({ group, onUpdate, onRemove, onMoveUp, onMoveDown, availa
                             onMoveDown={i < items.length - 1 ? () => setItems(moveArr(items, i, 1)) : undefined}
                             availableCols={availableCols}
                             depth={depth + 1}
+                            fetchDistinctValues={fetchDistinctValues}
                         />
                     )}
                 </div>
@@ -663,7 +949,7 @@ function FilterGroupUI({ group, onUpdate, onRemove, onMoveUp, onMoveDown, availa
     )
 }
 
-function FilterRowsStepUI({ step, availableCols, onChange }: { step: FilterRowsStep; availableCols: string[]; onChange: (s: FilterRowsStep) => void }) {
+function FilterRowsStepUI({ step, availableCols, onChange, fetchDistinctValues }: { step: FilterRowsStep; availableCols: string[]; onChange: (s: FilterRowsStep) => void; fetchDistinctValues?: (col: string, limit: number) => Promise<{ values: string[]; hasMore: boolean }> }) {
     // Normalise rétrocompat : ancien format conditions[] → groups
     const groups: FilterGroup[] = step.groups?.length
         ? step.groups
@@ -701,6 +987,7 @@ function FilterRowsStepUI({ step, availableCols, onChange }: { step: FilterRowsS
                         onMoveDown={gi < groups.length - 1 ? () => updateGroups(moveArr(groups, gi, 1)) : undefined}
                         availableCols={availableCols}
                         depth={0}
+                        fetchDistinctValues={fetchDistinctValues}
                     />
                 </div>
             ))}
@@ -1194,12 +1481,17 @@ function DateTruncStepUI({ step, availableCols, onChange }: { step: DateTruncSte
 
 // ─── Résumé inline d'un step ──────────────────────────────────────────────────
 
+function truncateCols(items: string[], max = 4): string {
+    if (items.length <= max) return items.join(', ')
+    return items.slice(0, max).join(', ') + '…'
+}
+
 function stepSummary(step: SqlBlockStep): string {
     switch (step.type) {
-        case 'select_columns':  return step.columns.length ? step.columns.join(', ') : '—'
-        case 'exclude_columns': return step.columns.length ? step.columns.join(', ') : '—'
-        case 'rename_columns':  return step.renames.length ? step.renames.map(r => `${r.from}→${r.to}`).join(', ') : '—'
-        case 'change_type':     return step.changes.length ? step.changes.map(c => `${c.column}:${c.targetType}`).join(', ') : '—'
+        case 'select_columns':  return step.columns.length ? truncateCols(step.columns) : '—'
+        case 'exclude_columns': return step.columns.length ? truncateCols(step.columns) : '—'
+        case 'rename_columns':  return step.renames.length ? truncateCols(step.renames.map(r => `${r.from}→${r.to}`)) : '—'
+        case 'change_type':     return step.changes.length ? truncateCols(step.changes.map(c => `${c.column}:${c.targetType}`)) : '—'
         case 'filter_rows': {
             const groups = step.groups?.length ? step.groups : (step.conditions?.length ? [{ items: step.conditions.map(c => ({ kind: 'cond', cond: c })) }] : [])
             function countItems(g): number {
@@ -1209,30 +1501,136 @@ function stepSummary(step: SqlBlockStep): string {
             const neg = groups.some(g => g.negate)
             return n ? `${n} condition${n > 1 ? 's' : ''}${groups.length > 1 ? ` (${groups.length} groupes)` : ''}${neg ? ' [NOT]' : ''}` : '—'
         }
-        case 'sort':            return step.keys.length ? step.keys.map(k => `${k.column} ${k.direction === 'asc' ? '↑' : '↓'}`).join(', ') : '—'
+        case 'sort':            return step.keys.length ? truncateCols(step.keys.map(k => `${k.column} ${k.direction === 'asc' ? '↑' : '↓'}`)) : '—'
         case 'top_n':           return step.mode === 'limit' ? `${step.n} lignes` : `${step.n}% échantillon`
-        case 'derive':          return step.columns.length ? step.columns.map(c => c.name).join(', ') : '—'
-        case 'fill_null':       return step.fills.length ? step.fills.map(f => f.column).join(', ') : '—'
-        case 'group_by':        return step.groupCols.length ? step.groupCols.join(', ') : '—'
+        case 'derive':          return step.columns.length ? truncateCols(step.columns.map(c => c.name)) : '—'
+        case 'fill_null':       return step.fills.length ? truncateCols(step.fills.map(f => f.column)) : '—'
+        case 'group_by':        return step.groupCols.length ? truncateCols(step.groupCols) : '—'
         case 'join':            return step.rightTable || '—'
         case 'union':           return step.table || '—'
         case 'pivot':           return step.onColumn || '—'
-        case 'unpivot':         return step.columns.length ? step.columns.join(', ') : '—'
+        case 'unpivot':         return step.columns.length ? truncateCols(step.columns) : '—'
         case 'window':          return step.columns.length ? `${step.columns.length} col.` : '—'
         case 'unnest':          return step.column || '—'
         case 'json_extract':    return step.column || '—'
         case 'date_trunc':      return step.column ? `${step.column} → ${step.granularity}` : '—'
+        case 'custom_sql':      return step.sql ? step.sql.slice(0, 40).replace(/\n/g, ' ') + (step.sql.length > 40 ? '…' : '') : '—'
         default:                return ''
     }
 }
 
-// ─── StepConfigModal ──────────────────────────────────────────────────────────
+// ─── CustomSqlStepUI ──────────────────────────────────────────────────────────
 
-function StepConfigModal({ step, index, availableCols, availableColTypes, onUpdate, onClose }: {
+function CustomSqlStepUI({ step, onChange }: { step: CustomSqlStep; onChange: (s: CustomSqlStep) => void }) {
+    return (
+        <div className="flex flex-col gap-3">
+            <p className="text-xs text-muted-foreground">
+                Écrivez du SQL libre. Utilisez <code className="bg-muted px-1 rounded font-mono">{'{{subquery}}'}</code> pour référencer le résultat de l'étape précédente (ou la source si c'est la première étape).
+            </p>
+            <textarea
+                className="w-full h-48 text-xs font-mono rounded-md border border-border bg-background p-2 resize-none focus:outline-none focus:ring-1 focus:ring-primary"
+                value={step.sql}
+                onChange={e => onChange({ ...step, sql: e.target.value })}
+                spellCheck={false}
+                placeholder="SELECT * FROM {{subquery}} WHERE ..."
+            />
+        </div>
+    )
+}
+
+// ─── useStepInputSchemas ──────────────────────────────────────────────────────
+// Récupère le schéma réel en entrée de chaque step.
+// Stratégie : lit d'abord la table temp déjà matérialisée par useStepEyeData
+// (makeTableRef(cellId, N-1)), fallback sur une requête SQL LIMIT 0.
+
+interface DynamicSchema { columns: string[]; colTypes: Record<string, string> }
+
+function useStepInputSchemas(ast: SqlBlockAst, cellId: string) {
+    const [dynamicSchemas, setDynamicSchemas] = useState<Record<number, DynamicSchema>>({})
+    const cacheRef = useRef<Map<string, DynamicSchema>>(new Map())
+    const astRef = useRef(ast)
+    astRef.current = ast
+
+    const fetchSchemaForStep = useCallback(async (stepIdx: number) => {
+        const a = astRef.current
+        if (!a.source) return
+        const cacheKey = JSON.stringify({ src: a.source, steps: a.steps.slice(0, stepIdx) })
+
+        const cached = cacheRef.current.get(cacheKey)
+        if (cached) {
+            setDynamicSchemas(prev => ({ ...prev, [stepIdx]: cached }))
+            return
+        }
+
+        try {
+            let schemaTypes: Record<string, string> | undefined
+
+            // 1. Essaie la table temp déjà matérialisée (makeTableRef(cellId, stepIdx-1))
+            //    Elle existe si la matérialisation proactive a tourné.
+            if (stepIdx > 0) {
+                const tRef = makeTableRef(cellId, stepIdx - 1)
+                try {
+                    const conn = DuckDBManager.getConnection()
+                    if (conn) {
+                        const result = await conn.query(`SELECT * FROM ${tRef} LIMIT 0`)
+                        schemaTypes = {}
+                        for (const field of result.schema.fields) {
+                            schemaTypes[field.name] = String(field.type)
+                        }
+                    }
+                } catch { /* table pas encore créée → fallback */ }
+            }
+
+            // 2. Fallback : LIMIT 0 directement sur le SQL amont (sans wrapper subquery)
+            if (!schemaTypes) {
+                const inputSql = stepIdx === 0
+                    ? `SELECT * FROM ${quoteId(a.source)}`
+                    : stepSql(a, stepIdx - 1)
+                if (!inputSql) return
+                const bare = inputSql.trimEnd().replace(/;+\s*$/, '')
+                const hasLimit = /\bLIMIT\s+\d/i.test(bare.replace(/\([\s\S]*?\)/g, ''))
+                const sql0 = hasLimit ? bare : `${bare}\nLIMIT 0`
+                const conn = DuckDBManager.getConnection()
+                if (!conn) return
+                const result = await conn.query(sql0)
+                for (const field of result.schema.fields) {
+                    if (!schemaTypes) schemaTypes = {}
+                    schemaTypes[field.name] = String(field.type)
+                }
+            }
+
+            if (!schemaTypes) return
+            const result: DynamicSchema = { columns: Object.keys(schemaTypes), colTypes: schemaTypes }
+            cacheRef.current.set(cacheKey, result)
+            setDynamicSchemas(prev => ({ ...prev, [stepIdx]: result }))
+        } catch (err) {
+            console.warn('[sqlblock input-schema]', err)
+        }
+    }, [cellId])
+
+    /** Invalide le cache pour les steps >= dirtyFromStep (AST a changé) */
+    const invalidateFrom = useCallback((dirtyFromStep: number, a: SqlBlockAst) => {
+        for (const [key] of cacheRef.current) {
+            try {
+                const parsed = JSON.parse(key) as { src: string; steps: unknown[] }
+                if (parsed.src !== a.source || parsed.steps.length >= dirtyFromStep)
+                    cacheRef.current.delete(key)
+            } catch { cacheRef.current.delete(key) }
+        }
+    }, [])
+
+    return { dynamicSchemas, fetchSchemaForStep, invalidateFrom }
+}
+
+
+
+function StepConfigModal({ step, index, availableCols, availableColTypes, onUpdate, onClose, fetchDistinctValues, otherStepNames }: {
     step: SqlBlockStep; index: number
     availableCols: string[]; availableColTypes: Record<string, string>
     onUpdate: (idx: number, s: SqlBlockStep) => void
     onClose: () => void
+    fetchDistinctValues?: (col: string, limit: number) => Promise<{ values: string[]; hasMore: boolean }>
+    otherStepNames: string[]
 }) {
     // Fermeture sur Échap
     useEffect(() => {
@@ -1241,12 +1639,16 @@ function StepConfigModal({ step, index, availableCols, availableColTypes, onUpda
         return () => document.removeEventListener('keydown', handler)
     }, [onClose])
 
+    const nameValue = step.name ?? ''
+    const descValue = step.description ?? ''
+    const nameConflict = nameValue.trim() !== '' && otherStepNames.includes(nameValue.trim())
+
     return createPortal(
         <div className="fixed inset-0 z-[9998] flex items-center justify-center">
             {/* Backdrop */}
             <div className="absolute inset-0 bg-black/50" onClick={onClose} />
             {/* Modale */}
-            <div className="relative z-10 bg-popover border border-border rounded-xl shadow-2xl w-full max-w-lg mx-4 max-h-[85vh] flex flex-col">
+            <div className="relative z-10 bg-popover border border-border rounded-xl shadow-2xl w-full max-w-lg mx-4 h-[96vh] flex flex-col">
                 {/* Header */}
                 <div className="flex items-center gap-2 px-4 py-3 border-b border-border shrink-0">
                     <span className="text-xs text-muted-foreground font-mono w-5">{index + 1}.</span>
@@ -1254,25 +1656,56 @@ function StepConfigModal({ step, index, availableCols, availableColTypes, onUpda
                     <button onClick={onClose} className="text-muted-foreground hover:text-foreground w-6 h-6 flex items-center justify-center rounded hover:bg-muted text-lg leading-none">×</button>
                 </div>
                 {/* Corps — scrollable */}
-                <div className="overflow-y-auto px-4 py-4 flex-1">
-                    {step.type === 'select_columns' && <SelectColumnsStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
-                    {step.type === 'exclude_columns' && <ExcludeColumnsStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
-                    {step.type === 'change_type' && <ChangeTypeStepUI step={step} availableCols={availableCols} availableColTypes={availableColTypes} onChange={s => onUpdate(index, s)} />}
-                    {step.type === 'filter_rows' && <FilterRowsStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
-                    {step.type === 'sort' && <SortStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
-                    {step.type === 'top_n' && <TopNStepUI step={step} onChange={s => onUpdate(index, s)} />}
-                    {step.type === 'rename_columns' && <RenameColumnsStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
-                    {step.type === 'derive' && <DeriveStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
-                    {step.type === 'fill_null' && <FillNullStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
-                    {step.type === 'group_by' && <GroupByStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
-                    {step.type === 'join' && <JoinStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
-                    {step.type === 'union' && <UnionStepUI step={step} onChange={s => onUpdate(index, s)} />}
-                    {step.type === 'pivot' && <PivotStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
-                    {step.type === 'unpivot' && <UnpivotStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
-                    {step.type === 'window' && <WindowStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
-                    {step.type === 'unnest' && <UnnestStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
-                    {step.type === 'json_extract' && <JsonExtractStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
-                    {step.type === 'date_trunc' && <DateTruncStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
+                <div className="overflow-y-auto px-4 py-4 flex-1 flex flex-col gap-4">
+                    {/* Nom et description */}
+                    <div className="flex flex-col gap-2 pb-3 border-b border-border">
+                        <div>
+                            <label className="text-xs text-muted-foreground mb-1 block">Nom de la sous-requête</label>
+                            <input
+                                type="text"
+                                value={nameValue}
+                                onChange={e => onUpdate(index, { ...step, name: e.target.value || undefined })}
+                                placeholder={`${getAutoCteName(step, index)} (auto)`}
+                                className={`w-full px-2 py-1 text-xs border rounded bg-background font-mono ${nameConflict ? 'border-destructive' : 'border-border'}`}
+                                spellCheck={false}
+                            />
+                            {nameConflict && (
+                                <p className="text-xs text-destructive mt-0.5">Ce nom est déjà utilisé par un autre step.</p>
+                            )}
+                        </div>
+                        <div>
+                            <label className="text-xs text-muted-foreground mb-1 block">Description</label>
+                            <textarea
+                                value={descValue}
+                                onChange={e => onUpdate(index, { ...step, description: e.target.value || undefined })}
+                                placeholder="Description de cette étape…"
+                                rows={2}
+                                className="w-full px-2 py-1 text-xs border border-border rounded bg-background resize-none"
+                            />
+                        </div>
+                    </div>
+                    {/* Config spécifique au type de step */}
+                    <div>
+                        {step.type === 'select_columns' && <SelectColumnsStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
+                        {step.type === 'exclude_columns' && <ExcludeColumnsStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
+                        {step.type === 'change_type' && <ChangeTypeStepUI step={step} availableCols={availableCols} availableColTypes={availableColTypes} onChange={s => onUpdate(index, s)} />}
+                        {step.type === 'filter_rows' && <FilterRowsStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} fetchDistinctValues={fetchDistinctValues} />}
+                        {step.type === 'sort' && <SortStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
+                        {step.type === 'top_n' && <TopNStepUI step={step} onChange={s => onUpdate(index, s)} />}
+                        {step.type === 'rename_columns' && <RenameColumnsStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
+                        {step.type === 'derive' && <DeriveStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
+                        {step.type === 'fill_null' && <FillNullStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
+                        {step.type === 'group_by' && <GroupByStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
+                        {step.type === 'join' && <JoinStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
+                        {step.type === 'union' && <UnionStepUI step={step} onChange={s => onUpdate(index, s)} />}
+                        {step.type === 'pivot' && <PivotStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
+                        {step.type === 'unpivot' && <UnpivotStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
+                        {step.type === 'window' && <WindowStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
+                        {step.type === 'unnest' && <UnnestStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
+                        {step.type === 'json_extract' && <JsonExtractStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
+                        {step.type === 'date_trunc' && <DateTruncStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
+                        {step.type === 'custom_sql' && <CustomSqlStepUI step={step} onChange={s => onUpdate(index, s)} />}
+                    </div>
                 </div>
             </div>
         </div>,
@@ -1284,7 +1717,8 @@ function StepConfigModal({ step, index, availableCols, availableColTypes, onUpda
 
 function StepItem({ step, index, totalSteps, availableCols, availableColTypes,
     eyeOpen, eyeLoading, onEyeToggle,
-    onUpdate, onRemove, onMove }: {
+    onUpdate, onRemove, onMove,
+    configOpen, onConfigOpen, onConfigClose, fetchDistinctValues, otherStepNames }: {
     step: SqlBlockStep; index: number; totalSteps: number
     availableCols: string[]; availableColTypes: Record<string, string>
     eyeOpen: boolean; eyeLoading: boolean
@@ -1292,10 +1726,16 @@ function StepItem({ step, index, totalSteps, availableCols, availableColTypes,
     onUpdate: (idx: number, s: SqlBlockStep) => void
     onRemove: (idx: number) => void
     onMove: (idx: number, dir: -1 | 1) => void
+    configOpen: boolean
+    onConfigOpen: () => void
+    onConfigClose: () => void
+    fetchDistinctValues?: (col: string, limit: number) => Promise<{ values: string[]; hasMore: boolean }>
+    otherStepNames: string[]
 }) {
-    const [configOpen, setConfigOpen] = useState(false)
     const [pendingDelete, setPendingDelete] = useState(false)
     const summary = stepSummary(step)
+    const customName = step.name?.trim()
+    const hasDesc = !!step.description?.trim()
 
     return (
         <>
@@ -1316,10 +1756,24 @@ function StepItem({ step, index, totalSteps, availableCols, availableColTypes,
 
                     <span className="text-xs text-muted-foreground font-mono w-4 shrink-0">{index + 1}.</span>
                     {/* Nom + résumé — clic ouvre la config */}
-                    <button className="flex-1 text-left min-w-0" onClick={() => setConfigOpen(true)}>
-                        <span className="text-xs font-medium">{STEP_LABELS[step.type]}</span>
-                        {summary && summary !== '—' && (
-                            <span className="ml-1.5 text-xs text-muted-foreground truncate">{summary}</span>
+                    <button className="flex-1 text-left min-w-0" onClick={onConfigOpen}>
+                        <div className="flex items-center gap-1 flex-wrap">
+                            <span className="text-xs font-medium">{STEP_LABELS[step.type]}</span>
+                            {customName && (
+                                <span className="text-[10px] font-mono text-primary/80 bg-primary/10 px-1 rounded leading-4 shrink-0" title="Nom de la sous-requête">{customName}</span>
+                            )}
+                            {hasDesc && !customName && (
+                                <span className="text-muted-foreground opacity-60" title={step.description}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                </span>
+                            )}
+                        </div>
+                        {hasDesc ? (
+                            <span className="block text-xs text-muted-foreground truncate italic">{step.description}</span>
+                        ) : (
+                            summary && summary !== '—' && (
+                                <span className="block text-xs text-muted-foreground truncate">{summary}</span>
+                            )
                         )}
                     </button>
 
@@ -1335,7 +1789,7 @@ function StepItem({ step, index, totalSteps, availableCols, availableColTypes,
                         ) : (
                             <>
                                 {/* Roue crantée — ouvre la modale de config */}
-                                <button onClick={() => setConfigOpen(true)}
+                                <button onClick={onConfigOpen}
                                     className="text-muted-foreground hover:text-foreground w-6 h-6 flex items-center justify-center rounded hover:bg-muted transition-colors"
                                     title="Configurer ce step">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -1357,7 +1811,9 @@ function StepItem({ step, index, totalSteps, availableCols, availableColTypes,
             {configOpen && (
                 <StepConfigModal step={step} index={index}
                     availableCols={availableCols} availableColTypes={availableColTypes}
-                    onUpdate={onUpdate} onClose={() => setConfigOpen(false)} />
+                    onUpdate={onUpdate} onClose={onConfigClose}
+                    fetchDistinctValues={fetchDistinctValues}
+                    otherStepNames={otherStepNames} />
             )}
         </>
     )
@@ -1385,85 +1841,187 @@ function defaultStep(type: SqlBlockStep['type']): SqlBlockStep {
         case 'unnest':          return { type, column: '', alias: 'item', keepEmpty: false }
         case 'json_extract':    return { type, column: '', extractions: [] }
         case 'date_trunc':      return { type, column: '', granularity: 'month', mode: 'replace' }
+        case 'custom_sql':      return { type, sql: 'SELECT * FROM {{subquery}}' }
     }
 }
 
-function AddStepMenu({ onAdd }: { onAdd: (step: SqlBlockStep) => void }) {
+function AddStepModal({ onAdd, availableCols, availableColTypes, fetchDistinctValues, otherStepNames, stepIndex, onOpen }: {
+    onAdd: (step: SqlBlockStep) => void
+    availableCols: string[]; availableColTypes: Record<string, string>
+    fetchDistinctValues?: (col: string, selectLimit: number, fromLimit: number) => Promise<{ values: string[]; hasMore: boolean }>
+    otherStepNames: string[]
+    stepIndex: number
+    onOpen?: () => void
+}) {
     const [open, setOpen] = useState(false)
+    const [selectedType, setSelectedType] = useState<string | null>(null)
+    const [draftStep, setDraftStep] = useState<SqlBlockStep | null>(null)
     const [search, setSearch] = useState('')
-    const [menuRect, setMenuRect] = useState<DOMRect | null>(null)
-    const btnRef = useRef<HTMLButtonElement>(null)
-    const menuRef = useRef<HTMLDivElement>(null)
     const searchRef = useRef<HTMLInputElement>(null)
 
-    function handleToggle() {
-        if (!open && btnRef.current) setMenuRect(btnRef.current.getBoundingClientRect())
-        setOpen(o => !o)
-        if (!open) { setSearch(''); setTimeout(() => searchRef.current?.focus(), 50) }
+    function handleOpen() {
+        setOpen(true)
+        setSelectedType(null)
+        setDraftStep(null)
+        setSearch('')
+        onOpen?.()
+        setTimeout(() => searchRef.current?.focus(), 50)
+    }
+
+    function handleClose() { setOpen(false) }
+
+    function handleSelectType(type: string) {
+        setSelectedType(type)
+        setDraftStep(defaultStep(type) as SqlBlockStep)
+    }
+
+    function handleDraftUpdate(_idx: number, s: SqlBlockStep) { setDraftStep(s) }
+
+    function handleConfirm() {
+        if (draftStep) { onAdd(draftStep); setOpen(false) }
     }
 
     useEffect(() => {
         if (!open) return
-        function handleClick(e: MouseEvent) {
-            if (menuRef.current && !menuRef.current.contains(e.target as Node) &&
-                btnRef.current && !btnRef.current.contains(e.target as Node)) setOpen(false)
+        function onKey(e: KeyboardEvent) {
+            if (e.key === 'Escape') {
+                if (selectedType) { setSelectedType(null); setDraftStep(null) }
+                else setOpen(false)
+            }
         }
-        document.addEventListener('mousedown', handleClick)
-        return () => document.removeEventListener('mousedown', handleClick)
-    }, [open])
+        document.addEventListener('keydown', onKey)
+        return () => document.removeEventListener('keydown', onKey)
+    }, [open, selectedType])
 
     const q = search.toLowerCase().trim()
-    // Filtrage : si recherche active, afficher tous les steps correspondants à plat
     const filteredCats = q
         ? [{ label: 'Résultats', steps: STEP_CATEGORIES.flatMap(c => c.steps).filter(t => STEP_LABELS[t].toLowerCase().includes(q)) }]
         : STEP_CATEGORIES
 
-    const menuStyle: React.CSSProperties = menuRect ? {
-        position: 'fixed', top: menuRect.bottom + 4,
-        left: menuRect.left, minWidth: Math.max(menuRect.width, 280), zIndex: 9999,
-    } : {}
+    const nameConflict = !!(draftStep?.name?.trim() && otherStepNames.includes(draftStep.name.trim()))
 
     return (
         <>
-            <button ref={btnRef} onClick={handleToggle}
+            <button onClick={handleOpen}
                 className="w-full flex items-center justify-center gap-2 px-3 py-1.5 rounded border border-dashed border-border hover:border-primary hover:text-primary text-xs text-muted-foreground transition-colors">
-                + Ajouter un step
+                + Ajouter une étape
             </button>
-            {open && menuRect && createPortal(
-                <div ref={menuRef} style={menuStyle}
-                    className="bg-popover border border-border rounded-lg shadow-xl overflow-hidden flex flex-col max-h-96">
-                    {/* Champ de recherche */}
-                    <div className="px-2 py-2 border-b border-border bg-muted/30">
-                        <input ref={searchRef} value={search} onChange={e => setSearch(e.target.value)}
-                            placeholder="Filtrer les traitements…"
-                            className="w-full h-6 rounded border border-border bg-background px-2 text-xs focus:outline-none focus:ring-1 focus:ring-primary"
-                            onKeyDown={e => {
-                                if (e.key === 'Escape') setOpen(false)
-                                if (e.key === 'Enter' && filteredCats[0]?.steps[0]) {
-                                    onAdd(defaultStep(filteredCats[0].steps[0])); setOpen(false)
-                                }
-                            }}
-                        />
-                    </div>
-                    <div className="overflow-y-auto">
-                        {filteredCats.map(cat => (
-                            <div key={cat.label}>
-                                {(!q || cat.steps.length > 0) && (
-                                    <div className="px-3 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wide bg-muted/50 border-b border-border sticky top-0">
-                                        {cat.label}
+            {open && createPortal(
+                <div className="fixed inset-0 z-[9998] flex items-center justify-center">
+                    <div className="absolute inset-0 bg-black/50" onClick={handleClose} />
+                    <div className="relative z-10 bg-popover border border-border rounded-xl shadow-2xl w-full max-w-lg mx-4 h-[96vh] flex flex-col">
+
+                        {/* Header */}
+                        <div className="flex items-center gap-2 px-4 py-3 border-b border-border shrink-0">
+                            {selectedType && (
+                                <button onClick={() => { setSelectedType(null); setDraftStep(null) }}
+                                    className="text-muted-foreground hover:text-foreground text-sm px-1 leading-none" title="Changer de type">←</button>
+                            )}
+                            <span className="font-semibold text-sm flex-1">
+                                {selectedType ? STEP_LABELS[selectedType] : 'Ajouter une étape'}
+                            </span>
+                            <button onClick={handleClose}
+                                className="text-muted-foreground hover:text-foreground w-6 h-6 flex items-center justify-center rounded hover:bg-muted text-lg leading-none">×</button>
+                        </div>
+
+                        {!selectedType ? (
+                            /* ── Phase 1 : sélection du type ── */
+                            <>
+                                <div className="px-2 py-2 border-b border-border bg-muted/30 shrink-0">
+                                    <input ref={searchRef} value={search} onChange={e => setSearch(e.target.value)}
+                                        placeholder="Filtrer les traitements…"
+                                        className="w-full h-6 rounded border border-border bg-background px-2 text-xs focus:outline-none focus:ring-1 focus:ring-primary"
+                                        onKeyDown={e => {
+                                            if (e.key === 'Enter' && filteredCats[0]?.steps[0]) handleSelectType(filteredCats[0].steps[0])
+                                        }}
+                                    />
+                                </div>
+                                <div className="overflow-y-auto flex-1">
+                                    {filteredCats.map(cat => (
+                                        <div key={cat.label}>
+                                            {(!q || cat.steps.length > 0) && (
+                                                <div className="px-3 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wide bg-muted/50 border-b border-border sticky top-0">
+                                                    {cat.label}
+                                                </div>
+                                            )}
+                                            {cat.steps.map(type => (
+                                                <button key={type}
+                                                    className="w-full text-left px-3 py-1.5 hover:bg-muted transition-colors flex items-center gap-2"
+                                                    onClick={() => handleSelectType(type)}>
+                                                    <span className="text-xs font-medium flex-1">{STEP_LABELS[type]}</span>
+                                                </button>
+                                            ))}
+                                            {q && cat.steps.length === 0 && (
+                                                <div className="px-3 py-2 text-xs text-muted-foreground italic">Aucun résultat</div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            </>
+                        ) : draftStep ? (
+                            /* ── Phase 2 : configuration ── */
+                            <>
+                                <div className="overflow-y-auto px-4 py-4 flex-1 flex flex-col gap-4">
+                                    {/* Nom et description */}
+                                    <div className="flex flex-col gap-2 pb-3 border-b border-border">
+                                        <div>
+                                            <label className="text-xs text-muted-foreground mb-1 block">Nom de la sous-requête</label>
+                                            <input type="text"
+                                                value={draftStep.name ?? ''}
+                                                onChange={e => setDraftStep({ ...draftStep, name: e.target.value || undefined })}
+                                                placeholder={`${getAutoCteName(draftStep, stepIndex)} (auto)`}
+                                                className={`w-full px-2 py-1 text-xs border rounded bg-background font-mono ${nameConflict ? 'border-destructive' : 'border-border'}`}
+                                                spellCheck={false}
+                                            />
+                                            {nameConflict && <p className="text-xs text-destructive mt-0.5">Ce nom est déjà utilisé par un autre step.</p>}
+                                        </div>
+                                        <div>
+                                            <label className="text-xs text-muted-foreground mb-1 block">Description</label>
+                                            <textarea
+                                                value={draftStep.description ?? ''}
+                                                onChange={e => setDraftStep({ ...draftStep, description: e.target.value || undefined })}
+                                                placeholder="Description de cette étape…"
+                                                rows={2}
+                                                className="w-full px-2 py-1 text-xs border border-border rounded bg-background resize-none"
+                                            />
+                                        </div>
                                     </div>
-                                )}
-                                {cat.steps.map(type => (
-                                    <button key={type} className="w-full text-left px-3 py-1.5 hover:bg-muted transition-colors flex items-center gap-2"
-                                        onClick={() => { onAdd(defaultStep(type)); setOpen(false); setSearch('') }}>
-                                        <span className="text-xs font-medium flex-1">{STEP_LABELS[type]}</span>
+                                    {/* Config spécifique au type */}
+                                    <div>
+                                        {draftStep.type === 'select_columns' && <SelectColumnsStepUI step={draftStep} availableCols={availableCols} onChange={s => handleDraftUpdate(0, s)} />}
+                                        {draftStep.type === 'exclude_columns' && <ExcludeColumnsStepUI step={draftStep} availableCols={availableCols} onChange={s => handleDraftUpdate(0, s)} />}
+                                        {draftStep.type === 'change_type' && <ChangeTypeStepUI step={draftStep} availableCols={availableCols} availableColTypes={availableColTypes} onChange={s => handleDraftUpdate(0, s)} />}
+                                        {draftStep.type === 'filter_rows' && <FilterRowsStepUI step={draftStep} availableCols={availableCols} onChange={s => handleDraftUpdate(0, s)} fetchDistinctValues={fetchDistinctValues} />}
+                                        {draftStep.type === 'sort' && <SortStepUI step={draftStep} availableCols={availableCols} onChange={s => handleDraftUpdate(0, s)} />}
+                                        {draftStep.type === 'top_n' && <TopNStepUI step={draftStep} onChange={s => handleDraftUpdate(0, s)} />}
+                                        {draftStep.type === 'rename_columns' && <RenameColumnsStepUI step={draftStep} availableCols={availableCols} onChange={s => handleDraftUpdate(0, s)} />}
+                                        {draftStep.type === 'derive' && <DeriveStepUI step={draftStep} availableCols={availableCols} onChange={s => handleDraftUpdate(0, s)} />}
+                                        {draftStep.type === 'fill_null' && <FillNullStepUI step={draftStep} availableCols={availableCols} onChange={s => handleDraftUpdate(0, s)} />}
+                                        {draftStep.type === 'group_by' && <GroupByStepUI step={draftStep} availableCols={availableCols} onChange={s => handleDraftUpdate(0, s)} />}
+                                        {draftStep.type === 'join' && <JoinStepUI step={draftStep} availableCols={availableCols} onChange={s => handleDraftUpdate(0, s)} />}
+                                        {draftStep.type === 'union' && <UnionStepUI step={draftStep} onChange={s => handleDraftUpdate(0, s)} />}
+                                        {draftStep.type === 'pivot' && <PivotStepUI step={draftStep} availableCols={availableCols} onChange={s => handleDraftUpdate(0, s)} />}
+                                        {draftStep.type === 'unpivot' && <UnpivotStepUI step={draftStep} availableCols={availableCols} onChange={s => handleDraftUpdate(0, s)} />}
+                                        {draftStep.type === 'window' && <WindowStepUI step={draftStep} availableCols={availableCols} onChange={s => handleDraftUpdate(0, s)} />}
+                                        {draftStep.type === 'unnest' && <UnnestStepUI step={draftStep} availableCols={availableCols} onChange={s => handleDraftUpdate(0, s)} />}
+                                        {draftStep.type === 'json_extract' && <JsonExtractStepUI step={draftStep} availableCols={availableCols} onChange={s => handleDraftUpdate(0, s)} />}
+                                        {draftStep.type === 'date_trunc' && <DateTruncStepUI step={draftStep} availableCols={availableCols} onChange={s => handleDraftUpdate(0, s)} />}
+                                        {draftStep.type === 'custom_sql' && <CustomSqlStepUI step={draftStep} onChange={s => handleDraftUpdate(0, s)} />}
+                                    </div>
+                                </div>
+                                {/* Footer */}
+                                <div className="px-4 py-3 border-t border-border flex justify-end gap-2 shrink-0">
+                                    <button onClick={handleClose}
+                                        className="px-3 py-1.5 text-xs rounded border border-border hover:bg-muted transition-colors">
+                                        Annuler
                                     </button>
-                                ))}
-                                {q && cat.steps.length === 0 && (
-                                    <div className="px-3 py-2 text-xs text-muted-foreground italic">Aucun résultat</div>
-                                )}
-                            </div>
-                        ))}
+                                    <button onClick={handleConfirm} disabled={nameConflict}
+                                        className="px-3 py-1.5 text-xs rounded bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50">
+                                        Ajouter l'étape
+                                    </button>
+                                </div>
+                            </>
+                        ) : null}
                     </div>
                 </div>,
                 document.body
@@ -1566,7 +2124,7 @@ function IncompatibleConfirmModal({ onConfirm, onCancel }: { onConfirm: () => vo
 
 // ─── SqlBlockEditor (composant principal) ─────────────────────────────────────
 
-export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: number[]; cellIndex: number }) {
+export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCell }: { cell: any; path: number[]; cellIndex: number; onExitUiMode?: () => void; fromSqlCell?: boolean }) {
     const { forceUpdate, _duckdbTables, db } = useNotebookStore(useShallow(s => ({
         forceUpdate: s.forceUpdate,
         _duckdbTables: s._duckdbTables,
@@ -1581,6 +2139,9 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
         ast.source ? (_duckdbTables?.[ast.source]?.columns ?? []) : []
     const stepSchemas = computeStepSchemas(ast, sourceColumns)
 
+    // Schémas dynamiques : priorité table temp déjà matérialisée, fallback SQL LIMIT 0
+    const { dynamicSchemas, fetchSchemaForStep, invalidateFrom } = useStepInputSchemas(ast, cell._id)
+
     // tableSchemas pour l'autocomplétion Monaco
     const tableSchemas = db?.schemaTrees ?? []
 
@@ -1593,6 +2154,9 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
     // SQL généré visible ?
     const [showSql, setShowSql] = useState(false)
 
+    // Index du step dont la modale de config est ouverte
+    const [configOpenIdx, setConfigOpenIdx] = useState<number | null>(null)
+
     const selectSql = getEffectiveSql(cfg)
     const displaySql = cell.name?.trim()
         ? generateMaterializeQuery(cell.name, selectSql, ast.materialize ?? 'view')
@@ -1604,13 +2168,22 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
         commitAstUpdate(cell, { source: v }, forceUpdate)
     }, [cell, forceUpdate])
 
+    // Auto-sélection de la première table lors de la création d'une cellule sans source
+    useEffect(() => {
+        if (!ast.source) {
+            const tables = Object.keys(_duckdbTables ?? {}).filter(t => !t.startsWith('_sqlblock.'))
+            if (tables.length > 0) commitAstUpdate(cell, { source: tables[0] }, forceUpdate)
+        }
+    }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
     const handleMaterializeChange = useCallback((mat: SqlBlockMaterialize) => {
         commitAstUpdate(cell, { materialize: mat }, forceUpdate)
     }, [cell, forceUpdate])
 
     const handleStepUpdate = useCallback((idx: number, newStep: SqlBlockStep) => {
+        invalidateFrom(idx + 1, ast)   // les schémas en aval sont périmés
         commitAstUpdate(cell, { steps: ast.steps.map((s, i) => i === idx ? newStep : s) }, forceUpdate)
-    }, [cell, ast.steps, forceUpdate])
+    }, [cell, ast, forceUpdate, invalidateFrom])
 
     const handleStepRemove = useCallback((idx: number) => {
         commitAstUpdate(cell, { steps: ast.steps.filter((_, i) => i !== idx) }, forceUpdate)
@@ -1624,19 +2197,50 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
     }, [cell, ast.steps, forceUpdate])
 
     const handleStepAdd = useCallback((step: SqlBlockStep) => {
-        commitAstUpdate(cell, { steps: [...ast.steps, step] }, forceUpdate)
+        const newSteps = [...ast.steps, step]
+        commitAstUpdate(cell, { steps: newSteps }, forceUpdate)
+        // Pas d'ouverture auto du modal de config — l'étape a déjà été configurée dans AddStepModal
     }, [cell, ast.steps, forceUpdate])
+
+    // ─── Distinct values pour le filtre (par step) ─────────────────────────
+    // Fabrique une fonction fetchDistinctValues qui interroge la sous-requête
+    // réelle en entrée du step (stepSql(ast, stepIdx-1)), pas juste ast.source.
+
+    const makeStepDistinctValues = useCallback((stepIdx: number) => {
+        return async (column: string, selectLimit: number, fromLimit: number): Promise<{ values: string[]; hasMore: boolean }> => {
+            if (!ast.source || !column) return { values: [], hasMore: false }
+            try {
+                const inputSql = stepIdx === 0
+                    ? `SELECT * FROM ${quoteId(ast.source)}`
+                    : stepSql(ast, stepIdx - 1)
+                if (!inputSql) return { values: [], hasMore: false }
+                const col = `"${column.replace(/"/g, '""')}"`
+                // Applique le fromLimit en sous-couche pour éviter de scanner toute la table
+                const inner = fromLimit > 0
+                    ? `(SELECT ${col} FROM (${inputSql}) __fdv__ WHERE ${col} IS NOT NULL LIMIT ${fromLimit}) _sub`
+                    : `(${inputSql}) __fdv__ WHERE ${col} IS NOT NULL`
+                const sql = selectLimit > 0
+                    ? `SELECT DISTINCT ${col} FROM ${inner} ORDER BY 1 LIMIT ${selectLimit + 1}`
+                    : `SELECT DISTINCT ${col} FROM ${inner} ORDER BY 1`
+                const rows = await DuckDBManager.executeQuery(sql)
+                const hasMore = selectLimit > 0 && rows.length > selectLimit
+                return { values: rows.slice(0, selectLimit > 0 ? selectLimit : undefined).map(r => String(r[column] ?? '')), hasMore }
+            } catch {
+                return { values: [], hasMore: false }
+            }
+        }
+    }, [ast])
 
     // ─── Handlers SQL manuel ───────────────────────────────────────────────
 
     function handleManualSqlEdit(rawSql: string) {
         const newSql = stripMaterializePrefix(rawSql)
-        const result = sqlToAst(newSql, ast.materialize)
+        const result = sqlToAstSmart(newSql, ast.materialize)
         if (result.compatible && result.ast) {
             const cfg = getOrInitConfig(cell)
             cfg.ast = result.ast; cfg.degraded = false; cfg.manualSql = null
-            if (!cell.queries) cell.queries = [{ name: 'main', sql: newSql, engine: 'sql', clientVisible: false }]
-            else cell.queries[0] = { ...cell.queries[0], sql: newSql }
+            const genSql = astToSql(result.ast)
+            cfg.sql = buildDisplaySql(cell.name, genSql, result.ast.materialize ?? 'select')
             forceUpdate()
         } else {
             setPendingDegradedSql(newSql)
@@ -1647,20 +2251,18 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
         if (!pendingDegradedSql) return
         const cfg = getOrInitConfig(cell)
         cfg.degraded = true; cfg.manualSql = pendingDegradedSql
-        if (!cell.queries) cell.queries = [{ name: 'main', sql: pendingDegradedSql, engine: 'sql', clientVisible: false }]
-        else cell.queries[0] = { ...cell.queries[0], sql: pendingDegradedSql }
+        cfg.sql = buildDisplaySql(cell.name, pendingDegradedSql, cfg.ast?.materialize ?? 'select')
         setPendingDegradedSql(null); forceUpdate()
     }
 
     function tryRestoreFromDegraded() {
         const cfg = getOrInitConfig(cell)
         const sql = stripMaterializePrefix(cfg.manualSql || selectSql)
-        const result = sqlToAst(sql, ast.materialize)
+        const result = sqlToAstSmart(sql, ast.materialize)
         if (result.compatible && result.ast) {
             cfg.ast = result.ast; cfg.degraded = false; cfg.manualSql = null
             const genSql = astToSql(result.ast)
-            if (!cell.queries) cell.queries = [{ name: 'main', sql: genSql, engine: 'sql', clientVisible: false }]
-            else cell.queries[0] = { ...cell.queries[0], sql: genSql }
+            cfg.sql = buildDisplaySql(cell.name, genSql, result.ast.materialize ?? 'select')
             forceUpdate()
         } else {
             alert(`Impossible de restaurer l'AST : ${result.error || 'SQL incompatible'}`)
@@ -1678,6 +2280,22 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
         ? { _id: `eye_${eyeOpen}_${cell._id}`, _results: eyeData.rows, _schemaTypes: eyeData.schemaTypes }
         : cell
 
+    // ─── Layout responsive (ResizeObserver) ─────────────────────────────
+    // Breakpoints :
+    //   ≥ 680px : [datatable | sql | étapes] côte à côte
+    //   440–679 : [sql | étapes] en haut  +  [datatable] en bas
+    //   < 440   : [étapes] en haut  +  [datatable + sql] empilés en bas
+    const bodyRef = useRef<HTMLDivElement>(null)
+    const [bodyWidth, setBodyWidth] = useState(9999)
+    useEffect(() => {
+        const el = bodyRef.current
+        if (!el) return
+        const obs = new ResizeObserver(([e]) => setBodyWidth(e.contentRect.width))
+        obs.observe(el)
+        return () => obs.disconnect()
+    }, [])
+    const layout = bodyWidth >= 680 ? 'wide' : bodyWidth >= 440 ? 'medium' : 'narrow'
+
     // ─── Render ────────────────────────────────────────────────────────────
 
     return (
@@ -1689,51 +2307,63 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
 
             {/* Ligne Source + Matérialisation */}
             <div className="flex items-center gap-3 flex-wrap shrink-0">
+                {onExitUiMode && (
+                    <button
+                        onClick={onExitUiMode}
+                        className="flex items-center gap-1 px-2 py-1 text-xs text-muted-foreground border border-border rounded hover:bg-muted transition-colors shrink-0"
+                        title="Retour à l'éditeur SQL"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        SQL
+                    </button>
+                )}
                 <div className="flex items-center gap-2 flex-1 min-w-40">
                     <label className="text-xs text-muted-foreground shrink-0">Source :</label>
-                    <input type="text"
-                        className="flex-1 h-7 rounded border border-border bg-background px-2 text-xs font-mono"
-                        value={ast.source}
-                        onChange={e => handleSourceChange(e.target.value)}
-                        placeholder="nom_de_table"
-                        list={`sqlblock-source-list-${cell._id}`}
-                        disabled={cfg.degraded}
-                    />
-                    <datalist id={`sqlblock-source-list-${cell._id}`}>
-                        {Object.keys(_duckdbTables ?? {}).map(t => <option key={t} value={t} />)}
-                    </datalist>
+                    {(() => {
+                        const mainTables = Object.keys(_duckdbTables ?? {}).filter(t => !t.startsWith('_sqlblock.'))
+                        return (
+                            <Select value={ast.source || ''} onValueChange={handleSourceChange} disabled={cfg.degraded}>
+                                <SelectTrigger className="flex-1 h-7 text-xs font-mono min-w-0">
+                                    <SelectValue placeholder="— choisir une source —" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {mainTables.map(t => <SelectItem key={t} value={t} className="text-xs font-mono">{t}</SelectItem>)}
+                                    {ast.source && !mainTables.includes(ast.source) && (
+                                        <SelectItem value={ast.source} className="text-xs font-mono">{ast.source}</SelectItem>
+                                    )}
+                                </SelectContent>
+                            </Select>
+                        )
+                    })()}
                 </div>
-                <div className="flex items-center gap-2">
-                    <label className="text-xs text-muted-foreground shrink-0">Résultat :</label>
-                    <div className="flex rounded border border-border overflow-hidden text-xs">
-                        <button onClick={() => handleMaterializeChange('view')} disabled={cfg.degraded}
-                            className={`px-2 py-1 transition-colors ${ast.materialize === 'view' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}
-                            title="Vue DuckDB (lazy)">VIEW</button>
-                        <button onClick={() => handleMaterializeChange('table')} disabled={cfg.degraded}
-                            className={`px-2 py-1 transition-colors ${ast.materialize === 'table' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}
-                            title="TABLE matérialisée">TABLE</button>
+                {!fromSqlCell && (
+                    <div className="flex items-center gap-2">
+                        <label className="text-xs text-muted-foreground shrink-0">Résultat :</label>
+                        <div className="flex rounded border border-border overflow-hidden text-xs">
+                            <button onClick={() => handleMaterializeChange('view')} disabled={cfg.degraded}
+                                className={`px-2 py-1 transition-colors ${ast.materialize === 'view' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}
+                                title="Vue DuckDB (lazy)">VIEW</button>
+                            <button onClick={() => handleMaterializeChange('table')} disabled={cfg.degraded}
+                                className={`px-2 py-1 transition-colors ${ast.materialize === 'table' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}
+                                title="TABLE matérialisée">TABLE</button>
+                            <button onClick={() => handleMaterializeChange('select')} disabled={cfg.degraded}
+                                className={`px-2 py-1 transition-colors ${ast.materialize === 'select' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}
+                                title="SELECT simple (sans créer de vue ni de table)">SELECT</button>
+                        </div>
                     </div>
-                </div>
+                )}
             </div>
 
-            {/* Corps principal — hauteur étirée */}
-            {!cfg.degraded ? (
-                <div className="flex gap-3 min-h-[280px]" style={{ height: 'calc(100% - 40px)' }}>
-
-                    {/* Colonne gauche : DataTable (résultat cell ou aperçu step) */}
-                    <div className="flex-1 min-w-0 flex flex-col gap-1">
+            {/* Corps principal — responsive */}
+            {!cfg.degraded ? (() => {
+                // ── Sections réutilisables ──────────────────────────────
+                const dtSection = (
+                    <>
                         {showingEye && (
                             <div className="flex items-center gap-1.5 shrink-0">
-                                <span className="text-xs text-primary font-medium">
-                                    Aperçu étape {eyeOpen! + 1}
-                                </span>
-                                {eyeLoading && (
-                                    <svg viewBox="0 0 24 24" className="w-3 h-3 animate-spin text-muted-foreground" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>
-                                )}
-                                <button onClick={() => toggleEye(eyeOpen!)}
-                                    className="ml-auto text-xs text-muted-foreground hover:text-foreground underline">
-                                    ✕ fermer
-                                </button>
+                                <span className="text-xs text-primary font-medium">Aperçu étape {eyeOpen! + 1}</span>
+                                {eyeLoading && <svg viewBox="0 0 24 24" className="w-3 h-3 animate-spin text-muted-foreground" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>}
+                                <button onClick={() => toggleEye(eyeOpen!)} className="ml-auto text-xs text-muted-foreground hover:text-foreground underline">✕ fermer</button>
                             </div>
                         )}
                         {showingEye ? (
@@ -1743,66 +2373,88 @@ export function SqlBlockEditor({ cell, path, cellIndex }: { cell: any; path: num
                                     ? <div className="flex items-center justify-center h-16 text-xs text-muted-foreground italic">Chargement…</div>
                                     : <div className="flex items-center justify-center h-16 text-xs text-muted-foreground italic border border-dashed border-border rounded">Résultat vide</div>
                         ) : hasResults ? (
-                            <>
-                                {cell._resultInfo && <div className="text-xs text-muted-foreground shrink-0">{cell._resultInfo}</div>}
-                                <SqlDataTable cell={cell} />
-                            </>
+                            <>{cell._resultInfo && <div className="text-xs text-muted-foreground shrink-0">{cell._resultInfo}</div>}<SqlDataTable cell={cell} /></>
                         ) : (
-                            <div className="flex items-center justify-center h-16 text-xs text-muted-foreground italic border border-dashed border-border rounded">
-                                Aucun résultat — exécutez la cellule
-                            </div>
+                            <div className="flex items-center justify-center h-16 text-xs text-muted-foreground italic border border-dashed border-border rounded">Aucun résultat — exécutez la cellule</div>
                         )}
                         {cell._status === 'error' && cell._resultInfo && !showingEye && (
                             <div className="p-2 rounded bg-destructive/10 text-destructive text-xs shrink-0">{cell._resultInfo}</div>
                         )}
-                    </div>
+                    </>
+                )
 
-                    {/* Colonne SQL Monaco (toggle, étirée) */}
-                    <div className={`flex flex-col min-h-0 ${showSql ? 'w-64 shrink-0' : ''}`}>
-                        <button onClick={() => setShowSql(s => !s)}
-                            className="flex items-center gap-1 text-xs font-medium text-muted-foreground uppercase tracking-wide hover:text-foreground transition-colors whitespace-nowrap shrink-0 mb-1">
-                            SQL généré <span className="ml-0.5">{showSql ? '▾' : '▸'}</span>
-                        </button>
-                        {showSql && (
-                            <SqlPreview
-                                sql={displaySql}
-                                editable={true}
-                                onEdit={handleManualSqlEdit}
-                                tableSchemas={tableSchemas}
-                                cellId={cell._id}
-                            />
-                        )}
-                    </div>
+                const sqlToggle = (
+                    <button onClick={() => setShowSql(s => !s)}
+                        className="flex items-center gap-1 text-xs font-medium text-muted-foreground uppercase tracking-wide hover:text-foreground transition-colors whitespace-nowrap shrink-0 mb-1">
+                        SQL généré <span className="ml-0.5">{showSql ? '▾' : '▸'}</span>
+                    </button>
+                )
+                const sqlPreviewEl = showSql && (
+                    <SqlPreview sql={displaySql} editable={true} onEdit={handleManualSqlEdit} tableSchemas={tableSchemas} cellId={cell._id} />
+                )
 
-                    {/* Colonne Steps */}
-                    <div className="flex flex-col gap-2 w-64 shrink-0 overflow-y-auto">
-                        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide shrink-0">Steps</span>
-                        {ast.steps.length === 0 && (
-                            <p className="text-xs text-muted-foreground italic px-1">
-                                Aucun step — SELECT * FROM {ast.source || '…'}
-                            </p>
-                        )}
+                const n = ast.steps.length
+                const newStepInputSchema = dynamicSchemas[n] ?? (
+                    n === 0
+                        ? { columns: sourceColumns.map(c => c.name), colTypes: Object.fromEntries(sourceColumns.map(c => [c.name, c.type])) }
+                        : (stepSchemas[n - 1] ?? { columns: sourceColumns.map(c => c.name), colTypes: {} })
+                )
+                const stepsSection = (
+                    <>
+                        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide shrink-0">Étapes</span>
+                        {ast.steps.length === 0 && <p className="text-xs text-muted-foreground italic px-1">Aucune étape — SELECT * FROM {ast.source || '…'}</p>}
                         {ast.steps.map((step, idx) => {
-                            const schema = stepSchemas[idx] ?? { columns: sourceColumns.map(c => c.name), colTypes: Object.fromEntries(sourceColumns.map(c => [c.name, c.type])) }
+                            const staticSchema = stepSchemas[idx] ?? { columns: sourceColumns.map(c => c.name), colTypes: Object.fromEntries(sourceColumns.map(c => [c.name, c.type])) }
+                            const schema = dynamicSchemas[idx] ?? staticSchema
+                            const otherStepNames = ast.steps.filter((_, i) => i !== idx).map(s => s.name?.trim()).filter(Boolean) as string[]
                             return (
-                                <StepItem
-                                    key={idx}
-                                    step={step} index={idx} totalSteps={ast.steps.length}
-                                    availableCols={schema.columns}
-                                    availableColTypes={schema.colTypes}
-                                    eyeOpen={eyeOpen === idx}
-                                    eyeLoading={eyeLoading && eyeOpen === idx}
-                                    onEyeToggle={() => toggleEye(idx)}
-                                    onUpdate={handleStepUpdate}
-                                    onRemove={handleStepRemove}
-                                    onMove={handleStepMove}
+                                <StepItem key={idx} step={step} index={idx} totalSteps={ast.steps.length}
+                                    availableCols={schema.columns} availableColTypes={schema.colTypes}
+                                    eyeOpen={eyeOpen === idx} eyeLoading={eyeLoading && eyeOpen === idx}
+                                    onEyeToggle={() => toggleEye(idx)} onUpdate={handleStepUpdate}
+                                    onRemove={handleStepRemove} onMove={handleStepMove}
+                                    configOpen={configOpenIdx === idx}
+                                    onConfigOpen={() => { setConfigOpenIdx(idx); fetchSchemaForStep(idx) }}
+                                    onConfigClose={() => setConfigOpenIdx(null)}
+                                    fetchDistinctValues={makeStepDistinctValues(idx)} otherStepNames={otherStepNames}
                                 />
                             )
                         })}
-                        <AddStepMenu onAdd={handleStepAdd} />
+                        <AddStepModal onAdd={handleStepAdd}
+                            availableCols={newStepInputSchema.columns} availableColTypes={newStepInputSchema.colTypes}
+                            fetchDistinctValues={makeStepDistinctValues(n)}
+                            otherStepNames={ast.steps.map(s => s.name?.trim()).filter(Boolean) as string[]}
+                            stepIndex={n} onOpen={() => fetchSchemaForStep(n)}
+                        />
+                    </>
+                )
+
+                // ── Rendu selon la largeur ──────────────────────────────
+                if (layout === 'wide') return (
+                    <div ref={bodyRef} className="flex flex-row gap-3 min-h-[280px]" style={{ height: 'calc(100% - 40px)' }}>
+                        <div className="flex-1 min-w-0 flex flex-col gap-1">{dtSection}</div>
+                        <div className={`flex flex-col min-h-0 ${showSql ? 'w-64 shrink-0' : ''}`}>{sqlToggle}{sqlPreviewEl}</div>
+                        <div className="flex flex-col gap-2 w-64 shrink-0 overflow-y-auto">{stepsSection}</div>
                     </div>
-                </div>
-            ) : (
+                )
+                if (layout === 'medium') return (
+                    <div ref={bodyRef} className="flex flex-col gap-2">
+                        <div className="flex flex-row gap-3 min-h-[280px]">
+                            <div className={`flex flex-col min-h-0 ${showSql ? 'flex-1 min-w-0' : ''}`}>{sqlToggle}{sqlPreviewEl}</div>
+                            <div className="flex flex-col gap-2 w-64 shrink-0 overflow-y-auto">{stepsSection}</div>
+                        </div>
+                        <div className="flex flex-col gap-1 min-h-[180px]">{dtSection}</div>
+                    </div>
+                )
+                // narrow
+                return (
+                    <div ref={bodyRef} className="flex flex-col gap-2">
+                        <div className="flex flex-col gap-2 overflow-y-auto">{stepsSection}</div>
+                        <div className="flex flex-col gap-1 min-h-[180px]">{dtSection}</div>
+                        <div className={`flex flex-col ${showSql ? 'min-h-[180px]' : ''}`}>{sqlToggle}{sqlPreviewEl}</div>
+                    </div>
+                )
+            })() : (
                 <div className="flex gap-3 min-h-[280px]">
                     <div className="flex-1 min-w-0 flex flex-col gap-1">
                         {hasResults ? (

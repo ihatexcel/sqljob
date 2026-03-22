@@ -281,6 +281,14 @@ export const createExecutionSlice = (set: any, get: any) => ({
     },
 
     async executeSqlRecursiveParseCell(cell) {
+        // Si queries[0].sql est vide mais qu'un AST est disponible, reconstituer le SQL
+        const q0 = cell.queries?.[0]
+        if (q0?.ast && !q0.sql?.trim()) {
+            const { astToSql, buildDisplaySql } = await import('../../../lib/SqlBlockService')
+            const selectSql = q0.degraded && q0.manualSql ? q0.manualSql : astToSql(q0.ast)
+            q0.sql = buildDisplaySql(cell.name, selectSql, cell.materialize ?? q0.ast.materialize ?? 'select')
+        }
+
         if (!ConfigManager.getCellQuery(cell, 0)?.trim()) {
             console.warn('❌ cell.query est vide ou undefined!')
             return
@@ -421,16 +429,40 @@ export const createExecutionSlice = (set: any, get: any) => ({
                     await DuckDBManager.dropFile(fileName)
                 }
             } else {
-                const finalResults = await DuckDBManager.executeQuery(finalQuery)
-                cell._results = finalResults
-                cell._resultInfo = `✅ ${finalResults.length} ligne(s)`
-                if (get().isSqlResultTabular(cell)) {
-                    const maxRows = cell.maxRows || 100000
-                    const truncated = finalResults.length > maxRows
-                    const rawResults = finalResults.slice(0, maxRows)
-                    _rawTableDataStore.set(cell._id, rawResults)
-                    cell._results = rawResults
-                    if (truncated) cell._resultInfo = `✅ ${finalResults.length} ligne(s) (limité à ${maxRows})`
+                const materialize = cell.materialize ?? 'select'
+                const { quoteId, stripMaterializePrefix } = await import('../../../lib/SqlBlockService')
+                // Normalise le SQL : retire le préfixe DDL éventuel pour obtenir le SELECT brut
+                const isDdl = /^CREATE\s+OR\s+REPLACE\s+/i.test(finalQuery.trim())
+                const selectSql = isDdl ? stripMaterializePrefix(finalQuery) : finalQuery
+
+                if (materialize !== 'select' && cell.name?.trim()) {
+                    // Créer une VIEW ou TABLE DuckDB depuis le SELECT
+                    const qid = quoteId(cell.name)
+                    const oppositeType = materialize === 'view' ? 'TABLE' : 'VIEW'
+                    try { await DuckDBManager.executeQuery(`DROP ${oppositeType} IF EXISTS ${qid}`) } catch (_) { /* ok */ }
+                    const createSql = materialize === 'table'
+                        ? `CREATE OR REPLACE TABLE ${qid} AS (\n${selectSql}\n)`
+                        : `CREATE OR REPLACE VIEW ${qid} AS (\n${selectSql}\n)`
+                    await DuckDBManager.executeQuery(createSql)
+                    const { rows: results, schemaTypes } = await DuckDBManager.executeQueryWithSchema(
+                        `SELECT * FROM ${qid} LIMIT 1000`
+                    )
+                    cell._results = results
+                    cell._schemaTypes = schemaTypes || {}
+                    cell._resultInfo = `${results.length} ligne(s)${results.length === 1000 ? ' (limité à 1 000)' : ''} — ${materialize === 'table' ? 'TABLE' : 'VIEW'} "${cell.name}" créée`
+                    await get().refreshDuckdbSchema?.()
+                } else {
+                    const finalResults = await DuckDBManager.executeQuery(finalQuery)
+                    cell._results = finalResults
+                    cell._resultInfo = `✅ ${finalResults.length} ligne(s)`
+                    if (get().isSqlResultTabular(cell)) {
+                        const maxRows = cell.maxRows || 100000
+                        const truncated = finalResults.length > maxRows
+                        const rawResults = finalResults.slice(0, maxRows)
+                        _rawTableDataStore.set(cell._id, rawResults)
+                        cell._results = rawResults
+                        if (truncated) cell._resultInfo = `✅ ${finalResults.length} ligne(s) (limité à ${maxRows})`
+                    }
                 }
             }
 
@@ -463,58 +495,6 @@ export const createExecutionSlice = (set: any, get: any) => ({
 
             get().setStatus('Tableau chargé', 'success')
             if (sqlIsDdl(finalQuery)) await get().refreshDuckdbSchema?.()
-        } catch (error) {
-            throw error
-        }
-    },
-
-    async executeSqlBlockCell(cell) {
-        const { astToSql, getEffectiveSql, generateMaterializeQuery } = await import('../../../lib/SqlBlockService')
-        const { createDefaultSqlBlockConfig } = await import('../../../lib/SqlBlockTypes')
-
-        // Initialiser la config si elle n'existe pas
-        if (!cell.sqlBlockConfig) {
-            cell.sqlBlockConfig = createDefaultSqlBlockConfig()
-        }
-        const cfg = cell.sqlBlockConfig
-        const sql = getEffectiveSql(cfg)
-
-        if (!sql?.trim()) {
-            cell._resultInfo = 'Aucun SQL à exécuter — définissez une source et des steps.'
-            return
-        }
-
-        if (!cell.name?.trim()) {
-            throw new Error('La cellule sqlBlock doit avoir un nom (utilisé comme nom de VIEW/TABLE dans DuckDB).')
-        }
-
-        get().setStatus('Exécution du SQL Block...', 'loading')
-
-        try {
-            // Supprimer l'objet existant s'il est d'un type différent
-            // (DuckDB refuse CREATE OR REPLACE TABLE sur une VIEW existante et vice-versa)
-            const materialize = cfg.ast?.materialize ?? 'view'
-            const oppositeType = materialize === 'view' ? 'TABLE' : 'VIEW'
-            try {
-                await DuckDBManager.executeQuery(`DROP ${oppositeType} IF EXISTS ${cell.name}`)
-            } catch (_) { /* pas d'objet à supprimer, on continue */ }
-
-            // Créer la VIEW ou TABLE dans DuckDB (accessible par les cellules en aval)
-            const finalSql = get().parseQueryWithParameters(sql)
-            const materializeQuery = generateMaterializeQuery(cell.name, finalSql, materialize)
-            await DuckDBManager.executeQuery(materializeQuery)
-
-            // Charger les résultats pour l'affichage dans la cellule
-            const { rows: results, schemaTypes } = await DuckDBManager.executeQueryWithSchema(
-                `SELECT * FROM ${cell.name} LIMIT 1000`
-            )
-            cell._results = results
-            cell._schemaTypes = schemaTypes || {}
-            cell._resultInfo = `${results.length} ligne(s)${results.length === 1000 ? ' (limité à 1 000 pour l\'affichage)' : ''} — ${cfg.ast?.materialize === 'table' ? 'TABLE' : 'VIEW'} "${cell.name}" créée`
-
-            // Synchroniser le schéma DuckDB (panel + éditeur SQL)
-            await get().refreshDuckdbSchema?.()
-            get().setStatus('SQL Block exécuté', 'success')
         } catch (error) {
             throw error
         }

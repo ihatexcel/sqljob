@@ -4,7 +4,6 @@ import { ConfigManager } from '../../../lib/ConfigManager'
 import { CellConfigService, initializeCell } from '../../../lib/CellConfigService'
 import { CELL_TYPE_SCHEMAS } from '../../../lib/cellTypeSchemas'
 import { useConfirmModal } from '../uiStores'
-import { createDefaultSqlBlockConfig } from '../../../lib/SqlBlockTypes'
 
 export const createCellsSlice = (set: any, get: any) => ({
 
@@ -153,10 +152,7 @@ export const createCellsSlice = (set: any, get: any) => ({
             newCell._perspectiveWorker = null
             newCell._perspectiveTable = null
         }
-        if (type === 'sqlBlock') {
-            newCell.sqlBlockConfig = createDefaultSqlBlockConfig()
-        }
-        return newCell
+return newCell
     },
 
     addGroup(cellType: string) {
@@ -191,7 +187,15 @@ export const createCellsSlice = (set: any, get: any) => ({
     insertGroupAt(atIndex: number, cellType: string) {
         const newGroup = get().createNewGroup('row')
         newGroup.cells = [get().createNewCell(cellType)]
-        get().getGroups().splice(atIndex, 0, newGroup)
+
+        // Renuméroter les groupes existants par ordre trié, puis décaler
+        // ceux à partir de atIndex pour faire de la place au nouveau.
+        const groups = get().getGroups()
+        const sorted = [...groups].sort((a: any, b: any) => (a._order ?? 0) - (b._order ?? 0))
+        sorted.forEach((g: any, i: number) => { g._order = i >= atIndex ? i + 1 : i })
+        newGroup._order = atIndex
+
+        groups.push(newGroup)
         set({ insertGroupModal: { open: false, atIndex: null } })
         set((s: any) => ({ _rev: s._rev + 1 }))
     },

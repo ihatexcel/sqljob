@@ -2,7 +2,6 @@
 import { CELL_TYPE_SCHEMAS, CELL_TYPE_HANDLERS } from './cellTypeSchemas'
 import { GistEncrypt } from './GistEncrypt'
 import { FileHandler } from './FileHandler'
-import { createDefaultSqlBlockConfig } from './SqlBlockTypes'
 
         export class ConfigManager {
             static SQLJOB_VERSION = '0.1';
@@ -94,11 +93,7 @@ import { createDefaultSqlBlockConfig } from './SqlBlockTypes'
                 if (c.type === 'pdfme' && typeof c.json === 'object' && c.json !== null) {
                     c.json = JSON.stringify(c.json, null, 2);
                 }
-                // sqlBlock: initialiser la config si absente (rétro-compat)
-                if (c.type === 'sqlBlock' && !c.sqlBlockConfig) {
-                    c.sqlBlockConfig = createDefaultSqlBlockConfig();
-                }
-                return c;
+return c;
             }
 
             /**
@@ -576,12 +571,18 @@ import { createDefaultSqlBlockConfig } from './SqlBlockTypes'
             static _buildQueriesForClean(cell) {
                 if (Array.isArray(cell.queries) && cell.queries.length > 0) {
                     const schema = CELL_TYPE_SCHEMAS?.types[cell?.type];
-                    return cell.queries.map((q, i) => ({
-                        name: q.name || schema?.queryNames?.[i] || (i === 0 ? 'main' : i === 1 ? 'filename' : 'query' + i),
-                        query: q.sql || '',
-                        engine: q.engine || ConfigManager.getDefaultEngineForType(cell?.type, i),
-                        clientVisible: q.clientVisible === true
-                    }));
+                    return cell.queries.map((q, i) => {
+                        const entry: any = {
+                            name: q.name || schema?.queryNames?.[i] || (i === 0 ? 'main' : i === 1 ? 'filename' : 'query' + i),
+                            query: q.sql || '',
+                            engine: q.engine || ConfigManager.getDefaultEngineForType(cell?.type, i),
+                            clientVisible: q.clientVisible === true,
+                        };
+                        if (q.ast !== undefined) entry.ast = q.ast;
+                        if (q.degraded) entry.degraded = q.degraded;
+                        if (q.manualSql) entry.manualSql = q.manualSql;
+                        return entry;
+                    });
                 }
                 const arr = [];
                 const qMain = ConfigManager.getCellQuery(cell, 'main');
