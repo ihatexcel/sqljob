@@ -136579,8 +136579,9 @@ function SqlBlockEditor({ cell: At, path: yt, cellIndex: xt, onExitUiMode: wt, f
   }, [At, St]), tn = reactExports.useCallback((As, Ss) => {
     jt(As + 1, $t), commitAstUpdate(At, { steps: $t.steps.map((fs, vs) => vs === As ? Ss : fs) }, St);
   }, [At, $t, St, jt]), Vr = reactExports.useCallback((As) => {
-    commitAstUpdate(At, { steps: $t.steps.filter((Ss, fs) => fs !== As) }, St);
+    Cr(null), commitAstUpdate(At, { steps: $t.steps.filter((Ss, fs) => fs !== As) }, St);
   }, [At, $t.steps, St]), sn = reactExports.useCallback((As, Ss) => {
+    Cr(null);
     const fs = [...$t.steps], vs = As + Ss;
     vs < 0 || vs >= fs.length || ([fs[As], fs[vs]] = [fs[vs], fs[As]], commitAstUpdate(At, { steps: fs }, St));
   }, [At, $t.steps, St]), An = reactExports.useCallback((As) => {
@@ -136639,7 +136640,9 @@ function SqlBlockEditor({ cell: At, path: yt, cellIndex: xt, onExitUiMode: wt, f
       wt && /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "button",
         {
-          onClick: wt,
+          onClick: () => {
+            Cr(null), wt();
+          },
           className: "flex items-center gap-1 px-2 py-1 text-xs text-muted-foreground border border-border rounded hover:bg-muted transition-colors shrink-0",
           title: "Retour à l'éditeur SQL",
           children: [
@@ -137149,7 +137152,9 @@ function SqlTableBody({ cell: At, path: yt, cellIndex: xt, showTextResult: wt = 
     getSqlResultAsText: Ht.getSqlResultAsText,
     forceUpdate: Ht.forceUpdate
   }))), [It, Rt] = reactExports.useState(!1), [Dt, jt] = reactExports.useState("table"), Nt = St(At), Mt = At._status === "running", Ot = At.type === "table", Bt = !!(At._echartsOption || At._kpiHtml);
-  return Dt === "chart" && !Bt && jt("table"), Ct && At.type === "sqlRecursiveParse" && It ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+  return reactExports.useEffect(() => {
+    Dt === "chart" && !Bt && jt("table");
+  }, [Bt]), Ct && At.type === "sqlRecursiveParse" && It ? /* @__PURE__ */ jsxRuntimeExports.jsx(
     SqlBlockEditor,
     {
       cell: At,
