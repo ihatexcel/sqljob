@@ -334,15 +334,6 @@ export function ChartConfigEditor({ chartConfig, availableColumns, availableColT
                                                 optional={false}
                                                 onChange={col => col && handleMultiRoleChange(slot.role, idx, 'column', col)}
                                             />
-                                            {slot.hasLabel && (
-                                                <input
-                                                    type="text"
-                                                    value={entry.label ?? ''}
-                                                    placeholder="Libellé"
-                                                    onChange={e => handleMultiRoleChange(slot.role, idx, 'label', e.target.value)}
-                                                    className="h-6 text-xs px-1.5 border border-border rounded bg-background min-w-0 w-24"
-                                                />
-                                            )}
                                             <button
                                                 type="button"
                                                 onClick={() => handleMultiRoleRemove(slot.role, idx)}

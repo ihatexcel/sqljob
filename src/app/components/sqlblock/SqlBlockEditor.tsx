@@ -1154,9 +1154,20 @@ function FillNullStepUI({ step, availableCols, onChange }: { step: FillNullStep;
 
 const AGG_FNS = ['count', 'count_distinct', 'sum', 'avg', 'min', 'max', 'median', 'stddev', 'string_agg', 'list']
 
+function autoAlias(fn: string, column: string): string {
+    const col = column === '*' ? 'all' : column
+    return `${fn}_${col}`
+}
+
 function GroupByStepUI({ step, availableCols, onChange }: { step: GroupByStep; availableCols: string[]; onChange: (s: GroupByStep) => void }) {
     function updateAgg(i: number, patch: Partial<Aggregation>) {
-        onChange({ ...step, aggregations: step.aggregations.map((a, idx) => idx === i ? { ...a, ...patch } : a) })
+        const current = step.aggregations[i]
+        // Auto-recalcule l'alias quand fn ou column change
+        const merged = { ...current, ...patch }
+        if (('fn' in patch || 'column' in patch)) {
+            merged.alias = autoAlias(merged.fn, merged.column)
+        }
+        onChange({ ...step, aggregations: step.aggregations.map((a, idx) => idx === i ? merged : a) })
     }
     const toggleGroup = (col: string) => {
         const s = new Set(step.groupCols)
@@ -1193,7 +1204,7 @@ function GroupByStepUI({ step, availableCols, onChange }: { step: GroupByStep; a
                         <RemoveBtn onClick={() => onChange({ ...step, aggregations: step.aggregations.filter((_, idx) => idx !== i) })} />
                     </div>
                 ))}
-                <AddRowBtn onClick={() => onChange({ ...step, aggregations: [...step.aggregations, { column: availableCols[0] ?? '*', fn: 'count', alias: 'count' }] })} label="+ Agrégation" />
+                <AddRowBtn onClick={() => { const col = availableCols[0] ?? '*'; onChange({ ...step, aggregations: [...step.aggregations, { column: col, fn: 'count', alias: autoAlias('count', col) }] }) }} label="+ Agrégation" />
             </div>
         </div>
     )
@@ -1555,7 +1566,9 @@ function useStepInputSchemas(ast: SqlBlockAst, cellId: string) {
     astRef.current = ast
 
     const fetchSchemaForStep = useCallback(async (stepIdx: number) => {
-        const a = astRef.current
+        // Toujours travailler sur un AST sans chartConfig : le SELECT final avec
+        // annotations (CAST(x AS XAXIS)…) ne doit jamais polluer les schémas des étapes.
+        const a = { ...astRef.current, chartConfig: undefined }
         if (!a.source) return
         const cacheKey = JSON.stringify({ src: a.source, steps: a.steps.slice(0, stepIdx) })
 
@@ -1586,11 +1599,9 @@ function useStepInputSchemas(ast: SqlBlockAst, cellId: string) {
 
             // 2. Fallback : LIMIT 0 directement sur le SQL amont (sans wrapper subquery)
             if (!schemaTypes) {
-                // Utiliser un AST sans chartConfig pour éviter les colonnes CAST(x AS XAXIS) etc.
-                const cleanAst = { ...a, chartConfig: undefined }
                 const inputSql = stepIdx === 0
                     ? `SELECT * FROM ${quoteId(a.source)}`
-                    : stepSql(cleanAst, stepIdx - 1)
+                    : stepSql(a, stepIdx - 1)
                 if (!inputSql) return
                 const bare = inputSql.trimEnd().replace(/;+\s*$/, '')
                 const hasLimit = /\bLIMIT\s+\d/i.test(bare.replace(/\([\s\S]*?\)/g, ''))
@@ -1613,7 +1624,7 @@ function useStepInputSchemas(ast: SqlBlockAst, cellId: string) {
         }
     }, [cellId])
 
-    /** Invalide le cache pour les steps >= dirtyFromStep (AST a changé) */
+    /** Invalide le cache ET l'état dynamicSchemas pour les steps >= dirtyFromStep */
     const invalidateFrom = useCallback((dirtyFromStep: number, a: SqlBlockAst) => {
         for (const [key] of cacheRef.current) {
             try {
@@ -1622,6 +1633,14 @@ function useStepInputSchemas(ast: SqlBlockAst, cellId: string) {
                     cacheRef.current.delete(key)
             } catch { cacheRef.current.delete(key) }
         }
+        // Purge aussi le state React pour éviter d'afficher des données périmées
+        setDynamicSchemas(prev => {
+            const next: Record<number, DynamicSchema> = {}
+            for (const [k, v] of Object.entries(prev)) {
+                if (Number(k) < dirtyFromStep) next[Number(k)] = v
+            }
+            return next
+        })
     }, [])
 
     return { dynamicSchemas, fetchSchemaForStep, invalidateFrom }
@@ -2233,10 +2252,11 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
 
     const handleChartConfigChange = useCallback((cfg: ChartConfig | null) => {
         // Invalide le cache des schémas dynamiques : chartConfig change le SQL final
-        // donc les entrées cached avec annotations chart doivent être purgées
         invalidateFrom(0, ast)
         commitAstUpdate(cell, { chartConfig: cfg ?? undefined }, forceUpdate)
-    }, [cell, ast, forceUpdate, invalidateFrom])
+        // Ré-exécute la cellule pour refléter les changements de visualisation
+        if (cfg) runCellAt(path, cellIndex)
+    }, [cell, ast, forceUpdate, invalidateFrom, runCellAt, path, cellIndex])
 
     // ─── Distinct values pour le filtre (par step) ─────────────────────────
     // Fabrique une fonction fetchDistinctValues qui interroge la sous-requête
