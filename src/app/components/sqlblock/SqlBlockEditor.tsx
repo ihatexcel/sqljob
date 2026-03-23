@@ -2250,6 +2250,28 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
         // Pas d'ouverture auto du modal de config — l'étape a déjà été configurée dans AddStepModal
     }, [cell, ast.steps, forceUpdate])
 
+    // Schéma "propre" pour ChartConfigEditor : colonnes AVANT les annotations chart
+    // (défini ici avant handleChartConfigChange pour éviter le TDZ dans les deps)
+    const stepsKey = useMemo(() => JSON.stringify(ast.steps), [ast.steps])
+    const [chartInputSchema, setChartInputSchema] = useState<{ columns: string[]; colTypes: Record<string, string> }>({ columns: [], colTypes: {} })
+
+    const fetchChartSchema = useCallback(async () => {
+        if (!ast.source || !fromSqlCell || (ast.materialize ?? 'select') !== 'select') return
+        const cleanAst = { ...ast, chartConfig: undefined }
+        const cleanSql = astToSql(cleanAst)
+        const bare = cleanSql.trimEnd().replace(/;+\s*$/, '')
+        try {
+            const conn = DuckDBManager.getConnection()
+            if (!conn) return
+            const result = await conn.query(`${bare}\nLIMIT 0`)
+            const colTypes: Record<string, string> = {}
+            for (const field of result.schema.fields) colTypes[field.name] = String(field.type)
+            setChartInputSchema({ columns: Object.keys(colTypes), colTypes })
+        } catch (err) {
+            console.warn('[ChartConfigEditor schema]', err)
+        }
+    }, [ast.source, stepsKey]) // eslint-disable-line
+
     const handleChartConfigChange = useCallback((cfg: ChartConfig | null) => {
         // Invalide le cache des schémas dynamiques : chartConfig change le SQL final
         invalidateFrom(0, ast)
@@ -2344,28 +2366,6 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
 
     // Quand le graphique disparaît, ferme l'aperçu chart
     useEffect(() => { if (chartEyeOpen && !hasChart) setChartEyeOpen(false) }, [hasChart]) // eslint-disable-line
-
-    // Schéma "propre" pour ChartConfigEditor : colonnes AVANT les annotations chart
-    // On génère le SQL sans chartConfig pour éviter les colonnes CAST(x AS XAXIS) etc.
-    const stepsKey = useMemo(() => JSON.stringify(ast.steps), [ast.steps])
-    const [chartInputSchema, setChartInputSchema] = useState<{ columns: string[]; colTypes: Record<string, string> }>({ columns: [], colTypes: {} })
-
-    const fetchChartSchema = useCallback(async () => {
-        if (!ast.source || !fromSqlCell || (ast.materialize ?? 'select') !== 'select') return
-        const cleanAst = { ...ast, chartConfig: undefined }
-        const cleanSql = astToSql(cleanAst)
-        const bare = cleanSql.trimEnd().replace(/;+\s*$/, '')
-        try {
-            const conn = DuckDBManager.getConnection()
-            if (!conn) return
-            const result = await conn.query(`${bare}\nLIMIT 0`)
-            const colTypes: Record<string, string> = {}
-            for (const field of result.schema.fields) colTypes[field.name] = String(field.type)
-            setChartInputSchema({ columns: Object.keys(colTypes), colTypes })
-        } catch (err) {
-            console.warn('[ChartConfigEditor schema]', err)
-        }
-    }, [ast.source, stepsKey]) // eslint-disable-line
 
     // Re-fetch quand les étapes changent
     useEffect(() => { fetchChartSchema() }, [stepsKey, ast.source]) // eslint-disable-line
