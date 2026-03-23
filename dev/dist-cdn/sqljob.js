@@ -133162,6 +133162,65 @@ function parseRenameList(At) {
   }
   return xt;
 }
+function splitSelectParts(At) {
+  const yt = [];
+  let xt = 0, wt = "";
+  for (const Ct of At) {
+    if (Ct === "(") xt++;
+    else if (Ct === ")") xt--;
+    else if (Ct === "," && xt === 0) {
+      yt.push(wt.trim()), wt = "";
+      continue;
+    }
+    wt += Ct;
+  }
+  return wt.trim() && yt.push(wt.trim()), yt;
+}
+function tryParseGroupByParts(At, yt) {
+  var Et, kt;
+  const xt = splitSelectParts(yt).map((Tt) => unquoteId(Tt.trim())).filter(Boolean);
+  if (!xt.length) return null;
+  const wt = splitSelectParts(At), Ct = [], St = [];
+  for (const Tt of wt) {
+    const $t = Tt.trim(), Lt = unquoteId($t);
+    if (xt.includes(Lt)) {
+      Ct.push(Lt);
+      continue;
+    }
+    const It = $t.match(/^(\w+)\s*\(([\s\S]+)\)\s+AS\s+("(?:[^"]+)"|[\w]+)\s*$/i);
+    if (!It) return null;
+    const Rt = It[1].toUpperCase(), Dt = It[2].trim(), jt = unquoteId(It[3].trim());
+    let Nt = null;
+    if (Rt === "COUNT")
+      if (Dt === "*") Nt = { fn: "count", column: "*", alias: jt };
+      else {
+        const Mt = Dt.match(/^DISTINCT\s+([\s\S]+)$/i);
+        Nt = Mt ? { fn: "count_distinct", column: unquoteId(Mt[1].trim()), alias: jt } : { fn: "count", column: unquoteId(Dt), alias: jt };
+      }
+    else if (Rt === "STRING_AGG") {
+      const Mt = splitSelectParts(Dt), Ot = unquoteId(((Et = Mt[0]) == null ? void 0 : Et.trim()) ?? ""), Bt = ((kt = Mt[1]) == null ? void 0 : kt.trim().replace(/^['"]|['"]$/g, "")) ?? ", ";
+      Nt = { fn: "string_agg", column: Ot, alias: jt, separator: Bt };
+    } else {
+      const Ot = {
+        SUM: "sum",
+        AVG: "avg",
+        MIN: "min",
+        MAX: "max",
+        MEDIAN: "median",
+        STDDEV: "stddev",
+        STDDEV_SAMP: "stddev",
+        STDDEV_POP: "stddev",
+        LIST: "list",
+        ARRAY_AGG: "list"
+      }[Rt];
+      if (!Ot) return null;
+      Nt = { fn: Ot, column: unquoteId(Dt), alias: jt };
+    }
+    if (!Nt) return null;
+    St.push(Nt);
+  }
+  return xt.some((Tt) => !Ct.includes(Tt)) ? null : { type: "group_by", groupCols: xt, aggregations: St };
+}
 function parseCteBodyToStep(At, yt, xt) {
   const wt = At.trim(), Ct = wt.match(/^SELECT\s+(.+?)\s+FROM\s+(?:"[^"]*"|\S+)\s*;?\s*$/is);
   if (Ct) {
@@ -133197,6 +133256,13 @@ function parseCteBodyToStep(At, yt, xt) {
     if ($t) {
       const It = { type: "top_n", mode: $t[2].trim() === "%" ? "sample_percent" : "sample_rows", n: parseInt($t[1]) };
       return $t[3] && (It.sampleMethod = $t[3]), It;
+    }
+  }
+  if (!yt || yt === "group_by") {
+    const Tt = wt.match(/^SELECT\s+([\s\S]+?)\s+FROM\s+(?:"[^"]*"|\S+)\s+GROUP\s+BY\s+([\s\S]+?)\s*;?\s*$/i);
+    if (Tt) {
+      const $t = tryParseGroupByParts(Tt[1].trim(), Tt[2].trim());
+      if ($t) return $t;
     }
   }
   const Et = quoteId(xt);
