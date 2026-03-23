@@ -289,7 +289,9 @@ function useStepEyeData(cell: any, ast: SqlBlockAst) {
             const a = astRef.current
             if (!a.source) return
             const tRef = cellTableRef(idx)
-            const sql = stepSql(a, idx)
+            // Toujours sans chartConfig : la table temp doit contenir les données brutes,
+            // pas les colonnes annotées CAST(x AS XAXIS) du SELECT de visualisation.
+            const sql = stepSql({ ...a, chartConfig: undefined }, idx)
             if (!sql) return
             // Append LIMIT directement — fonctionne pour SELECT plat et CTE chain.
             // On strip un éventuel ; final et on n'ajoute pas de second LIMIT si déjà présent.
