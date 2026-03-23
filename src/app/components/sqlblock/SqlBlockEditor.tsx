@@ -2254,9 +2254,11 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
         // Invalide le cache des schémas dynamiques : chartConfig change le SQL final
         invalidateFrom(0, ast)
         commitAstUpdate(cell, { chartConfig: cfg ?? undefined }, forceUpdate)
-        // Ré-exécute la cellule pour refléter les changements de visualisation
-        if (cfg) runCellAt(path, cellIndex)
-    }, [cell, ast, forceUpdate, invalidateFrom, runCellAt, path, cellIndex])
+        if (cfg) {
+            fetchChartSchema() // Force le fetch des colonnes dès l'activation
+            runCellAt(path, cellIndex)
+        }
+    }, [cell, ast, forceUpdate, invalidateFrom, fetchChartSchema, runCellAt, path, cellIndex])
 
     // ─── Distinct values pour le filtre (par step) ─────────────────────────
     // Fabrique une fonction fetchDistinctValues qui interroge la sous-requête
@@ -2367,6 +2369,15 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
 
     // Re-fetch quand les étapes changent
     useEffect(() => { fetchChartSchema() }, [stepsKey, ast.source]) // eslint-disable-line
+
+    // Fallback immédiat : si l'async n'a pas encore renvoyé de colonnes, utilise sourceColumns
+    // (disponibles dans _duckdbTables sans requête DuckDB — couvre le cas 0 étapes)
+    const chartSchema = chartInputSchema.columns.length > 0
+        ? chartInputSchema
+        : {
+            columns: sourceColumns.map(c => c.name),
+            colTypes: Object.fromEntries(sourceColumns.map(c => [c.name, c.type])),
+        }
 
     // ─── Layout responsive (ResizeObserver) ─────────────────────────────
     // Breakpoints :
@@ -2527,8 +2538,8 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
                         {fromSqlCell && (ast.materialize ?? 'select') === 'select' && (
                             <ChartConfigEditor
                                 chartConfig={ast.chartConfig}
-                                availableColumns={chartInputSchema.columns}
-                                availableColTypes={chartInputSchema.colTypes}
+                                availableColumns={chartSchema.columns}
+                                availableColTypes={chartSchema.colTypes}
                                 onMount={fetchChartSchema}
                                 onChange={handleChartConfigChange}
                                 eyeOpen={chartEyeOpen}
