@@ -132596,9 +132596,8 @@ const CHART_ROLES_ORDERED = [
 function buildChartFinalSelect(At, yt) {
   return `SELECT
 ${yt.columns.map((wt) => {
-    var kt;
-    const Ct = quoteId(wt.column), St = wt.role.toUpperCase(), Et = (kt = wt.label) != null && kt.trim() ? ` AS ${quoteId(wt.label)}` : "";
-    return `  ${Ct}::${St}${Et}`;
+    const Ct = quoteId(wt.column), St = wt.role.toUpperCase();
+    return `  ${Ct}::${St}`;
   }).join(`,
 `)}
 FROM ${At}`;
@@ -134476,7 +134475,7 @@ function defaultConfigForType(At, yt) {
   for (const Ct of xt.roles) {
     if (Ct.optional) continue;
     const St = yt[0] ?? "";
-    Ct.multiple ? St && wt.push({ column: St, role: Ct.role, label: St }) : St && wt.push({ column: St, role: Ct.role });
+    St && wt.push({ column: St, role: Ct.role });
   }
   return { chartType: At, columns: wt };
 }
@@ -134524,7 +134523,7 @@ function ChartConfigEditor({ chartConfig: At, availableColumns: yt, availableCol
   }, [Lt, It, wt]), Ot = reactExports.useCallback((zt) => {
     const Yt = yt[0] ?? "";
     console.log("[ChartConfigEditor] multi role add", zt, "→", Yt);
-    const Kt = [...getEntriesForRole(It, zt), { column: Yt, role: zt, label: Yt }];
+    const Kt = [...getEntriesForRole(It, zt), { column: Yt, role: zt }];
     wt({ chartType: Lt, columns: replaceRoleEntries(It, zt, Kt) });
   }, [Lt, It, yt, wt]), Bt = reactExports.useCallback((zt, Yt) => {
     console.log("[ChartConfigEditor] multi role remove", zt, Yt);
