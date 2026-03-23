@@ -893,6 +893,78 @@ function parseRenameList(s: string): { from: string; to: string }[] | null {
     return renames;
 }
 
+/** Splits a comma-separated SQL expression list, respecting parentheses. */
+function splitSelectParts(sql: string): string[] {
+    const parts: string[] = [];
+    let depth = 0, cur = '';
+    for (const ch of sql) {
+        if (ch === '(') depth++;
+        else if (ch === ')') depth--;
+        else if (ch === ',' && depth === 0) { parts.push(cur.trim()); cur = ''; continue; }
+        cur += ch;
+    }
+    if (cur.trim()) parts.push(cur.trim());
+    return parts;
+}
+
+/** Tries to parse a GROUP BY body into a GroupByStep AST node. */
+function tryParseGroupByParts(selectBody: string, groupByBody: string): import('./SqlBlockTypes').GroupByStep | null {
+    const groupCols = splitSelectParts(groupByBody).map(s => unquoteId(s.trim())).filter(Boolean);
+    if (!groupCols.length) return null;
+
+    const selectParts = splitSelectParts(selectBody);
+    const seenGroupCols: string[] = [];
+    const aggregations: import('./SqlBlockTypes').Aggregation[] = [];
+
+    for (const part of selectParts) {
+        const p = part.trim();
+        // Plain column → must be a GROUP BY column
+        const asPlain = unquoteId(p);
+        if (groupCols.includes(asPlain)) { seenGroupCols.push(asPlain); continue; }
+
+        // FN(args) AS alias — greedy match of args handles nested parens
+        const fnM = p.match(/^(\w+)\s*\(([\s\S]+)\)\s+AS\s+("(?:[^"]+)"|[\w]+)\s*$/i);
+        if (!fnM) return null;
+
+        const fn = fnM[1].toUpperCase();
+        const rawArgs = fnM[2].trim();
+        const alias = unquoteId(fnM[3].trim());
+        let agg: import('./SqlBlockTypes').Aggregation | null = null;
+
+        if (fn === 'COUNT') {
+            if (rawArgs === '*') agg = { fn: 'count', column: '*', alias };
+            else {
+                const distM = rawArgs.match(/^DISTINCT\s+([\s\S]+)$/i);
+                agg = distM
+                    ? { fn: 'count_distinct', column: unquoteId(distM[1].trim()), alias }
+                    : { fn: 'count', column: unquoteId(rawArgs), alias };
+            }
+        } else if (fn === 'STRING_AGG') {
+            const p2 = splitSelectParts(rawArgs);
+            const col = unquoteId(p2[0]?.trim() ?? '');
+            const sep = p2[1]?.trim().replace(/^['"]|['"]$/g, '') ?? ', ';
+            agg = { fn: 'string_agg', column: col, alias, separator: sep };
+        } else {
+            const FN_MAP: Record<string, string> = {
+                SUM: 'sum', AVG: 'avg', MIN: 'min', MAX: 'max',
+                MEDIAN: 'median', STDDEV: 'stddev', STDDEV_SAMP: 'stddev', STDDEV_POP: 'stddev',
+                LIST: 'list', ARRAY_AGG: 'list',
+            };
+            const mapped = FN_MAP[fn];
+            if (!mapped) return null;
+            agg = { fn: mapped as any, column: unquoteId(rawArgs), alias };
+        }
+
+        if (!agg) return null;
+        aggregations.push(agg);
+    }
+
+    // Verify all GROUP BY cols appeared in SELECT
+    if (groupCols.some(c => !seenGroupCols.includes(c))) return null;
+
+    return { type: 'group_by', groupCols, aggregations };
+}
+
 /**
  * Parse le corps d'un CTE en un SqlBlockStep.
  * - Retourne null si c'est un SELECT * passthrough (pas de step).
@@ -952,6 +1024,15 @@ function parseCteBodyToStep(
             const step: SqlBlockStep = { type: 'top_n', mode: isPercent ? 'sample_percent' : 'sample_rows', n: parseInt(sampleM[1]) };
             if (sampleM[3]) (step as any).sampleMethod = sampleM[3];
             return step;
+        }
+    }
+
+    // ── group_by (SELECT groupCols + AGGs FROM src GROUP BY cols) ──────────────
+    if (!typeHint || typeHint === 'group_by') {
+        const groupM = b.match(/^SELECT\s+([\s\S]+?)\s+FROM\s+(?:"[^"]*"|\S+)\s+GROUP\s+BY\s+([\s\S]+?)\s*;?\s*$/i);
+        if (groupM) {
+            const groupStep = tryParseGroupByParts(groupM[1].trim(), groupM[2].trim());
+            if (groupStep) return groupStep;
         }
     }
 
