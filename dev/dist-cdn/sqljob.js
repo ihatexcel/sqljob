@@ -134850,7 +134850,7 @@ function useStepEyeData(At, yt) {
         await ensureSqlblockSchema();
         const Jt = Tt.current;
         if (!Jt.source) return;
-        const Zt = Dt(Bt), sr = stepSql(Jt, Bt);
+        const Zt = Dt(Bt), sr = stepSql({ ...Jt, chartConfig: void 0 }, Bt);
         if (!sr) return;
         const Cr = sr.trimEnd().replace(/;+\s*$/, ""), Ur = /\bLIMIT\s+\d/i.test(Cr.replace(/\([\s\S]*?\)/g, "")) ? Cr : `${Cr}
 LIMIT ${SUBCELL_LIMIT}`;
