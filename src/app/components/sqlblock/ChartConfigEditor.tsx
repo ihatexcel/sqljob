@@ -125,11 +125,7 @@ function defaultConfigForType(chartType: string, availableColumns: string[]): Ch
     for (const slot of config.roles) {
         if (slot.optional) continue // ne pré-remplit pas les slots optionnels
         const col = availableColumns[0] ?? ''
-        if (slot.multiple) {
-            if (col) columns.push({ column: col, role: slot.role, label: col })
-        } else {
-            if (col) columns.push({ column: col, role: slot.role })
-        }
+        if (col) columns.push({ column: col, role: slot.role })
     }
     return { chartType, columns }
 }
@@ -234,7 +230,7 @@ export function ChartConfigEditor({ chartConfig, availableColumns, availableColT
     const handleMultiRoleAdd = useCallback((role: string) => {
         const col = availableColumns[0] ?? ''
         console.log('[ChartConfigEditor] multi role add', role, '→', col)
-        const entries = [...getEntriesForRole(columns, role), { column: col, role, label: col }]
+        const entries = [...getEntriesForRole(columns, role), { column: col, role }]
         onChange({ chartType, columns: replaceRoleEntries(columns, role, entries) })
     }, [chartType, columns, availableColumns, onChange])
 
