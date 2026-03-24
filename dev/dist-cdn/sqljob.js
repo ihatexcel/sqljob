@@ -137280,10 +137280,18 @@ function EChartRenderer({ cell: At, hasHeight: yt }) {
     !wt.current || !At._echartsOption || (Ct = CDNManager.loadECharts) == null || Ct.call(CDNManager).then(() => {
       const St = window.echarts;
       if (!St || !wt.current) return;
-      let Et = St.getInstanceByDom(wt.current) || St.init(wt.current);
+      let Et = St.getInstanceByDom(wt.current) || St.init(wt.current, null, { renderer: "svg" });
       Et.clear(), Et.setOption(At._echartsOption);
     });
-  }, [xt, At._echartsOption]), At._kpiHtml ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { dangerouslySetInnerHTML: { __html: At._kpiHtml } }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { ref: wt, className: yt ? "flex-1 min-h-0" : "min-h-[300px]" });
+  }, [xt, At._echartsOption]), reactExports.useEffect(() => {
+    const Ct = wt.current;
+    if (!Ct) return;
+    const St = new ResizeObserver(() => {
+      const Et = window.echarts, kt = Et == null ? void 0 : Et.getInstanceByDom(Ct);
+      kt == null || kt.resize();
+    });
+    return St.observe(Ct), () => St.disconnect();
+  }, []), At._kpiHtml ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-full", dangerouslySetInnerHTML: { __html: At._kpiHtml } }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { ref: wt, className: `w-full ${yt ? "flex-1 min-h-0" : "min-h-[300px]"}` });
 }
 function SqlTableBody({ cell: At, path: yt, cellIndex: xt, showTextResult: wt = !1 }) {
   var Zt, sr, Cr, Rr, Ur;
