@@ -284,9 +284,9 @@ export const createExecutionSlice = (set: any, get: any) => ({
         // Si queries[0].sql est vide mais qu'un AST est disponible, reconstituer le SQL
         const q0 = cell.queries?.[0]
         if (q0?.ast && !q0.sql?.trim()) {
-            const { astToSql, buildDisplaySql } = await import('../../../lib/SqlBlockService')
+            const { astToSql } = await import('../../../lib/SqlBlockService')
             const selectSql = q0.degraded && q0.manualSql ? q0.manualSql : astToSql(q0.ast)
-            q0.sql = buildDisplaySql(cell.name, selectSql, cell.materialize ?? q0.ast.materialize ?? 'select')
+            q0.sql = selectSql  // SELECT pur — le DDL est assemblé ci-dessous
         }
 
         if (!ConfigManager.getCellQuery(cell, 0)?.trim()) {
@@ -432,11 +432,12 @@ export const createExecutionSlice = (set: any, get: any) => ({
                 const materialize = cell.materialize ?? 'select'
 
                 if (materialize !== 'select' && cell.name?.trim()) {
-                    // Le SQL contient déjà DROP ... IF EXISTS + CREATE OR REPLACE TABLE/VIEW
-                    // (généré par generateMaterializeQuery avec {{ _name }} substitué)
+                    // Assemble DDL à l'exécution : DROP de l'opposé + CREATE OR REPLACE TABLE/VIEW
                     const { quoteId } = await import('../../../lib/SqlBlockService')
-                    await DuckDBManager.executeQuery(finalQuery)
                     const qid = quoteId(cell.name)
+                    const oppositeType = materialize === 'view' ? 'TABLE' : 'VIEW'
+                    const ddlSql = `DROP ${oppositeType} IF EXISTS ${qid};\nCREATE OR REPLACE ${materialize.toUpperCase()} ${qid} AS (\n${finalQuery}\n)`
+                    await DuckDBManager.executeQuery(ddlSql)
                     const { rows: results, schemaTypes } = await DuckDBManager.executeQueryWithSchema(
                         `SELECT * FROM ${qid} LIMIT 1000`
                     )
