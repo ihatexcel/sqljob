@@ -430,20 +430,13 @@ export const createExecutionSlice = (set: any, get: any) => ({
                 }
             } else {
                 const materialize = cell.materialize ?? 'select'
-                const { quoteId, stripMaterializePrefix } = await import('../../../lib/SqlBlockService')
-                // Normalise le SQL : retire le préfixe DDL éventuel pour obtenir le SELECT brut
-                const isDdl = /^CREATE\s+OR\s+REPLACE\s+/i.test(finalQuery.trim())
-                const selectSql = isDdl ? stripMaterializePrefix(finalQuery) : finalQuery
 
                 if (materialize !== 'select' && cell.name?.trim()) {
-                    // Créer une VIEW ou TABLE DuckDB depuis le SELECT
+                    // Le SQL contient déjà DROP ... IF EXISTS + CREATE OR REPLACE TABLE/VIEW
+                    // (généré par generateMaterializeQuery avec {{ _name }} substitué)
+                    const { quoteId } = await import('../../../lib/SqlBlockService')
+                    await DuckDBManager.executeQuery(finalQuery)
                     const qid = quoteId(cell.name)
-                    const oppositeType = materialize === 'view' ? 'TABLE' : 'VIEW'
-                    try { await DuckDBManager.executeQuery(`DROP ${oppositeType} IF EXISTS ${qid}`) } catch (_) { /* ok */ }
-                    const createSql = materialize === 'table'
-                        ? `CREATE OR REPLACE TABLE ${qid} AS (\n${selectSql}\n)`
-                        : `CREATE OR REPLACE VIEW ${qid} AS (\n${selectSql}\n)`
-                    await DuckDBManager.executeQuery(createSql)
                     const { rows: results, schemaTypes } = await DuckDBManager.executeQueryWithSchema(
                         `SELECT * FROM ${qid} LIMIT 1000`
                     )

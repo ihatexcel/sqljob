@@ -184,12 +184,17 @@ export function astToSql(ast: SqlBlockAst): string {
     return `WITH\n${ctes.join(',\n')}\n${finalSelect}`;
 }
 
-export function generateMaterializeQuery(name: string, sql: string, materialize: SqlBlockMaterialize): string {
+export function generateMaterializeQuery(_name: string, sql: string, materialize: SqlBlockMaterialize): string {
     if (materialize === 'select') return sql;
-    const q = quoteId(name);
-    return materialize === 'table'
-        ? `CREATE OR REPLACE TABLE ${q} AS (\n${sql}\n)`
-        : `CREATE OR REPLACE VIEW ${q} AS (\n${sql}\n)`;
+    // DROP the opposite type first (table→drop view, view→drop table) to avoid DuckDB conflicts.
+    // {{ _name }} is substituted at execution time with the cell name.
+    const drop = materialize === 'table'
+        ? `DROP VIEW IF EXISTS {{ _name }};`
+        : `DROP TABLE IF EXISTS {{ _name }};`;
+    const create = materialize === 'table'
+        ? `CREATE OR REPLACE TABLE {{ _name }} AS (\n${sql}\n)`
+        : `CREATE OR REPLACE VIEW {{ _name }} AS (\n${sql}\n)`;
+    return `${drop}\n${create}`;
 }
 
 /** Construit le SQL affiché dans l'éditeur : avec CREATE OR REPLACE pour VIEW/TABLE, SQL brut pour SELECT. */

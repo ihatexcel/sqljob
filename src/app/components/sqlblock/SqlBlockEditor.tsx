@@ -2437,17 +2437,17 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
                         )
                     })()}
                 </div>
-                {!fromSqlCell && (
+                {!fromSqlCell && !cfg.degraded && (
                     <div className="flex items-center gap-2">
                         <label className="text-xs text-muted-foreground shrink-0">Résultat :</label>
                         <div className="flex rounded border border-border overflow-hidden text-xs">
-                            <button onClick={() => handleMaterializeChange('view')} disabled={cfg.degraded}
+                            <button onClick={() => handleMaterializeChange('view')}
                                 className={`px-2 py-1 transition-colors ${ast.materialize === 'view' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}
                                 title="Vue DuckDB (lazy)">VIEW</button>
-                            <button onClick={() => handleMaterializeChange('table')} disabled={cfg.degraded}
+                            <button onClick={() => handleMaterializeChange('table')}
                                 className={`px-2 py-1 transition-colors ${ast.materialize === 'table' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}
                                 title="TABLE matérialisée">TABLE</button>
-                            <button onClick={() => handleMaterializeChange('select')} disabled={cfg.degraded}
+                            <button onClick={() => handleMaterializeChange('select')}
                                 className={`px-2 py-1 transition-colors ${ast.materialize === 'select' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}
                                 title="SELECT simple (sans créer de vue ni de table)">SELECT</button>
                         </div>
