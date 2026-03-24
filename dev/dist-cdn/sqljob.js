@@ -142583,7 +142583,7 @@ const createPagesSlice = (At, yt) => ({
   },
   shouldShowCell(xt) {
     const { devMode: wt } = yt();
-    return wt || ConfigManager.getCellQueryClientVisible(xt, 0) ? !0 : xt.type === "buttonRunNextCells" ? !!xt.buttonLabel : xt.type === "sqlRecursiveParse" ? !1 : ["table", "iframe", "sqlStat"].includes(xt.type) ? xt._status === "success" || xt._status === "running" || xt._results && xt._results.length > 0 : !0;
+    return wt || ConfigManager.getCellQueryClientVisible(xt, 0) ? !0 : xt.type === "buttonRunNextCells" ? !!xt.buttonLabel : xt.type === "sqlRecursiveParse" ? ConfigManager.getCellQueryShowResult(xt, 0) : ["table", "iframe", "sqlStat"].includes(xt.type) ? xt._status === "success" || xt._status === "running" || xt._results && xt._results.length > 0 : !0;
   },
   shouldShowGroup(xt) {
     const { devMode: wt } = yt();
