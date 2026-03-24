@@ -589,7 +589,7 @@ return c;
                             engine: q.engine || ConfigManager.getDefaultEngineForType(cell?.type, i),
                             clientVisible: q.clientVisible === true,
                         };
-                        if (q.showQueryResult === false) entry.showQueryResult = false;
+                        if (q.showQueryResult !== undefined) entry.showQueryResult = q.showQueryResult !== false;
                         if (q.ast !== undefined) entry.ast = q.ast;
                         if (q.degraded) entry.degraded = q.degraded;
                         if (q.manualSql) entry.manualSql = q.manualSql;
@@ -598,7 +598,7 @@ return c;
                 }
                 const arr = [];
                 const qMain = ConfigManager.getCellQuery(cell, 'main');
-                if (qMain) arr.push({ name: 'main', sql: qMain, engine: ConfigManager.getCellEngine(cell, 'main'), clientVisible: ConfigManager.getCellQueryClientVisible(cell, 'main') });
+                if (qMain) arr.push({ name: 'main', sql: qMain, engine: ConfigManager.getCellEngine(cell, 'main'), clientVisible: ConfigManager.getCellQueryClientVisible(cell, 'main'), showQueryResult: ConfigManager.getCellQueryShowResult(cell, 'main') });
                 const qFallback = ConfigManager.getCellQuery(cell, 'fallback') || ConfigManager.getCellQuery(cell, 'filename');
                 if (qFallback) arr.push({ name: ConfigManager.getQuery2Name(cell), sql: qFallback, engine: 'sql', clientVisible: false });
                 return arr;
