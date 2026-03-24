@@ -11,7 +11,6 @@ import { CDNManager } from '../../lib/CDNManager'
 import { SqlEditorWidget } from './SqlEditorWidget'
 import { SqlDataTable } from './SqlDataTable'
 import { Icon } from '../../lib/icons'
-import { buildDisplaySql, stripMaterializePrefix } from '../../lib/SqlBlockService'
 import {
     Accordion, AccordionItem, AccordionTrigger, AccordionContent,
     Dialog, DialogContent, DialogHeader, DialogTitle,
@@ -418,41 +417,19 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
             {/* Contenu normal — caché quand en mode UI */}
             <div style={sqlBlockUiMode ? { display: 'none' } : undefined}
                 className={hasHeight ? 'flex-1 min-h-0 flex flex-col' : ''}>
-            {devMode && cell.type === 'sqlRecursiveParse' && (
+            {devMode && cell.type === 'sqlRecursiveParse' && hasChart && (
                 <div className="flex items-center gap-2 mb-1 shrink-0">
-                    <label className="text-xs text-muted-foreground shrink-0">Résultat :</label>
-                    <div className="flex rounded border border-border overflow-hidden text-xs">
-                        {(['select', 'view', 'table'] as const).map(m => (
-                            <button key={m} onClick={() => {
-                                cell.materialize = m
-                                const q = cell.queries?.[0]
-                                if (q) {
-                                    // Toujours dériver le SELECT depuis q.sql courant (pas l'AST qui peut être périmé)
-                                    const selectSql = stripMaterializePrefix(q.sql || '')
-                                    q.sql = buildDisplaySql(cell.name, selectSql, m)
-                                    if (q.ast) q.ast = { ...q.ast, materialize: m }
-                                }
-                                forceUpdate()
-                            }}
-                                className={`px-2 py-0.5 transition-colors ${(cell.materialize ?? 'select') === m ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}
-                                title={m === 'select' ? 'SELECT simple (sans créer de vue ni de table)' : m === 'view' ? 'Créer une Vue DuckDB (lazy)' : 'Créer une TABLE matérialisée'}>
-                                {m.toUpperCase()}
-                            </button>
-                        ))}
-                    </div>
                     {/* Toggle Tableau / Graphique */}
-                    {hasChart && (
-                        <div className="flex rounded border border-border overflow-hidden text-xs ml-2">
-                            <button onClick={() => setVizMode('table')}
-                                className={`px-2 py-0.5 transition-colors ${vizMode === 'table' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}>
-                                Tableau
-                            </button>
-                            <button onClick={() => setVizMode('chart')}
-                                className={`px-2 py-0.5 transition-colors ${vizMode === 'chart' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}>
-                                Graphique
-                            </button>
-                        </div>
-                    )}
+                    <div className="flex rounded border border-border overflow-hidden text-xs">
+                        <button onClick={() => setVizMode('table')}
+                            className={`px-2 py-0.5 transition-colors ${vizMode === 'table' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}>
+                            Tableau
+                        </button>
+                        <button onClick={() => setVizMode('chart')}
+                            className={`px-2 py-0.5 transition-colors ${vizMode === 'chart' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}>
+                            Graphique
+                        </button>
+                    </div>
                 </div>
             )}
             {/* Toggle visible en mode client si la cellule a un graphique */}

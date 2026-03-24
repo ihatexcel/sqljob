@@ -433,10 +433,12 @@ export const createExecutionSlice = (set: any, get: any) => ({
 
                 if (materialize !== 'select' && cell.name?.trim()) {
                     // Assemble DDL à l'exécution : DROP de l'opposé + CREATE OR REPLACE TABLE/VIEW
-                    const { quoteId } = await import('../../../lib/SqlBlockService')
+                    // stripMaterializePrefix extrait le SELECT pur si q.sql contient déjà un DDL (buildDisplaySql)
+                    const { quoteId, stripMaterializePrefix } = await import('../../../lib/SqlBlockService')
                     const qid = quoteId(cell.name)
                     const oppositeType = materialize === 'view' ? 'TABLE' : 'VIEW'
-                    const ddlSql = `DROP ${oppositeType} IF EXISTS ${qid};\nCREATE OR REPLACE ${materialize.toUpperCase()} ${qid} AS (\n${finalQuery}\n)`
+                    const selectOnly = stripMaterializePrefix(finalQuery)
+                    const ddlSql = `DROP ${oppositeType} IF EXISTS ${qid};\nCREATE OR REPLACE ${materialize.toUpperCase()} ${qid} AS (\n${selectOnly}\n)`
                     await DuckDBManager.executeQuery(ddlSql)
                     const { rows: results, schemaTypes } = await DuckDBManager.executeQueryWithSchema(
                         `SELECT * FROM ${qid} LIMIT 1000`

@@ -102,8 +102,10 @@ function commitAstUpdate(cell: any, newAst: Partial<SqlBlockAst>, forceUpdate: (
     cfg.ast = { ...cfg.ast, ...newAst }
     cfg.degraded = false
     cfg.manualSql = null
-    // Stocker le SELECT pur — le DDL (DROP/CREATE) est assemblé à l'exécution
-    cfg.sql = astToSql(cfg.ast)
+    // Stocker le SQL avec DDL si view/table — cohérent avec l'éditeur SQL en mode non-UI
+    // L'exécution stripe le préfixe DDL avant de ré-appliquer via cell.materialize
+    const selectSql = astToSql(cfg.ast)
+    cfg.sql = buildDisplaySql(cell.name, selectSql, cfg.ast.materialize ?? 'select')
     // Sync cell.materialize avec l'AST
     if (newAst.materialize !== undefined) cell.materialize = newAst.materialize
     forceUpdate()
