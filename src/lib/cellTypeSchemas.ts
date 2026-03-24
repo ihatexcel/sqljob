@@ -86,7 +86,7 @@ export const CELL_TYPE_SCHEMAS = {
                     specificParams: [
                         { key: 'queries.main.clientVisible', label: "Afficher l'éditeur SQL en mode client", tooltip: "Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur. En mode client, seul le résultat sera affiché.", inputType: 'checkbox' }
                     ],
-                    defaults: { queries: [{ name: 'main', sql: 'SELECT * FROM source1 LIMIT 100', engine: 'sql', clientVisible: false }] },
+                    defaults: { queries: [{ name: 'main', sql: 'SELECT 1;', engine: 'sql', clientVisible: false }] },
                     bodyFamily: 'sqlWithTable',
                     bodyConfig: { queryKey: 'query', showTextResult: true, showResultInfo: true },
                     bodyDisplay: { showSkeleton: { excludeWhenSqlEditor: true }, resultInfo: { showDevOnly: false } }

@@ -379,7 +379,10 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
     })))
 
     const [sqlBlockUiMode, setSqlBlockUiMode] = useState(false)
-    const [vizMode, setVizMode] = useState<'table' | 'chart'>('table')
+
+    // En mode visualisation, afficher le graphique par défaut (sinon datatable)
+    const isVisualizationMode = !!(cell.queries?.[0]?.ast?.chartConfig)
+    const [vizMode, setVizMode] = useState<'table' | 'chart'>(isVisualizationMode ? 'chart' : 'table')
 
     const hasHeight = hasCellHeight(cell)
     const isRunning = cell._status === 'running'
@@ -432,8 +435,8 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
                     </div>
                 </div>
             )}
-            {/* Toggle visible en mode client si la cellule a un graphique */}
-            {!devMode && hasChart && cell.type === 'sqlRecursiveParse' && (
+            {/* Toggle visible en mode client uniquement si outputMode=visualization */}
+            {!devMode && hasChart && isVisualizationMode && cell.type === 'sqlRecursiveParse' && (
                 <div className="flex rounded border border-border overflow-hidden text-xs mb-1 shrink-0 self-start">
                     <button onClick={() => setVizMode('table')}
                         className={`px-2 py-0.5 transition-colors ${vizMode === 'table' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}>
