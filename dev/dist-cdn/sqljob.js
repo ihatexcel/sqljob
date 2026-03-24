@@ -143174,7 +143174,7 @@ class CellConfigService {
               const Mt = typeof jt.sql == "string" && St ? jt.sql.replace(/\{name\}/g, St) : jt.sql;
               Nt.sql = Mt;
             }
-            jt.engine !== void 0 && Nt.engine === void 0 && (Nt.engine = jt.engine), jt.clientVisible !== void 0 && Nt.clientVisible === void 0 && (Nt.clientVisible = jt.clientVisible);
+            jt.engine !== void 0 && Nt.engine === void 0 && (Nt.engine = jt.engine), jt.clientVisible !== void 0 && Nt.clientVisible === void 0 && (Nt.clientVisible = jt.clientVisible), jt.showQueryResult !== void 0 && Nt.showQueryResult === void 0 && (Nt.showQueryResult = jt.showQueryResult);
           }
         }
       } else if (yt[$t] === void 0)
