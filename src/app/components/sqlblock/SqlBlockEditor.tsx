@@ -2540,7 +2540,7 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
                                     onChange={e => handleOutputModeChange(e.target.value)}
                                     className="text-xs border border-border rounded px-1 py-0.5 bg-background text-foreground"
                                 >
-                                    <option value="select">— SELECT</option>
+                                    <option value="select">— DATATABLE</option>
                                     <option value="view">VIEW</option>
                                     <option value="table">TABLE</option>
                                     <option value="visualization">VISUALISATION</option>

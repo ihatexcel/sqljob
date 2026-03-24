@@ -96,8 +96,16 @@ const CHART_ROLES_SET = new Set(CHART_ROLES_ORDERED);
  * Génère un SELECT final avec annotations ::ROLE à partir d'une ChartConfig.
  * Ex: SELECT "date"::XAXIS, "revenue"::BARCHART AS "Revenue" FROM "last_cte"
  */
+const CHART_AXIS_ROLES = new Set(['XAXIS', 'YAXIS', 'CATEGORY', 'COLOR', 'COLORS']);
+
 export function buildChartFinalSelect(fromSource: string, cfg: ChartConfig): string {
-    const parts = cfg.columns.map(col => {
+    // Axe / catégorie / couleur en premier, puis les données
+    const sorted = [...cfg.columns].sort((a, b) => {
+        const aAxis = CHART_AXIS_ROLES.has(a.role.toUpperCase()) ? 0 : 1;
+        const bAxis = CHART_AXIS_ROLES.has(b.role.toUpperCase()) ? 0 : 1;
+        return aAxis - bAxis;
+    });
+    const parts = sorted.map(col => {
         const quotedCol = quoteId(col.column);
         const role = col.role.toUpperCase();
         return `  ${quotedCol}::${role}`;
