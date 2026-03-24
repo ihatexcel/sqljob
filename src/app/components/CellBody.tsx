@@ -352,14 +352,27 @@ function EChartRenderer({ cell, hasHeight }: { cell: any; hasHeight: boolean }) 
         CDNManager.loadECharts?.().then(() => {
             const echarts = (window as any).echarts
             if (!echarts || !chartRef.current) return
-            let chart = echarts.getInstanceByDom(chartRef.current) || echarts.init(chartRef.current)
+            let chart = echarts.getInstanceByDom(chartRef.current) || echarts.init(chartRef.current, null, { renderer: 'svg' })
             chart.clear()
             chart.setOption(cell._echartsOption)
         })
     }, [_rev, cell._echartsOption])
 
-    if (cell._kpiHtml) return <div dangerouslySetInnerHTML={{ __html: cell._kpiHtml }} />
-    return <div ref={chartRef} className={hasHeight ? 'flex-1 min-h-0' : 'min-h-[300px]'} />
+    // Resize ECharts quand le conteneur change de dimensions (responsive)
+    useEffect(() => {
+        const el = chartRef.current
+        if (!el) return
+        const ro = new ResizeObserver(() => {
+            const echarts = (window as any).echarts
+            const chart = echarts?.getInstanceByDom(el)
+            chart?.resize()
+        })
+        ro.observe(el)
+        return () => ro.disconnect()
+    }, [])
+
+    if (cell._kpiHtml) return <div className="w-full" dangerouslySetInnerHTML={{ __html: cell._kpiHtml }} />
+    return <div ref={chartRef} className={`w-full ${hasHeight ? 'flex-1 min-h-0' : 'min-h-[300px]'}`} />
 }
 
 // ─── SqlTableBody ─────────────────────────────────────────────────────────────
