@@ -2445,8 +2445,7 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
                         )
                     })()}
                 </div>
-                {false /* mode SELECT/VIEW/TABLE/VISUALISATION déplacé dans les étapes */
-                )}
+                {/* mode SELECT/VIEW/TABLE/VISUALISATION déplacé dans les étapes */}
             </div>
 
             {/* Corps principal — responsive */}
