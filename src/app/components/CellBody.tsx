@@ -463,7 +463,7 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
             {/* Mode tableau */}
             {vizMode === 'table' && (showTextResult ? (
                 <>
-                    {showSqlEditorVisible?.(cell) && isSqlResultTabular?.(cell) && (
+                    {isSqlResultTabular?.(cell) && (
                         <div className={`relative rounded-lg mt-2 ${hasHeight ? 'flex-1 min-h-0 overflow-auto' : ''}`}>
                             {isRunning
                                 ? <div className="bg-background rounded-lg overflow-x-auto"><TableSkeleton /></div>
@@ -471,7 +471,7 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
                             }
                         </div>
                     )}
-                    {showSqlEditorVisible?.(cell) && isSqlResultText?.(cell) && (
+                    {isSqlResultText?.(cell) && (
                         <textarea className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-mono mt-2 min-h-[120px]" readOnly value={getSqlResultAsText?.(cell) || ''} />
                     )}
                 </>
