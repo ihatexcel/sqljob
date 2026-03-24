@@ -96,6 +96,7 @@ import { FileHandler } from './FileHandler'
                                 }
                                 if (d.engine !== undefined && q.engine === undefined) q.engine = d.engine;
                                 if (d.clientVisible !== undefined && q.clientVisible === undefined) q.clientVisible = d.clientVisible;
+                                if (d.showQueryResult !== undefined && q.showQueryResult === undefined) q.showQueryResult = d.showQueryResult;
                             }
                         }
                     } else if (cell[k] === undefined) {
