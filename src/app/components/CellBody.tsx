@@ -366,18 +366,22 @@ function EChartRenderer({ cell, hasHeight }: { cell: any; hasHeight: boolean }) 
 function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
     const {
         devMode, hasCellHeight,
-        showSqlEditorVisible, showQueryResult, isSqlResultTabular, isSqlResultText,
-        getSqlResultAsText, forceUpdate,
+        showSqlEditorVisible, isSqlResultTabular, isSqlResultText,
+        getSqlResultAsText, forceUpdate, _rev,
     } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         hasCellHeight: s.hasCellHeight,
         showSqlEditorVisible: s.showSqlEditorVisible,
-        showQueryResult: s.showQueryResult,
         isSqlResultTabular: s.isSqlResultTabular,
         isSqlResultText: s.isSqlResultText,
         getSqlResultAsText: s.getSqlResultAsText,
         forceUpdate: s.forceUpdate,
+        _rev: s._rev,
     })))
+
+    // Lu directement depuis la cellule (pas via store) pour éviter les problèmes de ref stale.
+    // undefined → true (rétrocompat : les anciennes cellules sans ce champ affichent leurs résultats)
+    const showResult = devMode || (cell.queries?.[0]?.showQueryResult !== false)
 
     const [sqlBlockUiMode, setSqlBlockUiMode] = useState(false)
 
@@ -427,7 +431,7 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
                     onEnterUiMode={cell.type === 'sqlRecursiveParse' ? () => setSqlBlockUiMode(true) : null}
                 />
             )}
-            {showQueryResult?.(cell) && (<>
+            {showResult && (<>
             {/* Toggle Tableau/Graphique — devMode */}
             {devMode && cell.type === 'sqlRecursiveParse' && hasChart && (
                 <div className="flex items-center gap-2 mb-1 shrink-0">
