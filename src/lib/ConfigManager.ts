@@ -589,7 +589,7 @@ return c;
                             engine: q.engine || ConfigManager.getDefaultEngineForType(cell?.type, i),
                             clientVisible: q.clientVisible === true,
                         };
-                        if (q.showQueryResult !== undefined) entry.showQueryResult = q.showQueryResult !== false;
+                        entry.showQueryResult = q.showQueryResult !== false; // undefined → true (rétrocompat)
                         if (q.ast !== undefined) entry.ast = q.ast;
                         if (q.degraded) entry.degraded = q.degraded;
                         if (q.manualSql) entry.manualSql = q.manualSql;
