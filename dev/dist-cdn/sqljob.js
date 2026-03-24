@@ -24605,7 +24605,7 @@ const CELL_TYPE_SCHEMAS = {
       specificParams: [
         { key: "queries.main.clientVisible", label: "Afficher l'éditeur SQL en mode client", tooltip: "Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur. En mode client, seul le résultat sera affiché.", inputType: "checkbox" }
       ],
-      defaults: { queries: [{ name: "main", sql: "SELECT * FROM source1 LIMIT 100", engine: "sql", clientVisible: !1 }] },
+      defaults: { queries: [{ name: "main", sql: "SELECT 1;", engine: "sql", clientVisible: !1 }] },
       bodyFamily: "sqlWithTable",
       bodyConfig: { queryKey: "query", showTextResult: !0, showResultInfo: !0 },
       bodyDisplay: { showSkeleton: { excludeWhenSqlEditor: !0 }, resultInfo: { showDevOnly: !1 } }
@@ -132593,12 +132593,15 @@ const CHART_ROLES_ORDERED = [
   "TREND",
   "XLINE",
   "YLINE"
-], CHART_ROLES_SET = new Set(CHART_ROLES_ORDERED);
+], CHART_ROLES_SET = new Set(CHART_ROLES_ORDERED), CHART_AXIS_ROLES = /* @__PURE__ */ new Set(["XAXIS", "YAXIS", "CATEGORY", "COLOR", "COLORS"]);
 function buildChartFinalSelect(At, yt) {
   return `SELECT
-${yt.columns.map((wt) => {
-    const Ct = quoteId(wt.column), St = wt.role.toUpperCase();
-    return `  ${Ct}::${St}`;
+${[...yt.columns].sort((Ct, St) => {
+    const Et = CHART_AXIS_ROLES.has(Ct.role.toUpperCase()) ? 0 : 1, kt = CHART_AXIS_ROLES.has(St.role.toUpperCase()) ? 0 : 1;
+    return Et - kt;
+  }).map((Ct) => {
+    const St = quoteId(Ct.column), Et = Ct.role.toUpperCase();
+    return `  ${St}::${Et}`;
   }).join(`,
 `)}
 FROM ${At}`;
@@ -136917,7 +136920,7 @@ LIMIT 0`), Gn = {};
               onChange: (oo) => bo(oo.target.value),
               className: "text-xs border border-border rounded px-1 py-0.5 bg-background text-foreground",
               children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "select", children: "— SELECT" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "select", children: "— DATATABLE" }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "view", children: "VIEW" }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "table", children: "TABLE" }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "visualization", children: "VISUALISATION" })
@@ -137273,6 +137276,7 @@ function EChartRenderer({ cell: At, hasHeight: yt }) {
   }, [xt, At._echartsOption]), At._kpiHtml ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { dangerouslySetInnerHTML: { __html: At._kpiHtml } }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { ref: wt, className: yt ? "flex-1 min-h-0" : "min-h-[300px]" });
 }
 function SqlTableBody({ cell: At, path: yt, cellIndex: xt, showTextResult: wt = !1 }) {
+  var Kt, Jt, Zt;
   const {
     devMode: Ct,
     hasCellHeight: St,
@@ -137281,21 +137285,21 @@ function SqlTableBody({ cell: At, path: yt, cellIndex: xt, showTextResult: wt = 
     isSqlResultText: Tt,
     getSqlResultAsText: $t,
     forceUpdate: Lt
-  } = useNotebookStore(useShallow((Yt) => ({
-    devMode: Yt.devMode,
-    hasCellHeight: Yt.hasCellHeight,
-    showSqlEditorVisible: Yt.showSqlEditorVisible,
-    isSqlResultTabular: Yt.isSqlResultTabular,
-    isSqlResultText: Yt.isSqlResultText,
-    getSqlResultAsText: Yt.getSqlResultAsText,
-    forceUpdate: Yt.forceUpdate
-  }))), [It, Rt] = reactExports.useState(!1), [Dt, jt] = reactExports.useState("table"), Nt = St(At), Mt = At._status === "running", Ot = At.type === "table", Bt = !!(At._echartsOption || At._kpiHtml);
+  } = useNotebookStore(useShallow((sr) => ({
+    devMode: sr.devMode,
+    hasCellHeight: sr.hasCellHeight,
+    showSqlEditorVisible: sr.showSqlEditorVisible,
+    isSqlResultTabular: sr.isSqlResultTabular,
+    isSqlResultText: sr.isSqlResultText,
+    getSqlResultAsText: sr.getSqlResultAsText,
+    forceUpdate: sr.forceUpdate
+  }))), [It, Rt] = reactExports.useState(!1), Dt = !!((Zt = (Jt = (Kt = At.queries) == null ? void 0 : Kt[0]) == null ? void 0 : Jt.ast) != null && Zt.chartConfig), [jt, Nt] = reactExports.useState(Dt ? "chart" : "table"), Mt = St(At), Ot = At._status === "running", Bt = At.type === "table", zt = !!(At._echartsOption || At._kpiHtml);
   reactExports.useEffect(() => {
-    Dt === "chart" && !Bt && jt("table");
-  }, [Bt]);
-  const zt = Ct && At.type === "sqlRecursiveParse";
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: Nt ? "flex-1 min-h-0 flex flex-col" : "", children: [
-    zt && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: It ? void 0 : { display: "none" }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+    jt === "chart" && !zt && Nt("table");
+  }, [zt]);
+  const Yt = Ct && At.type === "sqlRecursiveParse";
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: Mt ? "flex-1 min-h-0 flex flex-col" : "", children: [
+    Yt && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: It ? void 0 : { display: "none" }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
       SqlBlockEditor,
       {
         cell: At,
@@ -137309,40 +137313,40 @@ function SqlTableBody({ cell: At, path: yt, cellIndex: xt, showTextResult: wt = 
       "div",
       {
         style: It ? { display: "none" } : void 0,
-        className: Nt ? "flex-1 min-h-0 flex flex-col" : "",
+        className: Mt ? "flex-1 min-h-0 flex flex-col" : "",
         children: [
-          Ct && At.type === "sqlRecursiveParse" && Bt && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-2 mb-1 shrink-0", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex rounded border border-border overflow-hidden text-xs", children: [
+          Ct && At.type === "sqlRecursiveParse" && zt && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-2 mb-1 shrink-0", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex rounded border border-border overflow-hidden text-xs", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "button",
               {
-                onClick: () => jt("table"),
-                className: `px-2 py-0.5 transition-colors ${Dt === "table" ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"}`,
+                onClick: () => Nt("table"),
+                className: `px-2 py-0.5 transition-colors ${jt === "table" ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"}`,
                 children: "Tableau"
               }
             ),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "button",
               {
-                onClick: () => jt("chart"),
-                className: `px-2 py-0.5 transition-colors ${Dt === "chart" ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"}`,
+                onClick: () => Nt("chart"),
+                className: `px-2 py-0.5 transition-colors ${jt === "chart" ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"}`,
                 children: "Graphique"
               }
             )
           ] }) }),
-          !Ct && Bt && At.type === "sqlRecursiveParse" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex rounded border border-border overflow-hidden text-xs mb-1 shrink-0 self-start", children: [
+          !Ct && zt && Dt && At.type === "sqlRecursiveParse" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex rounded border border-border overflow-hidden text-xs mb-1 shrink-0 self-start", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "button",
               {
-                onClick: () => jt("table"),
-                className: `px-2 py-0.5 transition-colors ${Dt === "table" ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"}`,
+                onClick: () => Nt("table"),
+                className: `px-2 py-0.5 transition-colors ${jt === "table" ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"}`,
                 children: "Tableau"
               }
             ),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "button",
               {
-                onClick: () => jt("chart"),
-                className: `px-2 py-0.5 transition-colors ${Dt === "chart" ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"}`,
+                onClick: () => Nt("chart"),
+                className: `px-2 py-0.5 transition-colors ${jt === "chart" ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"}`,
                 children: "Graphique"
               }
             )
@@ -137357,11 +137361,11 @@ function SqlTableBody({ cell: At, path: yt, cellIndex: xt, showTextResult: wt = 
               onEnterUiMode: At.type === "sqlRecursiveParse" ? () => Rt(!0) : null
             }
           ),
-          Dt === "chart" && Bt && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: Nt ? "flex-1 min-h-0 flex flex-col" : "", children: /* @__PURE__ */ jsxRuntimeExports.jsx(EChartRenderer, { cell: At, hasHeight: Nt }) }),
-          Dt === "table" && (wt ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-            (Et == null ? void 0 : Et(At)) && (kt == null ? void 0 : kt(At)) && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `relative rounded-lg mt-2 ${Nt ? "flex-1 min-h-0 overflow-auto" : ""}`, children: Mt ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-background rounded-lg overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsx(TableSkeleton, {}) }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-background rounded-lg overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsx(SqlDataTable, { cell: At, searchable: Ot }) }) }),
+          jt === "chart" && zt && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: Mt ? "flex-1 min-h-0 flex flex-col" : "", children: /* @__PURE__ */ jsxRuntimeExports.jsx(EChartRenderer, { cell: At, hasHeight: Mt }) }),
+          jt === "table" && (wt ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+            (Et == null ? void 0 : Et(At)) && (kt == null ? void 0 : kt(At)) && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `relative rounded-lg mt-2 ${Mt ? "flex-1 min-h-0 overflow-auto" : ""}`, children: Ot ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-background rounded-lg overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsx(TableSkeleton, {}) }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-background rounded-lg overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsx(SqlDataTable, { cell: At, searchable: Bt }) }) }),
             (Et == null ? void 0 : Et(At)) && (Tt == null ? void 0 : Tt(At)) && /* @__PURE__ */ jsxRuntimeExports.jsx("textarea", { className: "flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-mono mt-2 min-h-[120px]", readOnly: !0, value: ($t == null ? void 0 : $t(At)) || "" })
-          ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: Nt ? "flex-1 min-h-0 overflow-auto" : "", children: Mt ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-background rounded-lg overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsx(TableSkeleton, {}) }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-background rounded-lg overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsx(SqlDataTable, { cell: At, searchable: Ot }) }) })),
+          ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: Mt ? "flex-1 min-h-0 overflow-auto" : "", children: Ot ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-background rounded-lg overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsx(TableSkeleton, {}) }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-background rounded-lg overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsx(SqlDataTable, { cell: At, searchable: Bt }) }) })),
           /* @__PURE__ */ jsxRuntimeExports.jsx(ResultInfo, { cell: At, devOnly: !0 })
         ]
       }
