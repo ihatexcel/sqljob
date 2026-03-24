@@ -24595,6 +24595,7 @@ const CELL_TYPE_SCHEMAS = {
     sqlRecursiveParse: {
       executeHandler: "executeSqlRecursiveParseCell",
       defaultNamePrefix: "sql",
+      showNameInHeader: !0,
       hideInViewMode: !0,
       exportFields: ["queries", "materialize"],
       initProps: {},
@@ -142876,7 +142877,7 @@ const createHelpersSlice = (At, yt) => ({
   },
   findReferencedParams(xt) {
     if (!xt) return [];
-    const wt = [], Ct = /\{\{\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*\}\}/g;
+    const wt = [], Ct = /\{\{\s*([a-zA-Z][a-zA-Z0-9_]*)\s*\}\}/g;
     let St;
     for (; (St = Ct.exec(xt)) !== null; )
       wt.includes(St[1]) || wt.push(St[1]);
@@ -144623,8 +144624,12 @@ FROM source1 LIMIT 10;`;
       yt().setStatus("Le nom ne peut pas être vide", "error"), Ct.name = yt().generateUniqueCellName(Ct.type, Ct._id);
       return;
     }
+    if (St.startsWith("_")) {
+      yt().setStatus("Le nom ne peut pas commencer par _ (réservé aux variables système {{ _xxx }})", "error"), Ct.name = yt().generateUniqueCellName(Ct.type, Ct._id);
+      return;
+    }
     if (!ConfigManager.isCellNameValid(Ct, St)) {
-      yt().setStatus("Le nom doit commencer par une lettre ou _ et ne contenir que des lettres, chiffres et _", "error"), Ct.name = St.replace(/[^a-zA-Z0-9_]/g, "_").replace(/^([0-9])/, "_$1");
+      yt().setStatus("Le nom doit commencer par une lettre et ne contenir que des lettres, chiffres et _", "error"), Ct.name = St.replace(/[^a-zA-Z0-9_]/g, "_").replace(/^[^a-zA-Z]/, "c");
       return;
     }
     yt().isCellNameUsed(St, Ct._id) && (yt().setStatus(`Le nom "${St}" est déjà utilisé par une autre cellule`, "error"), Ct.name = yt().generateUniqueCellName(Ct.type, Ct._id));
@@ -144638,8 +144643,12 @@ FROM source1 LIMIT 10;`;
       yt().setStatus("Le nom de la source ne peut pas être vide", "error"), St.name = yt().generateUniqueSourceName();
       return;
     }
-    if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(Et)) {
-      yt().setStatus("Le nom doit commencer par une lettre ou _ et ne contenir que des lettres, chiffres et _", "error"), St.name = Et.replace(/[^a-zA-Z0-9_]/g, "_").replace(/^([0-9])/, "_$1");
+    if (Et.startsWith("_")) {
+      yt().setStatus("Le nom ne peut pas commencer par _ (réservé aux variables système)", "error"), St.name = yt().generateUniqueSourceName();
+      return;
+    }
+    if (!/^[a-zA-Z][a-zA-Z0-9_]*$/.test(Et)) {
+      yt().setStatus("Le nom doit commencer par une lettre et ne contenir que des lettres, chiffres et _", "error"), St.name = Et.replace(/[^a-zA-Z0-9_]/g, "_").replace(/^[^a-zA-Z]/, "s");
       return;
     }
     yt().isNameUniqueAcrossPages(Et, "source", yt().activePageIndex, Ct, wt) || (yt().setStatus(`Le nom de source "${Et}" est déjà utilisé dans une autre page`, "error"), St.name = yt().generateUniqueSourceName());
@@ -145176,7 +145185,7 @@ const createExecutionSlice = (At, yt) => ({
       return;
     }
     try {
-      const Mt = yt().parseQueryWithParameters(ConfigManager.getCellQuery(xt, 0) || "");
+      const Mt = yt().parseQueryWithParameters(ConfigManager.getCellQuery(xt, 0) || "", { _name: xt.name || "" });
       yt().setStatus("Exécution de la requête...", "loading");
       const Ot = /COPY\s+[\s\S]+\bTO\s+'([^']+)'/i, Bt = Mt.match(Ot);
       if (Bt) {
