@@ -134796,7 +134796,9 @@ function getOrInitConfig(At) {
 }
 function commitAstUpdate(At, yt, xt) {
   const wt = getOrInitConfig(At);
-  wt.ast = { ...wt.ast, ...yt }, wt.degraded = !1, wt.manualSql = null, wt.sql = astToSql(wt.ast), yt.materialize !== void 0 && (At.materialize = yt.materialize), xt();
+  wt.ast = { ...wt.ast, ...yt }, wt.degraded = !1, wt.manualSql = null;
+  const Ct = astToSql(wt.ast);
+  wt.sql = buildDisplaySql(At.name, Ct, wt.ast.materialize ?? "select"), yt.materialize !== void 0 && (At.materialize = yt.materialize), xt();
 }
 function applyStepToSchema(At, yt, xt) {
   switch (At.type) {
@@ -137309,46 +137311,24 @@ function SqlTableBody({ cell: At, path: yt, cellIndex: xt, showTextResult: wt = 
         style: It ? { display: "none" } : void 0,
         className: Nt ? "flex-1 min-h-0 flex flex-col" : "",
         children: [
-          Ct && At.type === "sqlRecursiveParse" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 mb-1 shrink-0", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-xs text-muted-foreground shrink-0", children: "Résultat :" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex rounded border border-border overflow-hidden text-xs", children: ["select", "view", "table"].map((Yt) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Ct && At.type === "sqlRecursiveParse" && Bt && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-2 mb-1 shrink-0", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex rounded border border-border overflow-hidden text-xs", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
               "button",
               {
-                onClick: () => {
-                  var Jt;
-                  At.materialize = Yt;
-                  const Kt = (Jt = At.queries) == null ? void 0 : Jt[0];
-                  if (Kt) {
-                    const Zt = stripMaterializePrefix(Kt.sql || "");
-                    Kt.sql = buildDisplaySql(At.name, Zt, Yt), Kt.ast && (Kt.ast = { ...Kt.ast, materialize: Yt });
-                  }
-                  Lt();
-                },
-                className: `px-2 py-0.5 transition-colors ${(At.materialize ?? "select") === Yt ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"}`,
-                title: Yt === "select" ? "SELECT simple (sans créer de vue ni de table)" : Yt === "view" ? "Créer une Vue DuckDB (lazy)" : "Créer une TABLE matérialisée",
-                children: Yt.toUpperCase()
-              },
-              Yt
-            )) }),
-            Bt && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex rounded border border-border overflow-hidden text-xs ml-2", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "button",
-                {
-                  onClick: () => jt("table"),
-                  className: `px-2 py-0.5 transition-colors ${Dt === "table" ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"}`,
-                  children: "Tableau"
-                }
-              ),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "button",
-                {
-                  onClick: () => jt("chart"),
-                  className: `px-2 py-0.5 transition-colors ${Dt === "chart" ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"}`,
-                  children: "Graphique"
-                }
-              )
-            ] })
-          ] }),
+                onClick: () => jt("table"),
+                className: `px-2 py-0.5 transition-colors ${Dt === "table" ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"}`,
+                children: "Tableau"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "button",
+              {
+                onClick: () => jt("chart"),
+                className: `px-2 py-0.5 transition-colors ${Dt === "chart" ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"}`,
+                children: "Graphique"
+              }
+            )
+          ] }) }),
           !Ct && Bt && At.type === "sqlRecursiveParse" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex rounded border border-border overflow-hidden text-xs mb-1 shrink-0 self-start", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "button",
@@ -145261,15 +145241,15 @@ const createExecutionSlice = (At, yt) => ({
       } else {
         const zt = xt.materialize ?? "select";
         if (zt !== "select" && (($t = xt.name) != null && $t.trim())) {
-          const { quoteId: Yt } = await Promise.resolve().then(() => SqlBlockService), Kt = Yt(xt.name), Zt = `DROP ${zt === "view" ? "TABLE" : "VIEW"} IF EXISTS ${Kt};
-CREATE OR REPLACE ${zt.toUpperCase()} ${Kt} AS (
-${Mt}
+          const { quoteId: Yt, stripMaterializePrefix: Kt } = await Promise.resolve().then(() => SqlBlockService), Jt = Yt(xt.name), Zt = zt === "view" ? "TABLE" : "VIEW", sr = Kt(Mt), Cr = `DROP ${Zt} IF EXISTS ${Jt};
+CREATE OR REPLACE ${zt.toUpperCase()} ${Jt} AS (
+${sr}
 )`;
-          await DuckDBManager.executeQuery(Zt);
-          const { rows: sr, schemaTypes: Cr } = await DuckDBManager.executeQueryWithSchema(
-            `SELECT * FROM ${Kt} LIMIT 1000`
+          await DuckDBManager.executeQuery(Cr);
+          const { rows: Rr, schemaTypes: Ur } = await DuckDBManager.executeQueryWithSchema(
+            `SELECT * FROM ${Jt} LIMIT 1000`
           );
-          xt._results = sr, xt._schemaTypes = Cr || {}, xt._resultInfo = `${sr.length} ligne(s)${sr.length === 1e3 ? " (limité à 1 000)" : ""} — ${zt === "table" ? "TABLE" : "VIEW"} "${xt.name}" créée`, await ((It = (Lt = yt()).refreshDuckdbSchema) == null ? void 0 : It.call(Lt));
+          xt._results = Rr, xt._schemaTypes = Ur || {}, xt._resultInfo = `${Rr.length} ligne(s)${Rr.length === 1e3 ? " (limité à 1 000)" : ""} — ${zt === "table" ? "TABLE" : "VIEW"} "${xt.name}" créée`, await ((It = (Lt = yt()).refreshDuckdbSchema) == null ? void 0 : It.call(Lt));
         } else {
           const Yt = (Rt = wt == null ? void 0 : wt.ast) == null ? void 0 : Rt.chartConfig;
           if ((Dt = Yt == null ? void 0 : Yt.columns) != null && Dt.length) {
