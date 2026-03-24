@@ -181,7 +181,7 @@ export function CellConfigModal() {
                                 {param.inputType === 'checkbox' ? (
                                     <div className="flex items-center gap-3">
                                         <Checkbox
-                                            checked={!!getCellValueByPath(cell, param.key)}
+                                            checked={(() => { const v = getCellValueByPath(cell, param.key); return v === undefined ? (param.defaultValue === true) : !!v; })()}
                                             onCheckedChange={v => { setCellValueByPath(cell, param.key, !!v); forceUpdate() }}
                                         />
                                         <Label className="cursor-pointer">{param.label}</Label>
