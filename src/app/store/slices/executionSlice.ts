@@ -295,7 +295,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
         }
 
         try {
-            const finalQuery = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '')
+            const finalQuery = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '', { _name: cell.name || '' })
 
             get().setStatus('Exécution de la requête...', 'loading')
 

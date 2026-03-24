@@ -424,9 +424,14 @@ return newCell
             cell.name = get().generateUniqueCellName(cell.type, cell._id)
             return
         }
+        if (currentName.startsWith('_')) {
+            get().setStatus('Le nom ne peut pas commencer par _ (réservé aux variables système {{ _xxx }})', 'error')
+            cell.name = get().generateUniqueCellName(cell.type, cell._id)
+            return
+        }
         if (!ConfigManager.isCellNameValid(cell, currentName)) {
-            get().setStatus('Le nom doit commencer par une lettre ou _ et ne contenir que des lettres, chiffres et _', 'error')
-            cell.name = currentName.replace(/[^a-zA-Z0-9_]/g, '_').replace(/^([0-9])/, '_$1')
+            get().setStatus('Le nom doit commencer par une lettre et ne contenir que des lettres, chiffres et _', 'error')
+            cell.name = currentName.replace(/[^a-zA-Z0-9_]/g, '_').replace(/^[^a-zA-Z]/, 'c')
             return
         }
         if (get().isCellNameUsed(currentName, cell._id)) {
@@ -445,9 +450,14 @@ return newCell
             cell.name = get().generateUniqueSourceName()
             return
         }
-        if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(currentName)) {
-            get().setStatus('Le nom doit commencer par une lettre ou _ et ne contenir que des lettres, chiffres et _', 'error')
-            cell.name = currentName.replace(/[^a-zA-Z0-9_]/g, '_').replace(/^([0-9])/, '_$1')
+        if (currentName.startsWith('_')) {
+            get().setStatus('Le nom ne peut pas commencer par _ (réservé aux variables système)', 'error')
+            cell.name = get().generateUniqueSourceName()
+            return
+        }
+        if (!/^[a-zA-Z][a-zA-Z0-9_]*$/.test(currentName)) {
+            get().setStatus('Le nom doit commencer par une lettre et ne contenir que des lettres, chiffres et _', 'error')
+            cell.name = currentName.replace(/[^a-zA-Z0-9_]/g, '_').replace(/^[^a-zA-Z]/, 's')
             return
         }
         if (!get().isNameUniqueAcrossPages(currentName, 'source', get().activePageIndex, path, cellIndex)) {

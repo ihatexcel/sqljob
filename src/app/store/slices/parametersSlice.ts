@@ -43,7 +43,8 @@ export const createParametersSlice = (set: any, get: any) => ({
     findReferencedParams(query: string) {
         if (!query) return []
         const params: string[] = []
-        const regex = /\{\{\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*\}\}/g
+        // Names starting with _ are reserved system variables ({{ _name }}, etc.) — excluded from DAG
+        const regex = /\{\{\s*([a-zA-Z][a-zA-Z0-9_]*)\s*\}\}/g
         let match
         while ((match = regex.exec(query)) !== null) {
             if (!params.includes(match[1])) params.push(match[1])
