@@ -127,6 +127,17 @@ return c;
                 return q ? q.clientVisible === true : false;
             }
 
+            /**
+             * Indique si le résultat (datatable/visualisation) doit être affiché en mode client.
+             * Par défaut true (undefined = affiché).
+             */
+            static getCellQueryShowResult(cell, nameOrIndex = 'main') {
+                if (!cell) return true;
+                const name = typeof nameOrIndex === 'number' ? (ConfigManager.getQueryNameForIndex(cell, nameOrIndex) || 'main') : nameOrIndex;
+                const q = ConfigManager.getQueryByName(cell, name);
+                return q ? q.showQueryResult !== false : true;
+            }
+
             /** Trouve une requête par nom dans cell.queries. Rétrocompat: si pas de name sur les queries, utilise l'index du schéma. */
             static getQueryByName(cell, name) {
                 if (!cell || !Array.isArray(cell.queries)) return null;
@@ -578,6 +589,7 @@ return c;
                             engine: q.engine || ConfigManager.getDefaultEngineForType(cell?.type, i),
                             clientVisible: q.clientVisible === true,
                         };
+                        if (q.showQueryResult === false) entry.showQueryResult = false;
                         if (q.ast !== undefined) entry.ast = q.ast;
                         if (q.degraded) entry.degraded = q.degraded;
                         if (q.manualSql) entry.manualSql = q.manualSql;

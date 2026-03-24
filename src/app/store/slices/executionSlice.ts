@@ -528,6 +528,10 @@ export const createExecutionSlice = (set: any, get: any) => ({
         return get().devMode || ConfigManager.getCellQueryClientVisible(cell, 0)
     },
 
+    showQueryResult(cell) {
+        return get().devMode || ConfigManager.getCellQueryShowResult(cell, 0)
+    },
+
     isSqlResultTabular(cell) {
         const r = cell?._results
         if (!r || !Array.isArray(r) || r.length === 0) return false

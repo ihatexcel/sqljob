@@ -84,9 +84,10 @@ export const CELL_TYPE_SCHEMAS = {
                     queryCount: 1,
                     queryNames: ['main'],
                     specificParams: [
+                        { key: 'queries.main.showQueryResult', label: "Afficher le résultat en mode client", tooltip: "Si décoché, le datatable et la visualisation ne seront pas affichés en mode client.", inputType: 'checkbox', defaultValue: true },
                         { key: 'queries.main.clientVisible', label: "Afficher l'éditeur SQL en mode client", tooltip: "Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur. En mode client, seul le résultat sera affiché.", inputType: 'checkbox' }
                     ],
-                    defaults: { queries: [{ name: 'main', sql: 'SELECT 1;', engine: 'sql', clientVisible: false }] },
+                    defaults: { queries: [{ name: 'main', sql: 'SELECT 1;', engine: 'sql', clientVisible: false, showQueryResult: true }] },
                     bodyFamily: 'sqlWithTable',
                     bodyConfig: { queryKey: 'query', showTextResult: true, showResultInfo: true },
                     bodyDisplay: { showSkeleton: { excludeWhenSqlEditor: true }, resultInfo: { showDevOnly: false } }

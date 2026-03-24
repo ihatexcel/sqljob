@@ -366,12 +366,13 @@ function EChartRenderer({ cell, hasHeight }: { cell: any; hasHeight: boolean }) 
 function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
     const {
         devMode, hasCellHeight,
-        showSqlEditorVisible, isSqlResultTabular, isSqlResultText,
+        showSqlEditorVisible, showQueryResult, isSqlResultTabular, isSqlResultText,
         getSqlResultAsText, forceUpdate,
     } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         hasCellHeight: s.hasCellHeight,
         showSqlEditorVisible: s.showSqlEditorVisible,
+        showQueryResult: s.showQueryResult,
         isSqlResultTabular: s.isSqlResultTabular,
         isSqlResultText: s.isSqlResultText,
         getSqlResultAsText: s.getSqlResultAsText,
@@ -420,9 +421,16 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
             {/* Contenu normal — caché quand en mode UI */}
             <div style={sqlBlockUiMode ? { display: 'none' } : undefined}
                 className={hasHeight ? 'flex-1 min-h-0 flex flex-col' : ''}>
+            {showSqlEditorVisible?.(cell) && (
+                <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
+                    placeholder="SELECT * FROM source1 LIMIT 100"
+                    onEnterUiMode={cell.type === 'sqlRecursiveParse' ? () => setSqlBlockUiMode(true) : null}
+                />
+            )}
+            {showQueryResult?.(cell) && (<>
+            {/* Toggle Tableau/Graphique — devMode */}
             {devMode && cell.type === 'sqlRecursiveParse' && hasChart && (
                 <div className="flex items-center gap-2 mb-1 shrink-0">
-                    {/* Toggle Tableau / Graphique */}
                     <div className="flex rounded border border-border overflow-hidden text-xs">
                         <button onClick={() => setVizMode('table')}
                             className={`px-2 py-0.5 transition-colors ${vizMode === 'table' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}>
@@ -447,12 +455,6 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
                         Graphique
                     </button>
                 </div>
-            )}
-            {showSqlEditorVisible?.(cell) && (
-                <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
-                    placeholder="SELECT * FROM source1 LIMIT 100"
-                    onEnterUiMode={cell.type === 'sqlRecursiveParse' ? () => setSqlBlockUiMode(true) : null}
-                />
             )}
             {/* Mode graphique */}
             {vizMode === 'chart' && hasChart && (
@@ -483,6 +485,7 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
                     }
                 </div>
             ))}
+            </>)}
             <ResultInfo cell={cell} devOnly />
             </div>
         </div>
