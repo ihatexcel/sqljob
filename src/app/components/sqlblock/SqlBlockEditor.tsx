@@ -102,8 +102,8 @@ function commitAstUpdate(cell: any, newAst: Partial<SqlBlockAst>, forceUpdate: (
     cfg.ast = { ...cfg.ast, ...newAst }
     cfg.degraded = false
     cfg.manualSql = null
-    const selectSql = astToSql(cfg.ast)
-    cfg.sql = buildDisplaySql(cell.name, selectSql, cfg.ast.materialize ?? 'select')
+    // Stocker le SELECT pur — le DDL (DROP/CREATE) est assemblé à l'exécution
+    cfg.sql = astToSql(cfg.ast)
     // Sync cell.materialize avec l'AST
     if (newAst.materialize !== undefined) cell.materialize = newAst.materialize
     forceUpdate()
@@ -2207,7 +2207,7 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
 
     const selectSql = getEffectiveSql(cfg)
     const displaySql = cell.name?.trim()
-        ? generateMaterializeQuery(cell.name, selectSql, ast.materialize ?? 'view')
+        ? generateMaterializeQuery(cell.name, selectSql, ast.materialize ?? 'select')
         : selectSql
 
     // ─── Handlers AST ──────────────────────────────────────────────────────
@@ -2224,9 +2224,8 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
         }
     }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-    const handleMaterializeChange = useCallback((mat: SqlBlockMaterialize) => {
-        commitAstUpdate(cell, { materialize: mat }, forceUpdate)
-    }, [cell, forceUpdate])
+    // Mode de sortie courant : 'select' | 'view' | 'table' | 'visualization'
+    const outputMode = ast.chartConfig !== undefined ? 'visualization' : (ast.materialize ?? 'select')
 
     const handleStepUpdate = useCallback((idx: number, newStep: SqlBlockStep) => {
         invalidateFrom(idx + 1, ast)   // les schémas en aval sont périmés
@@ -2258,7 +2257,7 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
     const [chartInputSchema, setChartInputSchema] = useState<{ columns: string[]; colTypes: Record<string, string> }>({ columns: [], colTypes: {} })
 
     const fetchChartSchema = useCallback(async () => {
-        if (!ast.source || !fromSqlCell || (ast.materialize ?? 'select') !== 'select') return
+        if (!ast.source) return
         const cleanAst = { ...ast, chartConfig: undefined }
         const cleanSql = astToSql(cleanAst)
         const bare = cleanSql.trimEnd().replace(/;+\s*$/, '')
@@ -2283,6 +2282,15 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
             runCellAt(path, cellIndex)
         }
     }, [cell, ast, forceUpdate, invalidateFrom, fetchChartSchema, runCellAt, path, cellIndex])
+
+    const handleOutputModeChange = useCallback((mode: string) => {
+        if (mode === 'visualization') {
+            commitAstUpdate(cell, { materialize: 'select', chartConfig: ast.chartConfig ?? { columns: [] } }, forceUpdate)
+            fetchChartSchema()
+        } else {
+            commitAstUpdate(cell, { materialize: mode as SqlBlockMaterialize, chartConfig: undefined }, forceUpdate)
+        }
+    }, [cell, ast.chartConfig, forceUpdate, fetchChartSchema])
 
     // ─── Distinct values pour le filtre (par step) ─────────────────────────
     // Fabrique une fonction fetchDistinctValues qui interroge la sous-requête
@@ -2437,21 +2445,7 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
                         )
                     })()}
                 </div>
-                {!fromSqlCell && !cfg.degraded && (
-                    <div className="flex items-center gap-2">
-                        <label className="text-xs text-muted-foreground shrink-0">Résultat :</label>
-                        <div className="flex rounded border border-border overflow-hidden text-xs">
-                            <button onClick={() => handleMaterializeChange('view')}
-                                className={`px-2 py-1 transition-colors ${ast.materialize === 'view' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}
-                                title="Vue DuckDB (lazy)">VIEW</button>
-                            <button onClick={() => handleMaterializeChange('table')}
-                                className={`px-2 py-1 transition-colors ${ast.materialize === 'table' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}
-                                title="TABLE matérialisée">TABLE</button>
-                            <button onClick={() => handleMaterializeChange('select')}
-                                className={`px-2 py-1 transition-colors ${ast.materialize === 'select' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}
-                                title="SELECT simple (sans créer de vue ni de table)">SELECT</button>
-                        </div>
-                    </div>
+                {false /* mode SELECT/VIEW/TABLE/VISUALISATION déplacé dans les étapes */
                 )}
             </div>
 
@@ -2537,7 +2531,22 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
                             otherStepNames={ast.steps.map(s => s.name?.trim()).filter(Boolean) as string[]}
                             stepIndex={n} onOpen={() => fetchSchemaForStep(n)}
                         />
-                        {fromSqlCell && (ast.materialize ?? 'select') === 'select' && (
+                        {!cfg.degraded && (
+                            <div className="flex items-center gap-2 mt-1 shrink-0">
+                                <label className="text-xs text-muted-foreground shrink-0">Résultat :</label>
+                                <select
+                                    value={outputMode}
+                                    onChange={e => handleOutputModeChange(e.target.value)}
+                                    className="text-xs border border-border rounded px-1 py-0.5 bg-background text-foreground"
+                                >
+                                    <option value="select">— SELECT</option>
+                                    <option value="view">VIEW</option>
+                                    <option value="table">TABLE</option>
+                                    <option value="visualization">VISUALISATION</option>
+                                </select>
+                            </div>
+                        )}
+                        {outputMode === 'visualization' && (
                             <ChartConfigEditor
                                 chartConfig={ast.chartConfig}
                                 availableColumns={chartSchema.columns}
