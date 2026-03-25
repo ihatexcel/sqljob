@@ -93,7 +93,7 @@ export function CellConfigModal() {
                                     <SelectItem value="source">Source</SelectItem>
                                     <SelectItem value="uiParameter">Paramètre UI</SelectItem>
                                     <SelectItem value="buttonRunNextCells">Bouton Exécuter</SelectItem>
-                                    <SelectItem value="sqlRecursiveParse">SQL</SelectItem>
+                                    <SelectItem value="sql">SQL</SelectItem>
                                     <SelectItem value="table">Tableau</SelectItem>
                                     <SelectItem value="iframe">HTML/Iframe</SelectItem>
                                     <SelectItem value="sqlStat">Stat SQL</SelectItem>

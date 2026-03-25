@@ -23,7 +23,7 @@ export const createCellsSlice = (set: any, get: any) => ({
     },
 
     isSqlCellWithEditor(type: string) {
-        return ['sqlRecursiveParse', 'table', 'iframe', 'sqlStat', 'perspective', 'pdfme', 'publipostageWord', 'echart'].includes(type)
+        return ['sql', 'table', 'iframe', 'sqlStat', 'perspective', 'pdfme', 'publipostageWord', 'echart'].includes(type)
     },
 
     bodyDisplayShouldShowSkeleton(cell: any) {

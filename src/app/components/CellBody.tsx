@@ -412,19 +412,20 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
         if (vizMode === 'chart' && !hasChart) setVizMode('table')
     }, [hasChart]) // eslint-disable-line react-hooks/exhaustive-deps
 
-    // Mode UI visuel (sqlBlock) pour les cellules sqlRecursiveParse.
+    // Mode UI visuel (sqlBlock) pour les cellules sql.
     // IMPORTANT: on utilise display:none au lieu de démontage conditionnel pour éviter
-    // le bug React "removeChild not a child" : quand SqlBlockEditor est démonté brutalement,
-    // les portals Radix (Select, StepConfigModal) ont déjà été supprimés de document.body
-    // par leurs propres handlers pointerdown, et React échoue à les removeChild une 2ème fois.
-    // En gardant SqlBlockEditor toujours monté (juste caché), aucun cleanup de portal n'est déclenché.
-    const showSqlBlockEditor = devMode && cell.type === 'sqlRecursiveParse'
+    // le bug React "removeChild not a child" (portals Radix déjà retirés du DOM avant cleanup).
+    // L'overlay fixed plein-écran est toujours monté, juste caché quand inactif.
+    const showSqlBlockEditor = devMode && cell.type === 'sql'
 
     return (
         <div className={hasHeight ? 'flex-1 min-h-0 flex flex-col' : ''}>
-            {/* SqlBlockEditor — toujours monté quand disponible, caché via display:none */}
+            {/* SqlBlockEditor — overlay plein écran, toujours monté, caché via display:none */}
             {showSqlBlockEditor && (
-                <div style={sqlBlockUiMode ? undefined : { display: 'none' }}>
+                <div
+                    style={sqlBlockUiMode ? undefined : { display: 'none' }}
+                    className="fixed inset-0 z-50 bg-background flex flex-col overflow-hidden"
+                >
                     <SqlBlockEditor
                         cell={cell}
                         path={path}
@@ -441,12 +442,12 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
             {showSqlEditorVisible?.(cell) && (
                 <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
                     placeholder="SELECT * FROM source1 LIMIT 100"
-                    onEnterUiMode={cell.type === 'sqlRecursiveParse' ? () => setSqlBlockUiMode(true) : null}
+                    onEnterUiMode={cell.type === 'sql' ? () => setSqlBlockUiMode(true) : null}
                 />
             )}
             {showResult && (<>
             {/* Toggle Tableau/Graphique — devMode */}
-            {devMode && cell.type === 'sqlRecursiveParse' && hasChart && (
+            {devMode && cell.type === 'sql' && hasChart && (
                 <div className="flex items-center gap-2 mb-1 shrink-0">
                     <div className="flex rounded border border-border overflow-hidden text-xs">
                         <button onClick={() => setVizMode('table')}
@@ -461,7 +462,7 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
                 </div>
             )}
             {/* Toggle visible en mode client uniquement si outputMode=visualization */}
-            {!devMode && hasChart && isVisualizationMode && cell.type === 'sqlRecursiveParse' && (
+            {!devMode && hasChart && isVisualizationMode && cell.type === 'sql' && (
                 <div className="flex rounded border border-border overflow-hidden text-xs mb-1 shrink-0 self-start">
                     <button onClick={() => setVizMode('table')}
                         className={`px-2 py-0.5 transition-colors ${vizMode === 'table' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}>
@@ -999,7 +1000,7 @@ export function CellBody({ cell, path, cellIndex, group }: { cell: any, path: nu
             case 'markdown': return <MarkdownBody cell={cell} path={path} cellIndex={cellIndex} />
             case 'source': return <SourceBody cell={cell} path={path} cellIndex={cellIndex} />
             case 'buttonRunNextCells': return <ButtonRunBody cell={cell} path={path} cellIndex={cellIndex} />
-            case 'sqlRecursiveParse': return <SqlTableBody cell={cell} path={path} cellIndex={cellIndex} showTextResult={true} />
+            case 'sql': return <SqlTableBody cell={cell} path={path} cellIndex={cellIndex} showTextResult={true} />
             case 'table': return <SqlTableBody cell={cell} path={path} cellIndex={cellIndex} />
             case 'iframe': return <IframeBody cell={cell} path={path} cellIndex={cellIndex} />
             case 'sqlStat': return <SqlStatBody cell={cell} path={path} cellIndex={cellIndex} />

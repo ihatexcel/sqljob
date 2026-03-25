@@ -73,7 +73,7 @@ export const CELL_TYPE_SCHEMAS = {
                     bodyFamily: 'buttonRun',
                     bodyConfig: { defaultLabel: 'Exécuter', action: 'runCellsAfter' }
                 },
-                sqlRecursiveParse: {
+                sql: {
                     executeHandler: 'executeSqlRecursiveParseCell',
                     defaultNamePrefix: 'sql',
                     showNameInHeader: true,
