@@ -137345,8 +137345,8 @@ function SqlTableBody({ cell: At, path: yt, cellIndex: xt, showTextResult: wt = 
     Mt(!1), An && It(yt, xt), dropSqlblockSchema().then(() => Rt());
   }, [At, yt, xt, It, Rt]), Ht = !!((Vr = (tn = (ln = At.queries) == null ? void 0 : ln[0]) == null ? void 0 : tn.ast) != null && Vr.chartConfig), [Yt, Kt] = reactExports.useState(Ht ? "chart" : "table"), Jt = St(At), Zt = At._status === "running", sr = At.type === "table", Cr = !!(At._echartsOption || At._kpiHtml);
   reactExports.useEffect(() => {
-    Yt === "chart" && !Cr && Kt("table");
-  }, [Cr]);
+    Cr && Ht ? Kt("chart") : Cr || Kt("table");
+  }, [Cr, Ht]);
   const Rr = Ct && At.type === "sql";
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: Jt ? "flex-1 min-h-0 flex flex-col" : "", children: [
     Rr && /* @__PURE__ */ jsxRuntimeExports.jsx(
