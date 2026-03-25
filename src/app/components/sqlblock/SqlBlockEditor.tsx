@@ -2173,7 +2173,7 @@ function ChartPreviewInEditor({ cell }: { cell: any }) {
 
 // ─── SqlBlockEditor (composant principal) ─────────────────────────────────────
 
-export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCell }: { cell: any; path: number[]; cellIndex: number; onExitUiMode?: () => void; fromSqlCell?: boolean }) {
+export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCell, skipExecution }: { cell: any; path: number[]; cellIndex: number; onExitUiMode?: () => void; fromSqlCell?: boolean; skipExecution?: boolean }) {
     const { forceUpdate, _duckdbTables, db, runCellAt } = useNotebookStore(useShallow(s => ({
         forceUpdate: s.forceUpdate,
         _duckdbTables: s._duckdbTables,
@@ -2281,9 +2281,9 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
         commitAstUpdate(cell, { chartConfig: cfg ?? undefined }, forceUpdate)
         if (cfg) {
             fetchChartSchema() // Force le fetch des colonnes dès l'activation
-            runCellAt(path, cellIndex)
+            if (!skipExecution) runCellAt(path, cellIndex)
         }
-    }, [cell, ast, forceUpdate, invalidateFrom, fetchChartSchema, runCellAt, path, cellIndex])
+    }, [cell, ast, forceUpdate, invalidateFrom, fetchChartSchema, runCellAt, path, cellIndex, skipExecution])
 
     const handleOutputModeChange = useCallback((mode: string) => {
         if (mode === 'visualization') {

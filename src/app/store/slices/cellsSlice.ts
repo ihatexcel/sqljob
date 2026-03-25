@@ -158,8 +158,12 @@ return newCell
     addGroup(cellType: string) {
         const newGroup = get().createNewGroup('row')
         newGroup.cells = [get().createNewCell(cellType)]
-        get().getGroups().push(newGroup)
+        const groups = get().getGroups()
+        const maxOrder = groups.length > 0 ? Math.max(...groups.map((g: any) => g._order ?? 0)) : -1
+        newGroup._order = maxOrder + 1
+        groups.push(newGroup)
         set({ showAddGroupModal: false })
+        set((s: any) => ({ _rev: s._rev + 1 }))
     },
 
     addCellToGroup(pathOrIndex: any, cellType: string) {
