@@ -55,7 +55,7 @@ export const createParametersSlice = (set: any, get: any) => ({
     findDependentCells(paramName: string) {
         const groups = get().getGroups()
         const dependents: any[] = []
-        const dagTypes = ['uiParameter', 'sqlRecursiveParse', 'table', 'perspective', 'sqlStat']
+        const dagTypes = ['uiParameter', 'sql', 'table', 'perspective', 'sqlStat']
         const searchInGroup = (group: any, path: number[]) => {
             for (let cellIndex = 0; cellIndex < (group.cells || []).length; cellIndex++) {
                 const cell = group.cells[cellIndex]

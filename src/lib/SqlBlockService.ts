@@ -108,7 +108,8 @@ export function buildChartFinalSelect(fromSource: string, cfg: ChartConfig): str
     const parts = sorted.map(col => {
         const quotedCol = quoteId(col.column);
         const role = col.role.toUpperCase();
-        return `  ${quotedCol}::${role}`;
+        const alias = col.label?.trim() ? ` AS "${col.label.trim()}"` : '';
+        return `  ${quotedCol}::${role}${alias}`;
     });
     return `SELECT\n${parts.join(',\n')}\nFROM ${fromSource}`;
 }

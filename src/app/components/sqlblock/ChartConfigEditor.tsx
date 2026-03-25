@@ -25,9 +25,9 @@ const CHART_TYPE_CONFIGS: Record<string, { label: string; icon: string; roles: R
         label: 'Barres',
         icon: 'material-symbols-light:bar-chart',
         roles: [
-            { role: 'XAXIS',    label: 'Axe X',      multiple: false, optional: false, hasLabel: false },
+            { role: 'XAXIS',    label: 'Axe X',      multiple: false, optional: false, hasLabel: true },
             { role: 'BARCHART', label: 'Barres',      multiple: true,  optional: false, hasLabel: true },
-            { role: 'CATEGORY', label: 'Catégorie',   multiple: false, optional: true,  hasLabel: false },
+            { role: 'CATEGORY', label: 'Catégorie',   multiple: false, optional: true,  hasLabel: true },
             { role: 'COLOR',    label: 'Couleur',     multiple: false, optional: true,  hasLabel: false },
         ],
     },
@@ -35,16 +35,16 @@ const CHART_TYPE_CONFIGS: Record<string, { label: string; icon: string; roles: R
         label: 'Lignes',
         icon: 'material-symbols-light:show-chart',
         roles: [
-            { role: 'XAXIS',     label: 'Axe X',    multiple: false, optional: false, hasLabel: false },
+            { role: 'XAXIS',     label: 'Axe X',    multiple: false, optional: false, hasLabel: true },
             { role: 'LINECHART', label: 'Courbes',   multiple: true,  optional: false, hasLabel: true },
-            { role: 'CATEGORY',  label: 'Catégorie', multiple: false, optional: true,  hasLabel: false },
+            { role: 'CATEGORY',  label: 'Catégorie', multiple: false, optional: true,  hasLabel: true },
         ],
     },
     'bar+line': {
         label: 'Barres + Lignes',
         icon: 'material-symbols-light:stacked-bar-chart',
         roles: [
-            { role: 'XAXIS',     label: 'Axe X',    multiple: false, optional: false, hasLabel: false },
+            { role: 'XAXIS',     label: 'Axe X',    multiple: false, optional: false, hasLabel: true },
             { role: 'BARCHART',  label: 'Barres',    multiple: true,  optional: false, hasLabel: true },
             { role: 'LINECHART', label: 'Courbes',   multiple: true,  optional: false, hasLabel: true },
         ],
@@ -53,8 +53,8 @@ const CHART_TYPE_CONFIGS: Record<string, { label: string; icon: string; roles: R
         label: 'Camembert',
         icon: 'material-symbols-light:pie-chart',
         roles: [
-            { role: 'CATEGORY', label: 'Catégorie', multiple: false, optional: false, hasLabel: false },
-            { role: 'PIECHART', label: 'Valeurs',   multiple: false, optional: false, hasLabel: false },
+            { role: 'CATEGORY', label: 'Catégorie', multiple: false, optional: false, hasLabel: true },
+            { role: 'PIECHART', label: 'Valeurs',   multiple: false, optional: false, hasLabel: true },
             { role: 'COLOR',    label: 'Couleur',   multiple: false, optional: true,  hasLabel: false },
         ],
     },
@@ -62,8 +62,8 @@ const CHART_TYPE_CONFIGS: Record<string, { label: string; icon: string; roles: R
         label: 'Donut',
         icon: 'material-symbols-light:donut-large',
         roles: [
-            { role: 'CATEGORY',   label: 'Catégorie', multiple: false, optional: false, hasLabel: false },
-            { role: 'DONUTCHART', label: 'Valeurs',   multiple: false, optional: false, hasLabel: false },
+            { role: 'CATEGORY',   label: 'Catégorie', multiple: false, optional: false, hasLabel: true },
+            { role: 'DONUTCHART', label: 'Valeurs',   multiple: false, optional: false, hasLabel: true },
             { role: 'COLOR',      label: 'Couleur',   multiple: false, optional: true,  hasLabel: false },
         ],
     },
@@ -71,7 +71,7 @@ const CHART_TYPE_CONFIGS: Record<string, { label: string; icon: string; roles: R
         label: 'Jauge',
         icon: 'material-symbols-light:speed',
         roles: [
-            { role: 'GAUGE',   label: 'Valeur',   multiple: false, optional: false, hasLabel: false },
+            { role: 'GAUGE',   label: 'Valeur',   multiple: false, optional: false, hasLabel: true },
             { role: 'RANGE',   label: 'Plage',    multiple: false, optional: true,  hasLabel: false },
             { role: 'COLORS',  label: 'Couleurs', multiple: false, optional: true,  hasLabel: false },
             { role: 'LABELS',  label: 'Labels',   multiple: false, optional: true,  hasLabel: false },
@@ -82,7 +82,7 @@ const CHART_TYPE_CONFIGS: Record<string, { label: string; icon: string; roles: R
         icon: 'material-symbols-light:candlestick-chart',
         roles: [
             { role: 'BOXPLOT', label: 'Valeurs', multiple: true,  optional: false, hasLabel: true },
-            { role: 'XAXIS',   label: 'Axe X',   multiple: false, optional: true,  hasLabel: false },
+            { role: 'XAXIS',   label: 'Axe X',   multiple: false, optional: true,  hasLabel: true },
         ],
     },
     kpi: {
@@ -90,9 +90,9 @@ const CHART_TYPE_CONFIGS: Record<string, { label: string; icon: string; roles: R
         icon: 'material-symbols-light:123',
         roles: [
             { role: 'LABEL',   label: 'Valeurs',    multiple: true,  optional: false, hasLabel: true },
-            { role: 'PERCENT', label: 'Pourcentage', multiple: false, optional: true,  hasLabel: false },
-            { role: 'COMPARE', label: 'Comparaison', multiple: false, optional: true,  hasLabel: false },
-            { role: 'TREND',   label: 'Tendance',    multiple: false, optional: true,  hasLabel: false },
+            { role: 'PERCENT', label: 'Pourcentage', multiple: false, optional: true,  hasLabel: true },
+            { role: 'COMPARE', label: 'Comparaison', multiple: false, optional: true,  hasLabel: true },
+            { role: 'TREND',   label: 'Tendance',    multiple: false, optional: true,  hasLabel: true },
         ],
     },
 }
@@ -215,15 +215,26 @@ export function ChartConfigEditor({ chartConfig, availableColumns, availableColT
 
     const handleSingleRoleChange = useCallback((role: string, col: string | null) => {
         console.log('[ChartConfigEditor] single role change', role, '→', col)
-        const entries = col ? [{ column: col, role }] : []
+        // Reset label when column changes
+        const entries = col ? [{ column: col, role, label: undefined }] : []
+        onChange({ chartType, columns: replaceRoleEntries(columns, role, entries) })
+    }, [chartType, columns, onChange])
+
+    const handleSingleRoleLabelChange = useCallback((role: string, label: string) => {
+        const entry = getEntriesForRole(columns, role)[0]
+        if (!entry) return
+        const entries = [{ ...entry, label: label || undefined }]
         onChange({ chartType, columns: replaceRoleEntries(columns, role, entries) })
     }, [chartType, columns, onChange])
 
     const handleMultiRoleChange = useCallback((role: string, idx: number, field: 'column' | 'label', value: string) => {
         console.log('[ChartConfigEditor] multi role change', role, idx, field, '→', value)
-        const entries = getEntriesForRole(columns, role).map((e, i) =>
-            i === idx ? { ...e, [field]: value } : e
-        )
+        const entries = getEntriesForRole(columns, role).map((e, i) => {
+            if (i !== idx) return e
+            // Reset label when column changes
+            if (field === 'column') return { ...e, column: value, label: undefined }
+            return { ...e, [field]: value || undefined }
+        })
         onChange({ chartType, columns: replaceRoleEntries(columns, role, entries) })
     }, [chartType, columns, onChange])
 
@@ -330,6 +341,15 @@ export function ChartConfigEditor({ chartConfig, availableColumns, availableColT
                                                 optional={false}
                                                 onChange={col => col && handleMultiRoleChange(slot.role, idx, 'column', col)}
                                             />
+                                            {slot.hasLabel && (
+                                                <input
+                                                    type="text"
+                                                    value={entry.label ?? ''}
+                                                    onChange={e => handleMultiRoleChange(slot.role, idx, 'label', e.target.value)}
+                                                    placeholder="AS (alias)"
+                                                    className="h-6 text-xs px-1.5 border border-border rounded bg-background min-w-[80px] max-w-[120px]"
+                                                />
+                                            )}
                                             <button
                                                 type="button"
                                                 onClick={() => handleMultiRoleRemove(slot.role, idx)}
@@ -354,6 +374,15 @@ export function ChartConfigEditor({ chartConfig, availableColumns, availableColT
                                         optional={slot.optional}
                                         onChange={col => handleSingleRoleChange(slot.role, col)}
                                     />
+                                    {slot.hasLabel && entry && (
+                                        <input
+                                            type="text"
+                                            value={entry.label ?? ''}
+                                            onChange={e => handleSingleRoleLabelChange(slot.role, e.target.value)}
+                                            placeholder="AS (alias)"
+                                            className="h-6 text-xs px-1.5 border border-border rounded bg-background min-w-[80px] max-w-[120px]"
+                                        />
+                                    )}
                                 </div>
                             )
                         }

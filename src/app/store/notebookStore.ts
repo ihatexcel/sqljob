@@ -230,7 +230,7 @@ function buildInitialState() {
             { type: 'source',             label: 'Source',                   icon: 'folder-open' },
             { type: 'uiParameter',        label: 'Paramètre UI',             icon: 'tune' },
             { type: 'buttonRunNextCells', label: 'Bouton Exécuter',          icon: 'play-circle' },
-            { type: 'sqlRecursiveParse',  label: 'SQL',                      icon: 'storage' },
+            { type: 'sql',  label: 'SQL',                      icon: 'storage' },
             { type: 'table',              label: 'Tableau',                  icon: 'table' },
             { type: 'iframe',             label: 'HTML/Iframe',              icon: 'web' },
             { type: 'sqlStat',            label: 'Stat SQL',                 icon: 'monitoring' },
