@@ -449,7 +449,7 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
             {showSqlEditorVisible?.(cell) && (
                 <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
                     placeholder="SELECT * FROM source1 LIMIT 100"
-                    onEnterUiMode={cell.type === 'sql' ? () => setSqlBlockUiMode(true) : null}
+                    onEnterUiMode={cell.type === 'sql' ? () => { setSqlBlockUiMode(true); runCellAt(path, cellIndex) } : null}
                 />
             )}
             {showResult && (<>

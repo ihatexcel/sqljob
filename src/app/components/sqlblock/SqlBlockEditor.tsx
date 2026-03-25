@@ -91,7 +91,7 @@ function getOrInitConfig(cell: any): SqlBlockConfig {
         q.manualSql = cell.json.manualSql ?? null
         delete cell.json
     }
-    if (!q.ast) q.ast = createDefaultSqlBlockConfig().ast
+    if (!q.ast) q.ast = { source: '', steps: [], materialize: cell.materialize ?? 'select' }
     if (q.degraded === undefined) q.degraded = false
     if (q.manualSql === undefined) q.manualSql = null
     return q
