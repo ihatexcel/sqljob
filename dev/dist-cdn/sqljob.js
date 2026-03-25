@@ -137347,8 +137347,11 @@ function SqlTableBody({ cell: At, path: yt, cellIndex: xt, showTextResult: wt = 
       "div",
       {
         style: Dt ? void 0 : { display: "none" },
-        className: "fixed inset-0 z-50 bg-background flex flex-col overflow-hidden",
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        className: "fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50",
+        onClick: (Yr) => {
+          Yr.target === Yr.currentTarget && jt(!1);
+        },
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-background border border-border rounded-xl shadow-2xl flex flex-col w-full max-w-5xl max-h-[90dvh] overflow-hidden", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-y-auto flex-1 min-h-0 p-4", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
           SqlBlockEditor,
           {
             cell: At,
@@ -137357,7 +137360,7 @@ function SqlTableBody({ cell: At, path: yt, cellIndex: xt, showTextResult: wt = 
             fromSqlCell: !0,
             onExitUiMode: () => jt(!1)
           }
-        )
+        ) }) })
       }
     ),
     /* @__PURE__ */ jsxRuntimeExports.jsxs(
