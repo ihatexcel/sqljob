@@ -549,7 +549,7 @@ function singleStepToSql(source: string, step: SqlBlockStep): string {
         }
 
         case 'custom_sql': {
-            const sql = step.sql?.trim() || `SELECT * FROM {{subquery}}`;
+            const sql = (step.sql?.trim() || `SELECT * FROM {{subquery}}`).replace(/;+\s*$/, '');
             return sql.replace(/\{\{subquery\}\}/g, source);
         }
     }

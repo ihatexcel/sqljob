@@ -3,11 +3,12 @@
  * Rendu du body d'une cellule selon son type.
  * Remplace les templates Alpine générés par CellBodyRenderer.
  */
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import { useNotebookStore } from '../store/notebookStore'
 import { ConfigManager } from '../../lib/ConfigManager'
 import { CDNManager } from '../../lib/CDNManager'
+import { DuckDBManager } from '../../lib/DuckDBManager'
 import { SqlEditorWidget } from './SqlEditorWidget'
 import { SqlDataTable } from './SqlDataTable'
 import { Icon } from '../../lib/icons'
@@ -398,6 +399,26 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
     const showResult = devMode || (cell.queries?.[0]?.showQueryResult !== false)
 
     const [sqlBlockUiMode, setSqlBlockUiMode] = useState(false)
+    const sqlAtOpenRef = useRef<string>('')
+
+    /** Ferme la modale : rafraîchit seulement si le SQL a changé, puis nettoie les subcells. */
+    const handleCloseModal = useCallback(() => {
+        const currentSql = ConfigManager.getCellQuery(cell, 'main') || ''
+        const modified = currentSql !== sqlAtOpenRef.current
+        setSqlBlockUiMode(false)
+        if (modified) runCellAt(path, cellIndex)
+        // Nettoyage best-effort des tables _sqlblock.sb_* de cette cellule
+        const safeId = (cell._id ?? '').replace(/[^a-zA-Z0-9]/g, '_')
+        if (safeId) {
+            DuckDBManager.executeQuery(
+                `SELECT table_name FROM information_schema.tables WHERE table_schema = '_sqlblock' AND table_name LIKE 'sb_${safeId}_s%'`
+            ).then(rows => {
+                for (const row of (rows ?? [])) {
+                    DuckDBManager.executeQuery(`DROP TABLE IF EXISTS "_sqlblock"."${row.table_name}"`).catch(() => {})
+                }
+            }).catch(() => {})
+        }
+    }, [cell, path, cellIndex, runCellAt])
 
     // En mode visualisation, afficher le graphique par défaut (sinon datatable)
     const isVisualizationMode = !!(cell.queries?.[0]?.ast?.chartConfig)
@@ -426,17 +447,28 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
                 <div
                     style={sqlBlockUiMode ? undefined : { display: 'none' }}
                     className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
-                    onClick={e => { if (e.target === e.currentTarget) setSqlBlockUiMode(false) }}
+                    onClick={e => { if (e.target === e.currentTarget) handleCloseModal() }}
                 >
                     <div className="bg-background border border-border rounded-xl shadow-2xl flex flex-col w-full max-w-[95vw] max-h-[90dvh] overflow-hidden">
-                        <div className="overflow-y-auto flex-1 min-h-0 p-4">
+                        {/* Bouton fermer (×) */}
+                        <div className="flex items-center justify-end px-3 pt-2 pb-0 shrink-0">
+                            <button
+                                type="button"
+                                onClick={handleCloseModal}
+                                className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+                                title="Fermer"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                            </button>
+                        </div>
+                        <div className="overflow-y-auto flex-1 min-h-0 px-4 pb-4">
                             <SqlBlockEditor
                                 cell={cell}
                                 path={path}
                                 cellIndex={cellIndex}
                                 fromSqlCell={true}
                                 skipExecution={true}
-                                onExitUiMode={() => { setSqlBlockUiMode(false); runCellAt(path, cellIndex) }}
+                                onExitUiMode={handleCloseModal}
                             />
                         </div>
                     </div>
@@ -449,7 +481,11 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
             {showSqlEditorVisible?.(cell) && (
                 <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
                     placeholder="SELECT * FROM source1 LIMIT 100"
-                    onEnterUiMode={cell.type === 'sql' ? () => { setSqlBlockUiMode(true); runCellAt(path, cellIndex) } : null}
+                    onEnterUiMode={cell.type === 'sql' ? () => {
+                        sqlAtOpenRef.current = ConfigManager.getCellQuery(cell, 'main') || ''
+                        setSqlBlockUiMode(true)
+                        runCellAt(path, cellIndex)
+                    } : null}
                 />
             )}
             {showResult && (<>
