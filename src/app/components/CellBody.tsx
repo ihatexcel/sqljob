@@ -381,7 +381,7 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
     const {
         devMode, hasCellHeight,
         showSqlEditorVisible, isSqlResultTabular, isSqlResultText,
-        getSqlResultAsText, forceUpdate, runCellAt, _rev,
+        getSqlResultAsText, forceUpdate, runCellAt, refreshDuckdbTables, _rev,
     } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         hasCellHeight: s.hasCellHeight,
@@ -391,6 +391,7 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
         getSqlResultAsText: s.getSqlResultAsText,
         forceUpdate: s.forceUpdate,
         runCellAt: s.runCellAt,
+        refreshDuckdbTables: s.refreshDuckdbTables,
         _rev: s._rev,
     })))
 
@@ -407,9 +408,9 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
         const modified = currentSql !== sqlAtOpenRef.current
         setSqlBlockUiMode(false)
         if (modified) runCellAt(path, cellIndex)
-        // Drop du schéma _sqlblock entier (colonnes par étape, uniquement pour l'UI SQL)
-        dropSqlblockSchema()
-    }, [cell, path, cellIndex, runCellAt])
+        // Drop du schéma _sqlblock entier puis rafraîchit l'arborescence DuckDB
+        dropSqlblockSchema().then(() => refreshDuckdbTables())
+    }, [cell, path, cellIndex, runCellAt, refreshDuckdbTables])
 
     // En mode visualisation, afficher le graphique par défaut (sinon datatable)
     const isVisualizationMode = !!(cell.queries?.[0]?.ast?.chartConfig)
