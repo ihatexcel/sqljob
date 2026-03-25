@@ -258,7 +258,7 @@ function makeTableRef(cellId: string, idx: number): string {
     return `"${SQLBLOCK_SCHEMA}"."${name}"`
 }
 
-function useStepEyeData(cell: any, ast: SqlBlockAst) {
+function useStepEyeData(cell: any, ast: SqlBlockAst, modalOpen?: boolean) {
     const [eyeOpen, setEyeOpenState] = useState<number | null>(null)
     const [loading, setLoading] = useState(false)
     const [, bumpRender] = useState(0)
@@ -2206,7 +2206,7 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
     const tableSchemas = db?.schemaTrees ?? []
 
     // Œil par étape (aperçus DuckDB)
-    const { eyeOpen, toggleEye, loading: eyeLoading, getEyeData } = useStepEyeData(cell, ast)
+    const { eyeOpen, toggleEye, loading: eyeLoading, getEyeData } = useStepEyeData(cell, ast, modalOpen)
 
     // Modal mode dégradé
     const [pendingDegradedSql, setPendingDegradedSql] = useState<string | null>(null)
