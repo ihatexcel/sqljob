@@ -237,6 +237,14 @@ const SQLBLOCK_SCHEMA = '_sqlblock'
 const SUBCELL_LIMIT = 50   // lignes dans les tables intermédiaires
 let sqlblockSchemaEnsured = false
 
+/** Appelé à la fermeture de la modale UI SQL pour dropper tout le schéma _sqlblock. */
+export async function dropSqlblockSchema() {
+    try {
+        await DuckDBManager.executeQuery(`DROP SCHEMA IF EXISTS "${SQLBLOCK_SCHEMA}" CASCADE`)
+    } catch { /* ignore */ }
+    sqlblockSchemaEnsured = false
+}
+
 async function ensureSqlblockSchema() {
     if (sqlblockSchemaEnsured) return
     await DuckDBManager.executeQuery(`CREATE SCHEMA IF NOT EXISTS "${SQLBLOCK_SCHEMA}"`)
@@ -289,7 +297,7 @@ function useStepEyeData(cell: any, ast: SqlBlockAst) {
         try {
             await ensureSqlblockSchema()
             const a = astRef.current
-            if (!a.source) return
+            if (!a.source && !a.steps?.length) return
             const tRef = cellTableRef(idx)
             // Toujours sans chartConfig : la table temp doit contenir les données brutes,
             // pas les colonnes annotées CAST(x AS XAXIS) du SELECT de visualisation.
@@ -332,9 +340,11 @@ function useStepEyeData(cell: any, ast: SqlBlockAst) {
     // Dès que la source ou les steps changent, on (re)matérialise toutes les
     // étapes séquentiellement (silent=true → pas de spinner global).
     // Résultat : eye instant, schéma toujours à jour, indépendant du mode VIEW/TABLE.
-    const bgKey = JSON.stringify({ src: ast.source, steps: ast.steps })
+    // modalOpen inclus dans bgKey pour forcer le re-run à chaque ouverture
+    const bgKey = JSON.stringify({ src: ast.source, steps: ast.steps, open: !!modalOpen })
     useEffect(() => {
-        if (!ast.source || !ast.steps.length) return
+        if (!modalOpen) return  // Ne matérialiser que quand la modale est visible
+        if (!ast.source && !ast.steps.length) return
         let cancelled = false
         const run = async () => {
             await ensureSqlblockSchema()
@@ -2173,7 +2183,7 @@ function ChartPreviewInEditor({ cell }: { cell: any }) {
 
 // ─── SqlBlockEditor (composant principal) ─────────────────────────────────────
 
-export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCell, skipExecution }: { cell: any; path: number[]; cellIndex: number; onExitUiMode?: () => void; fromSqlCell?: boolean; skipExecution?: boolean }) {
+export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCell, skipExecution, modalOpen }: { cell: any; path: number[]; cellIndex: number; onExitUiMode?: () => void; fromSqlCell?: boolean; skipExecution?: boolean; modalOpen?: boolean }) {
     const { forceUpdate, _duckdbTables, db, runCellAt } = useNotebookStore(useShallow(s => ({
         forceUpdate: s.forceUpdate,
         _duckdbTables: s._duckdbTables,
