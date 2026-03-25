@@ -380,7 +380,7 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
     const {
         devMode, hasCellHeight,
         showSqlEditorVisible, isSqlResultTabular, isSqlResultText,
-        getSqlResultAsText, forceUpdate, _rev,
+        getSqlResultAsText, forceUpdate, runCellAt, _rev,
     } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         hasCellHeight: s.hasCellHeight,
@@ -389,6 +389,7 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
         isSqlResultText: s.isSqlResultText,
         getSqlResultAsText: s.getSqlResultAsText,
         forceUpdate: s.forceUpdate,
+        runCellAt: s.runCellAt,
         _rev: s._rev,
     })))
 
@@ -427,14 +428,15 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
                     className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
                     onClick={e => { if (e.target === e.currentTarget) setSqlBlockUiMode(false) }}
                 >
-                    <div className="bg-background border border-border rounded-xl shadow-2xl flex flex-col w-full max-w-5xl max-h-[90dvh] overflow-hidden">
+                    <div className="bg-background border border-border rounded-xl shadow-2xl flex flex-col w-full max-w-[95vw] max-h-[90dvh] overflow-hidden">
                         <div className="overflow-y-auto flex-1 min-h-0 p-4">
                             <SqlBlockEditor
                                 cell={cell}
                                 path={path}
                                 cellIndex={cellIndex}
                                 fromSqlCell={true}
-                                onExitUiMode={() => setSqlBlockUiMode(false)}
+                                skipExecution={true}
+                                onExitUiMode={() => { setSqlBlockUiMode(false); runCellAt(path, cellIndex) }}
                             />
                         </div>
                     </div>
@@ -455,13 +457,13 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
             {devMode && cell.type === 'sql' && hasChart && (
                 <div className="flex items-center gap-2 mb-1 shrink-0">
                     <div className="flex rounded border border-border overflow-hidden text-xs">
-                        <button onClick={() => setVizMode('table')}
-                            className={`px-2 py-0.5 transition-colors ${vizMode === 'table' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}>
-                            Tableau
-                        </button>
                         <button onClick={() => setVizMode('chart')}
                             className={`px-2 py-0.5 transition-colors ${vizMode === 'chart' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}>
                             Graphique
+                        </button>
+                        <button onClick={() => setVizMode('table')}
+                            className={`px-2 py-0.5 transition-colors ${vizMode === 'table' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}>
+                            Tableau
                         </button>
                     </div>
                 </div>
