@@ -2259,7 +2259,7 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
     const [chartInputSchema, setChartInputSchema] = useState<{ columns: string[]; colTypes: Record<string, string> }>({ columns: [], colTypes: {} })
 
     const fetchChartSchema = useCallback(async () => {
-        if (!ast.source) return
+        if (!ast.source && !ast.steps.length) return
         const cleanAst = { ...ast, chartConfig: undefined }
         const cleanSql = astToSql(cleanAst)
         const bare = cleanSql.trimEnd().replace(/;+\s*$/, '')
@@ -2418,7 +2418,7 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
 
             {/* Ligne Source + Matérialisation */}
             <div className="flex items-center gap-3 flex-wrap shrink-0">
-                {onExitUiMode && (
+                {onExitUiMode && !fromSqlCell && (
                     <button
                         onClick={() => { setConfigOpenIdx(null); onExitUiMode() }}
                         className="flex items-center gap-1 px-2 py-1 text-xs text-muted-foreground border border-border rounded hover:bg-muted transition-colors shrink-0"
