@@ -132940,7 +132940,7 @@ FROM ${At}`;
       return `SELECT *, ${Et} AS ${quoteId(kt)} FROM ${At}`;
     }
     case "custom_sql":
-      return (((Ct = yt.sql) == null ? void 0 : Ct.trim()) || "SELECT * FROM {{subquery}}").replace(/\{\{subquery\}\}/g, At);
+      return (((Ct = yt.sql) == null ? void 0 : Ct.trim()) || "SELECT * FROM {{subquery}}").replace(/;+\s*$/, "").replace(/\{\{subquery\}\}/g, At);
   }
 }
 function filterGroupHasContent(At) {
@@ -136739,7 +136739,7 @@ function SqlBlockEditor({ cell: At, path: yt, cellIndex: xt, onExitUiMode: wt, f
     const Xs = [...It.steps, Al];
     commitAstUpdate(At, { steps: Xs }, Et);
   }, [At, It.steps, Et]), Mn = reactExports.useMemo(() => JSON.stringify(It.steps), [It.steps]), [$o, Fn] = reactExports.useState({ columns: [], colTypes: {} }), In = reactExports.useCallback(async () => {
-    if (!It.source) return;
+    if (!It.source && !It.steps.length) return;
     const Al = { ...It, chartConfig: void 0 }, uo = astToSql(Al).trimEnd().replace(/;+\s*$/, "");
     try {
       const jn = DuckDBManager.getConnection();
@@ -136812,7 +136812,7 @@ LIMIT 0`), so = {};
     Lt.degraded && /* @__PURE__ */ jsxRuntimeExports.jsx(DegradedBanner, { onRestore: ds }),
     Jt !== null && /* @__PURE__ */ jsxRuntimeExports.jsx(IncompatibleConfirmModal, { onConfirm: ss, onCancel: () => Zt(null) }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3 flex-wrap shrink-0", children: [
-      wt && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      wt && !Ct && /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "button",
         {
           onClick: () => {
@@ -137311,7 +137311,7 @@ function EChartRenderer({ cell: At, hasHeight: yt }) {
   }, []), At._kpiHtml ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-full", dangerouslySetInnerHTML: { __html: At._kpiHtml } }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { ref: wt, className: `w-full ${yt ? "flex-1 min-h-0" : "min-h-[300px]"}` });
 }
 function SqlTableBody({ cell: At, path: yt, cellIndex: xt, showTextResult: wt = !1 }) {
-  var sr, Cr, Rr, Ur, qr;
+  var Rr, Ur, qr, ln, tn;
   const {
     devMode: Ct,
     hasCellHeight: St,
@@ -137322,50 +137322,75 @@ function SqlTableBody({ cell: At, path: yt, cellIndex: xt, showTextResult: wt = 
     forceUpdate: Lt,
     runCellAt: It,
     _rev: Rt
-  } = useNotebookStore(useShallow((ln) => ({
-    devMode: ln.devMode,
-    hasCellHeight: ln.hasCellHeight,
-    showSqlEditorVisible: ln.showSqlEditorVisible,
-    isSqlResultTabular: ln.isSqlResultTabular,
-    isSqlResultText: ln.isSqlResultText,
-    getSqlResultAsText: ln.getSqlResultAsText,
-    forceUpdate: ln.forceUpdate,
-    runCellAt: ln.runCellAt,
-    _rev: ln._rev
-  }))), Dt = Ct || ((Cr = (sr = At.queries) == null ? void 0 : sr[0]) == null ? void 0 : Cr.showQueryResult) !== !1, [jt, Nt] = reactExports.useState(!1), Mt = !!((qr = (Ur = (Rr = At.queries) == null ? void 0 : Rr[0]) == null ? void 0 : Ur.ast) != null && qr.chartConfig), [Ot, Bt] = reactExports.useState(Mt ? "chart" : "table"), Ht = St(At), Yt = At._status === "running", Kt = At.type === "table", Jt = !!(At._echartsOption || At._kpiHtml);
+  } = useNotebookStore(useShallow((Vr) => ({
+    devMode: Vr.devMode,
+    hasCellHeight: Vr.hasCellHeight,
+    showSqlEditorVisible: Vr.showSqlEditorVisible,
+    isSqlResultTabular: Vr.isSqlResultTabular,
+    isSqlResultText: Vr.isSqlResultText,
+    getSqlResultAsText: Vr.getSqlResultAsText,
+    forceUpdate: Vr.forceUpdate,
+    runCellAt: Vr.runCellAt,
+    _rev: Vr._rev
+  }))), Dt = Ct || ((Ur = (Rr = At.queries) == null ? void 0 : Rr[0]) == null ? void 0 : Ur.showQueryResult) !== !1, [jt, Nt] = reactExports.useState(!1), Mt = reactExports.useRef(""), Ot = reactExports.useCallback(() => {
+    const sn = (ConfigManager.getCellQuery(At, "main") || "") !== Mt.current;
+    Nt(!1), sn && It(yt, xt);
+    const An = (At._id ?? "").replace(/[^a-zA-Z0-9]/g, "_");
+    An && DuckDBManager.executeQuery(
+      `SELECT table_name FROM information_schema.tables WHERE table_schema = '_sqlblock' AND table_name LIKE 'sb_${An}_s%'`
+    ).then((En) => {
+      for (const fn of En ?? [])
+        DuckDBManager.executeQuery(`DROP TABLE IF EXISTS "_sqlblock"."${fn.table_name}"`).catch(() => {
+        });
+    }).catch(() => {
+    });
+  }, [At, yt, xt, It]), Bt = !!((tn = (ln = (qr = At.queries) == null ? void 0 : qr[0]) == null ? void 0 : ln.ast) != null && tn.chartConfig), [Ht, Yt] = reactExports.useState(Bt ? "chart" : "table"), Kt = St(At), Jt = At._status === "running", Zt = At.type === "table", sr = !!(At._echartsOption || At._kpiHtml);
   reactExports.useEffect(() => {
-    Ot === "chart" && !Jt && Bt("table");
-  }, [Jt]);
-  const Zt = Ct && At.type === "sql";
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: Ht ? "flex-1 min-h-0 flex flex-col" : "", children: [
-    Zt && /* @__PURE__ */ jsxRuntimeExports.jsx(
+    Ht === "chart" && !sr && Yt("table");
+  }, [sr]);
+  const Cr = Ct && At.type === "sql";
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: Kt ? "flex-1 min-h-0 flex flex-col" : "", children: [
+    Cr && /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
         style: jt ? void 0 : { display: "none" },
         className: "fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50",
-        onClick: (ln) => {
-          ln.target === ln.currentTarget && Nt(!1);
+        onClick: (Vr) => {
+          Vr.target === Vr.currentTarget && Ot();
         },
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-background border border-border rounded-xl shadow-2xl flex flex-col w-full max-w-[95vw] max-h-[90dvh] overflow-hidden", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-y-auto flex-1 min-h-0 p-4", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          SqlBlockEditor,
-          {
-            cell: At,
-            path: yt,
-            cellIndex: xt,
-            fromSqlCell: !0,
-            skipExecution: !0,
-            onExitUiMode: () => {
-              Nt(!1), It(yt, xt);
+        children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-background border border-border rounded-xl shadow-2xl flex flex-col w-full max-w-[95vw] max-h-[90dvh] overflow-hidden", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center justify-end px-3 pt-2 pb-0 shrink-0", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              type: "button",
+              onClick: Ot,
+              className: "p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors",
+              title: "Fermer",
+              children: /* @__PURE__ */ jsxRuntimeExports.jsxs("svg", { xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("line", { x1: "18", y1: "6", x2: "6", y2: "18" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("line", { x1: "6", y1: "6", x2: "18", y2: "18" })
+              ] })
             }
-          }
-        ) }) })
+          ) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-y-auto flex-1 min-h-0 px-4 pb-4", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            SqlBlockEditor,
+            {
+              cell: At,
+              path: yt,
+              cellIndex: xt,
+              fromSqlCell: !0,
+              skipExecution: !0,
+              onExitUiMode: Ot
+            }
+          ) })
+        ] })
       }
     ),
     /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "div",
       {
         style: jt ? { display: "none" } : void 0,
-        className: Ht ? "flex-1 min-h-0 flex flex-col" : "",
+        className: Kt ? "flex-1 min-h-0 flex flex-col" : "",
         children: [
           (Et == null ? void 0 : Et(At)) && /* @__PURE__ */ jsxRuntimeExports.jsx(
             SqlEditorWidget,
@@ -137375,52 +137400,52 @@ function SqlTableBody({ cell: At, path: yt, cellIndex: xt, showTextResult: wt = 
               cellIndex: xt,
               placeholder: "SELECT * FROM source1 LIMIT 100",
               onEnterUiMode: At.type === "sql" ? () => {
-                Nt(!0), It(yt, xt);
+                Mt.current = ConfigManager.getCellQuery(At, "main") || "", Nt(!0), It(yt, xt);
               } : null
             }
           ),
           Dt && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-            Ct && At.type === "sql" && Jt && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-2 mb-1 shrink-0", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex rounded border border-border overflow-hidden text-xs", children: [
+            Ct && At.type === "sql" && sr && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-2 mb-1 shrink-0", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex rounded border border-border overflow-hidden text-xs", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(
                 "button",
                 {
-                  onClick: () => Bt("chart"),
-                  className: `px-2 py-0.5 transition-colors ${Ot === "chart" ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"}`,
+                  onClick: () => Yt("chart"),
+                  className: `px-2 py-0.5 transition-colors ${Ht === "chart" ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"}`,
                   children: "Graphique"
                 }
               ),
               /* @__PURE__ */ jsxRuntimeExports.jsx(
                 "button",
                 {
-                  onClick: () => Bt("table"),
-                  className: `px-2 py-0.5 transition-colors ${Ot === "table" ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"}`,
+                  onClick: () => Yt("table"),
+                  className: `px-2 py-0.5 transition-colors ${Ht === "table" ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"}`,
                   children: "Tableau"
                 }
               )
             ] }) }),
-            !Ct && Jt && Mt && At.type === "sql" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex rounded border border-border overflow-hidden text-xs mb-1 shrink-0 self-start", children: [
+            !Ct && sr && Bt && At.type === "sql" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex rounded border border-border overflow-hidden text-xs mb-1 shrink-0 self-start", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(
                 "button",
                 {
-                  onClick: () => Bt("table"),
-                  className: `px-2 py-0.5 transition-colors ${Ot === "table" ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"}`,
+                  onClick: () => Yt("table"),
+                  className: `px-2 py-0.5 transition-colors ${Ht === "table" ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"}`,
                   children: "Tableau"
                 }
               ),
               /* @__PURE__ */ jsxRuntimeExports.jsx(
                 "button",
                 {
-                  onClick: () => Bt("chart"),
-                  className: `px-2 py-0.5 transition-colors ${Ot === "chart" ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"}`,
+                  onClick: () => Yt("chart"),
+                  className: `px-2 py-0.5 transition-colors ${Ht === "chart" ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"}`,
                   children: "Graphique"
                 }
               )
             ] }),
-            Ot === "chart" && Jt && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: Ht ? "flex-1 min-h-0 flex flex-col" : "", children: /* @__PURE__ */ jsxRuntimeExports.jsx(EChartRenderer, { cell: At, hasHeight: Ht }) }),
-            Ot === "table" && (wt ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-              (kt == null ? void 0 : kt(At)) && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `relative rounded-lg mt-2 ${Ht ? "flex-1 min-h-0 overflow-auto" : ""}`, children: Yt ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-background rounded-lg overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsx(TableSkeleton, {}) }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-background rounded-lg overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsx(SqlDataTable, { cell: At, searchable: Kt }) }) }),
+            Ht === "chart" && sr && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: Kt ? "flex-1 min-h-0 flex flex-col" : "", children: /* @__PURE__ */ jsxRuntimeExports.jsx(EChartRenderer, { cell: At, hasHeight: Kt }) }),
+            Ht === "table" && (wt ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+              (kt == null ? void 0 : kt(At)) && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `relative rounded-lg mt-2 ${Kt ? "flex-1 min-h-0 overflow-auto" : ""}`, children: Jt ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-background rounded-lg overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsx(TableSkeleton, {}) }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-background rounded-lg overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsx(SqlDataTable, { cell: At, searchable: Zt }) }) }),
               (Tt == null ? void 0 : Tt(At)) && /* @__PURE__ */ jsxRuntimeExports.jsx("textarea", { className: "flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-mono mt-2 min-h-[120px]", readOnly: !0, value: ($t == null ? void 0 : $t(At)) || "" })
-            ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: Ht ? "flex-1 min-h-0 overflow-auto" : "", children: Yt ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-background rounded-lg overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsx(TableSkeleton, {}) }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-background rounded-lg overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsx(SqlDataTable, { cell: At, searchable: Kt }) }) }))
+            ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: Kt ? "flex-1 min-h-0 overflow-auto" : "", children: Jt ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-background rounded-lg overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsx(TableSkeleton, {}) }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-background rounded-lg overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsx(SqlDataTable, { cell: At, searchable: Zt }) }) }))
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(ResultInfo, { cell: At, devOnly: !0 })
         ]
