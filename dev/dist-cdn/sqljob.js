@@ -134818,18 +134818,11 @@ const DUCKDB_TYPES = [
     steps: ["custom_sql"]
   }
 ];
-function createDefaultSqlBlockConfig(At = "") {
-  return {
-    ast: { source: At, steps: [], materialize: "view" },
-    degraded: !1,
-    manualSql: null
-  };
-}
 function getOrInitConfig(At) {
   var xt, wt;
   (xt = At.queries) != null && xt.length || (At.queries = [{ name: "main", sql: "", engine: "sql", clientVisible: !1 }]);
   const yt = At.queries[0];
-  return (wt = At.json) != null && wt.ast && !yt.ast && (yt.ast = At.json.ast, yt.degraded = At.json.degraded ?? !1, yt.manualSql = At.json.manualSql ?? null, delete At.json), yt.ast || (yt.ast = createDefaultSqlBlockConfig().ast), yt.degraded === void 0 && (yt.degraded = !1), yt.manualSql === void 0 && (yt.manualSql = null), yt;
+  return (wt = At.json) != null && wt.ast && !yt.ast && (yt.ast = At.json.ast, yt.degraded = At.json.degraded ?? !1, yt.manualSql = At.json.manualSql ?? null, delete At.json), yt.ast || (yt.ast = { source: "", steps: [], materialize: At.materialize ?? "select" }), yt.degraded === void 0 && (yt.degraded = !1), yt.manualSql === void 0 && (yt.manualSql = null), yt;
 }
 function commitAstUpdate(At, yt, xt) {
   const wt = getOrInitConfig(At);
@@ -137381,7 +137374,9 @@ function SqlTableBody({ cell: At, path: yt, cellIndex: xt, showTextResult: wt = 
               path: yt,
               cellIndex: xt,
               placeholder: "SELECT * FROM source1 LIMIT 100",
-              onEnterUiMode: At.type === "sql" ? () => Nt(!0) : null
+              onEnterUiMode: At.type === "sql" ? () => {
+                Nt(!0), It(yt, xt);
+              } : null
             }
           ),
           Dt && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
