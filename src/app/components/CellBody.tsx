@@ -8,7 +8,7 @@ import { useShallow } from 'zustand/react/shallow'
 import { useNotebookStore } from '../store/notebookStore'
 import { ConfigManager } from '../../lib/ConfigManager'
 import { CDNManager } from '../../lib/CDNManager'
-import { DuckDBManager } from '../../lib/DuckDBManager'
+import { dropSqlblockSchema } from './sqlblock/SqlBlockEditor'
 import { SqlEditorWidget } from './SqlEditorWidget'
 import { SqlDataTable } from './SqlDataTable'
 import { Icon } from '../../lib/icons'
@@ -407,17 +407,8 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
         const modified = currentSql !== sqlAtOpenRef.current
         setSqlBlockUiMode(false)
         if (modified) runCellAt(path, cellIndex)
-        // Nettoyage best-effort des tables _sqlblock.sb_* de cette cellule
-        const safeId = (cell._id ?? '').replace(/[^a-zA-Z0-9]/g, '_')
-        if (safeId) {
-            DuckDBManager.executeQuery(
-                `SELECT table_name FROM information_schema.tables WHERE table_schema = '_sqlblock' AND table_name LIKE 'sb_${safeId}_s%'`
-            ).then(rows => {
-                for (const row of (rows ?? [])) {
-                    DuckDBManager.executeQuery(`DROP TABLE IF EXISTS "_sqlblock"."${row.table_name}"`).catch(() => {})
-                }
-            }).catch(() => {})
-        }
+        // Drop du schéma _sqlblock entier (colonnes par étape, uniquement pour l'UI SQL)
+        dropSqlblockSchema()
     }, [cell, path, cellIndex, runCellAt])
 
     // En mode visualisation, afficher le graphique par défaut (sinon datatable)
@@ -468,6 +459,7 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
                                 cellIndex={cellIndex}
                                 fromSqlCell={true}
                                 skipExecution={true}
+                                modalOpen={sqlBlockUiMode}
                                 onExitUiMode={handleCloseModal}
                             />
                         </div>
@@ -507,13 +499,13 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
             {/* Toggle visible en mode client uniquement si outputMode=visualization */}
             {!devMode && hasChart && isVisualizationMode && cell.type === 'sql' && (
                 <div className="flex rounded border border-border overflow-hidden text-xs mb-1 shrink-0 self-start">
-                    <button onClick={() => setVizMode('table')}
-                        className={`px-2 py-0.5 transition-colors ${vizMode === 'table' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}>
-                        Tableau
-                    </button>
                     <button onClick={() => setVizMode('chart')}
                         className={`px-2 py-0.5 transition-colors ${vizMode === 'chart' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}>
                         Graphique
+                    </button>
+                    <button onClick={() => setVizMode('table')}
+                        className={`px-2 py-0.5 transition-colors ${vizMode === 'table' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}>
+                        Tableau
                     </button>
                 </div>
             )}

@@ -220,8 +220,12 @@ export function stripMaterializePrefix(sql: string): string {
 }
 
 export function stepSql(ast: SqlBlockAst, stepIndex: number): string {
-    if (!ast.source) return '';
-    if (stepIndex < 0 || !ast.steps?.length) return `SELECT * FROM ${quoteId(ast.source)}`;
+    // Si pas de source ET pas de steps : rien à faire
+    if (!ast.source && !ast.steps?.length) return '';
+    if (stepIndex < 0 || !ast.steps?.length) {
+        if (!ast.source) return '';
+        return `SELECT * FROM ${quoteId(ast.source)}`;
+    }
     return astToSql({ ...ast, steps: ast.steps.slice(0, stepIndex + 1) });
 }
 
