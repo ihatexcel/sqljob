@@ -431,7 +431,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
             } else {
                 const materialize = cell.materialize ?? 'select'
 
-                if (materialize !== 'select' && cell.name?.trim()) {
+                if (materialize !== 'select' && cell.name?.trim() && !sqlIsDdl(finalQuery)) {
                     // Assemble DDL à l'exécution : DROP de l'opposé + CREATE OR REPLACE TABLE/VIEW
                     // stripMaterializePrefix extrait le SELECT pur si q.sql contient déjà un DDL (buildDisplaySql)
                     const { quoteId, stripMaterializePrefix } = await import('../../../lib/SqlBlockService')
