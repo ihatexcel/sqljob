@@ -420,19 +420,24 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
 
     return (
         <div className={hasHeight ? 'flex-1 min-h-0 flex flex-col' : ''}>
-            {/* SqlBlockEditor — overlay plein écran, toujours monté, caché via display:none */}
+            {/* SqlBlockEditor — modale centrée, toujours montée, cachée via display:none */}
             {showSqlBlockEditor && (
                 <div
                     style={sqlBlockUiMode ? undefined : { display: 'none' }}
-                    className="fixed inset-0 z-50 bg-background flex flex-col overflow-hidden"
+                    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+                    onClick={e => { if (e.target === e.currentTarget) setSqlBlockUiMode(false) }}
                 >
-                    <SqlBlockEditor
-                        cell={cell}
-                        path={path}
-                        cellIndex={cellIndex}
-                        fromSqlCell={true}
-                        onExitUiMode={() => setSqlBlockUiMode(false)}
-                    />
+                    <div className="bg-background border border-border rounded-xl shadow-2xl flex flex-col w-full max-w-5xl max-h-[90dvh] overflow-hidden">
+                        <div className="overflow-y-auto flex-1 min-h-0 p-4">
+                            <SqlBlockEditor
+                                cell={cell}
+                                path={path}
+                                cellIndex={cellIndex}
+                                fromSqlCell={true}
+                                onExitUiMode={() => setSqlBlockUiMode(false)}
+                            />
+                        </div>
+                    </div>
                 </div>
             )}
 
