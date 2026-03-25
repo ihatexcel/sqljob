@@ -137345,7 +137345,7 @@ function SqlTableBody({ cell: At, path: yt, cellIndex: xt, showTextResult: wt = 
     Mt(!1), An && It(yt, xt), dropSqlblockSchema().then(() => Rt());
   }, [At, yt, xt, It, Rt]), Ht = !!((Vr = (tn = (ln = At.queries) == null ? void 0 : ln[0]) == null ? void 0 : tn.ast) != null && Vr.chartConfig), [Yt, Kt] = reactExports.useState(Ht ? "chart" : "table"), Jt = St(At), Zt = At._status === "running", sr = At.type === "table", Cr = !!(At._echartsOption || At._kpiHtml);
   reactExports.useEffect(() => {
-    Cr && Ht ? Kt("chart") : Cr || Kt("table");
+    Ht ? Cr && Kt("chart") : Kt("table");
   }, [Cr, Ht]);
   const Rr = Ct && At.type === "sql";
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: Jt ? "flex-1 min-h-0 flex flex-col" : "", children: [
@@ -145327,7 +145327,7 @@ const createExecutionSlice = (At, yt) => ({
         }
       } else {
         const Ht = xt.materialize ?? "select";
-        if (Ht !== "select" && (($t = xt.name) != null && $t.trim())) {
+        if (Ht !== "select" && (($t = xt.name) != null && $t.trim()) && !sqlIsDdl(Mt)) {
           const { quoteId: Yt, stripMaterializePrefix: Kt } = await Promise.resolve().then(() => SqlBlockService), Jt = Yt(xt.name), Zt = Ht === "view" ? "TABLE" : "VIEW", sr = Kt(Mt), Cr = `DROP ${Zt} IF EXISTS ${Jt};
 CREATE OR REPLACE ${Ht.toUpperCase()} ${Jt} AS (
 ${sr}
