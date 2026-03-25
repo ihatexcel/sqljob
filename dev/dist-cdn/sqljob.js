@@ -134482,76 +134482,76 @@ function makeTableRef(At, yt) {
   const wt = `sb_${At.replace(/[^a-zA-Z0-9]/g, "_")}_s${yt < 0 ? "src" : yt}`;
   return `"${SQLBLOCK_SCHEMA}"."${wt}"`;
 }
-function useStepEyeData(At, yt) {
-  const [xt, wt] = reactExports.useState(null), [Ct, St] = reactExports.useState(!1), [, Et] = reactExports.useState(0), kt = useNotebookStore((Bt) => Bt.refreshDuckdbSchema), Tt = reactExports.useRef(yt);
-  Tt.current = yt;
-  const $t = reactExports.useRef(At);
-  $t.current = At;
-  const Lt = reactExports.useRef(null), It = reactExports.useRef(/* @__PURE__ */ new Map());
-  function Rt(Bt) {
-    const Ht = Tt.current;
-    return JSON.stringify({ src: Ht.source, steps: Ht.steps.slice(0, Bt + 1) });
+function useStepEyeData(At, yt, xt) {
+  const [wt, Ct] = reactExports.useState(null), [St, Et] = reactExports.useState(!1), [, kt] = reactExports.useState(0), Tt = useNotebookStore((Ht) => Ht.refreshDuckdbSchema), $t = reactExports.useRef(yt);
+  $t.current = yt;
+  const Lt = reactExports.useRef(At);
+  Lt.current = At;
+  const It = reactExports.useRef(null), Rt = reactExports.useRef(/* @__PURE__ */ new Map());
+  function Dt(Ht) {
+    const Yt = $t.current;
+    return JSON.stringify({ src: Yt.source, steps: Yt.steps.slice(0, Ht + 1) });
   }
-  const Dt = (Bt) => makeTableRef($t.current._id, Bt);
-  async function jt(Bt, Ht = !1) {
-    var Kt, Jt;
-    const Yt = Rt(Bt);
-    if (((Kt = It.current.get(Bt)) == null ? void 0 : Kt.hash) !== Yt) {
-      Ht || St(!0);
+  const jt = (Ht) => makeTableRef(Lt.current._id, Ht);
+  async function Nt(Ht, Yt = !1) {
+    var Jt, Zt;
+    const Kt = Dt(Ht);
+    if (((Jt = Rt.current.get(Ht)) == null ? void 0 : Jt.hash) !== Kt) {
+      Yt || Et(!0);
       try {
         await ensureSqlblockSchema();
-        const Zt = Tt.current;
-        if (!Zt.source && !((Jt = Zt.steps) != null && Jt.length)) return;
-        const sr = Dt(Bt), Cr = stepSql({ ...Zt, chartConfig: void 0 }, Bt);
-        if (!Cr) return;
-        const Rr = Cr.trimEnd().replace(/;+\s*$/, ""), Yr = /\bLIMIT\s+\d/i.test(Rr.replace(/\([\s\S]*?\)/g, "")) ? Rr : `${Rr}
+        const sr = $t.current;
+        if (!sr.source && !((Zt = sr.steps) != null && Zt.length)) return;
+        const Cr = jt(Ht), Rr = stepSql({ ...sr, chartConfig: void 0 }, Ht);
+        if (!Rr) return;
+        const Ur = Rr.trimEnd().replace(/;+\s*$/, ""), ln = /\bLIMIT\s+\d/i.test(Ur.replace(/\([\s\S]*?\)/g, "")) ? Ur : `${Ur}
 LIMIT ${SUBCELL_LIMIT}`;
         await DuckDBManager.executeQuery(
-          `CREATE OR REPLACE TABLE ${sr} AS (
-${Yr}
+          `CREATE OR REPLACE TABLE ${Cr} AS (
+${ln}
 )`
         );
-        const tn = await DuckDBManager.getConnection().query(`SELECT * FROM ${sr}`), Vr = tn.toArray().map((An) => Object.fromEntries(An)), sn = {};
-        for (const An of tn.schema.fields)
-          sn[An.name] = String(An.type);
-        It.current.set(Bt, { rows: Vr, schemaTypes: sn, hash: Yt }), Et((An) => An + 1);
-      } catch (Zt) {
-        console.error("[sqlblock eye]", Zt);
+        const Vr = await DuckDBManager.getConnection().query(`SELECT * FROM ${Cr}`), sn = Vr.toArray().map((En) => Object.fromEntries(En)), An = {};
+        for (const En of Vr.schema.fields)
+          An[En.name] = String(En.type);
+        Rt.current.set(Ht, { rows: sn, schemaTypes: An, hash: Kt }), kt((En) => En + 1);
+      } catch (sr) {
+        console.error("[sqlblock eye]", sr);
       } finally {
-        Ht || St(!1);
+        Yt || Et(!1);
       }
     }
   }
-  function Nt(Bt) {
-    const Ht = Lt.current === Bt ? null : Bt;
-    Lt.current = Ht, wt(Ht), Ht !== null && jt(Ht);
+  function Mt(Ht) {
+    const Yt = It.current === Ht ? null : Ht;
+    It.current = Yt, Ct(Yt), Yt !== null && Nt(Yt);
   }
-  const Mt = JSON.stringify({ src: yt.source, steps: yt.steps, open: !!modalOpen });
+  const Ot = JSON.stringify({ src: yt.source, steps: yt.steps, open: !!xt });
   reactExports.useEffect(() => {
-    if (!modalOpen || !yt.source && !yt.steps.length) return;
-    let Bt = !1;
+    if (!xt || !yt.source && !yt.steps.length) return;
+    let Ht = !1;
     return (async () => {
       await ensureSqlblockSchema();
-      for (let Yt = 0; Yt < Tt.current.steps.length && !Bt; Yt++)
-        await jt(Yt, !0);
-      if (!Bt)
+      for (let Kt = 0; Kt < $t.current.steps.length && !Ht; Kt++)
+        await Nt(Kt, !0);
+      if (!Ht)
         try {
-          await (kt == null ? void 0 : kt());
+          await (Tt == null ? void 0 : Tt());
         } catch {
         }
     })(), () => {
-      Bt = !0;
+      Ht = !0;
     };
-  }, [Mt]);
-  const Ot = xt !== null ? JSON.stringify([yt.source, ...yt.steps.slice(0, xt + 1)]) : null;
+  }, [Ot]);
+  const Bt = wt !== null ? JSON.stringify([yt.source, ...yt.steps.slice(0, wt + 1)]) : null;
   return reactExports.useEffect(() => {
-    xt !== null && jt(xt);
-  }, [Ot, xt]), {
-    eyeOpen: xt,
-    toggleEye: Nt,
-    loading: Ct,
-    getEyeData: (Bt) => It.current.get(Bt) ?? null,
-    cellTableRef: Dt
+    wt !== null && Nt(wt);
+  }, [Bt, wt]), {
+    eyeOpen: wt,
+    toggleEye: Mt,
+    loading: St,
+    getEyeData: (Ht) => Rt.current.get(Ht) ?? null,
+    cellTableRef: jt
   };
 }
 function EyeIcon({ open: At, className: yt = "" }) {
@@ -136272,7 +136272,7 @@ function SqlBlockEditor({ cell: At, path: yt, cellIndex: xt, onExitUiMode: wt, f
     _duckdbTables: Gs._duckdbTables,
     db: Gs.db,
     runCellAt: Gs.runCellAt
-  }))), It = getOrInitConfig(At), Rt = It.ast, Dt = Rt.source ? ((np = Tt == null ? void 0 : Tt[Rt.source]) == null ? void 0 : np.columns) ?? [] : [], jt = computeStepSchemas(Rt, Dt), { dynamicSchemas: Nt, fetchSchemaForStep: Mt, invalidateFrom: Ot } = useStepInputSchemas(Rt, At._id), Bt = ($t == null ? void 0 : $t.schemaTrees) ?? [], { eyeOpen: Ht, toggleEye: Yt, loading: Kt, getEyeData: Jt } = useStepEyeData(At, Rt), [Zt, sr] = reactExports.useState(null), [Cr, Rr] = reactExports.useState(!1), [Ur, Yr] = reactExports.useState(null), ln = getEffectiveSql(It), tn = (Cl = At.name) != null && Cl.trim() ? generateMaterializeQuery(At.name, ln, Rt.materialize ?? "select") : ln, Vr = reactExports.useCallback((Gs) => {
+  }))), It = getOrInitConfig(At), Rt = It.ast, Dt = Rt.source ? ((np = Tt == null ? void 0 : Tt[Rt.source]) == null ? void 0 : np.columns) ?? [] : [], jt = computeStepSchemas(Rt, Dt), { dynamicSchemas: Nt, fetchSchemaForStep: Mt, invalidateFrom: Ot } = useStepInputSchemas(Rt, At._id), Bt = ($t == null ? void 0 : $t.schemaTrees) ?? [], { eyeOpen: Ht, toggleEye: Yt, loading: Kt, getEyeData: Jt } = useStepEyeData(At, Rt, Et), [Zt, sr] = reactExports.useState(null), [Cr, Rr] = reactExports.useState(!1), [Ur, Yr] = reactExports.useState(null), ln = getEffectiveSql(It), tn = (Cl = At.name) != null && Cl.trim() ? generateMaterializeQuery(At.name, ln, Rt.materialize ?? "select") : ln, Vr = reactExports.useCallback((Gs) => {
     commitAstUpdate(At, { source: Gs }, kt);
   }, [At, kt]);
   reactExports.useEffect(() => {
