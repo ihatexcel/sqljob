@@ -421,10 +421,10 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
     const searchable = cell.type === 'table'
     const hasChart = !!(cell._echartsOption || cell._kpiHtml)
 
-    // Synchronise vizMode avec hasChart : graphique par défaut dès que disponible
+    // Synchronise vizMode : graphique dès qu'il est disponible, table sinon
     useEffect(() => {
-        if (hasChart && isVisualizationMode) setVizMode('chart')
-        else if (!hasChart) setVizMode('table')
+        if (!isVisualizationMode) setVizMode('table')
+        else if (hasChart) setVizMode('chart')
     }, [hasChart, isVisualizationMode]) // eslint-disable-line react-hooks/exhaustive-deps
 
     // Mode UI visuel (sqlBlock) pour les cellules sql.
