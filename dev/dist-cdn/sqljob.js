@@ -136278,7 +136278,7 @@ function SqlBlockEditor({ cell: At, path: yt, cellIndex: xt, onExitUiMode: wt, f
     _duckdbTables: Dn._duckdbTables,
     db: Dn.db,
     runCellAt: Dn.runCellAt
-  }))), It = getOrInitConfig(At), Rt = It.ast, Dt = Rt.source ? ((Al = Tt == null ? void 0 : Tt[Rt.source]) == null ? void 0 : Al.columns) ?? [] : [], jt = computeStepSchemas(Rt, Dt), { dynamicSchemas: Nt, fetchSchemaForStep: Mt, invalidateFrom: Ot } = useStepInputSchemas(Rt, At._id), Bt = ($t == null ? void 0 : $t.schemaTrees) ?? [], { eyeOpen: Ht, toggleEye: qt, loading: Kt, getEyeData: Jt } = useStepEyeData(At, Rt, Et), [Zt, sr] = reactExports.useState(null), [Cr, Rr] = reactExports.useState(!1), [Ur, qr] = reactExports.useState(!1), [ln, tn] = reactExports.useState(null), Vr = getEffectiveSql(It), sn = (po = At.name) != null && po.trim() ? generateMaterializeQuery(At.name, Vr, Rt.materialize ?? "select") : Vr, An = reactExports.useCallback((Dn) => {
+  }))), It = getOrInitConfig(At), Rt = It.ast, Dt = Rt.source ? ((Al = Tt == null ? void 0 : Tt[Rt.source]) == null ? void 0 : Al.columns) ?? [] : [], jt = computeStepSchemas(Rt, Dt), { dynamicSchemas: Nt, fetchSchemaForStep: Mt, invalidateFrom: Ot } = useStepInputSchemas(Rt, At._id), Bt = (($t == null ? void 0 : $t.schemaTrees) ?? []).map((Dn) => ({ ...Dn, columns: (Dn == null ? void 0 : Dn.columns) ?? [] })), { eyeOpen: Ht, toggleEye: qt, loading: Kt, getEyeData: Jt } = useStepEyeData(At, Rt, Et), [Zt, sr] = reactExports.useState(null), [Cr, Rr] = reactExports.useState(!1), [Ur, qr] = reactExports.useState(!1), [ln, tn] = reactExports.useState(null), Vr = getEffectiveSql(It), sn = (po = At.name) != null && po.trim() ? generateMaterializeQuery(At.name, Vr, Rt.materialize ?? "select") : Vr, An = reactExports.useCallback((Dn) => {
     commitAstUpdate(At, { source: Dn }, kt);
   }, [At, kt]);
   reactExports.useEffect(() => {
@@ -136922,7 +136922,7 @@ function SqlEditorWidget({
     isLoading: ln.isLoading,
     runCellAt: ln.runCellAt,
     db: ln.db
-  }))), [jt, Nt] = reactExports.useState(!1), Mt = Ct === "query2" ? ConfigManager.getQuery2Name(At) : "main", Ot = ConfigManager.getCellEngine(At, Mt), Bt = Ot === "js", Ht = Ot === "text", qt = !Bt && !Ht, Kt = St || (Bt ? "JavaScript" : Ht ? "Texte" : "SQL"), Jt = kt || (Bt ? "badge-warning" : Ht ? "badge-ghost" : "badge-info"), Zt = Bt ? "bolt" : Ht ? "article" : "storage", sr = (Dt == null ? void 0 : Dt.schemaTrees) ?? [];
+  }))), [jt, Nt] = reactExports.useState(!1), Mt = Ct === "query2" ? ConfigManager.getQuery2Name(At) : "main", Ot = ConfigManager.getCellEngine(At, Mt), Bt = Ot === "js", Ht = Ot === "text", qt = !Bt && !Ht, Kt = St || (Bt ? "JavaScript" : Ht ? "Texte" : "SQL"), Jt = kt || (Bt ? "badge-warning" : Ht ? "badge-ghost" : "badge-info"), Zt = Bt ? "bolt" : Ht ? "article" : "storage", sr = ((Dt == null ? void 0 : Dt.schemaTrees) ?? []).map((ln) => ({ ...ln, columns: (ln == null ? void 0 : ln.columns) ?? [] }));
   reactExports.useEffect(() => {
     var ln, tn, Vr, sn, An, En;
     if (Tt && qt && !((ln = ConfigManager.getCellQuery(At, Mt)) != null && ln.trim()) && At.type === "source") {
