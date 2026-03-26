@@ -136305,8 +136305,7 @@ function SqlBlockEditor({ cell: At, path: yt, cellIndex: xt, onExitUiMode: wt, f
 LIMIT 0`), su = {};
       for (const Vl of Ps.schema.fields) su[Vl.name] = String(Vl.type);
       ho({ columns: Object.keys(su), colTypes: su });
-    } catch (Ho) {
-      console.warn("[ChartConfigEditor schema]", Ho);
+    } catch {
     }
   }, [Rt.source, In]), Cs = reactExports.useCallback((Dn) => {
     Ot(0, Rt), commitAstUpdate(At, { chartConfig: Dn ?? void 0 }, kt), Dn && (Wo(), St || Lt(yt, xt));
