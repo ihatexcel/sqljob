@@ -2203,7 +2203,8 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
     const { dynamicSchemas, fetchSchemaForStep, invalidateFrom } = useStepInputSchemas(ast, cell._id)
 
     // tableSchemas pour l'autocomplétion Monaco
-    const tableSchemas = db?.schemaTrees ?? []
+    // Sanitize : columns peut être undefined sur certaines entrées → crash forEach dans le provider
+    const tableSchemas = (db?.schemaTrees ?? []).map((t: any) => ({ ...t, columns: t?.columns ?? [] }))
 
     // Œil par étape (aperçus DuckDB)
     const { eyeOpen, toggleEye, loading: eyeLoading, getEyeData } = useStepEyeData(cell, ast, modalOpen)
