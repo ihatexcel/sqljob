@@ -2525,7 +2525,7 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
                                     ? <div className="flex items-center justify-center h-16 text-xs text-muted-foreground italic">Chargement…</div>
                                     : <div className="flex items-center justify-center h-16 text-xs text-muted-foreground italic border border-dashed border-border rounded">Résultat vide</div>
                         ) : hasResults ? (
-                            <>{cell._resultInfo && <div className="text-xs text-muted-foreground shrink-0">{cell._resultInfo}</div>}<SqlDataTable cell={cell} /></>
+                            <SqlDataTable cell={cell} />
                         ) : (
                             <div className="flex items-center justify-center h-16 text-xs text-muted-foreground italic border border-dashed border-border rounded">Aucun résultat — exécutez la cellule</div>
                         )}
@@ -2640,10 +2640,7 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
                 <div className="flex gap-3 min-h-[280px]">
                     <div className="flex-1 min-w-0 flex flex-col gap-1">
                         {hasResults ? (
-                            <>
-                                {cell._resultInfo && <div className="text-xs text-muted-foreground shrink-0">{cell._resultInfo}</div>}
-                                <SqlDataTable cell={cell} />
-                            </>
+                            <SqlDataTable cell={cell} />
                         ) : (
                             <div className="flex items-center justify-center h-16 text-xs text-muted-foreground italic border border-dashed border-border rounded">
                                 Aucun résultat — exécutez la cellule
