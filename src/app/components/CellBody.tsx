@@ -987,7 +987,7 @@ function PerspectiveBody({ cell, path, cellIndex }: any) {
                                 fromSqlCell={true}
                                 skipExecution={true}
                                 modalOpen={sqlBlockUiMode}
-                                allowedMaterializeModes={['select']}
+                                allowedMaterializeModes={['ephemeral']}
                                 onExitUiMode={handleCloseModal}
                             />
                         </div>

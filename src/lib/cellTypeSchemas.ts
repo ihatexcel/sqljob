@@ -78,7 +78,7 @@ export const CELL_TYPE_SCHEMAS = {
                     defaultNamePrefix: 'sql',
                     showNameInHeader: true,
                     hideInViewMode: true,
-                    exportFields: ['queries', 'materialize'],
+                    exportFields: ['queries', 'materialized'],
                     initProps: {},
                     commonParams: ['name', 'queries'],
                     queryCount: 1,

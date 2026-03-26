@@ -94,6 +94,22 @@ import { FileHandler } from './FileHandler'
                 if (c.type === 'pdfme' && typeof c.json === 'object' && c.json !== null) {
                     c.json = JSON.stringify(c.json, null, 2);
                 }
+                // Rétrocompat : anciens exports utilisaient 'materialize' et 'select'
+                if (c.materialize !== undefined && c.materialized === undefined) {
+                    c.materialized = c.materialize === 'select' ? 'ephemeral' : c.materialize;
+                    delete c.materialize;
+                }
+                if (c.materialized === 'select') c.materialized = 'ephemeral';
+                // Rétrocompat : ast.materialize → ast.materialized dans les queries
+                if (Array.isArray(c.queries)) {
+                    for (const q of c.queries) {
+                        if (q.ast && q.ast.materialize !== undefined && q.ast.materialized === undefined) {
+                            q.ast.materialized = q.ast.materialize === 'select' ? 'ephemeral' : q.ast.materialize;
+                            delete q.ast.materialize;
+                        }
+                        if (q.ast && q.ast.materialized === 'select') q.ast.materialized = 'ephemeral';
+                    }
+                }
 return c;
             }
 

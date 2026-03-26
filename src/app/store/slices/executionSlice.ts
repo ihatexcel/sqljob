@@ -429,9 +429,9 @@ export const createExecutionSlice = (set: any, get: any) => ({
                     await DuckDBManager.dropFile(fileName)
                 }
             } else {
-                const materialize = cell.materialize ?? 'select'
+                const materialize = cell.materialized ?? 'ephemeral'
 
-                if (materialize !== 'select' && cell.name?.trim()) {
+                if (materialize !== 'ephemeral' && cell.name?.trim()) {
                     const { quoteId, stripMaterializePrefix } = await import('../../../lib/SqlBlockService')
                     const qid = quoteId(cell.name)
                     // stripMaterializePrefix extrait le SELECT pur si finalQuery contient un wrapper
