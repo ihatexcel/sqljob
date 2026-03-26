@@ -137052,7 +137052,7 @@ function TableSkeleton() {
 }
 function ResultInfo({ cell: At, devOnly: yt = !1 }) {
   const xt = useNotebookStore((wt) => wt.devMode);
-  return !At._resultInfo || yt && !xt ? null : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-2 p-2 bg-muted rounded text-sm text-muted-foreground", children: At._resultInfo });
+  return !At._resultInfo || !String(At._resultInfo).startsWith("❌") || yt && !xt ? null : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-2 p-2 bg-muted rounded text-sm text-muted-foreground", children: At._resultInfo });
 }
 function MarkdownBody({ cell: At, path: yt, cellIndex: xt }) {
   const wt = useNotebookStore((Et) => Et.devMode), Ct = reactExports.useRef(null), St = useNotebookStore((Et) => Et.hasCellHeight);
