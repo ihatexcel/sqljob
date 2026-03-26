@@ -49,7 +49,8 @@ export function SqlEditorWidget({
     const iconName = isJs ? 'bolt' : isText ? 'article' : 'storage'
 
     // tableSchemas depuis db.schemaTrees pour l'autocomplétion Monaco DuckDB
-    const tableSchemas = db?.schemaTrees ?? []
+    // Sanitize : columns peut être undefined sur certaines entrées → crash forEach dans le provider
+    const tableSchemas = (db?.schemaTrees ?? []).map((t: any) => ({ ...t, columns: t?.columns ?? [] }))
 
     // Appliquer la requête source par défaut si vide (cellule source)
     useEffect(() => {
