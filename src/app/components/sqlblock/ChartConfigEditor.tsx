@@ -191,6 +191,15 @@ export function ChartConfigEditor({ chartConfig, availableColumns, availableColT
         return () => console.log('[ChartConfigEditor] UNMOUNTED')
     }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
+    // Auto-fill : quand les colonnes deviennent disponibles et que la config est vide,
+    // sélectionner automatiquement la première colonne pour chaque rôle obligatoire.
+    const availableKey = availableColumns.join(',')
+    useEffect(() => {
+        if (!isActive || columns.length > 0 || availableColumns.length === 0) return
+        const newCfg = defaultConfigForType(chartType, availableColumns)
+        if (newCfg.columns.length > 0) onChange(newCfg)
+    }, [availableKey]) // eslint-disable-line react-hooks/exhaustive-deps
+
     // Debug render
     console.log('[ChartConfigEditor] render', { isActive, open, chartType, columnsCount: columns.length, availableColumns, availableColTypes })
 
