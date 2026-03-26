@@ -47,6 +47,7 @@ function TableSkeleton() {
 function ResultInfo({ cell, devOnly = false }: { cell: any, devOnly?: boolean }) {
     const devMode = useNotebookStore(s => s.devMode)
     if (!cell._resultInfo) return null
+    if (!String(cell._resultInfo).startsWith('❌')) return null
     if (devOnly && !devMode) return null
     return <div className="mt-2 p-2 bg-muted rounded text-sm text-muted-foreground">{cell._resultInfo}</div>
 }
