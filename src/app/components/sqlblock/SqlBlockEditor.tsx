@@ -2297,13 +2297,13 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
     }, [cell, ast, forceUpdate, invalidateFrom, fetchChartSchema, runCellAt, path, cellIndex, skipExecution])
 
     const handleOutputModeChange = useCallback(async (mode: string) => {
-        // Transition view ↔ table : supprimer silencieusement l'ancien type si existant
+        // Quitter view/table → supprimer silencieusement l'objet DuckDB existant
         if (cell.name?.trim()) {
             const prev = ast.materialize ?? 'select'
             try {
-                if (prev === 'table' && mode === 'view') {
+                if (prev === 'table') {
                     await DuckDBManager.executeQuery(`DROP TABLE IF EXISTS ${quoteId(cell.name)}`)
-                } else if (prev === 'view' && mode === 'table') {
+                } else if (prev === 'view') {
                     await DuckDBManager.executeQuery(`DROP VIEW IF EXISTS ${quoteId(cell.name)}`)
                 }
             } catch (_) { /* silencieux */ }
