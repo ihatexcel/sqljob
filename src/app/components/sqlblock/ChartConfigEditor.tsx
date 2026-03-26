@@ -145,7 +145,7 @@ function ColSelect({ value, availableColumns, optional, onChange }: {
 }) {
     const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const v = e.target.value
-        console.log('[ChartConfigEditor] ColSelect change →', v)
+
         onChange(v === NONE_VALUE ? null : v)
     }
     return (
@@ -184,11 +184,9 @@ export function ChartConfigEditor({ chartConfig, availableColumns, availableColT
     const columns: ChartColumnRole[] = chartConfig?.columns ?? []
     const typeConfig = CHART_TYPE_CONFIGS[chartType] ?? CHART_TYPE_CONFIGS.bar
 
-    // Debug lifecycle + déclenche le fetch du schéma dynamique (colonnes réelles de la dernière étape)
+    // Déclenche le fetch du schéma dynamique (colonnes réelles de la dernière étape)
     useEffect(() => {
-        console.log('[ChartConfigEditor] MOUNTED')
         onMount?.()
-        return () => console.log('[ChartConfigEditor] UNMOUNTED')
     }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
     // Auto-fill : quand les colonnes deviennent disponibles et que la config est vide,
@@ -200,30 +198,23 @@ export function ChartConfigEditor({ chartConfig, availableColumns, availableColT
         if (newCfg.columns.length > 0) onChange(newCfg)
     }, [availableKey]) // eslint-disable-line react-hooks/exhaustive-deps
 
-    // Debug render
-    console.log('[ChartConfigEditor] render', { isActive, open, chartType, columnsCount: columns.length, availableColumns, availableColTypes })
-
     const handleToggle = useCallback(() => {
         if (isActive) {
-            console.log('[ChartConfigEditor] toggle OFF → onChange(null)')
             onChange(null)
             setOpen(false)
         } else {
             const newCfg = defaultConfigForType('bar', availableColumns)
-            console.log('[ChartConfigEditor] toggle ON → onChange', newCfg)
             onChange(newCfg)
             setOpen(true)
         }
     }, [isActive, availableColumns, onChange])
 
     const handleTypeChange = useCallback((newType: string) => {
-        console.log('[ChartConfigEditor] type change →', newType)
         const newCfg = defaultConfigForType(newType, availableColumns)
         onChange(newCfg)
     }, [availableColumns, onChange])
 
     const handleSingleRoleChange = useCallback((role: string, col: string | null) => {
-        console.log('[ChartConfigEditor] single role change', role, '→', col)
         // Reset label when column changes
         const entries = col ? [{ column: col, role, label: undefined }] : []
         onChange({ chartType, columns: replaceRoleEntries(columns, role, entries) })
@@ -237,7 +228,6 @@ export function ChartConfigEditor({ chartConfig, availableColumns, availableColT
     }, [chartType, columns, onChange])
 
     const handleMultiRoleChange = useCallback((role: string, idx: number, field: 'column' | 'label', value: string) => {
-        console.log('[ChartConfigEditor] multi role change', role, idx, field, '→', value)
         const entries = getEntriesForRole(columns, role).map((e, i) => {
             if (i !== idx) return e
             // Reset label when column changes
@@ -249,13 +239,11 @@ export function ChartConfigEditor({ chartConfig, availableColumns, availableColT
 
     const handleMultiRoleAdd = useCallback((role: string) => {
         const col = availableColumns[0] ?? ''
-        console.log('[ChartConfigEditor] multi role add', role, '→', col)
         const entries = [...getEntriesForRole(columns, role), { column: col, role }]
         onChange({ chartType, columns: replaceRoleEntries(columns, role, entries) })
     }, [chartType, columns, availableColumns, onChange])
 
     const handleMultiRoleRemove = useCallback((role: string, idx: number) => {
-        console.log('[ChartConfigEditor] multi role remove', role, idx)
         const entries = getEntriesForRole(columns, role).filter((_, i) => i !== idx)
         onChange({ chartType, columns: replaceRoleEntries(columns, role, entries) })
     }, [chartType, columns, onChange])
