@@ -24540,9 +24540,9 @@ const CELL_TYPE_SCHEMAS = {
       queryNames: ["main"],
       specificParams: [
         { key: "queries.main.engine", label: "Type de langage", tooltip: "Texte: Markdown saisi directement | SQL: requête retournant du Markdown | JS: expression JavaScript retournant du Markdown", inputType: "select", options: [{ value: "text", label: "Texte" }, { value: "sql", label: "SQL" }, { value: "js", label: "JavaScript" }] },
-        { key: "queries.main.clientVisible", label: "Afficher l'éditeur en mode client", inputType: "checkbox" }
+        { key: "queries.main.showQueryEditor", label: "Afficher l'éditeur en mode client", inputType: "checkbox" }
       ],
-      defaults: { queries: [{ name: "main", sql: "# Nouvelle section", engine: "text", clientVisible: !1 }] },
+      defaults: { queries: [{ name: "main", sql: "# Nouvelle section", engine: "text", showQueryEditor: !1 }] },
       bodyFamily: "markdown",
       bodyConfig: { devModeToolbar: ["bold", "italic", "heading", "|", "quote", "unordered-list", "ordered-list", "|", "link", "image", "|", "preview", "|", "guide"], devTextareaId: "markdown_dev_", clientTextareaId: "markdown_cli_" }
     },
@@ -24570,8 +24570,8 @@ const CELL_TYPE_SCHEMAS = {
       defaults: {
         title: "Glissez-déposez votre fichier ici",
         queries: [
-          { name: "main", sql: "CREATE OR REPLACE TABLE {name} AS SELECT * FROM '{{fileName}}'", engine: "sql", clientVisible: !1 },
-          { name: "fallback", sql: "CREATE OR REPLACE TABLE {name} AS SELECT * FROM query( CASE WHEN lower('{{fileName}}') LIKE '%.csv' OR lower('{{fileName}}') LIKE '%.csv.gz' THEN 'SELECT * FROM read_csv(''' || '{{fileName}}' || ''', HEADER = true, AUTO_DETECT = true, SAMPLE_SIZE = -1, IGNORE_ERRORS = true, store_rejects = true)' WHEN lower('{{fileName}}') LIKE '%.xlsx' THEN 'SELECT * FROM read_xlsx(''' || '{{fileName}}' || ''', HEADER = true, STOP_AT_EMPTY = false, EMPTY_AS_VARCHAR = true, IGNORE_ERRORS = true)' WHEN lower('{{fileName}}') LIKE '%.tsv' OR lower('{{fileName}}') LIKE '%.tsv.gz' OR lower('{{fileName}}') LIKE '%.txt' OR lower('{{fileName}}') LIKE '%.txt.gz' THEN 'SELECT * FROM read_csv(''' || '{{fileName}}' || ''', HEADER = true, DELIM = ''	'', AUTO_DETECT = true, SAMPLE_SIZE = -1, IGNORE_ERRORS = true, store_rejects = true)' WHEN lower('{{fileName}}') LIKE '%.parquet' OR lower('{{fileName}}') LIKE '%.parquet.gz' THEN 'SELECT * FROM read_parquet(''' || '{{fileName}}' || ''')' ELSE 'SELECT 1' END );", engine: "sql", clientVisible: !1 }
+          { name: "main", sql: "CREATE OR REPLACE TABLE {name} AS SELECT * FROM '{{fileName}}'", engine: "sql", showQueryEditor: !1 },
+          { name: "fallback", sql: "CREATE OR REPLACE TABLE {name} AS SELECT * FROM query( CASE WHEN lower('{{fileName}}') LIKE '%.csv' OR lower('{{fileName}}') LIKE '%.csv.gz' THEN 'SELECT * FROM read_csv(''' || '{{fileName}}' || ''', HEADER = true, AUTO_DETECT = true, SAMPLE_SIZE = -1, IGNORE_ERRORS = true, store_rejects = true)' WHEN lower('{{fileName}}') LIKE '%.xlsx' THEN 'SELECT * FROM read_xlsx(''' || '{{fileName}}' || ''', HEADER = true, STOP_AT_EMPTY = false, EMPTY_AS_VARCHAR = true, IGNORE_ERRORS = true)' WHEN lower('{{fileName}}') LIKE '%.tsv' OR lower('{{fileName}}') LIKE '%.tsv.gz' OR lower('{{fileName}}') LIKE '%.txt' OR lower('{{fileName}}') LIKE '%.txt.gz' THEN 'SELECT * FROM read_csv(''' || '{{fileName}}' || ''', HEADER = true, DELIM = ''	'', AUTO_DETECT = true, SAMPLE_SIZE = -1, IGNORE_ERRORS = true, store_rejects = true)' WHEN lower('{{fileName}}') LIKE '%.parquet' OR lower('{{fileName}}') LIKE '%.parquet.gz' THEN 'SELECT * FROM read_parquet(''' || '{{fileName}}' || ''')' ELSE 'SELECT 1' END );", engine: "sql", showQueryEditor: !1 }
         ],
         json: { xlsx: { options: { type: "array", raw: !1, dateNF: "dd/mm/yyyy", cellDates: !0 }, toCsvOptions: { dateNF: "dd/mm/yyyy", FS: ",", RS: `
 ` }, sheetSelection: { type: { auto: !0 }, index: 0, name: "" } } }
@@ -24604,9 +24604,9 @@ const CELL_TYPE_SCHEMAS = {
       queryNames: ["main"],
       specificParams: [
         { key: "queries.main.showQueryResult", label: "Afficher le résultat en mode client", tooltip: "Si décoché, le datatable et la visualisation ne seront pas affichés en mode client.", inputType: "checkbox", defaultValue: !0 },
-        { key: "queries.main.clientVisible", label: "Afficher l'éditeur SQL en mode client", tooltip: "Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur. En mode client, seul le résultat sera affiché.", inputType: "checkbox" }
+        { key: "queries.main.showQueryEditor", label: "Afficher l'éditeur SQL en mode client", tooltip: "Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur. En mode client, seul le résultat sera affiché.", inputType: "checkbox" }
       ],
-      defaults: { queries: [{ name: "main", sql: "SELECT 1;", engine: "sql", clientVisible: !1, showQueryResult: !0 }] },
+      defaults: { queries: [{ name: "main", sql: "SELECT 1;", engine: "sql", showQueryEditor: !1, showQueryResult: !0 }] },
       bodyFamily: "sqlWithTable",
       bodyConfig: { queryKey: "query", showTextResult: !0, showResultInfo: !0 },
       bodyDisplay: { showSkeleton: { excludeWhenSqlEditor: !0 }, resultInfo: { showDevOnly: !1 } }
@@ -24621,9 +24621,9 @@ const CELL_TYPE_SCHEMAS = {
       queryNames: ["main"],
       specificParams: [
         { key: "maxRows", label: "Nombre max de lignes", tooltip: "Limite le nombre de lignes affichées dans le tableau pour éviter les surcharges mémoire", inputType: "number", placeholder: "100000" },
-        { key: "queries.main.clientVisible", label: "Afficher l'éditeur SQL en mode client", tooltip: "Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur. En mode client, seul le résultat sera affiché.", inputType: "checkbox" }
+        { key: "queries.main.showQueryEditor", label: "Afficher l'éditeur SQL en mode client", tooltip: "Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur. En mode client, seul le résultat sera affiché.", inputType: "checkbox" }
       ],
-      defaults: { queries: [{ name: "main", sql: "SELECT * FROM source1 LIMIT 100", engine: "sql", clientVisible: !1 }], maxRows: 1e5 },
+      defaults: { queries: [{ name: "main", sql: "SELECT * FROM source1 LIMIT 100", engine: "sql", showQueryEditor: !1 }], maxRows: 1e5 },
       bodyFamily: "sqlWithTable",
       bodyConfig: { queryKey: "query", showTextResult: !1, showResultInfo: !0 },
       bodyDisplay: { showSkeleton: { excludeWhenSqlEditor: !0 }, resultInfo: { showDevOnly: !1 } }
@@ -24639,9 +24639,9 @@ const CELL_TYPE_SCHEMAS = {
       queryNames: ["main"],
       specificParams: [
         { key: "queries.main.engine", label: "Type de langage", tooltip: "SQL: requête retournant du HTML | JS: retourne une chaîne HTML | Texte: HTML saisi directement", inputType: "select", options: [{ value: "sql", label: "SQL" }, { value: "js", label: "JavaScript" }, { value: "text", label: "Texte" }] },
-        { key: "queries.main.clientVisible", label: "Afficher l'éditeur SQL en mode client", tooltip: "Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur. En mode client, seul le résultat sera affiché.", inputType: "checkbox" }
+        { key: "queries.main.showQueryEditor", label: "Afficher l'éditeur SQL en mode client", tooltip: "Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur. En mode client, seul le résultat sera affiché.", inputType: "checkbox" }
       ],
-      defaults: { queries: [{ name: "main", sql: "<html><body><h1>Hello</h1></body></html>", engine: "text", clientVisible: !1 }] },
+      defaults: { queries: [{ name: "main", sql: "<html><body><h1>Hello</h1></body></html>", engine: "text", showQueryEditor: !1 }] },
       bodyFamily: "sqlWithIframe",
       bodyConfig: { useIframeEditor: !0 },
       bodyDisplay: { showSkeleton: { excludeWhenSqlEditor: !0 } }
@@ -24660,9 +24660,9 @@ const CELL_TYPE_SCHEMAS = {
       titleLabel: "Titre de la stat",
       titleTooltip: "Titre affiché au-dessus de la valeur statistique",
       specificParams: [
-        { key: "queries.main.clientVisible", label: "Afficher l'éditeur SQL en mode client", tooltip: "Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur. En mode client, seul le résultat sera affiché.", inputType: "checkbox" }
+        { key: "queries.main.showQueryEditor", label: "Afficher l'éditeur SQL en mode client", tooltip: "Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur. En mode client, seul le résultat sera affiché.", inputType: "checkbox" }
       ],
-      defaults: { title: "Total Lignes", subtitle: "", icon: "material-symbols-light:join-right", queries: [{ name: "main", sql: "SELECT COUNT(*) FROM source1", engine: "sql", clientVisible: !1 }] },
+      defaults: { title: "Total Lignes", subtitle: "", icon: "material-symbols-light:join-right", queries: [{ name: "main", sql: "SELECT COUNT(*) FROM source1", engine: "sql", showQueryEditor: !1 }] },
       bodyFamily: "sqlStat",
       bodyConfig: { defaultIcon: "mdi:information-outline", showResultInfoDevOnly: !0 },
       bodyDisplay: { showSkeleton: { excludeWhenSqlEditor: !0 }, resultInfo: { showDevOnly: !0 } }
@@ -24704,7 +24704,7 @@ const CELL_TYPE_SCHEMAS = {
           name: "main",
           sql: "",
           engine: "sql",
-          clientVisible: !1
+          showQueryEditor: !1
         }]
       },
       bodyFamily: "uiParameter",
@@ -24731,8 +24731,8 @@ const CELL_TYPE_SCHEMAS = {
       specificParams: [],
       defaults: {
         queries: [
-          { name: "main", sql: "SELECT * FROM source1 LIMIT 10", engine: "sql", clientVisible: !1 },
-          { name: "filename", sql: "SELECT 'document_' || STRFTIME(current_timestamp::TIMESTAMP, '%Y-%m-%d_%H-%M-%S') || '.docx' AS filename;", engine: "sql", clientVisible: !1 }
+          { name: "main", sql: "SELECT * FROM source1 LIMIT 10", engine: "sql", showQueryEditor: !1 },
+          { name: "filename", sql: "SELECT 'document_' || STRFTIME(current_timestamp::TIMESTAMP, '%Y-%m-%d_%H-%M-%S') || '.docx' AS filename;", engine: "sql", showQueryEditor: !1 }
         ],
         buttonLabel: "Générer les documents"
       },
@@ -24771,8 +24771,8 @@ const CELL_TYPE_SCHEMAS = {
         queries: [
           { name: "main", sql: `with v_source as (select * from source1 limit 10)
 SELECT 'Titre' as header, 'Pied de page' as footer, json_group_array(json_array(col1, col2, col3)) as datatable
-FROM v_source LIMIT 10`, engine: "sql", clientVisible: !1 },
-          { name: "filename", sql: "SELECT '$loop' || '_2.pdf'", engine: "sql", clientVisible: !1 }
+FROM v_source LIMIT 10`, engine: "sql", showQueryEditor: !1 },
+          { name: "filename", sql: "SELECT '$loop' || '_2.pdf'", engine: "sql", showQueryEditor: !1 }
         ],
         buttonLabel: "📑 Générer le PDF"
       },
@@ -24796,7 +24796,7 @@ FROM v_source LIMIT 10`, engine: "sql", clientVisible: !1 },
       queryLabels: { main: "Requête SQL (alias de colonnes = rôles visuels)" },
       specificParams: [
         {
-          key: "queries.main.clientVisible",
+          key: "queries.main.showQueryEditor",
           label: "Afficher l'éditeur SQL en mode client",
           tooltip: "Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur. En mode client, seul le graphique sera affiché.",
           inputType: "checkbox"
@@ -24818,7 +24818,7 @@ FROM (VALUES
     ('Jun', 55000, 50000)
 ) t(month, revenue, target)`,
           engine: "sql",
-          clientVisible: !1
+          showQueryEditor: !1
         }]
       },
       bodyFamily: "sqlWithEchart",
@@ -24838,10 +24838,10 @@ FROM (VALUES
       specificParams: [
         { key: "json.perspectiveConfig", label: "Configuration Perspective (JSON optionnel)", tooltip: "Configuration JSON pour le viewer Perspective (group_by, columns, sort, plugin, theme, etc.)", inputType: "textarea", rows: 10, placeholder: '{"plugin": "Datagrid", "theme": "Pro Dark", ...}' },
         { key: "perspectiveCdns", label: "CDN Perspective.js à charger", tooltip: "Sélectionnez les modules CDN nécessaires", inputType: "perspectiveCdns" },
-        { key: "queries.main.clientVisible", label: "Afficher l'éditeur SQL en mode client", tooltip: "Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur.", inputType: "checkbox" }
+        { key: "queries.main.showQueryEditor", label: "Afficher l'éditeur SQL en mode client", tooltip: "Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur.", inputType: "checkbox" }
       ],
       defaults: {
-        queries: [{ name: "main", sql: "SELECT * FROM source1", engine: "sql", clientVisible: !1 }],
+        queries: [{ name: "main", sql: "SELECT * FROM source1", engine: "sql", showQueryEditor: !1 }],
         json: { perspectiveConfig: "" },
         perspectiveCdns: { viewer: !0, datagrid: !0, d3fc: !0, openlayers: !1 }
       },
@@ -44935,12 +44935,12 @@ const c_ = class c_ {
     return Ct && Ct.sql || "";
   }
   /**
-   * Indique si l'éditeur SQL est visible pour cette requête (clientVisible).
+   * Indique si l'éditeur SQL est visible pour cette requête (showQueryEditor).
    */
-  static getCellQueryClientVisible(yt, xt = "main") {
+  static getCellQueryShowQueryEditor(yt, xt = "main") {
     if (!yt) return !1;
     const wt = typeof xt == "number" ? c_.getQueryNameForIndex(yt, xt) || "main" : xt, Ct = c_.getQueryByName(yt, wt);
-    return Ct ? Ct.clientVisible === !0 : !1;
+    return Ct ? Ct.showQueryEditor === !0 : !1;
   }
   /**
    * Indique si le résultat (datatable/visualisation) doit être affiché en mode client.
@@ -45152,7 +45152,7 @@ const c_ = class c_ {
         yt.queries[$t].name = Ct, St = yt.queries[$t];
       else {
         const Lt = c_.getDefaultEngineForType(yt, Ct);
-        St = { name: Ct, sql: "", engine: Lt, clientVisible: !1 };
+        St = { name: Ct, sql: "", engine: Lt, showQueryEditor: !1 };
         const It = ((Tt = wt == null ? void 0 : wt.queryNames) == null ? void 0 : Tt.indexOf(Ct)) ?? yt.queries.length;
         It < yt.queries.length ? yt.queries.splice(It, 0, St) : yt.queries.push(St);
       }
@@ -45164,7 +45164,7 @@ const c_ = class c_ {
     if (!yt) return null;
     Array.isArray(yt.queries) || (yt.queries = []);
     let xt = yt.queries.find((wt) => wt.name === "main");
-    return xt || (yt.queries[0] && !yt.queries[0].name ? (yt.queries[0].name = "main", xt = yt.queries[0]) : (xt = { name: "main", sql: "", engine: "sql", clientVisible: !1 }, yt.queries.unshift(xt))), xt;
+    return xt || (yt.queries[0] && !yt.queries[0].name ? (yt.queries[0].name = "main", xt = yt.queries[0]) : (xt = { name: "main", sql: "", engine: "sql", showQueryEditor: !1 }, yt.queries.unshift(xt))), xt;
   }
   /** Retourne la requête conditionnelle du groupe (name: 'main') ou null. */
   static getGroupIfQuery(yt) {
@@ -45325,22 +45325,22 @@ const c_ = class c_ {
           name: Et.name || (($t = St == null ? void 0 : St.queryNames) == null ? void 0 : $t[kt]) || (kt === 0 ? "main" : kt === 1 ? "filename" : "query" + kt),
           query: Et.sql || "",
           engine: Et.engine || c_.getDefaultEngineForType(yt == null ? void 0 : yt.type, kt),
-          clientVisible: Et.clientVisible === !0
+          showQueryEditor: Et.showQueryEditor === !0
         };
         return Tt.showQueryResult = Et.showQueryResult !== !1, Et.ast !== void 0 && (Tt.ast = Et.ast), Et.degraded && (Tt.degraded = Et.degraded), Et.manualSql && (Tt.manualSql = Et.manualSql), Tt;
       });
     }
     const xt = [], wt = c_.getCellQuery(yt, "main");
-    wt && xt.push({ name: "main", sql: wt, engine: c_.getCellEngine(yt, "main"), clientVisible: c_.getCellQueryClientVisible(yt, "main"), showQueryResult: c_.getCellQueryShowResult(yt, "main") });
+    wt && xt.push({ name: "main", sql: wt, engine: c_.getCellEngine(yt, "main"), showQueryEditor: c_.getCellQueryShowQueryEditor(yt, "main"), showQueryResult: c_.getCellQueryShowResult(yt, "main") });
     const Ct = c_.getCellQuery(yt, "fallback") || c_.getCellQuery(yt, "filename");
-    return Ct && xt.push({ name: c_.getQuery2Name(yt), sql: Ct, engine: "sql", clientVisible: !1 }), xt;
+    return Ct && xt.push({ name: c_.getQuery2Name(yt), sql: Ct, engine: "sql", showQueryEditor: !1 }), xt;
   }
   static async cleanCell(yt, xt = !1) {
     var Tt, $t;
     const wt = { type: yt.type }, Ct = CELL_TYPE_SCHEMAS == null ? void 0 : CELL_TYPE_SCHEMAS.types[yt == null ? void 0 : yt.type], St = (Ct == null ? void 0 : Ct.exportFields) ?? ["queries"];
     for (const Lt of St)
       if (Lt === "queries")
-        wt.queries = c_._buildQueriesForClean(yt), yt.type === "markdown" && (!Array.isArray(wt.queries) || wt.queries.length === 0) && (wt.queries = [{ name: "main", query: c_.getCellEditableContent(yt), engine: c_.getCellEngine(yt, "main"), clientVisible: c_.getCellQueryClientVisible(yt, "main") }]);
+        wt.queries = c_._buildQueriesForClean(yt), yt.type === "markdown" && (!Array.isArray(wt.queries) || wt.queries.length === 0) && (wt.queries = [{ name: "main", query: c_.getCellEditableContent(yt), engine: c_.getCellEngine(yt, "main"), showQueryEditor: c_.getCellQueryShowQueryEditor(yt, "main") }]);
       else if (Lt === "name") {
         const It = CELL_TYPE_HANDLERS[yt == null ? void 0 : yt.type], Rt = It != null && It.getExportValue ? It.getExportValue(yt, "name") : yt.name;
         Rt !== void 0 && (wt.name = Rt);
@@ -45397,7 +45397,7 @@ const c_ = class c_ {
         name: "main",
         query: St.sql.trim(),
         engine: St.engine || "sql",
-        clientVisible: St.clientVisible === !0
+        showQueryEditor: St.showQueryEditor === !0
       }]);
     }
     yt.loop && yt.loop.enabled && (wt.loop = {
@@ -134370,7 +134370,7 @@ function SqlDataTable({ cell: At, searchable: yt = !1 }) {
 }
 function getOrInitConfig(At) {
   var xt, wt;
-  (xt = At.queries) != null && xt.length || (At.queries = [{ name: "main", sql: "", engine: "sql", clientVisible: !1 }]);
+  (xt = At.queries) != null && xt.length || (At.queries = [{ name: "main", sql: "", engine: "sql", showQueryEditor: !1 }]);
   const yt = At.queries[0];
   return (wt = At.json) != null && wt.ast && !yt.ast && (yt.ast = At.json.ast, yt.degraded = At.json.degraded ?? !1, yt.manualSql = At.json.manualSql ?? null, delete At.json), yt.ast || (yt.ast = { source: "", steps: [], materialize: At.materialize ?? "select" }), yt.degraded === void 0 && (yt.degraded = !1), yt.manualSql === void 0 && (yt.manualSql = null), yt;
 }
@@ -134470,8 +134470,12 @@ function computeStepSchemas(At, yt) {
   return xt;
 }
 const SQLBLOCK_SCHEMA = "_sqlblock", SUBCELL_LIMIT = 50;
-let sqlblockSchemaEnsured = !1;
+let sqlblockSchemaEnsured = !1, sqlblockDropped = !1;
+function openSqlblockSession() {
+  sqlblockDropped = !1;
+}
 async function dropSqlblockSchema() {
+  sqlblockDropped = !0;
   try {
     await DuckDBManager.executeQuery(`DROP SCHEMA IF EXISTS "${SQLBLOCK_SCHEMA}" CASCADE`);
   } catch {
@@ -134479,7 +134483,7 @@ async function dropSqlblockSchema() {
   sqlblockSchemaEnsured = !1;
 }
 async function ensureSqlblockSchema() {
-  sqlblockSchemaEnsured || (await DuckDBManager.executeQuery(`CREATE SCHEMA IF NOT EXISTS "${SQLBLOCK_SCHEMA}"`), sqlblockSchemaEnsured = !0);
+  sqlblockDropped || sqlblockSchemaEnsured || (await DuckDBManager.executeQuery(`CREATE SCHEMA IF NOT EXISTS "${SQLBLOCK_SCHEMA}"`), sqlblockSchemaEnsured = !0);
 }
 function makeTableRef(At, yt) {
   const wt = `sb_${At.replace(/[^a-zA-Z0-9]/g, "_")}_s${yt < 0 ? "src" : yt}`;
@@ -136941,7 +136945,7 @@ function SqlEditorWidget({
       return;
     }
     const sn = At.materialize ?? "select", An = sqlToAstSmart(tn, sn);
-    (fn = At.queries) != null && fn.length || (At.queries = [{ name: "main", sql: ln, engine: "sql", clientVisible: !1 }]);
+    (fn = At.queries) != null && fn.length || (At.queries = [{ name: "main", sql: ln, engine: "sql", showQueryEditor: !1 }]);
     const En = At.queries[0];
     An.compatible && An.ast ? (En.ast = An.ast, En.degraded = !1, En.manualSql = null) : (En.ast = null, En.degraded = !0, En.manualSql = tn), $t == null || $t();
   }
@@ -137426,7 +137430,7 @@ function SqlTableBody({ cell: At, path: yt, cellIndex: xt, showTextResult: wt = 
               cellIndex: xt,
               placeholder: "SELECT * FROM source1 LIMIT 100",
               onEnterUiMode: At.type === "sql" ? () => {
-                Ot.current = ConfigManager.getCellQuery(At, "main") || "", Mt(!0), It(yt, xt);
+                Ot.current = ConfigManager.getCellQuery(At, "main") || "", openSqlblockSession(), Mt(!0), It(yt, xt);
               } : null
             }
           ),
@@ -137900,7 +137904,7 @@ function PerspectiveBody({ cell: At, path: yt, cellIndex: xt }) {
               cellIndex: xt,
               queryType: "query",
               onEnterUiMode: wt ? () => {
-                Rt.current = ConfigManager.getCellQuery(At, "main") || "", It(!0), kt(yt, xt);
+                Rt.current = ConfigManager.getCellQuery(At, "main") || "", openSqlblockSession(), It(!0), kt(yt, xt);
               } : null
             }
           ),
@@ -143296,13 +143300,13 @@ class CellConfigService {
         for (let Rt = 0; Rt < It.length; Rt++) {
           const Dt = It[Rt];
           ConfigManager.ensureCellQueries(yt, Dt);
-          const jt = Array.isArray(Lt) ? Lt.find((Mt) => Mt.name === Dt) || Lt[Rt] : { sql: "", engine: "sql", clientVisible: !1 }, Nt = ConfigManager.getQueryByName(yt, Dt);
+          const jt = Array.isArray(Lt) ? Lt.find((Mt) => Mt.name === Dt) || Lt[Rt] : { sql: "", engine: "sql", showQueryEditor: !1 }, Nt = ConfigManager.getQueryByName(yt, Dt);
           if (Nt && jt) {
             if (!Nt.sql && jt.sql) {
               const Mt = typeof jt.sql == "string" && St ? jt.sql.replace(/\{name\}/g, St) : jt.sql;
               Nt.sql = Mt;
             }
-            jt.engine !== void 0 && Nt.engine === void 0 && (Nt.engine = jt.engine), jt.clientVisible !== void 0 && Nt.clientVisible === void 0 && (Nt.clientVisible = jt.clientVisible), jt.showQueryResult !== void 0 && Nt.showQueryResult === void 0 && (Nt.showQueryResult = jt.showQueryResult);
+            jt.engine !== void 0 && Nt.engine === void 0 && (Nt.engine = jt.engine), jt.showQueryEditor !== void 0 && Nt.showQueryEditor === void 0 && (Nt.showQueryEditor = jt.showQueryEditor), jt.showQueryResult !== void 0 && Nt.showQueryResult === void 0 && (Nt.showQueryResult = jt.showQueryResult);
           }
         }
       } else if (yt[$t] === void 0)
@@ -143417,7 +143421,7 @@ class CellConfigService {
         let Rt = yt.queries.find((Dt) => Dt.name === Lt);
         if (!Rt) {
           const Dt = ConfigManager.getDefaultEngineForType(yt == null ? void 0 : yt.type, Lt);
-          Rt = { name: Lt, sql: "", engine: Dt, clientVisible: !1 }, yt.queries.push(Rt);
+          Rt = { name: Lt, sql: "", engine: Dt, showQueryEditor: !1 }, yt.queries.push(Rt);
         }
         Rt && It && (Rt[It] = wt);
         return;
@@ -144155,7 +144159,7 @@ ${It}${$t}</head>
         name: Kt.name || "main",
         sql: Kt.sql || "",
         engine: Kt.engine || "sql",
-        clientVisible: Kt.clientVisible === !0
+        showQueryEditor: (Kt.showQueryEditor ?? Kt.clientVisible) === !0
       })) : Yt.queries = [], Yt.loop = Bt.loop ? { enabled: Bt.loop.enabled || !1, query: Bt.loop.query || "", zip: Bt.loop.zip || !1, zipQuery: Bt.loop.zipQuery || "" } : { enabled: !1, query: "", zip: !1, zipQuery: "" }, Bt.children && Bt.children.length > 0 && (Yt.children = Bt.children.map((Kt, Jt) => {
         const Zt = Ct(Kt, Jt);
         return Zt._order = ConfigManager.normalizeOrder(Kt.order, Jt), Zt;
@@ -145446,7 +145450,7 @@ ${Zt}
     }
   },
   showSqlEditorVisible(xt) {
-    return yt().devMode || ConfigManager.getCellQueryClientVisible(xt, 0);
+    return yt().devMode || ConfigManager.getCellQueryShowQueryEditor(xt, 0);
   },
   showQueryResult(xt) {
     return yt().devMode || ConfigManager.getCellQueryShowResult(xt, 0);
@@ -146231,7 +146235,7 @@ function buildInitialState() {
       name: Kt.name || "main",
       sql: Kt.sql || "",
       engine: Kt.engine || "sql",
-      clientVisible: Kt.clientVisible === !0
+      showQueryEditor: (Kt.showQueryEditor ?? Kt.clientVisible) === !0
     })) : Yt.queries = [], Ht.children && Ht.children.length > 0 && (Yt.children = Ht.children.map((Kt, Jt) => {
       const Zt = xt(Kt, Jt);
       return Zt._order = ConfigManager.normalizeOrder(Kt.order, Jt), Zt;
