@@ -133255,6 +133255,11 @@ const SqlBlockService = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.def
   stepSql,
   stripMaterializePrefix
 }, Symbol.toStringTag, { value: "Module" })), CHART_TYPE_CONFIGS = {
+  datatable: {
+    label: "Datatable",
+    icon: "material-symbols-light:table",
+    roles: []
+  },
   bar: {
     label: "Barres",
     icon: "material-symbols-light:bar-chart",
@@ -136550,7 +136555,7 @@ LIMIT 0`), Ku = {};
               onChange: (Ts) => ds(Ts.target.value),
               className: "text-xs border border-border rounded px-1 py-0.5 bg-background text-foreground",
               children: [
-                (!kt || kt.includes("ephemeral")) && /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "ephemeral", children: "Datatable" }),
+                (!kt || kt.includes("ephemeral")) && /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "ephemeral", children: "ephemeral" }),
                 (!kt || kt.includes("view")) && /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "view", children: "VIEW" }),
                 (!kt || kt.includes("table")) && /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "table", children: "TABLE" })
               ]
