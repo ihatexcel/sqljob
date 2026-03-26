@@ -431,22 +431,33 @@ export const createExecutionSlice = (set: any, get: any) => ({
             } else {
                 const materialize = cell.materialize ?? 'select'
 
-                if (materialize !== 'select' && cell.name?.trim() && !sqlIsDdl(finalQuery)) {
-                    // Assemble DDL à l'exécution : DROP de l'opposé + CREATE OR REPLACE TABLE/VIEW
-                    // stripMaterializePrefix extrait le SELECT pur si q.sql contient déjà un DDL (buildDisplaySql)
+                if (materialize !== 'select' && cell.name?.trim()) {
                     const { quoteId, stripMaterializePrefix } = await import('../../../lib/SqlBlockService')
                     const qid = quoteId(cell.name)
-                    const oppositeType = materialize === 'view' ? 'TABLE' : 'VIEW'
+                    // stripMaterializePrefix extrait le SELECT pur si finalQuery contient un wrapper
+                    // CREATE OR REPLACE VIEW/TABLE (généré par buildDisplaySql ou ancien format avec DROP).
                     const selectOnly = stripMaterializePrefix(finalQuery)
-                    const ddlSql = `DROP ${oppositeType} IF EXISTS ${qid};\nCREATE OR REPLACE ${materialize.toUpperCase()} ${qid} AS (\n${selectOnly}\n)`
-                    await DuckDBManager.executeQuery(ddlSql)
-                    const { rows: results, schemaTypes } = await DuckDBManager.executeQueryWithSchema(
-                        `SELECT * FROM ${qid} LIMIT 1000`
-                    )
-                    cell._results = results
-                    cell._schemaTypes = schemaTypes || {}
-                    cell._resultInfo = `${results.length} ligne(s)${results.length === 1000 ? ' (limité à 1 000)' : ''} — ${materialize === 'table' ? 'TABLE' : 'VIEW'} "${cell.name}" créée`
-                    await get().refreshDuckdbSchema?.()
+                    if (!sqlIsDdl(selectOnly)) {
+                        // SELECT pur : assembler DROP opposé + CREATE OR REPLACE VIEW/TABLE
+                        const oppositeType = materialize === 'view' ? 'TABLE' : 'VIEW'
+                        const ddlSql = `DROP ${oppositeType} IF EXISTS ${qid};\nCREATE OR REPLACE ${materialize.toUpperCase()} ${qid} AS (\n${selectOnly}\n)`
+                        await DuckDBManager.executeQuery(ddlSql)
+                        const { rows: results, schemaTypes } = await DuckDBManager.executeQueryWithSchema(
+                            `SELECT * FROM ${qid} LIMIT 1000`
+                        )
+                        cell._results = results
+                        cell._schemaTypes = schemaTypes || {}
+                        cell._resultInfo = `${results.length} ligne(s)${results.length === 1000 ? ' (limité à 1 000)' : ''} — ${materialize === 'table' ? 'TABLE' : 'VIEW'} "${cell.name}" créée`
+                        await get().refreshDuckdbSchema?.()
+                    } else {
+                        // DDL pur (DROP, INSERT…) : exécuter tel quel sans wrapper VIEW/TABLE
+                        cell._echartsOption = null
+                        cell._kpiHtml = null
+                        const { rows: finalResults, schemaTypes } = await DuckDBManager.executeQueryWithSchema(finalQuery)
+                        cell._results = finalResults
+                        cell._schemaTypes = schemaTypes || {}
+                        cell._resultInfo = `✅ ${finalResults.length} ligne(s)`
+                    }
                 } else {
                     const chartConfig = q0?.ast?.chartConfig
                     if (chartConfig?.columns?.length) {

@@ -2210,6 +2210,7 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
 
     // Modal mode dégradé
     const [pendingDegradedSql, setPendingDegradedSql] = useState<string | null>(null)
+    const [multiSqlWarning, setMultiSqlWarning] = useState(false)
 
     // SQL généré visible ?
     const [showSql, setShowSql] = useState(false)
@@ -2295,14 +2296,25 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
         }
     }, [cell, ast, forceUpdate, invalidateFrom, fetchChartSchema, runCellAt, path, cellIndex, skipExecution])
 
-    const handleOutputModeChange = useCallback((mode: string) => {
+    const handleOutputModeChange = useCallback(async (mode: string) => {
+        // Transition view ↔ table : supprimer silencieusement l'ancien type si existant
+        if (cell.name?.trim()) {
+            const prev = ast.materialize ?? 'select'
+            try {
+                if (prev === 'table' && mode === 'view') {
+                    await DuckDBManager.executeQuery(`DROP TABLE IF EXISTS ${quoteId(cell.name)}`)
+                } else if (prev === 'view' && mode === 'table') {
+                    await DuckDBManager.executeQuery(`DROP VIEW IF EXISTS ${quoteId(cell.name)}`)
+                }
+            } catch (_) { /* silencieux */ }
+        }
         if (mode === 'visualization') {
             commitAstUpdate(cell, { materialize: 'select', chartConfig: ast.chartConfig ?? { columns: [] } }, forceUpdate)
             fetchChartSchema()
         } else {
             commitAstUpdate(cell, { materialize: mode as SqlBlockMaterialize, chartConfig: undefined }, forceUpdate)
         }
-    }, [cell, ast.chartConfig, forceUpdate, fetchChartSchema])
+    }, [cell, ast.chartConfig, ast.materialize, forceUpdate, fetchChartSchema])
 
     // ─── Distinct values pour le filtre (par step) ─────────────────────────
     // Fabrique une fonction fetchDistinctValues qui interroge la sous-requête
@@ -2337,6 +2349,17 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
 
     function handleManualSqlEdit(rawSql: string) {
         const newSql = stripMaterializePrefix(rawSql)
+        // Vérification : plusieurs instructions SQL → UI impossible
+        const stmts = newSql.split(';').map((s: string) => s.trim()).filter(Boolean)
+        if (stmts.length > 1) {
+            const cfg = getOrInitConfig(cell)
+            cfg.degraded = true; cfg.manualSql = newSql
+            cfg.sql = buildDisplaySql(cell.name, newSql, cfg.ast?.materialize ?? 'select')
+            setMultiSqlWarning(true)
+            forceUpdate()
+            return
+        }
+        setMultiSqlWarning(false)
         const result = sqlToAstSmart(newSql, ast.materialize)
         if (result.compatible && result.ast) {
             const cfg = getOrInitConfig(cell)
@@ -2422,6 +2445,12 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
     return (
         <div className="flex flex-col gap-3 w-full">
             {cfg.degraded && <DegradedBanner onRestore={tryRestoreFromDegraded} />}
+            {multiSqlWarning && (
+                <div className="flex items-center gap-2 rounded-md bg-yellow-50 border border-yellow-200 text-yellow-800 text-xs px-3 py-2">
+                    <span>⚠️ L'édition du SQL via l'UI n'est possible que si une seule instruction SQL est présente.</span>
+                    <button onClick={() => setMultiSqlWarning(false)} className="ml-auto shrink-0 text-yellow-600 hover:text-yellow-900">✕</button>
+                </div>
+            )}
             {pendingDegradedSql !== null && (
                 <IncompatibleConfirmModal onConfirm={confirmDegraded} onCancel={() => setPendingDegradedSql(null)} />
             )}
