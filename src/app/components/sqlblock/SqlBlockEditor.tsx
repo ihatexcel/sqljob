@@ -2590,7 +2590,7 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
                                     onChange={e => handleOutputModeChange(e.target.value)}
                                     className="text-xs border border-border rounded px-1 py-0.5 bg-background text-foreground"
                                 >
-                                    {(!allowedMaterializeModes || allowedMaterializeModes.includes('ephemeral')) && <option value="ephemeral">Datatable</option>}
+                                    {(!allowedMaterializeModes || allowedMaterializeModes.includes('ephemeral')) && <option value="ephemeral">ephemeral</option>}
                                     {(!allowedMaterializeModes || allowedMaterializeModes.includes('view')) && <option value="view">VIEW</option>}
                                     {(!allowedMaterializeModes || allowedMaterializeModes.includes('table')) && <option value="table">TABLE</option>}
                                 </select>

@@ -21,6 +21,11 @@ interface RoleSlotConfig {
 }
 
 const CHART_TYPE_CONFIGS: Record<string, { label: string; icon: string; roles: RoleSlotConfig[] }> = {
+    datatable: {
+        label: 'Datatable',
+        icon: 'material-symbols-light:table',
+        roles: [],
+    },
     bar: {
         label: 'Barres',
         icon: 'material-symbols-light:bar-chart',
