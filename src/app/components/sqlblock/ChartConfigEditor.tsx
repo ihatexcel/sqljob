@@ -182,37 +182,28 @@ export interface ChartConfigEditorProps {
 }
 
 export function ChartConfigEditor({ chartConfig, availableColumns, availableColTypes, onChange, onMount, eyeOpen, onEyeToggle }: ChartConfigEditorProps) {
-    const [open, setOpen] = useState(!!chartConfig)
-
-    const isActive = !!chartConfig
-    const chartType = chartConfig?.chartType ?? 'bar'
+    const chartType = chartConfig?.chartType ?? 'datatable'
     const columns: ChartColumnRole[] = chartConfig?.columns ?? []
-    const typeConfig = CHART_TYPE_CONFIGS[chartType] ?? CHART_TYPE_CONFIGS.bar
+    const typeConfig = CHART_TYPE_CONFIGS[chartType] ?? CHART_TYPE_CONFIGS.datatable
 
-    // Déclenche le fetch du schéma dynamique (colonnes réelles de la dernière étape)
+    // Déclenche le fetch du schéma dynamique
     useEffect(() => {
         onMount?.()
+    }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+    // Init par défaut si aucune config (datatable)
+    useEffect(() => {
+        if (!chartConfig) onChange({ chartType: 'datatable', columns: [] })
     }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
     // Auto-fill : quand les colonnes deviennent disponibles et que la config est vide,
     // sélectionner automatiquement la première colonne pour chaque rôle obligatoire.
     const availableKey = availableColumns.join(',')
     useEffect(() => {
-        if (!isActive || columns.length > 0 || availableColumns.length === 0) return
+        if (chartType === 'datatable' || columns.length > 0 || availableColumns.length === 0) return
         const newCfg = defaultConfigForType(chartType, availableColumns)
         if (newCfg.columns.length > 0) onChange(newCfg)
     }, [availableKey]) // eslint-disable-line react-hooks/exhaustive-deps
-
-    const handleToggle = useCallback(() => {
-        if (isActive) {
-            onChange(null)
-            setOpen(false)
-        } else {
-            const newCfg = defaultConfigForType('bar', availableColumns)
-            onChange(newCfg)
-            setOpen(true)
-        }
-    }, [isActive, availableColumns, onChange])
 
     const handleTypeChange = useCallback((newType: string) => {
         const newCfg = defaultConfigForType(newType, availableColumns)
@@ -254,69 +245,23 @@ export function ChartConfigEditor({ chartConfig, availableColumns, availableColT
     }, [chartType, columns, onChange])
 
     return (
-        <div className="border border-border rounded-md bg-background/50 shrink-0">
-            {/* Header */}
-            <div className="flex items-center gap-1.5 px-2 py-1.5 select-none">
-                {/* Œil — à gauche, même style que les étapes */}
-                <button
-                    type="button"
-                    onClick={e => { e.stopPropagation(); onEyeToggle?.() }}
-                    disabled={!isActive || !onEyeToggle}
-                    className={`shrink-0 w-5 h-5 flex items-center justify-center rounded transition-colors ${!isActive || !onEyeToggle ? 'invisible' : eyeOpen ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
-                    title={eyeOpen ? "Fermer l'aperçu graphique" : 'Aperçu graphique (exécute la cellule)'}
+        <div className="flex flex-col gap-2">
+            {/* Type de graphique */}
+            <div className="flex items-center gap-2">
+                <span className="text-xs text-muted-foreground w-28 shrink-0">Type</span>
+                <select
+                    value={chartType}
+                    onChange={e => handleTypeChange(e.target.value)}
+                    className={SELECT_TYPE_CLASS}
                 >
-                    {eyeOpen ? (
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
-                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                            <circle cx="12" cy="12" r="3" />
-                        </svg>
-                    ) : (
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
-                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
-                            <line x1="1" y1="1" x2="23" y2="23" />
-                        </svg>
-                    )}
-                </button>
-
-                {/* Titre + collapse — clic sur toute la zone */}
-                <div className="flex items-center gap-2 flex-1 cursor-pointer" onClick={() => setOpen(o => !o)}>
-                    <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                        <span className="iconify mr-1" data-icon="material-symbols-light:bar-chart" />
-                        Visualisation
-                    </span>
-                    {/* Toggle activer/désactiver */}
-                    <button
-                        type="button"
-                        onClick={e => { e.stopPropagation(); handleToggle() }}
-                        className={`relative inline-flex h-4 w-7 items-center rounded-full transition-colors ml-1 shrink-0 ${isActive ? 'bg-primary' : 'bg-muted'}`}
-                        title={isActive ? 'Désactiver le graphique' : 'Activer le graphique'}
-                    >
-                        <span className={`inline-block h-3 w-3 rounded-full bg-white shadow transition-transform ${isActive ? 'translate-x-3.5' : 'translate-x-0.5'}`} />
-                    </button>
-                    <span className="text-xs text-muted-foreground">{isActive ? 'Activé' : 'Désactivé'}</span>
-                    <span className="ml-auto text-muted-foreground text-xs">{open ? '▾' : '▸'}</span>
-                </div>
+                    {Object.entries(CHART_TYPE_CONFIGS).map(([key, cfg]) => (
+                        <option key={key} value={key}>{cfg.label}</option>
+                    ))}
+                </select>
             </div>
 
-            {/* Body — affiché uniquement si ouvert ET actif */}
-            {open && isActive && (
-                <div className="flex flex-col gap-2 px-3 pb-3 border-t border-border">
-                    {/* Type de graphique — native <select> */}
-                    <div className="flex items-center gap-2 mt-2">
-                        <span className="text-xs text-muted-foreground w-28 shrink-0">Type</span>
-                        <select
-                            value={chartType}
-                            onChange={e => handleTypeChange(e.target.value)}
-                            className={SELECT_TYPE_CLASS}
-                        >
-                            {Object.entries(CHART_TYPE_CONFIGS).map(([key, cfg]) => (
-                                <option key={key} value={key}>{cfg.label}</option>
-                            ))}
-                        </select>
-                    </div>
-
-                    {/* Slots de rôles */}
-                    {typeConfig.roles.map(slot => {
+            {/* Slots de rôles (vide si datatable) */}
+            {typeConfig.roles.map(slot => {
                         if (slot.multiple) {
                             const entries = getEntriesForRole(columns, slot.role)
                             return (
@@ -388,9 +333,7 @@ export function ChartConfigEditor({ chartConfig, availableColumns, availableColT
                                 </div>
                             )
                         }
-                    })}
-                </div>
-            )}
+            })}
         </div>
     )
 }
