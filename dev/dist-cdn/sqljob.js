@@ -45441,6 +45441,27 @@ const c_ = class c_ {
 };
 hm(c_, "SQLJOB_VERSION", "0.1");
 let ConfigManager = c_;
+function exportConfigToJson(At) {
+  const yt = [];
+  function xt(Ct) {
+    if (Array.isArray(Ct)) return Ct.map(xt);
+    if (Ct && typeof Ct == "object") {
+      const St = {};
+      for (const [Et, kt] of Object.entries(Ct))
+        if (Et === "json" && kt && typeof kt == "object") {
+          const Tt = `\0COMPACT${yt.length}\0`;
+          yt.push([Tt, JSON.stringify(kt)]), St[Et] = Tt;
+        } else
+          St[Et] = xt(kt);
+      return St;
+    }
+    return Ct;
+  }
+  let wt = JSON.stringify(xt(At), null, 2);
+  for (const [Ct, St] of yt)
+    wt = wt.replace(JSON.stringify(Ct), St);
+  return wt;
+}
 const createStoreImpl$1 = (At) => {
   let yt;
   const xt = /* @__PURE__ */ new Set(), wt = ($t, Lt) => {
@@ -143979,7 +144000,7 @@ const createExportSlice = (At, yt) => ({
             const Nt = JSON.stringify(Lt), Mt = await GistEncrypt.encrypt(Nt, It);
             Rt = JSON.stringify(Mt, null, 2);
           } else
-            Rt = JSON.stringify(Lt, null, 2);
+            Rt = exportConfigToJson(Lt);
           const Dt = new Blob([Rt], { type: "application/json" }), jt = St.endsWith(".json") ? St : St + ".json";
           FileHandler.downloadFile(Dt, jt), yt().setStatus("Configuration exportée", "success");
           break;
@@ -144043,7 +144064,7 @@ const createExportSlice = (At, yt) => ({
       It = `    <script type="application/octet-stream" id="defaultConfigBase64" data-encrypted="true">${btoa(JSON.stringify(Bt))}<\/script>
 `;
     } else
-      It = `    <script type="application/octet-stream" id="defaultConfigBase64">${ConfigManager.encodeUTF8ToBase64(JSON.stringify(xt, null, 2))}<\/script>
+      It = `    <script type="application/octet-stream" id="defaultConfigBase64">${ConfigManager.encodeUTF8ToBase64(exportConfigToJson(xt))}<\/script>
 `;
     const jt = `<!DOCTYPE html>
 <html lang="fr">
@@ -144067,7 +144088,7 @@ ${It}${$t}</head>
         devMode: xt.devMode,
         showLayout: xt.showLayout,
         includeFileData: !!xt.includeFiles
-      }), St = JSON.stringify(Ct, null, 2);
+      }), St = exportConfigToJson(Ct);
       return await navigator.clipboard.writeText(St), !0;
     } catch (Ct) {
       return console.error("Erreur copie JSON:", Ct), yt().setStatus("Erreur: " + Ct.message, "error"), !1;
@@ -146198,6 +146219,7 @@ setAutoFreeze(!1);
 function exposeGlobals() {
   Object.assign(window, {
     ConfigManager,
+    exportConfigToJson,
     CellConfigService,
     initializeCell,
     EChartSqlParser,
