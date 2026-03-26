@@ -8,7 +8,7 @@ import { useShallow } from 'zustand/react/shallow'
 import { useNotebookStore } from '../store/notebookStore'
 import { ConfigManager } from '../../lib/ConfigManager'
 import { CDNManager } from '../../lib/CDNManager'
-import { dropSqlblockSchema } from './sqlblock/SqlBlockEditor'
+import { dropSqlblockSchema, openSqlblockSession } from './sqlblock/SqlBlockEditor'
 import { SqlEditorWidget } from './SqlEditorWidget'
 import { SqlDataTable } from './SqlDataTable'
 import { Icon } from '../../lib/icons'
@@ -477,6 +477,7 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
                     placeholder="SELECT * FROM source1 LIMIT 100"
                     onEnterUiMode={cell.type === 'sql' ? () => {
                         sqlAtOpenRef.current = ConfigManager.getCellQuery(cell, 'main') || ''
+                        openSqlblockSession()
                         setSqlBlockUiMode(true)
                         runCellAt(path, cellIndex)
                     } : null}
@@ -1001,6 +1002,7 @@ function PerspectiveBody({ cell, path, cellIndex }: any) {
                         queryType="query"
                         onEnterUiMode={devMode ? () => {
                             sqlAtOpenRef.current = ConfigManager.getCellQuery(cell, 'main') || ''
+                            openSqlblockSession()
                             setSqlBlockUiMode(true)
                             runCellAt(path, cellIndex)
                         } : null} />
