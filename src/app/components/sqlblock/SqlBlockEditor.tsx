@@ -2282,8 +2282,8 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
             const colTypes: Record<string, string> = {}
             for (const field of result.schema.fields) colTypes[field.name] = String(field.type)
             setChartInputSchema({ columns: Object.keys(colTypes), colTypes })
-        } catch (err) {
-            console.warn('[ChartConfigEditor schema]', err)
+        } catch {
+            // Source table peut ne pas encore exister (fichier non chargé) — silencieux
         }
     }, [ast.source, stepsKey]) // eslint-disable-line
 
