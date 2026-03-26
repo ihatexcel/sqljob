@@ -212,9 +212,15 @@ export function buildDisplaySql(name: string | null | undefined, selectSql: stri
     return generateMaterializeQuery(name, selectSql, materialize);
 }
 
-/** Retire le préfixe CREATE OR REPLACE VIEW/TABLE d'un SQL pour extraire le SELECT interne. */
+/** Retire le préfixe DROP + CREATE OR REPLACE VIEW/TABLE d'un SQL pour extraire le SELECT interne.
+ *  Gère les noms quotés ("id"), les templates {{ _name }} et les identifiants bruts. */
 export function stripMaterializePrefix(sql: string): string {
-    const m = sql.match(/^CREATE\s+OR\s+REPLACE\s+(?:VIEW|TABLE)\s+(?:"[^"]*"|\S+)\s+AS\s*\(\s*([\s\S]*?)\s*\)\s*;?\s*$/i);
+    const anyName = `(?:"[^"]*"|\\{\\{[^}]+\\}\\}|\\S+)`;
+    const m = sql.trim().match(new RegExp(
+        `^(?:DROP\\s+(?:VIEW|TABLE)\\s+IF\\s+EXISTS\\s+${anyName}\\s*;\\s*)?` +
+        `CREATE\\s+OR\\s+REPLACE\\s+(?:VIEW|TABLE)\\s+${anyName}\\s+AS\\s*\\(\\s*([\\s\\S]*?)\\s*\\)\\s*;?\\s*$`,
+        'i'
+    ));
     if (m) return m[1].trim();
     return sql.trim();
 }
