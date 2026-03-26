@@ -29,7 +29,7 @@ import { createCellsSlice } from './slices/cellsSlice'
 import { createFilesSlice } from './slices/filesSlice'
 import { createExecutionSlice } from './slices/executionSlice'
 import { createCopyPasteSlice } from './slices/copyPasteSlice'
-import { ConfigManager } from '../../lib/ConfigManager'
+import { ConfigManager, exportConfigToJson } from '../../lib/ConfigManager'
 import { applyThemeFromConfig, initCustomTheme } from '../components/modals/ThemeCustomModal'
 import { DuckDBManager } from '../../lib/DuckDBManager'
 import { CellConfigService, initializeCell } from '../../lib/CellConfigService'
@@ -51,6 +51,7 @@ setAutoFreeze(false)
 export function exposeGlobals() {
     Object.assign(window, {
         ConfigManager,
+        exportConfigToJson,
         CellConfigService,
         initializeCell,
         EChartSqlParser,
