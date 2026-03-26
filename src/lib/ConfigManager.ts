@@ -801,3 +801,35 @@ return c;
                 };
             }
         }
+
+/**
+ * Sérialise une config export en JSON indenté (indent=2) en compactant les
+ * champs `json` (ex: json.xlsx) sur une seule ligne pour la lisibilité.
+ */
+export function exportConfigToJson(config: any): string {
+    const compacts: [string, string][] = []
+
+    function walk(obj: any): any {
+        if (Array.isArray(obj)) return obj.map(walk)
+        if (obj && typeof obj === 'object') {
+            const result: Record<string, any> = {}
+            for (const [k, v] of Object.entries(obj)) {
+                if (k === 'json' && v && typeof v === 'object') {
+                    const placeholder = `\u0000COMPACT${compacts.length}\u0000`
+                    compacts.push([placeholder, JSON.stringify(v)])
+                    result[k] = placeholder
+                } else {
+                    result[k] = walk(v)
+                }
+            }
+            return result
+        }
+        return obj
+    }
+
+    let json = JSON.stringify(walk(config), null, 2)
+    for (const [placeholder, compactJson] of compacts) {
+        json = json.replace(JSON.stringify(placeholder), compactJson)
+    }
+    return json
+}

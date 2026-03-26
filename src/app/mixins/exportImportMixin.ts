@@ -53,7 +53,7 @@ export function exportImportMixin() {
                             this.dbEngine,
                             this.directedAcyclicGraph
                         );
-                        const json = JSON.stringify(config, null, 2);
+                        const json = exportConfigToJson(config);
                         // Fallback textarea pour éviter la perte du contexte de geste utilisateur
                         const ta = document.createElement('textarea');
                         ta.value = json;
@@ -121,7 +121,7 @@ export function exportImportMixin() {
                                     const encrypted = await GistEncrypt.encrypt(jsonString, jsonPassphrase);
                                     jsonContent = JSON.stringify(encrypted, null, 2);
                                 } else {
-                                    jsonContent = JSON.stringify(config, null, 2);
+                                    jsonContent = exportConfigToJson(config);
                                 }
                                 const jsonBlob = new Blob([jsonContent], { type: 'application/json' });
                                 const jsonFileName = fileName.endsWith('.json') ? fileName : fileName + '.json';
@@ -223,7 +223,7 @@ export function exportImportMixin() {
                         const configScriptContent = btoa(JSON.stringify(encrypted));
                         configScriptTag = `    <script type="application/octet-stream" id="defaultConfigBase64" data-encrypted="true">${configScriptContent}</script>\n`;
                     } else {
-                        const configBase64 = ConfigManager.encodeUTF8ToBase64(JSON.stringify(config, null, 2));
+                        const configBase64 = ConfigManager.encodeUTF8ToBase64(exportConfigToJson(config));
                         configScriptTag = `    <script type="application/octet-stream" id="defaultConfigBase64">${configBase64}</script>\n`;
                     }
 
