@@ -88,7 +88,7 @@ export function SqlEditorWidget({
         // Préserve le mode de matérialisation réel de la cellule (ne jamais forcer 'view')
         const mat = (cell.materialize ?? 'select') as 'view' | 'table' | 'select'
         const result = sqlToAstSmart(stripped, mat)
-        if (!cell.queries?.length) cell.queries = [{ name: 'main', sql: fullSql, engine: 'sql', clientVisible: false }]
+        if (!cell.queries?.length) cell.queries = [{ name: 'main', sql: fullSql, engine: 'sql', showQueryEditor: false }]
         const q = cell.queries[0]
         if (result.compatible && result.ast) {
             q.ast = result.ast

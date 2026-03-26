@@ -537,7 +537,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
     },
 
     showSqlEditorVisible(cell) {
-        return get().devMode || ConfigManager.getCellQueryClientVisible(cell, 0)
+        return get().devMode || ConfigManager.getCellQueryShowQueryEditor(cell, 0)
     },
 
     showQueryResult(cell) {

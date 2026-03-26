@@ -100,7 +100,7 @@ function buildInitialState() {
                 name: q.name || 'main',
                 sql: q.sql || '',
                 engine: q.engine || 'sql',
-                clientVisible: q.clientVisible === true
+                showQueryEditor: (q.showQueryEditor ?? q.clientVisible) === true
             }))
         } else {
             newGroup.queries = []

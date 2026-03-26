@@ -87,7 +87,7 @@ import { FileHandler } from './FileHandler'
                         for (let i = 0; i < qNames.length; i++) {
                             const qName = qNames[i];
                             ConfigManager.ensureCellQueries(cell, qName);
-                            const d = Array.isArray(v) ? (v.find(x => x.name === qName) || v[i]) : { sql: '', engine: 'sql', clientVisible: false };
+                            const d = Array.isArray(v) ? (v.find(x => x.name === qName) || v[i]) : { sql: '', engine: 'sql', showQueryEditor: false };
                             const q = ConfigManager.getQueryByName(cell, qName);
                             if (q && d) {
                                 if (!q.sql && d.sql) {
@@ -95,7 +95,7 @@ import { FileHandler } from './FileHandler'
                                     q.sql = sql;
                                 }
                                 if (d.engine !== undefined && q.engine === undefined) q.engine = d.engine;
-                                if (d.clientVisible !== undefined && q.clientVisible === undefined) q.clientVisible = d.clientVisible;
+                                if (d.showQueryEditor !== undefined && q.showQueryEditor === undefined) q.showQueryEditor = d.showQueryEditor;
                                 if (d.showQueryResult !== undefined && q.showQueryResult === undefined) q.showQueryResult = d.showQueryResult;
                             }
                         }
@@ -234,7 +234,7 @@ import { FileHandler } from './FileHandler'
                         let q = cell.queries.find(x => x.name === qName);
                         if (!q) {
                             const defaultEngine = ConfigManager.getDefaultEngineForType(cell?.type, qName);
-                            q = { name: qName, sql: '', engine: defaultEngine, clientVisible: false };
+                            q = { name: qName, sql: '', engine: defaultEngine, showQueryEditor: false };
                             cell.queries.push(q);
                         }
                         if (q && subPath) {

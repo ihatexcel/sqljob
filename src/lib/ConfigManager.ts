@@ -119,13 +119,13 @@ return c;
             }
 
             /**
-             * Indique si l'éditeur SQL est visible pour cette requête (clientVisible).
+             * Indique si l'éditeur SQL est visible pour cette requête (showQueryEditor).
              */
-            static getCellQueryClientVisible(cell, nameOrIndex = 'main') {
+            static getCellQueryShowQueryEditor(cell, nameOrIndex = 'main') {
                 if (!cell) return false;
                 const name = typeof nameOrIndex === 'number' ? (ConfigManager.getQueryNameForIndex(cell, nameOrIndex) || 'main') : nameOrIndex;
                 const q = ConfigManager.getQueryByName(cell, name);
-                return q ? q.clientVisible === true : false;
+                return q ? q.showQueryEditor === true : false;
             }
 
             /**
@@ -341,7 +341,7 @@ return c;
                         q = cell.queries[idx];
                     } else {
                         const defaultEngine = ConfigManager.getDefaultEngineForType(cell, name);
-                        q = { name, sql: '', engine: defaultEngine, clientVisible: false };
+                        q = { name, sql: '', engine: defaultEngine, showQueryEditor: false };
                         const insertIdx = schema?.queryNames?.indexOf(name) ?? cell.queries.length;
                         if (insertIdx < cell.queries.length) cell.queries.splice(insertIdx, 0, q);
                         else cell.queries.push(q);
@@ -357,7 +357,7 @@ return c;
                 let q = group.queries.find(x => x.name === 'main');
                 if (!q) {
                     if (group.queries[0] && !group.queries[0].name) { group.queries[0].name = 'main'; q = group.queries[0]; }
-                    else { q = { name: 'main', sql: '', engine: 'sql', clientVisible: false }; group.queries.unshift(q); }
+                    else { q = { name: 'main', sql: '', engine: 'sql', showQueryEditor: false }; group.queries.unshift(q); }
                 }
                 return q;
             }
@@ -588,7 +588,7 @@ return c;
                             name: q.name || schema?.queryNames?.[i] || (i === 0 ? 'main' : i === 1 ? 'filename' : 'query' + i),
                             query: q.sql || '',
                             engine: q.engine || ConfigManager.getDefaultEngineForType(cell?.type, i),
-                            clientVisible: q.clientVisible === true,
+                            showQueryEditor: q.showQueryEditor === true,
                         };
                         entry.showQueryResult = q.showQueryResult !== false; // undefined → true (rétrocompat)
                         if (q.ast !== undefined) entry.ast = q.ast;
@@ -599,9 +599,9 @@ return c;
                 }
                 const arr = [];
                 const qMain = ConfigManager.getCellQuery(cell, 'main');
-                if (qMain) arr.push({ name: 'main', sql: qMain, engine: ConfigManager.getCellEngine(cell, 'main'), clientVisible: ConfigManager.getCellQueryClientVisible(cell, 'main'), showQueryResult: ConfigManager.getCellQueryShowResult(cell, 'main') });
+                if (qMain) arr.push({ name: 'main', sql: qMain, engine: ConfigManager.getCellEngine(cell, 'main'), showQueryEditor: ConfigManager.getCellQueryShowQueryEditor(cell, 'main'), showQueryResult: ConfigManager.getCellQueryShowResult(cell, 'main') });
                 const qFallback = ConfigManager.getCellQuery(cell, 'fallback') || ConfigManager.getCellQuery(cell, 'filename');
-                if (qFallback) arr.push({ name: ConfigManager.getQuery2Name(cell), sql: qFallback, engine: 'sql', clientVisible: false });
+                if (qFallback) arr.push({ name: ConfigManager.getQuery2Name(cell), sql: qFallback, engine: 'sql', showQueryEditor: false });
                 return arr;
             }
 
@@ -615,7 +615,7 @@ return c;
                     if (field === 'queries') {
                         cleanCell.queries = ConfigManager._buildQueriesForClean(cell);
                         if (cell.type === 'markdown' && (!Array.isArray(cleanCell.queries) || cleanCell.queries.length === 0)) {
-                            cleanCell.queries = [{ name: 'main', query: ConfigManager.getCellEditableContent(cell), engine: ConfigManager.getCellEngine(cell, 'main'), clientVisible: ConfigManager.getCellQueryClientVisible(cell, 'main') }];
+                            cleanCell.queries = [{ name: 'main', query: ConfigManager.getCellEditableContent(cell), engine: ConfigManager.getCellEngine(cell, 'main'), showQueryEditor: ConfigManager.getCellQueryShowQueryEditor(cell, 'main') }];
                         }
                     } else if (field === 'name') {
                         const handler = CELL_TYPE_HANDLERS[cell?.type];
@@ -732,7 +732,7 @@ return c;
                             name: 'main',
                             query: q0.sql.trim(),
                             engine: q0.engine || 'sql',
-                            clientVisible: q0.clientVisible === true
+                            showQueryEditor: q0.showQueryEditor === true
                         }];
                     }
                 }
