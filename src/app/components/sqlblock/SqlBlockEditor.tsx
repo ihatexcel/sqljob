@@ -2183,7 +2183,7 @@ function ChartPreviewInEditor({ cell }: { cell: any }) {
 
 // ─── SqlBlockEditor (composant principal) ─────────────────────────────────────
 
-export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCell, skipExecution, modalOpen }: { cell: any; path: number[]; cellIndex: number; onExitUiMode?: () => void; fromSqlCell?: boolean; skipExecution?: boolean; modalOpen?: boolean }) {
+export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCell, skipExecution, modalOpen, allowedMaterializeModes }: { cell: any; path: number[]; cellIndex: number; onExitUiMode?: () => void; fromSqlCell?: boolean; skipExecution?: boolean; modalOpen?: boolean; allowedMaterializeModes?: string[] }) {
     const { forceUpdate, _duckdbTables, db, runCellAt } = useNotebookStore(useShallow(s => ({
         forceUpdate: s.forceUpdate,
         _duckdbTables: s._duckdbTables,
@@ -2586,10 +2586,10 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
                                     onChange={e => handleOutputModeChange(e.target.value)}
                                     className="text-xs border border-border rounded px-1 py-0.5 bg-background text-foreground"
                                 >
-                                    <option value="select">— DATATABLE</option>
-                                    <option value="view">VIEW</option>
-                                    <option value="table">TABLE</option>
-                                    <option value="visualization">VISUALISATION</option>
+                                    {(!allowedMaterializeModes || allowedMaterializeModes.includes('select')) && <option value="select">— DATATABLE</option>}
+                                    {(!allowedMaterializeModes || allowedMaterializeModes.includes('view')) && <option value="view">VIEW</option>}
+                                    {(!allowedMaterializeModes || allowedMaterializeModes.includes('table')) && <option value="table">TABLE</option>}
+                                    {(!allowedMaterializeModes || allowedMaterializeModes.includes('visualization')) && <option value="visualization">VISUALISATION</option>}
                                 </select>
                             </div>
                         )}
