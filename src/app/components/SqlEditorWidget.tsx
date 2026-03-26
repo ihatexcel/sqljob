@@ -78,6 +78,12 @@ export function SqlEditorWidget({
     function enterUiMode() {
         const fullSql = ConfigManager.getCellQuery(cell, queryName) || ''
         const stripped = stripMaterializePrefix(fullSql)
+        // Bloquer si plusieurs instructions SQL : l'UI visuelle ne supporte qu'une seule instruction
+        const stmts = stripped.split(';').map(s => s.trim()).filter(Boolean)
+        if (stmts.length > 1) {
+            alert("L'édition du SQL via l'UI n'est possible que si une seule instruction SQL est présente.")
+            return
+        }
         // Préserve le mode de matérialisation réel de la cellule (ne jamais forcer 'view')
         const mat = (cell.materialize ?? 'select') as 'view' | 'table' | 'select'
         const result = sqlToAstSmart(stripped, mat)

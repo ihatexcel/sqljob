@@ -438,10 +438,11 @@ export const createExecutionSlice = (set: any, get: any) => ({
                     // CREATE OR REPLACE VIEW/TABLE (généré par buildDisplaySql ou ancien format avec DROP).
                     const selectOnly = stripMaterializePrefix(finalQuery)
                     if (!sqlIsDdl(selectOnly)) {
-                        // SELECT pur : assembler DROP opposé + CREATE OR REPLACE VIEW/TABLE
+                        // SELECT pur : DROP de l'opposé (silencieux, DuckDB rejette IF EXISTS sur mauvais type)
+                        // puis CREATE OR REPLACE VIEW/TABLE
                         const oppositeType = materialize === 'view' ? 'TABLE' : 'VIEW'
-                        const ddlSql = `DROP ${oppositeType} IF EXISTS ${qid};\nCREATE OR REPLACE ${materialize.toUpperCase()} ${qid} AS (\n${selectOnly}\n)`
-                        await DuckDBManager.executeQuery(ddlSql)
+                        try { await DuckDBManager.executeQuery(`DROP ${oppositeType} IF EXISTS ${qid}`) } catch (_) {}
+                        await DuckDBManager.executeQuery(`CREATE OR REPLACE ${materialize.toUpperCase()} ${qid} AS (\n${selectOnly}\n)`)
                         const { rows: results, schemaTypes } = await DuckDBManager.executeQueryWithSchema(
                             `SELECT * FROM ${qid} LIMIT 1000`
                         )
