@@ -133330,7 +133330,7 @@ const SELECT_CLASS = "h-6 text-xs px-1.5 border border-border rounded bg-backgro
 function ColSelect$1({ value: At, availableColumns: yt, optional: xt, onChange: wt }) {
   const Ct = (St) => {
     const Et = St.target.value;
-    console.log("[ChartConfigEditor] ColSelect change →", Et), wt(Et === NONE_VALUE ? null : Et);
+    wt(Et === NONE_VALUE ? null : Et);
   };
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(
     "select",
@@ -133347,42 +133347,39 @@ function ColSelect$1({ value: At, availableColumns: yt, optional: xt, onChange: 
 }
 function ChartConfigEditor({ chartConfig: At, availableColumns: yt, availableColTypes: xt, onChange: wt, onMount: Ct, eyeOpen: St, onEyeToggle: Et }) {
   const [kt, Tt] = reactExports.useState(!!At), $t = !!At, Lt = (At == null ? void 0 : At.chartType) ?? "bar", It = (At == null ? void 0 : At.columns) ?? [], Rt = CHART_TYPE_CONFIGS[Lt] ?? CHART_TYPE_CONFIGS.bar;
-  reactExports.useEffect(() => (console.log("[ChartConfigEditor] MOUNTED"), Ct == null || Ct(), () => console.log("[ChartConfigEditor] UNMOUNTED")), []);
+  reactExports.useEffect(() => {
+    Ct == null || Ct();
+  }, []);
   const Dt = yt.join(",");
   reactExports.useEffect(() => {
     if (!$t || It.length > 0 || yt.length === 0) return;
     const Kt = defaultConfigForType(Lt, yt);
     Kt.columns.length > 0 && wt(Kt);
-  }, [Dt]), console.log("[ChartConfigEditor] render", { isActive: $t, open: kt, chartType: Lt, columnsCount: It.length, availableColumns: yt, availableColTypes: xt });
+  }, [Dt]);
   const jt = reactExports.useCallback(() => {
     if ($t)
-      console.log("[ChartConfigEditor] toggle OFF → onChange(null)"), wt(null), Tt(!1);
+      wt(null), Tt(!1);
     else {
       const Kt = defaultConfigForType("bar", yt);
-      console.log("[ChartConfigEditor] toggle ON → onChange", Kt), wt(Kt), Tt(!0);
+      wt(Kt), Tt(!0);
     }
   }, [$t, yt, wt]), Nt = reactExports.useCallback((Kt) => {
-    console.log("[ChartConfigEditor] type change →", Kt);
     const Jt = defaultConfigForType(Kt, yt);
     wt(Jt);
   }, [yt, wt]), Mt = reactExports.useCallback((Kt, Jt) => {
-    console.log("[ChartConfigEditor] single role change", Kt, "→", Jt), wt({ chartType: Lt, columns: replaceRoleEntries(It, Kt, Jt ? [{ column: Jt, role: Kt, label: void 0 }] : []) });
+    wt({ chartType: Lt, columns: replaceRoleEntries(It, Kt, Jt ? [{ column: Jt, role: Kt, label: void 0 }] : []) });
   }, [Lt, It, wt]), Ot = reactExports.useCallback((Kt, Jt) => {
     const Zt = getEntriesForRole(It, Kt)[0];
     if (!Zt) return;
     const sr = [{ ...Zt, label: Jt || void 0 }];
     wt({ chartType: Lt, columns: replaceRoleEntries(It, Kt, sr) });
   }, [Lt, It, wt]), Bt = reactExports.useCallback((Kt, Jt, Zt, sr) => {
-    console.log("[ChartConfigEditor] multi role change", Kt, Jt, Zt, "→", sr);
     const Cr = getEntriesForRole(It, Kt).map((Rr, Ur) => Ur !== Jt ? Rr : Zt === "column" ? { ...Rr, column: sr, label: void 0 } : { ...Rr, [Zt]: sr || void 0 });
     wt({ chartType: Lt, columns: replaceRoleEntries(It, Kt, Cr) });
   }, [Lt, It, wt]), Ht = reactExports.useCallback((Kt) => {
-    const Jt = yt[0] ?? "";
-    console.log("[ChartConfigEditor] multi role add", Kt, "→", Jt);
-    const Zt = [...getEntriesForRole(It, Kt), { column: Jt, role: Kt }];
+    const Jt = yt[0] ?? "", Zt = [...getEntriesForRole(It, Kt), { column: Jt, role: Kt }];
     wt({ chartType: Lt, columns: replaceRoleEntries(It, Kt, Zt) });
   }, [Lt, It, yt, wt]), qt = reactExports.useCallback((Kt, Jt) => {
-    console.log("[ChartConfigEditor] multi role remove", Kt, Jt);
     const Zt = getEntriesForRole(It, Kt).filter((sr, Cr) => Cr !== Jt);
     wt({ chartType: Lt, columns: replaceRoleEntries(It, Kt, Zt) });
   }, [Lt, It, wt]);
