@@ -132575,8 +132575,11 @@ function buildDisplaySql(At, yt, xt) {
   return !(At != null && At.trim()) || xt === "select" ? yt : generateMaterializeQuery(At, yt, xt);
 }
 function stripMaterializePrefix(At) {
-  const yt = At.match(/^CREATE\s+OR\s+REPLACE\s+(?:VIEW|TABLE)\s+(?:"[^"]*"|\S+)\s+AS\s*\(\s*([\s\S]*?)\s*\)\s*;?\s*$/i);
-  return yt ? yt[1].trim() : At.trim();
+  const yt = '(?:"[^"]*"|\\{\\{[^}]+\\}\\}|\\S+)', xt = At.trim().match(new RegExp(
+    `^(?:DROP\\s+(?:VIEW|TABLE)\\s+IF\\s+EXISTS\\s+${yt}\\s*;\\s*)?CREATE\\s+OR\\s+REPLACE\\s+(?:VIEW|TABLE)\\s+${yt}\\s+AS\\s*\\(\\s*([\\s\\S]*?)\\s*\\)\\s*;?\\s*$`,
+    "i"
+  ));
+  return xt ? xt[1].trim() : At.trim();
 }
 function stepSql(At, yt) {
   var xt, wt;
