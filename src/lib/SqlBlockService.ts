@@ -194,7 +194,7 @@ export function astToSql(ast: SqlBlockAst): string {
 }
 
 export function generateMaterializeQuery(_name: string, sql: string, materialize: SqlBlockMaterialize): string {
-    if (materialize === 'select') return sql;
+    if (materialize === 'ephemeral') return sql;
     // {{ _name }} est substitué à l'exécution avec le nom réel de la cellule.
     // Le DROP de l'opposé est géré à l'exécution (executionSlice), pas affiché ici.
     return materialize === 'table'
@@ -204,7 +204,7 @@ export function generateMaterializeQuery(_name: string, sql: string, materialize
 
 /** Construit le SQL affiché dans l'éditeur : avec CREATE OR REPLACE pour VIEW/TABLE, SQL brut pour SELECT. */
 export function buildDisplaySql(name: string | null | undefined, selectSql: string, materialize: SqlBlockMaterialize): string {
-    if (!name?.trim() || materialize === 'select') return selectSql;
+    if (!name?.trim() || materialize === 'ephemeral') return selectSql;
     return generateMaterializeQuery(name, selectSql, materialize);
 }
 
@@ -264,7 +264,7 @@ function tryParseSimpleSelect(sql: string, materialize: SqlBlockMaterialize): Sq
     if (!m) return null;
     const parsed = parseSelectBody(m[1].trim());
     if (!parsed) return null;
-    return { source: unquoteId(m[2].trim()), steps: parsed.step ? [parsed.step] : [], materialize };
+    return { source: unquoteId(m[2].trim()), steps: parsed.step ? [parsed.step] : [], materialized: materialize };
 }
 
 /** Extrait le SELECT final d'un WITH query (le SELECT qui suit tous les CTEs, à profondeur 0). */
@@ -296,7 +296,7 @@ function tryParseCteChain(sql: string, materialize: SqlBlockMaterialize): SqlBlo
     }
     const finalSql = extractFinalSelectFromWithQuery(sql);
     const chartConfig = finalSql ? parseChartFinalSelect(finalSql) ?? undefined : undefined;
-    return { source: unquoteId(ctes[0].source), steps, materialize, ...(chartConfig ? { chartConfig } : {}) };
+    return { source: unquoteId(ctes[0].source), steps, materialized: materialize, ...(chartConfig ? { chartConfig } : {}) };
 }
 
 interface CteInfo { body: string; source: string }
@@ -1087,7 +1087,7 @@ function tryParseCteChainSmart(sql: string, materialize: SqlBlockMaterialize): S
 
     const finalSql = extractFinalSelectFromWithQuery(sql);
     const chartConfig = finalSql ? parseChartFinalSelect(finalSql) ?? undefined : undefined;
-    return { source, steps, materialize, ...(chartConfig ? { chartConfig } : {}) };
+    return { source, steps, materialized: materialize, ...(chartConfig ? { chartConfig } : {}) };
 }
 
 /** Parser simple SELECT (hors CTE) étendu aux patterns P1 (WHERE, ORDER BY, LIMIT).
@@ -1099,12 +1099,12 @@ function tryParseSimpleSmart(sql: string, materialize: SqlBlockMaterialize): Sql
 
     // Si le SELECT contient des annotations ::ROLE, c'est un SELECT final de visualisation
     const chartConfig = parseChartFinalSelect(sql) ?? undefined;
-    if (chartConfig) return { source, steps: [], materialize, chartConfig };
+    if (chartConfig) return { source, steps: [], materialized: materialize, chartConfig };
 
     const step = parseCteBodyToStep(sql, null, source);
-    if (step === null) return { source, steps: [], materialize }; // SELECT *
+    if (step === null) return { source, steps: [], materialized: materialize }; // SELECT *
     // custom_sql ou step reconnu → on crée un AST avec ce step (pas de perte de données)
-    return { source, steps: [step], materialize };
+    return { source, steps: [step], materialized: materialize };
 }
 
 /**
@@ -1129,7 +1129,7 @@ export function sqlToAstSmart(sql: string, materialize: SqlBlockMaterialize = 'v
     //    Préserve le SQL intégralement, sans perte de données.
     if (normalized) {
         return {
-            ast: { source: '', steps: [{ type: 'custom_sql', sql: normalized }], materialize },
+            ast: { source: '', steps: [{ type: 'custom_sql', sql: normalized }], materialized: materialize },
             compatible: true,
         };
     }

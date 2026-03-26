@@ -2,7 +2,7 @@
 // L'AST est la source de vérité pour les cellules sqlBlock.
 // sql <-> ast <-> ui : toute modification UI ou SQL passe par l'AST.
 
-export type SqlBlockMaterialize = 'view' | 'table' | 'select';
+export type SqlBlockMaterialize = 'view' | 'table' | 'ephemeral';
 
 // ─── P0 — Sélection de colonnes ───────────────────────────────────────────────
 
@@ -264,7 +264,7 @@ export interface ChartConfig {
 export interface SqlBlockAst {
     source: string;
     steps: SqlBlockStep[];
-    materialize: SqlBlockMaterialize;
+    materialized: SqlBlockMaterialize;
     chartConfig?: ChartConfig;  // optionnel : active le mode graphique sur le dernier SELECT
 }
 
@@ -357,7 +357,7 @@ export const STEP_CATEGORIES = [
 
 export function createDefaultSqlBlockConfig(source = ''): SqlBlockConfig {
     return {
-        ast: { source, steps: [], materialize: 'view' },
+        ast: { source, steps: [], materialized: 'view' },
         degraded: false,
         manualSql: null,
     };

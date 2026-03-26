@@ -91,7 +91,7 @@ function getOrInitConfig(cell: any): SqlBlockConfig {
         q.manualSql = cell.json.manualSql ?? null
         delete cell.json
     }
-    if (!q.ast) q.ast = { source: '', steps: [], materialize: cell.materialize ?? 'select' }
+    if (!q.ast) q.ast = { source: '', steps: [], materialized: cell.materialized ?? 'ephemeral' }
     if (q.degraded === undefined) q.degraded = false
     if (q.manualSql === undefined) q.manualSql = null
     return q
@@ -105,9 +105,9 @@ function commitAstUpdate(cell: any, newAst: Partial<SqlBlockAst>, forceUpdate: (
     // Stocker le SQL avec DDL si view/table — cohérent avec l'éditeur SQL en mode non-UI
     // L'exécution stripe le préfixe DDL avant de ré-appliquer via cell.materialize
     const selectSql = astToSql(cfg.ast)
-    cfg.sql = buildDisplaySql(cell.name, selectSql, cfg.ast.materialize ?? 'select')
-    // Sync cell.materialize avec l'AST
-    if (newAst.materialize !== undefined) cell.materialize = newAst.materialize
+    cfg.sql = buildDisplaySql(cell.name, selectSql, cfg.ast.materialized ?? 'ephemeral')
+    // Sync cell.materialized avec l'AST
+    if (newAst.materialized !== undefined) cell.materialized = newAst.materialized
     forceUpdate()
 }
 
@@ -2229,7 +2229,7 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
 
     const selectSql = getEffectiveSql(cfg)
     const displaySql = cell.name?.trim()
-        ? generateMaterializeQuery(cell.name, selectSql, ast.materialize ?? 'select')
+        ? generateMaterializeQuery(cell.name, selectSql, ast.materialized ?? 'ephemeral')
         : selectSql
 
     // ─── Handlers AST ──────────────────────────────────────────────────────
@@ -2246,8 +2246,8 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
         }
     }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-    // Mode de sortie courant : 'select' | 'view' | 'table' | 'visualization'
-    const outputMode = ast.chartConfig !== undefined ? 'visualization' : (ast.materialize ?? 'select')
+    // Mode de matérialisation courant : 'ephemeral' | 'view' | 'table'
+    const outputMode = ast.materialized ?? 'ephemeral'
 
     const handleStepUpdate = useCallback((idx: number, newStep: SqlBlockStep) => {
         invalidateFrom(idx + 1, ast)   // les schémas en aval sont périmés
@@ -2308,7 +2308,7 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
     const handleOutputModeChange = useCallback(async (mode: string) => {
         // Quitter view/table → supprimer silencieusement l'objet DuckDB existant
         if (cell.name?.trim()) {
-            const prev = ast.materialize ?? 'select'
+            const prev = ast.materialized ?? 'ephemeral'
             try {
                 if (prev === 'table') {
                     await DuckDBManager.executeQuery(`DROP TABLE IF EXISTS ${quoteId(cell.name)}`)
@@ -2317,13 +2317,8 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
                 }
             } catch (_) { /* silencieux */ }
         }
-        if (mode === 'visualization') {
-            commitAstUpdate(cell, { materialize: 'select', chartConfig: ast.chartConfig ?? { columns: [] } }, forceUpdate)
-            fetchChartSchema()
-        } else {
-            commitAstUpdate(cell, { materialize: mode as SqlBlockMaterialize, chartConfig: undefined }, forceUpdate)
-        }
-    }, [cell, ast.chartConfig, ast.materialize, forceUpdate, fetchChartSchema])
+        commitAstUpdate(cell, { materialized: mode as SqlBlockMaterialize }, forceUpdate)
+    }, [cell, ast.materialized, forceUpdate])
 
     // ─── Distinct values pour le filtre (par step) ─────────────────────────
     // Fabrique une fonction fetchDistinctValues qui interroge la sous-requête
@@ -2363,18 +2358,18 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
         if (stmts.length > 1) {
             const cfg = getOrInitConfig(cell)
             cfg.degraded = true; cfg.manualSql = newSql
-            cfg.sql = buildDisplaySql(cell.name, newSql, cfg.ast?.materialize ?? 'select')
+            cfg.sql = buildDisplaySql(cell.name, newSql, cfg.ast?.materialized ?? 'ephemeral')
             setMultiSqlWarning(true)
             forceUpdate()
             return
         }
         setMultiSqlWarning(false)
-        const result = sqlToAstSmart(newSql, ast.materialize)
+        const result = sqlToAstSmart(newSql, ast.materialized)
         if (result.compatible && result.ast) {
             const cfg = getOrInitConfig(cell)
             cfg.ast = result.ast; cfg.degraded = false; cfg.manualSql = null
             const genSql = astToSql(result.ast)
-            cfg.sql = buildDisplaySql(cell.name, genSql, result.ast.materialize ?? 'select')
+            cfg.sql = buildDisplaySql(cell.name, genSql, result.ast.materialized ?? 'ephemeral')
             forceUpdate()
         } else {
             setPendingDegradedSql(newSql)
@@ -2385,7 +2380,7 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
         if (!pendingDegradedSql) return
         const cfg = getOrInitConfig(cell)
         cfg.degraded = true; cfg.manualSql = pendingDegradedSql
-        cfg.sql = buildDisplaySql(cell.name, pendingDegradedSql, cfg.ast?.materialize ?? 'select')
+        cfg.sql = buildDisplaySql(cell.name, pendingDegradedSql, cfg.ast?.materialized ?? 'ephemeral')
         setPendingDegradedSql(null); forceUpdate()
     }
 
@@ -2398,11 +2393,11 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
             setMultiSqlWarning(true)
             return
         }
-        const result = sqlToAstSmart(sql, ast.materialize)
+        const result = sqlToAstSmart(sql, ast.materialized)
         if (result.compatible && result.ast) {
             cfg.ast = result.ast; cfg.degraded = false; cfg.manualSql = null
             const genSql = astToSql(result.ast)
-            cfg.sql = buildDisplaySql(cell.name, genSql, result.ast.materialize ?? 'select')
+            cfg.sql = buildDisplaySql(cell.name, genSql, result.ast.materialized ?? 'ephemeral')
             forceUpdate()
         } else {
             alert(`Impossible de restaurer l'AST : ${result.error || 'SQL incompatible'}`)
@@ -2418,6 +2413,7 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
 
     // Aperçu graphique dans dtSection (remplace le datatable)
     const [chartEyeOpen, setChartEyeOpen] = useState(false)
+    const [vizConfigOpen, setVizConfigOpen] = useState(false)
 
     // cellule factice pour SqlDataTable quand on affiche un aperçu step
     const displayCell = showingEye && eyeData
@@ -2588,20 +2584,41 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
                         />
                         {!cfg.degraded && (
                             <div className="flex items-center gap-2 mt-1 shrink-0">
-                                <label className="text-xs text-muted-foreground shrink-0">Résultat :</label>
+                                <label className="text-xs text-muted-foreground shrink-0">Matérialisation :</label>
                                 <select
                                     value={outputMode}
                                     onChange={e => handleOutputModeChange(e.target.value)}
                                     className="text-xs border border-border rounded px-1 py-0.5 bg-background text-foreground"
                                 >
-                                    {(!allowedMaterializeModes || allowedMaterializeModes.includes('select')) && <option value="select">— DATATABLE</option>}
+                                    {(!allowedMaterializeModes || allowedMaterializeModes.includes('ephemeral')) && <option value="ephemeral">Datatable</option>}
                                     {(!allowedMaterializeModes || allowedMaterializeModes.includes('view')) && <option value="view">VIEW</option>}
                                     {(!allowedMaterializeModes || allowedMaterializeModes.includes('table')) && <option value="table">TABLE</option>}
-                                    {(!allowedMaterializeModes || allowedMaterializeModes.includes('visualization')) && <option value="visualization">VISUALISATION</option>}
                                 </select>
                             </div>
                         )}
-                        {outputMode === 'visualization' && (
+                        {/* Étape visualisation permanente (toujours la dernière, non déplaçable) */}
+                        <div className="flex items-center gap-1 rounded border border-border bg-muted/30 px-2 py-1 shrink-0">
+                            <span className="flex-1 text-xs text-foreground truncate">📊 Visualisation</span>
+                            <button
+                                className={`p-0.5 rounded transition-colors ${chartEyeOpen ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+                                title={chartEyeOpen ? "Masquer l'aperçu graphique" : "Afficher l'aperçu graphique"}
+                                onClick={() => {
+                                    const opening = !chartEyeOpen
+                                    setChartEyeOpen(opening)
+                                    if (opening && !skipExecution) runCellAt(path, cellIndex)
+                                }}
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                            </button>
+                            <button
+                                className={`p-0.5 rounded transition-colors ${vizConfigOpen ? 'text-primary bg-primary/10' : 'text-muted-foreground hover:text-foreground'}`}
+                                title="Configurer la visualisation"
+                                onClick={() => { setVizConfigOpen(v => !v); fetchChartSchema() }}
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+                            </button>
+                        </div>
+                        {vizConfigOpen && (
                             <ChartConfigEditor
                                 chartConfig={ast.chartConfig}
                                 availableColumns={chartSchema.columns}
@@ -2612,7 +2629,7 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
                                 onEyeToggle={() => {
                                     const opening = !chartEyeOpen
                                     setChartEyeOpen(opening)
-                                    if (opening) runCellAt(path, cellIndex)
+                                    if (opening && !skipExecution) runCellAt(path, cellIndex)
                                 }}
                             />
                         )}

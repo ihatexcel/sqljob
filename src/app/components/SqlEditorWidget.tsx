@@ -86,7 +86,7 @@ export function SqlEditorWidget({
             return
         }
         // Préserve le mode de matérialisation réel de la cellule (ne jamais forcer 'view')
-        const mat = (cell.materialize ?? 'select') as 'view' | 'table' | 'select'
+        const mat = (cell.materialized ?? 'ephemeral') as 'view' | 'table' | 'ephemeral'
         const result = sqlToAstSmart(stripped, mat)
         if (!cell.queries?.length) cell.queries = [{ name: 'main', sql: fullSql, engine: 'sql', showQueryEditor: false }]
         const q = cell.queries[0]
