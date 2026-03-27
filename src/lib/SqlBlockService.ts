@@ -13,6 +13,7 @@ import type {
     SqlBlockConfig,
     SortKey,
     FilterOp,
+    FilterValueKind,
     ChartConfig,
     ChartColumnRole,
 } from './SqlBlockTypes';
@@ -593,22 +594,31 @@ function filterGroupToSql(g: FilterGroup): string {
     return g.negate ? `NOT ${expr}` : expr
 }
 
+/** Rendu d'une valeur de filtre selon son mode (literal, column, param). */
+function renderFilterValue(v: string, kind?: FilterValueKind): string {
+    if (kind === 'column') return quoteId(v)
+    if (kind === 'param')  return v   // {{paramName}} — substitué à l'exécution
+    return quoteSqlValue(v)
+}
+
 function conditionToSql(c: FilterCondition): string {
     const col = quoteId(c.column);
+    const val  = renderFilterValue(c.value ?? '', c.valueKind)
+    const valTo = renderFilterValue(c.valueTo ?? '', c.valueToKind)
     switch (c.op) {
-        case '=':       return `${col} = ${quoteSqlValue(c.value ?? '')}`;
-        case '!=':      return `${col} != ${quoteSqlValue(c.value ?? '')}`;
-        case '>':       return `${col} > ${quoteSqlValue(c.value ?? '')}`;
-        case '<':       return `${col} < ${quoteSqlValue(c.value ?? '')}`;
-        case '>=':      return `${col} >= ${quoteSqlValue(c.value ?? '')}`;
-        case '<=':      return `${col} <= ${quoteSqlValue(c.value ?? '')}`;
+        case '=':       return `${col} = ${val}`;
+        case '!=':      return `${col} != ${val}`;
+        case '>':       return `${col} > ${val}`;
+        case '<':       return `${col} < ${val}`;
+        case '>=':      return `${col} >= ${val}`;
+        case '<=':      return `${col} <= ${val}`;
         case 'in':      return `${col} IN (${(c.values ?? []).map(quoteSqlValue).join(', ')})`;
         case 'not_in':  return `${col} NOT IN (${(c.values ?? []).map(quoteSqlValue).join(', ')})`;
         case 'is_null': return `${col} IS NULL`;
         case 'not_null':return `${col} IS NOT NULL`;
-        case 'like':    return `${col} LIKE ${quoteSqlValue(c.value ?? '')}`;
-        case 'ilike':   return `${col} ILIKE ${quoteSqlValue(c.value ?? '')}`;
-        case 'between': return `${col} BETWEEN ${quoteSqlValue(c.value ?? '')} AND ${quoteSqlValue(c.valueTo ?? '')}`;
+        case 'like':    return `${col} LIKE ${val}`;
+        case 'ilike':   return `${col} ILIKE ${val}`;
+        case 'between': return `${col} BETWEEN ${val} AND ${valTo}`;
     }
 }
 

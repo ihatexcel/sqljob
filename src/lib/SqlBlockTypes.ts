@@ -32,15 +32,22 @@ export type FilterOp =
     | 'in' | 'not_in' | 'is_null' | 'not_null'
     | 'like' | 'ilike' | 'between';
 
+/** Mode de saisie d'une valeur de filtre : valeur fixe, référence colonne, ou paramètre UI */
+export type FilterValueKind = 'literal' | 'column' | 'param';
+
 export interface FilterCondition {
     column: string;
     op: FilterOp;
     /** Valeur unique (=, !=, >, like…) */
     value?: string;
+    /** Mode de la valeur unique */
+    valueKind?: FilterValueKind;
     /** Valeurs multiples (IN, NOT IN) */
     values?: string[];
     /** Borne haute (BETWEEN) */
     valueTo?: string;
+    /** Mode de la borne haute */
+    valueToKind?: FilterValueKind;
 }
 /** Élément d'un groupe : condition atomique ou sous-groupe (récursif) */
 export type FilterItem =
