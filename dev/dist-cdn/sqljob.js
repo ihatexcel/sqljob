@@ -135967,15 +135967,23 @@ function SourceConfigModal({ source: At, tables: yt, disabled: xt, onChange: wt,
           /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-semibold text-sm flex-1", children: "Source" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: Ct, className: "text-muted-foreground hover:text-foreground w-6 h-6 flex items-center justify-center rounded hover:bg-muted text-lg leading-none", children: "×" })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "px-4 py-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Select, { value: At || "", onValueChange: (St) => {
-          wt(St), Ct();
-        }, disabled: xt, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(SelectTrigger, { className: "w-full h-8 text-xs font-mono", children: /* @__PURE__ */ jsxRuntimeExports.jsx(SelectValue, { placeholder: "— choisir une source —" }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(SelectContent, { children: [
-            yt.map((St) => /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: St, className: "text-xs font-mono", children: St }, St)),
-            At && !yt.includes(At) && /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: At, className: "text-xs font-mono", children: At })
-          ] })
-        ] }) })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "px-4 py-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "select",
+          {
+            value: At || "",
+            onChange: (St) => {
+              wt(St.target.value), Ct();
+            },
+            disabled: xt,
+            size: Math.min(yt.length + (At && !yt.includes(At) ? 1 : 0), 12),
+            className: "w-full text-xs font-mono border border-border rounded bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-primary",
+            children: [
+              !At && /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "", disabled: !0, children: "— choisir une source —" }),
+              yt.map((St) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: St, children: St }, St)),
+              At && !yt.includes(At) && /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: At, children: At })
+            ]
+          }
+        ) })
       ] })
     ] }),
     document.body
