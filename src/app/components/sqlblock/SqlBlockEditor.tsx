@@ -2509,7 +2509,7 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
     const hasChart = !!(cell._echartsOption || cell._kpiHtml)
 
     // Aperçu graphique dans dtSection (remplace le datatable)
-    const [chartEyeOpen, setChartEyeOpen] = useState(false)
+    const [vizTab, setVizTab] = useState<'table' | 'chart'>('table')
     const [vizConfigOpen, setVizConfigOpen] = useState(false)
 
     // cellule factice pour SqlDataTable quand on affiche un aperçu step
@@ -2517,8 +2517,12 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
         ? { _id: `eye_${eyeOpen}_${cell._id}`, _results: eyeData.rows, _schemaTypes: eyeData.schemaTypes }
         : cell
 
-    // Quand le graphique disparaît, ferme l'aperçu chart
-    useEffect(() => { if (chartEyeOpen && !hasChart) setChartEyeOpen(false) }, [hasChart]) // eslint-disable-line
+    // Bascule auto sur 'table' si le graphique disparaît
+    useEffect(() => { if (vizTab === 'chart' && !hasChart) setVizTab('table') }, [hasChart]) // eslint-disable-line
+    // Synchro vizTab avec le type de chartConfig
+    useEffect(() => {
+        setVizTab(ast.chartConfig?.chartType && ast.chartConfig.chartType !== 'datatable' ? 'chart' : 'table')
+    }, [ast.chartConfig?.chartType]) // eslint-disable-line
 
     // Re-fetch quand les étapes changent
     useEffect(() => { fetchChartSchema() }, [stepsKey, ast.source]) // eslint-disable-line
@@ -2602,35 +2606,39 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
                 // ── Sections réutilisables ──────────────────────────────
                 const dtSection = (
                     <>
-                        {chartEyeOpen && (
-                            <div className="flex items-center gap-1.5 shrink-0">
-                                <span className="text-xs text-primary font-medium">Aperçu graphique</span>
-                                <button onClick={() => setChartEyeOpen(false)} className="ml-auto text-xs text-muted-foreground hover:text-foreground underline">✕ fermer</button>
-                            </div>
-                        )}
-                        {!chartEyeOpen && showingEye && (
+                        {showingEye ? (
                             <div className="flex items-center gap-1.5 shrink-0">
                                 <span className="text-xs text-primary font-medium">Aperçu étape {eyeOpen! + 1}</span>
                                 {eyeLoading && <svg viewBox="0 0 24 24" className="w-3 h-3 animate-spin text-muted-foreground" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>}
-                                <button onClick={() => toggleEye(eyeOpen!)} className="ml-auto text-xs text-muted-foreground hover:text-foreground underline">✕ fermer</button>
+                            </div>
+                        ) : (
+                            <div className="flex items-center gap-1 shrink-0">
+                                <button
+                                    onClick={() => setVizTab('table')}
+                                    className={`px-2 py-0.5 text-xs rounded transition-colors ${vizTab === 'table' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted'}`}
+                                >Tableau</button>
+                                <button
+                                    onClick={() => { setVizTab('chart'); if (!skipExecution) runCellAt(path, cellIndex) }}
+                                    className={`px-2 py-0.5 text-xs rounded transition-colors ${vizTab === 'chart' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted'}`}
+                                >Graphique</button>
                             </div>
                         )}
-                        {chartEyeOpen ? (
-                            hasChart
-                                ? <ChartPreviewInEditor cell={cell} />
-                                : <div className="flex items-center justify-center h-16 text-xs text-muted-foreground italic border border-dashed border-border rounded">Exécutez la cellule pour voir le graphique</div>
-                        ) : showingEye ? (
+                        {showingEye ? (
                             eyeData && eyeData.rows.length > 0
                                 ? <SqlDataTable cell={displayCell} />
                                 : eyeLoading
                                     ? <div className="flex items-center justify-center h-16 text-xs text-muted-foreground italic">Chargement…</div>
                                     : <div className="flex items-center justify-center h-16 text-xs text-muted-foreground italic border border-dashed border-border rounded">Résultat vide</div>
+                        ) : vizTab === 'chart' ? (
+                            hasChart
+                                ? <ChartPreviewInEditor cell={cell} />
+                                : <div className="flex items-center justify-center h-16 text-xs text-muted-foreground italic border border-dashed border-border rounded">Exécutez la cellule pour voir le graphique</div>
                         ) : hasResults ? (
                             <SqlDataTable cell={cell} />
                         ) : (
                             <div className="flex items-center justify-center h-16 text-xs text-muted-foreground italic border border-dashed border-border rounded">Aucun résultat — exécutez la cellule</div>
                         )}
-                        {cell._status === 'error' && cell._resultInfo && !showingEye && !chartEyeOpen && (
+                        {cell._status === 'error' && cell._resultInfo && !showingEye && (
                             <div className="p-2 rounded bg-destructive/10 text-destructive text-xs shrink-0">{cell._resultInfo}</div>
                         )}
                     </>
@@ -2694,11 +2702,9 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
                             </div>
                         )}
                         <VizStepItem
-                            eyeOpen={chartEyeOpen}
+                            eyeOpen={eyeOpen === null}
                             onEyeToggle={() => {
-                                const opening = !chartEyeOpen
-                                setChartEyeOpen(opening)
-                                if (opening && !skipExecution) runCellAt(path, cellIndex)
+                                if (typeof eyeOpen === 'number') toggleEye(eyeOpen)
                             }}
                             configOpen={vizConfigOpen}
                             onConfigOpen={() => { setVizConfigOpen(true); fetchChartSchema() }}
