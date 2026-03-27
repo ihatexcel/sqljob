@@ -136697,8 +136697,8 @@ LIMIT 0`), Zl = {};
     } catch {
     }
   }, [Dt.source, Wo]), ns = reactExports.useCallback((Rl) => {
-    Bt(0, Dt), commitAstUpdate(At, { chartConfig: Rl ?? void 0 }, Tt), Rl && (fs(), St || It(yt, xt));
-  }, [At, Dt, Tt, Bt, fs, It, yt, xt, St]), Ro = reactExports.useCallback(async (Rl) => {
+    Bt(0, Dt), commitAstUpdate(At, { chartConfig: Rl ?? void 0 }, Tt), Rl && fs();
+  }, [At, Dt, Tt, Bt, fs]), Ro = reactExports.useCallback(async (Rl) => {
     var Tu;
     if ((Tu = At.name) != null && Tu.trim()) {
       const Xu = Dt.materialized ?? "ephemeral";
@@ -136894,7 +136894,9 @@ LIMIT 0`), Zl = {};
               onConfigOpen: () => {
                 Vr(Sp), Ot(Sp);
               },
-              onConfigClose: () => Vr(null),
+              onConfigClose: () => {
+                Vr(null), Dt.chartConfig && !St && It(yt, xt);
+              },
               fetchDistinctValues: Eo(Sp),
               otherStepNames: Lu
             },
@@ -136943,7 +136945,9 @@ LIMIT 0`), Zl = {};
             onConfigOpen: () => {
               ap(!0), fs();
             },
-            onConfigClose: () => ap(!1),
+            onConfigClose: () => {
+              ap(!1), St || It(yt, xt);
+            },
             chartConfig: Dt.chartConfig,
             availableColumns: Al.columns,
             availableColTypes: Al.colTypes,
