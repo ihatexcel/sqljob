@@ -73,6 +73,8 @@ import type {
     JsonExtractStep,
     DateTruncStep,
     CustomSqlStep,
+    ConditionalColumnStep,
+    ConditionalRule,
     SqlBlockMaterialize,
 } from '../../../lib/SqlBlockTypes'
 import { SqlDataTable } from '../SqlDataTable'
@@ -200,6 +202,11 @@ function applyStepToSchema(step: SqlBlockStep, cols: string[], types: Record<str
             if (step.mode === 'replace') return { cols, types: { ...types, [step.column]: 'TIMESTAMP' } }
             const alias = step.alias || `${step.column}_${step.granularity}`
             return { cols: [...cols, alias], types: { ...types, [alias]: 'TIMESTAMP' } }
+        }
+        case 'conditional_column': {
+            const colName = step.newColumn || 'nouvelle_colonne'
+            if (cols.includes(colName)) return { cols, types }
+            return { cols: [...cols, colName], types: { ...types, [colName]: 'VARCHAR' } }
         }
         default:
             // custom_sql ou type inconnu : schéma non dérivable statiquement, on conserve l'entrée
@@ -1665,7 +1672,8 @@ function stepSummary(step: SqlBlockStep): string {
         case 'unnest':          return step.column || '—'
         case 'json_extract':    return step.column || '—'
         case 'date_trunc':      return step.column ? `${step.column} → ${step.granularity}` : '—'
-        case 'custom_sql':      return step.sql ? step.sql.slice(0, 40).replace(/\n/g, ' ') + (step.sql.length > 40 ? '…' : '') : '—'
+        case 'custom_sql':           return step.sql ? step.sql.slice(0, 40).replace(/\n/g, ' ') + (step.sql.length > 40 ? '…' : '') : '—'
+        case 'conditional_column':   return step.newColumn ? `→ ${step.newColumn}` : '—'
         default:                return ''
     }
 }
@@ -1685,6 +1693,143 @@ function CustomSqlStepUI({ step, onChange }: { step: CustomSqlStep; onChange: (s
                 spellCheck={false}
                 placeholder="SELECT * FROM {{subquery}} WHERE ..."
             />
+        </div>
+    )
+}
+
+// ─── ConditionalColumnStepUI ──────────────────────────────────────────────────
+
+/** Une ligne de règle WHEN … THEN … */
+function ConditionalRuleRow({ rule, index, total, availableCols, fetchDistinctValues, onChange, onRemove, onMoveUp, onMoveDown }: {
+    rule: ConditionalRule; index: number; total: number
+    availableCols: string[]
+    fetchDistinctValues?: (col: string, sl: number, fl: number) => Promise<{ values: string[]; hasMore: boolean }>
+    onChange: (r: ConditionalRule) => void
+    onRemove: () => void
+    onMoveUp?: () => void
+    onMoveDown?: () => void
+}) {
+    // Normalise le groupe when
+    const when: FilterGroup = rule.when ?? { items: [], logicOp: 'AND' }
+
+    function updateWhen(patch: Partial<FilterGroup>) {
+        onChange({ ...rule, when: { ...when, ...patch } })
+    }
+
+    function updateItem(idx: number, item: FilterItem) {
+        const items = [...(when.items ?? [])]
+        items[idx] = item
+        updateWhen({ items })
+    }
+
+    function addCond() {
+        const items = [...(when.items ?? []), { kind: 'cond' as const, cond: { column: availableCols[0] ?? '', op: '=' as FilterOp, value: '', valueKind: 'literal' as FilterValueKind } }]
+        updateWhen({ items })
+    }
+
+    function removeCond(idx: number) {
+        const items = (when.items ?? []).filter((_, i) => i !== idx)
+        updateWhen({ items })
+    }
+
+    const condItems = (when.items ?? []).filter(it => it.kind === 'cond')
+
+    return (
+        <div className="border border-border rounded p-2 flex flex-col gap-1.5">
+            {/* En-tête règle */}
+            <div className="flex items-center gap-1">
+                <span className="text-xs font-semibold text-muted-foreground shrink-0 w-12">SI</span>
+                <div className="flex rounded border border-border overflow-hidden text-xs ml-auto shrink-0">
+                    {(['AND', 'OR'] as const).map(o => (
+                        <button key={o} type="button" onClick={() => updateWhen({ logicOp: o })}
+                            className={`px-2 py-0.5 transition-colors ${when.logicOp === o ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}>
+                            {o}
+                        </button>
+                    ))}
+                </div>
+                <MoveBtns onUp={onMoveUp} onDown={onMoveDown} />
+                <RemoveBtn onClick={onRemove} />
+            </div>
+            {/* Conditions WHEN */}
+            <div className="flex flex-col gap-1 pl-2">
+                {condItems.map((item, ci) => item.kind === 'cond' && (
+                    <FilterConditionRow key={ci} cond={item.cond} availableCols={availableCols}
+                        onChange={patch => updateItem(ci, { kind: 'cond', cond: { ...item.cond, ...patch } })}
+                        onRemove={() => removeCond(ci)}
+                        fetchDistinctValues={fetchDistinctValues}
+                    />
+                ))}
+                <AddRowBtn onClick={addCond} label="+ Condition" />
+            </div>
+            {/* Valeur ALORS */}
+            <div className="flex items-center gap-1 pl-2">
+                <span className="text-xs font-semibold text-muted-foreground shrink-0 w-12">ALORS</span>
+                <VarInput
+                    value={rule.then ?? ''} valueKind={rule.thenKind ?? 'literal'}
+                    onChange={(v, k) => onChange({ ...rule, then: v, thenKind: k })}
+                    availableCols={availableCols}
+                    fetchDistinctValues={fetchDistinctValues}
+                    placeholder="valeur résultat" className="flex-1 min-w-0"
+                />
+            </div>
+        </div>
+    )
+}
+
+function ConditionalColumnStepUI({ step, availableCols, fetchDistinctValues, onChange }: {
+    step: ConditionalColumnStep; availableCols: string[]
+    fetchDistinctValues?: (col: string, sl: number, fl: number) => Promise<{ values: string[]; hasMore: boolean }>
+    onChange: (s: ConditionalColumnStep) => void
+}) {
+    const rules = step.rules ?? []
+
+    function updateRule(i: number, r: ConditionalRule) {
+        onChange({ ...step, rules: rules.map((x, idx) => idx === i ? r : x) })
+    }
+
+    function addRule() {
+        const newRule: ConditionalRule = {
+            when: { items: [{ kind: 'cond', cond: { column: availableCols[0] ?? '', op: '=', value: '', valueKind: 'literal' } }], logicOp: 'AND' },
+            then: '', thenKind: 'literal',
+        }
+        onChange({ ...step, rules: [...rules, newRule] })
+    }
+
+    return (
+        <div className="flex flex-col gap-2">
+            {/* Nom de la nouvelle colonne */}
+            <div className="flex items-center gap-2">
+                <span className="text-xs text-muted-foreground shrink-0">Nom de la colonne</span>
+                <TxtInput
+                    value={step.newColumn ?? ''} onChange={v => onChange({ ...step, newColumn: v })}
+                    placeholder="nouvelle_colonne" className="flex-1"
+                />
+            </div>
+
+            {/* Règles WHEN … THEN … */}
+            {rules.map((rule, i) => (
+                <ConditionalRuleRow key={i}
+                    rule={rule} index={i} total={rules.length}
+                    availableCols={availableCols} fetchDistinctValues={fetchDistinctValues}
+                    onChange={r => updateRule(i, r)}
+                    onRemove={() => onChange({ ...step, rules: rules.filter((_, idx) => idx !== i) })}
+                    onMoveUp={i > 0 ? () => onChange({ ...step, rules: moveArr(rules, i, -1) }) : undefined}
+                    onMoveDown={i < rules.length - 1 ? () => onChange({ ...step, rules: moveArr(rules, i, 1) }) : undefined}
+                />
+            ))}
+            <AddRowBtn onClick={addRule} label="+ Règle (WHEN … THEN …)" />
+
+            {/* Valeur SINON */}
+            <div className="flex items-center gap-1 border border-dashed border-border rounded p-2">
+                <span className="text-xs font-semibold text-muted-foreground shrink-0 w-12">SINON</span>
+                <VarInput
+                    value={step.elseValue ?? ''} valueKind={step.elseKind ?? 'literal'}
+                    onChange={(v, k) => onChange({ ...step, elseValue: v, elseKind: k })}
+                    availableCols={availableCols}
+                    fetchDistinctValues={fetchDistinctValues}
+                    placeholder="NULL si vide" className="flex-1 min-w-0"
+                />
+            </div>
         </div>
     )
 }
@@ -1866,6 +2011,7 @@ function StepConfigModal({ step, index, availableCols, availableColTypes, onUpda
                         {step.type === 'json_extract' && <JsonExtractStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
                         {step.type === 'date_trunc' && <DateTruncStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
                         {step.type === 'custom_sql' && <CustomSqlStepUI step={step} onChange={s => onUpdate(index, s)} />}
+                        {step.type === 'conditional_column' && <ConditionalColumnStepUI step={step} availableCols={availableCols} fetchDistinctValues={fetchDistinctValues} onChange={s => onUpdate(index, s)} />}
                     </div>
                 </div>
             </div>
@@ -2182,7 +2328,8 @@ function defaultStep(type: SqlBlockStep['type']): SqlBlockStep {
         case 'unnest':          return { type, column: '', alias: 'item', keepEmpty: false }
         case 'json_extract':    return { type, column: '', extractions: [] }
         case 'date_trunc':      return { type, column: '', granularity: 'month', mode: 'replace' }
-        case 'custom_sql':      return { type, sql: 'SELECT * FROM {{subquery}}' }
+        case 'custom_sql':          return { type, sql: 'SELECT * FROM {{subquery}}' }
+        case 'conditional_column':  return { type, newColumn: 'nouvelle_colonne', rules: [], elseValue: '', elseKind: 'literal' }
     }
 }
 
@@ -2348,6 +2495,7 @@ function AddStepModal({ onAdd, availableCols, availableColTypes, fetchDistinctVa
                                         {draftStep.type === 'json_extract' && <JsonExtractStepUI step={draftStep} availableCols={availableCols} onChange={s => handleDraftUpdate(0, s)} />}
                                         {draftStep.type === 'date_trunc' && <DateTruncStepUI step={draftStep} availableCols={availableCols} onChange={s => handleDraftUpdate(0, s)} />}
                                         {draftStep.type === 'custom_sql' && <CustomSqlStepUI step={draftStep} onChange={s => handleDraftUpdate(0, s)} />}
+                                        {draftStep.type === 'conditional_column' && <ConditionalColumnStepUI step={draftStep} availableCols={availableCols} fetchDistinctValues={fetchDistinctValues} onChange={s => handleDraftUpdate(0, s)} />}
                                     </div>
                                 </div>
                                 {/* Footer */}
