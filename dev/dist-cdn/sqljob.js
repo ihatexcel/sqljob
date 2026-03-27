@@ -132864,6 +132864,17 @@ FROM ${At}`;
       const kt = yt.alias || `${yt.column}_${yt.granularity}`;
       return `SELECT *, ${Et} AS ${quoteId(kt)} FROM ${At}`;
     }
+    case "conditional_column": {
+      const St = quoteId(yt.newColumn || "nouvelle_colonne"), Et = (yt.rules ?? []).filter(($t) => filterGroupHasContent($t.when)).map(($t) => {
+        const Lt = filterGroupToSql($t.when), It = renderFilterValue($t.then ?? "", $t.thenKind);
+        return `WHEN ${Lt} THEN ${It}`;
+      }), kt = yt.elseValue !== void 0 && yt.elseValue !== "" ? `ELSE ${renderFilterValue(yt.elseValue, yt.elseKind)}` : "ELSE NULL";
+      return `SELECT *, ${`CASE
+    ${Et.join(`
+    `)}
+    ${kt}
+  END`} AS ${St} FROM ${At}`;
+    }
     case "custom_sql":
       return (((Ct = yt.sql) == null ? void 0 : Ct.trim()) || "SELECT * FROM {{subquery}}").replace(/;+\s*$/, "").replace(/\{\{subquery\}\}/g, At);
   }
@@ -133543,7 +133554,8 @@ const DUCKDB_TYPES = [
   unnest: "Exploser un tableau (UNNEST)",
   json_extract: "Extraire du JSON",
   date_trunc: "Tronquer une date",
-  custom_sql: "SQL personnalisé"
+  custom_sql: "SQL personnalisé",
+  conditional_column: "Colonne conditionnelle"
 }, STEP_CATEGORIES = [
   {
     label: "Filtrage & Tri",
@@ -133551,7 +133563,7 @@ const DUCKDB_TYPES = [
   },
   {
     label: "Colonnes",
-    steps: ["select_columns", "exclude_columns", "rename_columns", "derive", "change_type", "fill_null"]
+    steps: ["select_columns", "exclude_columns", "rename_columns", "derive", "conditional_column", "change_type", "fill_null"]
   },
   {
     label: "Agrégation & Reshape",
@@ -134438,6 +134450,10 @@ function applyStepToSchema(At, yt, xt) {
       if (At.mode === "replace") return { cols: yt, types: { ...xt, [At.column]: "TIMESTAMP" } };
       const wt = At.alias || `${At.column}_${At.granularity}`;
       return { cols: [...yt, wt], types: { ...xt, [wt]: "TIMESTAMP" } };
+    }
+    case "conditional_column": {
+      const wt = At.newColumn || "nouvelle_colonne";
+      return yt.includes(wt) ? { cols: yt, types: xt } : { cols: [...yt, wt], types: { ...xt, [wt]: "VARCHAR" } };
     }
     default:
       return { cols: yt, types: xt };
@@ -135781,6 +135797,8 @@ function stepSummary(At) {
       return At.column ? `${At.column} → ${At.granularity}` : "—";
     case "custom_sql":
       return At.sql ? At.sql.slice(0, 40).replace(/\n/g, " ") + (At.sql.length > 40 ? "…" : "") : "—";
+    case "conditional_column":
+      return At.newColumn ? `→ ${At.newColumn}` : "—";
     default:
       return "";
   }
@@ -135802,6 +135820,130 @@ function CustomSqlStepUI({ step: At, onChange: yt }) {
         placeholder: "SELECT * FROM {{subquery}} WHERE ..."
       }
     )
+  ] });
+}
+function ConditionalRuleRow({ rule: At, index: yt, total: xt, availableCols: wt, fetchDistinctValues: Ct, onChange: St, onRemove: Et, onMoveUp: kt, onMoveDown: Tt }) {
+  const $t = At.when ?? { items: [], logicOp: "AND" };
+  function Lt(Nt) {
+    St({ ...At, when: { ...$t, ...Nt } });
+  }
+  function It(Nt, Mt) {
+    const Ot = [...$t.items ?? []];
+    Ot[Nt] = Mt, Lt({ items: Ot });
+  }
+  function Rt() {
+    const Nt = [...$t.items ?? [], { kind: "cond", cond: { column: wt[0] ?? "", op: "=", value: "", valueKind: "literal" } }];
+    Lt({ items: Nt });
+  }
+  function Dt(Nt) {
+    const Mt = ($t.items ?? []).filter((Ot, Bt) => Bt !== Nt);
+    Lt({ items: Mt });
+  }
+  const jt = ($t.items ?? []).filter((Nt) => Nt.kind === "cond");
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "border border-border rounded p-2 flex flex-col gap-1.5", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-semibold text-muted-foreground shrink-0 w-12", children: "SI" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex rounded border border-border overflow-hidden text-xs ml-auto shrink-0", children: ["AND", "OR"].map((Nt) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "button",
+        {
+          type: "button",
+          onClick: () => Lt({ logicOp: Nt }),
+          className: `px-2 py-0.5 transition-colors ${$t.logicOp === Nt ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"}`,
+          children: Nt
+        },
+        Nt
+      )) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(MoveBtns, { onUp: kt, onDown: Tt }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(RemoveBtn, { onClick: Et })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-1 pl-2", children: [
+      jt.map((Nt, Mt) => Nt.kind === "cond" && /* @__PURE__ */ jsxRuntimeExports.jsx(
+        FilterConditionRow,
+        {
+          cond: Nt.cond,
+          availableCols: wt,
+          onChange: (Ot) => It(Mt, { kind: "cond", cond: { ...Nt.cond, ...Ot } }),
+          onRemove: () => Dt(Mt),
+          fetchDistinctValues: Ct
+        },
+        Mt
+      )),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(AddRowBtn, { onClick: Rt, label: "+ Condition" })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1 pl-2", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-semibold text-muted-foreground shrink-0 w-12", children: "ALORS" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        VarInput,
+        {
+          value: At.then ?? "",
+          valueKind: At.thenKind ?? "literal",
+          onChange: (Nt, Mt) => St({ ...At, then: Nt, thenKind: Mt }),
+          availableCols: wt,
+          fetchDistinctValues: Ct,
+          placeholder: "valeur résultat",
+          className: "flex-1 min-w-0"
+        }
+      )
+    ] })
+  ] });
+}
+function ConditionalColumnStepUI({ step: At, availableCols: yt, fetchDistinctValues: xt, onChange: wt }) {
+  const Ct = At.rules ?? [];
+  function St(kt, Tt) {
+    wt({ ...At, rules: Ct.map(($t, Lt) => Lt === kt ? Tt : $t) });
+  }
+  function Et() {
+    const kt = {
+      when: { items: [{ kind: "cond", cond: { column: yt[0] ?? "", op: "=", value: "", valueKind: "literal" } }], logicOp: "AND" },
+      then: "",
+      thenKind: "literal"
+    };
+    wt({ ...At, rules: [...Ct, kt] });
+  }
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs text-muted-foreground shrink-0", children: "Nom de la colonne" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        TxtInput,
+        {
+          value: At.newColumn ?? "",
+          onChange: (kt) => wt({ ...At, newColumn: kt }),
+          placeholder: "nouvelle_colonne",
+          className: "flex-1"
+        }
+      )
+    ] }),
+    Ct.map((kt, Tt) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+      ConditionalRuleRow,
+      {
+        rule: kt,
+        index: Tt,
+        total: Ct.length,
+        availableCols: yt,
+        fetchDistinctValues: xt,
+        onChange: ($t) => St(Tt, $t),
+        onRemove: () => wt({ ...At, rules: Ct.filter(($t, Lt) => Lt !== Tt) }),
+        onMoveUp: Tt > 0 ? () => wt({ ...At, rules: moveArr(Ct, Tt, -1) }) : void 0,
+        onMoveDown: Tt < Ct.length - 1 ? () => wt({ ...At, rules: moveArr(Ct, Tt, 1) }) : void 0
+      },
+      Tt
+    )),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(AddRowBtn, { onClick: Et, label: "+ Règle (WHEN … THEN …)" }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1 border border-dashed border-border rounded p-2", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-semibold text-muted-foreground shrink-0 w-12", children: "SINON" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        VarInput,
+        {
+          value: At.elseValue ?? "",
+          valueKind: At.elseKind ?? "literal",
+          onChange: (kt, Tt) => wt({ ...At, elseValue: kt, elseKind: Tt }),
+          availableCols: yt,
+          fetchDistinctValues: xt,
+          placeholder: "NULL si vide",
+          className: "flex-1 min-w-0"
+        }
+      )
+    ] })
   ] });
 }
 function useStepInputSchemas(At, yt) {
@@ -135933,7 +136075,8 @@ function StepConfigModal({ step: At, index: yt, availableCols: xt, availableColT
             At.type === "unnest" && /* @__PURE__ */ jsxRuntimeExports.jsx(UnnestStepUI, { step: At, availableCols: xt, onChange: (It) => Ct(yt, It) }),
             At.type === "json_extract" && /* @__PURE__ */ jsxRuntimeExports.jsx(JsonExtractStepUI, { step: At, availableCols: xt, onChange: (It) => Ct(yt, It) }),
             At.type === "date_trunc" && /* @__PURE__ */ jsxRuntimeExports.jsx(DateTruncStepUI, { step: At, availableCols: xt, onChange: (It) => Ct(yt, It) }),
-            At.type === "custom_sql" && /* @__PURE__ */ jsxRuntimeExports.jsx(CustomSqlStepUI, { step: At, onChange: (It) => Ct(yt, It) })
+            At.type === "custom_sql" && /* @__PURE__ */ jsxRuntimeExports.jsx(CustomSqlStepUI, { step: At, onChange: (It) => Ct(yt, It) }),
+            At.type === "conditional_column" && /* @__PURE__ */ jsxRuntimeExports.jsx(ConditionalColumnStepUI, { step: At, availableCols: xt, fetchDistinctValues: Et, onChange: (It) => Ct(yt, It) })
           ] })
         ] })
       ] })
@@ -136272,6 +136415,8 @@ function defaultStep(At) {
       return { type: At, column: "", granularity: "month", mode: "replace" };
     case "custom_sql":
       return { type: At, sql: "SELECT * FROM {{subquery}}" };
+    case "conditional_column":
+      return { type: At, newColumn: "nouvelle_colonne", rules: [], elseValue: "", elseKind: "literal" };
   }
 }
 function AddStepModal({ onAdd: At, availableCols: yt, availableColTypes: xt, fetchDistinctValues: wt, otherStepNames: Ct, stepIndex: St, onOpen: Et }) {
@@ -136391,7 +136536,8 @@ function AddStepModal({ onAdd: At, availableCols: yt, availableColTypes: xt, fet
                   It.type === "unnest" && /* @__PURE__ */ jsxRuntimeExports.jsx(UnnestStepUI, { step: It, availableCols: yt, onChange: (Cr) => zt(0, Cr) }),
                   It.type === "json_extract" && /* @__PURE__ */ jsxRuntimeExports.jsx(JsonExtractStepUI, { step: It, availableCols: yt, onChange: (Cr) => zt(0, Cr) }),
                   It.type === "date_trunc" && /* @__PURE__ */ jsxRuntimeExports.jsx(DateTruncStepUI, { step: It, availableCols: yt, onChange: (Cr) => zt(0, Cr) }),
-                  It.type === "custom_sql" && /* @__PURE__ */ jsxRuntimeExports.jsx(CustomSqlStepUI, { step: It, onChange: (Cr) => zt(0, Cr) })
+                  It.type === "custom_sql" && /* @__PURE__ */ jsxRuntimeExports.jsx(CustomSqlStepUI, { step: It, onChange: (Cr) => zt(0, Cr) }),
+                  It.type === "conditional_column" && /* @__PURE__ */ jsxRuntimeExports.jsx(ConditionalColumnStepUI, { step: It, availableCols: yt, fetchDistinctValues: wt, onChange: (Cr) => zt(0, Cr) })
                 ] })
               ] }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "px-4 py-3 border-t border-border flex justify-end gap-2 shrink-0", children: [
