@@ -135824,60 +135824,31 @@ function CustomSqlStepUI({ step: At, onChange: yt }) {
 }
 function ConditionalRuleRow({ rule: At, index: yt, total: xt, availableCols: wt, fetchDistinctValues: Ct, onChange: St, onRemove: Et, onMoveUp: kt, onMoveDown: Tt }) {
   const $t = At.when ?? { items: [], logicOp: "AND" };
-  function Lt(Nt) {
-    St({ ...At, when: { ...$t, ...Nt } });
-  }
-  function It(Nt, Mt) {
-    const Ot = [...$t.items ?? []];
-    Ot[Nt] = Mt, Lt({ items: Ot });
-  }
-  function Rt() {
-    const Nt = [...$t.items ?? [], { kind: "cond", cond: { column: wt[0] ?? "", op: "=", value: "", valueKind: "literal" } }];
-    Lt({ items: Nt });
-  }
-  function Dt(Nt) {
-    const Mt = ($t.items ?? []).filter((Ot, Bt) => Bt !== Nt);
-    Lt({ items: Mt });
-  }
-  const jt = ($t.items ?? []).filter((Nt) => Nt.kind === "cond");
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "border border-border rounded p-2 flex flex-col gap-1.5", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-semibold text-muted-foreground shrink-0 w-12", children: "SI" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex rounded border border-border overflow-hidden text-xs ml-auto shrink-0", children: ["AND", "OR"].map((Nt) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "button",
-        {
-          type: "button",
-          onClick: () => Lt({ logicOp: Nt }),
-          className: `px-2 py-0.5 transition-colors ${$t.logicOp === Nt ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"}`,
-          children: Nt
-        },
-        Nt
-      )) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1 mb-0.5", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-semibold text-muted-foreground shrink-0", children: "SI" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex-1" }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(MoveBtns, { onUp: kt, onDown: Tt }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(RemoveBtn, { onClick: Et })
     ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-1 pl-2", children: [
-      jt.map((Nt, Mt) => Nt.kind === "cond" && /* @__PURE__ */ jsxRuntimeExports.jsx(
-        FilterConditionRow,
-        {
-          cond: Nt.cond,
-          availableCols: wt,
-          onChange: (Ot) => It(Mt, { kind: "cond", cond: { ...Nt.cond, ...Ot } }),
-          onRemove: () => Dt(Mt),
-          fetchDistinctValues: Ct
-        },
-        Mt
-      )),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(AddRowBtn, { onClick: Rt, label: "+ Condition" })
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1 pl-2", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      FilterGroupUI,
+      {
+        group: $t,
+        onUpdate: (Lt) => St({ ...At, when: Lt }),
+        availableCols: wt,
+        depth: 1,
+        fetchDistinctValues: Ct
+      }
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-semibold text-muted-foreground shrink-0 w-12", children: "ALORS" }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         VarInput,
         {
           value: At.then ?? "",
           valueKind: At.thenKind ?? "literal",
-          onChange: (Nt, Mt) => St({ ...At, then: Nt, thenKind: Mt }),
+          onChange: (Lt, It) => St({ ...At, then: Lt, thenKind: It }),
           availableCols: wt,
           fetchDistinctValues: Ct,
           placeholder: "valeur résultat",
