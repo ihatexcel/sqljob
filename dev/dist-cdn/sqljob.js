@@ -132881,21 +132881,24 @@ function filterGroupToSql(At) {
   const wt = xt.join(` ${At.logicOp ?? "AND"} `), Ct = xt.length > 1 ? `(${wt})` : wt;
   return At.negate ? `NOT ${Ct}` : Ct;
 }
+function renderFilterValue(At, yt) {
+  return yt === "column" ? quoteId(At) : yt === "param" ? At : quoteSqlValue(At);
+}
 function conditionToSql(At) {
-  const yt = quoteId(At.column);
+  const yt = quoteId(At.column), xt = renderFilterValue(At.value ?? "", At.valueKind), wt = renderFilterValue(At.valueTo ?? "", At.valueToKind);
   switch (At.op) {
     case "=":
-      return `${yt} = ${quoteSqlValue(At.value ?? "")}`;
+      return `${yt} = ${xt}`;
     case "!=":
-      return `${yt} != ${quoteSqlValue(At.value ?? "")}`;
+      return `${yt} != ${xt}`;
     case ">":
-      return `${yt} > ${quoteSqlValue(At.value ?? "")}`;
+      return `${yt} > ${xt}`;
     case "<":
-      return `${yt} < ${quoteSqlValue(At.value ?? "")}`;
+      return `${yt} < ${xt}`;
     case ">=":
-      return `${yt} >= ${quoteSqlValue(At.value ?? "")}`;
+      return `${yt} >= ${xt}`;
     case "<=":
-      return `${yt} <= ${quoteSqlValue(At.value ?? "")}`;
+      return `${yt} <= ${xt}`;
     case "in":
       return `${yt} IN (${(At.values ?? []).map(quoteSqlValue).join(", ")})`;
     case "not_in":
@@ -132905,11 +132908,11 @@ function conditionToSql(At) {
     case "not_null":
       return `${yt} IS NOT NULL`;
     case "like":
-      return `${yt} LIKE ${quoteSqlValue(At.value ?? "")}`;
+      return `${yt} LIKE ${xt}`;
     case "ilike":
-      return `${yt} ILIKE ${quoteSqlValue(At.value ?? "")}`;
+      return `${yt} ILIKE ${xt}`;
     case "between":
-      return `${yt} BETWEEN ${quoteSqlValue(At.value ?? "")} AND ${quoteSqlValue(At.valueTo ?? "")}`;
+      return `${yt} BETWEEN ${xt} AND ${wt}`;
   }
 }
 function quoteSqlValue(At) {
@@ -134929,6 +134932,93 @@ function DistinctValueInput({ value: At, onChange: yt, column: xt, fetchDistinct
 function DistinctMultiInput({ values: At, onChange: yt, column: xt, fetchDistinctValues: wt, className: Ct = "" }) {
   return /* @__PURE__ */ jsxRuntimeExports.jsx(DistinctDropdown, { multi: !0, values: At, onChangeMulti: yt, column: xt, fetchDistinctValues: wt, className: Ct });
 }
+const VAR_KIND_ICONS = {
+  literal: /* @__PURE__ */ jsxRuntimeExports.jsxs("svg", { viewBox: "0 0 24 24", className: "w-3 h-3", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("polyline", { points: "4 7 4 4 20 4 20 7" }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("line", { x1: "9", y1: "20", x2: "15", y2: "20" }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("line", { x1: "12", y1: "4", x2: "12", y2: "20" })
+  ] }),
+  column: /* @__PURE__ */ jsxRuntimeExports.jsxs("svg", { viewBox: "0 0 24 24", className: "w-3 h-3", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("rect", { x: "3", y: "3", width: "18", height: "18", rx: "2" }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("line", { x1: "3", y1: "9", x2: "21", y2: "9" }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("line", { x1: "3", y1: "15", x2: "21", y2: "15" }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("line", { x1: "9", y1: "9", x2: "9", y2: "21" })
+  ] }),
+  param: /* @__PURE__ */ jsxRuntimeExports.jsxs("svg", { viewBox: "0 0 24 24", className: "w-3 h-3", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("polyline", { points: "17 12 21 12" }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("polyline", { points: "3 12 7 12" }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("rect", { x: "7", y: "8", width: "10", height: "8", rx: "1" })
+  ] })
+}, VAR_KIND_LABELS = {
+  literal: "Entrer une valeur",
+  column: "Sélectionner une colonne",
+  param: "Paramètre"
+};
+function VarInput({ value: At, valueKind: yt = "literal", onChange: xt, availableCols: wt, column: Ct, fetchDistinctValues: St, placeholder: Et = "valeur", className: kt = "" }) {
+  const [Tt, $t] = reactExports.useState(!1), Lt = reactExports.useRef(null), It = useNotebookStore(useShallow((Rt) => {
+    const Dt = Rt.getParameters();
+    return Object.keys(Dt);
+  }));
+  return reactExports.useEffect(() => {
+    if (!Tt) return;
+    const Rt = (Dt) => {
+      Lt.current && !Lt.current.contains(Dt.target) && $t(!1);
+    };
+    return document.addEventListener("mousedown", Rt), () => document.removeEventListener("mousedown", Rt);
+  }, [Tt]), /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: `flex items-center gap-0.5 ${kt}`, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative shrink-0", ref: Lt, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "button",
+        {
+          type: "button",
+          onClick: () => $t((Rt) => !Rt),
+          className: "h-6 w-6 flex items-center justify-center rounded border border-border bg-background text-muted-foreground hover:text-foreground hover:bg-muted transition-colors",
+          title: "Changer le type de valeur",
+          children: VAR_KIND_ICONS[yt]
+        }
+      ),
+      Tt && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute left-0 top-full z-50 mt-0.5 w-52 bg-popover border border-border rounded shadow-lg py-0.5", children: ["literal", "column", "param"].map((Rt) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "button",
+        {
+          type: "button",
+          onClick: () => {
+            xt("", Rt), $t(!1);
+          },
+          className: `w-full text-left px-3 py-1.5 text-xs hover:bg-muted flex items-center gap-2 ${yt === Rt ? "text-primary font-medium" : "text-foreground"}`,
+          children: [
+            VAR_KIND_ICONS[Rt],
+            VAR_KIND_LABELS[Rt]
+          ]
+        },
+        Rt
+      )) })
+    ] }),
+    yt === "literal" && /* @__PURE__ */ jsxRuntimeExports.jsx(
+      DistinctValueInput,
+      {
+        value: At,
+        onChange: (Rt) => xt(Rt, "literal"),
+        column: Ct ?? "",
+        fetchDistinctValues: St,
+        placeholder: Et,
+        className: "flex-1 min-w-0"
+      }
+    ),
+    yt === "column" && /* @__PURE__ */ jsxRuntimeExports.jsx(ColSelect, { value: At, cols: wt, onChange: (Rt) => xt(Rt, "column"), className: "flex-1 min-w-0 h-6 text-xs" }),
+    yt === "param" && (It.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      "select",
+      {
+        value: At,
+        onChange: (Rt) => xt(Rt.target.value, "param"),
+        className: "flex-1 min-w-0 h-6 rounded border border-border bg-background px-1 text-xs font-mono",
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "", children: "— paramètre —" }),
+          It.map((Rt) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: `{{${Rt}}}`, children: Rt }, Rt))
+        ]
+      }
+    ) : /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex-1 text-xs text-muted-foreground italic px-1", children: "Aucun paramètre UI" }))
+  ] });
+}
 function FilterConditionRow({ cond: At, availableCols: yt, onChange: xt, onRemove: wt, onMoveUp: Ct, onMoveDown: St, fetchDistinctValues: Et }) {
   const kt = At.op === "is_null" || At.op === "not_null", Tt = At.op === "between", $t = At.op === "in" || At.op === "not_in";
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-1", children: [
@@ -134939,10 +135029,12 @@ function FilterConditionRow({ cond: At, availableCols: yt, onChange: xt, onRemov
       !Rt && Dt && At.value && (jt.values = [At.value]), Rt && !Dt && ((Nt = At.values) != null && Nt.length) && (jt.value = At.values[0]), xt(jt);
     }, children: FILTER_OPS.map((Lt) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: Lt.op, children: Lt.label }, Lt.op)) }),
     !kt && !Tt && !$t && /* @__PURE__ */ jsxRuntimeExports.jsx(
-      DistinctValueInput,
+      VarInput,
       {
         value: At.value ?? "",
-        onChange: (Lt) => xt({ value: Lt }),
+        valueKind: At.valueKind,
+        onChange: (Lt, It) => xt({ value: Lt, valueKind: It }),
+        availableCols: yt,
         column: At.column,
         fetchDistinctValues: Et,
         placeholder: "valeur",
@@ -134950,9 +135042,33 @@ function FilterConditionRow({ cond: At, availableCols: yt, onChange: xt, onRemov
       }
     ),
     Tt && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(DistinctValueInput, { value: At.value ?? "", onChange: (Lt) => xt({ value: Lt }), column: At.column, fetchDistinctValues: Et, placeholder: "de", className: "w-20" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        VarInput,
+        {
+          value: At.value ?? "",
+          valueKind: At.valueKind,
+          onChange: (Lt, It) => xt({ value: Lt, valueKind: It }),
+          availableCols: yt,
+          column: At.column,
+          fetchDistinctValues: Et,
+          placeholder: "de",
+          className: "flex-1 min-w-16"
+        }
+      ),
       /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs text-muted-foreground", children: "et" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(DistinctValueInput, { value: At.valueTo ?? "", onChange: (Lt) => xt({ valueTo: Lt }), column: At.column, fetchDistinctValues: Et, placeholder: "à", className: "w-20" })
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        VarInput,
+        {
+          value: At.valueTo ?? "",
+          valueKind: At.valueToKind,
+          onChange: (Lt, It) => xt({ valueTo: Lt, valueToKind: It }),
+          availableCols: yt,
+          column: At.column,
+          fetchDistinctValues: Et,
+          placeholder: "à",
+          className: "flex-1 min-w-16"
+        }
+      )
     ] }),
     $t && /* @__PURE__ */ jsxRuntimeExports.jsx(
       DistinctMultiInput,
