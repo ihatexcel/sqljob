@@ -2588,7 +2588,6 @@ function ChartPreviewInEditor({ cell }: { cell: any }) {
     const lastRenderedOption = useRef<any>(null)
 
     useEffect(() => {
-        console.log('[chart] ChartPreviewInEditor effect → _rev:', _rev, '_echartsOption:', cell._echartsOption ? 'PRESENT' : 'NULL', 'same as last?', cell._echartsOption === lastRenderedOption.current)
         if (!chartRef.current || !cell._echartsOption) return
         if (cell._echartsOption === lastRenderedOption.current) return  // aucun changement réel
         lastRenderedOption.current = cell._echartsOption
@@ -2597,7 +2596,6 @@ function ChartPreviewInEditor({ cell }: { cell: any }) {
             if (!echarts || !chartRef.current) return
             let chart = echarts.getInstanceByDom(chartRef.current) || echarts.init(chartRef.current)
             chart.clear()
-            console.log('[chart] setOption appelé avec nouvelle option')
             chart.setOption(cell._echartsOption)
         })
     }, [_rev, cell._echartsOption])
@@ -2718,7 +2716,6 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
         // Invalide le cache des schémas dynamiques : chartConfig change le SQL final
         invalidateFrom(0, ast)
         commitAstUpdate(cell, { chartConfig: cfg ?? undefined }, forceUpdate)
-        console.log('[chart] handleChartConfigChange → chartType:', cfg?.chartType, 'columns:', cfg?.columns?.length, 'sql après commit:', getOrInitConfig(cell).sql?.slice(0, 120))
         if (cfg) fetchChartSchema()
         // runCellAt est déclenché à la fermeture de la modale (handleVizConfigClose), pas ici
     }, [cell, ast, forceUpdate, invalidateFrom, fetchChartSchema])
@@ -2918,7 +2915,7 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
                             <div className="flex items-center gap-1 shrink-0">
                                 {ast.chartConfig?.chartType && ast.chartConfig.chartType !== 'datatable' && (
                                     <button
-                                        onClick={() => { setVizTab('chart'); if (!skipExecution) runCellAt(path, cellIndex) }}
+                                        onClick={() => { setVizTab('chart'); runCellAt(path, cellIndex) }}
                                         className={`px-2 py-0.5 text-xs rounded transition-colors ${vizTab === 'chart' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted'}`}
                                     >Graphique</button>
                                 )}
@@ -2996,7 +2993,7 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
                                     onConfigClose={() => {
                                         setConfigOpenIdx(null)
                                         // Relance la visu si un graphique est actif
-                                        if (ast.chartConfig && !skipExecution) runCellAt(path, cellIndex)
+                                        if (ast.chartConfig) runCellAt(path, cellIndex)
                                     }}
                                     fetchDistinctValues={makeStepDistinctValues(idx)} otherStepNames={otherStepNames}
                                 />
@@ -3031,13 +3028,7 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
                             onConfigOpen={() => { setVizConfigOpen(true); fetchChartSchema() }}
                             onConfigClose={() => {
                                 setVizConfigOpen(false)
-                                const q0 = getOrInitConfig(cell)
-                                console.log('[chart] vizConfigClose → sql:', q0.sql?.slice(0, 120), 'chartConfig:', JSON.stringify(q0.ast?.chartConfig))
-                                // Relance le rendu après fermeture de la config viz
-                                if (!skipExecution) {
-                                    console.log('[chart] vizConfigClose → appel runCellAt', path, cellIndex)
-                                    runCellAt(path, cellIndex)
-                                }
+                                runCellAt(path, cellIndex)
                             }}
                             chartConfig={ast.chartConfig}
                             availableColumns={chartSchema.columns}
