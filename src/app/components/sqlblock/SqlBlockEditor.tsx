@@ -267,7 +267,7 @@ function makeTableRef(cellId: string, idx: number): string {
 }
 
 function useStepEyeData(cell: any, ast: SqlBlockAst, modalOpen?: boolean) {
-    const [eyeOpen, setEyeOpenState] = useState<number | null>(null)
+    const [eyeOpen, setEyeOpenState] = useState<number | 'source' | null>(null)
     const [loading, setLoading] = useState(false)
     const [, bumpRender] = useState(0)
 
@@ -279,13 +279,14 @@ function useStepEyeData(cell: any, ast: SqlBlockAst, modalOpen?: boolean) {
     astRef.current = ast
     const cellRef = useRef(cell)
     cellRef.current = cell
-    const eyeOpenRef = useRef<number | null>(null)
+    const eyeOpenRef = useRef<number | 'source' | null>(null)
 
-    // Cache : stepIndex → résultats + hash upstream
-    const cache = useRef<Map<number, EyeEntry>>(new Map())
+    // Cache : stepIndex | 'source' → résultats + hash upstream
+    const cache = useRef<Map<number | 'source', EyeEntry>>(new Map())
 
-    function getHash(idx: number): string {
+    function getHash(idx: number | 'source'): string {
         const a = astRef.current
+        if (idx === 'source') return JSON.stringify({ src: a.source })
         return JSON.stringify({ src: a.source, steps: a.steps.slice(0, idx + 1) })
     }
 
@@ -297,14 +298,26 @@ function useStepEyeData(cell: any, ast: SqlBlockAst, modalOpen?: boolean) {
      * On append simplement LIMIT N à la fin du SQL généré (CTE ou SELECT plat),
      * sans wrapper subquery qui pose problème avec les CTEs inline dans DuckDB WASM.
      */
-    async function doLoad(idx: number, silent = false) {
+    async function doLoad(idx: number | 'source', silent = false) {
         const hash = getHash(idx)
         if (cache.current.get(idx)?.hash === hash) return  // Cache valide
 
         if (!silent) setLoading(true)
         try {
-            await ensureSqlblockSchema()
             const a = astRef.current
+            if (idx === 'source') {
+                if (!a.source) return
+                const conn = DuckDBManager.getConnection()
+                if (!conn) return
+                const result = await conn.query(`SELECT * FROM ${quoteId(a.source)} LIMIT ${SUBCELL_LIMIT}`)
+                const rows = result.toArray().map((row: any) => Object.fromEntries(row))
+                const schemaTypes: Record<string, string> = {}
+                for (const field of result.schema.fields) schemaTypes[field.name] = String(field.type)
+                cache.current.set('source', { rows, schemaTypes, hash })
+                bumpRender(n => n + 1)
+                return
+            }
+            await ensureSqlblockSchema()
             if (!a.source && !a.steps?.length) return
             const tRef = cellTableRef(idx)
             // Toujours sans chartConfig : la table temp doit contenir les données brutes,
@@ -337,7 +350,7 @@ function useStepEyeData(cell: any, ast: SqlBlockAst, modalOpen?: boolean) {
         }
     }
 
-    function toggleEye(idx: number) {
+    function toggleEye(idx: number | 'source') {
         const next = eyeOpenRef.current === idx ? null : idx
         eyeOpenRef.current = next
         setEyeOpenState(next)
@@ -370,8 +383,9 @@ function useStepEyeData(cell: any, ast: SqlBlockAst, modalOpen?: boolean) {
     }, [bgKey])     // eslint-disable-line react-hooks/exhaustive-deps
 
     // Auto-refresh si l'œil est ouvert et que les prédécesseurs changent
-    const upstreamKey = eyeOpen !== null
+    const upstreamKey = typeof eyeOpen === 'number'
         ? JSON.stringify([ast.source, ...ast.steps.slice(0, eyeOpen + 1)])
+        : eyeOpen === 'source' ? ast.source
         : null
 
     useEffect(() => {
@@ -383,7 +397,7 @@ function useStepEyeData(cell: any, ast: SqlBlockAst, modalOpen?: boolean) {
         eyeOpen,
         toggleEye,
         loading,
-        getEyeData: (idx: number): EyeEntry | null => cache.current.get(idx) ?? null,
+        getEyeData: (idx: number | 'source'): EyeEntry | null => cache.current.get(idx) ?? null,
         cellTableRef,
     }
 }
@@ -1865,6 +1879,89 @@ function StepItem({ step, index, totalSteps, availableCols, availableColTypes,
     )
 }
 
+// ─── SourceStepItem / SourceConfigModal ───────────────────────────────────────
+
+function SourceConfigModal({ source, tables, disabled, onChange, onClose }: {
+    source: string; tables: string[]; disabled: boolean
+    onChange: (v: string) => void; onClose: () => void
+}) {
+    useEffect(() => {
+        const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+        document.addEventListener('keydown', handler)
+        return () => document.removeEventListener('keydown', handler)
+    }, [onClose])
+
+    return createPortal(
+        <div className="fixed inset-0 z-[9998] flex items-center justify-center">
+            <div className="absolute inset-0 bg-black/50" onClick={onClose} />
+            <div className="relative z-10 bg-popover border border-border rounded-xl shadow-2xl w-full max-w-sm mx-4 flex flex-col">
+                <div className="flex items-center gap-2 px-4 py-3 border-b border-border shrink-0">
+                    <span className="font-semibold text-sm flex-1">Source</span>
+                    <button onClick={onClose} className="text-muted-foreground hover:text-foreground w-6 h-6 flex items-center justify-center rounded hover:bg-muted text-lg leading-none">×</button>
+                </div>
+                <div className="px-4 py-4">
+                    <Select value={source || ''} onValueChange={v => { onChange(v); onClose() }} disabled={disabled}>
+                        <SelectTrigger className="w-full h-8 text-xs font-mono">
+                            <SelectValue placeholder="— choisir une source —" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {tables.map(t => <SelectItem key={t} value={t} className="text-xs font-mono">{t}</SelectItem>)}
+                            {source && !tables.includes(source) && (
+                                <SelectItem value={source} className="text-xs font-mono">{source}</SelectItem>
+                            )}
+                        </SelectContent>
+                    </Select>
+                </div>
+            </div>
+        </div>,
+        document.body
+    )
+}
+
+function SourceStepItem({ eyeOpen, onEyeToggle, source, configOpen, onConfigOpen, onConfigClose, tables, disabled, onSourceChange }: {
+    eyeOpen: boolean; onEyeToggle: () => void
+    source: string; configOpen: boolean; onConfigOpen: () => void; onConfigClose: () => void
+    tables: string[]; disabled: boolean; onSourceChange: (v: string) => void
+}) {
+    return (
+        <>
+            <div className="border border-border rounded bg-card text-card-foreground">
+                <div className="flex items-center gap-1.5 px-2 py-1.5 select-none">
+                    <button
+                        onClick={e => { e.stopPropagation(); onEyeToggle() }}
+                        className={`shrink-0 w-5 h-5 flex items-center justify-center rounded transition-colors ${eyeOpen ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+                        title={eyeOpen ? "Masquer l'aperçu source" : "Voir l'aperçu source"}
+                    >
+                        <EyeIcon open={eyeOpen} className="w-3.5 h-3.5" />
+                    </button>
+                    <button className="flex-1 text-left min-w-0" onClick={onConfigOpen}>
+                        <div className="flex items-center gap-1">
+                            <span className="text-xs font-medium">Source</span>
+                            {source && (
+                                <span className="text-[10px] font-mono text-primary/80 bg-primary/10 px-1 rounded leading-4 shrink-0 truncate max-w-[120px]">{source}</span>
+                            )}
+                        </div>
+                        {!source && <span className="block text-xs text-muted-foreground italic">— choisir une source —</span>}
+                    </button>
+                    <button onClick={onConfigOpen}
+                        className="text-muted-foreground hover:text-foreground w-6 h-6 flex items-center justify-center rounded hover:bg-muted transition-colors"
+                        title="Changer la source">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            {configOpen && (
+                <SourceConfigModal
+                    source={source} tables={tables} disabled={disabled}
+                    onChange={onSourceChange} onClose={onConfigClose}
+                />
+            )}
+        </>
+    )
+}
+
 // ─── VizStepItem / VizConfigModal ─────────────────────────────────────────────
 
 function VizConfigModal({ chartConfig, availableColumns, availableColTypes, onMount, onChange, onClose, eyeOpen, onEyeToggle }: {
@@ -2323,6 +2420,8 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
 
     // Index du step dont la modale de config est ouverte
     const [configOpenIdx, setConfigOpenIdx] = useState<number | null>(null)
+    // Modale de config source
+    const [sourceConfigOpen, setSourceConfigOpen] = useState(false)
 
     const selectSql = getEffectiveSql(cfg)
     const displaySql = cell.name?.trim()
@@ -2504,7 +2603,7 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
     // ─── Aperçu conditionnel (œil step actif ou résultats cellule) ────────
 
     const eyeData = eyeOpen !== null ? getEyeData(eyeOpen) : null
-    const showingEye = eyeOpen !== null
+    const showingEye = eyeOpen !== null   // source ou step intermédiaire
     const hasResults = cell._results && Array.isArray(cell._results) && cell._results.length > 0
     const hasChart = !!(cell._echartsOption || cell._kpiHtml)
 
@@ -2512,9 +2611,9 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
     const [vizTab, setVizTab] = useState<'table' | 'chart'>('table')
     const [vizConfigOpen, setVizConfigOpen] = useState(false)
 
-    // cellule factice pour SqlDataTable quand on affiche un aperçu step
+    // cellule factice pour SqlDataTable quand on affiche un aperçu step ou source
     const displayCell = showingEye && eyeData
-        ? { _id: `eye_${eyeOpen}_${cell._id}`, _results: eyeData.rows, _schemaTypes: eyeData.schemaTypes }
+        ? { _id: `eye_${String(eyeOpen)}_${cell._id}`, _results: eyeData.rows, _schemaTypes: eyeData.schemaTypes }
         : cell
 
     // Bascule auto sur 'table' si le graphique disparaît
@@ -2567,39 +2666,19 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
                 <IncompatibleConfirmModal onConfirm={confirmDegraded} onCancel={() => setPendingDegradedSql(null)} />
             )}
 
-            {/* Ligne Source + Matérialisation */}
-            <div className="flex items-center gap-3 flex-wrap shrink-0">
-                {onExitUiMode && !fromSqlCell && (
+            {/* Barre d'outils — bouton retour SQL uniquement */}
+            {onExitUiMode && !fromSqlCell && (
+                <div className="shrink-0">
                     <button
                         onClick={() => { setConfigOpenIdx(null); onExitUiMode() }}
-                        className="flex items-center gap-1 px-2 py-1 text-xs text-muted-foreground border border-border rounded hover:bg-muted transition-colors shrink-0"
+                        className="flex items-center gap-1 px-2 py-1 text-xs text-muted-foreground border border-border rounded hover:bg-muted transition-colors"
                         title="Retour à l'éditeur SQL"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         SQL
                     </button>
-                )}
-                <div className="flex items-center gap-2 flex-1 min-w-40">
-                    <label className="text-xs text-muted-foreground shrink-0">Source :</label>
-                    {(() => {
-                        const mainTables = Object.keys(_duckdbTables ?? {}).filter(t => !t.startsWith('_sqlblock.'))
-                        return (
-                            <Select value={ast.source || ''} onValueChange={handleSourceChange} disabled={cfg.degraded}>
-                                <SelectTrigger className="flex-1 h-7 text-xs font-mono min-w-0">
-                                    <SelectValue placeholder="— choisir une source —" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {mainTables.map(t => <SelectItem key={t} value={t} className="text-xs font-mono">{t}</SelectItem>)}
-                                    {ast.source && !mainTables.includes(ast.source) && (
-                                        <SelectItem value={ast.source} className="text-xs font-mono">{ast.source}</SelectItem>
-                                    )}
-                                </SelectContent>
-                            </Select>
-                        )
-                    })()}
                 </div>
-                {/* mode SELECT/VIEW/TABLE/VISUALISATION déplacé dans les étapes */}
-            </div>
+            )}
 
             {/* Corps principal — responsive */}
             {!cfg.degraded ? (() => {
@@ -2608,7 +2687,9 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
                     <>
                         {showingEye ? (
                             <div className="flex items-center gap-1.5 shrink-0">
-                                <span className="text-xs text-primary font-medium">Aperçu étape {eyeOpen! + 1}</span>
+                                <span className="text-xs text-primary font-medium">
+                                    {eyeOpen === 'source' ? `Source` : `Aperçu étape ${(eyeOpen as number) + 1}`}
+                                </span>
                                 {eyeLoading && <svg viewBox="0 0 24 24" className="w-3 h-3 animate-spin text-muted-foreground" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>}
                             </div>
                         ) : (
@@ -2655,6 +2736,7 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
                 )
 
                 const n = ast.steps.length
+                const mainTables = Object.keys(_duckdbTables ?? {}).filter(t => !t.startsWith('_sqlblock.'))
                 const newStepInputSchema = dynamicSchemas[n] ?? (
                     n === 0
                         ? { columns: sourceColumns.map(c => c.name), colTypes: Object.fromEntries(sourceColumns.map(c => [c.name, c.type])) }
@@ -2663,6 +2745,17 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
                 const stepsSection = (
                     <>
                         <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide shrink-0">Étapes</span>
+                        <SourceStepItem
+                            eyeOpen={eyeOpen === 'source'}
+                            onEyeToggle={() => toggleEye('source')}
+                            source={ast.source}
+                            configOpen={sourceConfigOpen}
+                            onConfigOpen={() => setSourceConfigOpen(true)}
+                            onConfigClose={() => setSourceConfigOpen(false)}
+                            tables={mainTables}
+                            disabled={cfg.degraded}
+                            onSourceChange={handleSourceChange}
+                        />
                         {ast.steps.length === 0 && <p className="text-xs text-muted-foreground italic px-1">Aucune étape — SELECT * FROM {ast.source || '…'}</p>}
                         {ast.steps.map((step, idx) => {
                             const staticSchema = stepSchemas[idx] ?? { columns: sourceColumns.map(c => c.name), colTypes: Object.fromEntries(sourceColumns.map(c => [c.name, c.type])) }
@@ -2704,7 +2797,7 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
                         <VizStepItem
                             eyeOpen={eyeOpen === null}
                             onEyeToggle={() => {
-                                if (typeof eyeOpen === 'number') toggleEye(eyeOpen)
+                                if (eyeOpen !== null) toggleEye(eyeOpen)
                             }}
                             configOpen={vizConfigOpen}
                             onConfigOpen={() => { setVizConfigOpen(true); fetchChartSchema() }}
