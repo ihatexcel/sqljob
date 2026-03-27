@@ -2583,9 +2583,14 @@ function IncompatibleConfirmModal({ onConfirm, onCancel }: { onConfirm: () => vo
 function ChartPreviewInEditor({ cell }: { cell: any }) {
     const { _rev } = useNotebookStore(useShallow(s => ({ _rev: s._rev })))
     const chartRef = useRef<HTMLDivElement>(null)
+    // Ne re-rendre le graphique que si _echartsOption a changé (nouvelle référence produite par runCellAt).
+    // Évite un setOption avec l'ancien option à chaque commitAstUpdate (qui incrémente _rev sans runCellAt).
+    const lastRenderedOption = useRef<any>(null)
 
     useEffect(() => {
         if (!chartRef.current || !cell._echartsOption) return
+        if (cell._echartsOption === lastRenderedOption.current) return  // aucun changement réel
+        lastRenderedOption.current = cell._echartsOption
         CDNManager.loadECharts?.().then(() => {
             const echarts = (window as any).echarts
             if (!echarts || !chartRef.current) return
