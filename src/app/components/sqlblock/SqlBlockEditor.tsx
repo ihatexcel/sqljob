@@ -2711,11 +2711,9 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
         // Invalide le cache des schémas dynamiques : chartConfig change le SQL final
         invalidateFrom(0, ast)
         commitAstUpdate(cell, { chartConfig: cfg ?? undefined }, forceUpdate)
-        if (cfg) {
-            fetchChartSchema() // Force le fetch des colonnes dès l'activation
-            if (!skipExecution) runCellAt(path, cellIndex)
-        }
-    }, [cell, ast, forceUpdate, invalidateFrom, fetchChartSchema, runCellAt, path, cellIndex, skipExecution])
+        if (cfg) fetchChartSchema() // Force le fetch des colonnes dès l'activation
+        // runCellAt est déclenché à la fermeture de la modale (handleVizConfigClose), pas ici
+    }, [cell, ast, forceUpdate, invalidateFrom, fetchChartSchema])
 
     const handleOutputModeChange = useCallback(async (mode: string) => {
         // Quitter view/table → supprimer silencieusement l'objet DuckDB existant
@@ -2987,7 +2985,11 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
                                     onRemove={handleStepRemove} onMove={handleStepMove}
                                     configOpen={configOpenIdx === idx}
                                     onConfigOpen={() => { setConfigOpenIdx(idx); fetchSchemaForStep(idx) }}
-                                    onConfigClose={() => setConfigOpenIdx(null)}
+                                    onConfigClose={() => {
+                                        setConfigOpenIdx(null)
+                                        // Relance la visu si un graphique est actif
+                                        if (ast.chartConfig && !skipExecution) runCellAt(path, cellIndex)
+                                    }}
                                     fetchDistinctValues={makeStepDistinctValues(idx)} otherStepNames={otherStepNames}
                                 />
                             )
@@ -3019,7 +3021,11 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
                             }}
                             configOpen={vizConfigOpen}
                             onConfigOpen={() => { setVizConfigOpen(true); fetchChartSchema() }}
-                            onConfigClose={() => setVizConfigOpen(false)}
+                            onConfigClose={() => {
+                                setVizConfigOpen(false)
+                                // Relance le rendu après fermeture de la config viz
+                                if (!skipExecution) runCellAt(path, cellIndex)
+                            }}
                             chartConfig={ast.chartConfig}
                             availableColumns={chartSchema.columns}
                             availableColTypes={chartSchema.colTypes}
