@@ -1699,7 +1699,7 @@ function CustomSqlStepUI({ step, onChange }: { step: CustomSqlStep; onChange: (s
 
 // ─── ConditionalColumnStepUI ──────────────────────────────────────────────────
 
-/** Une ligne de règle WHEN … THEN … */
+/** Une règle WHEN … THEN … avec groupe de conditions récursif (sous-groupes supportés) */
 function ConditionalRuleRow({ rule, index, total, availableCols, fetchDistinctValues, onChange, onRemove, onMoveUp, onMoveDown }: {
     rule: ConditionalRule; index: number; total: number
     availableCols: string[]
@@ -1709,60 +1709,27 @@ function ConditionalRuleRow({ rule, index, total, availableCols, fetchDistinctVa
     onMoveUp?: () => void
     onMoveDown?: () => void
 }) {
-    // Normalise le groupe when
     const when: FilterGroup = rule.when ?? { items: [], logicOp: 'AND' }
-
-    function updateWhen(patch: Partial<FilterGroup>) {
-        onChange({ ...rule, when: { ...when, ...patch } })
-    }
-
-    function updateItem(idx: number, item: FilterItem) {
-        const items = [...(when.items ?? [])]
-        items[idx] = item
-        updateWhen({ items })
-    }
-
-    function addCond() {
-        const items = [...(when.items ?? []), { kind: 'cond' as const, cond: { column: availableCols[0] ?? '', op: '=' as FilterOp, value: '', valueKind: 'literal' as FilterValueKind } }]
-        updateWhen({ items })
-    }
-
-    function removeCond(idx: number) {
-        const items = (when.items ?? []).filter((_, i) => i !== idx)
-        updateWhen({ items })
-    }
-
-    const condItems = (when.items ?? []).filter(it => it.kind === 'cond')
 
     return (
         <div className="border border-border rounded p-2 flex flex-col gap-1.5">
             {/* En-tête règle */}
-            <div className="flex items-center gap-1">
-                <span className="text-xs font-semibold text-muted-foreground shrink-0 w-12">SI</span>
-                <div className="flex rounded border border-border overflow-hidden text-xs ml-auto shrink-0">
-                    {(['AND', 'OR'] as const).map(o => (
-                        <button key={o} type="button" onClick={() => updateWhen({ logicOp: o })}
-                            className={`px-2 py-0.5 transition-colors ${when.logicOp === o ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}>
-                            {o}
-                        </button>
-                    ))}
-                </div>
+            <div className="flex items-center gap-1 mb-0.5">
+                <span className="text-xs font-semibold text-muted-foreground shrink-0">SI</span>
+                <span className="flex-1" />
                 <MoveBtns onUp={onMoveUp} onDown={onMoveDown} />
                 <RemoveBtn onClick={onRemove} />
             </div>
-            {/* Conditions WHEN */}
-            <div className="flex flex-col gap-1 pl-2">
-                {condItems.map((item, ci) => item.kind === 'cond' && (
-                    <FilterConditionRow key={ci} cond={item.cond} availableCols={availableCols}
-                        onChange={patch => updateItem(ci, { kind: 'cond', cond: { ...item.cond, ...patch } })}
-                        onRemove={() => removeCond(ci)}
-                        fetchDistinctValues={fetchDistinctValues}
-                    />
-                ))}
-                <AddRowBtn onClick={addCond} label="+ Condition" />
-            </div>
+            {/* Groupe de conditions récursif (avec sous-groupes, AND/OR, NOT) */}
+            <FilterGroupUI
+                group={when}
+                onUpdate={g => onChange({ ...rule, when: g })}
+                availableCols={availableCols}
+                depth={1}
+                fetchDistinctValues={fetchDistinctValues}
+            />
             {/* Valeur ALORS */}
-            <div className="flex items-center gap-1 pl-2">
+            <div className="flex items-center gap-1">
                 <span className="text-xs font-semibold text-muted-foreground shrink-0 w-12">ALORS</span>
                 <VarInput
                     value={rule.then ?? ''} valueKind={rule.thenKind ?? 'literal'}
