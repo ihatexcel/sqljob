@@ -1900,17 +1900,17 @@ function SourceConfigModal({ source, tables, disabled, onChange, onClose }: {
                     <button onClick={onClose} className="text-muted-foreground hover:text-foreground w-6 h-6 flex items-center justify-center rounded hover:bg-muted text-lg leading-none">×</button>
                 </div>
                 <div className="px-4 py-4">
-                    <Select value={source || ''} onValueChange={v => { onChange(v); onClose() }} disabled={disabled}>
-                        <SelectTrigger className="w-full h-8 text-xs font-mono">
-                            <SelectValue placeholder="— choisir une source —" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {tables.map(t => <SelectItem key={t} value={t} className="text-xs font-mono">{t}</SelectItem>)}
-                            {source && !tables.includes(source) && (
-                                <SelectItem value={source} className="text-xs font-mono">{source}</SelectItem>
-                            )}
-                        </SelectContent>
-                    </Select>
+                    <select
+                        value={source || ''}
+                        onChange={e => { onChange(e.target.value); onClose() }}
+                        disabled={disabled}
+                        size={Math.min(tables.length + (source && !tables.includes(source) ? 1 : 0), 12)}
+                        className="w-full text-xs font-mono border border-border rounded bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                    >
+                        {!source && <option value="" disabled>— choisir une source —</option>}
+                        {tables.map(t => <option key={t} value={t}>{t}</option>)}
+                        {source && !tables.includes(source) && <option value={source}>{source}</option>}
+                    </select>
                 </div>
             </div>
         </div>,
