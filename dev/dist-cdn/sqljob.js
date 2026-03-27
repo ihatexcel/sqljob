@@ -136587,14 +136587,6 @@ LIMIT 0`), Zl = {};
           /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs text-primary font-medium", children: Yt === "source" ? "Source" : `Aperçu étape ${Yt + 1}` }),
           Jt && /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { viewBox: "0 0 24 24", className: "w-3 h-3 animate-spin text-muted-foreground", fill: "none", stroke: "currentColor", strokeWidth: "2", children: /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M21 12a9 9 0 1 1-6.219-8.56" }) })
         ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1 shrink-0", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "button",
-            {
-              onClick: () => Xs("table"),
-              className: `px-2 py-0.5 text-xs rounded transition-colors ${ku === "table" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`,
-              children: "Tableau"
-            }
-          ),
           ((hp = Dt.chartConfig) == null ? void 0 : hp.chartType) && Dt.chartConfig.chartType !== "datatable" && /* @__PURE__ */ jsxRuntimeExports.jsx(
             "button",
             {
@@ -136603,6 +136595,14 @@ LIMIT 0`), Zl = {};
               },
               className: `px-2 py-0.5 text-xs rounded transition-colors ${ku === "chart" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`,
               children: "Graphique"
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              onClick: () => Xs("table"),
+              className: `px-2 py-0.5 text-xs rounded transition-colors ${ku === "table" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`,
+              children: "Tableau"
             }
           )
         ] }),
