@@ -218,6 +218,30 @@ export interface CustomSqlStep {
     sql: string;
 }
 
+// ─── Colonne conditionnelle (inspiré Power Query) ─────────────────────────────
+
+/** Une règle WHEN … THEN … dans une colonne conditionnelle */
+export interface ConditionalRule {
+    /** Condition WHEN (groupe de filtres) */
+    when: FilterGroup;
+    /** Valeur résultat THEN */
+    then: string;
+    /** Mode de la valeur THEN */
+    thenKind?: FilterValueKind;
+}
+
+export interface ConditionalColumnStep {
+    type: 'conditional_column';
+    /** Nom de la nouvelle colonne */
+    newColumn: string;
+    /** Liste de règles WHEN … THEN … (dans l'ordre) */
+    rules: ConditionalRule[];
+    /** Valeur ELSE (par défaut NULL si absent) */
+    elseValue?: string;
+    /** Mode de la valeur ELSE */
+    elseKind?: FilterValueKind;
+}
+
 // ─── Métadonnées communes à tous les steps ────────────────────────────────────
 
 export interface SqlBlockStepMeta {
@@ -249,6 +273,7 @@ export type SqlBlockStep = (
     | JsonExtractStep
     | DateTruncStep
     | CustomSqlStep
+    | ConditionalColumnStep
 ) & SqlBlockStepMeta;
 
 // ─── Visualisation graphique (TaleShape) ──────────────────────────────────────
@@ -310,7 +335,8 @@ export const STEP_LABELS: Record<SqlBlockStep['type'], string> = {
     unnest:          'Exploser un tableau (UNNEST)',
     json_extract:    'Extraire du JSON',
     date_trunc:      'Tronquer une date',
-    custom_sql:      'SQL personnalisé',
+    custom_sql:          'SQL personnalisé',
+    conditional_column:  'Colonne conditionnelle',
 };
 
 export const STEP_ICONS: Record<SqlBlockStep['type'], string> = {
@@ -332,7 +358,8 @@ export const STEP_ICONS: Record<SqlBlockStep['type'], string> = {
     unnest:          'material-symbols-light:unarchive',
     json_extract:    'material-symbols-light:data-object',
     date_trunc:      'material-symbols-light:date-range',
-    custom_sql:      'material-symbols-light:code',
+    custom_sql:          'material-symbols-light:code',
+    conditional_column:  'material-symbols-light:account-tree',
 };
 
 export const STEP_CATEGORIES = [
@@ -342,7 +369,7 @@ export const STEP_CATEGORIES = [
     },
     {
         label: 'Colonnes',
-        steps: ['select_columns', 'exclude_columns', 'rename_columns', 'derive', 'change_type', 'fill_null'] as SqlBlockStep['type'][],
+        steps: ['select_columns', 'exclude_columns', 'rename_columns', 'derive', 'conditional_column', 'change_type', 'fill_null'] as SqlBlockStep['type'][],
     },
     {
         label: 'Agrégation & Reshape',

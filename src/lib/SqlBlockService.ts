@@ -16,6 +16,7 @@ import type {
     FilterValueKind,
     ChartConfig,
     ChartColumnRole,
+    ConditionalRule,
 } from './SqlBlockTypes';
 
 const CTE_PREFIX = '_sqlblock_s';
@@ -553,6 +554,22 @@ function singleStepToSql(source: string, step: SqlBlockStep): string {
             }
             const alias = step.alias || `${step.column}_${step.granularity}`;
             return `SELECT *, ${expr} AS ${quoteId(alias)} FROM ${source}`;
+        }
+
+        case 'conditional_column': {
+            const col = quoteId(step.newColumn || 'nouvelle_colonne');
+            const whenClauses = (step.rules ?? [])
+                .filter(r => filterGroupHasContent(r.when))
+                .map(r => {
+                    const cond = filterGroupToSql(r.when);
+                    const thenVal = renderFilterValue(r.then ?? '', r.thenKind);
+                    return `WHEN ${cond} THEN ${thenVal}`;
+                });
+            const elseClause = step.elseValue !== undefined && step.elseValue !== ''
+                ? `ELSE ${renderFilterValue(step.elseValue, step.elseKind)}`
+                : 'ELSE NULL';
+            const caseExpr = `CASE\n    ${whenClauses.join('\n    ')}\n    ${elseClause}\n  END`;
+            return `SELECT *, ${caseExpr} AS ${col} FROM ${source}`;
         }
 
         case 'custom_sql': {
