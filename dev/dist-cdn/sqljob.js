@@ -136646,15 +136646,15 @@ function IncompatibleConfirmModal({ onConfirm: At, onCancel: yt }) {
   ] }) });
 }
 function ChartPreviewInEditor({ cell: At }) {
-  const { _rev: yt } = useNotebookStore(useShallow((wt) => ({ _rev: wt._rev }))), xt = reactExports.useRef(null);
+  const { _rev: yt } = useNotebookStore(useShallow((Ct) => ({ _rev: Ct._rev }))), xt = reactExports.useRef(null), wt = reactExports.useRef(null);
   return reactExports.useEffect(() => {
-    var wt;
-    !xt.current || !At._echartsOption || (wt = CDNManager.loadECharts) == null || wt.call(CDNManager).then(() => {
-      const Ct = window.echarts;
-      if (!Ct || !xt.current) return;
-      let St = Ct.getInstanceByDom(xt.current) || Ct.init(xt.current);
-      St.clear(), St.setOption(At._echartsOption);
-    });
+    var Ct;
+    !xt.current || !At._echartsOption || At._echartsOption !== wt.current && (wt.current = At._echartsOption, (Ct = CDNManager.loadECharts) == null || Ct.call(CDNManager).then(() => {
+      const St = window.echarts;
+      if (!St || !xt.current) return;
+      let Et = St.getInstanceByDom(xt.current) || St.init(xt.current);
+      Et.clear(), Et.setOption(At._echartsOption);
+    }));
   }, [yt, At._echartsOption]), At._kpiHtml ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-auto", dangerouslySetInnerHTML: { __html: At._kpiHtml } }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { ref: xt, className: "flex-1 min-h-0 min-h-[200px]" });
 }
 function SqlBlockEditor({ cell: At, path: yt, cellIndex: xt, onExitUiMode: wt, fromSqlCell: Ct, skipExecution: St, modalOpen: Et, allowedMaterializeModes: kt }) {
@@ -137733,23 +137733,23 @@ function ButtonRunBody({ cell: At, path: yt, cellIndex: xt }) {
   return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-center p-0", children: /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "inline-flex items-center justify-center px-4 py-1.5 rounded text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50", onClick: () => wt(yt, xt), disabled: Ct, children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: At.buttonLabel || "Exécuter" }) }) });
 }
 function EChartRenderer({ cell: At, hasHeight: yt }) {
-  const { _rev: xt } = useNotebookStore(useShallow((Ct) => ({ _rev: Ct._rev }))), wt = reactExports.useRef(null);
+  const { _rev: xt } = useNotebookStore(useShallow((St) => ({ _rev: St._rev }))), wt = reactExports.useRef(null), Ct = reactExports.useRef(null);
   return reactExports.useEffect(() => {
-    var Ct;
-    !wt.current || !At._echartsOption || (Ct = CDNManager.loadECharts) == null || Ct.call(CDNManager).then(() => {
-      const St = window.echarts;
-      if (!St || !wt.current) return;
-      let Et = St.getInstanceByDom(wt.current) || St.init(wt.current, null, { renderer: "svg" });
-      Et.clear(), Et.setOption(At._echartsOption);
-    });
+    var St;
+    !wt.current || !At._echartsOption || At._echartsOption !== Ct.current && (Ct.current = At._echartsOption, (St = CDNManager.loadECharts) == null || St.call(CDNManager).then(() => {
+      const Et = window.echarts;
+      if (!Et || !wt.current) return;
+      let kt = Et.getInstanceByDom(wt.current) || Et.init(wt.current, null, { renderer: "svg" });
+      kt.clear(), kt.setOption(At._echartsOption);
+    }));
   }, [xt, At._echartsOption]), reactExports.useEffect(() => {
-    const Ct = wt.current;
-    if (!Ct) return;
-    const St = new ResizeObserver(() => {
-      const Et = window.echarts, kt = Et == null ? void 0 : Et.getInstanceByDom(Ct);
-      kt == null || kt.resize();
+    const St = wt.current;
+    if (!St) return;
+    const Et = new ResizeObserver(() => {
+      const kt = window.echarts, Tt = kt == null ? void 0 : kt.getInstanceByDom(St);
+      Tt == null || Tt.resize();
     });
-    return St.observe(Ct), () => St.disconnect();
+    return Et.observe(St), () => Et.disconnect();
   }, []), At._kpiHtml ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-full", dangerouslySetInnerHTML: { __html: At._kpiHtml } }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { ref: wt, className: `w-full ${yt ? "flex-1 min-h-0" : "min-h-[300px]"}` });
 }
 function SqlTableBody({ cell: At, path: yt, cellIndex: xt, showTextResult: wt = !1 }) {
