@@ -348,9 +348,12 @@ function ButtonRunBody({ cell, path, cellIndex }: any) {
 function EChartRenderer({ cell, hasHeight }: { cell: any; hasHeight: boolean }) {
     const { _rev } = useNotebookStore(useShallow(s => ({ _rev: s._rev })))
     const chartRef = useRef<HTMLDivElement>(null)
+    const lastRenderedOption = useRef<any>(null)
 
     useEffect(() => {
         if (!chartRef.current || !cell._echartsOption) return
+        if (cell._echartsOption === lastRenderedOption.current) return
+        lastRenderedOption.current = cell._echartsOption
         CDNManager.loadECharts?.().then(() => {
             const echarts = (window as any).echarts
             if (!echarts || !chartRef.current) return
