@@ -2694,16 +2694,16 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
                             </div>
                         ) : (
                             <div className="flex items-center gap-1 shrink-0">
-                                <button
-                                    onClick={() => setVizTab('table')}
-                                    className={`px-2 py-0.5 text-xs rounded transition-colors ${vizTab === 'table' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted'}`}
-                                >Tableau</button>
                                 {ast.chartConfig?.chartType && ast.chartConfig.chartType !== 'datatable' && (
                                     <button
                                         onClick={() => { setVizTab('chart'); if (!skipExecution) runCellAt(path, cellIndex) }}
                                         className={`px-2 py-0.5 text-xs rounded transition-colors ${vizTab === 'chart' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted'}`}
                                     >Graphique</button>
                                 )}
+                                <button
+                                    onClick={() => setVizTab('table')}
+                                    className={`px-2 py-0.5 text-xs rounded transition-colors ${vizTab === 'table' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted'}`}
+                                >Tableau</button>
                             </div>
                         )}
                         {showingEye ? (
