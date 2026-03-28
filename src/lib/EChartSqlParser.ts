@@ -1053,38 +1053,41 @@ function _buildKpiHtml(row: any, roleMap: Record<string, ColumnRole[]>, title: s
   ${sublabel ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-top:.2rem">${_esc(sublabel)}</div>` : ''}
 </div>`);
     }
+    // PERCENT / COMPARE / TREND — affichés côte à côte sur une seule ligne
+    const rowItems: string[] = [];
+
     for (const col of (roleMap['PERCENT'] || [])) {
         const val = _num(row[col.originalName]);
         const fg = val >= 75 ? '#16a34a' : val >= 40 ? '#ca8a04' : '#dc2626';
-        const sublabel = _sub(col.displayName, 'PERCENT');
-        parts.push(`<div style="text-align:center;margin-bottom:.5rem">
-  <div style="font-size:clamp(1rem,3vw,1.5rem);font-weight:600;line-height:1.2;color:${fg}">${val.toFixed(1)}%</div>
-  ${sublabel ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-top:.2rem">${_esc(sublabel)}</div>` : ''}
-</div>`);
+        const lbl = _sub(col.displayName, 'PERCENT');
+        const prefix = lbl ? `<span style="color:var(--muted-foreground,#888)">${_esc(lbl)}: </span>` : '';
+        rowItems.push(`<span style="white-space:nowrap;font-size:.8rem;font-weight:600;color:${fg}">${prefix}${val.toFixed(1)}%</span>`);
     }
     for (const col of (roleMap['COMPARE'] || [])) {
         const val = _num(row[col.originalName]);
         const sign = val >= 0 ? '+' : '';
         const fg = val >= 0 ? '#16a34a' : '#dc2626';
-        const icon = val >= 0 ? '▲' : '▼';
-        const sublabel = _sub(col.displayName, 'COMPARE', 'Comparaison');
-        parts.push(`<div style="text-align:center;margin-bottom:.5rem">
-  <div style="font-size:clamp(1rem,3vw,1.5rem);font-weight:600;line-height:1.2;color:${fg}">${icon} ${sign}${val}</div>
-  ${sublabel ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-top:.2rem">${_esc(sublabel)}</div>` : ''}
-</div>`);
+        const bg = val >= 0 ? '#16a34a18' : '#dc262618';
+        const arrow = val > 0 ? '↑' : val < 0 ? '↓' : '→';
+        const lbl = _sub(col.displayName, 'COMPARE');
+        const prefix = lbl ? `<span style="color:var(--muted-foreground,#888)">${_esc(lbl)}: </span>` : '';
+        rowItems.push(`<span style="white-space:nowrap;font-size:.8rem">${prefix}<span style="background:${bg};color:${fg};border-radius:.35rem;padding:.1rem .45rem;font-weight:700">${sign}${val} ${arrow}</span></span>`);
     }
     for (const col of (roleMap['TREND'] || [])) {
         const val = _num(row[col.originalName]);
         const isUp = val > 0;
         const isNeutral = val === 0;
-        const arrow = isNeutral ? '→' : isUp ? '↑' : '↓';
         const fg = isNeutral ? '#ca8a04' : isUp ? '#16a34a' : '#dc2626';
+        const bg = isNeutral ? '#ca8a0418' : isUp ? '#16a34a18' : '#dc262618';
+        const arrow = isNeutral ? '→' : isUp ? '↑' : '↓';
         const sign = isUp ? '+' : '';
-        const sublabel = _sub(col.displayName, 'TREND', 'Tendance');
-        parts.push(`<div style="text-align:center;margin-bottom:.5rem">
-  <div style="font-size:clamp(1rem,3vw,1.5rem);font-weight:600;line-height:1.2;color:${fg}">${arrow} ${sign}${val}</div>
-  ${sublabel ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-top:.2rem">${_esc(sublabel)}</div>` : ''}
-</div>`);
+        const lbl = _sub(col.displayName, 'TREND');
+        const prefix = lbl ? `<span style="color:var(--muted-foreground,#888)">${_esc(lbl)}: </span>` : '';
+        rowItems.push(`<span style="white-space:nowrap;font-size:.8rem">${prefix}<span style="background:${bg};color:${fg};border-radius:.35rem;padding:.1rem .45rem;font-weight:700">${sign}${val} ${arrow}</span></span>`);
+    }
+
+    if (rowItems.length > 0) {
+        parts.push(`<div style="display:flex;flex-wrap:wrap;gap:.5rem 1rem;justify-content:center;align-items:center;margin-top:.5rem">${rowItems.join('')}</div>`);
     }
 
     if (parts.length === 0) return '<div style="padding:1rem;color:#888;font-size:.875rem;text-align:center">Aucune donnée</div>';
