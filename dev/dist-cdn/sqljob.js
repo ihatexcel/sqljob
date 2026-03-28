@@ -132339,11 +132339,11 @@ const xv = class xv {
    *   → strippedSql: "month, revenue AS Rev"
    *   → columnTypes: { month: 'XAXIS', Rev: 'BARCHART' } */
   static _stripChartCasts(yt) {
-    const xt = {}, wt = xv.CHART_TYPE_NAMES.join("|"), Ct = new RegExp(`(\\[[^\\]]*\\]|[\\w.]+|\\))\\s*::\\s*(${wt})\\b(\\s+AS\\s+(?:"([^"]+)"|(\\w+)))?`, "gi");
+    const xt = {}, wt = xv.CHART_TYPE_NAMES.join("|"), Ct = new RegExp(`(\\[[^\\]]*\\]|"[^"]*"|[\\w.]+|\\))\\s*::\\s*(${wt})\\b(\\s+AS\\s+(?:"([^"]+)"|(\\w+)))?`, "gi");
     return { strippedSql: yt.replace(Ct, (Et, kt, Tt, $t, Lt, It) => {
       const Rt = Tt.toUpperCase();
       let Dt, jt;
-      return kt.startsWith("[") ? (Dt = Lt ?? It ?? Rt, jt = kt + ($t ?? ` AS "${Rt}"`)) : kt !== ")" && /^\d/.test(kt) && kt.includes(".") ? (Dt = Lt ?? It ?? kt, jt = kt + ($t ?? "")) : (Dt = Lt ?? It ?? (kt === ")" ? null : kt.split(".").at(-1)), jt = kt + ($t ?? "")), Dt && (xt[Dt] = Rt), jt;
+      return kt.startsWith("[") ? (Dt = Lt ?? It ?? Rt, jt = kt + ($t ?? ` AS "${Rt}"`)) : kt.startsWith('"') && kt.endsWith('"') ? (Dt = Lt ?? It ?? kt.slice(1, -1), jt = kt + ($t ?? "")) : kt !== ")" && /^\d/.test(kt) && kt.includes(".") ? (Dt = Lt ?? It ?? kt, jt = kt + ($t ?? "")) : (Dt = Lt ?? It ?? (kt === ")" ? null : kt.split(".").at(-1)), jt = kt + ($t ?? "")), Dt && (xt[Dt] = Rt), jt;
     }), columnTypes: xt };
   }
   /** Exécute une requête et retourne les lignes + les types DuckDB de chaque colonne.
