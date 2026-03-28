@@ -134169,7 +134169,7 @@ function _buildGaugeOption(At, yt, xt, wt, Ct) {
       axisLine: { show: !1 },
       axisTick: { show: !1 },
       splitLine: { show: !1 },
-      axisLabel: { color: Ct, fontSize: 11, distance: -50, formatter: (Tu) => {
+      axisLabel: { color: Ct, fontSize: 11, distance: -50, rotate: "tangential", formatter: (Tu) => {
         const Ws = Ns(ys, Tu);
         return Ws && !Ws.isActive ? Ws.text : "";
       } },
@@ -134189,7 +134189,7 @@ function _buildGaugeOption(At, yt, xt, wt, Ct) {
       axisLine: { show: !1 },
       axisTick: { show: !1 },
       splitLine: { show: !1 },
-      axisLabel: { color: Ct, fontSize: 13, fontWeight: "bold", distance: -50, formatter: (Tu) => {
+      axisLabel: { color: Ct, fontSize: 13, fontWeight: "bold", distance: -50, rotate: "tangential", formatter: (Tu) => {
         const Ws = Ns(ys, Tu);
         return Ws && Ws.isActive ? Ws.text : "";
       } },
