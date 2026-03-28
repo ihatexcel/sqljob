@@ -136823,9 +136823,7 @@ LIMIT 0`), Zl = {};
           ((hp = Dt.chartConfig) == null ? void 0 : hp.chartType) && Dt.chartConfig.chartType !== "datatable" && /* @__PURE__ */ jsxRuntimeExports.jsx(
             "button",
             {
-              onClick: () => {
-                Xs("chart"), It(yt, xt);
-              },
+              onClick: () => Xs("chart"),
               className: `px-2 py-0.5 text-xs rounded transition-colors ${ku === "chart" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`,
               children: "Graphique"
             }
