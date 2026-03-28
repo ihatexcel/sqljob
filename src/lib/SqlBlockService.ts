@@ -214,7 +214,11 @@ export function astToSql(ast: SqlBlockAst): string {
     const finalSelect = chartConfig?.columns?.length
         ? buildChartFinalSelect(lastName, chartConfig)
         : `SELECT * FROM ${lastName}`;
-    return `WITH\n${ctes.join(',\n')}\n${finalSelect}`;
+    // Hoist SELECT '...'::LABEL; before WITH so DuckDB can parse the WITH block cleanly
+    const labelPrefixM = finalSelect.match(/^(SELECT\s+'[^']*'\s*::LABEL\s*;\n?)/i);
+    const labelPrefix = labelPrefixM ? labelPrefixM[1] : '';
+    const body = labelPrefix ? finalSelect.slice(labelPrefix.length) : finalSelect;
+    return `${labelPrefix}WITH\n${ctes.join(',\n')}\n${body}`;
 }
 
 export function generateMaterializeQuery(_name: string, sql: string, materialize: SqlBlockMaterialize): string {
