@@ -133234,6 +133234,16 @@ function parseCteBodyToStep(At, yt, xt) {
         groupCols: Tt[4] ? splitSelectParts(Tt[4]).map(($t) => unquoteId($t.trim())).filter(Boolean) : []
       };
   }
+  if (!yt || yt === "unpivot") {
+    const Tt = wt.match(/^SELECT\s+\*\s+FROM\s+\(\s*UNPIVOT\s+(?:"[^"]*"|\S+)\s+ON\s+([\s\S]+?)\s+INTO\s+NAME\s+((?:"[^"]*"|\S+))\s+VALUE\s+((?:"[^"]*"|\S+))\s*\)\s*;?\s*$/i);
+    if (Tt)
+      return {
+        type: "unpivot",
+        columns: splitSelectParts(Tt[1]).map(($t) => unquoteId($t.trim())).filter(Boolean),
+        nameCol: unquoteId(Tt[2].trim()),
+        valueCol: unquoteId(Tt[3].trim())
+      };
+  }
   const Et = quoteId(xt);
   return { type: "custom_sql", sql: wt.replace(new RegExp(`\\bFROM\\s+${escapeRegex(Et)}\\b`, "g"), "FROM {{subquery}}").replace(new RegExp(`\\bFROM\\s+${escapeRegex(xt)}\\b`, "g"), "FROM {{subquery}}") };
 }
@@ -133260,15 +133270,20 @@ function tryParseSimpleSmart(At, yt) {
   if (Ct.startsWith("(")) {
     const kt = At.match(/^SELECT\s+\*\s+FROM\s+\(\s*PIVOT\s+((?:"[^"]*"|\w[\w.]*?))\s+ON\s+((?:"[^"]*"|\S+))\s+USING\s+(\w+)\s*\(\s*((?:"[^"]*"|\S+))\s*\)(?:\s+GROUP\s+BY\s+([\s\S]+?))?\s*\)\s*;?\s*$/i);
     if (kt) {
-      const It = unquoteId(kt[1].trim()), Rt = unquoteId(kt[2].trim()), Dt = kt[3].toUpperCase(), jt = unquoteId(kt[4].trim()), Nt = kt[5] ? splitSelectParts(kt[5]).map((Mt) => unquoteId(Mt.trim())).filter(Boolean) : [];
-      return { source: It, steps: [{ type: "pivot", onColumn: Rt, valueColumn: jt, valueFn: Dt, groupCols: Nt }], materialized: yt };
+      const Rt = unquoteId(kt[1].trim()), Dt = unquoteId(kt[2].trim()), jt = kt[3].toUpperCase(), Nt = unquoteId(kt[4].trim()), Mt = kt[5] ? splitSelectParts(kt[5]).map((Ot) => unquoteId(Ot.trim())).filter(Boolean) : [];
+      return { source: Rt, steps: [{ type: "pivot", onColumn: Dt, valueColumn: Nt, valueFn: jt, groupCols: Mt }], materialized: yt };
     }
-    const Tt = extractSubquerySource(At);
-    if (!Tt) return null;
-    const $t = parseChartFinalSelect(At) ?? void 0;
-    if ($t) return { source: Tt, steps: [], materialized: yt, chartConfig: $t };
-    const Lt = parseCteBodyToStep(At, null, Tt);
-    return Lt === null ? { source: Tt, steps: [], materialized: yt } : { source: Tt, steps: [Lt], materialized: yt };
+    const Tt = At.match(/^SELECT\s+\*\s+FROM\s+\(\s*UNPIVOT\s+((?:"[^"]*"|\w[\w.]*?))\s+ON\s+([\s\S]+?)\s+INTO\s+NAME\s+((?:"[^"]*"|\S+))\s+VALUE\s+((?:"[^"]*"|\S+))\s*\)\s*;?\s*$/i);
+    if (Tt) {
+      const Rt = unquoteId(Tt[1].trim()), Dt = splitSelectParts(Tt[2]).map((Mt) => unquoteId(Mt.trim())).filter(Boolean), jt = unquoteId(Tt[3].trim()), Nt = unquoteId(Tt[4].trim());
+      return { source: Rt, steps: [{ type: "unpivot", columns: Dt, nameCol: jt, valueCol: Nt }], materialized: yt };
+    }
+    const $t = extractSubquerySource(At);
+    if (!$t) return null;
+    const Lt = parseChartFinalSelect(At) ?? void 0;
+    if (Lt) return { source: $t, steps: [], materialized: yt, chartConfig: Lt };
+    const It = parseCteBodyToStep(At, null, $t);
+    return It === null ? { source: $t, steps: [], materialized: yt } : { source: $t, steps: [It], materialized: yt };
   }
   const St = parseChartFinalSelect(At) ?? void 0;
   if (St) return { source: Ct, steps: [], materialized: yt, chartConfig: St };
@@ -136020,7 +136035,7 @@ function useStepInputSchemas(At, yt) {
         }
       }
       if (!Rt) {
-        const jt = Tt === 0 ? `SELECT * FROM ${quoteId($t.source)}` : stepSql($t, Tt - 1);
+        const jt = stepSql($t, Tt - 1);
         if (!jt) return;
         const Nt = jt.trimEnd().replace(/;+\s*$/, ""), Ot = /\bLIMIT\s+\d/i.test(Nt.replace(/\([\s\S]*?\)/g, "")) ? Nt : `${Nt}
 LIMIT 0`, Bt = DuckDBManager.getConnection();
