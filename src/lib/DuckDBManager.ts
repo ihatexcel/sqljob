@@ -251,8 +251,8 @@
                 const columnTypes: Record<string, string> = {};
                 const roleNames = DuckDBManager.CHART_TYPE_NAMES.join('|');
                 // Matches: expr::ROLENAME [AS "alias" | AS alias]?
-                // expr = array literal [...], simple identifier, table.column, or closing ) of a sub-expression
-                const re = new RegExp(`(\\[[^\\]]*\\]|[\\w.]+|\\))\\s*::\\s*(${roleNames})\\b(\\s+AS\\s+(?:"([^"]+)"|(\\w+)))?`, 'gi');
+                // expr = array literal [...], double-quoted identifier "...", simple identifier, table.column, or closing ) of a sub-expression
+                const re = new RegExp(`(\\[[^\\]]*\\]|"[^"]*"|[\\w.]+|\\))\\s*::\\s*(${roleNames})\\b(\\s+AS\\s+(?:"([^"]+)"|(\\w+)))?`, 'gi');
                 const strippedSql = sql.replace(re, (_, expr, role, asClause, dqAlias, bareAlias) => {
                     const roleUpper = role.toUpperCase();
                     let colName: string | null;
@@ -263,6 +263,10 @@
                         // so we always inject an explicit alias equal to the role name.
                         colName = dqAlias ?? bareAlias ?? roleUpper;
                         replacement = expr + (asClause ?? ` AS "${roleUpper}"`);
+                    } else if (expr.startsWith('"') && expr.endsWith('"')) {
+                        // Double-quoted identifier "Quantité" → strip quotes for colName
+                        colName = dqAlias ?? bareAlias ?? expr.slice(1, -1);
+                        replacement = expr + (asClause ?? '');
                     } else if (expr !== ')' && /^\d/.test(expr) && expr.includes('.')) {
                         // Numeric literal with decimal point (e.g. 0.22): DuckDB keeps the full
                         // literal as column name, so don't split on '.'.
