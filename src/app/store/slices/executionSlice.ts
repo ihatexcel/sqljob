@@ -18,26 +18,36 @@ function sqlIsDdl(sql: string): boolean {
 }
 
 /**
- * Extrait le label d'un SELECT '...'::LABEL; placé avant la requête principale.
- * Retourne le label et le SQL nettoyé (sans le statement LABEL).
- * Ex: "SELECT 'Mon titre'::LABEL;\nSELECT val::TEXT_LARGE FROM t"
- *   → { label: 'Mon titre', sql: "SELECT val::TEXT_LARGE FROM t" }
+ * Extrait tout statement contenant ::LABEL placé avant la requête principale.
+ * Retourne le SQL du statement LABEL (pour exécution dynamique) et le SQL nettoyé.
+ * Fonctionne avec des littéraux statiques ('Mon titre'::LABEL) ou des expressions dynamiques.
  */
-function extractLabelStatement(sql: string): { label: string | null; sql: string } {
+function extractLabelStatement(sql: string): { labelSql: string | null; sql: string } {
     const stmts = sql.split(/;[ \t]*(?=\r?\n|$)/)
-    let label: string | null = null
+    let labelSql: string | null = null
     const mainStmts: string[] = []
     for (const stmt of stmts) {
         const trimmed = stmt.trim()
         if (!trimmed) continue
-        const m = trimmed.match(/^\s*SELECT\s+'([^']*)'\s*::LABEL\b/i)
-        if (m && label === null) {
-            label = m[1]
+        if (labelSql === null && /^\s*SELECT\s+.+?::LABEL\b/i.test(trimmed)) {
+            labelSql = trimmed
         } else {
             mainStmts.push(trimmed)
         }
     }
-    return { label, sql: mainStmts.join(';\n') }
+    return { labelSql, sql: mainStmts.join(';\n') }
+}
+
+/** Exécute un statement LABEL et retourne le titre (valeur de la 1ère colonne, 1ère ligne). */
+async function executeLabelStatement(labelSql: string): Promise<string | null> {
+    try {
+        const { rows } = await DuckDBManager.executeQueryWithSchema(labelSql)
+        if (!rows.length) return null
+        const firstVal = Object.values(rows[0])[0]
+        return firstVal !== null && firstVal !== undefined ? String(firstVal) : null
+    } catch {
+        return null
+    }
 }
 
 export const createExecutionSlice = (set: any, get: any) => ({
@@ -487,8 +497,10 @@ export const createExecutionSlice = (set: any, get: any) => ({
                     const chartConfig = q0?.ast?.chartConfig
                     if (chartConfig?.columns?.length) {
                         // Mode graphique AST : initChartTypes + strip des annotations + EChartSqlParser
-                        // Extrait le SELECT '...'::LABEL; initial si présent (généré par buildChartFinalSelect)
-                        const { label: stmtLabel, sql: mainSql } = extractLabelStatement(finalQuery)
+                        // Extrait SELECT ...::LABEL; initial si présent (généré par buildChartFinalSelect)
+                        const { labelSql, sql: mainSql } = extractLabelStatement(finalQuery)
+                        // Exécute le statement LABEL pour supporter les titres dynamiques
+                        const stmtLabel = labelSql ? await executeLabelStatement(labelSql) : null
                         const kpiLabel = stmtLabel ?? chartConfig.label ?? null
                         get().setStatus('Chargement ECharts...', 'loading')
                         await CDNManager.loadECharts()
@@ -503,6 +515,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
                         cell._columnTypes = columnTypes
                         cell._resultInfo = `✅ ${rows.length} ligne(s)`
                         const parsed = EChartSqlParser.parseColumnRoles(rows, columnTypes)
+                        cell._kpiLabel = kpiLabel
                         if (parsed.chartType === 'kpi') {
                             cell._kpiHtml = EChartSqlParser.buildKpiHtml(rows, parsed, kpiLabel ?? undefined)
                             cell._echartsOption = null
@@ -512,8 +525,9 @@ export const createExecutionSlice = (set: any, get: any) => ({
                         }
                     } else {
                         // Pas de ast.chartConfig : exécuter et détecter automatiquement les rôles ::ROLE
-                        // Extrait SELECT '...'::LABEL; si présent en tête du SQL
-                        const { label: stmtLabel, sql: mainSql } = extractLabelStatement(finalQuery)
+                        // Extrait SELECT ...::LABEL; si présent en tête du SQL, l'exécute pour titre dynamique
+                        const { labelSql, sql: mainSql } = extractLabelStatement(finalQuery)
+                        const stmtLabel = labelSql ? await executeLabelStatement(labelSql) : null
                         const { rows: finalResults, columnTypes, schemaTypes } = await DuckDBManager.executeQueryWithSchema(mainSql)
                         const maxRows = cell.maxRows || 100000
                         cell._schemaTypes = schemaTypes || {}
@@ -521,6 +535,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
 
                         const parsed = EChartSqlParser.parseColumnRoles(finalResults, columnTypes)
 
+                        cell._kpiLabel = stmtLabel
                         if (parsed.chartType !== 'unknown') {
                             // Rôles chart détectés dans le SQL → rendu EChart
                             get().setStatus('Chargement ECharts...', 'loading')
