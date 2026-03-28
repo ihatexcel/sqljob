@@ -823,10 +823,10 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
         };
         outerSeries = {
             type: 'gauge', min, max, startAngle, endAngle, splitNumber,
-            center, radius, z: 2,
+            center, radius: '85%', z: 2,
             pointer: { show: false }, axisLine: { show: false },
             axisTick: { show: false }, splitLine: { show: false },
-            axisLabel: { color: textColor, fontSize: 11, distance: -30, formatter: outerFmt },
+            axisLabel: { color: textColor, fontSize: 11, distance: -50, formatter: outerFmt },
             detail: { show: false }, data: [],
         };
 
@@ -837,25 +837,18 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
         };
         boldSeries = {
             type: 'gauge', min, max, startAngle, endAngle, splitNumber,
-            center, radius, z: 2,
+            center, radius: '85%', z: 2,
             pointer: { show: false }, axisLine: { show: false },
             axisTick: { show: false }, splitLine: { show: false },
-            axisLabel: { color: textColor, fontSize: 13, fontWeight: 'bold', distance: -30, formatter: activeFmt },
+            axisLabel: { color: textColor, fontSize: 13, fontWeight: 'bold', distance: -50, formatter: activeFmt },
             detail: { show: false }, data: [],
         };
     }
 
     const mainSeries: any = {
         type: 'gauge', min, max, startAngle, endAngle, splitNumber,
-        center, radius, z: 10,
-        pointer: {
-            show: true,
-            icon: 'triangle',
-            length: 14,
-            width: 12,
-            offsetCenter: [0, '-62%'],
-            itemStyle: { color: textColor },
-        },
+        center, radius,
+        pointer: { show: false },
         title: { show: false },
         axisLine: { lineStyle: axisLineStyle },
         axisTick: { show: false },
@@ -876,10 +869,31 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
         data: [{ value, name: label }],
     };
 
+    // Pointer in its own series rendered last so it always appears above the colored arc
+    const pointerSeries: any = {
+        type: 'gauge', min, max, startAngle, endAngle, splitNumber,
+        center, radius,
+        pointer: {
+            show: true,
+            icon: 'triangle',
+            length: 14,
+            width: 12,
+            offsetCenter: [0, '-62%'],
+            itemStyle: { color: textColor },
+        },
+        axisLine: { show: false }, axisTick: { show: false },
+        splitLine: { show: false }, axisLabel: { show: false },
+        progress: { show: false }, detail: { show: false },
+        title: { show: false },
+        data: [{ value, name: label }],
+    };
+
     return {
         ...base,
         tooltip: { formatter: '{b}: {c}' + (isPercent ? '%' : '') },
-        series: boldSeries ? [mainSeries, outerSeries, boldSeries] : [mainSeries],
+        series: boldSeries
+            ? [mainSeries, outerSeries, boldSeries, pointerSeries]
+            : [mainSeries, pointerSeries],
     };
 }
 
