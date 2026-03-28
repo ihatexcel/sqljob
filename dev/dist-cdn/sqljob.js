@@ -134238,7 +134238,7 @@ function _buildGaugeOption(At, yt, xt, wt, Ct) {
     center: Rr,
     radius: Br,
     pointer: {
-      show: !0,
+      show: !!Dt,
       icon: "triangle",
       length: 14,
       width: 12,
