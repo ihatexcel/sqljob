@@ -11,7 +11,7 @@
  * Aperçu par étape (œil) : table DuckDB temporaire _sb_<cellId>_s<i> LIMIT 10.
  *   → Seules les étapes dont les prédécesseurs ont changé sont recalculées.
  */
-import { useState, useCallback, useRef, useEffect } from 'react'
+import { useState, useCallback, useRef, useEffect, useMemo } from 'react'
 import { createPortal } from 'react-dom'
 import { SqlMonacoEditor } from '@sqlrooms/sql-editor'
 import { useShallow } from 'zustand/react/shallow'
@@ -20,6 +20,7 @@ import {
 } from '@sqlrooms/ui'
 import { useNotebookStore } from '../../store/notebookStore'
 import { DuckDBManager } from '../../../lib/DuckDBManager'
+import { CDNManager } from '../../../lib/CDNManager'
 import {
     astToSql,
     sqlToAst,
@@ -32,6 +33,8 @@ import {
     quoteId,
     getAutoCteName,
 } from '../../../lib/SqlBlockService'
+import { ChartConfigEditor } from './ChartConfigEditor'
+import type { ChartConfig } from '../../../lib/SqlBlockTypes'
 import {
     DUCKDB_TYPES,
     STEP_LABELS,
@@ -50,6 +53,7 @@ import type {
     FilterItem,
     FilterCondition,
     FilterOp,
+    FilterValueKind,
     SortStep,
     SortKey,
     TopNStep,
@@ -69,6 +73,8 @@ import type {
     JsonExtractStep,
     DateTruncStep,
     CustomSqlStep,
+    ConditionalColumnStep,
+    ConditionalRule,
     SqlBlockMaterialize,
 } from '../../../lib/SqlBlockTypes'
 import { SqlDataTable } from '../SqlDataTable'
@@ -78,7 +84,7 @@ import { SqlDataTable } from '../SqlDataTable'
 /** Retourne queries[0] (avec migration depuis cell.json si nécessaire). */
 function getOrInitConfig(cell: any): SqlBlockConfig {
     if (!cell.queries?.length) {
-        cell.queries = [{ name: 'main', sql: '', engine: 'sql', clientVisible: false }]
+        cell.queries = [{ name: 'main', sql: '', engine: 'sql', showQueryEditor: false }]
     }
     const q = cell.queries[0]
     // Migration depuis cell.json (anciens sqlBlock)
@@ -88,7 +94,7 @@ function getOrInitConfig(cell: any): SqlBlockConfig {
         q.manualSql = cell.json.manualSql ?? null
         delete cell.json
     }
-    if (!q.ast) q.ast = createDefaultSqlBlockConfig().ast
+    if (!q.ast) q.ast = { source: '', steps: [], materialized: cell.materialized ?? 'ephemeral' }
     if (q.degraded === undefined) q.degraded = false
     if (q.manualSql === undefined) q.manualSql = null
     return q
@@ -99,10 +105,12 @@ function commitAstUpdate(cell: any, newAst: Partial<SqlBlockAst>, forceUpdate: (
     cfg.ast = { ...cfg.ast, ...newAst }
     cfg.degraded = false
     cfg.manualSql = null
+    // Stocker le SQL avec DDL si view/table — cohérent avec l'éditeur SQL en mode non-UI
+    // L'exécution stripe le préfixe DDL avant de ré-appliquer via cell.materialize
     const selectSql = astToSql(cfg.ast)
-    cfg.sql = buildDisplaySql(cell.name, selectSql, cfg.ast.materialize ?? 'select')
-    // Sync cell.materialize avec l'AST
-    if (newAst.materialize !== undefined) cell.materialize = newAst.materialize
+    cfg.sql = buildDisplaySql(cell.name, selectSql, cfg.ast.materialized ?? 'ephemeral')
+    // Sync cell.materialized avec l'AST
+    if (newAst.materialized !== undefined) cell.materialized = newAst.materialized
     forceUpdate()
 }
 
@@ -195,6 +203,11 @@ function applyStepToSchema(step: SqlBlockStep, cols: string[], types: Record<str
             const alias = step.alias || `${step.column}_${step.granularity}`
             return { cols: [...cols, alias], types: { ...types, [alias]: 'TIMESTAMP' } }
         }
+        case 'conditional_column': {
+            const colName = step.newColumn || 'nouvelle_colonne'
+            if (cols.includes(colName)) return { cols, types }
+            return { cols: [...cols, colName], types: { ...types, [colName]: 'VARCHAR' } }
+        }
         default:
             // custom_sql ou type inconnu : schéma non dérivable statiquement, on conserve l'entrée
             return { cols, types }
@@ -213,6 +226,8 @@ function computeStepSchemas(
         const next = applyStepToSchema(step, cols, types)
         cols = next.cols; types = next.types
     }
+    // Entry n = output of last step (= correct input for a new step appended after all existing steps)
+    schemas.push({ columns: [...cols], colTypes: { ...types } })
     return schemas
 }
 
@@ -231,9 +246,25 @@ interface EyeEntry {
 const SQLBLOCK_SCHEMA = '_sqlblock'
 const SUBCELL_LIMIT = 50   // lignes dans les tables intermédiaires
 let sqlblockSchemaEnsured = false
+/** Bloque ensureSqlblockSchema après un drop pour éviter la re-création par des opérations en vol. */
+let sqlblockDropped = false
+
+/** Appelé à l'ouverture de la modale : autorise à nouveau la création du schéma _sqlblock. */
+export function openSqlblockSession() {
+    sqlblockDropped = false
+}
+
+/** Appelé à la fermeture de la modale UI SQL pour dropper tout le schéma _sqlblock. */
+export async function dropSqlblockSchema() {
+    sqlblockDropped = true   // bloque immédiatement toute re-création par les opérations en vol
+    try {
+        await DuckDBManager.executeQuery(`DROP SCHEMA IF EXISTS "${SQLBLOCK_SCHEMA}" CASCADE`)
+    } catch { /* ignore */ }
+    sqlblockSchemaEnsured = false
+}
 
 async function ensureSqlblockSchema() {
-    if (sqlblockSchemaEnsured) return
+    if (sqlblockDropped || sqlblockSchemaEnsured) return
     await DuckDBManager.executeQuery(`CREATE SCHEMA IF NOT EXISTS "${SQLBLOCK_SCHEMA}"`)
     sqlblockSchemaEnsured = true
 }
@@ -245,8 +276,8 @@ function makeTableRef(cellId: string, idx: number): string {
     return `"${SQLBLOCK_SCHEMA}"."${name}"`
 }
 
-function useStepEyeData(cell: any, ast: SqlBlockAst) {
-    const [eyeOpen, setEyeOpenState] = useState<number | null>(null)
+function useStepEyeData(cell: any, ast: SqlBlockAst, modalOpen?: boolean) {
+    const [eyeOpen, setEyeOpenState] = useState<number | 'source' | null>(null)
     const [loading, setLoading] = useState(false)
     const [, bumpRender] = useState(0)
 
@@ -258,13 +289,14 @@ function useStepEyeData(cell: any, ast: SqlBlockAst) {
     astRef.current = ast
     const cellRef = useRef(cell)
     cellRef.current = cell
-    const eyeOpenRef = useRef<number | null>(null)
+    const eyeOpenRef = useRef<number | 'source' | null>(null)
 
-    // Cache : stepIndex → résultats + hash upstream
-    const cache = useRef<Map<number, EyeEntry>>(new Map())
+    // Cache : stepIndex | 'source' → résultats + hash upstream
+    const cache = useRef<Map<number | 'source', EyeEntry>>(new Map())
 
-    function getHash(idx: number): string {
+    function getHash(idx: number | 'source'): string {
         const a = astRef.current
+        if (idx === 'source') return JSON.stringify({ src: a.source })
         return JSON.stringify({ src: a.source, steps: a.steps.slice(0, idx + 1) })
     }
 
@@ -276,17 +308,31 @@ function useStepEyeData(cell: any, ast: SqlBlockAst) {
      * On append simplement LIMIT N à la fin du SQL généré (CTE ou SELECT plat),
      * sans wrapper subquery qui pose problème avec les CTEs inline dans DuckDB WASM.
      */
-    async function doLoad(idx: number, silent = false) {
+    async function doLoad(idx: number | 'source', silent = false) {
         const hash = getHash(idx)
         if (cache.current.get(idx)?.hash === hash) return  // Cache valide
 
         if (!silent) setLoading(true)
         try {
-            await ensureSqlblockSchema()
             const a = astRef.current
-            if (!a.source) return
+            if (idx === 'source') {
+                if (!a.source) return
+                const conn = DuckDBManager.getConnection()
+                if (!conn) return
+                const result = await conn.query(`SELECT * FROM ${quoteId(a.source)} LIMIT ${SUBCELL_LIMIT}`)
+                const rows = result.toArray().map((row: any) => Object.fromEntries(row))
+                const schemaTypes: Record<string, string> = {}
+                for (const field of result.schema.fields) schemaTypes[field.name] = String(field.type)
+                cache.current.set('source', { rows, schemaTypes, hash })
+                bumpRender(n => n + 1)
+                return
+            }
+            await ensureSqlblockSchema()
+            if (!a.source && !a.steps?.length) return
             const tRef = cellTableRef(idx)
-            const sql = stepSql(a, idx)
+            // Toujours sans chartConfig : la table temp doit contenir les données brutes,
+            // pas les colonnes annotées CAST(x AS XAXIS) du SELECT de visualisation.
+            const sql = stepSql({ ...a, chartConfig: undefined }, idx)
             if (!sql) return
             // Append LIMIT directement — fonctionne pour SELECT plat et CTE chain.
             // On strip un éventuel ; final et on n'ajoute pas de second LIMIT si déjà présent.
@@ -314,7 +360,7 @@ function useStepEyeData(cell: any, ast: SqlBlockAst) {
         }
     }
 
-    function toggleEye(idx: number) {
+    function toggleEye(idx: number | 'source') {
         const next = eyeOpenRef.current === idx ? null : idx
         eyeOpenRef.current = next
         setEyeOpenState(next)
@@ -325,9 +371,11 @@ function useStepEyeData(cell: any, ast: SqlBlockAst) {
     // Dès que la source ou les steps changent, on (re)matérialise toutes les
     // étapes séquentiellement (silent=true → pas de spinner global).
     // Résultat : eye instant, schéma toujours à jour, indépendant du mode VIEW/TABLE.
-    const bgKey = JSON.stringify({ src: ast.source, steps: ast.steps })
+    // modalOpen inclus dans bgKey pour forcer le re-run à chaque ouverture
+    const bgKey = JSON.stringify({ src: ast.source, steps: ast.steps, open: !!modalOpen })
     useEffect(() => {
-        if (!ast.source || !ast.steps.length) return
+        if (!modalOpen) return  // Ne matérialiser que quand la modale est visible
+        if (!ast.source && !ast.steps.length) return
         let cancelled = false
         const run = async () => {
             await ensureSqlblockSchema()
@@ -345,8 +393,9 @@ function useStepEyeData(cell: any, ast: SqlBlockAst) {
     }, [bgKey])     // eslint-disable-line react-hooks/exhaustive-deps
 
     // Auto-refresh si l'œil est ouvert et que les prédécesseurs changent
-    const upstreamKey = eyeOpen !== null
+    const upstreamKey = typeof eyeOpen === 'number'
         ? JSON.stringify([ast.source, ...ast.steps.slice(0, eyeOpen + 1)])
+        : eyeOpen === 'source' ? ast.source
         : null
 
     useEffect(() => {
@@ -358,7 +407,7 @@ function useStepEyeData(cell: any, ast: SqlBlockAst) {
         eyeOpen,
         toggleEye,
         loading,
-        getEyeData: (idx: number): EyeEntry | null => cache.current.get(idx) ?? null,
+        getEyeData: (idx: number | 'source'): EyeEntry | null => cache.current.get(idx) ?? null,
         cellTableRef,
     }
 }
@@ -752,6 +801,101 @@ function DistinctMultiInput({ values, onChange, column, fetchDistinctValues, cla
     return <DistinctDropdown multi values={values} onChangeMulti={onChange} column={column} fetchDistinctValues={fetchDistinctValues} className={className} />
 }
 
+// ─── VarInput — saisie variable (valeur / colonne / paramètre) ─────────────────
+// Réutilisable pour n'importe quelle étape nécessitant une valeur flexible.
+
+const VAR_KIND_ICONS: Record<FilterValueKind, JSX.Element> = {
+    literal: <svg viewBox="0 0 24 24" className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>,
+    column:  <svg viewBox="0 0 24 24" className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="9" x2="9" y2="21"/></svg>,
+    param:   <svg viewBox="0 0 24 24" className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="17 12 21 12"/><polyline points="3 12 7 12"/><rect x="7" y="8" width="10" height="8" rx="1"/></svg>,
+}
+
+const VAR_KIND_LABELS: Record<FilterValueKind, string> = {
+    literal: 'Entrer une valeur',
+    column:  'Sélectionner une colonne',
+    param:   'Paramètre',
+}
+
+/**
+ * Composant réutilisable : entrée d'une valeur avec choix du mode (valeur fixe / colonne / paramètre).
+ * L'icône "boxes" ouvre un menu déroulant pour changer de mode.
+ */
+function VarInput({ value, valueKind = 'literal', onChange, availableCols, column, fetchDistinctValues, placeholder = 'valeur', className = '' }: {
+    value: string; valueKind?: FilterValueKind
+    onChange: (value: string, kind: FilterValueKind) => void
+    availableCols: string[]
+    column?: string
+    fetchDistinctValues?: (col: string, sl: number, fl: number) => Promise<{ values: string[]; hasMore: boolean }>
+    placeholder?: string; className?: string
+}) {
+    const [menuOpen, setMenuOpen] = useState(false)
+    const menuRef = useRef<HTMLDivElement>(null)
+    const paramNames = useNotebookStore(useShallow((s: any) => {
+        const params = s.getParameters()
+        return Object.keys(params)
+    }))
+
+    // Fermeture sur clic extérieur
+    useEffect(() => {
+        if (!menuOpen) return
+        const handler = (e: MouseEvent) => { if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false) }
+        document.addEventListener('mousedown', handler)
+        return () => document.removeEventListener('mousedown', handler)
+    }, [menuOpen])
+
+    return (
+        <div className={`flex items-center gap-0.5 ${className}`}>
+            {/* Bouton mode */}
+            <div className="relative shrink-0" ref={menuRef}>
+                <button
+                    type="button"
+                    onClick={() => setMenuOpen(o => !o)}
+                    className="h-6 w-6 flex items-center justify-center rounded border border-border bg-background text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                    title="Changer le type de valeur"
+                >
+                    {VAR_KIND_ICONS[valueKind]}
+                </button>
+                {menuOpen && (
+                    <div className="absolute left-0 top-full z-50 mt-0.5 w-52 bg-popover border border-border rounded shadow-lg py-0.5">
+                        {(['literal', 'column', 'param'] as FilterValueKind[]).map(k => (
+                            <button key={k} type="button"
+                                onClick={() => { onChange('', k); setMenuOpen(false) }}
+                                className={`w-full text-left px-3 py-1.5 text-xs hover:bg-muted flex items-center gap-2 ${valueKind === k ? 'text-primary font-medium' : 'text-foreground'}`}
+                            >
+                                {VAR_KIND_ICONS[k]}
+                                {VAR_KIND_LABELS[k]}
+                            </button>
+                        ))}
+                    </div>
+                )}
+            </div>
+            {/* Zone de saisie selon le mode */}
+            {valueKind === 'literal' && (
+                <DistinctValueInput
+                    value={value} onChange={v => onChange(v, 'literal')}
+                    column={column ?? ''} fetchDistinctValues={fetchDistinctValues}
+                    placeholder={placeholder} className="flex-1 min-w-0"
+                />
+            )}
+            {valueKind === 'column' && (
+                <ColSelect value={value} cols={availableCols} onChange={v => onChange(v, 'column')} className="flex-1 min-w-0 h-6 text-xs" />
+            )}
+            {valueKind === 'param' && (
+                paramNames.length > 0
+                    ? <select
+                        value={value}
+                        onChange={e => onChange(e.target.value, 'param')}
+                        className="flex-1 min-w-0 h-6 rounded border border-border bg-background px-1 text-xs font-mono"
+                    >
+                        <option value="">— paramètre —</option>
+                        {paramNames.map((p: string) => <option key={p} value={`{{${p}}}`}>{p}</option>)}
+                    </select>
+                    : <span className="flex-1 text-xs text-muted-foreground italic px-1">Aucun paramètre UI</span>
+            )}
+        </div>
+    )
+}
+
 function FilterConditionRow({ cond, availableCols, onChange, onRemove, onMoveUp, onMoveDown, fetchDistinctValues }: {
     cond: FilterCondition; availableCols: string[]
     onChange: (patch: Partial<FilterCondition>) => void
@@ -778,19 +922,24 @@ function FilterConditionRow({ cond, availableCols, onChange, onRemove, onMoveUp,
                 {FILTER_OPS.map(o => <option key={o.op} value={o.op}>{o.label}</option>)}
             </select>
             {!noVal && !isBetween && !isMulti && (
-                <DistinctValueInput
-                    value={cond.value ?? ''}
-                    onChange={v => onChange({ value: v })}
-                    column={cond.column}
+                <VarInput
+                    value={cond.value ?? ''} valueKind={cond.valueKind}
+                    onChange={(v, k) => onChange({ value: v, valueKind: k })}
+                    availableCols={availableCols} column={cond.column}
                     fetchDistinctValues={fetchDistinctValues}
-                    placeholder="valeur"
-                    className="flex-1 min-w-16"
+                    placeholder="valeur" className="flex-1 min-w-16"
                 />
             )}
             {isBetween && <>
-                <DistinctValueInput value={cond.value ?? ''} onChange={v => onChange({ value: v })} column={cond.column} fetchDistinctValues={fetchDistinctValues} placeholder="de" className="w-20" />
+                <VarInput value={cond.value ?? ''} valueKind={cond.valueKind}
+                    onChange={(v, k) => onChange({ value: v, valueKind: k })}
+                    availableCols={availableCols} column={cond.column} fetchDistinctValues={fetchDistinctValues}
+                    placeholder="de" className="flex-1 min-w-16" />
                 <span className="text-xs text-muted-foreground">et</span>
-                <DistinctValueInput value={cond.valueTo ?? ''} onChange={v => onChange({ valueTo: v })} column={cond.column} fetchDistinctValues={fetchDistinctValues} placeholder="à" className="w-20" />
+                <VarInput value={cond.valueTo ?? ''} valueKind={cond.valueToKind}
+                    onChange={(v, k) => onChange({ valueTo: v, valueToKind: k })}
+                    availableCols={availableCols} column={cond.column} fetchDistinctValues={fetchDistinctValues}
+                    placeholder="à" className="flex-1 min-w-16" />
             </>}
             {isMulti && (
                 <DistinctMultiInput
@@ -1151,9 +1300,20 @@ function FillNullStepUI({ step, availableCols, onChange }: { step: FillNullStep;
 
 const AGG_FNS = ['count', 'count_distinct', 'sum', 'avg', 'min', 'max', 'median', 'stddev', 'string_agg', 'list']
 
+function autoAlias(fn: string, column: string): string {
+    const col = column === '*' ? 'all' : column
+    return `${fn}_${col}`
+}
+
 function GroupByStepUI({ step, availableCols, onChange }: { step: GroupByStep; availableCols: string[]; onChange: (s: GroupByStep) => void }) {
     function updateAgg(i: number, patch: Partial<Aggregation>) {
-        onChange({ ...step, aggregations: step.aggregations.map((a, idx) => idx === i ? { ...a, ...patch } : a) })
+        const current = step.aggregations[i]
+        // Auto-recalcule l'alias quand fn ou column change
+        const merged = { ...current, ...patch }
+        if (('fn' in patch || 'column' in patch)) {
+            merged.alias = autoAlias(merged.fn, merged.column)
+        }
+        onChange({ ...step, aggregations: step.aggregations.map((a, idx) => idx === i ? merged : a) })
     }
     const toggleGroup = (col: string) => {
         const s = new Set(step.groupCols)
@@ -1190,7 +1350,7 @@ function GroupByStepUI({ step, availableCols, onChange }: { step: GroupByStep; a
                         <RemoveBtn onClick={() => onChange({ ...step, aggregations: step.aggregations.filter((_, idx) => idx !== i) })} />
                     </div>
                 ))}
-                <AddRowBtn onClick={() => onChange({ ...step, aggregations: [...step.aggregations, { column: availableCols[0] ?? '*', fn: 'count', alias: 'count' }] })} label="+ Agrégation" />
+                <AddRowBtn onClick={() => { const col = availableCols[0] ?? '*'; onChange({ ...step, aggregations: [...step.aggregations, { column: col, fn: 'count', alias: autoAlias('count', col) }] }) }} label="+ Agrégation" />
             </div>
         </div>
     )
@@ -1514,7 +1674,8 @@ function stepSummary(step: SqlBlockStep): string {
         case 'unnest':          return step.column || '—'
         case 'json_extract':    return step.column || '—'
         case 'date_trunc':      return step.column ? `${step.column} → ${step.granularity}` : '—'
-        case 'custom_sql':      return step.sql ? step.sql.slice(0, 40).replace(/\n/g, ' ') + (step.sql.length > 40 ? '…' : '') : '—'
+        case 'custom_sql':           return step.sql ? step.sql.slice(0, 40).replace(/\n/g, ' ') + (step.sql.length > 40 ? '…' : '') : '—'
+        case 'conditional_column':   return step.newColumn ? `→ ${step.newColumn}` : '—'
         default:                return ''
     }
 }
@@ -1538,6 +1699,110 @@ function CustomSqlStepUI({ step, onChange }: { step: CustomSqlStep; onChange: (s
     )
 }
 
+// ─── ConditionalColumnStepUI ──────────────────────────────────────────────────
+
+/** Une règle WHEN … THEN … avec groupe de conditions récursif (sous-groupes supportés) */
+function ConditionalRuleRow({ rule, index, total, availableCols, fetchDistinctValues, onChange, onRemove, onMoveUp, onMoveDown }: {
+    rule: ConditionalRule; index: number; total: number
+    availableCols: string[]
+    fetchDistinctValues?: (col: string, sl: number, fl: number) => Promise<{ values: string[]; hasMore: boolean }>
+    onChange: (r: ConditionalRule) => void
+    onRemove: () => void
+    onMoveUp?: () => void
+    onMoveDown?: () => void
+}) {
+    const when: FilterGroup = rule.when ?? { items: [], logicOp: 'AND' }
+
+    return (
+        <div className="border border-border rounded p-2 flex flex-col gap-1.5">
+            {/* En-tête règle */}
+            <div className="flex items-center gap-1 mb-0.5">
+                <span className="text-xs font-semibold text-muted-foreground shrink-0">SI</span>
+                <span className="flex-1" />
+                <MoveBtns onUp={onMoveUp} onDown={onMoveDown} />
+                <RemoveBtn onClick={onRemove} />
+            </div>
+            {/* Groupe de conditions récursif (avec sous-groupes, AND/OR, NOT) */}
+            <FilterGroupUI
+                group={when}
+                onUpdate={g => onChange({ ...rule, when: g })}
+                availableCols={availableCols}
+                depth={1}
+                fetchDistinctValues={fetchDistinctValues}
+            />
+            {/* Valeur ALORS */}
+            <div className="flex items-center gap-1">
+                <span className="text-xs font-semibold text-muted-foreground shrink-0 w-12">ALORS</span>
+                <VarInput
+                    value={rule.then ?? ''} valueKind={rule.thenKind ?? 'literal'}
+                    onChange={(v, k) => onChange({ ...rule, then: v, thenKind: k })}
+                    availableCols={availableCols}
+                    fetchDistinctValues={fetchDistinctValues}
+                    placeholder="valeur résultat" className="flex-1 min-w-0"
+                />
+            </div>
+        </div>
+    )
+}
+
+function ConditionalColumnStepUI({ step, availableCols, fetchDistinctValues, onChange }: {
+    step: ConditionalColumnStep; availableCols: string[]
+    fetchDistinctValues?: (col: string, sl: number, fl: number) => Promise<{ values: string[]; hasMore: boolean }>
+    onChange: (s: ConditionalColumnStep) => void
+}) {
+    const rules = step.rules ?? []
+
+    function updateRule(i: number, r: ConditionalRule) {
+        onChange({ ...step, rules: rules.map((x, idx) => idx === i ? r : x) })
+    }
+
+    function addRule() {
+        const newRule: ConditionalRule = {
+            when: { items: [{ kind: 'cond', cond: { column: availableCols[0] ?? '', op: '=', value: '', valueKind: 'literal' } }], logicOp: 'AND' },
+            then: '', thenKind: 'literal',
+        }
+        onChange({ ...step, rules: [...rules, newRule] })
+    }
+
+    return (
+        <div className="flex flex-col gap-2">
+            {/* Nom de la nouvelle colonne */}
+            <div className="flex items-center gap-2">
+                <span className="text-xs text-muted-foreground shrink-0">Nom de la colonne</span>
+                <TxtInput
+                    value={step.newColumn ?? ''} onChange={v => onChange({ ...step, newColumn: v })}
+                    placeholder="nouvelle_colonne" className="flex-1"
+                />
+            </div>
+
+            {/* Règles WHEN … THEN … */}
+            {rules.map((rule, i) => (
+                <ConditionalRuleRow key={i}
+                    rule={rule} index={i} total={rules.length}
+                    availableCols={availableCols} fetchDistinctValues={fetchDistinctValues}
+                    onChange={r => updateRule(i, r)}
+                    onRemove={() => onChange({ ...step, rules: rules.filter((_, idx) => idx !== i) })}
+                    onMoveUp={i > 0 ? () => onChange({ ...step, rules: moveArr(rules, i, -1) }) : undefined}
+                    onMoveDown={i < rules.length - 1 ? () => onChange({ ...step, rules: moveArr(rules, i, 1) }) : undefined}
+                />
+            ))}
+            <AddRowBtn onClick={addRule} label="+ Règle (WHEN … THEN …)" />
+
+            {/* Valeur SINON */}
+            <div className="flex items-center gap-1 border border-dashed border-border rounded p-2">
+                <span className="text-xs font-semibold text-muted-foreground shrink-0 w-12">SINON</span>
+                <VarInput
+                    value={step.elseValue ?? ''} valueKind={step.elseKind ?? 'literal'}
+                    onChange={(v, k) => onChange({ ...step, elseValue: v, elseKind: k })}
+                    availableCols={availableCols}
+                    fetchDistinctValues={fetchDistinctValues}
+                    placeholder="NULL si vide" className="flex-1 min-w-0"
+                />
+            </div>
+        </div>
+    )
+}
+
 // ─── useStepInputSchemas ──────────────────────────────────────────────────────
 // Récupère le schéma réel en entrée de chaque step.
 // Stratégie : lit d'abord la table temp déjà matérialisée par useStepEyeData
@@ -1552,7 +1817,9 @@ function useStepInputSchemas(ast: SqlBlockAst, cellId: string) {
     astRef.current = ast
 
     const fetchSchemaForStep = useCallback(async (stepIdx: number) => {
-        const a = astRef.current
+        // Toujours travailler sur un AST sans chartConfig : le SELECT final avec
+        // annotations (CAST(x AS XAXIS)…) ne doit jamais polluer les schémas des étapes.
+        const a = { ...astRef.current, chartConfig: undefined }
         if (!a.source) return
         const cacheKey = JSON.stringify({ src: a.source, steps: a.steps.slice(0, stepIdx) })
 
@@ -1608,7 +1875,7 @@ function useStepInputSchemas(ast: SqlBlockAst, cellId: string) {
         }
     }, [cellId])
 
-    /** Invalide le cache pour les steps >= dirtyFromStep (AST a changé) */
+    /** Invalide le cache ET l'état dynamicSchemas pour les steps >= dirtyFromStep */
     const invalidateFrom = useCallback((dirtyFromStep: number, a: SqlBlockAst) => {
         for (const [key] of cacheRef.current) {
             try {
@@ -1617,6 +1884,14 @@ function useStepInputSchemas(ast: SqlBlockAst, cellId: string) {
                     cacheRef.current.delete(key)
             } catch { cacheRef.current.delete(key) }
         }
+        // Purge aussi le state React pour éviter d'afficher des données périmées
+        setDynamicSchemas(prev => {
+            const next: Record<number, DynamicSchema> = {}
+            for (const [k, v] of Object.entries(prev)) {
+                if (Number(k) < dirtyFromStep) next[Number(k)] = v
+            }
+            return next
+        })
     }, [])
 
     return { dynamicSchemas, fetchSchemaForStep, invalidateFrom }
@@ -1705,6 +1980,7 @@ function StepConfigModal({ step, index, availableCols, availableColTypes, onUpda
                         {step.type === 'json_extract' && <JsonExtractStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
                         {step.type === 'date_trunc' && <DateTruncStepUI step={step} availableCols={availableCols} onChange={s => onUpdate(index, s)} />}
                         {step.type === 'custom_sql' && <CustomSqlStepUI step={step} onChange={s => onUpdate(index, s)} />}
+                        {step.type === 'conditional_column' && <ConditionalColumnStepUI step={step} availableCols={availableCols} fetchDistinctValues={fetchDistinctValues} onChange={s => onUpdate(index, s)} />}
                     </div>
                 </div>
             </div>
@@ -1819,6 +2095,186 @@ function StepItem({ step, index, totalSteps, availableCols, availableColTypes,
     )
 }
 
+// ─── SourceStepItem / SourceConfigModal ───────────────────────────────────────
+
+function SourceConfigModal({ source, tables, disabled, onChange, onClose }: {
+    source: string; tables: string[]; disabled: boolean
+    onChange: (v: string) => void; onClose: () => void
+}) {
+    useEffect(() => {
+        const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+        document.addEventListener('keydown', handler)
+        return () => document.removeEventListener('keydown', handler)
+    }, [onClose])
+
+    return createPortal(
+        <div className="fixed inset-0 z-[9998] flex items-center justify-center">
+            <div className="absolute inset-0 bg-black/50" onClick={onClose} />
+            <div className="relative z-10 bg-popover border border-border rounded-xl shadow-2xl w-full max-w-sm mx-4 flex flex-col">
+                <div className="flex items-center gap-2 px-4 py-3 border-b border-border shrink-0">
+                    <span className="font-semibold text-sm flex-1">Source</span>
+                    <button onClick={onClose} className="text-muted-foreground hover:text-foreground w-6 h-6 flex items-center justify-center rounded hover:bg-muted text-lg leading-none">×</button>
+                </div>
+                <div className="px-4 py-4">
+                    <select
+                        value={source || ''}
+                        onChange={e => { onChange(e.target.value); onClose() }}
+                        disabled={disabled}
+                        size={Math.min(tables.length + (source && !tables.includes(source) ? 1 : 0), 12)}
+                        className="w-full text-xs font-mono border border-border rounded bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                    >
+                        {!source && <option value="" disabled>— choisir une source —</option>}
+                        {tables.map(t => <option key={t} value={t}>{t}</option>)}
+                        {source && !tables.includes(source) && <option value={source}>{source}</option>}
+                    </select>
+                </div>
+            </div>
+        </div>,
+        document.body
+    )
+}
+
+function SourceStepItem({ eyeOpen, onEyeToggle, source, configOpen, onConfigOpen, onConfigClose, tables, disabled, onSourceChange }: {
+    eyeOpen: boolean; onEyeToggle: () => void
+    source: string; configOpen: boolean; onConfigOpen: () => void; onConfigClose: () => void
+    tables: string[]; disabled: boolean; onSourceChange: (v: string) => void
+}) {
+    return (
+        <>
+            <div className="border border-border rounded bg-card text-card-foreground">
+                <div className="flex items-center gap-1.5 px-2 py-1.5 select-none">
+                    <button
+                        onClick={e => { e.stopPropagation(); onEyeToggle() }}
+                        className={`shrink-0 w-5 h-5 flex items-center justify-center rounded transition-colors ${eyeOpen ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+                        title={eyeOpen ? "Masquer l'aperçu source" : "Voir l'aperçu source"}
+                    >
+                        <EyeIcon open={eyeOpen} className="w-3.5 h-3.5" />
+                    </button>
+                    <button className="flex-1 text-left min-w-0" onClick={onConfigOpen}>
+                        <div className="flex items-center gap-1">
+                            <span className="text-xs font-medium">Source</span>
+                            {source && (
+                                <span className="text-[10px] font-mono text-primary/80 bg-primary/10 px-1 rounded leading-4 shrink-0 truncate max-w-[120px]">{source}</span>
+                            )}
+                        </div>
+                        {!source && <span className="block text-xs text-muted-foreground italic">— choisir une source —</span>}
+                    </button>
+                    <button onClick={onConfigOpen}
+                        className="text-muted-foreground hover:text-foreground w-6 h-6 flex items-center justify-center rounded hover:bg-muted transition-colors"
+                        title="Changer la source">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            {configOpen && (
+                <SourceConfigModal
+                    source={source} tables={tables} disabled={disabled}
+                    onChange={onSourceChange} onClose={onConfigClose}
+                />
+            )}
+        </>
+    )
+}
+
+// ─── VizStepItem / VizConfigModal ─────────────────────────────────────────────
+
+function VizConfigModal({ chartConfig, availableColumns, availableColTypes, onMount, onChange, onClose, eyeOpen, onEyeToggle }: {
+    chartConfig: ChartConfig | undefined
+    availableColumns: string[]; availableColTypes: Record<string, string>
+    onMount: () => void
+    onChange: (cfg: ChartConfig | null) => void
+    onClose: () => void
+    eyeOpen: boolean; onEyeToggle: () => void
+}) {
+    useEffect(() => {
+        const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+        document.addEventListener('keydown', handler)
+        return () => document.removeEventListener('keydown', handler)
+    }, [onClose])
+
+    return createPortal(
+        <div className="fixed inset-0 z-[9998] flex items-center justify-center">
+            <div className="absolute inset-0 bg-black/50" onClick={onClose} />
+            <div className="relative z-10 bg-popover border border-border rounded-xl shadow-2xl w-full max-w-lg mx-4 h-[96vh] flex flex-col">
+                <div className="flex items-center gap-2 px-4 py-3 border-b border-border shrink-0">
+                    <span className="font-semibold text-sm flex-1">Visualisation</span>
+                    <button onClick={onClose} className="text-muted-foreground hover:text-foreground w-6 h-6 flex items-center justify-center rounded hover:bg-muted text-lg leading-none">×</button>
+                </div>
+                <div className="overflow-y-auto px-4 py-4 flex-1">
+                    <ChartConfigEditor
+                        chartConfig={chartConfig}
+                        availableColumns={availableColumns}
+                        availableColTypes={availableColTypes}
+                        onMount={onMount}
+                        onChange={onChange}
+                        eyeOpen={eyeOpen}
+                        onEyeToggle={onEyeToggle}
+                    />
+                </div>
+            </div>
+        </div>,
+        document.body
+    )
+}
+
+function VizStepItem({ eyeOpen, onEyeToggle, configOpen, onConfigOpen, onConfigClose, chartConfig, availableColumns, availableColTypes, onMount, onChange }: {
+    eyeOpen: boolean; onEyeToggle: () => void
+    configOpen: boolean; onConfigOpen: () => void; onConfigClose: () => void
+    chartConfig: ChartConfig | undefined
+    availableColumns: string[]; availableColTypes: Record<string, string>
+    onMount: () => void
+    onChange: (cfg: ChartConfig | null) => void
+}) {
+    const isActive = !!chartConfig
+    const chartType = chartConfig?.chartType
+
+    return (
+        <>
+            <div className="border border-border rounded bg-card text-card-foreground">
+                <div className="flex items-center gap-1.5 px-2 py-1.5 select-none">
+                    <button
+                        onClick={e => { e.stopPropagation(); onEyeToggle() }}
+                        className={`shrink-0 w-5 h-5 flex items-center justify-center rounded transition-colors ${eyeOpen ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+                        title={eyeOpen ? "Masquer l'aperçu graphique" : "Afficher l'aperçu graphique"}
+                    >
+                        <EyeIcon open={eyeOpen} className="w-3.5 h-3.5" />
+                    </button>
+                    <button className="flex-1 text-left min-w-0" onClick={onConfigOpen}>
+                        <div className="flex items-center gap-1">
+                            <span className="text-xs font-medium">Visualisation</span>
+                            {isActive && chartType && (
+                                <span className="text-[10px] font-mono text-primary/80 bg-primary/10 px-1 rounded leading-4 shrink-0">{chartType}</span>
+                            )}
+                        </div>
+                        {!isActive && <span className="block text-xs text-muted-foreground italic">Désactivée</span>}
+                    </button>
+                    <button onClick={onConfigOpen}
+                        className="text-muted-foreground hover:text-foreground w-6 h-6 flex items-center justify-center rounded hover:bg-muted transition-colors"
+                        title="Configurer la visualisation">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            {configOpen && (
+                <VizConfigModal
+                    chartConfig={chartConfig}
+                    availableColumns={availableColumns}
+                    availableColTypes={availableColTypes}
+                    onMount={onMount}
+                    onChange={onChange}
+                    onClose={onConfigClose}
+                    eyeOpen={eyeOpen}
+                    onEyeToggle={onEyeToggle}
+                />
+            )}
+        </>
+    )
+}
+
 // ─── AddStepMenu ──────────────────────────────────────────────────────────────
 
 function defaultStep(type: SqlBlockStep['type']): SqlBlockStep {
@@ -1841,7 +2297,8 @@ function defaultStep(type: SqlBlockStep['type']): SqlBlockStep {
         case 'unnest':          return { type, column: '', alias: 'item', keepEmpty: false }
         case 'json_extract':    return { type, column: '', extractions: [] }
         case 'date_trunc':      return { type, column: '', granularity: 'month', mode: 'replace' }
-        case 'custom_sql':      return { type, sql: 'SELECT * FROM {{subquery}}' }
+        case 'custom_sql':          return { type, sql: 'SELECT * FROM {{subquery}}' }
+        case 'conditional_column':  return { type, newColumn: 'nouvelle_colonne', rules: [], elseValue: '', elseKind: 'literal' }
     }
 }
 
@@ -2007,6 +2464,7 @@ function AddStepModal({ onAdd, availableCols, availableColTypes, fetchDistinctVa
                                         {draftStep.type === 'json_extract' && <JsonExtractStepUI step={draftStep} availableCols={availableCols} onChange={s => handleDraftUpdate(0, s)} />}
                                         {draftStep.type === 'date_trunc' && <DateTruncStepUI step={draftStep} availableCols={availableCols} onChange={s => handleDraftUpdate(0, s)} />}
                                         {draftStep.type === 'custom_sql' && <CustomSqlStepUI step={draftStep} onChange={s => handleDraftUpdate(0, s)} />}
+                                        {draftStep.type === 'conditional_column' && <ConditionalColumnStepUI step={draftStep} availableCols={availableCols} fetchDistinctValues={fetchDistinctValues} onChange={s => handleDraftUpdate(0, s)} />}
                                     </div>
                                 </div>
                                 {/* Footer */}
@@ -2122,13 +2580,40 @@ function IncompatibleConfirmModal({ onConfirm, onCancel }: { onConfirm: () => vo
     )
 }
 
+// ─── ChartPreviewInEditor — aperçu ECharts/KPI dans le panel dtSection ────────
+
+function ChartPreviewInEditor({ cell }: { cell: any }) {
+    const { _rev } = useNotebookStore(useShallow(s => ({ _rev: s._rev })))
+    const chartRef = useRef<HTMLDivElement>(null)
+    // Ne re-rendre le graphique que si _echartsOption a changé (nouvelle référence produite par runCellAt).
+    // Évite un setOption avec l'ancien option à chaque commitAstUpdate (qui incrémente _rev sans runCellAt).
+    const lastRenderedOption = useRef<any>(null)
+
+    useEffect(() => {
+        if (!chartRef.current || !cell._echartsOption) return
+        if (cell._echartsOption === lastRenderedOption.current) return  // aucun changement réel
+        lastRenderedOption.current = cell._echartsOption
+        CDNManager.loadECharts?.().then(() => {
+            const echarts = (window as any).echarts
+            if (!echarts || !chartRef.current) return
+            let chart = echarts.getInstanceByDom(chartRef.current) || echarts.init(chartRef.current)
+            chart.clear()
+            chart.setOption(cell._echartsOption)
+        })
+    }, [_rev, cell._echartsOption])
+
+    if (cell._kpiHtml) return <div className="overflow-auto" dangerouslySetInnerHTML={{ __html: cell._kpiHtml }} />
+    return <div ref={chartRef} className="flex-1 min-h-0 min-h-[200px]" />
+}
+
 // ─── SqlBlockEditor (composant principal) ─────────────────────────────────────
 
-export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCell }: { cell: any; path: number[]; cellIndex: number; onExitUiMode?: () => void; fromSqlCell?: boolean }) {
-    const { forceUpdate, _duckdbTables, db } = useNotebookStore(useShallow(s => ({
+export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCell, skipExecution, modalOpen, allowedMaterializeModes }: { cell: any; path: number[]; cellIndex: number; onExitUiMode?: () => void; fromSqlCell?: boolean; skipExecution?: boolean; modalOpen?: boolean; allowedMaterializeModes?: string[] }) {
+    const { forceUpdate, _duckdbTables, db, runCellAt } = useNotebookStore(useShallow(s => ({
         forceUpdate: s.forceUpdate,
         _duckdbTables: s._duckdbTables,
         db: s.db,
+        runCellAt: s.runCellAt,
     })))
 
     const cfg: SqlBlockConfig = getOrInitConfig(cell)
@@ -2143,23 +2628,27 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
     const { dynamicSchemas, fetchSchemaForStep, invalidateFrom } = useStepInputSchemas(ast, cell._id)
 
     // tableSchemas pour l'autocomplétion Monaco
-    const tableSchemas = db?.schemaTrees ?? []
+    // Sanitize : columns peut être undefined sur certaines entrées → crash forEach dans le provider
+    const tableSchemas = (db?.schemaTrees ?? []).map((t: any) => ({ ...t, columns: t?.columns ?? [] }))
 
     // Œil par étape (aperçus DuckDB)
-    const { eyeOpen, toggleEye, loading: eyeLoading, getEyeData } = useStepEyeData(cell, ast)
+    const { eyeOpen, toggleEye, loading: eyeLoading, getEyeData } = useStepEyeData(cell, ast, modalOpen)
 
     // Modal mode dégradé
     const [pendingDegradedSql, setPendingDegradedSql] = useState<string | null>(null)
+    const [multiSqlWarning, setMultiSqlWarning] = useState(false)
 
     // SQL généré visible ?
     const [showSql, setShowSql] = useState(false)
 
     // Index du step dont la modale de config est ouverte
     const [configOpenIdx, setConfigOpenIdx] = useState<number | null>(null)
+    // Modale de config source
+    const [sourceConfigOpen, setSourceConfigOpen] = useState(false)
 
     const selectSql = getEffectiveSql(cfg)
     const displaySql = cell.name?.trim()
-        ? generateMaterializeQuery(cell.name, selectSql, ast.materialize ?? 'view')
+        ? generateMaterializeQuery(cell.name, selectSql, ast.materialized ?? 'ephemeral')
         : selectSql
 
     // ─── Handlers AST ──────────────────────────────────────────────────────
@@ -2176,9 +2665,8 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
         }
     }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-    const handleMaterializeChange = useCallback((mat: SqlBlockMaterialize) => {
-        commitAstUpdate(cell, { materialize: mat }, forceUpdate)
-    }, [cell, forceUpdate])
+    // Mode de matérialisation courant : 'ephemeral' | 'view' | 'table'
+    const outputMode = ast.materialized ?? 'ephemeral'
 
     const handleStepUpdate = useCallback((idx: number, newStep: SqlBlockStep) => {
         invalidateFrom(idx + 1, ast)   // les schémas en aval sont périmés
@@ -2186,10 +2674,12 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
     }, [cell, ast, forceUpdate, invalidateFrom])
 
     const handleStepRemove = useCallback((idx: number) => {
+        setConfigOpenIdx(null) // ferme la modale avant de supprimer le step (évite removeChild sur portal)
         commitAstUpdate(cell, { steps: ast.steps.filter((_, i) => i !== idx) }, forceUpdate)
     }, [cell, ast.steps, forceUpdate])
 
     const handleStepMove = useCallback((idx: number, dir: -1 | 1) => {
+        setConfigOpenIdx(null) // ferme la modale avant de déplacer le step
         const s = [...ast.steps]; const swap = idx + dir
         if (swap < 0 || swap >= s.length) return
         ;[s[idx], s[swap]] = [s[swap], s[idx]]
@@ -2202,6 +2692,51 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
         // Pas d'ouverture auto du modal de config — l'étape a déjà été configurée dans AddStepModal
     }, [cell, ast.steps, forceUpdate])
 
+    // Schéma "propre" pour ChartConfigEditor : colonnes AVANT les annotations chart
+    // (défini ici avant handleChartConfigChange pour éviter le TDZ dans les deps)
+    const stepsKey = useMemo(() => JSON.stringify(ast.steps), [ast.steps])
+    const [chartInputSchema, setChartInputSchema] = useState<{ columns: string[]; colTypes: Record<string, string> }>({ columns: [], colTypes: {} })
+
+    const fetchChartSchema = useCallback(async () => {
+        if (!ast.source && !ast.steps.length) return
+        const cleanAst = { ...ast, chartConfig: undefined }
+        const cleanSql = astToSql(cleanAst)
+        const bare = cleanSql.trimEnd().replace(/;+\s*$/, '')
+        try {
+            const conn = DuckDBManager.getConnection()
+            if (!conn) return
+            const result = await conn.query(`${bare}\nLIMIT 0`)
+            const colTypes: Record<string, string> = {}
+            for (const field of result.schema.fields) colTypes[field.name] = String(field.type)
+            setChartInputSchema({ columns: Object.keys(colTypes), colTypes })
+        } catch {
+            // Source table peut ne pas encore exister (fichier non chargé) — silencieux
+        }
+    }, [ast.source, stepsKey]) // eslint-disable-line
+
+    const handleChartConfigChange = useCallback((cfg: ChartConfig | null) => {
+        // Invalide le cache des schémas dynamiques : chartConfig change le SQL final
+        invalidateFrom(0, ast)
+        commitAstUpdate(cell, { chartConfig: cfg ?? undefined }, forceUpdate)
+        if (cfg) fetchChartSchema()
+        // runCellAt est déclenché à la fermeture de la modale (handleVizConfigClose), pas ici
+    }, [cell, ast, forceUpdate, invalidateFrom, fetchChartSchema])
+
+    const handleOutputModeChange = useCallback(async (mode: string) => {
+        // Quitter view/table → supprimer silencieusement l'objet DuckDB existant
+        if (cell.name?.trim()) {
+            const prev = ast.materialized ?? 'ephemeral'
+            try {
+                if (prev === 'table') {
+                    await DuckDBManager.executeQuery(`DROP TABLE IF EXISTS ${quoteId(cell.name)}`)
+                } else if (prev === 'view') {
+                    await DuckDBManager.executeQuery(`DROP VIEW IF EXISTS ${quoteId(cell.name)}`)
+                }
+            } catch (_) { /* silencieux */ }
+        }
+        commitAstUpdate(cell, { materialized: mode as SqlBlockMaterialize }, forceUpdate)
+    }, [cell, ast.materialized, forceUpdate])
+
     // ─── Distinct values pour le filtre (par step) ─────────────────────────
     // Fabrique une fonction fetchDistinctValues qui interroge la sous-requête
     // réelle en entrée du step (stepSql(ast, stepIdx-1)), pas juste ast.source.
@@ -2210,9 +2745,10 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
         return async (column: string, selectLimit: number, fromLimit: number): Promise<{ values: string[]; hasMore: boolean }> => {
             if (!ast.source || !column) return { values: [], hasMore: false }
             try {
+                const cleanAst = { ...ast, chartConfig: undefined }
                 const inputSql = stepIdx === 0
                     ? `SELECT * FROM ${quoteId(ast.source)}`
-                    : stepSql(ast, stepIdx - 1)
+                    : stepSql(cleanAst, stepIdx - 1)
                 if (!inputSql) return { values: [], hasMore: false }
                 const col = `"${column.replace(/"/g, '""')}"`
                 // Applique le fromLimit en sous-couche pour éviter de scanner toute la table
@@ -2235,12 +2771,23 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
 
     function handleManualSqlEdit(rawSql: string) {
         const newSql = stripMaterializePrefix(rawSql)
-        const result = sqlToAstSmart(newSql, ast.materialize)
+        // Vérification : plusieurs instructions SQL → UI impossible
+        const stmts = newSql.split(';').map((s: string) => s.trim()).filter(Boolean)
+        if (stmts.length > 1) {
+            const cfg = getOrInitConfig(cell)
+            cfg.degraded = true; cfg.manualSql = newSql
+            cfg.sql = buildDisplaySql(cell.name, newSql, cfg.ast?.materialized ?? 'ephemeral')
+            setMultiSqlWarning(true)
+            forceUpdate()
+            return
+        }
+        setMultiSqlWarning(false)
+        const result = sqlToAstSmart(newSql, ast.materialized)
         if (result.compatible && result.ast) {
             const cfg = getOrInitConfig(cell)
             cfg.ast = result.ast; cfg.degraded = false; cfg.manualSql = null
             const genSql = astToSql(result.ast)
-            cfg.sql = buildDisplaySql(cell.name, genSql, result.ast.materialize ?? 'select')
+            cfg.sql = buildDisplaySql(cell.name, genSql, result.ast.materialized ?? 'ephemeral')
             forceUpdate()
         } else {
             setPendingDegradedSql(newSql)
@@ -2251,18 +2798,24 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
         if (!pendingDegradedSql) return
         const cfg = getOrInitConfig(cell)
         cfg.degraded = true; cfg.manualSql = pendingDegradedSql
-        cfg.sql = buildDisplaySql(cell.name, pendingDegradedSql, cfg.ast?.materialize ?? 'select')
+        cfg.sql = buildDisplaySql(cell.name, pendingDegradedSql, cfg.ast?.materialized ?? 'ephemeral')
         setPendingDegradedSql(null); forceUpdate()
     }
 
     function tryRestoreFromDegraded() {
         const cfg = getOrInitConfig(cell)
         const sql = stripMaterializePrefix(cfg.manualSql || selectSql)
-        const result = sqlToAstSmart(sql, ast.materialize)
+        // Bloquer la restauration si plusieurs instructions SQL
+        const stmts = sql.split(';').map((s: string) => s.trim()).filter(Boolean)
+        if (stmts.length > 1) {
+            setMultiSqlWarning(true)
+            return
+        }
+        const result = sqlToAstSmart(sql, ast.materialized)
         if (result.compatible && result.ast) {
             cfg.ast = result.ast; cfg.degraded = false; cfg.manualSql = null
             const genSql = astToSql(result.ast)
-            cfg.sql = buildDisplaySql(cell.name, genSql, result.ast.materialize ?? 'select')
+            cfg.sql = buildDisplaySql(cell.name, genSql, result.ast.materialized ?? 'ephemeral')
             forceUpdate()
         } else {
             alert(`Impossible de restaurer l'AST : ${result.error || 'SQL incompatible'}`)
@@ -2272,13 +2825,39 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
     // ─── Aperçu conditionnel (œil step actif ou résultats cellule) ────────
 
     const eyeData = eyeOpen !== null ? getEyeData(eyeOpen) : null
-    const showingEye = eyeOpen !== null
+    const showingEye = eyeOpen !== null   // source ou step intermédiaire
     const hasResults = cell._results && Array.isArray(cell._results) && cell._results.length > 0
+    const hasChart = !!(cell._echartsOption || cell._kpiHtml)
 
-    // cellule factice pour SqlDataTable quand on affiche un aperçu step
+    // Aperçu graphique dans dtSection (remplace le datatable)
+    const [vizTab, setVizTab] = useState<'table' | 'chart'>('table')
+    const [vizConfigOpen, setVizConfigOpen] = useState(false)
+
+    // cellule factice pour SqlDataTable quand on affiche un aperçu step ou source
     const displayCell = showingEye && eyeData
-        ? { _id: `eye_${eyeOpen}_${cell._id}`, _results: eyeData.rows, _schemaTypes: eyeData.schemaTypes }
+        ? { _id: `eye_${String(eyeOpen)}_${cell._id}`, _results: eyeData.rows, _schemaTypes: eyeData.schemaTypes }
         : cell
+
+    // Bascule auto sur 'table' si le graphique disparaît
+    useEffect(() => {
+        if (vizTab === 'chart' && !hasChart) setVizTab('table')
+    }, [hasChart]) // eslint-disable-line
+    // Synchro vizTab avec le type de chartConfig
+    useEffect(() => {
+        setVizTab(ast.chartConfig?.chartType && ast.chartConfig.chartType !== 'datatable' ? 'chart' : 'table')
+    }, [ast.chartConfig?.chartType]) // eslint-disable-line
+
+    // Re-fetch quand les étapes changent
+    useEffect(() => { fetchChartSchema() }, [stepsKey, ast.source]) // eslint-disable-line
+
+    // Fallback immédiat : si l'async n'a pas encore renvoyé de colonnes, utilise sourceColumns
+    // (disponibles dans _duckdbTables sans requête DuckDB — couvre le cas 0 étapes)
+    const chartSchema = chartInputSchema.columns.length > 0
+        ? chartInputSchema
+        : {
+            columns: sourceColumns.map(c => c.name),
+            colTypes: Object.fromEntries(sourceColumns.map(c => [c.name, c.type])),
+        }
 
     // ─── Layout responsive (ResizeObserver) ─────────────────────────────
     // Breakpoints :
@@ -2301,69 +2880,54 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
     return (
         <div className="flex flex-col gap-3 w-full">
             {cfg.degraded && <DegradedBanner onRestore={tryRestoreFromDegraded} />}
+            {multiSqlWarning && (
+                <div className="flex items-center gap-2 rounded-md bg-yellow-50 border border-yellow-200 text-yellow-800 text-xs px-3 py-2">
+                    <span>⚠️ L'édition du SQL via l'UI n'est possible que si une seule instruction SQL est présente.</span>
+                    <button onClick={() => setMultiSqlWarning(false)} className="ml-auto shrink-0 text-yellow-600 hover:text-yellow-900">✕</button>
+                </div>
+            )}
             {pendingDegradedSql !== null && (
                 <IncompatibleConfirmModal onConfirm={confirmDegraded} onCancel={() => setPendingDegradedSql(null)} />
             )}
 
-            {/* Ligne Source + Matérialisation */}
-            <div className="flex items-center gap-3 flex-wrap shrink-0">
-                {onExitUiMode && (
+            {/* Barre d'outils — bouton retour SQL uniquement */}
+            {onExitUiMode && !fromSqlCell && (
+                <div className="shrink-0">
                     <button
-                        onClick={onExitUiMode}
-                        className="flex items-center gap-1 px-2 py-1 text-xs text-muted-foreground border border-border rounded hover:bg-muted transition-colors shrink-0"
+                        onClick={() => { setConfigOpenIdx(null); onExitUiMode() }}
+                        className="flex items-center gap-1 px-2 py-1 text-xs text-muted-foreground border border-border rounded hover:bg-muted transition-colors"
                         title="Retour à l'éditeur SQL"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         SQL
                     </button>
-                )}
-                <div className="flex items-center gap-2 flex-1 min-w-40">
-                    <label className="text-xs text-muted-foreground shrink-0">Source :</label>
-                    {(() => {
-                        const mainTables = Object.keys(_duckdbTables ?? {}).filter(t => !t.startsWith('_sqlblock.'))
-                        return (
-                            <Select value={ast.source || ''} onValueChange={handleSourceChange} disabled={cfg.degraded}>
-                                <SelectTrigger className="flex-1 h-7 text-xs font-mono min-w-0">
-                                    <SelectValue placeholder="— choisir une source —" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {mainTables.map(t => <SelectItem key={t} value={t} className="text-xs font-mono">{t}</SelectItem>)}
-                                    {ast.source && !mainTables.includes(ast.source) && (
-                                        <SelectItem value={ast.source} className="text-xs font-mono">{ast.source}</SelectItem>
-                                    )}
-                                </SelectContent>
-                            </Select>
-                        )
-                    })()}
                 </div>
-                {!fromSqlCell && (
-                    <div className="flex items-center gap-2">
-                        <label className="text-xs text-muted-foreground shrink-0">Résultat :</label>
-                        <div className="flex rounded border border-border overflow-hidden text-xs">
-                            <button onClick={() => handleMaterializeChange('view')} disabled={cfg.degraded}
-                                className={`px-2 py-1 transition-colors ${ast.materialize === 'view' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}
-                                title="Vue DuckDB (lazy)">VIEW</button>
-                            <button onClick={() => handleMaterializeChange('table')} disabled={cfg.degraded}
-                                className={`px-2 py-1 transition-colors ${ast.materialize === 'table' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}
-                                title="TABLE matérialisée">TABLE</button>
-                            <button onClick={() => handleMaterializeChange('select')} disabled={cfg.degraded}
-                                className={`px-2 py-1 transition-colors ${ast.materialize === 'select' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}
-                                title="SELECT simple (sans créer de vue ni de table)">SELECT</button>
-                        </div>
-                    </div>
-                )}
-            </div>
+            )}
 
             {/* Corps principal — responsive */}
             {!cfg.degraded ? (() => {
                 // ── Sections réutilisables ──────────────────────────────
                 const dtSection = (
                     <>
-                        {showingEye && (
+                        {showingEye ? (
                             <div className="flex items-center gap-1.5 shrink-0">
-                                <span className="text-xs text-primary font-medium">Aperçu étape {eyeOpen! + 1}</span>
+                                <span className="text-xs text-primary font-medium">
+                                    {eyeOpen === 'source' ? `Source` : `Aperçu étape ${(eyeOpen as number) + 1}`}
+                                </span>
                                 {eyeLoading && <svg viewBox="0 0 24 24" className="w-3 h-3 animate-spin text-muted-foreground" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>}
-                                <button onClick={() => toggleEye(eyeOpen!)} className="ml-auto text-xs text-muted-foreground hover:text-foreground underline">✕ fermer</button>
+                            </div>
+                        ) : (
+                            <div className="flex items-center gap-1 shrink-0">
+                                {ast.chartConfig?.chartType && ast.chartConfig.chartType !== 'datatable' && (
+                                    <button
+                                        onClick={() => setVizTab('chart')}
+                                        className={`px-2 py-0.5 text-xs rounded transition-colors ${vizTab === 'chart' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted'}`}
+                                    >Graphique</button>
+                                )}
+                                <button
+                                    onClick={() => setVizTab('table')}
+                                    className={`px-2 py-0.5 text-xs rounded transition-colors ${vizTab === 'table' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted'}`}
+                                >Tableau</button>
                             </div>
                         )}
                         {showingEye ? (
@@ -2372,8 +2936,12 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
                                 : eyeLoading
                                     ? <div className="flex items-center justify-center h-16 text-xs text-muted-foreground italic">Chargement…</div>
                                     : <div className="flex items-center justify-center h-16 text-xs text-muted-foreground italic border border-dashed border-border rounded">Résultat vide</div>
+                        ) : vizTab === 'chart' ? (
+                            hasChart
+                                ? <ChartPreviewInEditor cell={cell} />
+                                : <div className="flex items-center justify-center h-16 text-xs text-muted-foreground italic border border-dashed border-border rounded">Exécutez la cellule pour voir le graphique</div>
                         ) : hasResults ? (
-                            <>{cell._resultInfo && <div className="text-xs text-muted-foreground shrink-0">{cell._resultInfo}</div>}<SqlDataTable cell={cell} /></>
+                            <SqlDataTable cell={cell} />
                         ) : (
                             <div className="flex items-center justify-center h-16 text-xs text-muted-foreground italic border border-dashed border-border rounded">Aucun résultat — exécutez la cellule</div>
                         )}
@@ -2394,14 +2962,23 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
                 )
 
                 const n = ast.steps.length
-                const newStepInputSchema = dynamicSchemas[n] ?? (
-                    n === 0
-                        ? { columns: sourceColumns.map(c => c.name), colTypes: Object.fromEntries(sourceColumns.map(c => [c.name, c.type])) }
-                        : (stepSchemas[n - 1] ?? { columns: sourceColumns.map(c => c.name), colTypes: {} })
-                )
+                const mainTables = Object.keys(_duckdbTables ?? {}).filter(t => !t.startsWith('_sqlblock.'))
+                // stepSchemas[n] = output of last step (input for the new step being added)
+                const newStepInputSchema = dynamicSchemas[n] ?? stepSchemas[n] ?? { columns: sourceColumns.map(c => c.name), colTypes: Object.fromEntries(sourceColumns.map(c => [c.name, c.type])) }
                 const stepsSection = (
                     <>
                         <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide shrink-0">Étapes</span>
+                        <SourceStepItem
+                            eyeOpen={eyeOpen === 'source'}
+                            onEyeToggle={() => toggleEye('source')}
+                            source={ast.source}
+                            configOpen={sourceConfigOpen}
+                            onConfigOpen={() => setSourceConfigOpen(true)}
+                            onConfigClose={() => setSourceConfigOpen(false)}
+                            tables={mainTables}
+                            disabled={cfg.degraded}
+                            onSourceChange={handleSourceChange}
+                        />
                         {ast.steps.length === 0 && <p className="text-xs text-muted-foreground italic px-1">Aucune étape — SELECT * FROM {ast.source || '…'}</p>}
                         {ast.steps.map((step, idx) => {
                             const staticSchema = stepSchemas[idx] ?? { columns: sourceColumns.map(c => c.name), colTypes: Object.fromEntries(sourceColumns.map(c => [c.name, c.type])) }
@@ -2415,7 +2992,11 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
                                     onRemove={handleStepRemove} onMove={handleStepMove}
                                     configOpen={configOpenIdx === idx}
                                     onConfigOpen={() => { setConfigOpenIdx(idx); fetchSchemaForStep(idx) }}
-                                    onConfigClose={() => setConfigOpenIdx(null)}
+                                    onConfigClose={() => {
+                                        setConfigOpenIdx(null)
+                                        // Relance la visu si un graphique est actif
+                                        if (ast.chartConfig) runCellAt(path, cellIndex)
+                                    }}
                                     fetchDistinctValues={makeStepDistinctValues(idx)} otherStepNames={otherStepNames}
                                 />
                             )
@@ -2425,6 +3006,37 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
                             fetchDistinctValues={makeStepDistinctValues(n)}
                             otherStepNames={ast.steps.map(s => s.name?.trim()).filter(Boolean) as string[]}
                             stepIndex={n} onOpen={() => fetchSchemaForStep(n)}
+                        />
+                        {!cfg.degraded && (
+                            <div className="flex items-center gap-2 mt-1 shrink-0">
+                                <label className="text-xs text-muted-foreground shrink-0">Matérialisation :</label>
+                                <select
+                                    value={outputMode}
+                                    onChange={e => handleOutputModeChange(e.target.value)}
+                                    className="text-xs border border-border rounded px-1 py-0.5 bg-background text-foreground"
+                                >
+                                    {(!allowedMaterializeModes || allowedMaterializeModes.includes('ephemeral')) && <option value="ephemeral">ephemeral</option>}
+                                    {(!allowedMaterializeModes || allowedMaterializeModes.includes('view')) && <option value="view">VIEW</option>}
+                                    {(!allowedMaterializeModes || allowedMaterializeModes.includes('table')) && <option value="table">TABLE</option>}
+                                </select>
+                            </div>
+                        )}
+                        <VizStepItem
+                            eyeOpen={eyeOpen === null}
+                            onEyeToggle={() => {
+                                if (eyeOpen !== null) toggleEye(eyeOpen)
+                            }}
+                            configOpen={vizConfigOpen}
+                            onConfigOpen={() => { setVizConfigOpen(true); fetchChartSchema() }}
+                            onConfigClose={() => {
+                                setVizConfigOpen(false)
+                                runCellAt(path, cellIndex)
+                            }}
+                            chartConfig={ast.chartConfig}
+                            availableColumns={chartSchema.columns}
+                            availableColTypes={chartSchema.colTypes}
+                            onMount={fetchChartSchema}
+                            onChange={handleChartConfigChange}
                         />
                     </>
                 )
@@ -2458,10 +3070,7 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
                 <div className="flex gap-3 min-h-[280px]">
                     <div className="flex-1 min-w-0 flex flex-col gap-1">
                         {hasResults ? (
-                            <>
-                                {cell._resultInfo && <div className="text-xs text-muted-foreground shrink-0">{cell._resultInfo}</div>}
-                                <SqlDataTable cell={cell} />
-                            </>
+                            <SqlDataTable cell={cell} />
                         ) : (
                             <div className="flex items-center justify-center h-16 text-xs text-muted-foreground italic border border-dashed border-border rounded">
                                 Aucun résultat — exécutez la cellule

@@ -283,10 +283,11 @@ export const createExecutionSlice = (set: any, get: any) => ({
     async executeSqlRecursiveParseCell(cell) {
         // Si queries[0].sql est vide mais qu'un AST est disponible, reconstituer le SQL
         const q0 = cell.queries?.[0]
+
         if (q0?.ast && !q0.sql?.trim()) {
-            const { astToSql, buildDisplaySql } = await import('../../../lib/SqlBlockService')
+            const { astToSql } = await import('../../../lib/SqlBlockService')
             const selectSql = q0.degraded && q0.manualSql ? q0.manualSql : astToSql(q0.ast)
-            q0.sql = buildDisplaySql(cell.name, selectSql, cell.materialize ?? q0.ast.materialize ?? 'select')
+            q0.sql = selectSql  // SELECT pur — le DDL est assemblé ci-dessous
         }
 
         if (!ConfigManager.getCellQuery(cell, 0)?.trim()) {
@@ -295,7 +296,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
         }
 
         try {
-            const finalQuery = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '')
+            const finalQuery = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '', { _name: cell.name || '' })
 
             get().setStatus('Exécution de la requête...', 'loading')
 
@@ -429,39 +430,75 @@ export const createExecutionSlice = (set: any, get: any) => ({
                     await DuckDBManager.dropFile(fileName)
                 }
             } else {
-                const materialize = cell.materialize ?? 'select'
-                const { quoteId, stripMaterializePrefix } = await import('../../../lib/SqlBlockService')
-                // Normalise le SQL : retire le préfixe DDL éventuel pour obtenir le SELECT brut
-                const isDdl = /^CREATE\s+OR\s+REPLACE\s+/i.test(finalQuery.trim())
-                const selectSql = isDdl ? stripMaterializePrefix(finalQuery) : finalQuery
+                const materialize = cell.materialized ?? 'ephemeral'
 
-                if (materialize !== 'select' && cell.name?.trim()) {
-                    // Créer une VIEW ou TABLE DuckDB depuis le SELECT
+                if (materialize !== 'ephemeral' && cell.name?.trim()) {
+                    const { quoteId, stripMaterializePrefix } = await import('../../../lib/SqlBlockService')
                     const qid = quoteId(cell.name)
-                    const oppositeType = materialize === 'view' ? 'TABLE' : 'VIEW'
-                    try { await DuckDBManager.executeQuery(`DROP ${oppositeType} IF EXISTS ${qid}`) } catch (_) { /* ok */ }
-                    const createSql = materialize === 'table'
-                        ? `CREATE OR REPLACE TABLE ${qid} AS (\n${selectSql}\n)`
-                        : `CREATE OR REPLACE VIEW ${qid} AS (\n${selectSql}\n)`
-                    await DuckDBManager.executeQuery(createSql)
-                    const { rows: results, schemaTypes } = await DuckDBManager.executeQueryWithSchema(
-                        `SELECT * FROM ${qid} LIMIT 1000`
-                    )
-                    cell._results = results
-                    cell._schemaTypes = schemaTypes || {}
-                    cell._resultInfo = `${results.length} ligne(s)${results.length === 1000 ? ' (limité à 1 000)' : ''} — ${materialize === 'table' ? 'TABLE' : 'VIEW'} "${cell.name}" créée`
-                    await get().refreshDuckdbSchema?.()
+                    // stripMaterializePrefix extrait le SELECT pur si finalQuery contient un wrapper
+                    // CREATE OR REPLACE VIEW/TABLE (généré par buildDisplaySql ou ancien format avec DROP).
+                    const selectOnly = stripMaterializePrefix(finalQuery)
+                    if (!sqlIsDdl(selectOnly)) {
+                        // SELECT pur : DROP de l'opposé (silencieux, DuckDB rejette IF EXISTS sur mauvais type)
+                        // puis CREATE OR REPLACE VIEW/TABLE
+                        const oppositeType = materialize === 'view' ? 'TABLE' : 'VIEW'
+                        try { await DuckDBManager.executeQuery(`DROP ${oppositeType} IF EXISTS ${qid}`) } catch (_) {}
+                        await DuckDBManager.executeQuery(`CREATE OR REPLACE ${materialize.toUpperCase()} ${qid} AS (\n${selectOnly}\n)`)
+                        const { rows: results, schemaTypes } = await DuckDBManager.executeQueryWithSchema(
+                            `SELECT * FROM ${qid} LIMIT 1000`
+                        )
+                        cell._results = results
+                        cell._schemaTypes = schemaTypes || {}
+                        cell._resultInfo = `${results.length} ligne(s)${results.length === 1000 ? ' (limité à 1 000)' : ''} — ${materialize === 'table' ? 'TABLE' : 'VIEW'} "${cell.name}" créée`
+                        await get().refreshDuckdbSchema?.()
+                    } else {
+                        // DDL pur (DROP, INSERT…) : exécuter tel quel sans wrapper VIEW/TABLE
+                        cell._echartsOption = null
+                        cell._kpiHtml = null
+                        const { rows: finalResults, schemaTypes } = await DuckDBManager.executeQueryWithSchema(finalQuery)
+                        cell._results = finalResults
+                        cell._schemaTypes = schemaTypes || {}
+                        cell._resultInfo = `✅ ${finalResults.length} ligne(s)`
+                    }
                 } else {
-                    const finalResults = await DuckDBManager.executeQuery(finalQuery)
-                    cell._results = finalResults
-                    cell._resultInfo = `✅ ${finalResults.length} ligne(s)`
-                    if (get().isSqlResultTabular(cell)) {
+                    const chartConfig = q0?.ast?.chartConfig
+                    if (chartConfig?.columns?.length) {
+                        // Mode graphique : initChartTypes + strip des annotations + EChartSqlParser
+                        get().setStatus('Chargement ECharts...', 'loading')
+                        await CDNManager.loadECharts()
+                        await DuckDBManager.initChartTypes()
+                        get().setStatus('Exécution de la requête...', 'loading')
+                        const { rows, columnTypes, schemaTypes } = await DuckDBManager.executeQueryWithSchema(finalQuery)
                         const maxRows = cell.maxRows || 100000
-                        const truncated = finalResults.length > maxRows
-                        const rawResults = finalResults.slice(0, maxRows)
+                        const rawResults = rows.slice(0, maxRows)
                         _rawTableDataStore.set(cell._id, rawResults)
                         cell._results = rawResults
-                        if (truncated) cell._resultInfo = `✅ ${finalResults.length} ligne(s) (limité à ${maxRows})`
+                        cell._schemaTypes = schemaTypes || {}
+                        cell._columnTypes = columnTypes
+                        cell._resultInfo = `✅ ${rows.length} ligne(s)`
+                        const parsed = EChartSqlParser.parseColumnRoles(rows, columnTypes)
+                        if (parsed.chartType === 'kpi') {
+                            cell._kpiHtml = EChartSqlParser.buildKpiHtml(rows, parsed)
+                            cell._echartsOption = null
+                        } else {
+                            cell._echartsOption = EChartSqlParser.buildEChartsOption(rows, parsed) ?? null
+                            cell._kpiHtml = null
+                        }
+                    } else {
+                        cell._echartsOption = null
+                        cell._kpiHtml = null
+                        const { rows: finalResults, schemaTypes } = await DuckDBManager.executeQueryWithSchema(finalQuery)
+                        cell._results = finalResults
+                        cell._schemaTypes = schemaTypes || {}
+                        cell._resultInfo = `✅ ${finalResults.length} ligne(s)`
+                        if (get().isSqlResultTabular(cell)) {
+                            const maxRows = cell.maxRows || 100000
+                            const truncated = finalResults.length > maxRows
+                            const rawResults = finalResults.slice(0, maxRows)
+                            _rawTableDataStore.set(cell._id, rawResults)
+                            cell._results = rawResults
+                            if (truncated) cell._resultInfo = `✅ ${finalResults.length} ligne(s) (limité à ${maxRows})`
+                        }
                     }
                 }
             }
@@ -501,7 +538,11 @@ export const createExecutionSlice = (set: any, get: any) => ({
     },
 
     showSqlEditorVisible(cell) {
-        return get().devMode || ConfigManager.getCellQueryClientVisible(cell, 0)
+        return get().devMode || ConfigManager.getCellQueryShowQueryEditor(cell, 0)
+    },
+
+    showQueryResult(cell) {
+        return get().devMode || ConfigManager.getCellQueryShowResult(cell, 0)
     },
 
     isSqlResultTabular(cell) {

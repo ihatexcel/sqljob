@@ -3,15 +3,15 @@
  * Rendu du body d'une cellule selon son type.
  * Remplace les templates Alpine générés par CellBodyRenderer.
  */
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import { useNotebookStore } from '../store/notebookStore'
 import { ConfigManager } from '../../lib/ConfigManager'
 import { CDNManager } from '../../lib/CDNManager'
+import { dropSqlblockSchema, openSqlblockSession } from './sqlblock/SqlBlockEditor'
 import { SqlEditorWidget } from './SqlEditorWidget'
 import { SqlDataTable } from './SqlDataTable'
 import { Icon } from '../../lib/icons'
-import { buildDisplaySql, stripMaterializePrefix } from '../../lib/SqlBlockService'
 import {
     Accordion, AccordionItem, AccordionTrigger, AccordionContent,
     Dialog, DialogContent, DialogHeader, DialogTitle,
@@ -47,6 +47,7 @@ function TableSkeleton() {
 function ResultInfo({ cell, devOnly = false }: { cell: any, devOnly?: boolean }) {
     const devMode = useNotebookStore(s => s.devMode)
     if (!cell._resultInfo) return null
+    if (!String(cell._resultInfo).startsWith('❌')) return null
     if (devOnly && !devMode) return null
     return <div className="mt-2 p-2 bg-muted rounded text-sm text-muted-foreground">{cell._resultInfo}</div>
 }
@@ -343,12 +344,48 @@ function ButtonRunBody({ cell, path, cellIndex }: any) {
     )
 }
 
+// ─── EChartRenderer — rendu ECharts/KPI partagé ──────────────────────────────
+function EChartRenderer({ cell, hasHeight }: { cell: any; hasHeight: boolean }) {
+    const { _rev } = useNotebookStore(useShallow(s => ({ _rev: s._rev })))
+    const chartRef = useRef<HTMLDivElement>(null)
+    const lastRenderedOption = useRef<any>(null)
+
+    useEffect(() => {
+        if (!chartRef.current || !cell._echartsOption) return
+        if (cell._echartsOption === lastRenderedOption.current) return
+        lastRenderedOption.current = cell._echartsOption
+        CDNManager.loadECharts?.().then(() => {
+            const echarts = (window as any).echarts
+            if (!echarts || !chartRef.current) return
+            let chart = echarts.getInstanceByDom(chartRef.current) || echarts.init(chartRef.current, null, { renderer: 'svg' })
+            chart.clear()
+            chart.setOption(cell._echartsOption)
+        })
+    }, [_rev, cell._echartsOption])
+
+    // Resize ECharts quand le conteneur change de dimensions (responsive)
+    useEffect(() => {
+        const el = chartRef.current
+        if (!el) return
+        const ro = new ResizeObserver(() => {
+            const echarts = (window as any).echarts
+            const chart = echarts?.getInstanceByDom(el)
+            chart?.resize()
+        })
+        ro.observe(el)
+        return () => ro.disconnect()
+    }, [])
+
+    if (cell._kpiHtml) return <div className="w-full" dangerouslySetInnerHTML={{ __html: cell._kpiHtml }} />
+    return <div ref={chartRef} className={`w-full ${hasHeight ? 'flex-1 min-h-0' : 'min-h-[300px]'}`} />
+}
+
 // ─── SqlTableBody ─────────────────────────────────────────────────────────────
 function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
     const {
         devMode, hasCellHeight,
         showSqlEditorVisible, isSqlResultTabular, isSqlResultText,
-        getSqlResultAsText, forceUpdate,
+        getSqlResultAsText, forceUpdate, runCellAt, refreshDuckdbTables, _rev,
     } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         hasCellHeight: s.hasCellHeight,
@@ -357,62 +394,138 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
         isSqlResultText: s.isSqlResultText,
         getSqlResultAsText: s.getSqlResultAsText,
         forceUpdate: s.forceUpdate,
+        runCellAt: s.runCellAt,
+        refreshDuckdbTables: s.refreshDuckdbTables,
+        _rev: s._rev,
     })))
 
+    // Lu directement depuis la cellule (pas via store) pour éviter les problèmes de ref stale.
+    // undefined → true (rétrocompat : les anciennes cellules sans ce champ affichent leurs résultats)
+    const showResult = devMode || (cell.queries?.[0]?.showQueryResult !== false)
+
     const [sqlBlockUiMode, setSqlBlockUiMode] = useState(false)
+    const sqlAtOpenRef = useRef<string>('')
+
+    /** Ferme la modale : rafraîchit seulement si le SQL a changé, puis nettoie les subcells. */
+    const handleCloseModal = useCallback(() => {
+        const currentSql = ConfigManager.getCellQuery(cell, 'main') || ''
+        const modified = currentSql !== sqlAtOpenRef.current
+        setSqlBlockUiMode(false)
+        if (modified) runCellAt(path, cellIndex)
+        // Drop du schéma _sqlblock entier puis rafraîchit l'arborescence DuckDB
+        dropSqlblockSchema().then(() => refreshDuckdbTables())
+    }, [cell, path, cellIndex, runCellAt, refreshDuckdbTables])
+
+    // En mode visualisation, afficher le graphique par défaut (sinon datatable)
+    const isVisualizationMode = !!(cell.queries?.[0]?.ast?.chartConfig)
+    const [vizMode, setVizMode] = useState<'table' | 'chart'>(isVisualizationMode ? 'chart' : 'table')
 
     const hasHeight = hasCellHeight(cell)
     const isRunning = cell._status === 'running'
     const searchable = cell.type === 'table'
+    const hasChart = !!(cell._echartsOption || cell._kpiHtml)
 
-    // Mode UI visuel (sqlBlock) pour les cellules sqlRecursiveParse
-    if (devMode && cell.type === 'sqlRecursiveParse' && sqlBlockUiMode) {
-        return (
-            <SqlBlockEditor
-                cell={cell}
-                path={path}
-                cellIndex={cellIndex}
-                fromSqlCell={true}
-                onExitUiMode={() => setSqlBlockUiMode(false)}
-            />
-        )
-    }
+    // Synchronise vizMode : graphique dès qu'il est disponible, table sinon
+    useEffect(() => {
+        if (!isVisualizationMode) setVizMode('table')
+        else if (hasChart) setVizMode('chart')
+    }, [hasChart, isVisualizationMode]) // eslint-disable-line react-hooks/exhaustive-deps
+
+    // Mode UI visuel (sqlBlock) pour les cellules sql.
+    // IMPORTANT: on utilise display:none au lieu de démontage conditionnel pour éviter
+    // le bug React "removeChild not a child" (portals Radix déjà retirés du DOM avant cleanup).
+    // L'overlay fixed plein-écran est toujours monté, juste caché quand inactif.
+    const showSqlBlockEditor = devMode && cell.type === 'sql'
 
     return (
         <div className={hasHeight ? 'flex-1 min-h-0 flex flex-col' : ''}>
-            {devMode && cell.type === 'sqlRecursiveParse' && (
-                <div className="flex items-center gap-2 mb-1 shrink-0">
-                    <label className="text-xs text-muted-foreground shrink-0">Résultat :</label>
-                    <div className="flex rounded border border-border overflow-hidden text-xs">
-                        {(['select', 'view', 'table'] as const).map(m => (
-                            <button key={m} onClick={() => {
-                                cell.materialize = m
-                                const q = cell.queries?.[0]
-                                if (q) {
-                                    // Toujours dériver le SELECT depuis q.sql courant (pas l'AST qui peut être périmé)
-                                    const selectSql = stripMaterializePrefix(q.sql || '')
-                                    q.sql = buildDisplaySql(cell.name, selectSql, m)
-                                    if (q.ast) q.ast = { ...q.ast, materialize: m }
-                                }
-                                forceUpdate()
-                            }}
-                                className={`px-2 py-0.5 transition-colors ${(cell.materialize ?? 'select') === m ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}
-                                title={m === 'select' ? 'SELECT simple (sans créer de vue ni de table)' : m === 'view' ? 'Créer une Vue DuckDB (lazy)' : 'Créer une TABLE matérialisée'}>
-                                {m.toUpperCase()}
+            {/* SqlBlockEditor — modale centrée, toujours montée, cachée via display:none */}
+            {showSqlBlockEditor && (
+                <div
+                    style={sqlBlockUiMode ? undefined : { display: 'none' }}
+                    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+                    onClick={e => { if (e.target === e.currentTarget) handleCloseModal() }}
+                >
+                    <div className="bg-background border border-border rounded-xl shadow-2xl flex flex-col w-full max-w-[95vw] max-h-[90dvh] overflow-hidden">
+                        {/* Bouton fermer (×) */}
+                        <div className="flex items-center justify-end px-3 pt-2 pb-0 shrink-0">
+                            <button
+                                type="button"
+                                onClick={handleCloseModal}
+                                className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+                                title="Fermer"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                             </button>
-                        ))}
+                        </div>
+                        <div className="overflow-y-auto flex-1 min-h-0 px-4 pb-4">
+                            <SqlBlockEditor
+                                cell={cell}
+                                path={path}
+                                cellIndex={cellIndex}
+                                fromSqlCell={true}
+                                skipExecution={true}
+                                modalOpen={sqlBlockUiMode}
+                                onExitUiMode={handleCloseModal}
+                            />
+                        </div>
                     </div>
                 </div>
             )}
-            {devMode && showSqlEditorVisible?.(cell) && (
+
+            {/* Contenu normal — caché quand en mode UI */}
+            <div style={sqlBlockUiMode ? { display: 'none' } : undefined}
+                className={hasHeight ? 'flex-1 min-h-0 flex flex-col' : ''}>
+            {showSqlEditorVisible?.(cell) && (
                 <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
                     placeholder="SELECT * FROM source1 LIMIT 100"
-                    onEnterUiMode={cell.type === 'sqlRecursiveParse' ? () => setSqlBlockUiMode(true) : null}
+                    onEnterUiMode={cell.type === 'sql' ? () => {
+                        sqlAtOpenRef.current = ConfigManager.getCellQuery(cell, 'main') || ''
+                        openSqlblockSession()
+                        setSqlBlockUiMode(true)
+                        runCellAt(path, cellIndex)
+                    } : null}
                 />
             )}
-            {showTextResult ? (
+            {showResult && (<>
+            {/* Toggle Tableau/Graphique — devMode */}
+            {devMode && cell.type === 'sql' && hasChart && (
+                <div className="flex items-center gap-2 mb-1 shrink-0">
+                    <div className="flex rounded border border-border overflow-hidden text-xs">
+                        <button onClick={() => setVizMode('chart')}
+                            className={`px-2 py-0.5 transition-colors ${vizMode === 'chart' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}>
+                            Graphique
+                        </button>
+                        <button onClick={() => setVizMode('table')}
+                            className={`px-2 py-0.5 transition-colors ${vizMode === 'table' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}>
+                            Tableau
+                        </button>
+                    </div>
+                </div>
+            )}
+            {/* Toggle visible en mode client uniquement si outputMode=visualization */}
+            {!devMode && hasChart && isVisualizationMode && cell.type === 'sql' && (
+                <div className="flex rounded border border-border overflow-hidden text-xs mb-1 shrink-0 self-start">
+                    <button onClick={() => setVizMode('chart')}
+                        className={`px-2 py-0.5 transition-colors ${vizMode === 'chart' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}>
+                        Graphique
+                    </button>
+                    <button onClick={() => setVizMode('table')}
+                        className={`px-2 py-0.5 transition-colors ${vizMode === 'table' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}>
+                        Tableau
+                    </button>
+                </div>
+            )}
+            {/* Mode graphique */}
+            {vizMode === 'chart' && hasChart && (
+                <div className={hasHeight ? 'flex-1 min-h-0 flex flex-col' : ''}>
+                    <EChartRenderer cell={cell} hasHeight={hasHeight} />
+                </div>
+            )}
+            {/* Mode tableau */}
+            {vizMode === 'table' && (showTextResult ? (
                 <>
-                    {showSqlEditorVisible?.(cell) && isSqlResultTabular?.(cell) && (
+                    {isSqlResultTabular?.(cell) && (
                         <div className={`relative rounded-lg mt-2 ${hasHeight ? 'flex-1 min-h-0 overflow-auto' : ''}`}>
                             {isRunning
                                 ? <div className="bg-background rounded-lg overflow-x-auto"><TableSkeleton /></div>
@@ -420,7 +533,7 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
                             }
                         </div>
                     )}
-                    {showSqlEditorVisible?.(cell) && isSqlResultText?.(cell) && (
+                    {isSqlResultText?.(cell) && (
                         <textarea className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-mono mt-2 min-h-[120px]" readOnly value={getSqlResultAsText?.(cell) || ''} />
                     )}
                 </>
@@ -431,8 +544,10 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
                         : <div className="bg-background rounded-lg overflow-x-auto"><SqlDataTable cell={cell} searchable={searchable} /></div>
                     }
                 </div>
-            )}
+            ))}
+            </>)}
             <ResultInfo cell={cell} devOnly />
+            </div>
         </div>
     )
 }
@@ -463,7 +578,7 @@ function IframeBody({ cell, path, cellIndex }: any) {
 
     return (
         <div className={hasHeight ? 'flex-1 min-h-0 flex flex-col' : ''}>
-            {devMode && showSqlEditorVisible?.(cell) && (
+            {showSqlEditorVisible?.(cell) && (
                 <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
                     placeholder="SELECT '<h1>Hello</h1>'" />
             )}
@@ -484,63 +599,58 @@ function SqlStatBody({ cell, path, cellIndex }: any) {
         showSqlEditorVisible: s.showSqlEditorVisible
     })))
 
+    const [sqlBlockUiMode, setSqlBlockUiMode] = useState(false)
+
     return (
         <div>
-            {devMode && showSqlEditorVisible?.(cell) && (
-                <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
-                    placeholder="SELECT 42 AS value, 'Titre' AS title, 'info' AS type" />
-            )}
-            {cell._results && (
-                <div className="flex flex-col items-center py-1">
-                    {cell.icon && (
-                        <div className="text-muted-foreground">
-                            <span className="iconify inline-block h-8 w-8" data-icon={cell.icon}></span>
-                        </div>
-                    )}
-                    <div className="text-sm text-muted-foreground">{cell.title || 'Stat'}</div>
-                    <div className="text-4xl font-bold">{cell._statValue || '-'}</div>
-                    <div className="text-xs text-muted-foreground">{cell.subtitle || ''}</div>
+            {/* SqlBlockEditor — toujours monté, caché via display:none (évite removeChild portal bug) */}
+            {devMode && (
+                <div style={sqlBlockUiMode ? undefined : { display: 'none' }}>
+                    <SqlBlockEditor cell={cell} path={path} cellIndex={cellIndex}
+                        fromSqlCell={true} onExitUiMode={() => setSqlBlockUiMode(false)} />
                 </div>
             )}
-            <ResultInfo cell={cell} devOnly />
+            <div style={sqlBlockUiMode ? { display: 'none' } : undefined}>
+                {showSqlEditorVisible?.(cell) && (
+                    <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
+                        placeholder="SELECT 42 AS value, 'Titre' AS title, 'info' AS type"
+                        onEnterUiMode={devMode ? () => setSqlBlockUiMode(true) : null} />
+                )}
+                {cell._results && (
+                    <div className="flex flex-col items-center py-1">
+                        {cell.icon && (
+                            <div className="text-muted-foreground">
+                                <span className="iconify inline-block h-8 w-8" data-icon={cell.icon}></span>
+                            </div>
+                        )}
+                        <div className="text-sm text-muted-foreground">{cell.title || 'Stat'}</div>
+                        <div className="text-4xl font-bold">{cell._statValue || '-'}</div>
+                        <div className="text-xs text-muted-foreground">{cell.subtitle || ''}</div>
+                    </div>
+                )}
+                <ResultInfo cell={cell} devOnly />
+            </div>
         </div>
     )
 }
 
 // ─── EChartBody ───────────────────────────────────────────────────────────────
 function EChartBody({ cell, path, cellIndex }: any) {
-    const { devMode, showSqlEditorVisible, hasCellHeight, _rev } = useNotebookStore(useShallow(s => ({
+    const { devMode, showSqlEditorVisible, hasCellHeight } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         showSqlEditorVisible: s.showSqlEditorVisible,
         hasCellHeight: s.hasCellHeight,
-        _rev: s._rev,
     })))
-
-    const chartRef = useRef<HTMLDivElement>(null)
-
-    useEffect(() => {
-        if (!chartRef.current || !cell._echartsOption) return
-        CDNManager.loadECharts?.().then(() => {
-            const echarts = (window as any).echarts
-            if (!echarts || !chartRef.current) return
-            let chart = echarts.getInstanceByDom(chartRef.current) || echarts.init(chartRef.current)
-            chart.clear()
-            chart.setOption(cell._echartsOption)
-        })
-    }, [_rev, cell._echartsOption])
 
     const hasHeight = hasCellHeight(cell)
 
     return (
         <div className={hasHeight ? 'flex-1 min-h-0 flex flex-col' : ''}>
-            {devMode && showSqlEditorVisible?.(cell) && (
+            {showSqlEditorVisible?.(cell) && (
                 <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
                     placeholder="SELECT month::XAXIS, revenue::BARCHART AS &quot;Revenue&quot; FROM source1" />
             )}
-            {cell._kpiHtml
-                ? <div dangerouslySetInnerHTML={{ __html: cell._kpiHtml }} />
-                : <div ref={chartRef} className={hasHeight ? 'flex-1 min-h-0' : 'min-h-[300px]'} />
-            }
+            <EChartRenderer cell={cell} hasHeight={hasHeight} />
             <ResultInfo cell={cell} devOnly />
         </div>
     )
@@ -812,13 +922,27 @@ function PdfmeBody({ cell, path, cellIndex }: any) {
 
 // ─── PerspectiveBody ──────────────────────────────────────────────────────────
 function PerspectiveBody({ cell, path, cellIndex }: any) {
-    const { devMode, showSqlEditorVisible, hasCellHeight, renderPerspectiveInContainer, _rev } = useNotebookStore(useShallow(s => ({
+    const { devMode, showSqlEditorVisible, hasCellHeight, renderPerspectiveInContainer, runCellAt, refreshDuckdbTables, _rev } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         showSqlEditorVisible: s.showSqlEditorVisible,
         hasCellHeight: s.hasCellHeight,
         renderPerspectiveInContainer: s.renderPerspectiveInContainer,
+        runCellAt: s.runCellAt,
+        refreshDuckdbTables: s.refreshDuckdbTables,
         _rev: s._rev
     })))
+
+    const [sqlBlockUiMode, setSqlBlockUiMode] = useState(false)
+    const sqlAtOpenRef = useRef<string>('')
+
+    /** Ferme la modale : rafraîchit seulement si le SQL a changé, puis nettoie les subcells. */
+    const handleCloseModal = useCallback(() => {
+        const currentSql = ConfigManager.getCellQuery(cell, 'main') || ''
+        const modified = currentSql !== sqlAtOpenRef.current
+        setSqlBlockUiMode(false)
+        if (modified) runCellAt(path, cellIndex)
+        dropSqlblockSchema().then(() => refreshDuckdbTables())
+    }, [cell, path, cellIndex, runCellAt, refreshDuckdbTables])
 
     // Equivalent Alpine x-init: déclencher le rendu quand le viewer est monté et données prêtes
     // (cas rechargement de page où _arrowTable existe déjà, _perspectiveScheduled = false)
@@ -839,28 +963,73 @@ function PerspectiveBody({ cell, path, cellIndex }: any) {
 
     return (
         <div className={hasHeight ? 'flex-1 min-h-0 flex flex-col' : 'flex flex-col gap-2'}>
-            {showSqlEditorVisible?.(cell) && (
-                <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
-                    queryType="query" />
-            )}
-            {cell._status === 'running' && !cell._perspectiveReady && (
-                <div className={hasHeight ? 'flex-1 min-h-0 rounded-lg bg-background overflow-hidden' : 'rounded-lg bg-background overflow-hidden'}
-                    style={hasHeight ? {} : { minHeight: mh }}>
-                    <div className="animate-pulse h-full w-full bg-muted rounded-lg" style={{ minHeight: mh }}></div>
+            {/* SqlBlockEditor — modale centrée, toujours montée, cachée via display:none */}
+            {devMode && (
+                <div
+                    style={sqlBlockUiMode ? undefined : { display: 'none' }}
+                    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+                    onClick={e => { if (e.target === e.currentTarget) handleCloseModal() }}
+                >
+                    <div className="bg-background border border-border rounded-xl shadow-2xl flex flex-col w-full max-w-[95vw] max-h-[90dvh] overflow-hidden">
+                        {/* Bouton fermer (×) */}
+                        <div className="flex items-center justify-end px-3 pt-2 pb-0 shrink-0">
+                            <button
+                                type="button"
+                                onClick={handleCloseModal}
+                                className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+                                title="Fermer"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                            </button>
+                        </div>
+                        <div className="overflow-y-auto flex-1 min-h-0 px-4 pb-4">
+                            <SqlBlockEditor
+                                cell={cell}
+                                path={path}
+                                cellIndex={cellIndex}
+                                fromSqlCell={true}
+                                skipExecution={true}
+                                modalOpen={sqlBlockUiMode}
+                                allowedMaterializeModes={['ephemeral']}
+                                onExitUiMode={handleCloseModal}
+                            />
+                        </div>
+                    </div>
                 </div>
             )}
-            {cell._perspectiveReady && (
-                <div className={hasHeight ? 'flex-1 min-h-0 flex flex-col perspective-fill-height' : ''}
-                    style={hasHeight ? {} : { minHeight: mh }}>
-                    <perspective-viewer
-                        id={`perspective-${cell._id}`}
-                        theme="Pro Light"
-                        class={hasHeight ? 'flex-1 min-h-0 w-full rounded-lg' : 'w-full rounded-lg'}
-                        style={hasHeight ? {} : { minHeight: mh }}
-                    ></perspective-viewer>
-                </div>
-            )}
-            <ResultInfo cell={cell} devOnly />
+
+            {/* Contenu normal — caché quand en mode UI */}
+            <div style={sqlBlockUiMode ? { display: 'none' } : undefined}
+                className={hasHeight ? 'flex-1 min-h-0 flex flex-col' : 'flex flex-col gap-2'}>
+                {showSqlEditorVisible?.(cell) && (
+                    <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
+                        queryType="query"
+                        onEnterUiMode={devMode ? () => {
+                            sqlAtOpenRef.current = ConfigManager.getCellQuery(cell, 'main') || ''
+                            openSqlblockSession()
+                            setSqlBlockUiMode(true)
+                            runCellAt(path, cellIndex)
+                        } : null} />
+                )}
+                {cell._status === 'running' && !cell._perspectiveReady && (
+                    <div className={hasHeight ? 'flex-1 min-h-0 rounded-lg bg-background overflow-hidden' : 'rounded-lg bg-background overflow-hidden'}
+                        style={hasHeight ? {} : { minHeight: mh }}>
+                        <div className="animate-pulse h-full w-full bg-muted rounded-lg" style={{ minHeight: mh }}></div>
+                    </div>
+                )}
+                {cell._perspectiveReady && (
+                    <div className={hasHeight ? 'flex-1 min-h-0 flex flex-col perspective-fill-height' : ''}
+                        style={hasHeight ? {} : { minHeight: mh }}>
+                        <perspective-viewer
+                            id={`perspective-${cell._id}`}
+                            theme="Pro Light"
+                            class={hasHeight ? 'flex-1 min-h-0 w-full rounded-lg' : 'w-full rounded-lg'}
+                            style={hasHeight ? {} : { minHeight: mh }}
+                        ></perspective-viewer>
+                    </div>
+                )}
+                <ResultInfo cell={cell} devOnly />
+            </div>
         </div>
     )
 }
@@ -881,7 +1050,7 @@ function GenericHtmlBody({ cell, path, cellIndex }: any) {
 
     return (
         <div>
-            {devMode && showSqlEditorVisible?.(cell) && (
+            {showSqlEditorVisible?.(cell) && (
                 <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
                     placeholder="SELECT 1" />
             )}
@@ -919,7 +1088,7 @@ export function CellBody({ cell, path, cellIndex, group }: { cell: any, path: nu
             case 'markdown': return <MarkdownBody cell={cell} path={path} cellIndex={cellIndex} />
             case 'source': return <SourceBody cell={cell} path={path} cellIndex={cellIndex} />
             case 'buttonRunNextCells': return <ButtonRunBody cell={cell} path={path} cellIndex={cellIndex} />
-            case 'sqlRecursiveParse': return <SqlTableBody cell={cell} path={path} cellIndex={cellIndex} showTextResult={true} />
+            case 'sql': return <SqlTableBody cell={cell} path={path} cellIndex={cellIndex} showTextResult={true} />
             case 'table': return <SqlTableBody cell={cell} path={path} cellIndex={cellIndex} />
             case 'iframe': return <IframeBody cell={cell} path={path} cellIndex={cellIndex} />
             case 'sqlStat': return <SqlStatBody cell={cell} path={path} cellIndex={cellIndex} />

@@ -29,7 +29,7 @@ import { createCellsSlice } from './slices/cellsSlice'
 import { createFilesSlice } from './slices/filesSlice'
 import { createExecutionSlice } from './slices/executionSlice'
 import { createCopyPasteSlice } from './slices/copyPasteSlice'
-import { ConfigManager } from '../../lib/ConfigManager'
+import { ConfigManager, exportConfigToJson } from '../../lib/ConfigManager'
 import { applyThemeFromConfig, initCustomTheme } from '../components/modals/ThemeCustomModal'
 import { DuckDBManager } from '../../lib/DuckDBManager'
 import { CellConfigService, initializeCell } from '../../lib/CellConfigService'
@@ -51,6 +51,7 @@ setAutoFreeze(false)
 export function exposeGlobals() {
     Object.assign(window, {
         ConfigManager,
+        exportConfigToJson,
         CellConfigService,
         initializeCell,
         EChartSqlParser,
@@ -100,7 +101,7 @@ function buildInitialState() {
                 name: q.name || 'main',
                 sql: q.sql || '',
                 engine: q.engine || 'sql',
-                clientVisible: q.clientVisible === true
+                showQueryEditor: (q.showQueryEditor ?? q.clientVisible) === true
             }))
         } else {
             newGroup.queries = []
@@ -230,7 +231,7 @@ function buildInitialState() {
             { type: 'source',             label: 'Source',                   icon: 'folder-open' },
             { type: 'uiParameter',        label: 'Paramètre UI',             icon: 'tune' },
             { type: 'buttonRunNextCells', label: 'Bouton Exécuter',          icon: 'play-circle' },
-            { type: 'sqlRecursiveParse',  label: 'SQL',                      icon: 'storage' },
+            { type: 'sql',  label: 'SQL',                      icon: 'storage' },
             { type: 'table',              label: 'Tableau',                  icon: 'table' },
             { type: 'iframe',             label: 'HTML/Iframe',              icon: 'web' },
             { type: 'sqlStat',            label: 'Stat SQL',                 icon: 'monitoring' },
