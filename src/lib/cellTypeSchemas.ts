@@ -92,23 +92,6 @@ export const CELL_TYPE_SCHEMAS = {
                     bodyConfig: { queryKey: 'query', showTextResult: true, showResultInfo: true },
                     bodyDisplay: { showSkeleton: { excludeWhenSqlEditor: true }, resultInfo: { showDevOnly: false } }
                 },
-                table: {
-                    executeHandler: 'executeTableCell',
-                    defaultNamePrefix: 'table',
-                    exportFields: ['queries', 'maxRows'],
-                    initProps: {},
-                    commonParams: ['name', 'queries'],
-                    queryCount: 1,
-                    queryNames: ['main'],
-                    specificParams: [
-                        { key: 'maxRows', label: "Nombre max de lignes", tooltip: "Limite le nombre de lignes affichées dans le tableau pour éviter les surcharges mémoire", inputType: 'number', placeholder: '100000' },
-                        { key: 'queries.main.showQueryEditor', label: "Afficher l'éditeur SQL en mode client", tooltip: "Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur. En mode client, seul le résultat sera affiché.", inputType: 'checkbox' }
-                    ],
-                    defaults: { queries: [{ name: 'main', sql: 'SELECT * FROM source1 LIMIT 100', engine: 'sql', showQueryEditor: false }], maxRows: 100000 },
-                    bodyFamily: 'sqlWithTable',
-                    bodyConfig: { queryKey: 'query', showTextResult: false, showResultInfo: true },
-                    bodyDisplay: { showSkeleton: { excludeWhenSqlEditor: true }, resultInfo: { showDevOnly: false } }
-                },
                 iframe: {
                     executeHandler: 'executeIframeCell',
                     defaultNamePrefix: 'iframe',
@@ -257,36 +240,6 @@ export const CELL_TYPE_SCHEMAS = {
                         jsonPlaceholder: '{"basePdf": {...}, "schemas": [...]}',
                         defaultButtonLabel: '📑 Générer le PDF'
                     }
-                },
-                echart: {
-                    executeHandler: 'executeEchartCell',
-                    defaultNamePrefix: 'echart',
-                    showInViewWhenResultOrRunning: true,
-                    exportFields: ['queries'],
-                    initProps: { _echartInstance: null, _echartReady: false },
-                    commonParams: ['name', 'queries'],
-                    queryCount: 1,
-                    queryNames: ['main'],
-                    queryLabels: { main: 'Requête SQL (alias de colonnes = rôles visuels)' },
-                    specificParams: [
-                        {
-                            key: 'queries.main.showQueryEditor',
-                            label: "Afficher l'éditeur SQL en mode client",
-                            tooltip: "Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur. En mode client, seul le graphique sera affiché.",
-                            inputType: 'checkbox'
-                        }
-                    ],
-                    defaults: {
-                        queries: [{
-                            name: 'main',
-                            sql: "SELECT\n    month::XAXIS,\n    revenue::BARCHART AS \"Revenue\",\n    target::LINECHART  AS \"Target\"\nFROM (VALUES\n    ('Jan', 42000, 40000),\n    ('Feb', 38000, 40000),\n    ('Mar', 51000, 45000),\n    ('Apr', 47000, 45000),\n    ('May', 60000, 50000),\n    ('Jun', 55000, 50000)\n) t(month, revenue, target)",
-                            engine: 'sql',
-                            showQueryEditor: false
-                        }]
-                    },
-                    bodyFamily: 'sqlWithEchart',
-                    bodyConfig: { minHeight: '350px' },
-                    bodyDisplay: { showSkeleton: { excludeWhenSqlEditor: true } }
                 },
                 perspective: {
                     executeHandler: 'executePerspectiveCell',
