@@ -134290,40 +134290,32 @@ function buildKpiHtml(At, yt, xt) {
 }
 function _buildKpiHtml(At, yt, xt) {
   const wt = [];
-  function Ct(Et, kt, Tt = "") {
-    const $t = Et !== kt ? Et : Tt;
-    return $t && $t.toLowerCase() !== "null" ? $t : "";
+  function Ct(kt, Tt, $t = "") {
+    const Lt = kt !== Tt ? kt : $t;
+    return Lt && Lt.toLowerCase() !== "null" ? Lt : "";
   }
   const St = [...yt.KPI || [], ...yt.LABEL || []];
-  for (const Et of St) {
-    const kt = _str(At[Et.originalName]), Tt = Ct(Et.displayName, "KPI") || Ct(Et.displayName, "LABEL");
+  for (const kt of St) {
+    const Tt = _str(At[kt.originalName]), $t = Ct(kt.displayName, "KPI") || Ct(kt.displayName, "LABEL");
     wt.push(`<div style="text-align:center;margin-bottom:.5rem">
-  <div style="font-size:clamp(2.5rem,8vw,5rem);font-weight:700;line-height:1.05;color:var(--foreground,#111)">${_esc(kt)}</div>
-  ${Tt ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-top:.2rem">${_esc(Tt)}</div>` : ""}
-</div>`);
-  }
-  for (const Et of yt.PERCENT || []) {
-    const kt = _num(At[Et.originalName]), Tt = kt >= 75 ? "#16a34a" : kt >= 40 ? "#ca8a04" : "#dc2626", $t = Ct(Et.displayName, "PERCENT");
-    wt.push(`<div style="text-align:center;margin-bottom:.5rem">
-  <div style="font-size:clamp(1rem,3vw,1.5rem);font-weight:600;line-height:1.2;color:${Tt}">${kt.toFixed(1)}%</div>
+  <div style="font-size:clamp(2.5rem,8vw,5rem);font-weight:700;line-height:1.05;color:var(--foreground,#111)">${_esc(Tt)}</div>
   ${$t ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-top:.2rem">${_esc($t)}</div>` : ""}
 </div>`);
   }
-  for (const Et of yt.COMPARE || []) {
-    const kt = _num(At[Et.originalName]), Tt = kt >= 0 ? "+" : "", $t = kt >= 0 ? "#16a34a" : "#dc2626", Lt = kt >= 0 ? "▲" : "▼", It = Ct(Et.displayName, "COMPARE", "Comparaison");
-    wt.push(`<div style="text-align:center;margin-bottom:.5rem">
-  <div style="font-size:clamp(1rem,3vw,1.5rem);font-weight:600;line-height:1.2;color:${$t}">${Lt} ${Tt}${kt}</div>
-  ${It ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-top:.2rem">${_esc(It)}</div>` : ""}
-</div>`);
+  const Et = [];
+  for (const kt of yt.PERCENT || []) {
+    const Tt = _num(At[kt.originalName]), $t = Tt >= 75 ? "#16a34a" : Tt >= 40 ? "#ca8a04" : "#dc2626", Lt = Ct(kt.displayName, "PERCENT"), It = Lt ? `<span style="color:var(--muted-foreground,#888)">${_esc(Lt)}: </span>` : "";
+    Et.push(`<span style="white-space:nowrap;font-size:.8rem;font-weight:600;color:${$t}">${It}${Tt.toFixed(1)}%</span>`);
   }
-  for (const Et of yt.TREND || []) {
-    const kt = _num(At[Et.originalName]), Tt = kt > 0, $t = kt === 0, Lt = $t ? "→" : Tt ? "↑" : "↓", It = $t ? "#ca8a04" : Tt ? "#16a34a" : "#dc2626", Rt = Tt ? "+" : "", Dt = Ct(Et.displayName, "TREND", "Tendance");
-    wt.push(`<div style="text-align:center;margin-bottom:.5rem">
-  <div style="font-size:clamp(1rem,3vw,1.5rem);font-weight:600;line-height:1.2;color:${It}">${Lt} ${Rt}${kt}</div>
-  ${Dt ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-top:.2rem">${_esc(Dt)}</div>` : ""}
-</div>`);
+  for (const kt of yt.COMPARE || []) {
+    const Tt = _num(At[kt.originalName]), $t = Tt >= 0 ? "+" : "", Lt = Tt >= 0 ? "#16a34a" : "#dc2626", It = Tt >= 0 ? "#16a34a18" : "#dc262618", Rt = Tt > 0 ? "↑" : Tt < 0 ? "↓" : "→", Dt = Ct(kt.displayName, "COMPARE"), jt = Dt ? `<span style="color:var(--muted-foreground,#888)">${_esc(Dt)}: </span>` : "";
+    Et.push(`<span style="white-space:nowrap;font-size:.8rem">${jt}<span style="background:${It};color:${Lt};border-radius:.35rem;padding:.1rem .45rem;font-weight:700">${$t}${Tt} ${Rt}</span></span>`);
   }
-  return wt.length === 0 ? '<div style="padding:1rem;color:#888;font-size:.875rem;text-align:center">Aucune donnée</div>' : `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem 2rem;height:100%;box-sizing:border-box">${wt.join(`
+  for (const kt of yt.TREND || []) {
+    const Tt = _num(At[kt.originalName]), $t = Tt > 0, Lt = Tt === 0, It = Lt ? "#ca8a04" : $t ? "#16a34a" : "#dc2626", Rt = Lt ? "#ca8a0418" : $t ? "#16a34a18" : "#dc262618", Dt = Lt ? "→" : $t ? "↑" : "↓", jt = $t ? "+" : "", Nt = Ct(kt.displayName, "TREND"), Mt = Nt ? `<span style="color:var(--muted-foreground,#888)">${_esc(Nt)}: </span>` : "";
+    Et.push(`<span style="white-space:nowrap;font-size:.8rem">${Mt}<span style="background:${Rt};color:${It};border-radius:.35rem;padding:.1rem .45rem;font-weight:700">${jt}${Tt} ${Dt}</span></span>`);
+  }
+  return Et.length > 0 && wt.push(`<div style="display:flex;flex-wrap:wrap;gap:.5rem 1rem;justify-content:center;align-items:center;margin-top:.5rem">${Et.join("")}</div>`), wt.length === 0 ? '<div style="padding:1rem;color:#888;font-size:.875rem;text-align:center">Aucune donnée</div>' : `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem 2rem;height:100%;box-sizing:border-box">${wt.join(`
 `)}</div>`;
 }
 function buildTableColumnRenderers(At) {
