@@ -1049,7 +1049,7 @@ function _buildKpiHtml(row: any, roleMap: Record<string, ColumnRole[]>, title: s
         const val = _str(row[col.originalName]);
         const sublabel = _sub(col.displayName, 'KPI');
         parts.push(`<div style="text-align:center;margin-bottom:.5rem">
-  <div style="font-size:clamp(2.5rem,8vw,5rem);font-weight:700;line-height:1.05;color:var(--foreground,#111)">${_esc(val)}</div>
+  <div style="font-size:clamp(2rem,8vw,3.5rem);font-weight:700;line-height:1.05;color:var(--foreground,#111)">${_esc(val)}</div>
   ${sublabel ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-top:.2rem">${_esc(sublabel)}</div>` : ''}
 </div>`);
     }
