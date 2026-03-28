@@ -122,6 +122,8 @@ export function buildChartFinalSelect(fromSource: string, cfg: ChartConfig): str
             expr = col.column.trim() !== '' && !isNaN(n) ? col.column : `'${col.column.replace(/'/g, "''")}'`;
         } else if (col.valueKind === 'param') {
             expr = col.column; // {{paramName}} — pas de quoting
+        } else if (col.valueKind === 'expression') {
+            expr = `(${col.column})`;
         } else {
             expr = quoteId(col.column); // colonne (défaut)
         }
@@ -142,22 +144,23 @@ export function parseChartFinalSelect(selectSql: string): ChartConfig | null {
     if (labelM) cfgLabel = labelM[1];
 
     const rolesPattern = CHART_ROLES_ORDERED.join('|');
-    // Match: ("col" | '{{param}}' | {{param}} | 'literal' | unquoted)::ROLE [AS ("label" | label)]
-    // Groups: 1=double-quoted col, 2=param({{...}}), 3=single-quoted literal, 4=unquoted
+    // Match: ("col" | {{param}} | 'literal' | (expression) | unquoted)::ROLE [AS ("label" | label)]
+    // Groups: 1=double-quoted col, 2=param({{...}}), 3=single-quoted literal,
+    //         4=parenthesised expression, 5=unquoted
     const re = new RegExp(
-        `(?:"([^"]+)"|\\{\\{([^}]+)\\}\\}|'([^']*)'|([\\w.]+))\\s*::\\s*(${rolesPattern})(?:\\s+AS\\s+(?:"([^"]+)"|([\\w]+)))?`,
+        `(?:"([^"]+)"|\\{\\{([^}]+)\\}\\}|'([^']*)'|\\(((?:[^()]+|\\([^()]*\\))*)\\)|([\\w.]+))\\s*::\\s*(${rolesPattern})(?:\\s+AS\\s+(?:"([^"]+)"|([\\w]+)))?`,
         'gi'
     );
     const columns: ChartColumnRole[] = [];
     let m: RegExpExecArray | null;
     while ((m = re.exec(selectSql)) !== null) {
-        const role = m[5].toUpperCase();
-        const label = m[6] ?? m[7] ?? undefined;
+        const role = m[6].toUpperCase();
+        const label = m[7] ?? m[8] ?? undefined;
         // Skip LABEL role — it's a title prefix, not a data column
         if (!CHART_ROLES_SET.has(role) || role === 'LABEL') continue;
 
         let column: string;
-        let valueKind: 'column' | 'literal' | 'param' | undefined;
+        let valueKind: FilterValueKind | undefined;
 
         if (m[1] !== undefined) {
             // "double-quoted" → column identifier
@@ -171,9 +174,13 @@ export function parseChartFinalSelect(selectSql: string): ChartConfig | null {
             // 'single-quoted' → literal string (may be numeric)
             column = m[3];
             valueKind = 'literal';
+        } else if (m[4] !== undefined) {
+            // (expression) → SQL expression wrapped in parens
+            column = m[4];
+            valueKind = 'expression';
         } else {
             // unquoted word: numeric token → literal, otherwise → column
-            column = m[4];
+            column = m[5];
             valueKind = /^-?\d+(\.\d+)?([eE][+-]?\d+)?$/.test(column) ? 'literal' : 'column';
         }
 
@@ -662,8 +669,9 @@ function filterGroupToSql(g: FilterGroup): string {
 
 /** Rendu d'une valeur de filtre selon son mode (literal, column, param). */
 function renderFilterValue(v: string, kind?: FilterValueKind): string {
-    if (kind === 'column') return quoteId(v)
-    if (kind === 'param')  return v   // {{paramName}} — substitué à l'exécution
+    if (kind === 'column')     return quoteId(v)
+    if (kind === 'param')      return v            // {{paramName}} — substitué à l'exécution
+    if (kind === 'expression') return `(${v})`
     return quoteSqlValue(v)
 }
 

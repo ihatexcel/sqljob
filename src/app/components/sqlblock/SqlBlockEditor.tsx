@@ -805,15 +805,17 @@ function DistinctMultiInput({ values, onChange, column, fetchDistinctValues, cla
 // Réutilisable pour n'importe quelle étape nécessitant une valeur flexible.
 
 const VAR_KIND_ICONS: Record<FilterValueKind, JSX.Element> = {
-    literal: <svg viewBox="0 0 24 24" className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>,
-    column:  <svg viewBox="0 0 24 24" className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="9" x2="9" y2="21"/></svg>,
-    param:   <svg viewBox="0 0 24 24" className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="17 12 21 12"/><polyline points="3 12 7 12"/><rect x="7" y="8" width="10" height="8" rx="1"/></svg>,
+    literal:    <svg viewBox="0 0 24 24" className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>,
+    column:     <svg viewBox="0 0 24 24" className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="9" x2="9" y2="21"/></svg>,
+    param:      <svg viewBox="0 0 24 24" className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="17 12 21 12"/><polyline points="3 12 7 12"/><rect x="7" y="8" width="10" height="8" rx="1"/></svg>,
+    expression: <svg viewBox="0 0 24 24" className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6"/><path d="M10 9v6"/><path d="M14 9v6"/></svg>,
 }
 
 const VAR_KIND_LABELS: Record<FilterValueKind, string> = {
-    literal: 'Entrer une valeur',
-    column:  'Sélectionner une colonne',
-    param:   'Paramètre',
+    literal:    'Entrer une valeur',
+    column:     'Sélectionner une colonne',
+    param:      'Paramètre',
+    expression: 'Expression SQL',
 }
 
 /**
@@ -857,7 +859,7 @@ export function VarInput({ value, valueKind = 'literal', onChange, availableCols
                 </button>
                 {menuOpen && (
                     <div className="absolute left-0 top-full z-50 mt-0.5 w-52 bg-popover border border-border rounded shadow-lg py-0.5">
-                        {(['literal', 'column', 'param'] as FilterValueKind[]).map(k => (
+                        {(['literal', 'column', 'param', 'expression'] as FilterValueKind[]).map(k => (
                             <button key={k} type="button"
                                 onClick={() => { onChange('', k); setMenuOpen(false) }}
                                 className={`w-full text-left px-3 py-1.5 text-xs hover:bg-muted flex items-center gap-2 ${valueKind === k ? 'text-primary font-medium' : 'text-foreground'}`}
@@ -891,6 +893,15 @@ export function VarInput({ value, valueKind = 'literal', onChange, availableCols
                         {paramNames.map((p: string) => <option key={p} value={`{{${p}}}`}>{p}</option>)}
                     </select>
                     : <span className="flex-1 text-xs text-muted-foreground italic px-1">Aucun paramètre UI</span>
+            )}
+            {valueKind === 'expression' && (
+                <input
+                    type="text"
+                    value={value}
+                    onChange={e => onChange(e.target.value, 'expression')}
+                    placeholder="ex: col_a / col_b"
+                    className="flex-1 min-w-0 h-6 rounded border border-border bg-background px-1.5 text-xs font-mono"
+                />
             )}
         </div>
     )

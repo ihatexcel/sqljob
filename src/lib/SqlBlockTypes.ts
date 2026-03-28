@@ -33,7 +33,7 @@ export type FilterOp =
     | 'like' | 'ilike' | 'between';
 
 /** Mode de saisie d'une valeur de filtre : valeur fixe, référence colonne, ou paramètre UI */
-export type FilterValueKind = 'literal' | 'column' | 'param';
+export type FilterValueKind = 'literal' | 'column' | 'param' | 'expression';
 
 export interface FilterCondition {
     column: string;
