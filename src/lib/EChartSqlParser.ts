@@ -1107,7 +1107,7 @@ function _buildKpiHtml(row: any, roleMap: Record<string, ColumnRole[]>, title: s
     }
 
     if (parts.length === 0) return '<div style="padding:1rem;color:#888;font-size:.875rem;text-align:center">Aucune donnée</div>';
-    return `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:.5rem 2rem 1.5rem;min-height:200px;height:100%;box-sizing:border-box">${parts.join('\n')}</div>`;
+    return `<div style="text-align:center;padding:.5rem">${parts.join('\n')}</div>`;
 }
 
 // ─── Table cell HTML builder ──────────────────────────────────────────────────
