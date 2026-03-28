@@ -132517,32 +132517,32 @@ function parseChartFinalSelect(At) {
   return yt && (Lt.label = yt), Lt;
 }
 function astToSql(At) {
-  var kt, Tt, $t, Lt, It, Rt;
+  var Lt, It, Rt, Dt, jt, Nt;
   const { source: yt, steps: xt, chartConfig: wt } = At;
   if (!xt || xt.length === 0) {
-    const Dt = fromExpr(yt);
-    return (kt = wt == null ? void 0 : wt.columns) != null && kt.length ? buildChartFinalSelect(Dt, wt) : `SELECT * FROM ${Dt}`;
+    const Mt = fromExpr(yt);
+    return (Lt = wt == null ? void 0 : wt.columns) != null && Lt.length ? buildChartFinalSelect(Mt, wt) : `SELECT * FROM ${Mt}`;
   }
-  if (xt.length === 1 && !((Tt = xt[0].name) != null && Tt.trim()) && xt[0].type !== "custom_sql") {
-    const Dt = singleStepToSql(fromExpr(yt), xt[0]), jt = ($t = xt[0].description) == null ? void 0 : $t.trim();
-    if (!((Lt = wt == null ? void 0 : wt.columns) != null && Lt.length))
-      return jt ? `/* ${escapeBlockComment(jt)} */
-${Dt}` : Dt;
+  if (xt.length === 1 && !((It = xt[0].name) != null && It.trim()) && xt[0].type !== "custom_sql") {
+    const Mt = singleStepToSql(fromExpr(yt), xt[0]), Ot = (Rt = xt[0].description) == null ? void 0 : Rt.trim();
+    if (!((Dt = wt == null ? void 0 : wt.columns) != null && Dt.length))
+      return Ot ? `/* ${escapeBlockComment(Ot)} */
+${Mt}` : Mt;
   }
   const Ct = [];
-  for (let Dt = 0; Dt < xt.length; Dt++) {
-    const jt = Dt === 0 ? fromExpr(yt) : quoteId(getCteName(xt[Dt - 1], Dt - 1)), Nt = singleStepToSql(jt, xt[Dt]), Mt = quoteId(getCteName(xt[Dt], Dt)), Ot = (It = xt[Dt].description) == null ? void 0 : It.trim(), Bt = Ot ? `/* ${escapeBlockComment(Ot)} */
+  for (let Mt = 0; Mt < xt.length; Mt++) {
+    const Ot = Mt === 0 ? fromExpr(yt) : quoteId(getCteName(xt[Mt - 1], Mt - 1)), Bt = singleStepToSql(Ot, xt[Mt]), Ht = quoteId(getCteName(xt[Mt], Mt)), Yt = (jt = xt[Mt].description) == null ? void 0 : jt.trim(), Kt = Yt ? `/* ${escapeBlockComment(Yt)} */
     ` : "";
-    Ct.push(`  ${Mt} AS (
-    ${Bt}${Nt.replace(/\n/g, `
+    Ct.push(`  ${Ht} AS (
+    ${Kt}${Bt.replace(/\n/g, `
     `)}
   )`);
   }
-  const St = quoteId(getCteName(xt[xt.length - 1], xt.length - 1)), Et = (Rt = wt == null ? void 0 : wt.columns) != null && Rt.length ? buildChartFinalSelect(St, wt) : `SELECT * FROM ${St}`;
-  return `WITH
+  const St = quoteId(getCteName(xt[xt.length - 1], xt.length - 1)), Et = (Nt = wt == null ? void 0 : wt.columns) != null && Nt.length ? buildChartFinalSelect(St, wt) : `SELECT * FROM ${St}`, kt = Et.match(/^(SELECT\s+'[^']*'\s*::LABEL\s*;\n?)/i), Tt = kt ? kt[1] : "", $t = Tt ? Et.slice(Tt.length) : Et;
+  return `${Tt}WITH
 ${Ct.join(`,
 `)}
-${Et}`;
+${$t}`;
 }
 function generateMaterializeQuery(At, yt, xt) {
   return xt === "ephemeral" ? yt : xt === "table" ? `CREATE OR REPLACE TABLE {{ _name }} AS (
