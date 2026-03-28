@@ -132507,7 +132507,7 @@ function parseChartFinalSelect(At) {
   if (!St.length && !yt) return null;
   const kt = new Set(St.map((It) => It.role)), Tt = (It) => kt.has(It);
   let $t = "bar";
-  Tt("BARCHART_STACKED_PERCENT") || Tt("BARCHART_PERCENT") || Tt("BARCHART_STACKED") ? $t = "bar" : Tt("BARCHART") && Tt("LINECHART") ? $t = "bar+line" : Tt("BARCHART") ? $t = (Tt("YAXIS") && !Tt("XAXIS"), "bar") : Tt("LINECHART_PERCENT") || Tt("LINECHART") ? $t = "line" : Tt("PIECHART_PERCENT") || Tt("PIECHART") ? $t = "pie" : Tt("DONUTCHART_PERCENT") || Tt("DONUTCHART") ? $t = "donut" : Tt("GAUGE_PERCENT") || Tt("GAUGE") ? $t = "gauge" : Tt("BOXPLOT") ? $t = "boxplot" : (Tt("KPI") || Tt("LABEL") || Tt("PERCENT") || Tt("COMPARE") || Tt("TREND") || Tt("TREND_PERCENT")) && ($t = "kpi");
+  Tt("BARCHART_STACKED_PERCENT") || Tt("BARCHART_PERCENT") || Tt("BARCHART_STACKED") ? $t = "bar" : Tt("BARCHART") && Tt("LINECHART") ? $t = "bar+line" : Tt("BARCHART") ? $t = (Tt("YAXIS") && !Tt("XAXIS"), "bar") : Tt("LINECHART_PERCENT") || Tt("LINECHART") ? $t = "line" : Tt("PIECHART_PERCENT") || Tt("PIECHART") ? $t = "pie" : Tt("DONUTCHART_PERCENT") || Tt("DONUTCHART") ? $t = "donut" : Tt("GAUGE_PERCENT") || Tt("GAUGE") ? $t = "gauge" : Tt("BOXPLOT") ? $t = "boxplot" : (Tt("KPI") || Tt("PERCENT") || Tt("COMPARE") || Tt("TREND") || Tt("TREND_PERCENT")) && ($t = "kpi");
   const Lt = { chartType: $t, columns: St };
   return yt && (Lt.label = yt), Lt;
 }
@@ -133708,7 +133708,7 @@ function _detectChartType(At) {
     var wt;
     return !!((wt = At[xt]) != null && wt.length);
   };
-  return yt("BARCHART_STACKED_PERCENT") ? "bar_stacked_percent" : yt("BARCHART_PERCENT") ? "bar_percent" : yt("BARCHART_STACKED") ? "bar_stacked" : yt("BARCHART") && yt("LINECHART") ? "bar_line" : yt("BARCHART") ? yt("YAXIS") && !yt("XAXIS") ? "bar_horizontal" : "bar" : yt("LINECHART_PERCENT") ? "line_percent" : yt("LINECHART") ? "line" : yt("PIECHART_PERCENT") ? "pie_percent" : yt("PIECHART") ? "pie" : yt("DONUTCHART_PERCENT") ? "donut_percent" : yt("DONUTCHART") ? "donut" : yt("GAUGE_PERCENT") ? "gauge_percent" : yt("GAUGE") ? "gauge" : yt("BOXPLOT") ? "boxplot" : yt("KPI") || yt("LABEL") || yt("PERCENT") || yt("COMPARE") || yt("TREND") || yt("TREND_PERCENT") ? "kpi" : "unknown";
+  return yt("BARCHART_STACKED_PERCENT") ? "bar_stacked_percent" : yt("BARCHART_PERCENT") ? "bar_percent" : yt("BARCHART_STACKED") ? "bar_stacked" : yt("BARCHART") && yt("LINECHART") ? "bar_line" : yt("BARCHART") ? yt("YAXIS") && !yt("XAXIS") ? "bar_horizontal" : "bar" : yt("LINECHART_PERCENT") ? "line_percent" : yt("LINECHART") ? "line" : yt("PIECHART_PERCENT") ? "pie_percent" : yt("PIECHART") ? "pie" : yt("DONUTCHART_PERCENT") ? "donut_percent" : yt("DONUTCHART") ? "donut" : yt("GAUGE_PERCENT") ? "gauge_percent" : yt("GAUGE") ? "gauge" : yt("BOXPLOT") ? "boxplot" : yt("KPI") || yt("PERCENT") || yt("COMPARE") || yt("TREND") || yt("TREND_PERCENT") ? "kpi" : "unknown";
 }
 function buildEChartsOption(At, yt) {
   const { roleMap: xt, chartType: wt } = yt;
@@ -134288,42 +134288,44 @@ function _buildBoxplotOption(At, yt, xt, wt) {
 function _esc(At) {
   return String(At).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
+function _fmtVal(At) {
+  return At == null ? "–" : typeof At == "number" ? At.toLocaleString("fr-FR") : _esc(String(At));
+}
 function buildKpiHtml(At, yt, xt) {
   const wt = At[0] || {};
   return _buildKpiHtml(wt, yt.roleMap);
 }
 function _buildKpiHtml(At, yt, xt) {
   const wt = [];
-  function Ct(kt, Tt, $t = "") {
-    const Lt = kt !== Tt ? kt : $t;
-    return Lt && Lt.toLowerCase() !== "null" ? Lt : "";
+  function Ct(Et, kt, Tt = "") {
+    const $t = Et !== kt ? Et : Tt;
+    return $t && $t.toLowerCase() !== "null" ? $t : "";
   }
-  const St = [...yt.KPI || [], ...yt.LABEL || []];
-  for (const kt of St) {
-    const Tt = _str(At[kt.originalName]), $t = Ct(kt.displayName, "KPI") || Ct(kt.displayName, "LABEL");
+  for (const Et of yt.KPI || []) {
+    const kt = _str(At[Et.originalName]), Tt = Ct(Et.displayName, "KPI");
     wt.push(`<div style="text-align:center;margin-bottom:.5rem">
-  <div style="font-size:clamp(2.5rem,8vw,5rem);font-weight:700;line-height:1.05;color:var(--foreground,#111)">${_esc(Tt)}</div>
-  ${$t ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-top:.2rem">${_esc($t)}</div>` : ""}
+  <div style="font-size:clamp(2.5rem,8vw,5rem);font-weight:700;line-height:1.05;color:var(--foreground,#111)">${_esc(kt)}</div>
+  ${Tt ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-top:.2rem">${_esc(Tt)}</div>` : ""}
 </div>`);
   }
-  const Et = [];
-  for (const kt of yt.PERCENT || []) {
-    const Tt = _num(At[kt.originalName]), $t = Tt >= 75 ? "#16a34a" : Tt >= 40 ? "#ca8a04" : "#dc2626", Lt = Tt >= 75 ? "#16a34a18" : Tt >= 40 ? "#ca8a0418" : "#dc262618", It = Ct(kt.displayName, "PERCENT"), Rt = It ? `<span style="color:var(--muted-foreground,#888)">${_esc(It)}: </span>` : "";
-    Et.push(`<span style="white-space:nowrap;font-size:.8rem">${Rt}<span style="background:${Lt};color:${$t};border-radius:.35rem;padding:.1rem .45rem;font-weight:700">${Tt.toFixed(1)}%</span></span>`);
+  const St = [];
+  for (const Et of yt.PERCENT || []) {
+    const kt = _num(At[Et.originalName]), Tt = kt >= 75 ? "#16a34a" : kt >= 40 ? "#ca8a04" : "#dc2626", $t = kt >= 75 ? "#16a34a18" : kt >= 40 ? "#ca8a0418" : "#dc262618", Lt = Ct(Et.displayName, "PERCENT"), It = Lt ? `<span style="color:var(--muted-foreground,#888)">${_esc(Lt)}: </span>` : "";
+    St.push(`<span style="white-space:nowrap;font-size:.8rem">${It}<span style="background:${$t};color:${Tt};border-radius:.35rem;padding:.1rem .45rem;font-weight:700">${kt.toFixed(1)}%</span></span>`);
   }
-  for (const kt of yt.COMPARE || []) {
-    const Tt = _num(At[kt.originalName]), $t = Tt >= 0 ? "+" : "", Lt = Tt >= 0 ? "#16a34a" : "#dc2626", It = Ct(kt.displayName, "COMPARE"), Rt = It ? `<span style="color:var(--muted-foreground,#888)">${_esc(It)}: </span>` : "";
-    Et.push(`<span style="white-space:nowrap;font-size:.8rem;font-weight:600;color:${Lt}">${Rt}${$t}${Tt}</span>`);
+  for (const Et of yt.COMPARE || []) {
+    const kt = At[Et.originalName], Tt = typeof kt == "number" ? kt : kt != null && !isNaN(Number(kt)) ? Number(kt) : null, $t = Tt === null ? "var(--foreground,#111)" : Tt >= 0 ? "#16a34a" : "#dc2626", Lt = Tt !== null ? _fmtVal(Tt) : _esc(_str(kt)), It = Ct(Et.displayName, "COMPARE"), Rt = It ? `<span style="color:var(--muted-foreground,#888)">${_esc(It)}: </span>` : "";
+    St.push(`<span style="white-space:nowrap;font-size:.8rem;font-weight:600;color:${$t}">${Rt}${Lt}</span>`);
   }
-  for (const kt of yt.TREND || []) {
-    const Tt = _num(At[kt.originalName]), $t = Tt > 0, Lt = Tt === 0, It = Lt ? "#ca8a04" : $t ? "#16a34a" : "#dc2626", Rt = Lt ? "#ca8a0418" : $t ? "#16a34a18" : "#dc262618", Dt = Lt ? "→" : $t ? "↑" : "↓", jt = $t ? "+" : "", Nt = Ct(kt.displayName, "TREND"), Mt = Nt ? `<span style="color:var(--muted-foreground,#888)">${_esc(Nt)}: </span>` : "";
-    Et.push(`<span style="white-space:nowrap;font-size:.8rem">${Mt}<span style="background:${Rt};color:${It};border-radius:.35rem;padding:.1rem .45rem;font-weight:700">${jt}${Tt} ${Dt}</span></span>`);
+  for (const Et of yt.TREND || []) {
+    const kt = _num(At[Et.originalName]), Tt = kt > 0, $t = kt === 0, Lt = $t ? "#ca8a04" : Tt ? "#16a34a" : "#dc2626", It = $t ? "#ca8a0418" : Tt ? "#16a34a18" : "#dc262618", Rt = $t ? "→" : Tt ? "↑" : "↓", Dt = Tt ? "+" : "", jt = Ct(Et.displayName, "TREND"), Nt = jt ? `<span style="color:var(--muted-foreground,#888)">${_esc(jt)}: </span>` : "";
+    St.push(`<span style="white-space:nowrap;font-size:.8rem">${Nt}<span style="background:${It};color:${Lt};border-radius:.35rem;padding:.1rem .45rem;font-weight:700">${Dt}${kt} ${Rt}</span></span>`);
   }
-  for (const kt of yt.TREND_PERCENT || []) {
-    const Tt = _num(At[kt.originalName]), $t = Tt > 0, Lt = Tt === 0, It = Lt ? "#ca8a04" : $t ? "#16a34a" : "#dc2626", Rt = Lt ? "#ca8a0418" : $t ? "#16a34a18" : "#dc262618", Dt = Lt ? "→" : $t ? "↑" : "↓", jt = $t ? "+" : "", Nt = Ct(kt.displayName, "TREND_PERCENT"), Mt = Nt ? `<span style="color:var(--muted-foreground,#888)">${_esc(Nt)}: </span>` : "";
-    Et.push(`<span style="white-space:nowrap;font-size:.8rem">${Mt}<span style="background:${Rt};color:${It};border-radius:.35rem;padding:.1rem .45rem;font-weight:700">${jt}${Tt.toFixed(1)}% ${Dt}</span></span>`);
+  for (const Et of yt.TREND_PERCENT || []) {
+    const kt = _num(At[Et.originalName]), Tt = kt > 0, $t = kt === 0, Lt = $t ? "#ca8a04" : Tt ? "#16a34a" : "#dc2626", It = $t ? "#ca8a0418" : Tt ? "#16a34a18" : "#dc262618", Rt = $t ? "→" : Tt ? "↑" : "↓", Dt = Tt ? "+" : "", jt = Ct(Et.displayName, "TREND_PERCENT"), Nt = jt ? `<span style="color:var(--muted-foreground,#888)">${_esc(jt)}: </span>` : "";
+    St.push(`<span style="white-space:nowrap;font-size:.8rem">${Nt}<span style="background:${It};color:${Lt};border-radius:.35rem;padding:.1rem .45rem;font-weight:700">${Dt}${kt.toFixed(1)}% ${Rt}</span></span>`);
   }
-  return Et.length > 0 && wt.push(`<div style="display:flex;flex-wrap:wrap;gap:.5rem 1rem;justify-content:center;align-items:center;margin-top:.5rem">${Et.join("")}</div>`), wt.length === 0 ? '<div style="padding:1rem;color:#888;font-size:.875rem;text-align:center">Aucune donnée</div>' : `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem 2rem;height:100%;box-sizing:border-box">${wt.join(`
+  return St.length > 0 && wt.push(`<div style="display:flex;flex-wrap:wrap;gap:.5rem 1rem;justify-content:center;align-items:center;margin-top:.5rem">${St.join("")}</div>`), wt.length === 0 ? '<div style="padding:1rem;color:#888;font-size:.875rem;text-align:center">Aucune donnée</div>' : `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem 2rem;min-height:200px;height:100%;box-sizing:border-box">${wt.join(`
 `)}</div>`;
 }
 function buildTableColumnRenderers(At) {
@@ -137870,7 +137872,7 @@ function SqlTableBody({ cell: At, path: yt, cellIndex: xt, showTextResult: wt = 
     sr(Jt ? "chart" : "table");
   }, [Jt]);
   const Cr = Ct && At.type === "sql";
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: Ht ? "flex-1 min-h-0 flex flex-col" : "", children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: `group/sqlbody ${Ht ? "flex-1 min-h-0 flex flex-col" : ""}`, children: [
     Cr && /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
@@ -137927,7 +137929,7 @@ function SqlTableBody({ cell: At, path: yt, cellIndex: xt, showTextResult: wt = 
             }
           ),
           jt && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-            Ct && At.type === "sql" && At._echartsOption && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-2 mb-1 shrink-0", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex rounded border border-border overflow-hidden text-xs", children: [
+            At.type === "sql" && At._echartsOption && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "opacity-0 group-hover/sqlbody:opacity-100 transition-opacity flex items-center gap-2 mb-1 shrink-0", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex rounded border border-border overflow-hidden text-xs", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(
                 "button",
                 {
@@ -137945,26 +137947,8 @@ function SqlTableBody({ cell: At, path: yt, cellIndex: xt, showTextResult: wt = 
                 }
               )
             ] }) }),
-            !Ct && At.type === "sql" && At._echartsOption && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex rounded border border-border overflow-hidden text-xs mb-1 shrink-0 self-start", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "button",
-                {
-                  onClick: () => sr("chart"),
-                  className: `px-2 py-0.5 transition-colors ${Zt === "chart" ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"}`,
-                  children: "Graphique"
-                }
-              ),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "button",
-                {
-                  onClick: () => sr("table"),
-                  className: `px-2 py-0.5 transition-colors ${Zt === "table" ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"}`,
-                  children: "Tableau"
-                }
-              )
-            ] }),
             At._kpiLabel && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-base font-semibold text-foreground mb-2 shrink-0 text-center w-full", children: At._kpiLabel }),
-            Zt === "chart" && Jt && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: Ht ? "flex-1 min-h-0 flex flex-col" : "", children: /* @__PURE__ */ jsxRuntimeExports.jsx(EChartRenderer, { cell: At, hasHeight: Ht }) }),
+            Zt === "chart" && Jt && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `flex flex-col ${Ht ? "flex-1 min-h-0" : ""}`, children: /* @__PURE__ */ jsxRuntimeExports.jsx(EChartRenderer, { cell: At, hasHeight: Ht }) }),
             Zt === "table" && (wt ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
               (kt == null ? void 0 : kt(At)) && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `relative rounded-lg mt-2 ${Ht ? "flex-1 min-h-0 overflow-auto" : ""}`, children: Yt ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-background rounded-lg overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsx(TableSkeleton, {}) }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-background rounded-lg overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsx(SqlDataTable, { cell: At, searchable: Kt }) }) }),
               (Tt == null ? void 0 : Tt(At)) && /* @__PURE__ */ jsxRuntimeExports.jsx("textarea", { className: "flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-mono mt-2 min-h-[120px]", readOnly: !0, value: ($t == null ? void 0 : $t(At)) || "" })
