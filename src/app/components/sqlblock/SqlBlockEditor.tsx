@@ -2588,6 +2588,7 @@ function ChartPreviewInEditor({ cell }: { cell: any }) {
     const lastRenderedOption = useRef<any>(null)
 
     useEffect(() => {
+        console.log('[chart] ChartPreviewInEditor effect → _rev:', _rev, '_echartsOption:', cell._echartsOption ? 'PRESENT' : 'NULL', 'same as last?', cell._echartsOption === lastRenderedOption.current)
         if (!chartRef.current || !cell._echartsOption) return
         if (cell._echartsOption === lastRenderedOption.current) return  // aucun changement réel
         lastRenderedOption.current = cell._echartsOption
@@ -2596,6 +2597,7 @@ function ChartPreviewInEditor({ cell }: { cell: any }) {
             if (!echarts || !chartRef.current) return
             let chart = echarts.getInstanceByDom(chartRef.current) || echarts.init(chartRef.current)
             chart.clear()
+            console.log('[chart] setOption appelé')
             chart.setOption(cell._echartsOption)
         })
     }, [_rev, cell._echartsOption])
@@ -2836,10 +2838,15 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
         : cell
 
     // Bascule auto sur 'table' si le graphique disparaît
-    useEffect(() => { if (vizTab === 'chart' && !hasChart) setVizTab('table') }, [hasChart]) // eslint-disable-line
+    useEffect(() => {
+        console.log('[chart] vizTab-fallback effect → vizTab:', vizTab, 'hasChart:', hasChart)
+        if (vizTab === 'chart' && !hasChart) { console.log('[chart] vizTab-fallback → bascule en table!'); setVizTab('table') }
+    }, [hasChart]) // eslint-disable-line
     // Synchro vizTab avec le type de chartConfig
     useEffect(() => {
-        setVizTab(ast.chartConfig?.chartType && ast.chartConfig.chartType !== 'datatable' ? 'chart' : 'table')
+        const next = ast.chartConfig?.chartType && ast.chartConfig.chartType !== 'datatable' ? 'chart' : 'table'
+        console.log('[chart] vizTab-sync effect → chartType:', ast.chartConfig?.chartType, '→ vizTab:', next)
+        setVizTab(next)
     }, [ast.chartConfig?.chartType]) // eslint-disable-line
 
     // Re-fetch quand les étapes changent
@@ -3028,6 +3035,9 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
                             onConfigOpen={() => { setVizConfigOpen(true); fetchChartSchema() }}
                             onConfigClose={() => {
                                 setVizConfigOpen(false)
+                                const q0 = (cell.queries?.[0])
+                                console.log('[chart] vizConfigClose → sql:', q0?.sql?.slice(0, 120), 'chartConfig:', JSON.stringify(q0?.ast?.chartConfig))
+                                console.log('[chart] vizConfigClose → appel runCellAt', path, cellIndex)
                                 runCellAt(path, cellIndex)
                             }}
                             chartConfig={ast.chartConfig}
