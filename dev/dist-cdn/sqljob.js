@@ -24570,8 +24570,8 @@ const CELL_TYPE_SCHEMAS = {
       defaults: {
         title: "Glissez-déposez votre fichier ici",
         queries: [
-          { name: "main", sql: "CREATE OR REPLACE TABLE {name} AS SELECT * FROM '{{fileName}}'", engine: "sql", showQueryEditor: !1 },
-          { name: "fallback", sql: "CREATE OR REPLACE TABLE {name} AS SELECT * FROM query( CASE WHEN lower('{{fileName}}') LIKE '%.csv' OR lower('{{fileName}}') LIKE '%.csv.gz' THEN 'SELECT * FROM read_csv(''' || '{{fileName}}' || ''', HEADER = true, AUTO_DETECT = true, SAMPLE_SIZE = -1, IGNORE_ERRORS = true, store_rejects = true)' WHEN lower('{{fileName}}') LIKE '%.xlsx' THEN 'SELECT * FROM read_xlsx(''' || '{{fileName}}' || ''', HEADER = true, STOP_AT_EMPTY = false, EMPTY_AS_VARCHAR = true, IGNORE_ERRORS = true)' WHEN lower('{{fileName}}') LIKE '%.tsv' OR lower('{{fileName}}') LIKE '%.tsv.gz' OR lower('{{fileName}}') LIKE '%.txt' OR lower('{{fileName}}') LIKE '%.txt.gz' THEN 'SELECT * FROM read_csv(''' || '{{fileName}}' || ''', HEADER = true, DELIM = ''	'', AUTO_DETECT = true, SAMPLE_SIZE = -1, IGNORE_ERRORS = true, store_rejects = true)' WHEN lower('{{fileName}}') LIKE '%.parquet' OR lower('{{fileName}}') LIKE '%.parquet.gz' THEN 'SELECT * FROM read_parquet(''' || '{{fileName}}' || ''')' ELSE 'SELECT 1' END );", engine: "sql", showQueryEditor: !1 }
+          { name: "main", sql: "CREATE OR REPLACE TABLE {name} AS SELECT * FROM '{{_fileName}}'", engine: "sql", showQueryEditor: !1 },
+          { name: "fallback", sql: "CREATE OR REPLACE TABLE {name} AS SELECT * FROM query( CASE WHEN lower('{{_fileName}}') LIKE '%.csv' OR lower('{{_fileName}}') LIKE '%.csv.gz' THEN 'SELECT * FROM read_csv(''' || '{{_fileName}}' || ''', HEADER = true, AUTO_DETECT = true, SAMPLE_SIZE = -1, IGNORE_ERRORS = true, store_rejects = true)' WHEN lower('{{_fileName}}') LIKE '%.xlsx' THEN 'SELECT * FROM read_xlsx(''' || '{{_fileName}}' || ''', HEADER = true, STOP_AT_EMPTY = false, EMPTY_AS_VARCHAR = true, IGNORE_ERRORS = true)' WHEN lower('{{_fileName}}') LIKE '%.tsv' OR lower('{{_fileName}}') LIKE '%.tsv.gz' OR lower('{{_fileName}}') LIKE '%.txt' OR lower('{{_fileName}}') LIKE '%.txt.gz' THEN 'SELECT * FROM read_csv(''' || '{{_fileName}}' || ''', HEADER = true, DELIM = ''	'', AUTO_DETECT = true, SAMPLE_SIZE = -1, IGNORE_ERRORS = true, store_rejects = true)' WHEN lower('{{_fileName}}') LIKE '%.parquet' OR lower('{{_fileName}}') LIKE '%.parquet.gz' THEN 'SELECT * FROM read_parquet(''' || '{{_fileName}}' || ''')' ELSE 'SELECT 1' END );", engine: "sql", showQueryEditor: !1 }
         ],
         json: { xlsx: { options: { type: "array", raw: !1, dateNF: "dd/mm/yyyy", cellDates: !0 }, toCsvOptions: { dateNF: "dd/mm/yyyy", FS: ",", RS: `
 ` }, sheetSelection: { type: { auto: !0 }, index: 0, name: "" } } }
@@ -24772,7 +24772,7 @@ const CELL_TYPE_SCHEMAS = {
           { name: "main", sql: `with v_source as (select * from source1 limit 10)
 SELECT 'Titre' as header, 'Pied de page' as footer, json_group_array(json_array(col1, col2, col3)) as datatable
 FROM v_source LIMIT 10`, engine: "sql", showQueryEditor: !1 },
-          { name: "filename", sql: "SELECT '$loop' || '_2.pdf'", engine: "sql", showQueryEditor: !1 }
+          { name: "filename", sql: "SELECT '{{_loop}}' || '_2.pdf'", engine: "sql", showQueryEditor: !1 }
         ],
         buttonLabel: "📑 Générer le PDF"
       },
@@ -143422,7 +143422,7 @@ const createHelpersSlice = (At, yt) => ({
       for (const kt of (Et == null ? void 0 : Et.children) || []) St(kt);
     };
     for (const Et of wt || []) St(Et);
-    return xt != null && (Ct.loop = xt), Ct;
+    return xt != null && (Ct._loop = xt), Ct;
   },
   parseQueryWithParameters(xt, wt = {}) {
     if (!xt) return xt;
@@ -145141,7 +145141,7 @@ FROM source1 LIMIT 10;`;
     if (!Et) return;
     rawTableDataStore.delete(Et._id), Et._results = null, Et._resultInfo = null;
     const kt = Et.type, Tt = Et.name && String(Et.name).trim() ? Et.name : yt().generateUniqueCellName(kt);
-    (!Et.name || !String(Et.name).trim()) && (Et.name = Tt), CellConfigService.applyDefaultsOnTypeChange(Et, kt, { oldType: Ct, baseName: Tt }), Et.type === "source" && (Et.name ? ($t = ConfigManager.getCellQuery(Et, "main")) != null && $t.trim() || ConfigManager.setCellQuery(Et, "main", `CREATE OR REPLACE TABLE ${Et.name} AS SELECT * FROM '{{fileName}}'`) : Et.name = yt().generateUniqueSourceName(), (Lt = ConfigManager.getCellQuery(Et, "fallback")) != null && Lt.trim() || ConfigManager.setCellQuery(Et, "fallback", ((jt = (Dt = (Rt = (It = CELL_TYPE_SCHEMAS.types.source) == null ? void 0 : It.defaults) == null ? void 0 : Rt.queries) == null ? void 0 : Dt.find((zt) => zt.name === "fallback")) == null ? void 0 : jt.sql) || ((Bt = (Ot = (Mt = (Nt = CELL_TYPE_SCHEMAS.types.source) == null ? void 0 : Nt.defaults) == null ? void 0 : Mt.queries) == null ? void 0 : Ot[1]) == null ? void 0 : Bt.sql) || `CREATE OR REPLACE TABLE ${Et.name} AS SELECT * FROM '{{fileName}}'`), Et._fileName === void 0 && (Et._fileName = ""), Et._currentFile === void 0 && (Et._currentFile = null), Et._isDragging === void 0 && (Et._isDragging = !1), Et._loaded === void 0 && (Et._loaded = !1)), Et.type === "uiParameter" && (Et.referenceName && (!Et.name || !String(Et.name).trim()) && (Et.name = String(Et.referenceName).trim()), ConfigManager.getCellReferenceName(Et) || (Et.name = yt().generateUniqueCellName("uiParameter", Et._id)), Et._value === void 0 && (Et._value = ""), Et._options || (Et._options = []), Et._initialized = !1, Et._userModified = !1), Et.type === "publipostageWord" && (Et.docxTemplateBase64 === void 0 && (Et.docxTemplateBase64 = null), Et.docxTemplateFileName === void 0 && (Et.docxTemplateFileName = ""), Et._isDragging === void 0 && (Et._isDragging = !1)), Et.type === "perspective" && (Et._perspectiveReady = !1, Et._perspectiveWorker = null, Et._perspectiveTable = null);
+    (!Et.name || !String(Et.name).trim()) && (Et.name = Tt), CellConfigService.applyDefaultsOnTypeChange(Et, kt, { oldType: Ct, baseName: Tt }), Et.type === "source" && (Et.name ? ($t = ConfigManager.getCellQuery(Et, "main")) != null && $t.trim() || ConfigManager.setCellQuery(Et, "main", `CREATE OR REPLACE TABLE ${Et.name} AS SELECT * FROM '{{_fileName}}'`) : Et.name = yt().generateUniqueSourceName(), (Lt = ConfigManager.getCellQuery(Et, "fallback")) != null && Lt.trim() || ConfigManager.setCellQuery(Et, "fallback", ((jt = (Dt = (Rt = (It = CELL_TYPE_SCHEMAS.types.source) == null ? void 0 : It.defaults) == null ? void 0 : Rt.queries) == null ? void 0 : Dt.find((zt) => zt.name === "fallback")) == null ? void 0 : jt.sql) || ((Bt = (Ot = (Mt = (Nt = CELL_TYPE_SCHEMAS.types.source) == null ? void 0 : Nt.defaults) == null ? void 0 : Mt.queries) == null ? void 0 : Ot[1]) == null ? void 0 : Bt.sql) || `CREATE OR REPLACE TABLE ${Et.name} AS SELECT * FROM '{{_fileName}}'`), Et._fileName === void 0 && (Et._fileName = ""), Et._currentFile === void 0 && (Et._currentFile = null), Et._isDragging === void 0 && (Et._isDragging = !1), Et._loaded === void 0 && (Et._loaded = !1)), Et.type === "uiParameter" && (Et.referenceName && (!Et.name || !String(Et.name).trim()) && (Et.name = String(Et.referenceName).trim()), ConfigManager.getCellReferenceName(Et) || (Et.name = yt().generateUniqueCellName("uiParameter", Et._id)), Et._value === void 0 && (Et._value = ""), Et._options || (Et._options = []), Et._initialized = !1, Et._userModified = !1), Et.type === "publipostageWord" && (Et.docxTemplateBase64 === void 0 && (Et.docxTemplateBase64 = null), Et.docxTemplateFileName === void 0 && (Et.docxTemplateFileName = ""), Et._isDragging === void 0 && (Et._isDragging = !1)), Et.type === "perspective" && (Et._perspectiveReady = !1, Et._perspectiveWorker = null, Et._perspectiveTable = null);
   },
   generateUniqueCellName(xt, wt = null) {
     var Tt;
@@ -145343,7 +145343,7 @@ FROM source1 LIMIT 10;`;
       } else {
         await DuckDBManager.registerFile(xt.name, xt);
         const sr = (ConfigManager.getCellQuery(Et, "main") || ((Lt = ($t = Et.queries) == null ? void 0 : $t[0]) == null ? void 0 : Lt.sql) || "").trim();
-        sr ? Bt = yt().parseQueryWithParameters(sr, { fileName: Yt }) : Bt = `CREATE OR REPLACE TABLE ${Ot} AS SELECT * FROM '${Yt}'`;
+        sr ? Bt = yt().parseQueryWithParameters(sr, { _fileName: Yt }) : Bt = `CREATE OR REPLACE TABLE ${Ot} AS SELECT * FROM '${Yt}'`;
       }
       try {
         await DuckDBManager.executeQuery(Bt), zt = !0, Et._loadedViaFallback = !1, Et._mainQueryError = null, Et._rejectErrorsCount = 0;
@@ -145357,7 +145357,7 @@ FROM source1 LIMIT 10;`;
               await DuckDBManager.executeQuery("DROP TABLE IF EXISTS reject_errors");
             } catch {
             }
-            const Rr = yt().parseQueryWithParameters(Cr, { fileName: Yt });
+            const Rr = yt().parseQueryWithParameters(Cr, { _fileName: Yt });
             await DuckDBManager.executeQuery(Rr), zt = !0, Bt = Rr, Et._loadedViaFallback = !0;
             try {
               const Ur = await DuckDBManager.executeQuery("SELECT count(*) as cnt FROM reject_errors");
@@ -145662,7 +145662,7 @@ const createExecutionSlice = (At, yt) => ({
       yt().setStatus(`Boucle: ${$t.length} itérations`, "loading");
       for (let Lt = 0; Lt < $t.length; Lt++) {
         const It = $t[Lt];
-        At({ _currentLoopValue: It }), yt().setStatus(`Boucle ${Lt + 1}/${$t.length}: {{ loop }} = ${It}`, "loading");
+        At({ _currentLoopValue: It }), yt().setStatus(`Boucle ${Lt + 1}/${$t.length}: {{ _loop }} = ${It}`, "loading");
         const Rt = yt().getAllItemsSorted(wt);
         for (const Dt of Rt) {
           if (Dt.type === "child") {
@@ -147787,7 +147787,7 @@ function LoopConfigModal() {
       (($t = kt.loop) == null ? void 0 : $t.enabled) && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(Alert, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(AlertDescription, { className: "text-sm", children: [
           "La requête doit retourner une colonne. Chaque valeur sera utilisée comme variable ",
-          /* @__PURE__ */ jsxRuntimeExports.jsx("code", { className: "bg-muted px-1 rounded text-xs", children: "{{ loop }}" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("code", { className: "bg-muted px-1 rounded text-xs", children: "{{ _loop }}" }),
           " pour chaque itération du groupe."
         ] }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
