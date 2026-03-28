@@ -809,15 +809,25 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
     if (gaugeColors) {
         axisLineStyle.color = gaugeColors;
     } else if (gaugeAxisLabels) {
-        // Labels without explicit colors: use default gradient for zones
-        axisLineStyle.color = [
-            [0.3, '#91cc75'],
-            [0.7, '#fac858'],
-            [1, '#ee6666'],
-        ];
+        // Labels without explicit colors: use theme chart colors, one per zone
+        const themeColors = _getChartColors();
+        const rangeSpan = max - min || 1;
+        axisLineStyle.color = gaugeAxisLabels.map((item, i) => [
+            Math.min((item.value - min) / rangeSpan, 1),
+            themeColors[i % themeColors.length],
+        ]);
+        // Clamp last fraction to exactly 1
+        axisLineStyle.color[axisLineStyle.color.length - 1][0] = 1;
     } else {
-        // Simple gauge: neutral background arc, progress bar shows value
-        axisLineStyle.color = [[1, '#e0e0e0']];
+        // Simple gauge: neutral arc using theme border color
+        const _style = typeof document !== 'undefined' ? getComputedStyle(document.documentElement) : null;
+        const borderRaw = _style?.getPropertyValue('--border').trim();
+        let arcColor = _isDark() ? '#4a5568' : '#e0e0e0';
+        if (borderRaw) {
+            const p = borderRaw.split(/\s+/);
+            arcColor = p.length >= 3 ? `hsl(${p[0]}, ${p[1]}, ${p[2]})` : borderRaw;
+        }
+        axisLineStyle.color = [[1, arcColor]];
     }
 
     // Default: simple gauge with standard numeric labels
