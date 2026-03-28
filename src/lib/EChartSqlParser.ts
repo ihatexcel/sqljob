@@ -861,8 +861,7 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
         axisLine: { lineStyle: axisLineStyle },
         axisTick: { show: false },
         splitLine: { show: false },
-        // distance 38: labels appear just inside inner arc edge (matching reference)
-        axisLabel: { color: textColor, fontSize: 11, distance: 38, formatter: innerLabelFmt },
+        axisLabel: { color: textColor, fontSize: 11, distance: 15, formatter: innerLabelFmt },
         // Progress bar for simple gauges (no explicit labels/colors) — like reference
         progress: {
             show: !gaugeAxisLabels && !gaugeColors,
@@ -870,10 +869,9 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
             itemStyle: { color: '#5470c6' },
         },
         detail: {
-            fontSize: 30, fontWeight: 'bold', color: textColor,
-            width: 120, height: 50,
+            fontSize: 20, fontWeight: 'bold', color: textColor,
+            width: 120, height: 40,
             formatter: isPercent ? '{value}%' : '{value}',
-            // Inside the semicircle arc area (not below it)
             offsetCenter: [0, '-20%'],
         },
         data: [{ value, name: label }],

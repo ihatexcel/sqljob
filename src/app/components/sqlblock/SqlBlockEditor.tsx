@@ -2617,7 +2617,12 @@ function ChartPreviewInEditor({ cell }: { cell: any }) {
             <div dangerouslySetInnerHTML={{ __html: cell._kpiHtml }} />
         </div>
     )
-    return <div ref={chartRef} className="flex-1 min-h-0 min-h-[200px]" />
+    return (
+        <div className="flex flex-col min-h-0">
+            {cell._kpiLabel && <div className="text-base font-semibold text-foreground mb-0.5 text-center shrink-0">{cell._kpiLabel}</div>}
+            <div ref={chartRef} className="flex-1 min-h-[200px]" />
+        </div>
+    )
 }
 
 // ─── SqlBlockEditor (composant principal) ─────────────────────────────────────
