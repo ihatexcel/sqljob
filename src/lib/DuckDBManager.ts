@@ -203,7 +203,7 @@
                 'CATEGORY', 'COLOR', 'COLORS', 'RANGE', 'LABELS',
                 'XLINE', 'YLINE', 'LABEL',
                 // KPI roles
-                'KPI', 'PERCENT', 'COMPARE', 'TREND',
+                'KPI', 'PERCENT', 'COMPARE', 'TREND_PERCENT', 'TREND',
                 // Layout/filter roles (hors scope rendu mais on les crée pour la syntaxe)
                 'SECTION', 'HEADER_IMAGE', 'FOOTER_LINK',
                 'DOWNLOAD_CSV', 'DOWNLOAD_PDF', 'DOWNLOAD_XLSX',

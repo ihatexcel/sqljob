@@ -37,6 +37,7 @@ const KNOWN_ROLES = [
     'LABEL',
     'PERCENT',
     'COMPARE',
+    'TREND_PERCENT',
     'TREND',
     'XLINE',
     'YLINE',
@@ -155,7 +156,7 @@ function _detectChartType(roleMap: Record<string, ColumnRole[]>): string {
     if (has('GAUGE_PERCENT'))      return 'gauge_percent';
     if (has('GAUGE'))              return 'gauge';
     if (has('BOXPLOT'))            return 'boxplot';
-    if (has('KPI') || has('LABEL') || has('PERCENT') || has('COMPARE') || has('TREND')) return 'kpi';
+    if (has('KPI') || has('LABEL') || has('PERCENT') || has('COMPARE') || has('TREND') || has('TREND_PERCENT')) return 'kpi';
     return 'unknown';
 }
 
@@ -1053,30 +1054,33 @@ function _buildKpiHtml(row: any, roleMap: Record<string, ColumnRole[]>, title: s
   ${sublabel ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-top:.2rem">${_esc(sublabel)}</div>` : ''}
 </div>`);
     }
-    // PERCENT / COMPARE / TREND — affichés côte à côte sur une seule ligne
+    // PERCENT / COMPARE / TREND / TREND_PERCENT — côte à côte sur une ligne
     const rowItems: string[] = [];
 
+    // PERCENT : fond coloré, pas de flèche
     for (const col of (roleMap['PERCENT'] || [])) {
         const val = _num(row[col.originalName]);
         const fg = val >= 75 ? '#16a34a' : val >= 40 ? '#ca8a04' : '#dc2626';
+        const bg = val >= 75 ? '#16a34a18' : val >= 40 ? '#ca8a0418' : '#dc262618';
         const lbl = _sub(col.displayName, 'PERCENT');
         const prefix = lbl ? `<span style="color:var(--muted-foreground,#888)">${_esc(lbl)}: </span>` : '';
-        rowItems.push(`<span style="white-space:nowrap;font-size:.8rem;font-weight:600;color:${fg}">${prefix}${val.toFixed(1)}%</span>`);
+        rowItems.push(`<span style="white-space:nowrap;font-size:.8rem">${prefix}<span style="background:${bg};color:${fg};border-radius:.35rem;padding:.1rem .45rem;font-weight:700">${val.toFixed(1)}%</span></span>`);
     }
+
+    // COMPARE : texte coloré, pas de fond ni de flèche
     for (const col of (roleMap['COMPARE'] || [])) {
         const val = _num(row[col.originalName]);
         const sign = val >= 0 ? '+' : '';
         const fg = val >= 0 ? '#16a34a' : '#dc2626';
-        const bg = val >= 0 ? '#16a34a18' : '#dc262618';
-        const arrow = val > 0 ? '↑' : val < 0 ? '↓' : '→';
         const lbl = _sub(col.displayName, 'COMPARE');
         const prefix = lbl ? `<span style="color:var(--muted-foreground,#888)">${_esc(lbl)}: </span>` : '';
-        rowItems.push(`<span style="white-space:nowrap;font-size:.8rem">${prefix}<span style="background:${bg};color:${fg};border-radius:.35rem;padding:.1rem .45rem;font-weight:700">${sign}${val} ${arrow}</span></span>`);
+        rowItems.push(`<span style="white-space:nowrap;font-size:.8rem;font-weight:600;color:${fg}">${prefix}${sign}${val}</span>`);
     }
+
+    // TREND : fond coloré + flèche
     for (const col of (roleMap['TREND'] || [])) {
         const val = _num(row[col.originalName]);
-        const isUp = val > 0;
-        const isNeutral = val === 0;
+        const isUp = val > 0; const isNeutral = val === 0;
         const fg = isNeutral ? '#ca8a04' : isUp ? '#16a34a' : '#dc2626';
         const bg = isNeutral ? '#ca8a0418' : isUp ? '#16a34a18' : '#dc262618';
         const arrow = isNeutral ? '→' : isUp ? '↑' : '↓';
@@ -1084,6 +1088,19 @@ function _buildKpiHtml(row: any, roleMap: Record<string, ColumnRole[]>, title: s
         const lbl = _sub(col.displayName, 'TREND');
         const prefix = lbl ? `<span style="color:var(--muted-foreground,#888)">${_esc(lbl)}: </span>` : '';
         rowItems.push(`<span style="white-space:nowrap;font-size:.8rem">${prefix}<span style="background:${bg};color:${fg};border-radius:.35rem;padding:.1rem .45rem;font-weight:700">${sign}${val} ${arrow}</span></span>`);
+    }
+
+    // TREND_PERCENT : fond coloré + flèche + %
+    for (const col of (roleMap['TREND_PERCENT'] || [])) {
+        const val = _num(row[col.originalName]);
+        const isUp = val > 0; const isNeutral = val === 0;
+        const fg = isNeutral ? '#ca8a04' : isUp ? '#16a34a' : '#dc2626';
+        const bg = isNeutral ? '#ca8a0418' : isUp ? '#16a34a18' : '#dc262618';
+        const arrow = isNeutral ? '→' : isUp ? '↑' : '↓';
+        const sign = isUp ? '+' : '';
+        const lbl = _sub(col.displayName, 'TREND_PERCENT');
+        const prefix = lbl ? `<span style="color:var(--muted-foreground,#888)">${_esc(lbl)}: </span>` : '';
+        rowItems.push(`<span style="white-space:nowrap;font-size:.8rem">${prefix}<span style="background:${bg};color:${fg};border-radius:.35rem;padding:.1rem .45rem;font-weight:700">${sign}${val.toFixed(1)}% ${arrow}</span></span>`);
     }
 
     if (rowItems.length > 0) {
