@@ -1058,7 +1058,7 @@ function _buildKpiHtml(row: any, roleMap: Record<string, ColumnRole[]>, title: s
         const fg = val >= 75 ? '#16a34a' : val >= 40 ? '#ca8a04' : '#dc2626';
         const sublabel = _sub(col.displayName, 'PERCENT');
         parts.push(`<div style="text-align:center;margin-bottom:.5rem">
-  <div style="font-size:clamp(2.5rem,8vw,5rem);font-weight:700;line-height:1.05;color:${fg}">${val.toFixed(1)}%</div>
+  <div style="font-size:clamp(1rem,3vw,1.5rem);font-weight:600;line-height:1.2;color:${fg}">${val.toFixed(1)}%</div>
   ${sublabel ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-top:.2rem">${_esc(sublabel)}</div>` : ''}
 </div>`);
     }
@@ -1069,7 +1069,7 @@ function _buildKpiHtml(row: any, roleMap: Record<string, ColumnRole[]>, title: s
         const icon = val >= 0 ? '▲' : '▼';
         const sublabel = _sub(col.displayName, 'COMPARE', 'Comparaison');
         parts.push(`<div style="text-align:center;margin-bottom:.5rem">
-  <div style="font-size:clamp(2.5rem,8vw,5rem);font-weight:700;line-height:1.05;color:${fg}">${icon} ${sign}${val}</div>
+  <div style="font-size:clamp(1rem,3vw,1.5rem);font-weight:600;line-height:1.2;color:${fg}">${icon} ${sign}${val}</div>
   ${sublabel ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-top:.2rem">${_esc(sublabel)}</div>` : ''}
 </div>`);
     }
@@ -1082,7 +1082,7 @@ function _buildKpiHtml(row: any, roleMap: Record<string, ColumnRole[]>, title: s
         const sign = isUp ? '+' : '';
         const sublabel = _sub(col.displayName, 'TREND', 'Tendance');
         parts.push(`<div style="text-align:center;margin-bottom:.5rem">
-  <div style="font-size:clamp(2.5rem,8vw,5rem);font-weight:700;line-height:1.05;color:${fg}">${arrow} ${sign}${val}</div>
+  <div style="font-size:clamp(1rem,3vw,1.5rem);font-weight:600;line-height:1.2;color:${fg}">${arrow} ${sign}${val}</div>
   ${sublabel ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-top:.2rem">${_esc(sublabel)}</div>` : ''}
 </div>`);
     }
