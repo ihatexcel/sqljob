@@ -946,7 +946,7 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
         type: 'gauge', min, max, startAngle, endAngle, splitNumber,
         center, radius,
         pointer: {
-            show: !!rangeCol,
+            show: !!colorsCol,
             icon: 'triangle',
             length: 14,
             width: 12,
