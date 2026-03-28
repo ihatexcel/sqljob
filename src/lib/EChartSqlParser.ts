@@ -823,10 +823,10 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
         };
         outerSeries = {
             type: 'gauge', min, max, startAngle, endAngle, splitNumber,
-            center, radius,
+            center, radius, z: 2,
             pointer: { show: false }, axisLine: { show: false },
             axisTick: { show: false }, splitLine: { show: false },
-            axisLabel: { color: textColor, fontSize: 11, distance: -15, formatter: outerFmt },
+            axisLabel: { color: textColor, fontSize: 11, distance: -30, formatter: outerFmt },
             detail: { show: false }, data: [],
         };
 
@@ -837,17 +837,17 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
         };
         boldSeries = {
             type: 'gauge', min, max, startAngle, endAngle, splitNumber,
-            center, radius,
+            center, radius, z: 2,
             pointer: { show: false }, axisLine: { show: false },
             axisTick: { show: false }, splitLine: { show: false },
-            axisLabel: { color: textColor, fontSize: 13, fontWeight: 'bold', distance: -15, formatter: activeFmt },
+            axisLabel: { color: textColor, fontSize: 13, fontWeight: 'bold', distance: -30, formatter: activeFmt },
             detail: { show: false }, data: [],
         };
     }
 
     const mainSeries: any = {
         type: 'gauge', min, max, startAngle, endAngle, splitNumber,
-        center, radius,
+        center, radius, z: 10,
         pointer: {
             show: true,
             icon: 'triangle',
