@@ -1850,9 +1850,7 @@ function useStepInputSchemas(ast: SqlBlockAst, cellId: string) {
 
             // 2. Fallback : LIMIT 0 directement sur le SQL amont (sans wrapper subquery)
             if (!schemaTypes) {
-                const inputSql = stepIdx === 0
-                    ? `SELECT * FROM ${quoteId(a.source)}`
-                    : stepSql(a, stepIdx - 1)
+                const inputSql = stepSql(a, stepIdx - 1)
                 if (!inputSql) return
                 const bare = inputSql.trimEnd().replace(/;+\s*$/, '')
                 const hasLimit = /\bLIMIT\s+\d/i.test(bare.replace(/\([\s\S]*?\)/g, ''))

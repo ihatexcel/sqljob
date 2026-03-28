@@ -1107,6 +1107,19 @@ function parseCteBodyToStep(
         }
     }
 
+    // ── unpivot (SELECT * FROM (UNPIVOT src ON cols INTO NAME name VALUE value)) ─
+    if (!typeHint || typeHint === 'unpivot') {
+        const unpivotM = b.match(/^SELECT\s+\*\s+FROM\s+\(\s*UNPIVOT\s+(?:"[^"]*"|\S+)\s+ON\s+([\s\S]+?)\s+INTO\s+NAME\s+((?:"[^"]*"|\S+))\s+VALUE\s+((?:"[^"]*"|\S+))\s*\)\s*;?\s*$/i);
+        if (unpivotM) {
+            return {
+                type: 'unpivot',
+                columns:  splitSelectParts(unpivotM[1]).map(c => unquoteId(c.trim())).filter(Boolean),
+                nameCol:  unquoteId(unpivotM[2].trim()),
+                valueCol: unquoteId(unpivotM[3].trim()),
+            };
+        }
+    }
+
     // ── Fallback : custom_sql (source → {{subquery}}) ─────────────────────────
     const srcQ = quoteId(sourceName);
     const sqlWithPlaceholder = b
@@ -1173,6 +1186,16 @@ function tryParseSimpleSmart(sql: string, materialize: SqlBlockMaterialize): Sql
                 ? splitSelectParts(pivotM[5]).map(c => unquoteId(c.trim())).filter(Boolean)
                 : [];
             return { source: pivotSrc, steps: [{ type: 'pivot', onColumn: onCol, valueColumn: valueCol, valueFn: fn, groupCols }], materialized: materialize };
+        }
+
+        // Cas UNPIVOT : SELECT * FROM (UNPIVOT <source> ON <cols> INTO NAME <name> VALUE <value>)
+        const unpivotM = sql.match(/^SELECT\s+\*\s+FROM\s+\(\s*UNPIVOT\s+((?:"[^"]*"|\w[\w.]*?))\s+ON\s+([\s\S]+?)\s+INTO\s+NAME\s+((?:"[^"]*"|\S+))\s+VALUE\s+((?:"[^"]*"|\S+))\s*\)\s*;?\s*$/i);
+        if (unpivotM) {
+            const unpivotSrc = unquoteId(unpivotM[1].trim());
+            const columns    = splitSelectParts(unpivotM[2]).map(c => unquoteId(c.trim())).filter(Boolean);
+            const nameCol    = unquoteId(unpivotM[3].trim());
+            const valueCol   = unquoteId(unpivotM[4].trim());
+            return { source: unpivotSrc, steps: [{ type: 'unpivot', columns, nameCol, valueCol }], materialized: materialize };
         }
 
         // Cas général : extraire l'expression FROM complète comme source brute
