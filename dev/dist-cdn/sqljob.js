@@ -134065,14 +134065,14 @@ function _buildLineOption(At, yt, xt, wt, Ct) {
   };
 }
 function _buildPieOption(At, yt, xt, wt, Ct, St) {
-  var Nt, Mt, Ot;
-  const Et = xt.includes("percent"), kt = yt.PIECHART_PERCENT || yt.PIECHART || yt.DONUTCHART_PERCENT || yt.DONUTCHART || [], Tt = yt.CATEGORY || [], $t = yt.COLOR || [], Lt = (Nt = kt[0]) == null ? void 0 : Nt.originalName, It = (Mt = Tt[0]) == null ? void 0 : Mt.originalName, Rt = (Ot = $t[0]) == null ? void 0 : Ot.originalName, Dt = At.map((Bt) => {
-    const Ht = {
-      name: _str(It ? Bt[It] : Bt[Lt]),
-      value: _num(Bt[Lt])
+  var Mt, Ot, Bt;
+  const Et = xt.includes("percent"), kt = yt.PIECHART_PERCENT || yt.PIECHART || yt.DONUTCHART_PERCENT || yt.DONUTCHART || [], Tt = yt.CATEGORY || [], $t = yt.COLOR || [], Lt = (Mt = kt[0]) == null ? void 0 : Mt.originalName, It = (Ot = Tt[0]) == null ? void 0 : Ot.originalName, Rt = (Bt = $t[0]) == null ? void 0 : Bt.originalName, Dt = At.map((Ht) => {
+    const Yt = {
+      name: _str(It ? Ht[It] : Ht[Lt]),
+      value: _num(Ht[Lt])
     };
-    return Rt && Bt[Rt] && (Ht.itemStyle = { color: _str(Bt[Rt]) }), Ht;
-  });
+    return Rt && Ht[Rt] && (Yt.itemStyle = { color: _str(Ht[Rt]) }), Yt;
+  }), jt = Math.round(_cssClampPx("clamp(70px,12vw,130px)", 100)), Nt = St ? [Math.round(jt * 0.58), jt] : jt;
   return {
     ...wt,
     tooltip: {
@@ -134086,7 +134086,7 @@ function _buildPieOption(At, yt, xt, wt, Ct, St) {
     },
     series: [{
       type: "pie",
-      radius: St ? ["38%", "65%"] : "60%",
+      radius: Nt,
       data: Dt,
       label: {
         formatter: Et ? "{b}: {d}%" : "{b}: {c}",
