@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { useState } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import { useNotebookStore } from '../store/notebookStore'
 import { Button, Badge, Accordion, AccordionContent, AccordionItem, AccordionTrigger, DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from '@sqlrooms/ui'
@@ -12,14 +12,17 @@ import { ClipboardPaste } from 'lucide-react'
 function CellItem({ cell, cellIndex, path, group }: { cell: any, cellIndex: number, path: number[], group: any }) {
     const {
         devMode, getCellSizeOuterClass, getCellWrapperStyle,
-        getCellSizeInnerClass, shouldShowCell
+        getCellSizeInnerClass, shouldShowCell, forceUpdate
     } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         getCellSizeOuterClass: s.getCellSizeOuterClass,
         getCellWrapperStyle: s.getCellWrapperStyle,
         getCellSizeInnerClass: s.getCellSizeInnerClass,
-        shouldShowCell: s.shouldShowCell
+        shouldShowCell: s.shouldShowCell,
+        forceUpdate: s.forceUpdate,
     })))
+
+    const containerRef = useRef<HTMLDivElement>(null)
 
     const isColumn = group.direction === 'column'
     if (!devMode && !shouldShowCell(cell)) return null
@@ -37,12 +40,58 @@ function CellItem({ cell, cellIndex, path, group }: { cell: any, cellIndex: numb
         ? `border border-border shadow-sm hover:border-primary hover:shadow-lg ${statusBorder}`
         : 'border-0 shadow-none'
 
+    const handleResizeStart = useCallback((e: React.MouseEvent) => {
+        e.preventDefault()
+        const bodyEl = containerRef.current?.querySelector('.cell-body') as HTMLElement | null
+        if (!bodyEl) return
+        const startY = e.clientY
+        const startH = bodyEl.getBoundingClientRect().height
+        let lastH = startH
+        document.body.style.userSelect = 'none'
+        document.body.style.cursor = 'ns-resize'
+        const onMove = (ev: MouseEvent) => {
+            lastH = Math.max(30, Math.round(startH + ev.clientY - startY))
+            bodyEl.style.minHeight = `${lastH}px`
+            bodyEl.style.maxHeight = `${lastH}px`
+        }
+        const onUp = () => {
+            document.removeEventListener('mousemove', onMove)
+            document.removeEventListener('mouseup', onUp)
+            document.body.style.userSelect = ''
+            document.body.style.cursor = ''
+            bodyEl.style.minHeight = ''
+            bodyEl.style.maxHeight = ''
+            cell.minHeightPx = lastH
+            cell.maxHeightPx = lastH
+            forceUpdate()
+        }
+        document.addEventListener('mousemove', onMove)
+        document.addEventListener('mouseup', onUp)
+    }, [cell, forceUpdate])
+
+    const handleResizeReset = useCallback((e: React.MouseEvent) => {
+        e.stopPropagation()
+        delete cell.minHeightPx
+        delete cell.maxHeightPx
+        forceUpdate()
+    }, [cell, forceUpdate])
+
     return (
-        <div className={`flex flex-1 ${outerClass}`} style={wrapperStyle}>
-            <div className={`rounded-lg overflow-hidden bg-background cell-container ${innerClass} ${borderClass}`}>
+        <div className={`flex flex-1 ${outerClass} relative group/cell`} style={wrapperStyle}>
+            <div ref={containerRef} className={`rounded-lg overflow-hidden bg-background cell-container w-full ${innerClass} ${borderClass}`}>
                 <CellHeader cell={cell} path={path} cellIndex={cellIndex} group={group} />
                 <CellBody cell={cell} path={path} cellIndex={cellIndex} group={group} />
             </div>
+            {devMode && (
+                <div
+                    className="absolute bottom-0 left-0 right-0 h-2 cursor-ns-resize z-10 flex items-center justify-center opacity-0 group-hover/cell:opacity-100 transition-opacity"
+                    onMouseDown={handleResizeStart}
+                    onDoubleClick={handleResizeReset}
+                    title="Glisser pour redimensionner · Double-clic pour réinitialiser"
+                >
+                    <div className="w-8 h-px rounded-full bg-primary/60 pointer-events-none" />
+                </div>
+            )}
         </div>
     )
 }
