@@ -136913,7 +136913,7 @@ LIMIT 0`), Au = {};
           /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs text-primary font-medium", children: Yt === "source" ? "Source" : `Aperçu étape ${Yt + 1}` }),
           Jt && /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { viewBox: "0 0 24 24", className: "w-3 h-3 animate-spin text-muted-foreground", fill: "none", stroke: "currentColor", strokeWidth: "2", children: /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M21 12a9 9 0 1 1-6.219-8.56" }) })
         ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1 shrink-0", children: [
-          ((v0 = Dt.chartConfig) == null ? void 0 : v0.chartType) && Dt.chartConfig.chartType !== "datatable" && /* @__PURE__ */ jsxRuntimeExports.jsx(
+          (((v0 = Dt.chartConfig) == null ? void 0 : v0.chartType) && Dt.chartConfig.chartType !== "datatable" || El) && /* @__PURE__ */ jsxRuntimeExports.jsx(
             "button",
             {
               onClick: () => Xs("chart"),
