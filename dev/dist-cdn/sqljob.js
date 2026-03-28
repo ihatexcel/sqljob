@@ -134217,7 +134217,7 @@ function _buildGaugeOption(At, yt, xt, wt, Ct) {
     axisLine: { lineStyle: Yr },
     axisTick: { show: !1 },
     splitLine: { show: !1 },
-    axisLabel: { color: Ct, fontSize: 11, distance: 15, formatter: tn },
+    axisLabel: { color: Ct, fontSize: 11, distance: 25, formatter: tn },
     // Progress bar for simple gauges (no explicit labels/colors) — like reference
     progress: {
       show: !Jt && !Ht,
