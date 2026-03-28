@@ -632,28 +632,6 @@ function SqlStatBody({ cell, path, cellIndex }: any) {
     )
 }
 
-// ─── EChartBody ───────────────────────────────────────────────────────────────
-function EChartBody({ cell, path, cellIndex }: any) {
-    const { devMode, showSqlEditorVisible, hasCellHeight } = useNotebookStore(useShallow(s => ({
-        devMode: s.devMode,
-        showSqlEditorVisible: s.showSqlEditorVisible,
-        hasCellHeight: s.hasCellHeight,
-    })))
-
-    const hasHeight = hasCellHeight(cell)
-
-    return (
-        <div className={hasHeight ? 'flex-1 min-h-0 flex flex-col' : ''}>
-            {showSqlEditorVisible?.(cell) && (
-                <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
-                    placeholder="SELECT month::XAXIS, revenue::BARCHART AS &quot;Revenue&quot; FROM source1" />
-            )}
-            <EChartRenderer cell={cell} hasHeight={hasHeight} />
-            <ResultInfo cell={cell} devOnly />
-        </div>
-    )
-}
-
 // ─── UiParameterBody ──────────────────────────────────────────────────────────
 function UiParameterBody({ cell, path, cellIndex }: any) {
     const { devMode, onParameterValueChange } = useNotebookStore(useShallow(s => ({
@@ -1087,10 +1065,10 @@ export function CellBody({ cell, path, cellIndex, group }: { cell: any, path: nu
             case 'source': return <SourceBody cell={cell} path={path} cellIndex={cellIndex} />
             case 'buttonRunNextCells': return <ButtonRunBody cell={cell} path={path} cellIndex={cellIndex} />
             case 'sql': return <SqlTableBody cell={cell} path={path} cellIndex={cellIndex} showTextResult={true} />
-            case 'table': return <SqlTableBody cell={cell} path={path} cellIndex={cellIndex} />
+
             case 'iframe': return <IframeBody cell={cell} path={path} cellIndex={cellIndex} />
             case 'sqlStat': return <SqlStatBody cell={cell} path={path} cellIndex={cellIndex} />
-            case 'echart': return <EChartBody cell={cell} path={path} cellIndex={cellIndex} />
+
             case 'uiParameter': return <UiParameterBody cell={cell} path={path} cellIndex={cellIndex} />
             case 'publipostageWord':
                 return <PublipostageWordBody cell={cell} path={path} cellIndex={cellIndex} />

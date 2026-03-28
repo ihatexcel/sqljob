@@ -232,12 +232,11 @@ function buildInitialState() {
             { type: 'uiParameter',        label: 'Paramètre UI',             icon: 'tune' },
             { type: 'buttonRunNextCells', label: 'Bouton Exécuter',          icon: 'play-circle' },
             { type: 'sql',  label: 'SQL',                      icon: 'storage' },
-            { type: 'table',              label: 'Tableau',                  icon: 'table' },
+
             { type: 'iframe',             label: 'HTML/Iframe',              icon: 'web' },
             { type: 'sqlStat',            label: 'Stat SQL',                 icon: 'monitoring' },
             { type: 'publipostageWord',   label: 'Publipostage Word',        icon: 'description' },
             { type: 'pdfme',              label: 'PDF (pdfme)',               icon: 'picture-as-pdf' },
-            { type: 'echart',             label: 'EChart (Apache ECharts)',  icon: 'bar-chart' },
             { type: 'perspective',        label: 'Perspective Viewer',       icon: 'analytics' },
         ],
 
