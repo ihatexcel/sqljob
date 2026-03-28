@@ -486,8 +486,8 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
                 />
             )}
             {showResult && (<>
-            {/* Titre dynamique — affiché seulement en mode tableau (le KPI HTML inclut déjà le titre) */}
-            {cell._kpiLabel && vizMode === 'table' && (
+            {/* Titre dynamique — affiché pour tous les modes (label, datatable, chart) */}
+            {cell._kpiLabel && (
                 <div className="text-sm font-semibold text-foreground mb-1 shrink-0">{cell._kpiLabel}</div>
             )}
             {/* Toggle Tableau/Graphique — devMode */}
