@@ -8,7 +8,8 @@
  * removeChild conflicts when the component unmounts or hides.
  */
 import { useState, useCallback, useEffect } from 'react'
-import type { ChartConfig, ChartColumnRole } from '../../../lib/SqlBlockTypes'
+import type { ChartConfig, ChartColumnRole, FilterValueKind } from '../../../lib/SqlBlockTypes'
+import { VarInput } from './SqlBlockEditor'
 
 // ─── Config des types de graphique ────────────────────────────────────────────
 
@@ -250,9 +251,9 @@ export function ChartConfigEditor({ chartConfig, availableColumns, availableColT
         onChange(cfg)
     }, [chartType, cfgLabel, onChange])
 
-    const handleSingleRoleChange = useCallback((role: string, col: string | null) => {
-        const entries = col ? [{ column: col, role, label: undefined }] : []
-        emit(replaceRoleEntries(columns, role, entries))
+    const handleSingleRoleChange = useCallback((role: string, col: string | null, kind?: FilterValueKind) => {
+        const entry: ChartColumnRole | undefined = col ? { column: col, role, label: undefined, ...(kind && kind !== 'column' ? { valueKind: kind } : {}) } : undefined
+        emit(replaceRoleEntries(columns, role, entry ? [entry] : []))
     }, [columns, emit])
 
     const handleSingleRoleLabelChange = useCallback((role: string, label: string) => {
@@ -261,10 +262,10 @@ export function ChartConfigEditor({ chartConfig, availableColumns, availableColT
         emit(replaceRoleEntries(columns, role, [{ ...entry, label: label || undefined }]))
     }, [columns, emit])
 
-    const handleMultiRoleChange = useCallback((role: string, idx: number, field: 'column' | 'label', value: string) => {
+    const handleMultiRoleChange = useCallback((role: string, idx: number, field: 'column' | 'label', value: string, kind?: FilterValueKind) => {
         const entries = getEntriesForRole(columns, role).map((e, i) => {
             if (i !== idx) return e
-            if (field === 'column') return { ...e, column: value, label: undefined }
+            if (field === 'column') return { ...e, column: value, label: undefined, ...(kind && kind !== 'column' ? { valueKind: kind } : { valueKind: undefined }) }
             return { ...e, [field]: value || undefined }
         })
         emit(replaceRoleEntries(columns, role, entries))
@@ -309,6 +310,7 @@ export function ChartConfigEditor({ chartConfig, availableColumns, availableColT
 
             {/* Slots de rôles (vide si datatable) */}
             {typeConfig.roles.map(slot => {
+                        const isKpiType = chartType === 'kpi'
                         if (slot.multiple) {
                             const entries = getEntriesForRole(columns, slot.role)
                             return (
@@ -329,12 +331,22 @@ export function ChartConfigEditor({ chartConfig, availableColumns, availableColT
                                     )}
                                     {entries.map((entry, idx) => (
                                         <div key={idx} className="flex items-center gap-1.5 pl-1">
-                                            <ColSelect
-                                                value={entry.column}
-                                                availableColumns={availableColumns}
-                                                optional={false}
-                                                onChange={col => col && handleMultiRoleChange(slot.role, idx, 'column', col)}
-                                            />
+                                            {isKpiType ? (
+                                                <VarInput
+                                                    value={entry.column}
+                                                    valueKind={entry.valueKind ?? 'column'}
+                                                    availableCols={availableColumns}
+                                                    onChange={(v, k) => handleMultiRoleChange(slot.role, idx, 'column', v, k)}
+                                                    className="flex-1"
+                                                />
+                                            ) : (
+                                                <ColSelect
+                                                    value={entry.column}
+                                                    availableColumns={availableColumns}
+                                                    optional={false}
+                                                    onChange={col => col && handleMultiRoleChange(slot.role, idx, 'column', col)}
+                                                />
+                                            )}
                                             {slot.hasLabel && (
                                                 <input
                                                     type="text"
@@ -362,12 +374,22 @@ export function ChartConfigEditor({ chartConfig, availableColumns, availableColT
                                         {slot.label}
                                         {!slot.optional && <span className="text-destructive ml-0.5">*</span>}
                                     </span>
-                                    <ColSelect
-                                        value={entry?.column ?? NONE_VALUE}
-                                        availableColumns={availableColumns}
-                                        optional={slot.optional}
-                                        onChange={col => handleSingleRoleChange(slot.role, col)}
-                                    />
+                                    {isKpiType ? (
+                                        <VarInput
+                                            value={entry?.column ?? ''}
+                                            valueKind={entry?.valueKind ?? 'column'}
+                                            availableCols={availableColumns}
+                                            onChange={(v, k) => handleSingleRoleChange(slot.role, v || null, k)}
+                                            className="flex-1"
+                                        />
+                                    ) : (
+                                        <ColSelect
+                                            value={entry?.column ?? NONE_VALUE}
+                                            availableColumns={availableColumns}
+                                            optional={slot.optional}
+                                            onChange={col => handleSingleRoleChange(slot.role, col)}
+                                        />
+                                    )}
                                     {slot.hasLabel && entry && (
                                         <input
                                             type="text"

@@ -820,7 +820,7 @@ const VAR_KIND_LABELS: Record<FilterValueKind, string> = {
  * Composant réutilisable : entrée d'une valeur avec choix du mode (valeur fixe / colonne / paramètre).
  * L'icône "boxes" ouvre un menu déroulant pour changer de mode.
  */
-function VarInput({ value, valueKind = 'literal', onChange, availableCols, column, fetchDistinctValues, placeholder = 'valeur', className = '' }: {
+export function VarInput({ value, valueKind = 'literal', onChange, availableCols, column, fetchDistinctValues, placeholder = 'valeur', className = '' }: {
     value: string; valueKind?: FilterValueKind
     onChange: (value: string, kind: FilterValueKind) => void
     availableCols: string[]
