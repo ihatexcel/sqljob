@@ -68,8 +68,8 @@ const DEFAULT_COLORS = [
 
 /**
  * Returns the chart color palette:
- * 1. Explicit --chart-1…--chart-8 CSS variables (user-defined in custom theme)
- * 2. Auto-generated from --primary hue (rotates around the color wheel)
+ * 1. Explicit --chart-1…--chart-5 CSS variables (defined in every theme preset)
+ * 2. Auto-generated from --primary hue (rotates around the color wheel) — for 'default' or custom themes
  * 3. DEFAULT_COLORS fallback
  */
 function _getChartColors(): string[] {
