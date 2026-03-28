@@ -281,9 +281,6 @@
                     if (colName) columnTypes[colName] = roleUpper;
                     return replacement;
                 });
-                if (Object.keys(columnTypes).length > 0) {
-                    console.log('[DuckDB][stripChartCasts] colonnes détectées:', columnTypes, '\n  SQL original (extrait):', sql.slice(0, 200))
-                }
                 return { strippedSql, columnTypes };
             }
 
