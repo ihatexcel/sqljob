@@ -826,7 +826,7 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
             center, radius: '85%', z: 2,
             pointer: { show: false }, axisLine: { show: false },
             axisTick: { show: false }, splitLine: { show: false },
-            axisLabel: { color: textColor, fontSize: 11, distance: -50, formatter: outerFmt },
+            axisLabel: { color: textColor, fontSize: 11, distance: -50, rotate: 'tangential', formatter: outerFmt },
             detail: { show: false }, data: [],
         };
 
@@ -840,7 +840,7 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
             center, radius: '85%', z: 2,
             pointer: { show: false }, axisLine: { show: false },
             axisTick: { show: false }, splitLine: { show: false },
-            axisLabel: { color: textColor, fontSize: 13, fontWeight: 'bold', distance: -50, formatter: activeFmt },
+            axisLabel: { color: textColor, fontSize: 13, fontWeight: 'bold', distance: -50, rotate: 'tangential', formatter: activeFmt },
             detail: { show: false }, data: [],
         };
     }
