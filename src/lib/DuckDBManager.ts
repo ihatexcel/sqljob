@@ -202,9 +202,8 @@
                 'GAUGE', 'GAUGE_PERCENT',
                 'CATEGORY', 'COLOR', 'COLORS', 'RANGE', 'LABELS',
                 'XLINE', 'YLINE', 'LABEL',
-                // KPI / Stat roles
+                // KPI roles
                 'KPI', 'PERCENT', 'COMPARE', 'TREND',
-                'TEXT_LARGE', 'TEXT_MEDIUM', 'TEXT_SMALL',
                 // Layout/filter roles (hors scope rendu mais on les crée pour la syntaxe)
                 'SECTION', 'HEADER_IMAGE', 'FOOTER_LINK',
                 'DOWNLOAD_CSV', 'DOWNLOAD_PDF', 'DOWNLOAD_XLSX',

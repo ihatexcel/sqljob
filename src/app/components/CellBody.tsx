@@ -486,12 +486,8 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
                 />
             )}
             {showResult && (<>
-            {/* Titre dynamique — affiché pour tous les modes (label, datatable, chart) */}
-            {cell._kpiLabel && (
-                <div className="text-sm font-semibold text-foreground mb-1 shrink-0">{cell._kpiLabel}</div>
-            )}
-            {/* Toggle Tableau/Graphique — devMode */}
-            {devMode && cell.type === 'sql' && hasChart && (
+            {/* Toggle Tableau/Graphique — uniquement pour les charts ECharts (pas KPI) */}
+            {devMode && cell.type === 'sql' && cell._echartsOption && (
                 <div className="flex items-center gap-2 mb-1 shrink-0">
                     <div className="flex rounded border border-border overflow-hidden text-xs">
                         <button onClick={() => setVizMode('chart')}
@@ -505,8 +501,7 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
                     </div>
                 </div>
             )}
-            {/* Toggle visible en mode client si chart disponible */}
-            {!devMode && hasChart && cell.type === 'sql' && (
+            {!devMode && cell.type === 'sql' && cell._echartsOption && (
                 <div className="flex rounded border border-border overflow-hidden text-xs mb-1 shrink-0 self-start">
                     <button onClick={() => setVizMode('chart')}
                         className={`px-2 py-0.5 transition-colors ${vizMode === 'chart' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}>
@@ -517,6 +512,10 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
                         Tableau
                     </button>
                 </div>
+            )}
+            {/* Titre dynamique — centré, sous les boutons */}
+            {cell._kpiLabel && (
+                <div className="text-base font-semibold text-foreground mb-2 shrink-0 text-center w-full">{cell._kpiLabel}</div>
             )}
             {/* Mode graphique */}
             {vizMode === 'chart' && hasChart && (

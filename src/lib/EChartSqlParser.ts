@@ -33,9 +33,6 @@ const KNOWN_ROLES = [
     'COLORS',
     'LABELS',
     'RANGE',
-    'TEXT_LARGE',
-    'TEXT_MEDIUM',
-    'TEXT_SMALL',
     'KPI',
     'LABEL',
     'PERCENT',
@@ -158,7 +155,6 @@ function _detectChartType(roleMap: Record<string, ColumnRole[]>): string {
     if (has('GAUGE_PERCENT'))      return 'gauge_percent';
     if (has('GAUGE'))              return 'gauge';
     if (has('BOXPLOT'))            return 'boxplot';
-    if (has('TEXT_LARGE') || has('TEXT_MEDIUM') || has('TEXT_SMALL')) return 'kpi';
     if (has('KPI') || has('LABEL') || has('PERCENT') || has('COMPARE') || has('TREND')) return 'kpi';
     return 'unknown';
 }
@@ -1034,70 +1030,12 @@ function _fmtVal(v: any): string {
  *    DaisyUI stat cards side by side
  */
 export function buildKpiHtml(results: any[], parsed: ParsedColumnRoles, label?: string): string {
-    const { roleMap } = parsed;
     const row = results[0] || {};
-
-    const hasText = !!(roleMap['TEXT_LARGE']?.length || roleMap['TEXT_MEDIUM']?.length || roleMap['TEXT_SMALL']?.length);
-
-    if (hasText) {
-        return _buildStatHtml(row, roleMap, label ?? null);
-    }
-    return _buildKpiLegacy(row, roleMap, label ?? null);
+    return _buildKpiHtml(row, parsed.roleMap, label ?? null);
 }
 
-/** Stat mode: centered card with scaled value, comparison badge */
-function _buildStatHtml(row: any, roleMap: Record<string, ColumnRole[]>, title: string | null): string {
-    const parts: string[] = [];
-
-    // Main value(s) — TEXT_LARGE first, then MEDIUM, then SMALL
-    const sizeMap: Array<[string, string]> = [
-        ['TEXT_LARGE',  'clamp(2.5rem,8vw,4.5rem)'],
-        ['TEXT_MEDIUM', 'clamp(1.5rem,5vw,2.75rem)'],
-        ['TEXT_SMALL',  'clamp(1rem,3vw,1.5rem)'],
-    ];
-
-    let mainValue: number | null = null;
-
-    for (const [role, fontSize] of sizeMap) {
-        for (const col of (roleMap[role] || [])) {
-            const raw = row[col.originalName];
-            const val = _fmtVal(raw);
-            const rawLabel = col.displayName !== role ? col.displayName : '';
-            const sublabel = rawLabel && rawLabel.toLowerCase() !== 'null' ? rawLabel : '';
-            if (mainValue === null && typeof raw === 'number') mainValue = raw;
-            else if (mainValue === null && raw !== null && raw !== undefined && !isNaN(Number(raw))) mainValue = Number(raw);
-            parts.push(`<div style="text-align:center;margin-bottom:.25rem">
-  <div style="font-size:${fontSize};font-weight:700;line-height:1.05;color:var(--foreground,#111)">${val}</div>
-  ${sublabel ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-top:.2rem">${_esc(sublabel)}</div>` : ''}
-</div>`);
-        }
-    }
-
-    // COMPARE — shown below the main value with % diff badge
-    for (const col of (roleMap['COMPARE'] || [])) {
-        const compareVal = _num(row[col.originalName]);
-        const compareLabel = (col.displayName !== 'COMPARE') ? col.displayName : 'Précédent';
-        if (mainValue !== null) {
-            const pct = compareVal !== 0 ? ((mainValue - compareVal) / Math.abs(compareVal)) * 100 : 0;
-            const sign = pct >= 0 ? '+' : '';
-            const arrow = pct > 0 ? '↗' : pct < 0 ? '↘' : '→';
-            const bg = pct >= 0 ? '#16a34a22' : '#dc262622';
-            const fg = pct >= 0 ? '#16a34a' : '#dc2626';
-            parts.push(`<div style="text-align:center;margin-top:.75rem;font-size:.8rem;color:var(--muted-foreground,#888)">
-  ${_esc(compareLabel)}: ${_fmtVal(compareVal)}
-  <span style="display:inline-block;background:${bg};color:${fg};border-radius:.25rem;padding:.1rem .4rem;font-size:.75rem;font-weight:700;margin-left:.4rem">${sign}${Math.round(pct)}% ${arrow}</span>
-</div>`);
-        } else {
-            parts.push(`<div style="text-align:center;margin-top:.75rem;font-size:.8rem;color:var(--muted-foreground,#888)">${_esc(compareLabel)}: ${_fmtVal(compareVal)}</div>`);
-        }
-    }
-
-    if (parts.length === 0) return '<div style="padding:1rem;color:#888;font-size:.875rem;text-align:center">Aucune donnée</div>';
-    return `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem 2rem;height:100%;box-sizing:border-box">${parts.join('\n')}</div>`;
-}
-
-/** KPI mode: centered card — KPI / LABEL (compat) / PERCENT / COMPARE / TREND */
-function _buildKpiLegacy(row: any, roleMap: Record<string, ColumnRole[]>, title: string | null): string {
+/** KPI: centered card — KPI / LABEL (compat) / PERCENT / COMPARE / TREND */
+function _buildKpiHtml(row: any, roleMap: Record<string, ColumnRole[]>, title: string | null): string {
     const parts: string[] = [];
 
     function _sub(display: string, role: string, fallback = ''): string {
