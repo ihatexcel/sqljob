@@ -91,7 +91,7 @@ const CHART_ROLES_ORDERED = [
     'XAXIS', 'YAXIS', 'CATEGORY',
     'COLOR', 'COLORS', 'LABELS', 'RANGE',
     'TEXT_LARGE', 'TEXT_MEDIUM', 'TEXT_SMALL',
-    'LABEL', 'PERCENT', 'COMPARE', 'TREND', 'XLINE', 'YLINE',
+    'KPI', 'LABEL', 'PERCENT', 'COMPARE', 'TREND', 'XLINE', 'YLINE',
 ];
 const CHART_ROLES_SET = new Set(CHART_ROLES_ORDERED);
 
@@ -146,7 +146,7 @@ export function parseChartFinalSelect(selectSql: string): ChartConfig | null {
         const column = m[1] ?? m[2] ?? m[3];
         const role = m[4].toUpperCase();
         const label = m[5] ?? m[6] ?? undefined;
-        // Skip LABEL role — it's a title, not a data column
+        // Skip LABEL role — it's a title prefix, not a data column
         if (column && CHART_ROLES_SET.has(role) && role !== 'LABEL') {
             columns.push({ column, role, label });
         }
@@ -167,8 +167,8 @@ export function parseChartFinalSelect(selectSql: string): ChartConfig | null {
     else if (has('DONUTCHART_PERCENT') || has('DONUTCHART')) chartType = 'donut';
     else if (has('GAUGE_PERCENT') || has('GAUGE')) chartType = 'gauge';
     else if (has('BOXPLOT')) chartType = 'boxplot';
-    else if (has('TEXT_LARGE') || has('TEXT_MEDIUM') || has('TEXT_SMALL')) chartType = 'stat';
-    else if (has('PERCENT') || has('COMPARE') || has('TREND')) chartType = 'kpi';
+    else if (has('TEXT_LARGE') || has('TEXT_MEDIUM') || has('TEXT_SMALL')) chartType = 'kpi';
+    else if (has('KPI') || has('LABEL') || has('PERCENT') || has('COMPARE') || has('TREND')) chartType = 'kpi';
 
     const cfg: ChartConfig = { chartType, columns };
     if (cfgLabel) cfg.label = cfgLabel;
@@ -1259,7 +1259,7 @@ export function sqlToAstSmart(sql: string, materialize: SqlBlockMaterialize = 'v
         if (labelPrefix === null) return ast;
         const chartConfig: ChartConfig = ast.chartConfig
             ? { ...ast.chartConfig, label: labelPrefix }
-            : { chartType: 'stat', columns: [], label: labelPrefix };
+            : { chartType: 'kpi', columns: [], label: labelPrefix };
         return { ...ast, chartConfig };
     }
     function withLabelResult(r: SqlParseResult): SqlParseResult {

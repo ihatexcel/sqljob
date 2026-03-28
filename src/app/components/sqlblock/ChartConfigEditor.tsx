@@ -94,20 +94,13 @@ const CHART_TYPE_CONFIGS: Record<string, { label: string; icon: string; roles: R
         label: 'KPI',
         icon: 'material-symbols-light:123',
         roles: [
-            { role: 'LABEL',   label: 'Valeurs',    multiple: true,  optional: false, hasLabel: true },
-            { role: 'PERCENT', label: 'Pourcentage', multiple: false, optional: true,  hasLabel: true },
-            { role: 'COMPARE', label: 'Comparaison', multiple: false, optional: true,  hasLabel: true },
-            { role: 'TREND',   label: 'Tendance',    multiple: false, optional: true,  hasLabel: true },
-        ],
-    },
-    stat: {
-        label: 'Stat',
-        icon: 'material-symbols-light:monitoring',
-        roles: [
-            { role: 'TEXT_LARGE',  label: 'Valeur (grand)',  multiple: false, optional: true, hasLabel: true },
-            { role: 'TEXT_MEDIUM', label: 'Valeur (moyen)',  multiple: false, optional: true, hasLabel: true },
-            { role: 'TEXT_SMALL',  label: 'Valeur (petit)',  multiple: false, optional: true, hasLabel: true },
-            { role: 'COMPARE',     label: 'Comparaison',     multiple: false, optional: true, hasLabel: true },
+            { role: 'KPI',         label: 'Valeur',          multiple: true,  optional: false, hasLabel: true },
+            { role: 'TEXT_LARGE',  label: 'Valeur (grand)',  multiple: false, optional: true,  hasLabel: true },
+            { role: 'TEXT_MEDIUM', label: 'Valeur (moyen)',  multiple: false, optional: true,  hasLabel: true },
+            { role: 'TEXT_SMALL',  label: 'Valeur (petit)',  multiple: false, optional: true,  hasLabel: true },
+            { role: 'PERCENT',     label: 'Pourcentage',     multiple: false, optional: true,  hasLabel: true },
+            { role: 'COMPARE',     label: 'Comparaison',     multiple: false, optional: true,  hasLabel: true },
+            { role: 'TREND',       label: 'Tendance',        multiple: false, optional: true,  hasLabel: true },
         ],
     },
 }

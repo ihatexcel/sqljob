@@ -287,7 +287,7 @@ export interface ChartColumnRole {
 
 /** Configuration de visualisation graphique associée à l'AST. */
 export interface ChartConfig {
-    chartType: string;          // 'bar' | 'line' | 'bar+line' | 'pie' | 'donut' | 'gauge' | 'boxplot' | 'kpi' | 'stat'
+    chartType: string;          // 'bar' | 'line' | 'bar+line' | 'pie' | 'donut' | 'gauge' | 'boxplot' | 'kpi'
     columns: ChartColumnRole[]; // rôles dans l'ordre du SELECT final
     label?: string;             // titre affiché (stat/kpi) — génère SELECT '...'::LABEL; dans le SQL
 }
