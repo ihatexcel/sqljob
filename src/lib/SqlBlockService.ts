@@ -163,14 +163,14 @@ export function astToSql(ast: SqlBlockAst): string {
     const { source, steps, chartConfig } = ast;
 
     if (!steps || steps.length === 0) {
-        const from = quoteId(source);
+        const from = fromExpr(source);
         if (chartConfig?.columns?.length) return buildChartFinalSelect(from, chartConfig);
         return `SELECT * FROM ${from}`;
     }
     // Step unique sans nom : forme simple (pas de CTE)
     // Exception : custom_sql → toujours en CTE pour préserver la structure (SQL non standard)
     if (steps.length === 1 && !steps[0].name?.trim() && steps[0].type !== 'custom_sql') {
-        const sql = singleStepToSql(quoteId(source), steps[0]);
+        const sql = singleStepToSql(fromExpr(source), steps[0]);
         const desc = steps[0].description?.trim();
         // Pas de forme simple quand chartConfig présent : on passe par CTE pour pouvoir
         // ajouter le SELECT final avec annotations
@@ -181,7 +181,7 @@ export function astToSql(ast: SqlBlockAst): string {
 
     const ctes: string[] = [];
     for (let i = 0; i < steps.length; i++) {
-        const prevSrc = i === 0 ? quoteId(source) : quoteId(getCteName(steps[i - 1], i - 1));
+        const prevSrc = i === 0 ? fromExpr(source) : quoteId(getCteName(steps[i - 1], i - 1));
         const inner = singleStepToSql(prevSrc, steps[i]);
         const cteName = quoteId(getCteName(steps[i], i));
         const desc = steps[i].description?.trim();
@@ -228,7 +228,7 @@ export function stepSql(ast: SqlBlockAst, stepIndex: number): string {
     if (!ast.source && !ast.steps?.length) return '';
     if (stepIndex < 0 || !ast.steps?.length) {
         if (!ast.source) return '';
-        return `SELECT * FROM ${quoteId(ast.source)}`;
+        return `SELECT * FROM ${fromExpr(ast.source)}`;
     }
     return astToSql({ ...ast, steps: ast.steps.slice(0, stepIndex + 1) });
 }
@@ -651,6 +651,11 @@ export function quoteId(name: string): string {
     return `"${name.replace(/"/g, '""')}"`;
 }
 
+/** Génère l'expression FROM : sous-requête brute (commence par '(') → as-is, sinon identifiant quoté. */
+function fromExpr(source: string): string {
+    return source.startsWith('(') ? source : quoteId(source);
+}
+
 function unquoteId(name: string): string {
     if (name.startsWith('"') && name.endsWith('"')) return name.slice(1, -1).replace(/""/g, '"');
     return name;
@@ -713,8 +718,11 @@ function extractCtesWithFullBody(sql: string): CteFullInfo[] | null {
         const descM = normalized.match(/^\/\*(.*?)\*\//s);
         const description = descM ? descM[1].trim() : undefined;
         const bodyNoComment = normalized.replace(/^\/\*.*?\*\/\s*/s, '').trim();
+        // Pour PIVOT/UNPIVOT : la vraie source est l'identifiant à l'intérieur de la sous-requête
+        const pivotSrcM = bodyNoComment.match(/\bFROM\s+\(\s*(?:UN)?PIVOT\s+((?:"[^"]*"|\w[\w.]*?))\s+/i);
         const srcM = bodyNoComment.match(/\bFROM\s+((?:"[^"]*"|\S)+)/i);
-        const source = srcM ? unquoteId(srcM[1]) : '';
+        const rawSrcToken = pivotSrcM ? pivotSrcM[1] : srcM ? srcM[1] : null;
+        const source = rawSrcToken && !rawSrcToken.startsWith('(') ? unquoteId(rawSrcToken) : '';
         ctes.push({ name, fullBody: bodyNoComment, source, description });
 
         // Saute la virgule séparatrice
@@ -1083,6 +1091,22 @@ function parseCteBodyToStep(
         }
     }
 
+    // ── pivot (SELECT * FROM (PIVOT src ON col USING fn(col) GROUP BY ...)) ─────
+    if (!typeHint || typeHint === 'pivot') {
+        const pivotM = b.match(/^SELECT\s+\*\s+FROM\s+\(\s*PIVOT\s+(?:"[^"]*"|\S+)\s+ON\s+((?:"[^"]*"|\S+))\s+USING\s+(\w+)\s*\(\s*((?:"[^"]*"|\S+))\s*\)(?:\s+GROUP\s+BY\s+([\s\S]+?))?\s*\)\s*;?\s*$/i);
+        if (pivotM) {
+            return {
+                type: 'pivot',
+                onColumn:    unquoteId(pivotM[1].trim()),
+                valueFn:     pivotM[2].toUpperCase(),
+                valueColumn: unquoteId(pivotM[3].trim()),
+                groupCols:   pivotM[4]
+                    ? splitSelectParts(pivotM[4]).map(c => unquoteId(c.trim())).filter(Boolean)
+                    : [],
+            };
+        }
+    }
+
     // ── Fallback : custom_sql (source → {{subquery}}) ─────────────────────────
     const srcQ = quoteId(sourceName);
     const sqlWithPlaceholder = b
@@ -1117,16 +1141,52 @@ function tryParseCteChainSmart(sql: string, materialize: SqlBlockMaterialize): S
     return { source, steps, materialized: materialize, ...(chartConfig ? { chartConfig } : {}) };
 }
 
+/**
+ * Extrait l'expression FROM complète quand la source est une sous-requête (commence par '(').
+ * Ex: `SELECT * FROM (VALUES ...) t(a, b)` → `(VALUES ...) t(a, b)`
+ */
+function extractSubquerySource(sql: string): string | null {
+    const m = sql.match(/\bFROM\s+(\([\s\S]+)/i);
+    if (!m) return null;
+    return m[1].replace(/\s*;?\s*$/, '').trim();
+}
+
 /** Parser simple SELECT (hors CTE) étendu aux patterns P1 (WHERE, ORDER BY, LIMIT).
  * Les patterns non reconnus deviennent un step custom_sql (préserve le SQL sans perte). */
 function tryParseSimpleSmart(sql: string, materialize: SqlBlockMaterialize): SqlBlockAst | null {
     const srcM = sql.match(/^SELECT\s+(?:[\s\S]+?)\s+FROM\s+((?:"[^"]*"|\S+))/i);
     if (!srcM) return null;
-    const source = unquoteId(srcM[1]);
+    const firstToken = srcM[1];
+    const source = unquoteId(firstToken);
 
-    // Si la source commence par '(', c'est une sous-requête (VALUES, PIVOT, SELECT imbriqué…).
-    // On ne peut pas la représenter comme un identifiant → le fallback custom_sql s'en charge.
-    if (source.startsWith('(')) return null;
+    // ── Sous-requête comme source (FROM commence par '(') ──────────────────────
+    if (source.startsWith('(')) {
+        // Cas PIVOT : SELECT * FROM (PIVOT <source> ON <col> USING <fn>(<col>) GROUP BY ...)
+        // → parser en PivotStep avec la vraie source DuckDB identifiée
+        const pivotM = sql.match(/^SELECT\s+\*\s+FROM\s+\(\s*PIVOT\s+((?:"[^"]*"|\w[\w.]*?))\s+ON\s+((?:"[^"]*"|\S+))\s+USING\s+(\w+)\s*\(\s*((?:"[^"]*"|\S+))\s*\)(?:\s+GROUP\s+BY\s+([\s\S]+?))?\s*\)\s*;?\s*$/i);
+        if (pivotM) {
+            const pivotSrc = unquoteId(pivotM[1].trim());
+            const onCol    = unquoteId(pivotM[2].trim());
+            const fn       = pivotM[3].toUpperCase();
+            const valueCol = unquoteId(pivotM[4].trim());
+            const groupCols = pivotM[5]
+                ? splitSelectParts(pivotM[5]).map(c => unquoteId(c.trim())).filter(Boolean)
+                : [];
+            return { source: pivotSrc, steps: [{ type: 'pivot', onColumn: onCol, valueColumn: valueCol, valueFn: fn, groupCols }], materialized: materialize };
+        }
+
+        // Cas général : extraire l'expression FROM complète comme source brute
+        const rawSource = extractSubquerySource(sql);
+        if (!rawSource) return null;
+
+        const chartConfig = parseChartFinalSelect(sql) ?? undefined;
+        if (chartConfig) return { source: rawSource, steps: [], materialized: materialize, chartConfig };
+
+        // SELECT * FROM (<subquery>) sans roles → SELECT * passthrough (pas de steps)
+        const step = parseCteBodyToStep(sql, null, rawSource);
+        if (step === null) return { source: rawSource, steps: [], materialized: materialize };
+        return { source: rawSource, steps: [step], materialized: materialize };
+    }
 
     // Si le SELECT contient des annotations ::ROLE, c'est un SELECT final de visualisation
     const chartConfig = parseChartFinalSelect(sql) ?? undefined;

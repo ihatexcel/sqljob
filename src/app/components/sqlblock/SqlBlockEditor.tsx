@@ -2747,7 +2747,7 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
             try {
                 const cleanAst = { ...ast, chartConfig: undefined }
                 const inputSql = stepIdx === 0
-                    ? `SELECT * FROM ${quoteId(ast.source)}`
+                    ? stepSql(cleanAst, -1)
                     : stepSql(cleanAst, stepIdx - 1)
                 if (!inputSql) return { values: [], hasMore: false }
                 const col = `"${column.replace(/"/g, '""')}"`
