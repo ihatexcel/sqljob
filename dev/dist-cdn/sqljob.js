@@ -132383,6 +132383,7 @@ hm(xv, "CHART_TYPE_NAMES", [
   "YLINE",
   "LABEL",
   // KPI / Stat roles
+  "KPI",
   "PERCENT",
   "COMPARE",
   "TREND",
@@ -132468,6 +132469,7 @@ const CHART_ROLES_ORDERED = [
   "TEXT_LARGE",
   "TEXT_MEDIUM",
   "TEXT_SMALL",
+  "KPI",
   "LABEL",
   "PERCENT",
   "COMPARE",
@@ -132509,7 +132511,7 @@ function parseChartFinalSelect(At) {
   if (!St.length && !yt) return null;
   const kt = new Set(St.map((It) => It.role)), Tt = (It) => kt.has(It);
   let $t = "bar";
-  Tt("BARCHART_STACKED_PERCENT") || Tt("BARCHART_PERCENT") || Tt("BARCHART_STACKED") ? $t = "bar" : Tt("BARCHART") && Tt("LINECHART") ? $t = "bar+line" : Tt("BARCHART") ? $t = (Tt("YAXIS") && !Tt("XAXIS"), "bar") : Tt("LINECHART_PERCENT") || Tt("LINECHART") ? $t = "line" : Tt("PIECHART_PERCENT") || Tt("PIECHART") ? $t = "pie" : Tt("DONUTCHART_PERCENT") || Tt("DONUTCHART") ? $t = "donut" : Tt("GAUGE_PERCENT") || Tt("GAUGE") ? $t = "gauge" : Tt("BOXPLOT") ? $t = "boxplot" : Tt("TEXT_LARGE") || Tt("TEXT_MEDIUM") || Tt("TEXT_SMALL") ? $t = "stat" : (Tt("PERCENT") || Tt("COMPARE") || Tt("TREND")) && ($t = "kpi");
+  Tt("BARCHART_STACKED_PERCENT") || Tt("BARCHART_PERCENT") || Tt("BARCHART_STACKED") ? $t = "bar" : Tt("BARCHART") && Tt("LINECHART") ? $t = "bar+line" : Tt("BARCHART") ? $t = (Tt("YAXIS") && !Tt("XAXIS"), "bar") : Tt("LINECHART_PERCENT") || Tt("LINECHART") ? $t = "line" : Tt("PIECHART_PERCENT") || Tt("PIECHART") ? $t = "pie" : Tt("DONUTCHART_PERCENT") || Tt("DONUTCHART") ? $t = "donut" : Tt("GAUGE_PERCENT") || Tt("GAUGE") ? $t = "gauge" : Tt("BOXPLOT") ? $t = "boxplot" : (Tt("TEXT_LARGE") || Tt("TEXT_MEDIUM") || Tt("TEXT_SMALL") || Tt("KPI") || Tt("LABEL") || Tt("PERCENT") || Tt("COMPARE") || Tt("TREND")) && ($t = "kpi");
   const Lt = { chartType: $t, columns: St };
   return yt && (Lt.label = yt), Lt;
 }
@@ -133255,7 +133257,7 @@ function sqlToAstSmart(At, yt = "view") {
   }
   function St(It) {
     if (xt === null) return It;
-    const Rt = It.chartConfig ? { ...It.chartConfig, label: xt } : { chartType: "stat", columns: [], label: xt };
+    const Rt = It.chartConfig ? { ...It.chartConfig, label: xt } : { chartType: "kpi", columns: [], label: xt };
     return { ...It, chartConfig: Rt };
   }
   function Et(It) {
@@ -133359,20 +133361,13 @@ const SqlBlockService = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.def
     label: "KPI",
     icon: "material-symbols-light:123",
     roles: [
-      { role: "LABEL", label: "Valeurs", multiple: !0, optional: !1, hasLabel: !0 },
-      { role: "PERCENT", label: "Pourcentage", multiple: !1, optional: !0, hasLabel: !0 },
-      { role: "COMPARE", label: "Comparaison", multiple: !1, optional: !0, hasLabel: !0 },
-      { role: "TREND", label: "Tendance", multiple: !1, optional: !0, hasLabel: !0 }
-    ]
-  },
-  stat: {
-    label: "Stat",
-    icon: "material-symbols-light:monitoring",
-    roles: [
+      { role: "KPI", label: "Valeur", multiple: !0, optional: !1, hasLabel: !0 },
       { role: "TEXT_LARGE", label: "Valeur (grand)", multiple: !1, optional: !0, hasLabel: !0 },
       { role: "TEXT_MEDIUM", label: "Valeur (moyen)", multiple: !1, optional: !0, hasLabel: !0 },
       { role: "TEXT_SMALL", label: "Valeur (petit)", multiple: !1, optional: !0, hasLabel: !0 },
-      { role: "COMPARE", label: "Comparaison", multiple: !1, optional: !0, hasLabel: !0 }
+      { role: "PERCENT", label: "Pourcentage", multiple: !1, optional: !0, hasLabel: !0 },
+      { role: "COMPARE", label: "Comparaison", multiple: !1, optional: !0, hasLabel: !0 },
+      { role: "TREND", label: "Tendance", multiple: !1, optional: !0, hasLabel: !0 }
     ]
   }
 }, NONE_VALUE = "__none__", ROLE_COMPAT_MAP = {
@@ -133664,6 +133659,7 @@ const DUCKDB_TYPES = [
   "TEXT_LARGE",
   "TEXT_MEDIUM",
   "TEXT_SMALL",
+  "KPI",
   "LABEL",
   "PERCENT",
   "COMPARE",
@@ -133720,7 +133716,7 @@ function _detectChartType(At) {
     var wt;
     return !!((wt = At[xt]) != null && wt.length);
   };
-  return yt("BARCHART_STACKED_PERCENT") ? "bar_stacked_percent" : yt("BARCHART_PERCENT") ? "bar_percent" : yt("BARCHART_STACKED") ? "bar_stacked" : yt("BARCHART") && yt("LINECHART") ? "bar_line" : yt("BARCHART") ? yt("YAXIS") && !yt("XAXIS") ? "bar_horizontal" : "bar" : yt("LINECHART_PERCENT") ? "line_percent" : yt("LINECHART") ? "line" : yt("PIECHART_PERCENT") ? "pie_percent" : yt("PIECHART") ? "pie" : yt("DONUTCHART_PERCENT") ? "donut_percent" : yt("DONUTCHART") ? "donut" : yt("GAUGE_PERCENT") ? "gauge_percent" : yt("GAUGE") ? "gauge" : yt("BOXPLOT") ? "boxplot" : yt("TEXT_LARGE") || yt("TEXT_MEDIUM") || yt("TEXT_SMALL") || yt("LABEL") || yt("PERCENT") || yt("COMPARE") || yt("TREND") ? "kpi" : "unknown";
+  return yt("BARCHART_STACKED_PERCENT") ? "bar_stacked_percent" : yt("BARCHART_PERCENT") ? "bar_percent" : yt("BARCHART_STACKED") ? "bar_stacked" : yt("BARCHART") && yt("LINECHART") ? "bar_line" : yt("BARCHART") ? yt("YAXIS") && !yt("XAXIS") ? "bar_horizontal" : "bar" : yt("LINECHART_PERCENT") ? "line_percent" : yt("LINECHART") ? "line" : yt("PIECHART_PERCENT") ? "pie_percent" : yt("PIECHART") ? "pie" : yt("DONUTCHART_PERCENT") ? "donut_percent" : yt("DONUTCHART") ? "donut" : yt("GAUGE_PERCENT") ? "gauge_percent" : yt("GAUGE") ? "gauge" : yt("BOXPLOT") ? "boxplot" : yt("TEXT_LARGE") || yt("TEXT_MEDIUM") || yt("TEXT_SMALL") || yt("KPI") || yt("LABEL") || yt("PERCENT") || yt("COMPARE") || yt("TREND") ? "kpi" : "unknown";
 }
 function buildEChartsOption(At, yt) {
   const { roleMap: xt, chartType: wt } = yt;
@@ -134341,38 +134337,38 @@ function _buildStatHtml(At, yt, xt) {
 }
 function _buildKpiLegacy(At, yt, xt) {
   const wt = [];
-  xt && wt.push(`<div class="stat">
-  <div class="stat-title" style="font-size:.65rem;letter-spacing:.06em;text-transform:uppercase">${_esc(xt)}</div>
-</div>`);
-  for (const Ct of yt.LABEL || []) {
-    const St = _str(At[Ct.originalName]);
-    wt.push(`<div class="stat">
-  <div class="stat-title">${Ct.displayName !== "LABEL" ? _esc(Ct.displayName) : ""}</div>
-  <div class="stat-value text-primary">${_esc(St)}</div>
-</div>`);
-  }
-  for (const Ct of yt.PERCENT || []) {
-    const St = _num(At[Ct.originalName]), Et = St >= 75 ? "text-green-600 dark:text-green-400" : St >= 40 ? "text-yellow-500 dark:text-yellow-400" : "text-red-500 dark:text-red-400";
-    wt.push(`<div class="stat">
-  <div class="stat-title">${Ct.displayName !== "PERCENT" ? _esc(Ct.displayName) : ""}</div>
-  <div class="stat-value ${Et}">${St.toFixed(1)}%</div>
+  xt && wt.push(`<div style="text-align:center;font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted-foreground,#888);margin-bottom:.75rem">${_esc(xt)}</div>`);
+  const Ct = [...yt.KPI || [], ...yt.LABEL || []];
+  for (const St of Ct) {
+    const Et = _str(At[St.originalName]), kt = St.displayName !== "KPI" && St.displayName !== "LABEL" ? St.displayName : "";
+    wt.push(`<div style="text-align:center;margin-bottom:.5rem">
+  ${kt ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-bottom:.2rem">${_esc(kt)}</div>` : ""}
+  <div style="font-size:clamp(2.5rem,8vw,5rem);font-weight:700;line-height:1.05;color:var(--foreground,#111)">${_esc(Et)}</div>
 </div>`);
   }
-  for (const Ct of yt.COMPARE || []) {
-    const St = _num(At[Ct.originalName]), Et = St >= 0 ? "+" : "", kt = St >= 0 ? "text-green-600 dark:text-green-400" : "text-red-500 dark:text-red-400", Tt = St >= 0 ? '<span style="font-size:.6em">▲</span>' : '<span style="font-size:.6em">▼</span>';
-    wt.push(`<div class="stat">
-  <div class="stat-title">${Ct.displayName !== "COMPARE" ? _esc(Ct.displayName) : "Comparaison"}</div>
-  <div class="stat-value ${kt}">${Tt} ${Et}${St}</div>
+  for (const St of yt.PERCENT || []) {
+    const Et = _num(At[St.originalName]), kt = Et >= 75 ? "#16a34a" : Et >= 40 ? "#ca8a04" : "#dc2626", Tt = St.displayName !== "PERCENT" ? St.displayName : "";
+    wt.push(`<div style="text-align:center;margin-bottom:.5rem">
+  ${Tt ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-bottom:.2rem">${_esc(Tt)}</div>` : ""}
+  <div style="font-size:clamp(2.5rem,8vw,5rem);font-weight:700;line-height:1.05;color:${kt}">${Et.toFixed(1)}%</div>
 </div>`);
   }
-  for (const Ct of yt.TREND || []) {
-    const St = _num(At[Ct.originalName]), Et = St > 0, kt = St === 0, Tt = kt ? "→" : Et ? "↑" : "↓", $t = kt ? "text-yellow-500 dark:text-yellow-400" : Et ? "text-green-600 dark:text-green-400" : "text-red-500 dark:text-red-400", Lt = Et ? "+" : "";
-    wt.push(`<div class="stat">
-  <div class="stat-title">${Ct.displayName !== "TREND" ? _esc(Ct.displayName) : "Tendance"}</div>
-  <div class="stat-value ${$t}">${Tt} ${Lt}${St}</div>
+  for (const St of yt.COMPARE || []) {
+    const Et = _num(At[St.originalName]), kt = Et >= 0 ? "+" : "", Tt = Et >= 0 ? "#16a34a" : "#dc2626", $t = Et >= 0 ? "▲" : "▼", Lt = St.displayName !== "COMPARE" ? St.displayName : "Comparaison";
+    wt.push(`<div style="text-align:center;margin-bottom:.5rem">
+  ${Lt ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-bottom:.2rem">${_esc(Lt)}</div>` : ""}
+  <div style="font-size:clamp(2.5rem,8vw,5rem);font-weight:700;line-height:1.05;color:${Tt}">${$t} ${kt}${Et}</div>
 </div>`);
   }
-  return wt.length === 0 ? '<div class="p-4 text-muted-foreground text-sm">Aucune donnée</div>' : `<div class="stats shadow w-full flex-wrap">${wt.join("")}</div>`;
+  for (const St of yt.TREND || []) {
+    const Et = _num(At[St.originalName]), kt = Et > 0, Tt = Et === 0, $t = Tt ? "→" : kt ? "↑" : "↓", Lt = Tt ? "#ca8a04" : kt ? "#16a34a" : "#dc2626", It = kt ? "+" : "", Rt = St.displayName !== "TREND" ? St.displayName : "Tendance";
+    wt.push(`<div style="text-align:center;margin-bottom:.5rem">
+  ${Rt ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-bottom:.2rem">${_esc(Rt)}</div>` : ""}
+  <div style="font-size:clamp(2.5rem,8vw,5rem);font-weight:700;line-height:1.05;color:${Lt}">${$t} ${It}${Et}</div>
+</div>`);
+  }
+  return wt.length === 0 ? '<div style="padding:1rem;color:#888;font-size:.875rem;text-align:center">Aucune donnée</div>' : `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem 2rem;height:100%;box-sizing:border-box">${wt.join(`
+`)}</div>`;
 }
 function buildTableColumnRenderers(At) {
   const { roleMap: yt } = At, xt = {};
@@ -137975,7 +137971,7 @@ function SqlTableBody({ cell: At, path: yt, cellIndex: xt, showTextResult: wt = 
             }
           ),
           jt && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-            At._kpiLabel && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm font-semibold text-foreground mb-1 shrink-0", children: At._kpiLabel }),
+            At._kpiLabel && Zt === "table" && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm font-semibold text-foreground mb-1 shrink-0", children: At._kpiLabel }),
             Ct && At.type === "sql" && Jt && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-2 mb-1 shrink-0", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex rounded border border-border overflow-hidden text-xs", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(
                 "button",
