@@ -133348,7 +133348,22 @@ const SqlBlockService = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.def
       { role: "TREND", label: "Tendance", multiple: !1, optional: !0, hasLabel: !0 }
     ]
   }
-}, NONE_VALUE = "__none__";
+}, NONE_VALUE = "__none__", ROLE_COMPAT_MAP = {
+  BARCHART: "LINECHART",
+  LINECHART: "BARCHART",
+  PIECHART: "DONUTCHART",
+  DONUTCHART: "PIECHART"
+};
+function migrateColumnsForType(At, yt) {
+  const xt = CHART_TYPE_CONFIGS[yt];
+  if (!xt) return [];
+  const wt = new Set(xt.roles.map((Ct) => Ct.role));
+  return At.map((Ct) => {
+    if (wt.has(Ct.role)) return Ct;
+    const St = ROLE_COMPAT_MAP[Ct.role];
+    return St && wt.has(St) ? { ...Ct, role: St } : null;
+  }).filter(Boolean);
+}
 function getEntriesForRole(At, yt) {
   return At.filter((xt) => xt.role === yt);
 }
@@ -133402,9 +133417,9 @@ function ChartConfigEditor({ chartConfig: At, availableColumns: yt, availableCol
     Ot.columns.length > 0 && wt(Ot);
   }, [Lt]);
   const It = reactExports.useCallback((Ot) => {
-    const Bt = defaultConfigForType(Ot, yt);
-    wt(Bt);
-  }, [yt, wt]), Rt = reactExports.useCallback((Ot, Bt) => {
+    const Bt = migrateColumnsForType(Tt, Ot), Ht = Bt.length > 0 ? { chartType: Ot, columns: Bt } : defaultConfigForType(Ot, yt);
+    wt(Ht);
+  }, [Tt, yt, wt]), Rt = reactExports.useCallback((Ot, Bt) => {
     wt({ chartType: kt, columns: replaceRoleEntries(Tt, Ot, Bt ? [{ column: Bt, role: Ot, label: void 0 }] : []) });
   }, [kt, Tt, wt]), Dt = reactExports.useCallback((Ot, Bt) => {
     const Ht = getEntriesForRole(Tt, Ot)[0];
