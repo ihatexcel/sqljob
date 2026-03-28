@@ -17,6 +17,29 @@ function sqlIsDdl(sql: string): boolean {
     return sql.split(';').some(s => DDL_RE.test(s))
 }
 
+/**
+ * Extrait le label d'un SELECT '...'::LABEL; placé avant la requête principale.
+ * Retourne le label et le SQL nettoyé (sans le statement LABEL).
+ * Ex: "SELECT 'Mon titre'::LABEL;\nSELECT val::TEXT_LARGE FROM t"
+ *   → { label: 'Mon titre', sql: "SELECT val::TEXT_LARGE FROM t" }
+ */
+function extractLabelStatement(sql: string): { label: string | null; sql: string } {
+    const stmts = sql.split(/;[ \t]*(?=\r?\n|$)/)
+    let label: string | null = null
+    const mainStmts: string[] = []
+    for (const stmt of stmts) {
+        const trimmed = stmt.trim()
+        if (!trimmed) continue
+        const m = trimmed.match(/^\s*SELECT\s+'([^']*)'\s*::LABEL\b/i)
+        if (m && label === null) {
+            label = m[1]
+        } else {
+            mainStmts.push(trimmed)
+        }
+    }
+    return { label, sql: mainStmts.join(';\n') }
+}
+
 export const createExecutionSlice = (set: any, get: any) => ({
 
     async runGroupAtPath(path) {
@@ -464,11 +487,14 @@ export const createExecutionSlice = (set: any, get: any) => ({
                     const chartConfig = q0?.ast?.chartConfig
                     if (chartConfig?.columns?.length) {
                         // Mode graphique AST : initChartTypes + strip des annotations + EChartSqlParser
+                        // Extrait le SELECT '...'::LABEL; initial si présent (généré par buildChartFinalSelect)
+                        const { label: stmtLabel, sql: mainSql } = extractLabelStatement(finalQuery)
+                        const kpiLabel = stmtLabel ?? chartConfig.label ?? null
                         get().setStatus('Chargement ECharts...', 'loading')
                         await CDNManager.loadECharts()
                         await DuckDBManager.initChartTypes()
                         get().setStatus('Exécution de la requête...', 'loading')
-                        const { rows, columnTypes, schemaTypes } = await DuckDBManager.executeQueryWithSchema(finalQuery)
+                        const { rows, columnTypes, schemaTypes } = await DuckDBManager.executeQueryWithSchema(mainSql)
                         const maxRows = cell.maxRows || 100000
                         const rawResults = rows.slice(0, maxRows)
                         _rawTableDataStore.set(cell._id, rawResults)
@@ -478,7 +504,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
                         cell._resultInfo = `✅ ${rows.length} ligne(s)`
                         const parsed = EChartSqlParser.parseColumnRoles(rows, columnTypes)
                         if (parsed.chartType === 'kpi') {
-                            cell._kpiHtml = EChartSqlParser.buildKpiHtml(rows, parsed)
+                            cell._kpiHtml = EChartSqlParser.buildKpiHtml(rows, parsed, kpiLabel ?? undefined)
                             cell._echartsOption = null
                         } else {
                             cell._echartsOption = EChartSqlParser.buildEChartsOption(rows, parsed) ?? null
@@ -486,7 +512,9 @@ export const createExecutionSlice = (set: any, get: any) => ({
                         }
                     } else {
                         // Pas de ast.chartConfig : exécuter et détecter automatiquement les rôles ::ROLE
-                        const { rows: finalResults, columnTypes, schemaTypes } = await DuckDBManager.executeQueryWithSchema(finalQuery)
+                        // Extrait SELECT '...'::LABEL; si présent en tête du SQL
+                        const { label: stmtLabel, sql: mainSql } = extractLabelStatement(finalQuery)
+                        const { rows: finalResults, columnTypes, schemaTypes } = await DuckDBManager.executeQueryWithSchema(mainSql)
                         const maxRows = cell.maxRows || 100000
                         cell._schemaTypes = schemaTypes || {}
                         cell._columnTypes = columnTypes
@@ -503,7 +531,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
                             cell._results = rawResults
                             cell._resultInfo = `✅ ${finalResults.length} ligne(s)`
                             if (parsed.chartType === 'kpi') {
-                                cell._kpiHtml = EChartSqlParser.buildKpiHtml(finalResults, parsed)
+                                cell._kpiHtml = EChartSqlParser.buildKpiHtml(finalResults, parsed, stmtLabel ?? undefined)
                                 cell._echartsOption = null
                             } else {
                                 cell._echartsOption = EChartSqlParser.buildEChartsOption(finalResults, parsed) ?? null
