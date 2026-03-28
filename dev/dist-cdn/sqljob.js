@@ -134164,11 +134164,12 @@ function _buildGaugeOption(At, yt, xt, wt, Ct) {
       splitNumber: sn,
       center: Rr,
       radius: Br,
+      z: 2,
       pointer: { show: !1 },
       axisLine: { show: !1 },
       axisTick: { show: !1 },
       splitLine: { show: !1 },
-      axisLabel: { color: Ct, fontSize: 11, distance: -15, formatter: (El) => {
+      axisLabel: { color: Ct, fontSize: 11, distance: -30, formatter: (El) => {
         const Lu = ys(ms, El);
         return Lu && !Lu.isActive ? Lu.text : "";
       } },
@@ -134183,11 +134184,12 @@ function _buildGaugeOption(At, yt, xt, wt, Ct) {
       splitNumber: sn,
       center: Rr,
       radius: Br,
+      z: 2,
       pointer: { show: !1 },
       axisLine: { show: !1 },
       axisTick: { show: !1 },
       splitLine: { show: !1 },
-      axisLabel: { color: Ct, fontSize: 13, fontWeight: "bold", distance: -15, formatter: (El) => {
+      axisLabel: { color: Ct, fontSize: 13, fontWeight: "bold", distance: -30, formatter: (El) => {
         const Lu = ys(ms, El);
         return Lu && Lu.isActive ? Lu.text : "";
       } },
@@ -134204,6 +134206,7 @@ function _buildGaugeOption(At, yt, xt, wt, Ct) {
     splitNumber: sn,
     center: Rr,
     radius: Br,
+    z: 10,
     pointer: {
       show: !0,
       icon: "triangle",
