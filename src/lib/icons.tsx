@@ -76,12 +76,12 @@ export const CELL_TYPE_ICON: Record<string, string> = {
     uiParameter:        'tune',
     buttonRunNextCells: 'play-circle',
     sql:                'storage',
-    table:              'table',
+
     iframe:             'web',
     sqlStat:            'monitoring',
     publipostageWord:   'description',
     pdfme:              'picture-as-pdf',
-    echart:             'bar-chart',
+
     perspective:        'analytics',
 }
 

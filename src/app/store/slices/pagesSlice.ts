@@ -130,7 +130,7 @@ export const createPagesSlice = (set: any, get: any) => ({
         if (ConfigManager.getCellQueryShowQueryEditor(cell, 0)) return true
         if (cell.type === 'buttonRunNextCells') return !!cell.buttonLabel
         if (cell.type === 'sql') return ConfigManager.getCellQueryShowResult(cell, 0)
-        if (['table', 'iframe', 'sqlStat'].includes(cell.type)) {
+        if (['iframe', 'sqlStat'].includes(cell.type)) {
             return cell._status === 'success' || cell._status === 'running' || (cell._results && cell._results.length > 0)
         }
         return true

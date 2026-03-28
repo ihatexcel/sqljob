@@ -416,29 +416,28 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
         dropSqlblockSchema().then(() => refreshDuckdbTables())
     }, [cell, path, cellIndex, runCellAt, refreshDuckdbTables])
 
-    // En mode visualisation, afficher le graphique par défaut (sinon datatable)
-    const isVisualizationMode = !!(cell.queries?.[0]?.ast?.chartConfig)
-    const [vizMode, setVizMode] = useState<'table' | 'chart'>(isVisualizationMode ? 'chart' : 'table')
-
     const hasHeight = hasCellHeight(cell)
     const isRunning = cell._status === 'running'
     const searchable = cell.type === 'table'
     const hasChart = !!(cell._echartsOption || cell._kpiHtml)
 
-    // Synchronise vizMode : graphique dès qu'il est disponible, table sinon
+    const [vizMode, setVizMode] = useState<'table' | 'chart'>('table')
+
+    // Synchronise vizMode : graphique dès qu'un chart est disponible, table sinon
     useEffect(() => {
-        if (!isVisualizationMode) setVizMode('table')
-        else if (hasChart) setVizMode('chart')
-    }, [hasChart, isVisualizationMode]) // eslint-disable-line react-hooks/exhaustive-deps
+        if (hasChart) setVizMode('chart')
+        else setVizMode('table')
+    }, [hasChart]) // eslint-disable-line react-hooks/exhaustive-deps
 
     // Mode UI visuel (sqlBlock) pour les cellules sql.
     // IMPORTANT: on utilise display:none au lieu de démontage conditionnel pour éviter
     // le bug React "removeChild not a child" (portals Radix déjà retirés du DOM avant cleanup).
     // L'overlay fixed plein-écran est toujours monté, juste caché quand inactif.
     const showSqlBlockEditor = devMode && cell.type === 'sql'
+    const isKpi = !!cell._kpiHtml
 
     return (
-        <div className={hasHeight ? 'flex-1 min-h-0 flex flex-col' : ''}>
+        <div className={`group/sqlbody flex flex-col ${(hasHeight || isKpi) ? 'flex-1 min-h-0' : ''} ${isKpi ? 'justify-center' : ''}`}>
             {/* SqlBlockEditor — modale centrée, toujours montée, cachée via display:none */}
             {showSqlBlockEditor && (
                 <div
@@ -488,9 +487,9 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
                 />
             )}
             {showResult && (<>
-            {/* Toggle Tableau/Graphique — devMode */}
-            {devMode && cell.type === 'sql' && hasChart && (
-                <div className="flex items-center gap-2 mb-1 shrink-0">
+            {/* Toggle Tableau/Graphique — visible au hover, uniquement pour les charts ECharts (pas KPI) */}
+            {cell.type === 'sql' && cell._echartsOption && (
+                <div className="opacity-0 group-hover/sqlbody:opacity-100 transition-opacity flex items-center gap-2 mb-1 shrink-0">
                     <div className="flex rounded border border-border overflow-hidden text-xs">
                         <button onClick={() => setVizMode('chart')}
                             className={`px-2 py-0.5 transition-colors ${vizMode === 'chart' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}>
@@ -503,22 +502,13 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
                     </div>
                 </div>
             )}
-            {/* Toggle visible en mode client uniquement si outputMode=visualization */}
-            {!devMode && hasChart && isVisualizationMode && cell.type === 'sql' && (
-                <div className="flex rounded border border-border overflow-hidden text-xs mb-1 shrink-0 self-start">
-                    <button onClick={() => setVizMode('chart')}
-                        className={`px-2 py-0.5 transition-colors ${vizMode === 'chart' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}>
-                        Graphique
-                    </button>
-                    <button onClick={() => setVizMode('table')}
-                        className={`px-2 py-0.5 transition-colors ${vizMode === 'table' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}>
-                        Tableau
-                    </button>
-                </div>
+            {/* Titre dynamique — centré, sous les boutons */}
+            {cell._kpiLabel && (
+                <div className="text-base font-semibold text-foreground mb-0.5 shrink-0 text-center w-full">{cell._kpiLabel}</div>
             )}
             {/* Mode graphique */}
             {vizMode === 'chart' && hasChart && (
-                <div className={hasHeight ? 'flex-1 min-h-0 flex flex-col' : ''}>
+                <div className={`flex flex-col ${hasHeight ? 'flex-1 min-h-0' : ''}`}>
                     <EChartRenderer cell={cell} hasHeight={hasHeight} />
                 </div>
             )}
@@ -630,28 +620,6 @@ function SqlStatBody({ cell, path, cellIndex }: any) {
                 )}
                 <ResultInfo cell={cell} devOnly />
             </div>
-        </div>
-    )
-}
-
-// ─── EChartBody ───────────────────────────────────────────────────────────────
-function EChartBody({ cell, path, cellIndex }: any) {
-    const { devMode, showSqlEditorVisible, hasCellHeight } = useNotebookStore(useShallow(s => ({
-        devMode: s.devMode,
-        showSqlEditorVisible: s.showSqlEditorVisible,
-        hasCellHeight: s.hasCellHeight,
-    })))
-
-    const hasHeight = hasCellHeight(cell)
-
-    return (
-        <div className={hasHeight ? 'flex-1 min-h-0 flex flex-col' : ''}>
-            {showSqlEditorVisible?.(cell) && (
-                <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
-                    placeholder="SELECT month::XAXIS, revenue::BARCHART AS &quot;Revenue&quot; FROM source1" />
-            )}
-            <EChartRenderer cell={cell} hasHeight={hasHeight} />
-            <ResultInfo cell={cell} devOnly />
         </div>
     )
 }
@@ -1089,10 +1057,10 @@ export function CellBody({ cell, path, cellIndex, group }: { cell: any, path: nu
             case 'source': return <SourceBody cell={cell} path={path} cellIndex={cellIndex} />
             case 'buttonRunNextCells': return <ButtonRunBody cell={cell} path={path} cellIndex={cellIndex} />
             case 'sql': return <SqlTableBody cell={cell} path={path} cellIndex={cellIndex} showTextResult={true} />
-            case 'table': return <SqlTableBody cell={cell} path={path} cellIndex={cellIndex} />
+
             case 'iframe': return <IframeBody cell={cell} path={path} cellIndex={cellIndex} />
             case 'sqlStat': return <SqlStatBody cell={cell} path={path} cellIndex={cellIndex} />
-            case 'echart': return <EChartBody cell={cell} path={path} cellIndex={cellIndex} />
+
             case 'uiParameter': return <UiParameterBody cell={cell} path={path} cellIndex={cellIndex} />
             case 'publipostageWord':
                 return <PublipostageWordBody cell={cell} path={path} cellIndex={cellIndex} />

@@ -33,7 +33,7 @@ export type FilterOp =
     | 'like' | 'ilike' | 'between';
 
 /** Mode de saisie d'une valeur de filtre : valeur fixe, référence colonne, ou paramètre UI */
-export type FilterValueKind = 'literal' | 'column' | 'param';
+export type FilterValueKind = 'literal' | 'column' | 'param' | 'expression';
 
 export interface FilterCondition {
     column: string;
@@ -280,15 +280,17 @@ export type SqlBlockStep = (
 
 /** Mapping colonne → rôle visuel dans le SELECT final (dernier SELECT du pipeline). */
 export interface ChartColumnRole {
-    column: string;    // nom de colonne source (non quoté)
-    role: string;      // XAXIS | BARCHART | LINECHART | PIECHART | CATEGORY | …
-    label?: string;    // alias AS "Label" (légende ECharts)
+    column: string;         // valeur source : nom de colonne, littéral ou paramètre
+    role: string;           // XAXIS | BARCHART | KPI | PERCENT | …
+    label?: string;         // alias AS "Label" (légende ECharts)
+    valueKind?: FilterValueKind; // 'column' (défaut) | 'literal' | 'param'
 }
 
 /** Configuration de visualisation graphique associée à l'AST. */
 export interface ChartConfig {
     chartType: string;          // 'bar' | 'line' | 'bar+line' | 'pie' | 'donut' | 'gauge' | 'boxplot' | 'kpi'
     columns: ChartColumnRole[]; // rôles dans l'ordre du SELECT final
+    label?: string;             // titre affiché (stat/kpi) — génère SELECT '...'::LABEL; dans le SQL
 }
 
 // ─── AST root ─────────────────────────────────────────────────────────────────

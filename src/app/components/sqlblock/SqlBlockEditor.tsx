@@ -805,22 +805,24 @@ function DistinctMultiInput({ values, onChange, column, fetchDistinctValues, cla
 // Réutilisable pour n'importe quelle étape nécessitant une valeur flexible.
 
 const VAR_KIND_ICONS: Record<FilterValueKind, JSX.Element> = {
-    literal: <svg viewBox="0 0 24 24" className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>,
-    column:  <svg viewBox="0 0 24 24" className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="9" x2="9" y2="21"/></svg>,
-    param:   <svg viewBox="0 0 24 24" className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="17 12 21 12"/><polyline points="3 12 7 12"/><rect x="7" y="8" width="10" height="8" rx="1"/></svg>,
+    literal:    <svg viewBox="0 0 24 24" className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>,
+    column:     <svg viewBox="0 0 24 24" className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="9" x2="9" y2="21"/></svg>,
+    param:      <svg viewBox="0 0 24 24" className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="17 12 21 12"/><polyline points="3 12 7 12"/><rect x="7" y="8" width="10" height="8" rx="1"/></svg>,
+    expression: <svg viewBox="0 0 24 24" className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6"/><path d="M10 9v6"/><path d="M14 9v6"/></svg>,
 }
 
 const VAR_KIND_LABELS: Record<FilterValueKind, string> = {
-    literal: 'Entrer une valeur',
-    column:  'Sélectionner une colonne',
-    param:   'Paramètre',
+    literal:    'Entrer une valeur',
+    column:     'Sélectionner une colonne',
+    param:      'Paramètre',
+    expression: 'Expression SQL',
 }
 
 /**
  * Composant réutilisable : entrée d'une valeur avec choix du mode (valeur fixe / colonne / paramètre).
  * L'icône "boxes" ouvre un menu déroulant pour changer de mode.
  */
-function VarInput({ value, valueKind = 'literal', onChange, availableCols, column, fetchDistinctValues, placeholder = 'valeur', className = '' }: {
+export function VarInput({ value, valueKind = 'literal', onChange, availableCols, column, fetchDistinctValues, placeholder = 'valeur', className = '' }: {
     value: string; valueKind?: FilterValueKind
     onChange: (value: string, kind: FilterValueKind) => void
     availableCols: string[]
@@ -857,7 +859,7 @@ function VarInput({ value, valueKind = 'literal', onChange, availableCols, colum
                 </button>
                 {menuOpen && (
                     <div className="absolute left-0 top-full z-50 mt-0.5 w-52 bg-popover border border-border rounded shadow-lg py-0.5">
-                        {(['literal', 'column', 'param'] as FilterValueKind[]).map(k => (
+                        {(['literal', 'column', 'param', 'expression'] as FilterValueKind[]).map(k => (
                             <button key={k} type="button"
                                 onClick={() => { onChange('', k); setMenuOpen(false) }}
                                 className={`w-full text-left px-3 py-1.5 text-xs hover:bg-muted flex items-center gap-2 ${valueKind === k ? 'text-primary font-medium' : 'text-foreground'}`}
@@ -891,6 +893,15 @@ function VarInput({ value, valueKind = 'literal', onChange, availableCols, colum
                         {paramNames.map((p: string) => <option key={p} value={`{{${p}}}`}>{p}</option>)}
                     </select>
                     : <span className="flex-1 text-xs text-muted-foreground italic px-1">Aucun paramètre UI</span>
+            )}
+            {valueKind === 'expression' && (
+                <input
+                    type="text"
+                    value={value}
+                    onChange={e => onChange(e.target.value, 'expression')}
+                    placeholder="ex: col_a / col_b"
+                    className="flex-1 min-w-0 h-6 rounded border border-border bg-background px-1.5 text-xs font-mono"
+                />
             )}
         </div>
     )
@@ -1850,9 +1861,7 @@ function useStepInputSchemas(ast: SqlBlockAst, cellId: string) {
 
             // 2. Fallback : LIMIT 0 directement sur le SQL amont (sans wrapper subquery)
             if (!schemaTypes) {
-                const inputSql = stepIdx === 0
-                    ? `SELECT * FROM ${quoteId(a.source)}`
-                    : stepSql(a, stepIdx - 1)
+                const inputSql = stepSql(a, stepIdx - 1)
                 if (!inputSql) return
                 const bare = inputSql.trimEnd().replace(/;+\s*$/, '')
                 const hasLimit = /\bLIMIT\s+\d/i.test(bare.replace(/\([\s\S]*?\)/g, ''))
@@ -2602,8 +2611,18 @@ function ChartPreviewInEditor({ cell }: { cell: any }) {
         })
     }, [_rev, cell._echartsOption])
 
-    if (cell._kpiHtml) return <div className="overflow-auto" dangerouslySetInnerHTML={{ __html: cell._kpiHtml }} />
-    return <div ref={chartRef} className="flex-1 min-h-0 min-h-[200px]" />
+    if (cell._kpiHtml) return (
+        <div className="overflow-auto text-center">
+            {cell._kpiLabel && <div className="text-base font-semibold text-foreground mb-0.5">{cell._kpiLabel}</div>}
+            <div dangerouslySetInnerHTML={{ __html: cell._kpiHtml }} />
+        </div>
+    )
+    return (
+        <div className="flex flex-col min-h-0">
+            {cell._kpiLabel && <div className="text-base font-semibold text-foreground mb-0.5 text-center shrink-0">{cell._kpiLabel}</div>}
+            <div ref={chartRef} className="flex-1 min-h-[200px]" />
+        </div>
+    )
 }
 
 // ─── SqlBlockEditor (composant principal) ─────────────────────────────────────
@@ -2747,7 +2766,7 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
             try {
                 const cleanAst = { ...ast, chartConfig: undefined }
                 const inputSql = stepIdx === 0
-                    ? `SELECT * FROM ${quoteId(ast.source)}`
+                    ? stepSql(cleanAst, -1)
                     : stepSql(cleanAst, stepIdx - 1)
                 if (!inputSql) return { values: [], hasMore: false }
                 const col = `"${column.replace(/"/g, '""')}"`
@@ -2771,9 +2790,10 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
 
     function handleManualSqlEdit(rawSql: string) {
         const newSql = stripMaterializePrefix(rawSql)
-        // Vérification : plusieurs instructions SQL → UI impossible
+        // Vérification : plusieurs instructions SQL → UI impossible (hors LABEL prefix)
         const stmts = newSql.split(';').map((s: string) => s.trim()).filter(Boolean)
-        if (stmts.length > 1) {
+        const nonLabelStmts = stmts.filter((s: string) => !/^\s*SELECT\s+.+?::LABEL\b/i.test(s))
+        if (nonLabelStmts.length > 1) {
             const cfg = getOrInitConfig(cell)
             cfg.degraded = true; cfg.manualSql = newSql
             cfg.sql = buildDisplaySql(cell.name, newSql, cfg.ast?.materialized ?? 'ephemeral')
@@ -2789,6 +2809,7 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
             const genSql = astToSql(result.ast)
             cfg.sql = buildDisplaySql(cell.name, genSql, result.ast.materialized ?? 'ephemeral')
             forceUpdate()
+            runCellAt(path, cellIndex)
         } else {
             setPendingDegradedSql(newSql)
         }
@@ -2800,14 +2821,16 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
         cfg.degraded = true; cfg.manualSql = pendingDegradedSql
         cfg.sql = buildDisplaySql(cell.name, pendingDegradedSql, cfg.ast?.materialized ?? 'ephemeral')
         setPendingDegradedSql(null); forceUpdate()
+        runCellAt(path, cellIndex)
     }
 
     function tryRestoreFromDegraded() {
         const cfg = getOrInitConfig(cell)
         const sql = stripMaterializePrefix(cfg.manualSql || selectSql)
-        // Bloquer la restauration si plusieurs instructions SQL
+        // Bloquer la restauration si plusieurs instructions SQL (hors LABEL prefix)
         const stmts = sql.split(';').map((s: string) => s.trim()).filter(Boolean)
-        if (stmts.length > 1) {
+        const nonLabelStmts = stmts.filter((s: string) => !/^\s*SELECT\s+.+?::LABEL\b/i.test(s))
+        if (nonLabelStmts.length > 1) {
             setMultiSqlWarning(true)
             return
         }
@@ -2832,15 +2855,25 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
     // Aperçu graphique dans dtSection (remplace le datatable)
     const [vizTab, setVizTab] = useState<'table' | 'chart'>('table')
     const [vizConfigOpen, setVizConfigOpen] = useState(false)
+    // Flag : on n'auto-active qu'une seule fois par version du SQL (évite de re-forcer après switch manuel)
+    const hasAutoActivatedVizRef = useRef(false)
 
     // cellule factice pour SqlDataTable quand on affiche un aperçu step ou source
     const displayCell = showingEye && eyeData
         ? { _id: `eye_${String(eyeOpen)}_${cell._id}`, _results: eyeData.rows, _schemaTypes: eyeData.schemaTypes }
         : cell
 
-    // Bascule auto sur 'table' si le graphique disparaît
+    // Reset du flag d'auto-activation quand le SQL change (nouvelle cellule, nouvelles étapes…)
+    useEffect(() => { hasAutoActivatedVizRef.current = false }, [cell._id, stepsKey, ast.source]) // eslint-disable-line
+
+    // Bascule auto sur 'table' si le graphique disparaît ;
+    // ou sur 'chart' si un graphique apparaît (SQL avec rôles ::ROLE sans ast.chartConfig)
     useEffect(() => {
         if (vizTab === 'chart' && !hasChart) setVizTab('table')
+        else if (hasChart && vizTab === 'table' && !ast.chartConfig && !hasAutoActivatedVizRef.current) {
+            hasAutoActivatedVizRef.current = true
+            setVizTab('chart')
+        }
     }, [hasChart]) // eslint-disable-line
     // Synchro vizTab avec le type de chartConfig
     useEffect(() => {
@@ -2918,7 +2951,7 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
                             </div>
                         ) : (
                             <div className="flex items-center gap-1 shrink-0">
-                                {ast.chartConfig?.chartType && ast.chartConfig.chartType !== 'datatable' && (
+                                {(ast.chartConfig?.chartType && ast.chartConfig.chartType !== 'datatable' || hasChart) && (
                                     <button
                                         onClick={() => setVizTab('chart')}
                                         className={`px-2 py-0.5 text-xs rounded transition-colors ${vizTab === 'chart' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted'}`}

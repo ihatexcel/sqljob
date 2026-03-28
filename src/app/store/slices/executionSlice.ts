@@ -17,6 +17,39 @@ function sqlIsDdl(sql: string): boolean {
     return sql.split(';').some(s => DDL_RE.test(s))
 }
 
+/**
+ * Extrait tout statement contenant ::LABEL placé avant la requête principale.
+ * Retourne le SQL du statement LABEL (pour exécution dynamique) et le SQL nettoyé.
+ * Fonctionne avec des littéraux statiques ('Mon titre'::LABEL) ou des expressions dynamiques.
+ */
+function extractLabelStatement(sql: string): { labelSql: string | null; sql: string } {
+    const stmts = sql.split(/;[ \t]*(?=\r?\n|$)/)
+    let labelSql: string | null = null
+    const mainStmts: string[] = []
+    for (const stmt of stmts) {
+        const trimmed = stmt.trim()
+        if (!trimmed) continue
+        if (labelSql === null && /^\s*SELECT\s+.+?::LABEL\b/i.test(trimmed)) {
+            labelSql = trimmed
+        } else {
+            mainStmts.push(trimmed)
+        }
+    }
+    return { labelSql, sql: mainStmts.join(';\n') }
+}
+
+/** Exécute un statement LABEL et retourne le titre (valeur de la 1ère colonne, 1ère ligne). */
+async function executeLabelStatement(labelSql: string): Promise<string | null> {
+    try {
+        const { rows } = await DuckDBManager.executeQueryWithSchema(labelSql)
+        if (!rows.length) return null
+        const firstVal = Object.values(rows[0])[0]
+        return firstVal !== null && firstVal !== undefined ? String(firstVal) : null
+    } catch {
+        return null
+    }
+}
+
 export const createExecutionSlice = (set: any, get: any) => ({
 
     async runGroupAtPath(path) {
@@ -147,7 +180,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
             for (let i = 0; i < loopValues.length; i++) {
                 const loopValue = loopValues[i]
                 set({ _currentLoopValue: loopValue })
-                get().setStatus(`Boucle ${i + 1}/${loopValues.length}: {{ loop }} = ${loopValue}`, 'loading')
+                get().setStatus(`Boucle ${i + 1}/${loopValues.length}: {{ _loop }} = ${loopValue}`, 'loading')
 
                 const orderedItems = get().getAllItemsSorted(group)
                 for (const item of orderedItems) {
@@ -463,12 +496,17 @@ export const createExecutionSlice = (set: any, get: any) => ({
                 } else {
                     const chartConfig = q0?.ast?.chartConfig
                     if (chartConfig?.columns?.length) {
-                        // Mode graphique : initChartTypes + strip des annotations + EChartSqlParser
+                        // Mode graphique AST : initChartTypes + strip des annotations + EChartSqlParser
+                        // Extrait SELECT ...::LABEL; initial si présent (généré par buildChartFinalSelect)
+                        const { labelSql, sql: mainSql } = extractLabelStatement(finalQuery)
+                        // Exécute le statement LABEL pour supporter les titres dynamiques
+                        const stmtLabel = labelSql ? await executeLabelStatement(labelSql) : null
+                        const kpiLabel = stmtLabel ?? chartConfig.label ?? null
                         get().setStatus('Chargement ECharts...', 'loading')
                         await CDNManager.loadECharts()
                         await DuckDBManager.initChartTypes()
                         get().setStatus('Exécution de la requête...', 'loading')
-                        const { rows, columnTypes, schemaTypes } = await DuckDBManager.executeQueryWithSchema(finalQuery)
+                        const { rows, columnTypes, schemaTypes } = await DuckDBManager.executeQueryWithSchema(mainSql)
                         const maxRows = cell.maxRows || 100000
                         const rawResults = rows.slice(0, maxRows)
                         _rawTableDataStore.set(cell._id, rawResults)
@@ -477,60 +515,61 @@ export const createExecutionSlice = (set: any, get: any) => ({
                         cell._columnTypes = columnTypes
                         cell._resultInfo = `✅ ${rows.length} ligne(s)`
                         const parsed = EChartSqlParser.parseColumnRoles(rows, columnTypes)
+                        cell._kpiLabel = kpiLabel
                         if (parsed.chartType === 'kpi') {
-                            cell._kpiHtml = EChartSqlParser.buildKpiHtml(rows, parsed)
+                            cell._kpiHtml = EChartSqlParser.buildKpiHtml(rows, parsed, kpiLabel ?? undefined)
                             cell._echartsOption = null
                         } else {
                             cell._echartsOption = EChartSqlParser.buildEChartsOption(rows, parsed) ?? null
                             cell._kpiHtml = null
                         }
                     } else {
-                        cell._echartsOption = null
-                        cell._kpiHtml = null
-                        const { rows: finalResults, schemaTypes } = await DuckDBManager.executeQueryWithSchema(finalQuery)
-                        cell._results = finalResults
+                        // Pas de ast.chartConfig : exécuter et détecter automatiquement les rôles ::ROLE
+                        // Extrait SELECT ...::LABEL; si présent en tête du SQL, l'exécute pour titre dynamique
+                        const { labelSql, sql: mainSql } = extractLabelStatement(finalQuery)
+                        const stmtLabel = labelSql ? await executeLabelStatement(labelSql) : null
+                        const { rows: finalResults, columnTypes, schemaTypes } = await DuckDBManager.executeQueryWithSchema(mainSql)
+                        const maxRows = cell.maxRows || 100000
                         cell._schemaTypes = schemaTypes || {}
-                        cell._resultInfo = `✅ ${finalResults.length} ligne(s)`
-                        if (get().isSqlResultTabular(cell)) {
-                            const maxRows = cell.maxRows || 100000
-                            const truncated = finalResults.length > maxRows
+                        cell._columnTypes = columnTypes
+
+                        const parsed = EChartSqlParser.parseColumnRoles(finalResults, columnTypes)
+
+                        cell._kpiLabel = stmtLabel
+                        if (parsed.chartType !== 'unknown') {
+                            // Rôles chart détectés dans le SQL → rendu EChart
+                            get().setStatus('Chargement ECharts...', 'loading')
+                            await CDNManager.loadECharts()
+                            await DuckDBManager.initChartTypes()
                             const rawResults = finalResults.slice(0, maxRows)
                             _rawTableDataStore.set(cell._id, rawResults)
                             cell._results = rawResults
-                            if (truncated) cell._resultInfo = `✅ ${finalResults.length} ligne(s) (limité à ${maxRows})`
+                            cell._resultInfo = `✅ ${finalResults.length} ligne(s)`
+                            if (parsed.chartType === 'kpi') {
+                                cell._kpiHtml = EChartSqlParser.buildKpiHtml(finalResults, parsed, stmtLabel ?? undefined)
+                                cell._echartsOption = null
+                            } else {
+                                cell._echartsOption = EChartSqlParser.buildEChartsOption(finalResults, parsed) ?? null
+                                cell._kpiHtml = null
+                            }
+                        } else {
+                            cell._echartsOption = null
+                            cell._kpiHtml = null
+                            cell._results = finalResults
+                            cell._resultInfo = `✅ ${finalResults.length} ligne(s)`
+                            if (get().isSqlResultTabular(cell)) {
+                                const truncated = finalResults.length > maxRows
+                                const rawResults = finalResults.slice(0, maxRows)
+                                _rawTableDataStore.set(cell._id, rawResults)
+                                cell._results = rawResults
+                                if (truncated) cell._resultInfo = `✅ ${finalResults.length} ligne(s) (limité à ${maxRows})`
+                            }
                         }
                     }
                 }
             }
 
             get().setStatus('SQL Recursive Parse exécuté', 'success')
-            if (sqlIsDdl(finalQuery)) await get().refreshDuckdbSchema?.()
-        } catch (error) {
-            throw error
-        }
-    },
-
-    async executeTableCell(cell) {
-        if (!ConfigManager.getCellQuery(cell, 0)?.trim()) return
-
-        get().setStatus('Chargement tableau...', 'loading')
-
-        try {
-            const finalQuery = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '')
-
-            get().setStatus('Exécution de la requête...', 'loading')
-
-            const { rows: results, schemaTypes } = await DuckDBManager.executeQueryWithSchema(finalQuery)
-
-            const maxRows = cell.maxRows || 100000
-            const truncated = results.length > maxRows
-            const rawResults = results.slice(0, maxRows)
-            _rawTableDataStore.set(cell._id, rawResults)
-            cell._results = rawResults
-            cell._schemaTypes = schemaTypes || {}
-            cell._resultInfo = `${results.length} ligne(s)` + (truncated ? ` (limité à ${maxRows})` : '')
-
-            get().setStatus('Tableau chargé', 'success')
             if (sqlIsDdl(finalQuery)) await get().refreshDuckdbSchema?.()
         } catch (error) {
             throw error
@@ -1187,106 +1226,6 @@ export const createExecutionSlice = (set: any, get: any) => ({
             throw error
         } finally {
             cell._perspectiveRendering = false
-        }
-    },
-
-    async executeEchartCell(cell) {
-        if (!ConfigManager.getCellQuery(cell, 0)?.trim()) {
-            throw new Error('Requête SQL manquante')
-        }
-        if (DuckDBManager.currentEngine === 'ducklings') {
-            throw new Error('Les cellules EChart nécessitent le moteur DuckDB WASM. Changez le moteur dans les paramètres.')
-        }
-
-        get().setStatus('Chargement ECharts...', 'loading')
-        await CDNManager.loadECharts()
-
-        get().setStatus('Parsing de la requête SQL...', 'loading')
-
-        try {
-            await DuckDBManager.initChartTypes()
-
-            const finalQuery = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '')
-
-            get().setStatus('Exécution de la requête...', 'loading')
-            const { rows, columnTypes } = await DuckDBManager.executeQueryWithSchema(finalQuery)
-
-            cell._results = rows
-            cell._columnTypes = columnTypes
-
-            const parsed = EChartSqlParser.parseColumnRoles(rows, columnTypes)
-            if (parsed.chartType === 'kpi') {
-                cell._kpiHtml = EChartSqlParser.buildKpiHtml(rows, parsed)
-                cell._echartsOption = null
-            } else {
-                cell._echartsOption = EChartSqlParser.buildEChartsOption(rows, parsed) ?? null
-                cell._kpiHtml = null
-            }
-            cell._echartReady = true
-            set((s: any) => ({ _rev: s._rev + 1 }))
-
-            cell._resultInfo = `✅ ${rows.length} ligne(s)`
-            get().setStatus('EChart chargé', 'success')
-        } catch (error) {
-            cell._echartReady = false
-            throw error
-        }
-    },
-
-    async renderEchartInContainer(cell, fromExecute = false) {
-        const containerId = 'echart-' + cell._id
-        const container = document.getElementById(containerId)
-
-        if (!container || !cell._results || cell._results.length === 0) {
-            return
-        }
-
-        if (cell._echartRendering) return
-        cell._echartRendering = true
-
-        try {
-            if (cell._echartInstance) {
-                cell._echartInstance.dispose()
-                cell._echartInstance = null
-            }
-            if (cell._echartResizeObserver) {
-                cell._echartResizeObserver.disconnect()
-                cell._echartResizeObserver = null
-            }
-
-            const parsed = EChartSqlParser.parseColumnRoles(cell._results, cell._columnTypes)
-            const { chartType } = parsed
-
-            if (chartType === 'kpi') {
-                container.innerHTML = EChartSqlParser.buildKpiHtml(cell._results, parsed)
-                return
-            }
-
-            const option = EChartSqlParser.buildEChartsOption(cell._results, parsed)
-            if (!option) {
-                container.innerHTML = `<div class="flex items-center justify-center h-full text-base-content/50 text-sm p-6 text-center">
-                    Aucun type de graphique reconnu.<br>
-                    Utilisez des alias comme <strong>XAXIS</strong>, <strong>BARCHART</strong>, <strong>LINECHART</strong>, <strong>PIECHART</strong>, <strong>GAUGE</strong>…</div>`
-                return
-            }
-
-            const instance = window.echarts.init(container, null, { renderer: 'canvas' })
-            instance.setOption(option)
-            cell._echartInstance = instance
-
-            const ro = new ResizeObserver(() => {
-                if (cell._echartInstance && !cell._echartInstance.isDisposed()) {
-                    cell._echartInstance.resize()
-                }
-            })
-            ro.observe(container)
-            cell._echartResizeObserver = ro
-
-        } catch (error) {
-            console.error('[EChart] Erreur de rendu:', error)
-            throw error
-        } finally {
-            cell._echartRendering = false
         }
     },
 
