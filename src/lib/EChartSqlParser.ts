@@ -76,11 +76,18 @@ function _getChartColors(): string[] {
     if (typeof document === 'undefined') return DEFAULT_COLORS;
     const style = getComputedStyle(document.documentElement);
 
+    // shadcn/ui stores HSL as "H S% L%" (no hsl() wrapper, space-separated).
+    // ECharts/zrender only understands comma-separated hsl(H, S%, L%) — use that.
+    const toHsl = (raw: string) => {
+        const p = raw.trim().split(/\s+/)
+        return p.length >= 3 ? `hsl(${p[0]}, ${p[1]}, ${p[2]})` : raw
+    }
+
     // 1. Explicit --chart-N overrides
     const explicit: string[] = [];
     for (let i = 1; i <= 8; i++) {
         const v = style.getPropertyValue(`--chart-${i}`).trim();
-        if (v) explicit.push(v.includes(' ') ? `hsl(${v})` : v);
+        if (v) explicit.push(v.includes(' ') ? toHsl(v) : v);
     }
     if (explicit.length >= 3) return explicit;
 
@@ -90,11 +97,10 @@ function _getChartColors(): string[] {
         const parts = primaryRaw.split(/\s+/).map(parseFloat);
         if (parts.length >= 3 && !isNaN(parts[0])) {
             const [h, s, l] = parts;
-            // 8 hue offsets evenly spaced + shifted for variety
             const offsets = [0, 150, 270, 60, 210, 120, 330, 30];
             const sat = Math.round(Math.min(Math.max(s * 0.85, 45), 78));
             const lit = Math.round(Math.min(Math.max(l > 55 ? l - 10 : l < 35 ? l + 18 : l, 40), 65));
-            return offsets.map(o => `hsl(${Math.round((h + o) % 360)} ${sat}% ${lit}%)`);
+            return offsets.map(o => `hsl(${Math.round((h + o) % 360)}, ${sat}%, ${lit}%)`);
         }
     }
 
