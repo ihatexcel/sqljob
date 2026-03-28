@@ -133247,15 +133247,29 @@ function tryParseSimpleSmart(At, yt) {
   return Et === null ? { source: Ct, steps: [], materialized: yt } : { source: Ct, steps: [Et], materialized: yt };
 }
 function sqlToAstSmart(At, yt = "view") {
-  const xt = sqlToAst(At, yt);
-  if (xt.compatible && xt.ast) return xt;
-  const wt = At.replace(/[ \t]+/g, " ").trim(), Ct = tryParseCteChainSmart(wt, yt);
-  if (Ct) return { ast: Ct, compatible: !0 };
-  const St = tryParseSimpleSmart(wt, yt);
-  return St ? { ast: St, compatible: !0 } : wt ? {
-    ast: { source: "", steps: [{ type: "custom_sql", sql: wt }], materialized: yt },
+  let xt = null, wt = At;
+  const Ct = At.match(/^(\s*SELECT\s+'[^']*'\s*::LABEL\s*;[ \t]*\r?\n?)/i);
+  if (Ct) {
+    const It = Ct[1].match(/SELECT\s+'([^']*)'\s*::LABEL/i);
+    It && (xt = It[1]), wt = At.slice(Ct[1].length);
+  }
+  function St(It) {
+    if (xt === null) return It;
+    const Rt = It.chartConfig ? { ...It.chartConfig, label: xt } : { chartType: "stat", columns: [], label: xt };
+    return { ...It, chartConfig: Rt };
+  }
+  function Et(It) {
+    return xt === null || !It.compatible || !It.ast ? It : { ...It, ast: St(It.ast) };
+  }
+  const kt = sqlToAst(wt, yt);
+  if (kt.compatible && kt.ast) return Et(kt);
+  const Tt = wt.replace(/[ \t]+/g, " ").trim(), $t = tryParseCteChainSmart(Tt, yt);
+  if ($t) return Et({ ast: $t, compatible: !0 });
+  const Lt = tryParseSimpleSmart(Tt, yt);
+  return Lt ? Et({ ast: Lt, compatible: !0 }) : Tt ? Et({
+    ast: { source: "", steps: [{ type: "custom_sql", sql: Tt }], materialized: yt },
     compatible: !0
-  } : xt;
+  }) : kt;
 }
 const SqlBlockService = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
