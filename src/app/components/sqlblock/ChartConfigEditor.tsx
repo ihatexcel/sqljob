@@ -252,7 +252,12 @@ export function ChartConfigEditor({ chartConfig, availableColumns, availableColT
     }, [chartType, cfgLabel, onChange])
 
     const handleSingleRoleChange = useCallback((role: string, col: string | null, kind?: FilterValueKind) => {
-        const entry: ChartColumnRole | undefined = col ? { column: col, role, label: undefined, ...(kind && kind !== 'column' ? { valueKind: kind } : {}) } : undefined
+        const existing = getEntriesForRole(columns, role)[0]
+        // col=null → clear; col='' only comes from VarInput type-switch → keep entry with new kind
+        const shouldCreate = col !== null && (col !== '' || kind !== undefined)
+        const entry: ChartColumnRole | undefined = shouldCreate
+            ? { column: col ?? '', role, label: existing?.label, ...(kind && kind !== 'column' ? { valueKind: kind } : {}) }
+            : undefined
         emit(replaceRoleEntries(columns, role, entry ? [entry] : []))
     }, [columns, emit])
 
@@ -379,7 +384,7 @@ export function ChartConfigEditor({ chartConfig, availableColumns, availableColT
                                             value={entry?.column ?? ''}
                                             valueKind={entry?.valueKind ?? 'column'}
                                             availableCols={availableColumns}
-                                            onChange={(v, k) => handleSingleRoleChange(slot.role, v || null, k)}
+                                            onChange={(v, k) => handleSingleRoleChange(slot.role, v, k)}
                                             className="flex-1"
                                         />
                                     ) : (
