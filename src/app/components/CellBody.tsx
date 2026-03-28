@@ -416,20 +416,18 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
         dropSqlblockSchema().then(() => refreshDuckdbTables())
     }, [cell, path, cellIndex, runCellAt, refreshDuckdbTables])
 
-    // En mode visualisation, afficher le graphique par défaut (sinon datatable)
-    const isVisualizationMode = !!(cell.queries?.[0]?.ast?.chartConfig)
-    const [vizMode, setVizMode] = useState<'table' | 'chart'>(isVisualizationMode ? 'chart' : 'table')
-
     const hasHeight = hasCellHeight(cell)
     const isRunning = cell._status === 'running'
     const searchable = cell.type === 'table'
     const hasChart = !!(cell._echartsOption || cell._kpiHtml)
 
-    // Synchronise vizMode : graphique dès qu'il est disponible, table sinon
+    const [vizMode, setVizMode] = useState<'table' | 'chart'>('table')
+
+    // Synchronise vizMode : graphique dès qu'un chart est disponible, table sinon
     useEffect(() => {
-        if (!isVisualizationMode) setVizMode('table')
-        else if (hasChart) setVizMode('chart')
-    }, [hasChart, isVisualizationMode]) // eslint-disable-line react-hooks/exhaustive-deps
+        if (hasChart) setVizMode('chart')
+        else setVizMode('table')
+    }, [hasChart]) // eslint-disable-line react-hooks/exhaustive-deps
 
     // Mode UI visuel (sqlBlock) pour les cellules sql.
     // IMPORTANT: on utilise display:none au lieu de démontage conditionnel pour éviter
@@ -503,8 +501,8 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
                     </div>
                 </div>
             )}
-            {/* Toggle visible en mode client uniquement si outputMode=visualization */}
-            {!devMode && hasChart && isVisualizationMode && cell.type === 'sql' && (
+            {/* Toggle visible en mode client si chart disponible */}
+            {!devMode && hasChart && cell.type === 'sql' && (
                 <div className="flex rounded border border-border overflow-hidden text-xs mb-1 shrink-0 self-start">
                     <button onClick={() => setVizMode('chart')}
                         className={`px-2 py-0.5 transition-colors ${vizMode === 'chart' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}>
