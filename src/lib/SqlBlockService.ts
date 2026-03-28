@@ -1124,6 +1124,10 @@ function tryParseSimpleSmart(sql: string, materialize: SqlBlockMaterialize): Sql
     if (!srcM) return null;
     const source = unquoteId(srcM[1]);
 
+    // Si la source commence par '(', c'est une sous-requête (VALUES, PIVOT, SELECT imbriqué…).
+    // On ne peut pas la représenter comme un identifiant → le fallback custom_sql s'en charge.
+    if (source.startsWith('(')) return null;
+
     // Si le SELECT contient des annotations ::ROLE, c'est un SELECT final de visualisation
     const chartConfig = parseChartFinalSelect(sql) ?? undefined;
     if (chartConfig) return { source, steps: [], materialized: materialize, chartConfig };
