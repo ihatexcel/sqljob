@@ -53,7 +53,7 @@ export function LoopConfigModal() {
                         {group.loop?.enabled && (
                             <div className="space-y-4">
                                 <Alert>
-                                    <AlertDescription className="text-sm">La requête doit retourner une colonne. Chaque valeur sera utilisée comme variable <code className="bg-muted px-1 rounded text-xs">{"{{ loop }}"}</code> pour chaque itération du groupe.</AlertDescription>
+                                    <AlertDescription className="text-sm">La requête doit retourner une colonne. Chaque valeur sera utilisée comme variable <code className="bg-muted px-1 rounded text-xs">{"{{ _loop }}"}</code> pour chaque itération du groupe.</AlertDescription>
                                 </Alert>
                                 <div className="space-y-1">
                                     <Label className="font-semibold">Requête SQL de la boucle</Label>

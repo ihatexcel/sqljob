@@ -21,9 +21,9 @@ export function parametersMixin() {
                         collectFromGroup(group);
                     }
 
-                    // Ajouter la variable {{ loop }} si elle est définie (pendant l'exécution d'une boucle)
+                    // Ajouter la variable {{ _loop }} si elle est définie (pendant l'exécution d'une boucle)
                     if (this._currentLoopValue !== null && this._currentLoopValue !== undefined) {
-                        params['loop'] = this._currentLoopValue;
+                        params['_loop'] = this._currentLoopValue;
                     }
 
                     return params;
