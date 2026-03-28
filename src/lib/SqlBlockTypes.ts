@@ -280,9 +280,10 @@ export type SqlBlockStep = (
 
 /** Mapping colonne → rôle visuel dans le SELECT final (dernier SELECT du pipeline). */
 export interface ChartColumnRole {
-    column: string;    // nom de colonne source (non quoté)
-    role: string;      // XAXIS | BARCHART | LINECHART | PIECHART | CATEGORY | …
-    label?: string;    // alias AS "Label" (légende ECharts)
+    column: string;         // valeur source : nom de colonne, littéral ou paramètre
+    role: string;           // XAXIS | BARCHART | KPI | PERCENT | …
+    label?: string;         // alias AS "Label" (légende ECharts)
+    valueKind?: FilterValueKind; // 'column' (défaut) | 'literal' | 'param'
 }
 
 /** Configuration de visualisation graphique associée à l'AST. */

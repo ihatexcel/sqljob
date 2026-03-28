@@ -114,10 +114,18 @@ export function buildChartFinalSelect(fromSource: string, cfg: ChartConfig): str
         return aAxis - bAxis;
     });
     const parts = sorted.map(col => {
-        const quotedCol = quoteId(col.column);
         const role = col.role.toUpperCase();
         const alias = col.label?.trim() ? ` AS "${col.label.trim()}"` : '';
-        return `  ${quotedCol}::${role}${alias}`;
+        let expr: string;
+        if (col.valueKind === 'literal') {
+            const n = Number(col.column);
+            expr = col.column.trim() !== '' && !isNaN(n) ? col.column : `'${col.column.replace(/'/g, "''")}'`;
+        } else if (col.valueKind === 'param') {
+            expr = col.column; // {{paramName}} — pas de quoting
+        } else {
+            expr = quoteId(col.column); // colonne (défaut)
+        }
+        return `  ${expr}::${role}${alias}`;
     });
     return `${prefix}SELECT\n${parts.join(',\n')}\nFROM ${fromSource}`;
 }

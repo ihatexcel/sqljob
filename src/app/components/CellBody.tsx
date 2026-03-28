@@ -434,9 +434,10 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
     // le bug React "removeChild not a child" (portals Radix déjà retirés du DOM avant cleanup).
     // L'overlay fixed plein-écran est toujours monté, juste caché quand inactif.
     const showSqlBlockEditor = devMode && cell.type === 'sql'
+    const isKpi = !!cell._kpiHtml
 
     return (
-        <div className={`group/sqlbody ${hasHeight ? 'flex-1 min-h-0 flex flex-col' : ''}`}>
+        <div className={`group/sqlbody flex flex-col ${(hasHeight || isKpi) ? 'flex-1 min-h-0' : ''} ${isKpi ? 'justify-center' : ''}`}>
             {/* SqlBlockEditor — modale centrée, toujours montée, cachée via display:none */}
             {showSqlBlockEditor && (
                 <div
@@ -503,7 +504,7 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
             )}
             {/* Titre dynamique — centré, sous les boutons */}
             {cell._kpiLabel && (
-                <div className="text-base font-semibold text-foreground mb-2 shrink-0 text-center w-full">{cell._kpiLabel}</div>
+                <div className="text-base font-semibold text-foreground mb-0.5 shrink-0 text-center w-full">{cell._kpiLabel}</div>
             )}
             {/* Mode graphique */}
             {vizMode === 'chart' && hasChart && (

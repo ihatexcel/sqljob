@@ -1055,26 +1055,25 @@ function _buildKpiHtml(row: any, roleMap: Record<string, ColumnRole[]>, title: s
     }
     // PERCENT / COMPARE / TREND / TREND_PERCENT — côte à côte sur une ligne
     const rowItems: string[] = [];
+    const neutralBg = 'rgba(128,128,128,.12)';
+    const neutralFg = 'var(--foreground,#111)';
 
-    // PERCENT : fond coloré, pas de flèche
+    // PERCENT : fond neutre, pas de flèche
     for (const col of (roleMap['PERCENT'] || [])) {
         const val = _num(row[col.originalName]);
-        const fg = val >= 75 ? '#16a34a' : val >= 40 ? '#ca8a04' : '#dc2626';
-        const bg = val >= 75 ? '#16a34a18' : val >= 40 ? '#ca8a0418' : '#dc262618';
         const lbl = _sub(col.displayName, 'PERCENT');
-        const prefix = lbl ? `<span style="color:var(--muted-foreground,#888)">${_esc(lbl)}: </span>` : '';
-        rowItems.push(`<span style="white-space:nowrap;font-size:.8rem">${prefix}<span style="background:${bg};color:${fg};border-radius:.35rem;padding:.1rem .45rem;font-weight:700">${val.toFixed(1)}%</span></span>`);
+        const prefix = lbl ? `<span style="color:var(--muted-foreground,#888)">${_esc(lbl)} : </span>` : '';
+        rowItems.push(`<span style="white-space:nowrap;font-size:.8rem">${prefix}<span style="background:${neutralBg};color:${neutralFg};border-radius:.35rem;padding:.1rem .45rem;font-weight:700">${val.toFixed(1)}%</span></span>`);
     }
 
-    // COMPARE : texte coloré, pas de fond ni de flèche, tolère texte
+    // COMPARE : texte neutre, pas de fond ni de flèche, tolère texte
     for (const col of (roleMap['COMPARE'] || [])) {
         const raw = row[col.originalName];
         const numVal = typeof raw === 'number' ? raw : (raw !== null && raw !== undefined && !isNaN(Number(raw)) ? Number(raw) : null);
-        const fg = numVal === null ? 'var(--foreground,#111)' : numVal >= 0 ? '#16a34a' : '#dc2626';
         const display = numVal !== null ? _fmtVal(numVal) : _esc(_str(raw));
         const lbl = _sub(col.displayName, 'COMPARE');
-        const prefix = lbl ? `<span style="color:var(--muted-foreground,#888)">${_esc(lbl)}: </span>` : '';
-        rowItems.push(`<span style="white-space:nowrap;font-size:.8rem;font-weight:600;color:${fg}">${prefix}${display}</span>`);
+        const prefix = lbl ? `<span style="color:var(--muted-foreground,#888)">${_esc(lbl)} : </span>` : '';
+        rowItems.push(`<span style="white-space:nowrap;font-size:.8rem;font-weight:600;color:${neutralFg}">${prefix}${display}</span>`);
     }
 
     // TREND : fond coloré + flèche
@@ -1086,7 +1085,7 @@ function _buildKpiHtml(row: any, roleMap: Record<string, ColumnRole[]>, title: s
         const arrow = isNeutral ? '→' : isUp ? '↑' : '↓';
         const sign = isUp ? '+' : '';
         const lbl = _sub(col.displayName, 'TREND');
-        const prefix = lbl ? `<span style="color:var(--muted-foreground,#888)">${_esc(lbl)}: </span>` : '';
+        const prefix = lbl ? `<span style="color:var(--muted-foreground,#888)">${_esc(lbl)} : </span>` : '';
         rowItems.push(`<span style="white-space:nowrap;font-size:.8rem">${prefix}<span style="background:${bg};color:${fg};border-radius:.35rem;padding:.1rem .45rem;font-weight:700">${sign}${val} ${arrow}</span></span>`);
     }
 
@@ -1099,16 +1098,16 @@ function _buildKpiHtml(row: any, roleMap: Record<string, ColumnRole[]>, title: s
         const arrow = isNeutral ? '→' : isUp ? '↑' : '↓';
         const sign = isUp ? '+' : '';
         const lbl = _sub(col.displayName, 'TREND_PERCENT');
-        const prefix = lbl ? `<span style="color:var(--muted-foreground,#888)">${_esc(lbl)}: </span>` : '';
+        const prefix = lbl ? `<span style="color:var(--muted-foreground,#888)">${_esc(lbl)} : </span>` : '';
         rowItems.push(`<span style="white-space:nowrap;font-size:.8rem">${prefix}<span style="background:${bg};color:${fg};border-radius:.35rem;padding:.1rem .45rem;font-weight:700">${sign}${val.toFixed(1)}% ${arrow}</span></span>`);
     }
 
     if (rowItems.length > 0) {
-        parts.push(`<div style="display:flex;flex-wrap:wrap;gap:.5rem 1rem;justify-content:center;align-items:center;margin-top:.5rem">${rowItems.join('')}</div>`);
+        parts.push(`<div style="display:flex;flex-wrap:wrap;gap:.5rem 1rem;justify-content:center;align-items:center;margin-top:.25rem">${rowItems.join('')}</div>`);
     }
 
     if (parts.length === 0) return '<div style="padding:1rem;color:#888;font-size:.875rem;text-align:center">Aucune donnée</div>';
-    return `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem 2rem;min-height:200px;height:100%;box-sizing:border-box">${parts.join('\n')}</div>`;
+    return `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:.5rem 2rem 1.5rem;min-height:200px;height:100%;box-sizing:border-box">${parts.join('\n')}</div>`;
 }
 
 // ─── Table cell HTML builder ──────────────────────────────────────────────────
