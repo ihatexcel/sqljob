@@ -147,7 +147,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
             for (let i = 0; i < loopValues.length; i++) {
                 const loopValue = loopValues[i]
                 set({ _currentLoopValue: loopValue })
-                get().setStatus(`Boucle ${i + 1}/${loopValues.length}: {{ loop }} = ${loopValue}`, 'loading')
+                get().setStatus(`Boucle ${i + 1}/${loopValues.length}: {{ _loop }} = ${loopValue}`, 'loading')
 
                 const orderedItems = get().getAllItemsSorted(group)
                 for (const item of orderedItems) {

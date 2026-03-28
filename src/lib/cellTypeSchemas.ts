@@ -52,8 +52,8 @@ export const CELL_TYPE_SCHEMAS = {
                     defaults: {
                         title: 'Glissez-déposez votre fichier ici',
                         queries: [
-                            { name: 'main', sql: "CREATE OR REPLACE TABLE {name} AS SELECT * FROM '{{fileName}}'", engine: 'sql', showQueryEditor: false },
-                            { name: 'fallback', sql: "CREATE OR REPLACE TABLE {name} AS SELECT * FROM query( CASE WHEN lower('{{fileName}}') LIKE '%.csv' OR lower('{{fileName}}') LIKE '%.csv.gz' THEN 'SELECT * FROM read_csv(''' || '{{fileName}}' || ''', HEADER = true, AUTO_DETECT = true, SAMPLE_SIZE = -1, IGNORE_ERRORS = true, store_rejects = true)' WHEN lower('{{fileName}}') LIKE '%.xlsx' THEN 'SELECT * FROM read_xlsx(''' || '{{fileName}}' || ''', HEADER = true, STOP_AT_EMPTY = false, EMPTY_AS_VARCHAR = true, IGNORE_ERRORS = true)' WHEN lower('{{fileName}}') LIKE '%.tsv' OR lower('{{fileName}}') LIKE '%.tsv.gz' OR lower('{{fileName}}') LIKE '%.txt' OR lower('{{fileName}}') LIKE '%.txt.gz' THEN 'SELECT * FROM read_csv(''' || '{{fileName}}' || ''', HEADER = true, DELIM = ''\t'', AUTO_DETECT = true, SAMPLE_SIZE = -1, IGNORE_ERRORS = true, store_rejects = true)' WHEN lower('{{fileName}}') LIKE '%.parquet' OR lower('{{fileName}}') LIKE '%.parquet.gz' THEN 'SELECT * FROM read_parquet(''' || '{{fileName}}' || ''')' ELSE 'SELECT 1' END );", engine: 'sql', showQueryEditor: false }
+                            { name: 'main', sql: "CREATE OR REPLACE TABLE {name} AS SELECT * FROM '{{_fileName}}'", engine: 'sql', showQueryEditor: false },
+                            { name: 'fallback', sql: "CREATE OR REPLACE TABLE {name} AS SELECT * FROM query( CASE WHEN lower('{{_fileName}}') LIKE '%.csv' OR lower('{{_fileName}}') LIKE '%.csv.gz' THEN 'SELECT * FROM read_csv(''' || '{{_fileName}}' || ''', HEADER = true, AUTO_DETECT = true, SAMPLE_SIZE = -1, IGNORE_ERRORS = true, store_rejects = true)' WHEN lower('{{_fileName}}') LIKE '%.xlsx' THEN 'SELECT * FROM read_xlsx(''' || '{{_fileName}}' || ''', HEADER = true, STOP_AT_EMPTY = false, EMPTY_AS_VARCHAR = true, IGNORE_ERRORS = true)' WHEN lower('{{_fileName}}') LIKE '%.tsv' OR lower('{{_fileName}}') LIKE '%.tsv.gz' OR lower('{{_fileName}}') LIKE '%.txt' OR lower('{{_fileName}}') LIKE '%.txt.gz' THEN 'SELECT * FROM read_csv(''' || '{{_fileName}}' || ''', HEADER = true, DELIM = ''\t'', AUTO_DETECT = true, SAMPLE_SIZE = -1, IGNORE_ERRORS = true, store_rejects = true)' WHEN lower('{{_fileName}}') LIKE '%.parquet' OR lower('{{_fileName}}') LIKE '%.parquet.gz' THEN 'SELECT * FROM read_parquet(''' || '{{_fileName}}' || ''')' ELSE 'SELECT 1' END );", engine: 'sql', showQueryEditor: false }
                         ],
                         json: { xlsx: { options: { type: 'array', raw: false, dateNF: 'dd/mm/yyyy', cellDates: true }, toCsvOptions: { dateNF: 'dd/mm/yyyy', FS: ',', RS: '\n' }, sheetSelection: { type: { auto: true }, index: 0, name: '' } } }
                     },
@@ -246,7 +246,7 @@ export const CELL_TYPE_SCHEMAS = {
                         json: '',
                         queries: [
                             { name: 'main', sql: "with v_source as (select * from source1 limit 10)\nSELECT 'Titre' as header, 'Pied de page' as footer, json_group_array(json_array(col1, col2, col3)) as datatable\nFROM v_source LIMIT 10", engine: 'sql', showQueryEditor: false },
-                            { name: 'filename', sql: "SELECT '$loop' || '_2.pdf'", engine: 'sql', showQueryEditor: false }
+                            { name: 'filename', sql: "SELECT '{{_loop}}' || '_2.pdf'", engine: 'sql', showQueryEditor: false }
                         ],
                         buttonLabel: '📑 Générer le PDF'
                     },

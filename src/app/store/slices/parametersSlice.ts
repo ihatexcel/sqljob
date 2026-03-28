@@ -22,7 +22,7 @@ export const createParametersSlice = (set: any, get: any) => ({
         }
         for (const group of (groups || [])) collectFromGroup(group)
         if (_currentLoopValue !== null && _currentLoopValue !== undefined) {
-            params['loop'] = _currentLoopValue
+            params['_loop'] = _currentLoopValue
         }
         return params
     },
