@@ -132386,6 +132386,7 @@ hm(xv, "CHART_TYPE_NAMES", [
   "KPI",
   "PERCENT",
   "COMPARE",
+  "TREND_PERCENT",
   "TREND",
   // Layout/filter roles (hors scope rendu mais on les crée pour la syntaxe)
   "SECTION",
@@ -132467,6 +132468,7 @@ const CHART_ROLES_ORDERED = [
   "LABEL",
   "PERCENT",
   "COMPARE",
+  "TREND_PERCENT",
   "TREND",
   "XLINE",
   "YLINE"
@@ -132505,7 +132507,7 @@ function parseChartFinalSelect(At) {
   if (!St.length && !yt) return null;
   const kt = new Set(St.map((It) => It.role)), Tt = (It) => kt.has(It);
   let $t = "bar";
-  Tt("BARCHART_STACKED_PERCENT") || Tt("BARCHART_PERCENT") || Tt("BARCHART_STACKED") ? $t = "bar" : Tt("BARCHART") && Tt("LINECHART") ? $t = "bar+line" : Tt("BARCHART") ? $t = (Tt("YAXIS") && !Tt("XAXIS"), "bar") : Tt("LINECHART_PERCENT") || Tt("LINECHART") ? $t = "line" : Tt("PIECHART_PERCENT") || Tt("PIECHART") ? $t = "pie" : Tt("DONUTCHART_PERCENT") || Tt("DONUTCHART") ? $t = "donut" : Tt("GAUGE_PERCENT") || Tt("GAUGE") ? $t = "gauge" : Tt("BOXPLOT") ? $t = "boxplot" : (Tt("KPI") || Tt("LABEL") || Tt("PERCENT") || Tt("COMPARE") || Tt("TREND")) && ($t = "kpi");
+  Tt("BARCHART_STACKED_PERCENT") || Tt("BARCHART_PERCENT") || Tt("BARCHART_STACKED") ? $t = "bar" : Tt("BARCHART") && Tt("LINECHART") ? $t = "bar+line" : Tt("BARCHART") ? $t = (Tt("YAXIS") && !Tt("XAXIS"), "bar") : Tt("LINECHART_PERCENT") || Tt("LINECHART") ? $t = "line" : Tt("PIECHART_PERCENT") || Tt("PIECHART") ? $t = "pie" : Tt("DONUTCHART_PERCENT") || Tt("DONUTCHART") ? $t = "donut" : Tt("GAUGE_PERCENT") || Tt("GAUGE") ? $t = "gauge" : Tt("BOXPLOT") ? $t = "boxplot" : (Tt("KPI") || Tt("LABEL") || Tt("PERCENT") || Tt("COMPARE") || Tt("TREND") || Tt("TREND_PERCENT")) && ($t = "kpi");
   const Lt = { chartType: $t, columns: St };
   return yt && (Lt.label = yt), Lt;
 }
@@ -133358,7 +133360,8 @@ const SqlBlockService = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.def
       { role: "KPI", label: "Valeur", multiple: !0, optional: !1, hasLabel: !0 },
       { role: "PERCENT", label: "Pourcentage", multiple: !1, optional: !0, hasLabel: !0 },
       { role: "COMPARE", label: "Comparaison", multiple: !1, optional: !0, hasLabel: !0 },
-      { role: "TREND", label: "Tendance", multiple: !1, optional: !0, hasLabel: !0 }
+      { role: "TREND", label: "Tendance", multiple: !1, optional: !0, hasLabel: !0 },
+      { role: "TREND_PERCENT", label: "Tendance (%)", multiple: !1, optional: !0, hasLabel: !0 }
     ]
   }
 }, NONE_VALUE = "__none__", ROLE_COMPAT_MAP = {
@@ -133651,6 +133654,7 @@ const DUCKDB_TYPES = [
   "LABEL",
   "PERCENT",
   "COMPARE",
+  "TREND_PERCENT",
   "TREND",
   "XLINE",
   "YLINE"
@@ -133704,7 +133708,7 @@ function _detectChartType(At) {
     var wt;
     return !!((wt = At[xt]) != null && wt.length);
   };
-  return yt("BARCHART_STACKED_PERCENT") ? "bar_stacked_percent" : yt("BARCHART_PERCENT") ? "bar_percent" : yt("BARCHART_STACKED") ? "bar_stacked" : yt("BARCHART") && yt("LINECHART") ? "bar_line" : yt("BARCHART") ? yt("YAXIS") && !yt("XAXIS") ? "bar_horizontal" : "bar" : yt("LINECHART_PERCENT") ? "line_percent" : yt("LINECHART") ? "line" : yt("PIECHART_PERCENT") ? "pie_percent" : yt("PIECHART") ? "pie" : yt("DONUTCHART_PERCENT") ? "donut_percent" : yt("DONUTCHART") ? "donut" : yt("GAUGE_PERCENT") ? "gauge_percent" : yt("GAUGE") ? "gauge" : yt("BOXPLOT") ? "boxplot" : yt("KPI") || yt("LABEL") || yt("PERCENT") || yt("COMPARE") || yt("TREND") ? "kpi" : "unknown";
+  return yt("BARCHART_STACKED_PERCENT") ? "bar_stacked_percent" : yt("BARCHART_PERCENT") ? "bar_percent" : yt("BARCHART_STACKED") ? "bar_stacked" : yt("BARCHART") && yt("LINECHART") ? "bar_line" : yt("BARCHART") ? yt("YAXIS") && !yt("XAXIS") ? "bar_horizontal" : "bar" : yt("LINECHART_PERCENT") ? "line_percent" : yt("LINECHART") ? "line" : yt("PIECHART_PERCENT") ? "pie_percent" : yt("PIECHART") ? "pie" : yt("DONUTCHART_PERCENT") ? "donut_percent" : yt("DONUTCHART") ? "donut" : yt("GAUGE_PERCENT") ? "gauge_percent" : yt("GAUGE") ? "gauge" : yt("BOXPLOT") ? "boxplot" : yt("KPI") || yt("LABEL") || yt("PERCENT") || yt("COMPARE") || yt("TREND") || yt("TREND_PERCENT") ? "kpi" : "unknown";
 }
 function buildEChartsOption(At, yt) {
   const { roleMap: xt, chartType: wt } = yt;
@@ -134304,16 +134308,20 @@ function _buildKpiHtml(At, yt, xt) {
   }
   const Et = [];
   for (const kt of yt.PERCENT || []) {
-    const Tt = _num(At[kt.originalName]), $t = Tt >= 75 ? "#16a34a" : Tt >= 40 ? "#ca8a04" : "#dc2626", Lt = Ct(kt.displayName, "PERCENT"), It = Lt ? `<span style="color:var(--muted-foreground,#888)">${_esc(Lt)}: </span>` : "";
-    Et.push(`<span style="white-space:nowrap;font-size:.8rem;font-weight:600;color:${$t}">${It}${Tt.toFixed(1)}%</span>`);
+    const Tt = _num(At[kt.originalName]), $t = Tt >= 75 ? "#16a34a" : Tt >= 40 ? "#ca8a04" : "#dc2626", Lt = Tt >= 75 ? "#16a34a18" : Tt >= 40 ? "#ca8a0418" : "#dc262618", It = Ct(kt.displayName, "PERCENT"), Rt = It ? `<span style="color:var(--muted-foreground,#888)">${_esc(It)}: </span>` : "";
+    Et.push(`<span style="white-space:nowrap;font-size:.8rem">${Rt}<span style="background:${Lt};color:${$t};border-radius:.35rem;padding:.1rem .45rem;font-weight:700">${Tt.toFixed(1)}%</span></span>`);
   }
   for (const kt of yt.COMPARE || []) {
-    const Tt = _num(At[kt.originalName]), $t = Tt >= 0 ? "+" : "", Lt = Tt >= 0 ? "#16a34a" : "#dc2626", It = Tt >= 0 ? "#16a34a18" : "#dc262618", Rt = Tt > 0 ? "↑" : Tt < 0 ? "↓" : "→", Dt = Ct(kt.displayName, "COMPARE"), jt = Dt ? `<span style="color:var(--muted-foreground,#888)">${_esc(Dt)}: </span>` : "";
-    Et.push(`<span style="white-space:nowrap;font-size:.8rem">${jt}<span style="background:${It};color:${Lt};border-radius:.35rem;padding:.1rem .45rem;font-weight:700">${$t}${Tt} ${Rt}</span></span>`);
+    const Tt = _num(At[kt.originalName]), $t = Tt >= 0 ? "+" : "", Lt = Tt >= 0 ? "#16a34a" : "#dc2626", It = Ct(kt.displayName, "COMPARE"), Rt = It ? `<span style="color:var(--muted-foreground,#888)">${_esc(It)}: </span>` : "";
+    Et.push(`<span style="white-space:nowrap;font-size:.8rem;font-weight:600;color:${Lt}">${Rt}${$t}${Tt}</span>`);
   }
   for (const kt of yt.TREND || []) {
     const Tt = _num(At[kt.originalName]), $t = Tt > 0, Lt = Tt === 0, It = Lt ? "#ca8a04" : $t ? "#16a34a" : "#dc2626", Rt = Lt ? "#ca8a0418" : $t ? "#16a34a18" : "#dc262618", Dt = Lt ? "→" : $t ? "↑" : "↓", jt = $t ? "+" : "", Nt = Ct(kt.displayName, "TREND"), Mt = Nt ? `<span style="color:var(--muted-foreground,#888)">${_esc(Nt)}: </span>` : "";
     Et.push(`<span style="white-space:nowrap;font-size:.8rem">${Mt}<span style="background:${Rt};color:${It};border-radius:.35rem;padding:.1rem .45rem;font-weight:700">${jt}${Tt} ${Dt}</span></span>`);
+  }
+  for (const kt of yt.TREND_PERCENT || []) {
+    const Tt = _num(At[kt.originalName]), $t = Tt > 0, Lt = Tt === 0, It = Lt ? "#ca8a04" : $t ? "#16a34a" : "#dc2626", Rt = Lt ? "#ca8a0418" : $t ? "#16a34a18" : "#dc262618", Dt = Lt ? "→" : $t ? "↑" : "↓", jt = $t ? "+" : "", Nt = Ct(kt.displayName, "TREND_PERCENT"), Mt = Nt ? `<span style="color:var(--muted-foreground,#888)">${_esc(Nt)}: </span>` : "";
+    Et.push(`<span style="white-space:nowrap;font-size:.8rem">${Mt}<span style="background:${Rt};color:${It};border-radius:.35rem;padding:.1rem .45rem;font-weight:700">${jt}${Tt.toFixed(1)}% ${Dt}</span></span>`);
   }
   return Et.length > 0 && wt.push(`<div style="display:flex;flex-wrap:wrap;gap:.5rem 1rem;justify-content:center;align-items:center;margin-top:.5rem">${Et.join("")}</div>`), wt.length === 0 ? '<div style="padding:1rem;color:#888;font-size:.875rem;text-align:center">Aucune donnée</div>' : `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem 2rem;height:100%;box-sizing:border-box">${wt.join(`
 `)}</div>`;
