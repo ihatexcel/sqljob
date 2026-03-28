@@ -142,21 +142,44 @@ export function parseChartFinalSelect(selectSql: string): ChartConfig | null {
     if (labelM) cfgLabel = labelM[1];
 
     const rolesPattern = CHART_ROLES_ORDERED.join('|');
-    // Match: ("col" | col | 'literal')::ROLE [AS ("label" | label)]
+    // Match: ("col" | '{{param}}' | {{param}} | 'literal' | unquoted)::ROLE [AS ("label" | label)]
+    // Groups: 1=double-quoted col, 2=param({{...}}), 3=single-quoted literal, 4=unquoted
     const re = new RegExp(
-        `(?:"([^"]+)"|'([^']*)'|([\\w]+))\\s*::\\s*(${rolesPattern})(?:\\s+AS\\s+(?:"([^"]+)"|([\\w]+)))?`,
+        `(?:"([^"]+)"|\\{\\{([^}]+)\\}\\}|'([^']*)'|([\\w.]+))\\s*::\\s*(${rolesPattern})(?:\\s+AS\\s+(?:"([^"]+)"|([\\w]+)))?`,
         'gi'
     );
     const columns: ChartColumnRole[] = [];
     let m: RegExpExecArray | null;
     while ((m = re.exec(selectSql)) !== null) {
-        const column = m[1] ?? m[2] ?? m[3];
-        const role = m[4].toUpperCase();
-        const label = m[5] ?? m[6] ?? undefined;
+        const role = m[5].toUpperCase();
+        const label = m[6] ?? m[7] ?? undefined;
         // Skip LABEL role — it's a title prefix, not a data column
-        if (column && CHART_ROLES_SET.has(role) && role !== 'LABEL') {
-            columns.push({ column, role, label });
+        if (!CHART_ROLES_SET.has(role) || role === 'LABEL') continue;
+
+        let column: string;
+        let valueKind: 'column' | 'literal' | 'param' | undefined;
+
+        if (m[1] !== undefined) {
+            // "double-quoted" → column identifier
+            column = m[1];
+            valueKind = 'column';
+        } else if (m[2] !== undefined) {
+            // {{param}} → parameter
+            column = `{{${m[2]}}}`;
+            valueKind = 'param';
+        } else if (m[3] !== undefined) {
+            // 'single-quoted' → literal string (may be numeric)
+            column = m[3];
+            valueKind = 'literal';
+        } else {
+            // unquoted word: numeric token → literal, otherwise → column
+            column = m[4];
+            valueKind = /^-?\d+(\.\d+)?([eE][+-]?\d+)?$/.test(column) ? 'literal' : 'column';
         }
+
+        const entry: ChartColumnRole = { column, role, label };
+        if (valueKind !== 'column') entry.valueKind = valueKind;
+        columns.push(entry);
     }
     if (!columns.length && !cfgLabel) return null;
 
