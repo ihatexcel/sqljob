@@ -133700,18 +133700,21 @@ const DUCKDB_TYPES = [
 ];
 function _getChartColors() {
   if (typeof document > "u") return DEFAULT_COLORS;
-  const At = getComputedStyle(document.documentElement), yt = [];
-  for (let wt = 1; wt <= 8; wt++) {
-    const Ct = At.getPropertyValue(`--chart-${wt}`).trim();
-    Ct && yt.push(Ct.includes(" ") ? `hsl(${Ct})` : Ct);
+  const At = getComputedStyle(document.documentElement), yt = (Ct) => {
+    const St = Ct.trim().split(/\s+/);
+    return St.length >= 3 ? `hsl(${St[0]}, ${St[1]}, ${St[2]})` : Ct;
+  }, xt = [];
+  for (let Ct = 1; Ct <= 8; Ct++) {
+    const St = At.getPropertyValue(`--chart-${Ct}`).trim();
+    St && xt.push(St.includes(" ") ? yt(St) : St);
   }
-  if (yt.length >= 3) return yt;
-  const xt = At.getPropertyValue("--primary").trim();
-  if (xt) {
-    const wt = xt.split(/\s+/).map(parseFloat);
-    if (wt.length >= 3 && !isNaN(wt[0])) {
-      const [Ct, St, Et] = wt, kt = [0, 150, 270, 60, 210, 120, 330, 30], Tt = Math.round(Math.min(Math.max(St * 0.85, 45), 78)), $t = Math.round(Math.min(Math.max(Et > 55 ? Et - 10 : Et < 35 ? Et + 18 : Et, 40), 65));
-      return kt.map((Lt) => `hsl(${Math.round((Ct + Lt) % 360)} ${Tt}% ${$t}%)`);
+  if (xt.length >= 3) return xt;
+  const wt = At.getPropertyValue("--primary").trim();
+  if (wt) {
+    const Ct = wt.split(/\s+/).map(parseFloat);
+    if (Ct.length >= 3 && !isNaN(Ct[0])) {
+      const [St, Et, kt] = Ct, Tt = [0, 150, 270, 60, 210, 120, 330, 30], $t = Math.round(Math.min(Math.max(Et * 0.85, 45), 78)), Lt = Math.round(Math.min(Math.max(kt > 55 ? kt - 10 : kt < 35 ? kt + 18 : kt, 40), 65));
+      return Tt.map((It) => `hsl(${Math.round((St + It) % 360)}, ${$t}%, ${Lt}%)`);
     }
   }
   return DEFAULT_COLORS;
