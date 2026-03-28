@@ -133698,6 +133698,24 @@ const DUCKDB_TYPES = [
   "#9a60b4",
   "#ea7ccc"
 ];
+function _getChartColors() {
+  if (typeof document > "u") return DEFAULT_COLORS;
+  const At = getComputedStyle(document.documentElement), yt = [];
+  for (let wt = 1; wt <= 8; wt++) {
+    const Ct = At.getPropertyValue(`--chart-${wt}`).trim();
+    Ct && yt.push(Ct.includes(" ") ? `hsl(${Ct})` : Ct);
+  }
+  if (yt.length >= 3) return yt;
+  const xt = At.getPropertyValue("--primary").trim();
+  if (xt) {
+    const wt = xt.split(/\s+/).map(parseFloat);
+    if (wt.length >= 3 && !isNaN(wt[0])) {
+      const [Ct, St, Et] = wt, kt = [0, 150, 270, 60, 210, 120, 330, 30], Tt = Math.round(Math.min(Math.max(St * 0.85, 45), 78)), $t = Math.round(Math.min(Math.max(Et > 55 ? Et - 10 : Et < 35 ? Et + 18 : Et, 40), 65));
+      return kt.map((Lt) => `hsl(${Math.round((Ct + Lt) % 360)} ${Tt}% ${$t}%)`);
+    }
+  }
+  return DEFAULT_COLORS;
+}
 function _isDark() {
   var At;
   return typeof document > "u" ? !1 : document.documentElement.classList.contains("dark") || typeof window < "u" && ((At = window.matchMedia) == null ? void 0 : At.call(window, "(prefers-color-scheme: dark)").matches);
@@ -133744,7 +133762,7 @@ function buildEChartsOption(At, yt) {
   if (!At || At.length === 0) return null;
   const St = _isDark() ? "#e2e8f0" : "#334155", Et = {
     backgroundColor: "transparent",
-    color: DEFAULT_COLORS,
+    color: _getChartColors(),
     textStyle: { color: St, fontFamily: "inherit" },
     tooltip: { trigger: "axis", confine: !0 },
     legend: { show: !0, textStyle: { color: St } },
