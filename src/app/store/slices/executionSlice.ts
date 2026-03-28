@@ -283,6 +283,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
     async executeSqlRecursiveParseCell(cell) {
         // Si queries[0].sql est vide mais qu'un AST est disponible, reconstituer le SQL
         const q0 = cell.queries?.[0]
+        console.log('[chart] executeSqlRecursiveParseCell → sql:', q0?.sql?.slice(0, 120), 'chartConfig:', JSON.stringify(q0?.ast?.chartConfig))
 
         if (q0?.ast && !q0.sql?.trim()) {
             const { astToSql } = await import('../../../lib/SqlBlockService')
@@ -462,6 +463,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
                     }
                 } else {
                     const chartConfig = q0?.ast?.chartConfig
+                    console.log('[chart] branche ephémère → chartConfig columns:', chartConfig?.columns?.length, 'finalQuery:', finalQuery?.slice(0, 120))
                     if (chartConfig?.columns?.length) {
                         // Mode graphique : initChartTypes + strip des annotations + EChartSqlParser
                         get().setStatus('Chargement ECharts...', 'loading')
@@ -469,6 +471,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
                         await DuckDBManager.initChartTypes()
                         get().setStatus('Exécution de la requête...', 'loading')
                         const { rows, columnTypes, schemaTypes } = await DuckDBManager.executeQueryWithSchema(finalQuery)
+                        console.log('[chart] executeQueryWithSchema → rows:', rows.length, 'columnTypes:', JSON.stringify(columnTypes))
                         const maxRows = cell.maxRows || 100000
                         const rawResults = rows.slice(0, maxRows)
                         _rawTableDataStore.set(cell._id, rawResults)
@@ -477,14 +480,17 @@ export const createExecutionSlice = (set: any, get: any) => ({
                         cell._columnTypes = columnTypes
                         cell._resultInfo = `✅ ${rows.length} ligne(s)`
                         const parsed = EChartSqlParser.parseColumnRoles(rows, columnTypes)
+                        console.log('[chart] parseColumnRoles → chartType:', parsed.chartType, 'roles:', parsed.roles?.map(r => r.role))
                         if (parsed.chartType === 'kpi') {
                             cell._kpiHtml = EChartSqlParser.buildKpiHtml(rows, parsed)
                             cell._echartsOption = null
                         } else {
                             cell._echartsOption = EChartSqlParser.buildEChartsOption(rows, parsed) ?? null
                             cell._kpiHtml = null
+                            console.log('[chart] _echartsOption produit:', cell._echartsOption ? 'OK' : 'NULL')
                         }
                     } else {
+                        console.log('[chart] branche NO-CHART → _echartsOption = null')
                         cell._echartsOption = null
                         cell._kpiHtml = null
                         const { rows: finalResults, schemaTypes } = await DuckDBManager.executeQueryWithSchema(finalQuery)
