@@ -134072,7 +134072,7 @@ function _buildPieOption(At, yt, xt, wt, Ct, St) {
       value: _num(Ht[Lt])
     };
     return Rt && Ht[Rt] && (Yt.itemStyle = { color: _str(Ht[Rt]) }), Yt;
-  }), jt = Math.round(_cssClampPx("clamp(70px,12vw,130px)", 100)), Nt = St ? [Math.round(jt * 0.58), jt] : jt;
+  }), jt = Math.round(_cssClampPx("clamp(55px,8vmin,90px)", 80)), Nt = St ? [Math.round(jt * 0.58), jt] : jt;
   return {
     ...wt,
     tooltip: {
