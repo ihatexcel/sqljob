@@ -2769,9 +2769,10 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
 
     function handleManualSqlEdit(rawSql: string) {
         const newSql = stripMaterializePrefix(rawSql)
-        // Vérification : plusieurs instructions SQL → UI impossible
+        // Vérification : plusieurs instructions SQL → UI impossible (hors LABEL prefix)
         const stmts = newSql.split(';').map((s: string) => s.trim()).filter(Boolean)
-        if (stmts.length > 1) {
+        const nonLabelStmts = stmts.filter((s: string) => !/^\s*SELECT\s+.+?::LABEL\b/i.test(s))
+        if (nonLabelStmts.length > 1) {
             const cfg = getOrInitConfig(cell)
             cfg.degraded = true; cfg.manualSql = newSql
             cfg.sql = buildDisplaySql(cell.name, newSql, cfg.ast?.materialized ?? 'ephemeral')
@@ -2803,9 +2804,10 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
     function tryRestoreFromDegraded() {
         const cfg = getOrInitConfig(cell)
         const sql = stripMaterializePrefix(cfg.manualSql || selectSql)
-        // Bloquer la restauration si plusieurs instructions SQL
+        // Bloquer la restauration si plusieurs instructions SQL (hors LABEL prefix)
         const stmts = sql.split(';').map((s: string) => s.trim()).filter(Boolean)
-        if (stmts.length > 1) {
+        const nonLabelStmts = stmts.filter((s: string) => !/^\s*SELECT\s+.+?::LABEL\b/i.test(s))
+        if (nonLabelStmts.length > 1) {
             setMultiSqlWarning(true)
             return
         }

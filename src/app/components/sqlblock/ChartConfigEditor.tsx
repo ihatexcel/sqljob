@@ -304,19 +304,17 @@ export function ChartConfigEditor({ chartConfig, availableColumns, availableColT
                 </select>
             </div>
 
-            {/* Titre (stat / kpi) */}
-            {(chartType === 'stat' || chartType === 'kpi') && (
-                <div className="flex items-center gap-2">
-                    <span className="text-xs text-muted-foreground w-28 shrink-0">Titre</span>
-                    <input
-                        type="text"
-                        value={cfgLabel}
-                        onChange={e => handleLabelChange(e.target.value)}
-                        placeholder="Titre affiché au-dessus"
-                        className="h-6 text-xs px-1.5 border border-border rounded bg-background flex-1"
-                    />
-                </div>
-            )}
+            {/* Titre */}
+            <div className="flex items-center gap-2">
+                <span className="text-xs text-muted-foreground w-28 shrink-0">Titre</span>
+                <input
+                    type="text"
+                    value={cfgLabel}
+                    onChange={e => handleLabelChange(e.target.value)}
+                    placeholder="Titre affiché au-dessus"
+                    className="h-6 text-xs px-1.5 border border-border rounded bg-background flex-1"
+                />
+            </div>
 
             {/* Slots de rôles (vide si datatable) */}
             {typeConfig.roles.map(slot => {

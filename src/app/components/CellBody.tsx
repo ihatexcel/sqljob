@@ -486,6 +486,10 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
                 />
             )}
             {showResult && (<>
+            {/* Titre dynamique (LABEL) */}
+            {cell._kpiLabel && (
+                <div className="text-sm font-semibold text-foreground mb-1 shrink-0">{cell._kpiLabel}</div>
+            )}
             {/* Toggle Tableau/Graphique — devMode */}
             {devMode && cell.type === 'sql' && hasChart && (
                 <div className="flex items-center gap-2 mb-1 shrink-0">
