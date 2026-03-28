@@ -436,7 +436,7 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
     const showSqlBlockEditor = devMode && cell.type === 'sql'
 
     return (
-        <div className={hasHeight ? 'flex-1 min-h-0 flex flex-col' : ''}>
+        <div className={`group/sqlbody ${hasHeight ? 'flex-1 min-h-0 flex flex-col' : ''}`}>
             {/* SqlBlockEditor — modale centrée, toujours montée, cachée via display:none */}
             {showSqlBlockEditor && (
                 <div
@@ -486,9 +486,9 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
                 />
             )}
             {showResult && (<>
-            {/* Toggle Tableau/Graphique — uniquement pour les charts ECharts (pas KPI) */}
-            {devMode && cell.type === 'sql' && cell._echartsOption && (
-                <div className="flex items-center gap-2 mb-1 shrink-0">
+            {/* Toggle Tableau/Graphique — visible au hover, uniquement pour les charts ECharts (pas KPI) */}
+            {cell.type === 'sql' && cell._echartsOption && (
+                <div className="opacity-0 group-hover/sqlbody:opacity-100 transition-opacity flex items-center gap-2 mb-1 shrink-0">
                     <div className="flex rounded border border-border overflow-hidden text-xs">
                         <button onClick={() => setVizMode('chart')}
                             className={`px-2 py-0.5 transition-colors ${vizMode === 'chart' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}>
@@ -501,25 +501,13 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
                     </div>
                 </div>
             )}
-            {!devMode && cell.type === 'sql' && cell._echartsOption && (
-                <div className="flex rounded border border-border overflow-hidden text-xs mb-1 shrink-0 self-start">
-                    <button onClick={() => setVizMode('chart')}
-                        className={`px-2 py-0.5 transition-colors ${vizMode === 'chart' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}>
-                        Graphique
-                    </button>
-                    <button onClick={() => setVizMode('table')}
-                        className={`px-2 py-0.5 transition-colors ${vizMode === 'table' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}>
-                        Tableau
-                    </button>
-                </div>
-            )}
             {/* Titre dynamique — centré, sous les boutons */}
             {cell._kpiLabel && (
                 <div className="text-base font-semibold text-foreground mb-2 shrink-0 text-center w-full">{cell._kpiLabel}</div>
             )}
             {/* Mode graphique */}
             {vizMode === 'chart' && hasChart && (
-                <div className={hasHeight ? 'flex-1 min-h-0 flex flex-col' : ''}>
+                <div className={`flex flex-col ${hasHeight ? 'flex-1 min-h-0' : ''}`}>
                     <EChartRenderer cell={cell} hasHeight={hasHeight} />
                 </div>
             )}

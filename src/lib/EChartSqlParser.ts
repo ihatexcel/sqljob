@@ -156,7 +156,7 @@ function _detectChartType(roleMap: Record<string, ColumnRole[]>): string {
     if (has('GAUGE_PERCENT'))      return 'gauge_percent';
     if (has('GAUGE'))              return 'gauge';
     if (has('BOXPLOT'))            return 'boxplot';
-    if (has('KPI') || has('LABEL') || has('PERCENT') || has('COMPARE') || has('TREND') || has('TREND_PERCENT')) return 'kpi';
+    if (has('KPI') || has('PERCENT') || has('COMPARE') || has('TREND') || has('TREND_PERCENT')) return 'kpi';
     return 'unknown';
 }
 
@@ -1044,11 +1044,10 @@ function _buildKpiHtml(row: any, roleMap: Record<string, ColumnRole[]>, title: s
         return raw && raw.toLowerCase() !== 'null' ? raw : '';
     }
 
-    // KPI role (new) + LABEL role (backward compat)
-    const kpiCols = [...(roleMap['KPI'] || []), ...(roleMap['LABEL'] || [])];
-    for (const col of kpiCols) {
+    // KPI value columns
+    for (const col of (roleMap['KPI'] || [])) {
         const val = _str(row[col.originalName]);
-        const sublabel = _sub(col.displayName, 'KPI') || _sub(col.displayName, 'LABEL');
+        const sublabel = _sub(col.displayName, 'KPI');
         parts.push(`<div style="text-align:center;margin-bottom:.5rem">
   <div style="font-size:clamp(2.5rem,8vw,5rem);font-weight:700;line-height:1.05;color:var(--foreground,#111)">${_esc(val)}</div>
   ${sublabel ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-top:.2rem">${_esc(sublabel)}</div>` : ''}
@@ -1067,14 +1066,15 @@ function _buildKpiHtml(row: any, roleMap: Record<string, ColumnRole[]>, title: s
         rowItems.push(`<span style="white-space:nowrap;font-size:.8rem">${prefix}<span style="background:${bg};color:${fg};border-radius:.35rem;padding:.1rem .45rem;font-weight:700">${val.toFixed(1)}%</span></span>`);
     }
 
-    // COMPARE : texte coloré, pas de fond ni de flèche
+    // COMPARE : texte coloré, pas de fond ni de flèche, tolère texte
     for (const col of (roleMap['COMPARE'] || [])) {
-        const val = _num(row[col.originalName]);
-        const sign = val >= 0 ? '+' : '';
-        const fg = val >= 0 ? '#16a34a' : '#dc2626';
+        const raw = row[col.originalName];
+        const numVal = typeof raw === 'number' ? raw : (raw !== null && raw !== undefined && !isNaN(Number(raw)) ? Number(raw) : null);
+        const fg = numVal === null ? 'var(--foreground,#111)' : numVal >= 0 ? '#16a34a' : '#dc2626';
+        const display = numVal !== null ? _fmtVal(numVal) : _esc(_str(raw));
         const lbl = _sub(col.displayName, 'COMPARE');
         const prefix = lbl ? `<span style="color:var(--muted-foreground,#888)">${_esc(lbl)}: </span>` : '';
-        rowItems.push(`<span style="white-space:nowrap;font-size:.8rem;font-weight:600;color:${fg}">${prefix}${sign}${val}</span>`);
+        rowItems.push(`<span style="white-space:nowrap;font-size:.8rem;font-weight:600;color:${fg}">${prefix}${display}</span>`);
     }
 
     // TREND : fond coloré + flèche
@@ -1108,7 +1108,7 @@ function _buildKpiHtml(row: any, roleMap: Record<string, ColumnRole[]>, title: s
     }
 
     if (parts.length === 0) return '<div style="padding:1rem;color:#888;font-size:.875rem;text-align:center">Aucune donnée</div>';
-    return `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem 2rem;height:100%;box-sizing:border-box">${parts.join('\n')}</div>`;
+    return `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem 2rem;min-height:200px;height:100%;box-sizing:border-box">${parts.join('\n')}</div>`;
 }
 
 // ─── Table cell HTML builder ──────────────────────────────────────────────────
