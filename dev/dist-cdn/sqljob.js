@@ -132382,14 +132382,11 @@ hm(xv, "CHART_TYPE_NAMES", [
   "XLINE",
   "YLINE",
   "LABEL",
-  // KPI / Stat roles
+  // KPI roles
   "KPI",
   "PERCENT",
   "COMPARE",
   "TREND",
-  "TEXT_LARGE",
-  "TEXT_MEDIUM",
-  "TEXT_SMALL",
   // Layout/filter roles (hors scope rendu mais on les crée pour la syntaxe)
   "SECTION",
   "HEADER_IMAGE",
@@ -132466,9 +132463,6 @@ const CHART_ROLES_ORDERED = [
   "COLORS",
   "LABELS",
   "RANGE",
-  "TEXT_LARGE",
-  "TEXT_MEDIUM",
-  "TEXT_SMALL",
   "KPI",
   "LABEL",
   "PERCENT",
@@ -132511,7 +132505,7 @@ function parseChartFinalSelect(At) {
   if (!St.length && !yt) return null;
   const kt = new Set(St.map((It) => It.role)), Tt = (It) => kt.has(It);
   let $t = "bar";
-  Tt("BARCHART_STACKED_PERCENT") || Tt("BARCHART_PERCENT") || Tt("BARCHART_STACKED") ? $t = "bar" : Tt("BARCHART") && Tt("LINECHART") ? $t = "bar+line" : Tt("BARCHART") ? $t = (Tt("YAXIS") && !Tt("XAXIS"), "bar") : Tt("LINECHART_PERCENT") || Tt("LINECHART") ? $t = "line" : Tt("PIECHART_PERCENT") || Tt("PIECHART") ? $t = "pie" : Tt("DONUTCHART_PERCENT") || Tt("DONUTCHART") ? $t = "donut" : Tt("GAUGE_PERCENT") || Tt("GAUGE") ? $t = "gauge" : Tt("BOXPLOT") ? $t = "boxplot" : (Tt("TEXT_LARGE") || Tt("TEXT_MEDIUM") || Tt("TEXT_SMALL") || Tt("KPI") || Tt("LABEL") || Tt("PERCENT") || Tt("COMPARE") || Tt("TREND")) && ($t = "kpi");
+  Tt("BARCHART_STACKED_PERCENT") || Tt("BARCHART_PERCENT") || Tt("BARCHART_STACKED") ? $t = "bar" : Tt("BARCHART") && Tt("LINECHART") ? $t = "bar+line" : Tt("BARCHART") ? $t = (Tt("YAXIS") && !Tt("XAXIS"), "bar") : Tt("LINECHART_PERCENT") || Tt("LINECHART") ? $t = "line" : Tt("PIECHART_PERCENT") || Tt("PIECHART") ? $t = "pie" : Tt("DONUTCHART_PERCENT") || Tt("DONUTCHART") ? $t = "donut" : Tt("GAUGE_PERCENT") || Tt("GAUGE") ? $t = "gauge" : Tt("BOXPLOT") ? $t = "boxplot" : (Tt("KPI") || Tt("LABEL") || Tt("PERCENT") || Tt("COMPARE") || Tt("TREND")) && ($t = "kpi");
   const Lt = { chartType: $t, columns: St };
   return yt && (Lt.label = yt), Lt;
 }
@@ -133362,9 +133356,6 @@ const SqlBlockService = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.def
     icon: "material-symbols-light:123",
     roles: [
       { role: "KPI", label: "Valeur", multiple: !0, optional: !1, hasLabel: !0 },
-      { role: "TEXT_LARGE", label: "Valeur (grand)", multiple: !1, optional: !0, hasLabel: !0 },
-      { role: "TEXT_MEDIUM", label: "Valeur (moyen)", multiple: !1, optional: !0, hasLabel: !0 },
-      { role: "TEXT_SMALL", label: "Valeur (petit)", multiple: !1, optional: !0, hasLabel: !0 },
       { role: "PERCENT", label: "Pourcentage", multiple: !1, optional: !0, hasLabel: !0 },
       { role: "COMPARE", label: "Comparaison", multiple: !1, optional: !0, hasLabel: !0 },
       { role: "TREND", label: "Tendance", multiple: !1, optional: !0, hasLabel: !0 }
@@ -133656,9 +133647,6 @@ const DUCKDB_TYPES = [
   "COLORS",
   "LABELS",
   "RANGE",
-  "TEXT_LARGE",
-  "TEXT_MEDIUM",
-  "TEXT_SMALL",
   "KPI",
   "LABEL",
   "PERCENT",
@@ -133716,7 +133704,7 @@ function _detectChartType(At) {
     var wt;
     return !!((wt = At[xt]) != null && wt.length);
   };
-  return yt("BARCHART_STACKED_PERCENT") ? "bar_stacked_percent" : yt("BARCHART_PERCENT") ? "bar_percent" : yt("BARCHART_STACKED") ? "bar_stacked" : yt("BARCHART") && yt("LINECHART") ? "bar_line" : yt("BARCHART") ? yt("YAXIS") && !yt("XAXIS") ? "bar_horizontal" : "bar" : yt("LINECHART_PERCENT") ? "line_percent" : yt("LINECHART") ? "line" : yt("PIECHART_PERCENT") ? "pie_percent" : yt("PIECHART") ? "pie" : yt("DONUTCHART_PERCENT") ? "donut_percent" : yt("DONUTCHART") ? "donut" : yt("GAUGE_PERCENT") ? "gauge_percent" : yt("GAUGE") ? "gauge" : yt("BOXPLOT") ? "boxplot" : yt("TEXT_LARGE") || yt("TEXT_MEDIUM") || yt("TEXT_SMALL") || yt("KPI") || yt("LABEL") || yt("PERCENT") || yt("COMPARE") || yt("TREND") ? "kpi" : "unknown";
+  return yt("BARCHART_STACKED_PERCENT") ? "bar_stacked_percent" : yt("BARCHART_PERCENT") ? "bar_percent" : yt("BARCHART_STACKED") ? "bar_stacked" : yt("BARCHART") && yt("LINECHART") ? "bar_line" : yt("BARCHART") ? yt("YAXIS") && !yt("XAXIS") ? "bar_horizontal" : "bar" : yt("LINECHART_PERCENT") ? "line_percent" : yt("LINECHART") ? "line" : yt("PIECHART_PERCENT") ? "pie_percent" : yt("PIECHART") ? "pie" : yt("DONUTCHART_PERCENT") ? "donut_percent" : yt("DONUTCHART") ? "donut" : yt("GAUGE_PERCENT") ? "gauge_percent" : yt("GAUGE") ? "gauge" : yt("BOXPLOT") ? "boxplot" : yt("KPI") || yt("LABEL") || yt("PERCENT") || yt("COMPARE") || yt("TREND") ? "kpi" : "unknown";
 }
 function buildEChartsOption(At, yt) {
   const { roleMap: xt, chartType: wt } = yt;
@@ -134296,44 +134284,11 @@ function _buildBoxplotOption(At, yt, xt, wt) {
 function _esc(At) {
   return String(At).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
-function _fmtVal(At) {
-  return At == null ? "–" : typeof At == "number" ? At.toLocaleString("fr-FR") : _esc(String(At));
-}
 function buildKpiHtml(At, yt, xt) {
-  var Et, kt, Tt;
-  const { roleMap: wt } = yt, Ct = At[0] || {};
-  return (Et = wt.TEXT_LARGE) != null && Et.length || (kt = wt.TEXT_MEDIUM) != null && kt.length || (Tt = wt.TEXT_SMALL) != null && Tt.length ? _buildStatHtml(Ct, wt) : _buildKpiLegacy(Ct, wt);
+  const wt = At[0] || {};
+  return _buildKpiHtml(wt, yt.roleMap);
 }
-function _buildStatHtml(At, yt, xt) {
-  const wt = [], Ct = [
-    ["TEXT_LARGE", "clamp(2.5rem,8vw,4.5rem)"],
-    ["TEXT_MEDIUM", "clamp(1.5rem,5vw,2.75rem)"],
-    ["TEXT_SMALL", "clamp(1rem,3vw,1.5rem)"]
-  ];
-  let St = null;
-  for (const [Et, kt] of Ct)
-    for (const Tt of yt[Et] || []) {
-      const $t = At[Tt.originalName], Lt = _fmtVal($t), It = Tt.displayName !== Et ? Tt.displayName : "", Rt = It && It.toLowerCase() !== "null" ? It : "";
-      St === null && typeof $t == "number" ? St = $t : St === null && $t !== null && $t !== void 0 && !isNaN(Number($t)) && (St = Number($t)), wt.push(`<div style="text-align:center;margin-bottom:.25rem">
-  <div style="font-size:${kt};font-weight:700;line-height:1.05;color:var(--foreground,#111)">${Lt}</div>
-  ${Rt ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-top:.2rem">${_esc(Rt)}</div>` : ""}
-</div>`);
-    }
-  for (const Et of yt.COMPARE || []) {
-    const kt = _num(At[Et.originalName]), Tt = Et.displayName !== "COMPARE" ? Et.displayName : "Précédent";
-    if (St !== null) {
-      const $t = kt !== 0 ? (St - kt) / Math.abs(kt) * 100 : 0, Lt = $t >= 0 ? "+" : "", It = $t > 0 ? "↗" : $t < 0 ? "↘" : "→", Rt = $t >= 0 ? "#16a34a22" : "#dc262622", Dt = $t >= 0 ? "#16a34a" : "#dc2626";
-      wt.push(`<div style="text-align:center;margin-top:.75rem;font-size:.8rem;color:var(--muted-foreground,#888)">
-  ${_esc(Tt)}: ${_fmtVal(kt)}
-  <span style="display:inline-block;background:${Rt};color:${Dt};border-radius:.25rem;padding:.1rem .4rem;font-size:.75rem;font-weight:700;margin-left:.4rem">${Lt}${Math.round($t)}% ${It}</span>
-</div>`);
-    } else
-      wt.push(`<div style="text-align:center;margin-top:.75rem;font-size:.8rem;color:var(--muted-foreground,#888)">${_esc(Tt)}: ${_fmtVal(kt)}</div>`);
-  }
-  return wt.length === 0 ? '<div style="padding:1rem;color:#888;font-size:.875rem;text-align:center">Aucune donnée</div>' : `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem 2rem;height:100%;box-sizing:border-box">${wt.join(`
-`)}</div>`;
-}
-function _buildKpiLegacy(At, yt, xt) {
+function _buildKpiHtml(At, yt, xt) {
   const wt = [];
   function Ct(Et, kt, Tt = "") {
     const $t = Et !== kt ? Et : Tt;
@@ -137972,8 +137927,7 @@ function SqlTableBody({ cell: At, path: yt, cellIndex: xt, showTextResult: wt = 
             }
           ),
           jt && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-            At._kpiLabel && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm font-semibold text-foreground mb-1 shrink-0", children: At._kpiLabel }),
-            Ct && At.type === "sql" && Jt && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-2 mb-1 shrink-0", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex rounded border border-border overflow-hidden text-xs", children: [
+            Ct && At.type === "sql" && At._echartsOption && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-2 mb-1 shrink-0", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex rounded border border-border overflow-hidden text-xs", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(
                 "button",
                 {
@@ -137991,7 +137945,7 @@ function SqlTableBody({ cell: At, path: yt, cellIndex: xt, showTextResult: wt = 
                 }
               )
             ] }) }),
-            !Ct && Jt && At.type === "sql" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex rounded border border-border overflow-hidden text-xs mb-1 shrink-0 self-start", children: [
+            !Ct && At.type === "sql" && At._echartsOption && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex rounded border border-border overflow-hidden text-xs mb-1 shrink-0 self-start", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(
                 "button",
                 {
@@ -138009,6 +137963,7 @@ function SqlTableBody({ cell: At, path: yt, cellIndex: xt, showTextResult: wt = 
                 }
               )
             ] }),
+            At._kpiLabel && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-base font-semibold text-foreground mb-2 shrink-0 text-center w-full", children: At._kpiLabel }),
             Zt === "chart" && Jt && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: Ht ? "flex-1 min-h-0 flex flex-col" : "", children: /* @__PURE__ */ jsxRuntimeExports.jsx(EChartRenderer, { cell: At, hasHeight: Ht }) }),
             Zt === "table" && (wt ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
               (kt == null ? void 0 : kt(At)) && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `relative rounded-lg mt-2 ${Ht ? "flex-1 min-h-0 overflow-auto" : ""}`, children: Yt ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-background rounded-lg overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsx(TableSkeleton, {}) }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-background rounded-lg overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsx(SqlDataTable, { cell: At, searchable: Kt }) }) }),
