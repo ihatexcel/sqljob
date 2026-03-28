@@ -66,6 +66,41 @@ const DEFAULT_COLORS = [
     '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc',
 ];
 
+/**
+ * Returns the chart color palette:
+ * 1. Explicit --chart-1…--chart-8 CSS variables (user-defined in custom theme)
+ * 2. Auto-generated from --primary hue (rotates around the color wheel)
+ * 3. DEFAULT_COLORS fallback
+ */
+function _getChartColors(): string[] {
+    if (typeof document === 'undefined') return DEFAULT_COLORS;
+    const style = getComputedStyle(document.documentElement);
+
+    // 1. Explicit --chart-N overrides
+    const explicit: string[] = [];
+    for (let i = 1; i <= 8; i++) {
+        const v = style.getPropertyValue(`--chart-${i}`).trim();
+        if (v) explicit.push(v.includes(' ') ? `hsl(${v})` : v);
+    }
+    if (explicit.length >= 3) return explicit;
+
+    // 2. Derive from --primary (shadcn/ui format: "H S% L%")
+    const primaryRaw = style.getPropertyValue('--primary').trim();
+    if (primaryRaw) {
+        const parts = primaryRaw.split(/\s+/).map(parseFloat);
+        if (parts.length >= 3 && !isNaN(parts[0])) {
+            const [h, s, l] = parts;
+            // 8 hue offsets evenly spaced + shifted for variety
+            const offsets = [0, 150, 270, 60, 210, 120, 330, 30];
+            const sat = Math.round(Math.min(Math.max(s * 0.85, 45), 78));
+            const lit = Math.round(Math.min(Math.max(l > 55 ? l - 10 : l < 35 ? l + 18 : l, 40), 65));
+            return offsets.map(o => `hsl(${Math.round((h + o) % 360)} ${sat}% ${lit}%)`);
+        }
+    }
+
+    return DEFAULT_COLORS;
+}
+
 // ─── Dark theme detection ────────────────────────────────────────────────────
 
 const DARK_THEMES = new Set([
@@ -171,7 +206,7 @@ export function buildEChartsOption(results: any[], parsed: ParsedColumnRoles): o
 
     const base = {
         backgroundColor: 'transparent',
-        color: DEFAULT_COLORS,
+        color: _getChartColors(),
         textStyle: { color: textColor, fontFamily: 'inherit' },
         tooltip: { trigger: 'axis', confine: true },
         legend: { show: true, textStyle: { color: textColor } },
