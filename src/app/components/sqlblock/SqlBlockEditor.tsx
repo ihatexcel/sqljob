@@ -2832,15 +2832,25 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
     // Aperçu graphique dans dtSection (remplace le datatable)
     const [vizTab, setVizTab] = useState<'table' | 'chart'>('table')
     const [vizConfigOpen, setVizConfigOpen] = useState(false)
+    // Flag : on n'auto-active qu'une seule fois par version du SQL (évite de re-forcer après switch manuel)
+    const hasAutoActivatedVizRef = useRef(false)
 
     // cellule factice pour SqlDataTable quand on affiche un aperçu step ou source
     const displayCell = showingEye && eyeData
         ? { _id: `eye_${String(eyeOpen)}_${cell._id}`, _results: eyeData.rows, _schemaTypes: eyeData.schemaTypes }
         : cell
 
-    // Bascule auto sur 'table' si le graphique disparaît
+    // Reset du flag d'auto-activation quand le SQL change (nouvelle cellule, nouvelles étapes…)
+    useEffect(() => { hasAutoActivatedVizRef.current = false }, [cell._id, stepsKey, ast.source]) // eslint-disable-line
+
+    // Bascule auto sur 'table' si le graphique disparaît ;
+    // ou sur 'chart' si un graphique apparaît (SQL avec rôles ::ROLE sans ast.chartConfig)
     useEffect(() => {
         if (vizTab === 'chart' && !hasChart) setVizTab('table')
+        else if (hasChart && vizTab === 'table' && !ast.chartConfig && !hasAutoActivatedVizRef.current) {
+            hasAutoActivatedVizRef.current = true
+            setVizTab('chart')
+        }
     }, [hasChart]) // eslint-disable-line
     // Synchro vizTab avec le type de chartConfig
     useEffect(() => {
