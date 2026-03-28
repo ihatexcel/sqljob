@@ -133298,6 +133298,17 @@ const SqlBlockService = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.def
     icon: "material-symbols-light:table",
     roles: []
   },
+  kpi: {
+    label: "KPI",
+    icon: "material-symbols-light:123",
+    roles: [
+      { role: "KPI", label: "Valeur", multiple: !0, optional: !1, hasLabel: !0 },
+      { role: "PERCENT", label: "Pourcentage", multiple: !1, optional: !0, hasLabel: !0 },
+      { role: "COMPARE", label: "Comparaison", multiple: !1, optional: !0, hasLabel: !0 },
+      { role: "TREND", label: "Tendance", multiple: !1, optional: !0, hasLabel: !0 },
+      { role: "TREND_PERCENT", label: "Tendance (%)", multiple: !1, optional: !0, hasLabel: !0 }
+    ]
+  },
   bar: {
     label: "Barres",
     icon: "material-symbols-light:bar-chart",
@@ -133360,17 +133371,6 @@ const SqlBlockService = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.def
     roles: [
       { role: "BOXPLOT", label: "Valeurs", multiple: !0, optional: !1, hasLabel: !0 },
       { role: "XAXIS", label: "Axe X", multiple: !1, optional: !0, hasLabel: !0 }
-    ]
-  },
-  kpi: {
-    label: "KPI",
-    icon: "material-symbols-light:123",
-    roles: [
-      { role: "KPI", label: "Valeur", multiple: !0, optional: !1, hasLabel: !0 },
-      { role: "PERCENT", label: "Pourcentage", multiple: !1, optional: !0, hasLabel: !0 },
-      { role: "COMPARE", label: "Comparaison", multiple: !1, optional: !0, hasLabel: !0 },
-      { role: "TREND", label: "Tendance", multiple: !1, optional: !0, hasLabel: !0 },
-      { role: "TREND_PERCENT", label: "Tendance (%)", multiple: !1, optional: !0, hasLabel: !0 }
     ]
   }
 }, NONE_VALUE = "__none__", ROLE_COMPAT_MAP = {
@@ -134354,7 +134354,7 @@ function _buildKpiHtml(At, yt, xt) {
     const $t = _num(At[Tt.originalName]), Lt = $t > 0, It = $t === 0, Rt = It ? "#ca8a04" : Lt ? "#16a34a" : "#dc2626", Dt = It ? "#ca8a0418" : Lt ? "#16a34a18" : "#dc262618", jt = It ? "→" : Lt ? "↑" : "↓", Nt = Lt ? "+" : "", Mt = Ct(Tt.displayName, "TREND_PERCENT"), Ot = Mt ? `<span style="color:var(--muted-foreground,#888)">${_esc(Mt)} : </span>` : "";
     St.push(`<span style="white-space:nowrap;font-size:.8rem">${Ot}<span style="background:${Dt};color:${Rt};border-radius:.35rem;padding:.1rem .45rem;font-weight:700">${Nt}${$t.toFixed(1)}% ${jt}</span></span>`);
   }
-  return St.length > 0 && wt.push(`<div style="display:flex;flex-wrap:wrap;gap:.5rem 1rem;justify-content:center;align-items:center;margin-top:.25rem">${St.join("")}</div>`), wt.length === 0 ? '<div style="padding:1rem;color:#888;font-size:.875rem;text-align:center">Aucune donnée</div>' : `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:.5rem 2rem 1.5rem;min-height:200px;height:100%;box-sizing:border-box">${wt.join(`
+  return St.length > 0 && wt.push(`<div style="display:flex;flex-wrap:wrap;gap:.5rem 1rem;justify-content:center;align-items:center;margin-top:.25rem">${St.join("")}</div>`), wt.length === 0 ? '<div style="padding:1rem;color:#888;font-size:.875rem;text-align:center">Aucune donnée</div>' : `<div style="text-align:center;padding:.5rem">${wt.join(`
 `)}</div>`;
 }
 function buildTableColumnRenderers(At) {
@@ -136789,7 +136789,10 @@ function ChartPreviewInEditor({ cell: At }) {
       let Et = St.getInstanceByDom(xt.current) || St.init(xt.current);
       Et.clear(), Et.setOption(At._echartsOption);
     }));
-  }, [yt, At._echartsOption]), At._kpiHtml ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-auto", dangerouslySetInnerHTML: { __html: At._kpiHtml } }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { ref: xt, className: "flex-1 min-h-0 min-h-[200px]" });
+  }, [yt, At._echartsOption]), At._kpiHtml ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "overflow-auto text-center", children: [
+    At._kpiLabel && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-base font-semibold text-foreground mb-0.5", children: At._kpiLabel }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { dangerouslySetInnerHTML: { __html: At._kpiHtml } })
+  ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { ref: xt, className: "flex-1 min-h-0 min-h-[200px]" });
 }
 function SqlBlockEditor({ cell: At, path: yt, cellIndex: xt, onExitUiMode: wt, fromSqlCell: Ct, skipExecution: St, modalOpen: Et, allowedMaterializeModes: kt }) {
   var Fs, bu, tu;
@@ -136867,7 +136870,7 @@ LIMIT 0`), Au = {};
       const np = getOrInitConfig(At);
       np.ast = Kl.ast, np.degraded = !1, np.manualSql = null;
       const v0 = astToSql(Kl.ast);
-      np.sql = buildDisplaySql(At.name, v0, Kl.ast.materialized ?? "ephemeral"), Tt();
+      np.sql = buildDisplaySql(At.name, v0, Kl.ast.materialized ?? "ephemeral"), Tt(), It(yt, xt);
     } else
       Er(Xu);
   }
@@ -136875,7 +136878,7 @@ LIMIT 0`), Au = {};
     var Xu;
     if (!sr) return;
     const gu = getOrInitConfig(At);
-    gu.degraded = !0, gu.manualSql = sr, gu.sql = buildDisplaySql(At.name, sr, ((Xu = gu.ast) == null ? void 0 : Xu.materialized) ?? "ephemeral"), Er(null), Tt();
+    gu.degraded = !0, gu.manualSql = sr, gu.sql = buildDisplaySql(At.name, sr, ((Xu = gu.ast) == null ? void 0 : Xu.materialized) ?? "ephemeral"), Er(null), Tt(), It(yt, xt);
   }
   function ms() {
     const gu = getOrInitConfig(At), Xu = stripMaterializePrefix(gu.manualSql || En);
