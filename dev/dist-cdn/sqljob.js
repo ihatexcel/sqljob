@@ -133675,7 +133675,7 @@ function _detectChartType(At) {
     var wt;
     return !!((wt = At[xt]) != null && wt.length);
   };
-  return yt("BARCHART_STACKED_PERCENT") ? "bar_stacked_percent" : yt("BARCHART_PERCENT") ? "bar_percent" : yt("BARCHART_STACKED") ? "bar_stacked" : yt("BARCHART") ? yt("YAXIS") && !yt("XAXIS") ? "bar_horizontal" : "bar" : yt("LINECHART_PERCENT") ? "line_percent" : yt("LINECHART") ? "line" : yt("PIECHART_PERCENT") ? "pie_percent" : yt("PIECHART") ? "pie" : yt("DONUTCHART_PERCENT") ? "donut_percent" : yt("DONUTCHART") ? "donut" : yt("GAUGE_PERCENT") ? "gauge_percent" : yt("GAUGE") ? "gauge" : yt("BOXPLOT") ? "boxplot" : yt("LABEL") || yt("PERCENT") || yt("COMPARE") || yt("TREND") ? "kpi" : "unknown";
+  return yt("BARCHART_STACKED_PERCENT") ? "bar_stacked_percent" : yt("BARCHART_PERCENT") ? "bar_percent" : yt("BARCHART_STACKED") ? "bar_stacked" : yt("BARCHART") && yt("LINECHART") ? "bar_line" : yt("BARCHART") ? yt("YAXIS") && !yt("XAXIS") ? "bar_horizontal" : "bar" : yt("LINECHART_PERCENT") ? "line_percent" : yt("LINECHART") ? "line" : yt("PIECHART_PERCENT") ? "pie_percent" : yt("PIECHART") ? "pie" : yt("DONUTCHART_PERCENT") ? "donut_percent" : yt("DONUTCHART") ? "donut" : yt("GAUGE_PERCENT") ? "gauge_percent" : yt("GAUGE") ? "gauge" : yt("BOXPLOT") ? "boxplot" : yt("LABEL") || yt("PERCENT") || yt("COMPARE") || yt("TREND") ? "kpi" : "unknown";
 }
 function buildEChartsOption(At, yt) {
   const { roleMap: xt, chartType: wt } = yt;
@@ -133709,6 +133709,8 @@ function buildEChartsOption(At, yt) {
     case "donut":
     case "donut_percent":
       return _buildPieOption(At, xt, wt, Et, St, !0);
+    case "bar_line":
+      return _buildBarLineOption(At, xt, Et, St);
     case "gauge":
     case "gauge_percent":
       return _buildGaugeOption(At, xt, wt, Et, St);
@@ -133859,6 +133861,33 @@ function _buildBarOption(At, yt, xt, wt, Ct, St) {
     xAxis: St ? Ht : Bt,
     yAxis: St ? Bt : Ht,
     series: Nt
+  };
+}
+function _buildBarLineOption(At, yt, xt, wt) {
+  var Lt;
+  const St = (Lt = (yt.XAXIS || [])[0]) == null ? void 0 : Lt.originalName, Et = St ? At.map((It) => _str(It[St])) : [], kt = yt.BARCHART || [], Tt = yt.LINECHART || [], $t = [];
+  for (const It of kt)
+    $t.push({
+      name: It.displayName,
+      type: "bar",
+      barMaxWidth: 60,
+      emphasis: { focus: "series" },
+      data: At.map((Rt) => _num(Rt[It.originalName]))
+    });
+  for (const It of Tt)
+    $t.push({
+      name: It.displayName,
+      type: "line",
+      smooth: !0,
+      emphasis: { focus: "series" },
+      data: At.map((Rt) => _num(Rt[It.originalName]))
+    });
+  return {
+    ...xt,
+    tooltip: { trigger: "axis", confine: !0, axisPointer: { type: "shadow" } },
+    xAxis: { type: "category", data: Et, axisLabel: { color: wt } },
+    yAxis: { type: "value", axisLabel: { color: wt } },
+    series: $t
   };
 }
 function _buildLineOption(At, yt, xt, wt, Ct) {
