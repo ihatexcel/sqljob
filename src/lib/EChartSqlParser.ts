@@ -139,6 +139,7 @@ function _detectChartType(roleMap: Record<string, ColumnRole[]>): string {
     if (has('BARCHART_STACKED_PERCENT')) return 'bar_stacked_percent';
     if (has('BARCHART_PERCENT'))         return 'bar_percent';
     if (has('BARCHART_STACKED'))         return 'bar_stacked';
+    if (has('BARCHART') && has('LINECHART')) return 'bar_line';
     if (has('BARCHART')) {
         // Horizontal bar when YAXIS instead of XAXIS
         if (has('YAXIS') && !has('XAXIS')) return 'bar_horizontal';
@@ -196,6 +197,8 @@ export function buildEChartsOption(results: any[], parsed: ParsedColumnRoles): o
         case 'donut':
         case 'donut_percent':
             return _buildPieOption(results, roleMap, chartType, base, textColor, true);
+        case 'bar_line':
+            return _buildBarLineOption(results, roleMap, base, textColor);
         case 'gauge':
         case 'gauge_percent':
             return _buildGaugeOption(results, roleMap, chartType, base, textColor);
@@ -427,6 +430,45 @@ function _buildBarOption(results, roleMap, chartType, base, textColor, horizonta
         },
         xAxis: horizontal ? valueAxis : categoryAxis,
         yAxis: horizontal ? categoryAxis : valueAxis,
+        series,
+    };
+}
+
+// ─── Bar + Line mixed chart ───────────────────────────────────────────────────
+
+function _buildBarLineOption(results, roleMap, base, textColor) {
+    const axisCols = roleMap['XAXIS'] || [];
+    const axisCol = axisCols[0]?.originalName;
+    const axisData: string[] = axisCol ? results.map(r => _str(r[axisCol])) : [];
+
+    const barCols: ColumnRole[] = roleMap['BARCHART'] || [];
+    const lineCols: ColumnRole[] = roleMap['LINECHART'] || [];
+
+    const series: any[] = [];
+    for (const vc of barCols) {
+        series.push({
+            name: vc.displayName,
+            type: 'bar',
+            barMaxWidth: 60,
+            emphasis: { focus: 'series' },
+            data: results.map(r => _num(r[vc.originalName])),
+        });
+    }
+    for (const vc of lineCols) {
+        series.push({
+            name: vc.displayName,
+            type: 'line',
+            smooth: true,
+            emphasis: { focus: 'series' },
+            data: results.map(r => _num(r[vc.originalName])),
+        });
+    }
+
+    return {
+        ...base,
+        tooltip: { trigger: 'axis', confine: true, axisPointer: { type: 'shadow' } },
+        xAxis: { type: 'category', data: axisData, axisLabel: { color: textColor } },
+        yAxis: { type: 'value', axisLabel: { color: textColor } },
         series,
     };
 }
