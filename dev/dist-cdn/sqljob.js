@@ -133446,8 +133446,8 @@ function ChartConfigEditor({ chartConfig: At, availableColumns: yt, availableCol
     const Kt = { chartType: kt, columns: Yt };
     It && (Kt.label = It), wt(Kt);
   }, [kt, It, wt]), Nt = reactExports.useCallback((Yt, Kt, Jt) => {
-    const Zt = Kt ? { column: Kt, role: Yt, label: void 0, ...Jt && Jt !== "column" ? { valueKind: Jt } : {} } : void 0;
-    jt(replaceRoleEntries(Tt, Yt, Zt ? [Zt] : []));
+    const Zt = getEntriesForRole(Tt, Yt)[0], Er = Kt !== null && (Kt !== "" || Jt !== void 0) ? { column: Kt ?? "", role: Yt, label: Zt == null ? void 0 : Zt.label, ...Jt && Jt !== "column" ? { valueKind: Jt } : {} } : void 0;
+    jt(replaceRoleEntries(Tt, Yt, Er ? [Er] : []));
   }, [Tt, jt]), Mt = reactExports.useCallback((Yt, Kt) => {
     const Jt = getEntriesForRole(Tt, Yt)[0];
     Jt && jt(replaceRoleEntries(Tt, Yt, [{ ...Jt, label: Kt || void 0 }]));
@@ -133561,7 +133561,7 @@ function ChartConfigEditor({ chartConfig: At, availableColumns: yt, availableCol
               value: (Jt == null ? void 0 : Jt.column) ?? "",
               valueKind: (Jt == null ? void 0 : Jt.valueKind) ?? "column",
               availableCols: yt,
-              onChange: (Zt, sr) => Nt(Yt.role, Zt || null, sr),
+              onChange: (Zt, sr) => Nt(Yt.role, Zt, sr),
               className: "flex-1"
             }
           ) : /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -134329,7 +134329,7 @@ function _buildKpiHtml(At, yt, xt) {
   for (const Tt of yt.KPI || []) {
     const $t = _str(At[Tt.originalName]), Lt = Ct(Tt.displayName, "KPI");
     wt.push(`<div style="text-align:center;margin-bottom:.5rem">
-  <div style="font-size:clamp(2.5rem,8vw,5rem);font-weight:700;line-height:1.05;color:var(--foreground,#111)">${_esc($t)}</div>
+  <div style="font-size:clamp(2rem,8vw,3.5rem);font-weight:700;line-height:1.05;color:var(--foreground,#111)">${_esc($t)}</div>
   ${Lt ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-top:.2rem">${_esc(Lt)}</div>` : ""}
 </div>`);
   }
