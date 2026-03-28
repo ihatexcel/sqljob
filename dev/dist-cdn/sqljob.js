@@ -134204,13 +134204,12 @@ function _buildGaugeOption(At, yt, xt, wt, Ct) {
     splitNumber: sn,
     center: Rr,
     radius: Br,
-    // Small triangle pointer at arc edge (matching taleshape reference)
+    // Native ECharts needle: length is % of gauge radius → always scales correctly.
+    // ~70% ≈ inner arc edge for typical cell sizes (radius ~140px, barWidth 40px).
     pointer: {
       show: !0,
-      icon: "triangle",
-      length: 14,
-      width: 12,
-      offsetCenter: [0, "-68%"],
+      length: "70%",
+      width: 3,
       itemStyle: { color: Ct }
     },
     title: { show: !1 },
