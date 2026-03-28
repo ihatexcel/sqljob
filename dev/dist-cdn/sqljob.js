@@ -133687,7 +133687,18 @@ const DUCKDB_TYPES = [
   "TREND",
   "XLINE",
   "YLINE"
-], KNOWN_ROLES_SET = new Set(KNOWN_ROLES), DEFAULT_COLORS = [
+], KNOWN_ROLES_SET = new Set(KNOWN_ROLES);
+function _cssClampPx(At, yt) {
+  if (typeof document > "u") return yt;
+  const xt = document.createElement("div");
+  xt.style.cssText = `position:fixed;visibility:hidden;pointer-events:none;font-size:${At}`, document.body.appendChild(xt);
+  const wt = parseFloat(getComputedStyle(xt).fontSize);
+  return document.body.removeChild(xt), isNaN(wt) ? yt : wt;
+}
+function _axisLabelSize() {
+  return _cssClampPx("clamp(9px,1vw,12px)", 11);
+}
+const DEFAULT_COLORS = [
   "#5470c6",
   "#91cc75",
   "#fac858",
@@ -133921,7 +133932,7 @@ function _buildBarOption(At, yt, xt, wt, Ct, St) {
     data: Ot,
     label: { color: "#fff", fontSize: 9 }
   });
-  const Bt = { type: "category", data: jt, axisLabel: { color: Ct } }, Ht = {
+  const Bt = { type: "category", data: jt, axisLabel: { color: Ct, fontSize: _axisLabelSize() } }, Ht = {
     type: "value",
     axisLabel: {
       color: Ct,
@@ -133968,8 +133979,8 @@ function _buildBarLineOption(At, yt, xt, wt) {
   return {
     ...xt,
     tooltip: { trigger: "axis", confine: !0, axisPointer: { type: "shadow" } },
-    xAxis: { type: "category", data: Et, axisLabel: { color: wt } },
-    yAxis: { type: "value", axisLabel: { color: wt } },
+    xAxis: { type: "category", data: Et, axisLabel: { color: wt, fontSize: _axisLabelSize() } },
+    yAxis: { type: "value", axisLabel: { color: wt, fontSize: _axisLabelSize() } },
     series: $t
   };
 }
@@ -134041,7 +134052,7 @@ function _buildLineOption(At, yt, xt, wt, Ct) {
         return [Kt, ...Jt].join("<br/>");
       } } : {}
     },
-    xAxis: { type: "category", data: Rt, axisLabel: { color: Ct } },
+    xAxis: { type: "category", data: Rt, axisLabel: { color: Ct, fontSize: _axisLabelSize() } },
     yAxis: {
       type: "value",
       axisLabel: {
@@ -134359,8 +134370,8 @@ function _buildBoxplotOption(At, yt, xt, wt) {
   }), {
     ...xt,
     tooltip: { trigger: "item", confine: !0 },
-    xAxis: { type: "category", data: $t, axisLabel: { color: wt } },
-    yAxis: { type: "value", axisLabel: { color: wt } },
+    xAxis: { type: "category", data: $t, axisLabel: { color: wt, fontSize: _axisLabelSize() } },
+    yAxis: { type: "value", axisLabel: { color: wt, fontSize: _axisLabelSize() } },
     series: Dt
   };
 }
