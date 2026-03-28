@@ -90,7 +90,6 @@ const CHART_ROLES_ORDERED = [
     'BOXPLOT',
     'XAXIS', 'YAXIS', 'CATEGORY',
     'COLOR', 'COLORS', 'LABELS', 'RANGE',
-    'TEXT_LARGE', 'TEXT_MEDIUM', 'TEXT_SMALL',
     'KPI', 'LABEL', 'PERCENT', 'COMPARE', 'TREND', 'XLINE', 'YLINE',
 ];
 const CHART_ROLES_SET = new Set(CHART_ROLES_ORDERED);
@@ -167,7 +166,6 @@ export function parseChartFinalSelect(selectSql: string): ChartConfig | null {
     else if (has('DONUTCHART_PERCENT') || has('DONUTCHART')) chartType = 'donut';
     else if (has('GAUGE_PERCENT') || has('GAUGE')) chartType = 'gauge';
     else if (has('BOXPLOT')) chartType = 'boxplot';
-    else if (has('TEXT_LARGE') || has('TEXT_MEDIUM') || has('TEXT_SMALL')) chartType = 'kpi';
     else if (has('KPI') || has('LABEL') || has('PERCENT') || has('COMPARE') || has('TREND')) chartType = 'kpi';
 
     const cfg: ChartConfig = { chartType, columns };
