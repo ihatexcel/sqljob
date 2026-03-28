@@ -2844,17 +2844,14 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
     // Bascule auto sur 'table' si le graphique disparaît ;
     // ou sur 'chart' si un graphique apparaît (SQL avec rôles ::ROLE sans ast.chartConfig)
     useEffect(() => {
-        console.log('[vizTab] hasChart:', hasChart, 'vizTab:', vizTab, 'ast.chartConfig:', ast.chartConfig?.chartType, 'autoActivated:', hasAutoActivatedVizRef.current, '_echartsOption:', !!cell._echartsOption, '_kpiHtml:', !!cell._kpiHtml)
         if (vizTab === 'chart' && !hasChart) setVizTab('table')
         else if (hasChart && vizTab === 'table' && !ast.chartConfig && !hasAutoActivatedVizRef.current) {
             hasAutoActivatedVizRef.current = true
-            console.log('[vizTab] auto-activation chart (no ast.chartConfig, hasChart=true)')
             setVizTab('chart')
         }
     }, [hasChart]) // eslint-disable-line
     // Synchro vizTab avec le type de chartConfig
     useEffect(() => {
-        console.log('[vizTab] ast.chartConfig changed → chartType:', ast.chartConfig?.chartType)
         setVizTab(ast.chartConfig?.chartType && ast.chartConfig.chartType !== 'datatable' ? 'chart' : 'table')
     }, [ast.chartConfig?.chartType]) // eslint-disable-line
 

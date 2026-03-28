@@ -462,7 +462,6 @@ export const createExecutionSlice = (set: any, get: any) => ({
                     }
                 } else {
                     const chartConfig = q0?.ast?.chartConfig
-                    console.log('[exec][sqlblock] chartConfig présent:', !!chartConfig?.columns?.length, '— finalQuery (extrait):', finalQuery.slice(0, 200))
                     if (chartConfig?.columns?.length) {
                         // Mode graphique AST : initChartTypes + strip des annotations + EChartSqlParser
                         get().setStatus('Chargement ECharts...', 'loading')
@@ -470,7 +469,6 @@ export const createExecutionSlice = (set: any, get: any) => ({
                         await DuckDBManager.initChartTypes()
                         get().setStatus('Exécution de la requête...', 'loading')
                         const { rows, columnTypes, schemaTypes } = await DuckDBManager.executeQueryWithSchema(finalQuery)
-                        console.log('[exec][chart-ast] columnTypes:', columnTypes, 'rows:', rows.length)
                         const maxRows = cell.maxRows || 100000
                         const rawResults = rows.slice(0, maxRows)
                         _rawTableDataStore.set(cell._id, rawResults)
@@ -479,7 +477,6 @@ export const createExecutionSlice = (set: any, get: any) => ({
                         cell._columnTypes = columnTypes
                         cell._resultInfo = `✅ ${rows.length} ligne(s)`
                         const parsed = EChartSqlParser.parseColumnRoles(rows, columnTypes)
-                        console.log('[exec][chart-ast] parsed.chartType:', parsed.chartType)
                         if (parsed.chartType === 'kpi') {
                             cell._kpiHtml = EChartSqlParser.buildKpiHtml(rows, parsed)
                             cell._echartsOption = null
@@ -487,17 +484,14 @@ export const createExecutionSlice = (set: any, get: any) => ({
                             cell._echartsOption = EChartSqlParser.buildEChartsOption(rows, parsed) ?? null
                             cell._kpiHtml = null
                         }
-                        console.log('[exec][chart-ast] _echartsOption:', !!cell._echartsOption, '_kpiHtml:', !!cell._kpiHtml)
                     } else {
                         // Pas de ast.chartConfig : exécuter et détecter automatiquement les rôles ::ROLE
                         const { rows: finalResults, columnTypes, schemaTypes } = await DuckDBManager.executeQueryWithSchema(finalQuery)
-                        console.log('[exec][chart-detect] columnTypes:', columnTypes, 'rows:', finalResults.length)
                         const maxRows = cell.maxRows || 100000
                         cell._schemaTypes = schemaTypes || {}
                         cell._columnTypes = columnTypes
 
                         const parsed = EChartSqlParser.parseColumnRoles(finalResults, columnTypes)
-                        console.log('[exec][chart-detect] parsed.chartType:', parsed.chartType)
 
                         if (parsed.chartType !== 'unknown') {
                             // Rôles chart détectés dans le SQL → rendu EChart
@@ -515,7 +509,6 @@ export const createExecutionSlice = (set: any, get: any) => ({
                                 cell._echartsOption = EChartSqlParser.buildEChartsOption(finalResults, parsed) ?? null
                                 cell._kpiHtml = null
                             }
-                            console.log('[exec][chart-detect] _echartsOption:', !!cell._echartsOption, '_kpiHtml:', !!cell._kpiHtml)
                         } else {
                             cell._echartsOption = null
                             cell._kpiHtml = null
