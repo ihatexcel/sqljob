@@ -675,8 +675,8 @@ function _buildPieOption(results, roleMap, chartType, base, textColor, isDonut) 
         return entry;
     });
 
-    // Responsive radius: clamp(70px, 12vw, 130px) — shrinks on browser zoom (vw ↓)
-    const outerR = Math.round(_cssClampPx('clamp(70px,12vw,130px)', 100));
+    // Radius capped via vmin (shrinks on zoom-in, never exceeds 90px)
+    const outerR = Math.round(_cssClampPx('clamp(55px,8vmin,90px)', 80));
     const radius = isDonut ? [Math.round(outerR * 0.58), outerR] : outerR;
 
     return {
