@@ -134217,8 +134217,7 @@ function _buildGaugeOption(At, yt, xt, wt, Ct) {
     axisLine: { lineStyle: Yr },
     axisTick: { show: !1 },
     splitLine: { show: !1 },
-    // distance 38: labels appear just inside inner arc edge (matching reference)
-    axisLabel: { color: Ct, fontSize: 11, distance: 38, formatter: tn },
+    axisLabel: { color: Ct, fontSize: 11, distance: 15, formatter: tn },
     // Progress bar for simple gauges (no explicit labels/colors) — like reference
     progress: {
       show: !Jt && !Ht,
@@ -134226,13 +134225,12 @@ function _buildGaugeOption(At, yt, xt, wt, Ct) {
       itemStyle: { color: "#5470c6" }
     },
     detail: {
-      fontSize: 30,
+      fontSize: 20,
       fontWeight: "bold",
       color: Ct,
       width: 120,
-      height: 50,
+      height: 40,
       formatter: St ? "{value}%" : "{value}",
-      // Inside the semicircle arc area (not below it)
       offsetCenter: [0, "-20%"]
     },
     data: [{ value: $t, name: Lt }]
@@ -136792,7 +136790,10 @@ function ChartPreviewInEditor({ cell: At }) {
   }, [yt, At._echartsOption]), At._kpiHtml ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "overflow-auto text-center", children: [
     At._kpiLabel && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-base font-semibold text-foreground mb-0.5", children: At._kpiLabel }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { dangerouslySetInnerHTML: { __html: At._kpiHtml } })
-  ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { ref: xt, className: "flex-1 min-h-0 min-h-[200px]" });
+  ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col min-h-0", children: [
+    At._kpiLabel && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-base font-semibold text-foreground mb-0.5 text-center shrink-0", children: At._kpiLabel }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { ref: xt, className: "flex-1 min-h-[200px]" })
+  ] });
 }
 function SqlBlockEditor({ cell: At, path: yt, cellIndex: xt, onExitUiMode: wt, fromSqlCell: Ct, skipExecution: St, modalOpen: Et, allowedMaterializeModes: kt }) {
   var Fs, bu, tu;
