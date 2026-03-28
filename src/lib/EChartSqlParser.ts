@@ -59,6 +59,25 @@ export interface ParsedColumnRoles {
     chartType: string;
 }
 
+// ─── Responsive font size via CSS clamp() ────────────────────────────────────
+
+/**
+ * Resolves a CSS clamp() expression to a pixel number by measuring a hidden element.
+ * ECharts/Canvas requires a numeric fontSize — this bridges CSS and Canvas.
+ */
+function _cssClampPx(clampExpr: string, fallback: number): number {
+    if (typeof document === 'undefined') return fallback;
+    const el = document.createElement('div');
+    el.style.cssText = `position:fixed;visibility:hidden;pointer-events:none;font-size:${clampExpr}`;
+    document.body.appendChild(el);
+    const px = parseFloat(getComputedStyle(el).fontSize);
+    document.body.removeChild(el);
+    return isNaN(px) ? fallback : px;
+}
+
+/** Responsive axis label size: clamp(9px, 1vw, 12px) */
+function _axisLabelSize(): number { return _cssClampPx('clamp(9px,1vw,12px)', 11); }
+
 // ─── ECharts default colors (aligned with DaisyUI palette) ──────────────────
 
 const DEFAULT_COLORS = [
@@ -449,7 +468,7 @@ function _buildBarOption(results, roleMap, chartType, base, textColor, horizonta
         };
     }
 
-    const categoryAxis = { type: 'category', data: axisData, axisLabel: { color: textColor } };
+    const categoryAxis = { type: 'category', data: axisData, axisLabel: { color: textColor, fontSize: _axisLabelSize() } };
     const valueAxis: any = {
         type: 'value',
         axisLabel: {
@@ -510,8 +529,8 @@ function _buildBarLineOption(results, roleMap, base, textColor) {
     return {
         ...base,
         tooltip: { trigger: 'axis', confine: true, axisPointer: { type: 'shadow' } },
-        xAxis: { type: 'category', data: axisData, axisLabel: { color: textColor } },
-        yAxis: { type: 'value', axisLabel: { color: textColor } },
+        xAxis: { type: 'category', data: axisData, axisLabel: { color: textColor, fontSize: _axisLabelSize() } },
+        yAxis: { type: 'value', axisLabel: { color: textColor, fontSize: _axisLabelSize() } },
         series,
     };
 }
@@ -614,7 +633,7 @@ function _buildLineOption(results, roleMap, chartType, base, textColor) {
                 return [name, ...lines].join('<br/>');
             }} : {}),
         },
-        xAxis: { type: 'category', data: axisData, axisLabel: { color: textColor } },
+        xAxis: { type: 'category', data: axisData, axisLabel: { color: textColor, fontSize: _axisLabelSize() } },
         yAxis: {
             type: 'value',
             axisLabel: {
@@ -1062,8 +1081,8 @@ function _buildBoxplotOption(results, roleMap, base, textColor) {
     return {
         ...base,
         tooltip: { trigger: 'item', confine: true },
-        xAxis: { type: 'category', data: categories, axisLabel: { color: textColor } },
-        yAxis: { type: 'value', axisLabel: { color: textColor } },
+        xAxis: { type: 'category', data: categories, axisLabel: { color: textColor, fontSize: _axisLabelSize() } },
+        yAxis: { type: 'value', axisLabel: { color: textColor, fontSize: _axisLabelSize() } },
         series: boxSeries,
     };
 }
