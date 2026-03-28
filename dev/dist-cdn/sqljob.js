@@ -132501,13 +132501,17 @@ function parseChartFinalSelect(At) {
   const xt = At.match(/^\s*SELECT\s+'([^']*)'\s*::LABEL\s*;/i);
   xt && (yt = xt[1]);
   const wt = CHART_ROLES_ORDERED.join("|"), Ct = new RegExp(
-    `(?:"([^"]+)"|'([^']*)'|([\\w]+))\\s*::\\s*(${wt})(?:\\s+AS\\s+(?:"([^"]+)"|([\\w]+)))?`,
+    `(?:"([^"]+)"|\\{\\{([^}]+)\\}\\}|'([^']*)'|([\\w.]+))\\s*::\\s*(${wt})(?:\\s+AS\\s+(?:"([^"]+)"|([\\w]+)))?`,
     "gi"
   ), St = [];
   let Et;
   for (; (Et = Ct.exec(At)) !== null; ) {
-    const It = Et[1] ?? Et[2] ?? Et[3], Rt = Et[4].toUpperCase(), Dt = Et[5] ?? Et[6] ?? void 0;
-    It && CHART_ROLES_SET.has(Rt) && Rt !== "LABEL" && St.push({ column: It, role: Rt, label: Dt });
+    const It = Et[5].toUpperCase(), Rt = Et[6] ?? Et[7] ?? void 0;
+    if (!CHART_ROLES_SET.has(It) || It === "LABEL") continue;
+    let Dt, jt;
+    Et[1] !== void 0 ? (Dt = Et[1], jt = "column") : Et[2] !== void 0 ? (Dt = `{{${Et[2]}}}`, jt = "param") : Et[3] !== void 0 ? (Dt = Et[3], jt = "literal") : (Dt = Et[4], jt = /^-?\d+(\.\d+)?([eE][+-]?\d+)?$/.test(Dt) ? "literal" : "column");
+    const Nt = { column: Dt, role: It, label: Rt };
+    jt !== "column" && (Nt.valueKind = jt), St.push(Nt);
   }
   if (!St.length && !yt) return null;
   const kt = new Set(St.map((It) => It.role)), Tt = (It) => kt.has(It);
