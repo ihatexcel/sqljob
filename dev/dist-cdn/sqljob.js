@@ -24611,23 +24611,6 @@ const CELL_TYPE_SCHEMAS = {
       bodyConfig: { queryKey: "query", showTextResult: !0, showResultInfo: !0 },
       bodyDisplay: { showSkeleton: { excludeWhenSqlEditor: !0 }, resultInfo: { showDevOnly: !1 } }
     },
-    table: {
-      executeHandler: "executeTableCell",
-      defaultNamePrefix: "table",
-      exportFields: ["queries", "maxRows"],
-      initProps: {},
-      commonParams: ["name", "queries"],
-      queryCount: 1,
-      queryNames: ["main"],
-      specificParams: [
-        { key: "maxRows", label: "Nombre max de lignes", tooltip: "Limite le nombre de lignes affichées dans le tableau pour éviter les surcharges mémoire", inputType: "number", placeholder: "100000" },
-        { key: "queries.main.showQueryEditor", label: "Afficher l'éditeur SQL en mode client", tooltip: "Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur. En mode client, seul le résultat sera affiché.", inputType: "checkbox" }
-      ],
-      defaults: { queries: [{ name: "main", sql: "SELECT * FROM source1 LIMIT 100", engine: "sql", showQueryEditor: !1 }], maxRows: 1e5 },
-      bodyFamily: "sqlWithTable",
-      bodyConfig: { queryKey: "query", showTextResult: !1, showResultInfo: !0 },
-      bodyDisplay: { showSkeleton: { excludeWhenSqlEditor: !0 }, resultInfo: { showDevOnly: !1 } }
-    },
     iframe: {
       executeHandler: "executeIframeCell",
       defaultNamePrefix: "iframe",
@@ -24783,47 +24766,6 @@ FROM v_source LIMIT 10`, engine: "sql", showQueryEditor: !1 },
         jsonPlaceholder: '{"basePdf": {...}, "schemas": [...]}',
         defaultButtonLabel: "📑 Générer le PDF"
       }
-    },
-    echart: {
-      executeHandler: "executeEchartCell",
-      defaultNamePrefix: "echart",
-      showInViewWhenResultOrRunning: !0,
-      exportFields: ["queries"],
-      initProps: { _echartInstance: null, _echartReady: !1 },
-      commonParams: ["name", "queries"],
-      queryCount: 1,
-      queryNames: ["main"],
-      queryLabels: { main: "Requête SQL (alias de colonnes = rôles visuels)" },
-      specificParams: [
-        {
-          key: "queries.main.showQueryEditor",
-          label: "Afficher l'éditeur SQL en mode client",
-          tooltip: "Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur. En mode client, seul le graphique sera affiché.",
-          inputType: "checkbox"
-        }
-      ],
-      defaults: {
-        queries: [{
-          name: "main",
-          sql: `SELECT
-    month::XAXIS,
-    revenue::BARCHART AS "Revenue",
-    target::LINECHART  AS "Target"
-FROM (VALUES
-    ('Jan', 42000, 40000),
-    ('Feb', 38000, 40000),
-    ('Mar', 51000, 45000),
-    ('Apr', 47000, 45000),
-    ('May', 60000, 50000),
-    ('Jun', 55000, 50000)
-) t(month, revenue, target)`,
-          engine: "sql",
-          showQueryEditor: !1
-        }]
-      },
-      bodyFamily: "sqlWithEchart",
-      bodyConfig: { minHeight: "350px" },
-      bodyDisplay: { showSkeleton: { excludeWhenSqlEditor: !0 } }
     },
     perspective: {
       executeHandler: "executePerspectiveCell",
@@ -132028,12 +131970,10 @@ const CELL_TYPE_ICON = {
   uiParameter: "tune",
   buttonRunNextCells: "play-circle",
   sql: "storage",
-  table: "table",
   iframe: "web",
   sqlStat: "monitoring",
   publipostageWord: "description",
   pdfme: "picture-as-pdf",
-  echart: "bar-chart",
   perspective: "analytics"
 };
 function CellTypeIcon({ type: At, size: yt = 16 }) {
@@ -138053,26 +137993,6 @@ function SqlStatBody({ cell: At, path: yt, cellIndex: xt }) {
     ] })
   ] });
 }
-function EChartBody({ cell: At, path: yt, cellIndex: xt }) {
-  const { devMode: wt, showSqlEditorVisible: Ct, hasCellHeight: St } = useNotebookStore(useShallow((kt) => ({
-    devMode: kt.devMode,
-    showSqlEditorVisible: kt.showSqlEditorVisible,
-    hasCellHeight: kt.hasCellHeight
-  }))), Et = St(At);
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: Et ? "flex-1 min-h-0 flex flex-col" : "", children: [
-    (Ct == null ? void 0 : Ct(At)) && /* @__PURE__ */ jsxRuntimeExports.jsx(
-      SqlEditorWidget,
-      {
-        cell: At,
-        path: yt,
-        cellIndex: xt,
-        placeholder: 'SELECT month::XAXIS, revenue::BARCHART AS "Revenue" FROM source1'
-      }
-    ),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(EChartRenderer, { cell: At, hasHeight: Et }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(ResultInfo, { cell: At, devOnly: !0 })
-  ] });
-}
 function UiParameterBody({ cell: At, path: yt, cellIndex: xt }) {
   var jt;
   const { devMode: wt, onParameterValueChange: Ct } = useNotebookStore(useShallow((Nt) => ({
@@ -138465,14 +138385,10 @@ function CellBody({ cell: At, path: yt, cellIndex: xt, group: wt }) {
         return /* @__PURE__ */ jsxRuntimeExports.jsx(ButtonRunBody, { cell: At, path: yt, cellIndex: xt });
       case "sql":
         return /* @__PURE__ */ jsxRuntimeExports.jsx(SqlTableBody, { cell: At, path: yt, cellIndex: xt, showTextResult: !0 });
-      case "table":
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(SqlTableBody, { cell: At, path: yt, cellIndex: xt });
       case "iframe":
         return /* @__PURE__ */ jsxRuntimeExports.jsx(IframeBody, { cell: At, path: yt, cellIndex: xt });
       case "sqlStat":
         return /* @__PURE__ */ jsxRuntimeExports.jsx(SqlStatBody, { cell: At, path: yt, cellIndex: xt });
-      case "echart":
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(EChartBody, { cell: At, path: yt, cellIndex: xt });
       case "uiParameter":
         return /* @__PURE__ */ jsxRuntimeExports.jsx(UiParameterBody, { cell: At, path: yt, cellIndex: xt });
       case "publipostageWord":
@@ -143212,7 +143128,7 @@ const createPagesSlice = (At, yt) => ({
   },
   shouldShowCell(xt) {
     const { devMode: wt } = yt();
-    return wt || ConfigManager.getCellQueryShowQueryEditor(xt, 0) ? !0 : xt.type === "buttonRunNextCells" ? !!xt.buttonLabel : xt.type === "sql" ? ConfigManager.getCellQueryShowResult(xt, 0) : ["table", "iframe", "sqlStat"].includes(xt.type) ? xt._status === "success" || xt._status === "running" || xt._results && xt._results.length > 0 : !0;
+    return wt || ConfigManager.getCellQueryShowQueryEditor(xt, 0) ? !0 : xt.type === "buttonRunNextCells" ? !!xt.buttonLabel : xt.type === "sql" ? ConfigManager.getCellQueryShowResult(xt, 0) : ["iframe", "sqlStat"].includes(xt.type) ? xt._status === "success" || xt._status === "running" || xt._results && xt._results.length > 0 : !0;
   },
   shouldShowGroup(xt) {
     const { devMode: wt } = yt();
@@ -144985,7 +144901,7 @@ FROM source1 LIMIT 10;`;
     return xt && (wt(xt.minHeightPx) || wt(xt.minHeightPercent) || wt(xt.maxHeightPx) || wt(xt.maxHeightPercent));
   },
   isSqlCellWithEditor(xt) {
-    return ["sql", "table", "iframe", "sqlStat", "perspective", "pdfme", "publipostageWord", "echart"].includes(xt);
+    return ["sql", "iframe", "sqlStat", "perspective", "pdfme", "publipostageWord"].includes(xt);
   },
   bodyDisplayShouldShowSkeleton(xt) {
     var St, Et;
@@ -145937,20 +145853,6 @@ ${Zt}
       throw Mt;
     }
   },
-  async executeTableCell(xt) {
-    var wt, Ct, St;
-    if ((wt = ConfigManager.getCellQuery(xt, 0)) != null && wt.trim()) {
-      yt().setStatus("Chargement tableau...", "loading");
-      try {
-        const Et = yt().parseQueryWithParameters(ConfigManager.getCellQuery(xt, 0) || "");
-        yt().setStatus("Exécution de la requête...", "loading");
-        const { rows: kt, schemaTypes: Tt } = await DuckDBManager.executeQueryWithSchema(Et), $t = xt.maxRows || 1e5, Lt = kt.length > $t, It = kt.slice(0, $t);
-        rawTableDataStore.set(xt._id, It), xt._results = It, xt._schemaTypes = Tt || {}, xt._resultInfo = `${kt.length} ligne(s)` + (Lt ? ` (limité à ${$t})` : ""), yt().setStatus("Tableau chargé", "success"), sqlIsDdl(Et) && await ((St = (Ct = yt()).refreshDuckdbSchema) == null ? void 0 : St.call(Ct));
-      } catch (Et) {
-        throw Et;
-      }
-    }
-  },
   showSqlEditorVisible(xt) {
     return yt().devMode || ConfigManager.getCellQueryShowQueryEditor(xt, 0);
   },
@@ -146358,56 +146260,6 @@ ${Zt}
       throw console.error("Erreur lors du rendu Perspective:", Et), Et;
     } finally {
       xt._perspectiveRendering = !1;
-    }
-  },
-  async executeEchartCell(xt) {
-    var wt;
-    if (!((wt = ConfigManager.getCellQuery(xt, 0)) != null && wt.trim()))
-      throw new Error("Requête SQL manquante");
-    if (DuckDBManager.currentEngine === "ducklings")
-      throw new Error("Les cellules EChart nécessitent le moteur DuckDB WASM. Changez le moteur dans les paramètres.");
-    yt().setStatus("Chargement ECharts...", "loading"), await CDNManager.loadECharts(), yt().setStatus("Parsing de la requête SQL...", "loading");
-    try {
-      await DuckDBManager.initChartTypes();
-      const Ct = yt().parseQueryWithParameters(ConfigManager.getCellQuery(xt, 0) || "");
-      yt().setStatus("Exécution de la requête...", "loading");
-      const { rows: St, columnTypes: Et } = await DuckDBManager.executeQueryWithSchema(Ct);
-      xt._results = St, xt._columnTypes = Et;
-      const kt = EChartSqlParser.parseColumnRoles(St, Et);
-      kt.chartType === "kpi" ? (xt._kpiHtml = EChartSqlParser.buildKpiHtml(St, kt), xt._echartsOption = null) : (xt._echartsOption = EChartSqlParser.buildEChartsOption(St, kt) ?? null, xt._kpiHtml = null), xt._echartReady = !0, At((Tt) => ({ _rev: Tt._rev + 1 })), xt._resultInfo = `✅ ${St.length} ligne(s)`, yt().setStatus("EChart chargé", "success");
-    } catch (Ct) {
-      throw xt._echartReady = !1, Ct;
-    }
-  },
-  async renderEchartInContainer(xt, wt = !1) {
-    const Ct = "echart-" + xt._id, St = document.getElementById(Ct);
-    if (!(!St || !xt._results || xt._results.length === 0) && !xt._echartRendering) {
-      xt._echartRendering = !0;
-      try {
-        xt._echartInstance && (xt._echartInstance.dispose(), xt._echartInstance = null), xt._echartResizeObserver && (xt._echartResizeObserver.disconnect(), xt._echartResizeObserver = null);
-        const Et = EChartSqlParser.parseColumnRoles(xt._results, xt._columnTypes), { chartType: kt } = Et;
-        if (kt === "kpi") {
-          St.innerHTML = EChartSqlParser.buildKpiHtml(xt._results, Et);
-          return;
-        }
-        const Tt = EChartSqlParser.buildEChartsOption(xt._results, Et);
-        if (!Tt) {
-          St.innerHTML = `<div class="flex items-center justify-center h-full text-base-content/50 text-sm p-6 text-center">
-                    Aucun type de graphique reconnu.<br>
-                    Utilisez des alias comme <strong>XAXIS</strong>, <strong>BARCHART</strong>, <strong>LINECHART</strong>, <strong>PIECHART</strong>, <strong>GAUGE</strong>…</div>`;
-          return;
-        }
-        const $t = window.echarts.init(St, null, { renderer: "canvas" });
-        $t.setOption(Tt), xt._echartInstance = $t;
-        const Lt = new ResizeObserver(() => {
-          xt._echartInstance && !xt._echartInstance.isDisposed() && xt._echartInstance.resize();
-        });
-        Lt.observe(St), xt._echartResizeObserver = Lt;
-      } catch (Et) {
-        throw console.error("[EChart] Erreur de rendu:", Et), Et;
-      } finally {
-        xt._echartRendering = !1;
-      }
     }
   },
   async runGroupsFromIndex(xt) {
@@ -146836,12 +146688,10 @@ function buildInitialState() {
       { type: "uiParameter", label: "Paramètre UI", icon: "tune" },
       { type: "buttonRunNextCells", label: "Bouton Exécuter", icon: "play-circle" },
       { type: "sql", label: "SQL", icon: "storage" },
-      { type: "table", label: "Tableau", icon: "table" },
       { type: "iframe", label: "HTML/Iframe", icon: "web" },
       { type: "sqlStat", label: "Stat SQL", icon: "monitoring" },
       { type: "publipostageWord", label: "Publipostage Word", icon: "description" },
       { type: "pdfme", label: "PDF (pdfme)", icon: "picture-as-pdf" },
-      { type: "echart", label: "EChart (Apache ECharts)", icon: "bar-chart" },
       { type: "perspective", label: "Perspective Viewer", icon: "analytics" }
     ],
     _tables: {},
@@ -147650,12 +147500,10 @@ function CellConfigModal() {
                 /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "uiParameter", children: "Paramètre UI" }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "buttonRunNextCells", children: "Bouton Exécuter" }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "sql", children: "SQL" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "table", children: "Tableau" }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "iframe", children: "HTML/Iframe" }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "sqlStat", children: "Stat SQL" }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "publipostageWord", children: "Publipostage Word" }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "pdfme", children: "PDF (pdfme)" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "echart", children: "EChart (Apache ECharts)" }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "perspective", children: "Perspective Viewer" })
               ] })
             ]
