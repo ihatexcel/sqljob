@@ -1242,26 +1242,51 @@ function tryParseSimpleSmart(sql: string, materialize: SqlBlockMaterialize): Sql
  * par CTE (P1+). Les CTEs non parsables deviennent des steps custom_sql.
  */
 export function sqlToAstSmart(sql: string, materialize: SqlBlockMaterialize = 'view'): SqlParseResult {
+    // Extraire SELECT '...'::LABEL; en tête (stat title) avant parsing
+    // → permet d'éditer via l'UI même quand le SQL commence par ce préfixe
+    let labelPrefix: string | null = null;
+    let sqlBody = sql;
+    const labelM = sql.match(/^(\s*SELECT\s+'[^']*'\s*::LABEL\s*;[ \t]*\r?\n?)/i);
+    if (labelM) {
+        // Extraire la valeur du label
+        const valM = labelM[1].match(/SELECT\s+'([^']*)'\s*::LABEL/i);
+        if (valM) labelPrefix = valM[1];
+        sqlBody = sql.slice(labelM[1].length);
+    }
+
+    /** Injecte le label dans l'AST si présent */
+    function withLabel(ast: SqlBlockAst): SqlBlockAst {
+        if (labelPrefix === null) return ast;
+        const chartConfig: ChartConfig = ast.chartConfig
+            ? { ...ast.chartConfig, label: labelPrefix }
+            : { chartType: 'stat', columns: [], label: labelPrefix };
+        return { ...ast, chartConfig };
+    }
+    function withLabelResult(r: SqlParseResult): SqlParseResult {
+        if (labelPrefix === null || !r.compatible || !r.ast) return r;
+        return { ...r, ast: withLabel(r.ast) };
+    }
+
     // 1. Parser standard (P0)
-    const standard = sqlToAst(sql, materialize);
-    if (standard.compatible && standard.ast) return standard;
+    const standard = sqlToAst(sqlBody, materialize);
+    if (standard.compatible && standard.ast) return withLabelResult(standard);
 
     // 2. Parser par CTE intelligent
-    const normalized = sql.replace(/[ \t]+/g, ' ').trim();
+    const normalized = sqlBody.replace(/[ \t]+/g, ' ').trim();
     const smartCte = tryParseCteChainSmart(normalized, materialize);
-    if (smartCte) return { ast: smartCte, compatible: true };
+    if (smartCte) return withLabelResult({ ast: smartCte, compatible: true });
 
     // 3. Parser simple SELECT étendu (sans CTE)
     const smartSimple = tryParseSimpleSmart(normalized, materialize);
-    if (smartSimple) return { ast: smartSimple, compatible: true };
+    if (smartSimple) return withLabelResult({ ast: smartSimple, compatible: true });
 
     // 4. Fallback ultime : SQL non reconnu → étape custom_sql sans source
     //    Préserve le SQL intégralement, sans perte de données.
     if (normalized) {
-        return {
+        return withLabelResult({
             ast: { source: '', steps: [{ type: 'custom_sql', sql: normalized }], materialized: materialize },
             compatible: true,
-        };
+        });
     }
 
     // 5. Échec : retourne l'erreur d'origine
