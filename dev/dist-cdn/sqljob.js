@@ -132488,7 +132488,7 @@ function buildChartFinalSelect(At, yt) {
     if (Et.valueKind === "literal") {
       const It = Number(Et.column);
       $t = Et.column.trim() !== "" && !isNaN(It) ? Et.column : `'${Et.column.replace(/'/g, "''")}'`;
-    } else Et.valueKind === "param" ? $t = Et.column : $t = quoteId(Et.column);
+    } else Et.valueKind === "param" ? $t = Et.column : Et.valueKind === "expression" ? $t = `(${Et.column})` : $t = quoteId(Et.column);
     return `  ${$t}::${kt}${Tt}`;
   });
   return `${xt}SELECT
@@ -132501,15 +132501,15 @@ function parseChartFinalSelect(At) {
   const xt = At.match(/^\s*SELECT\s+'([^']*)'\s*::LABEL\s*;/i);
   xt && (yt = xt[1]);
   const wt = CHART_ROLES_ORDERED.join("|"), Ct = new RegExp(
-    `(?:"([^"]+)"|\\{\\{([^}]+)\\}\\}|'([^']*)'|([\\w.]+))\\s*::\\s*(${wt})(?:\\s+AS\\s+(?:"([^"]+)"|([\\w]+)))?`,
+    `(?:"([^"]+)"|\\{\\{([^}]+)\\}\\}|'([^']*)'|\\(((?:[^()]+|\\([^()]*\\))*)\\)|([\\w.]+))\\s*::\\s*(${wt})(?:\\s+AS\\s+(?:"([^"]+)"|([\\w]+)))?`,
     "gi"
   ), St = [];
   let Et;
   for (; (Et = Ct.exec(At)) !== null; ) {
-    const It = Et[5].toUpperCase(), Rt = Et[6] ?? Et[7] ?? void 0;
+    const It = Et[6].toUpperCase(), Rt = Et[7] ?? Et[8] ?? void 0;
     if (!CHART_ROLES_SET.has(It) || It === "LABEL") continue;
     let Dt, jt;
-    Et[1] !== void 0 ? (Dt = Et[1], jt = "column") : Et[2] !== void 0 ? (Dt = `{{${Et[2]}}}`, jt = "param") : Et[3] !== void 0 ? (Dt = Et[3], jt = "literal") : (Dt = Et[4], jt = /^-?\d+(\.\d+)?([eE][+-]?\d+)?$/.test(Dt) ? "literal" : "column");
+    Et[1] !== void 0 ? (Dt = Et[1], jt = "column") : Et[2] !== void 0 ? (Dt = `{{${Et[2]}}}`, jt = "param") : Et[3] !== void 0 ? (Dt = Et[3], jt = "literal") : Et[4] !== void 0 ? (Dt = Et[4], jt = "expression") : (Dt = Et[5], jt = /^-?\d+(\.\d+)?([eE][+-]?\d+)?$/.test(Dt) ? "literal" : "column");
     const Nt = { column: Dt, role: It, label: Rt };
     jt !== "column" && (Nt.valueKind = jt), St.push(Nt);
   }
@@ -132856,7 +132856,7 @@ function filterGroupToSql(At) {
   return At.negate ? `NOT ${Ct}` : Ct;
 }
 function renderFilterValue(At, yt) {
-  return yt === "column" ? quoteId(At) : yt === "param" ? At : quoteSqlValue(At);
+  return yt === "column" ? quoteId(At) : yt === "param" ? At : yt === "expression" ? `(${At})` : quoteSqlValue(At);
 }
 function conditionToSql(At) {
   const yt = quoteId(At.column), xt = renderFilterValue(At.value ?? "", At.valueKind), wt = renderFilterValue(At.valueTo ?? "", At.valueToKind);
@@ -135081,11 +135081,18 @@ const VAR_KIND_ICONS = {
     /* @__PURE__ */ jsxRuntimeExports.jsx("polyline", { points: "17 12 21 12" }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("polyline", { points: "3 12 7 12" }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("rect", { x: "7", y: "8", width: "10", height: "8", rx: "1" })
+  ] }),
+  expression: /* @__PURE__ */ jsxRuntimeExports.jsxs("svg", { viewBox: "0 0 24 24", className: "w-3 h-3", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("rect", { x: "3", y: "3", width: "18", height: "18", rx: "2" }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M9 9h6" }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M10 9v6" }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M14 9v6" })
   ] })
 }, VAR_KIND_LABELS = {
   literal: "Entrer une valeur",
   column: "Sélectionner une colonne",
-  param: "Paramètre"
+  param: "Paramètre",
+  expression: "Expression SQL"
 };
 function VarInput({ value: At, valueKind: yt = "literal", onChange: xt, availableCols: wt, column: Ct, fetchDistinctValues: St, placeholder: Et = "valeur", className: kt = "" }) {
   const [Tt, $t] = reactExports.useState(!1), Lt = reactExports.useRef(null), It = useNotebookStore(useShallow((Rt) => {
@@ -135110,7 +135117,7 @@ function VarInput({ value: At, valueKind: yt = "literal", onChange: xt, availabl
           children: VAR_KIND_ICONS[yt]
         }
       ),
-      Tt && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute left-0 top-full z-50 mt-0.5 w-52 bg-popover border border-border rounded shadow-lg py-0.5", children: ["literal", "column", "param"].map((Rt) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      Tt && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute left-0 top-full z-50 mt-0.5 w-52 bg-popover border border-border rounded shadow-lg py-0.5", children: ["literal", "column", "param", "expression"].map((Rt) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "button",
         {
           type: "button",
@@ -135149,7 +135156,17 @@ function VarInput({ value: At, valueKind: yt = "literal", onChange: xt, availabl
           It.map((Rt) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: `{{${Rt}}}`, children: Rt }, Rt))
         ]
       }
-    ) : /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex-1 text-xs text-muted-foreground italic px-1", children: "Aucun paramètre UI" }))
+    ) : /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex-1 text-xs text-muted-foreground italic px-1", children: "Aucun paramètre UI" })),
+    yt === "expression" && /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "input",
+      {
+        type: "text",
+        value: At,
+        onChange: (Rt) => xt(Rt.target.value, "expression"),
+        placeholder: "ex: col_a / col_b",
+        className: "flex-1 min-w-0 h-6 rounded border border-border bg-background px-1.5 text-xs font-mono"
+      }
+    )
   ] });
 }
 function FilterConditionRow({ cond: At, availableCols: yt, onChange: xt, onRemove: wt, onMoveUp: Ct, onMoveDown: St, fetchDistinctValues: Et }) {
