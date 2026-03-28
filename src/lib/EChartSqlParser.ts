@@ -36,6 +36,7 @@ const KNOWN_ROLES = [
     'TEXT_LARGE',
     'TEXT_MEDIUM',
     'TEXT_SMALL',
+    'KPI',
     'LABEL',
     'PERCENT',
     'COMPARE',
@@ -158,7 +159,7 @@ function _detectChartType(roleMap: Record<string, ColumnRole[]>): string {
     if (has('GAUGE'))              return 'gauge';
     if (has('BOXPLOT'))            return 'boxplot';
     if (has('TEXT_LARGE') || has('TEXT_MEDIUM') || has('TEXT_SMALL')) return 'kpi';
-    if (has('LABEL') || has('PERCENT') || has('COMPARE') || has('TREND')) return 'kpi';
+    if (has('KPI') || has('LABEL') || has('PERCENT') || has('COMPARE') || has('TREND')) return 'kpi';
     return 'unknown';
 }
 
@@ -1099,39 +1100,42 @@ function _buildStatHtml(row: any, roleMap: Record<string, ColumnRole[]>, title: 
     return `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem 2rem;height:100%;box-sizing:border-box">${parts.join('\n')}</div>`;
 }
 
-/** KPI mode (legacy): DaisyUI stat cards — LABEL / PERCENT / COMPARE / TREND */
+/** KPI mode: centered card — KPI / LABEL (compat) / PERCENT / COMPARE / TREND */
 function _buildKpiLegacy(row: any, roleMap: Record<string, ColumnRole[]>, title: string | null): string {
     const parts: string[] = [];
 
     if (title) {
-        parts.push(`<div class="stat">
-  <div class="stat-title" style="font-size:.65rem;letter-spacing:.06em;text-transform:uppercase">${_esc(title)}</div>
-</div>`);
+        parts.push(`<div style="text-align:center;font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted-foreground,#888);margin-bottom:.75rem">${_esc(title)}</div>`);
     }
 
-    for (const col of (roleMap['LABEL'] || [])) {
+    // KPI role (new) + LABEL role (backward compat)
+    const kpiCols = [...(roleMap['KPI'] || []), ...(roleMap['LABEL'] || [])];
+    for (const col of kpiCols) {
         const val = _str(row[col.originalName]);
-        parts.push(`<div class="stat">
-  <div class="stat-title">${col.displayName !== 'LABEL' ? _esc(col.displayName) : ''}</div>
-  <div class="stat-value text-primary">${_esc(val)}</div>
+        const sublabel = (col.displayName !== 'KPI' && col.displayName !== 'LABEL') ? col.displayName : '';
+        parts.push(`<div style="text-align:center;margin-bottom:.5rem">
+  ${sublabel ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-bottom:.2rem">${_esc(sublabel)}</div>` : ''}
+  <div style="font-size:clamp(2.5rem,8vw,5rem);font-weight:700;line-height:1.05;color:var(--foreground,#111)">${_esc(val)}</div>
 </div>`);
     }
     for (const col of (roleMap['PERCENT'] || [])) {
         const val = _num(row[col.originalName]);
-        const color = val >= 75 ? 'text-green-600 dark:text-green-400' : val >= 40 ? 'text-yellow-500 dark:text-yellow-400' : 'text-red-500 dark:text-red-400';
-        parts.push(`<div class="stat">
-  <div class="stat-title">${col.displayName !== 'PERCENT' ? _esc(col.displayName) : ''}</div>
-  <div class="stat-value ${color}">${val.toFixed(1)}%</div>
+        const fg = val >= 75 ? '#16a34a' : val >= 40 ? '#ca8a04' : '#dc2626';
+        const sublabel = col.displayName !== 'PERCENT' ? col.displayName : '';
+        parts.push(`<div style="text-align:center;margin-bottom:.5rem">
+  ${sublabel ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-bottom:.2rem">${_esc(sublabel)}</div>` : ''}
+  <div style="font-size:clamp(2.5rem,8vw,5rem);font-weight:700;line-height:1.05;color:${fg}">${val.toFixed(1)}%</div>
 </div>`);
     }
     for (const col of (roleMap['COMPARE'] || [])) {
         const val = _num(row[col.originalName]);
         const sign = val >= 0 ? '+' : '';
-        const color = val >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400';
-        const icon = val >= 0 ? `<span style="font-size:.6em">▲</span>` : `<span style="font-size:.6em">▼</span>`;
-        parts.push(`<div class="stat">
-  <div class="stat-title">${col.displayName !== 'COMPARE' ? _esc(col.displayName) : 'Comparaison'}</div>
-  <div class="stat-value ${color}">${icon} ${sign}${val}</div>
+        const fg = val >= 0 ? '#16a34a' : '#dc2626';
+        const icon = val >= 0 ? '▲' : '▼';
+        const sublabel = col.displayName !== 'COMPARE' ? col.displayName : 'Comparaison';
+        parts.push(`<div style="text-align:center;margin-bottom:.5rem">
+  ${sublabel ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-bottom:.2rem">${_esc(sublabel)}</div>` : ''}
+  <div style="font-size:clamp(2.5rem,8vw,5rem);font-weight:700;line-height:1.05;color:${fg}">${icon} ${sign}${val}</div>
 </div>`);
     }
     for (const col of (roleMap['TREND'] || [])) {
@@ -1139,16 +1143,17 @@ function _buildKpiLegacy(row: any, roleMap: Record<string, ColumnRole[]>, title:
         const isUp = val > 0;
         const isNeutral = val === 0;
         const arrow = isNeutral ? '→' : isUp ? '↑' : '↓';
-        const color = isNeutral ? 'text-yellow-500 dark:text-yellow-400' : isUp ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400';
+        const fg = isNeutral ? '#ca8a04' : isUp ? '#16a34a' : '#dc2626';
         const sign = isUp ? '+' : '';
-        parts.push(`<div class="stat">
-  <div class="stat-title">${col.displayName !== 'TREND' ? _esc(col.displayName) : 'Tendance'}</div>
-  <div class="stat-value ${color}">${arrow} ${sign}${val}</div>
+        const sublabel = col.displayName !== 'TREND' ? col.displayName : 'Tendance';
+        parts.push(`<div style="text-align:center;margin-bottom:.5rem">
+  ${sublabel ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-bottom:.2rem">${_esc(sublabel)}</div>` : ''}
+  <div style="font-size:clamp(2.5rem,8vw,5rem);font-weight:700;line-height:1.05;color:${fg}">${arrow} ${sign}${val}</div>
 </div>`);
     }
 
-    if (parts.length === 0) return '<div class="p-4 text-muted-foreground text-sm">Aucune donnée</div>';
-    return `<div class="stats shadow w-full flex-wrap">${parts.join('')}</div>`;
+    if (parts.length === 0) return '<div style="padding:1rem;color:#888;font-size:.875rem;text-align:center">Aucune donnée</div>';
+    return `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem 2rem;height:100%;box-sizing:border-box">${parts.join('\n')}</div>`;
 }
 
 // ─── Table cell HTML builder ──────────────────────────────────────────────────
