@@ -2915,7 +2915,7 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
                             <div className="flex items-center gap-1 shrink-0">
                                 {ast.chartConfig?.chartType && ast.chartConfig.chartType !== 'datatable' && (
                                     <button
-                                        onClick={() => { setVizTab('chart'); runCellAt(path, cellIndex) }}
+                                        onClick={() => setVizTab('chart')}
                                         className={`px-2 py-0.5 text-xs rounded transition-colors ${vizTab === 'chart' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted'}`}
                                     >Graphique</button>
                                 )}
