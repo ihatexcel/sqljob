@@ -2611,7 +2611,12 @@ function ChartPreviewInEditor({ cell }: { cell: any }) {
         })
     }, [_rev, cell._echartsOption])
 
-    if (cell._kpiHtml) return <div className="overflow-auto" dangerouslySetInnerHTML={{ __html: cell._kpiHtml }} />
+    if (cell._kpiHtml) return (
+        <div className="overflow-auto text-center">
+            {cell._kpiLabel && <div className="text-base font-semibold text-foreground mb-0.5">{cell._kpiLabel}</div>}
+            <div dangerouslySetInnerHTML={{ __html: cell._kpiHtml }} />
+        </div>
+    )
     return <div ref={chartRef} className="flex-1 min-h-0 min-h-[200px]" />
 }
 
@@ -2799,6 +2804,7 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
             const genSql = astToSql(result.ast)
             cfg.sql = buildDisplaySql(cell.name, genSql, result.ast.materialized ?? 'ephemeral')
             forceUpdate()
+            runCellAt(path, cellIndex)
         } else {
             setPendingDegradedSql(newSql)
         }
@@ -2810,6 +2816,7 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
         cfg.degraded = true; cfg.manualSql = pendingDegradedSql
         cfg.sql = buildDisplaySql(cell.name, pendingDegradedSql, cfg.ast?.materialized ?? 'ephemeral')
         setPendingDegradedSql(null); forceUpdate()
+        runCellAt(path, cellIndex)
     }
 
     function tryRestoreFromDegraded() {

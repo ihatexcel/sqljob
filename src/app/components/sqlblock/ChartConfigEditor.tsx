@@ -27,6 +27,17 @@ const CHART_TYPE_CONFIGS: Record<string, { label: string; icon: string; roles: R
         icon: 'material-symbols-light:table',
         roles: [],
     },
+    kpi: {
+        label: 'KPI',
+        icon: 'material-symbols-light:123',
+        roles: [
+            { role: 'KPI',           label: 'Valeur',        multiple: true,  optional: false, hasLabel: true },
+            { role: 'PERCENT',       label: 'Pourcentage',   multiple: false, optional: true,  hasLabel: true },
+            { role: 'COMPARE',       label: 'Comparaison',   multiple: false, optional: true,  hasLabel: true },
+            { role: 'TREND',         label: 'Tendance',      multiple: false, optional: true,  hasLabel: true },
+            { role: 'TREND_PERCENT', label: 'Tendance (%)',  multiple: false, optional: true,  hasLabel: true },
+        ],
+    },
     bar: {
         label: 'Barres',
         icon: 'material-symbols-light:bar-chart',
@@ -89,17 +100,6 @@ const CHART_TYPE_CONFIGS: Record<string, { label: string; icon: string; roles: R
         roles: [
             { role: 'BOXPLOT', label: 'Valeurs', multiple: true,  optional: false, hasLabel: true },
             { role: 'XAXIS',   label: 'Axe X',   multiple: false, optional: true,  hasLabel: true },
-        ],
-    },
-    kpi: {
-        label: 'KPI',
-        icon: 'material-symbols-light:123',
-        roles: [
-            { role: 'KPI',     label: 'Valeur',      multiple: true,  optional: false, hasLabel: true },
-            { role: 'PERCENT', label: 'Pourcentage',  multiple: false, optional: true,  hasLabel: true },
-            { role: 'COMPARE',       label: 'Comparaison',       multiple: false, optional: true, hasLabel: true },
-            { role: 'TREND',         label: 'Tendance',          multiple: false, optional: true, hasLabel: true },
-            { role: 'TREND_PERCENT', label: 'Tendance (%)',      multiple: false, optional: true, hasLabel: true },
         ],
     },
 }
