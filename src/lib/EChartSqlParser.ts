@@ -1045,14 +1045,9 @@ export function buildKpiHtml(results: any[], parsed: ParsedColumnRoles, label?: 
     return _buildKpiLegacy(row, roleMap, label ?? null);
 }
 
-/** Stat mode: centered card with title, scaled value, comparison badge */
+/** Stat mode: centered card with scaled value, comparison badge */
 function _buildStatHtml(row: any, roleMap: Record<string, ColumnRole[]>, title: string | null): string {
     const parts: string[] = [];
-
-    // Title
-    if (title) {
-        parts.push(`<div style="text-align:center;font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted-foreground,#888);margin-bottom:.75rem">${_esc(title)}</div>`);
-    }
 
     // Main value(s) — TEXT_LARGE first, then MEDIUM, then SMALL
     const sizeMap: Array<[string, string]> = [
@@ -1067,7 +1062,8 @@ function _buildStatHtml(row: any, roleMap: Record<string, ColumnRole[]>, title: 
         for (const col of (roleMap[role] || [])) {
             const raw = row[col.originalName];
             const val = _fmtVal(raw);
-            const sublabel = (col.displayName !== role) ? col.displayName : '';
+            const rawLabel = col.displayName !== role ? col.displayName : '';
+            const sublabel = rawLabel && rawLabel.toLowerCase() !== 'null' ? rawLabel : '';
             if (mainValue === null && typeof raw === 'number') mainValue = raw;
             else if (mainValue === null && raw !== null && raw !== undefined && !isNaN(Number(raw))) mainValue = Number(raw);
             parts.push(`<div style="text-align:center;margin-bottom:.25rem">
@@ -1104,27 +1100,28 @@ function _buildStatHtml(row: any, roleMap: Record<string, ColumnRole[]>, title: 
 function _buildKpiLegacy(row: any, roleMap: Record<string, ColumnRole[]>, title: string | null): string {
     const parts: string[] = [];
 
-    if (title) {
-        parts.push(`<div style="text-align:center;font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted-foreground,#888);margin-bottom:.75rem">${_esc(title)}</div>`);
+    function _sub(display: string, role: string, fallback = ''): string {
+        const raw = display !== role ? display : fallback;
+        return raw && raw.toLowerCase() !== 'null' ? raw : '';
     }
 
     // KPI role (new) + LABEL role (backward compat)
     const kpiCols = [...(roleMap['KPI'] || []), ...(roleMap['LABEL'] || [])];
     for (const col of kpiCols) {
         const val = _str(row[col.originalName]);
-        const sublabel = (col.displayName !== 'KPI' && col.displayName !== 'LABEL') ? col.displayName : '';
+        const sublabel = _sub(col.displayName, 'KPI') || _sub(col.displayName, 'LABEL');
         parts.push(`<div style="text-align:center;margin-bottom:.5rem">
-  ${sublabel ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-bottom:.2rem">${_esc(sublabel)}</div>` : ''}
   <div style="font-size:clamp(2.5rem,8vw,5rem);font-weight:700;line-height:1.05;color:var(--foreground,#111)">${_esc(val)}</div>
+  ${sublabel ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-top:.2rem">${_esc(sublabel)}</div>` : ''}
 </div>`);
     }
     for (const col of (roleMap['PERCENT'] || [])) {
         const val = _num(row[col.originalName]);
         const fg = val >= 75 ? '#16a34a' : val >= 40 ? '#ca8a04' : '#dc2626';
-        const sublabel = col.displayName !== 'PERCENT' ? col.displayName : '';
+        const sublabel = _sub(col.displayName, 'PERCENT');
         parts.push(`<div style="text-align:center;margin-bottom:.5rem">
-  ${sublabel ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-bottom:.2rem">${_esc(sublabel)}</div>` : ''}
   <div style="font-size:clamp(2.5rem,8vw,5rem);font-weight:700;line-height:1.05;color:${fg}">${val.toFixed(1)}%</div>
+  ${sublabel ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-top:.2rem">${_esc(sublabel)}</div>` : ''}
 </div>`);
     }
     for (const col of (roleMap['COMPARE'] || [])) {
@@ -1132,10 +1129,10 @@ function _buildKpiLegacy(row: any, roleMap: Record<string, ColumnRole[]>, title:
         const sign = val >= 0 ? '+' : '';
         const fg = val >= 0 ? '#16a34a' : '#dc2626';
         const icon = val >= 0 ? '▲' : '▼';
-        const sublabel = col.displayName !== 'COMPARE' ? col.displayName : 'Comparaison';
+        const sublabel = _sub(col.displayName, 'COMPARE', 'Comparaison');
         parts.push(`<div style="text-align:center;margin-bottom:.5rem">
-  ${sublabel ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-bottom:.2rem">${_esc(sublabel)}</div>` : ''}
   <div style="font-size:clamp(2.5rem,8vw,5rem);font-weight:700;line-height:1.05;color:${fg}">${icon} ${sign}${val}</div>
+  ${sublabel ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-top:.2rem">${_esc(sublabel)}</div>` : ''}
 </div>`);
     }
     for (const col of (roleMap['TREND'] || [])) {
@@ -1145,10 +1142,10 @@ function _buildKpiLegacy(row: any, roleMap: Record<string, ColumnRole[]>, title:
         const arrow = isNeutral ? '→' : isUp ? '↑' : '↓';
         const fg = isNeutral ? '#ca8a04' : isUp ? '#16a34a' : '#dc2626';
         const sign = isUp ? '+' : '';
-        const sublabel = col.displayName !== 'TREND' ? col.displayName : 'Tendance';
+        const sublabel = _sub(col.displayName, 'TREND', 'Tendance');
         parts.push(`<div style="text-align:center;margin-bottom:.5rem">
-  ${sublabel ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-bottom:.2rem">${_esc(sublabel)}</div>` : ''}
   <div style="font-size:clamp(2.5rem,8vw,5rem);font-weight:700;line-height:1.05;color:${fg}">${arrow} ${sign}${val}</div>
+  ${sublabel ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-top:.2rem">${_esc(sublabel)}</div>` : ''}
 </div>`);
     }
 
