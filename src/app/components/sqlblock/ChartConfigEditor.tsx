@@ -100,6 +100,16 @@ const CHART_TYPE_CONFIGS: Record<string, { label: string; icon: string; roles: R
             { role: 'TREND',   label: 'Tendance',    multiple: false, optional: true,  hasLabel: true },
         ],
     },
+    stat: {
+        label: 'Stat',
+        icon: 'material-symbols-light:monitoring',
+        roles: [
+            { role: 'TEXT_LARGE',  label: 'Valeur (grand)',  multiple: false, optional: true, hasLabel: true },
+            { role: 'TEXT_MEDIUM', label: 'Valeur (moyen)',  multiple: false, optional: true, hasLabel: true },
+            { role: 'TEXT_SMALL',  label: 'Valeur (petit)',  multiple: false, optional: true, hasLabel: true },
+            { role: 'COMPARE',     label: 'Comparaison',     multiple: false, optional: true, hasLabel: true },
+        ],
+    },
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -228,47 +238,55 @@ export function ChartConfigEditor({ chartConfig, availableColumns, availableColT
         if (newCfg.columns.length > 0) onChange(newCfg)
     }, [availableKey]) // eslint-disable-line react-hooks/exhaustive-deps
 
+    const cfgLabel: string = (chartConfig as any)?.label ?? ''
+
     const handleTypeChange = useCallback((newType: string) => {
         const migrated = migrateColumnsForType(columns, newType)
-        const newCfg = migrated.length > 0
+        const base = migrated.length > 0
             ? { chartType: newType, columns: migrated }
             : defaultConfigForType(newType, availableColumns)
-        onChange(newCfg)
-    }, [columns, availableColumns, onChange])
+        onChange({ ...base, label: (chartConfig as any)?.label })
+    }, [columns, availableColumns, onChange, chartConfig])
+
+    const handleLabelChange = useCallback((val: string) => {
+        onChange({ chartType, columns, label: val || undefined } as any)
+    }, [chartType, columns, onChange])
+
+    // Émet un ChartConfig en préservant le label titre
+    const emit = useCallback((cols: ChartColumnRole[]) => {
+        const cfg: any = { chartType, columns: cols }
+        if (cfgLabel) cfg.label = cfgLabel
+        onChange(cfg)
+    }, [chartType, cfgLabel, onChange])
 
     const handleSingleRoleChange = useCallback((role: string, col: string | null) => {
-        // Reset label when column changes
         const entries = col ? [{ column: col, role, label: undefined }] : []
-        onChange({ chartType, columns: replaceRoleEntries(columns, role, entries) })
-    }, [chartType, columns, onChange])
+        emit(replaceRoleEntries(columns, role, entries))
+    }, [columns, emit])
 
     const handleSingleRoleLabelChange = useCallback((role: string, label: string) => {
         const entry = getEntriesForRole(columns, role)[0]
         if (!entry) return
-        const entries = [{ ...entry, label: label || undefined }]
-        onChange({ chartType, columns: replaceRoleEntries(columns, role, entries) })
-    }, [chartType, columns, onChange])
+        emit(replaceRoleEntries(columns, role, [{ ...entry, label: label || undefined }]))
+    }, [columns, emit])
 
     const handleMultiRoleChange = useCallback((role: string, idx: number, field: 'column' | 'label', value: string) => {
         const entries = getEntriesForRole(columns, role).map((e, i) => {
             if (i !== idx) return e
-            // Reset label when column changes
             if (field === 'column') return { ...e, column: value, label: undefined }
             return { ...e, [field]: value || undefined }
         })
-        onChange({ chartType, columns: replaceRoleEntries(columns, role, entries) })
-    }, [chartType, columns, onChange])
+        emit(replaceRoleEntries(columns, role, entries))
+    }, [columns, emit])
 
     const handleMultiRoleAdd = useCallback((role: string) => {
         const col = availableColumns[0] ?? ''
-        const entries = [...getEntriesForRole(columns, role), { column: col, role }]
-        onChange({ chartType, columns: replaceRoleEntries(columns, role, entries) })
-    }, [chartType, columns, availableColumns, onChange])
+        emit(replaceRoleEntries(columns, role, [...getEntriesForRole(columns, role), { column: col, role }]))
+    }, [columns, availableColumns, emit])
 
     const handleMultiRoleRemove = useCallback((role: string, idx: number) => {
-        const entries = getEntriesForRole(columns, role).filter((_, i) => i !== idx)
-        onChange({ chartType, columns: replaceRoleEntries(columns, role, entries) })
-    }, [chartType, columns, onChange])
+        emit(replaceRoleEntries(columns, role, getEntriesForRole(columns, role).filter((_, i) => i !== idx)))
+    }, [columns, emit])
 
     return (
         <div className="flex flex-col gap-2">
@@ -285,6 +303,20 @@ export function ChartConfigEditor({ chartConfig, availableColumns, availableColT
                     ))}
                 </select>
             </div>
+
+            {/* Titre (stat / kpi) */}
+            {(chartType === 'stat' || chartType === 'kpi') && (
+                <div className="flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground w-28 shrink-0">Titre</span>
+                    <input
+                        type="text"
+                        value={cfgLabel}
+                        onChange={e => handleLabelChange(e.target.value)}
+                        placeholder="Titre affiché au-dessus"
+                        className="h-6 text-xs px-1.5 border border-border rounded bg-background flex-1"
+                    />
+                </div>
+            )}
 
             {/* Slots de rôles (vide si datatable) */}
             {typeConfig.roles.map(slot => {

@@ -33,6 +33,9 @@ const KNOWN_ROLES = [
     'COLORS',
     'LABELS',
     'RANGE',
+    'TEXT_LARGE',
+    'TEXT_MEDIUM',
+    'TEXT_SMALL',
     'LABEL',
     'PERCENT',
     'COMPARE',
@@ -154,6 +157,7 @@ function _detectChartType(roleMap: Record<string, ColumnRole[]>): string {
     if (has('GAUGE_PERCENT'))      return 'gauge_percent';
     if (has('GAUGE'))              return 'gauge';
     if (has('BOXPLOT'))            return 'boxplot';
+    if (has('TEXT_LARGE') || has('TEXT_MEDIUM') || has('TEXT_SMALL')) return 'kpi';
     if (has('LABEL') || has('PERCENT') || has('COMPARE') || has('TREND')) return 'kpi';
     return 'unknown';
 }
@@ -1006,41 +1010,129 @@ function _buildBoxplotOption(results, roleMap, base, textColor) {
 
 // ─── KPI card HTML builder (not an ECharts option) ───────────────────────────
 
+function _esc(s: string): string {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function _fmtVal(v: any): string {
+    if (v === null || v === undefined) return '–';
+    if (typeof v === 'number') return v.toLocaleString('fr-FR');
+    return _esc(String(v));
+}
+
 /**
- * Returns an HTML string for a KPI single-value display.
+ * Returns an HTML string for a KPI / Stat single-value display.
  * Used when chartType === 'kpi' (no ECharts instance needed).
+ *
+ * @param label - optional title override (from SELECT '...'::LABEL; or chartConfig.label)
+ *
+ * Two display modes:
+ *  - Stat mode (TEXT_LARGE / TEXT_MEDIUM / TEXT_SMALL present):
+ *    centered card with title, big value, comparison row below
+ *  - KPI mode (legacy LABEL / PERCENT / COMPARE / TREND):
+ *    DaisyUI stat cards side by side
  */
-export function buildKpiHtml(results: any[], parsed: ParsedColumnRoles): string {
+export function buildKpiHtml(results: any[], parsed: ParsedColumnRoles, label?: string): string {
     const { roleMap } = parsed;
     const row = results[0] || {};
+
+    const hasText = !!(roleMap['TEXT_LARGE']?.length || roleMap['TEXT_MEDIUM']?.length || roleMap['TEXT_SMALL']?.length);
+
+    if (hasText) {
+        return _buildStatHtml(row, roleMap, label ?? null);
+    }
+    return _buildKpiLegacy(row, roleMap, label ?? null);
+}
+
+/** Stat mode: centered card with title, scaled value, comparison badge */
+function _buildStatHtml(row: any, roleMap: Record<string, ColumnRole[]>, title: string | null): string {
     const parts: string[] = [];
+
+    // Title
+    if (title) {
+        parts.push(`<div style="text-align:center;font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted-foreground,#888);margin-bottom:.75rem">${_esc(title)}</div>`);
+    }
+
+    // Main value(s) — TEXT_LARGE first, then MEDIUM, then SMALL
+    const sizeMap: Array<[string, string]> = [
+        ['TEXT_LARGE',  'clamp(2.5rem,8vw,4.5rem)'],
+        ['TEXT_MEDIUM', 'clamp(1.5rem,5vw,2.75rem)'],
+        ['TEXT_SMALL',  'clamp(1rem,3vw,1.5rem)'],
+    ];
+
+    let mainValue: number | null = null;
+
+    for (const [role, fontSize] of sizeMap) {
+        for (const col of (roleMap[role] || [])) {
+            const raw = row[col.originalName];
+            const val = _fmtVal(raw);
+            const sublabel = (col.displayName !== role) ? col.displayName : '';
+            if (mainValue === null && typeof raw === 'number') mainValue = raw;
+            else if (mainValue === null && raw !== null && raw !== undefined && !isNaN(Number(raw))) mainValue = Number(raw);
+            parts.push(`<div style="text-align:center;margin-bottom:.25rem">
+  <div style="font-size:${fontSize};font-weight:700;line-height:1.05;color:var(--foreground,#111)">${val}</div>
+  ${sublabel ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-top:.2rem">${_esc(sublabel)}</div>` : ''}
+</div>`);
+        }
+    }
+
+    // COMPARE — shown below the main value with % diff badge
+    for (const col of (roleMap['COMPARE'] || [])) {
+        const compareVal = _num(row[col.originalName]);
+        const compareLabel = (col.displayName !== 'COMPARE') ? col.displayName : 'Précédent';
+        if (mainValue !== null) {
+            const pct = compareVal !== 0 ? ((mainValue - compareVal) / Math.abs(compareVal)) * 100 : 0;
+            const sign = pct >= 0 ? '+' : '';
+            const arrow = pct > 0 ? '↗' : pct < 0 ? '↘' : '→';
+            const bg = pct >= 0 ? '#16a34a22' : '#dc262622';
+            const fg = pct >= 0 ? '#16a34a' : '#dc2626';
+            parts.push(`<div style="text-align:center;margin-top:.75rem;font-size:.8rem;color:var(--muted-foreground,#888)">
+  ${_esc(compareLabel)}: ${_fmtVal(compareVal)}
+  <span style="display:inline-block;background:${bg};color:${fg};border-radius:.25rem;padding:.1rem .4rem;font-size:.75rem;font-weight:700;margin-left:.4rem">${sign}${Math.round(pct)}% ${arrow}</span>
+</div>`);
+        } else {
+            parts.push(`<div style="text-align:center;margin-top:.75rem;font-size:.8rem;color:var(--muted-foreground,#888)">${_esc(compareLabel)}: ${_fmtVal(compareVal)}</div>`);
+        }
+    }
+
+    if (parts.length === 0) return '<div style="padding:1rem;color:#888;font-size:.875rem;text-align:center">Aucune donnée</div>';
+    return `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem 2rem;height:100%;box-sizing:border-box">${parts.join('\n')}</div>`;
+}
+
+/** KPI mode (legacy): DaisyUI stat cards — LABEL / PERCENT / COMPARE / TREND */
+function _buildKpiLegacy(row: any, roleMap: Record<string, ColumnRole[]>, title: string | null): string {
+    const parts: string[] = [];
+
+    if (title) {
+        parts.push(`<div class="stat">
+  <div class="stat-title" style="font-size:.65rem;letter-spacing:.06em;text-transform:uppercase">${_esc(title)}</div>
+</div>`);
+    }
 
     for (const col of (roleMap['LABEL'] || [])) {
         const val = _str(row[col.originalName]);
         parts.push(`<div class="stat">
-            <div class="stat-title">${col.displayName !== 'LABEL' ? col.displayName : ''}</div>
-            <div class="stat-value text-primary">${val}</div>
-        </div>`);
+  <div class="stat-title">${col.displayName !== 'LABEL' ? _esc(col.displayName) : ''}</div>
+  <div class="stat-value text-primary">${_esc(val)}</div>
+</div>`);
     }
     for (const col of (roleMap['PERCENT'] || [])) {
         const val = _num(row[col.originalName]);
         const color = val >= 75 ? 'text-green-600 dark:text-green-400' : val >= 40 ? 'text-yellow-500 dark:text-yellow-400' : 'text-red-500 dark:text-red-400';
         parts.push(`<div class="stat">
-            <div class="stat-title">${col.displayName !== 'PERCENT' ? col.displayName : ''}</div>
-            <div class="stat-value ${color}">${val.toFixed(1)}%</div>
-        </div>`);
+  <div class="stat-title">${col.displayName !== 'PERCENT' ? _esc(col.displayName) : ''}</div>
+  <div class="stat-value ${color}">${val.toFixed(1)}%</div>
+</div>`);
     }
     for (const col of (roleMap['COMPARE'] || [])) {
         const val = _num(row[col.originalName]);
         const sign = val >= 0 ? '+' : '';
         const color = val >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400';
-        const icon = val >= 0
-            ? `<span style="font-size:0.6em">▲</span>`
-            : `<span style="font-size:0.6em">▼</span>`;
+        const icon = val >= 0 ? `<span style="font-size:.6em">▲</span>` : `<span style="font-size:.6em">▼</span>`;
         parts.push(`<div class="stat">
-            <div class="stat-title">${col.displayName !== 'COMPARE' ? col.displayName : 'Comparaison'}</div>
-            <div class="stat-value ${color}">${icon} ${sign}${val}</div>
-        </div>`);
+  <div class="stat-title">${col.displayName !== 'COMPARE' ? _esc(col.displayName) : 'Comparaison'}</div>
+  <div class="stat-value ${color}">${icon} ${sign}${val}</div>
+</div>`);
     }
     for (const col of (roleMap['TREND'] || [])) {
         const val = _num(row[col.originalName]);
@@ -1050,13 +1142,12 @@ export function buildKpiHtml(results: any[], parsed: ParsedColumnRoles): string 
         const color = isNeutral ? 'text-yellow-500 dark:text-yellow-400' : isUp ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400';
         const sign = isUp ? '+' : '';
         parts.push(`<div class="stat">
-            <div class="stat-title">${col.displayName !== 'TREND' ? col.displayName : 'Tendance'}</div>
-            <div class="stat-value ${color}">${arrow} ${sign}${val}</div>
-        </div>`);
+  <div class="stat-title">${col.displayName !== 'TREND' ? _esc(col.displayName) : 'Tendance'}</div>
+  <div class="stat-value ${color}">${arrow} ${sign}${val}</div>
+</div>`);
     }
 
     if (parts.length === 0) return '<div class="p-4 text-muted-foreground text-sm">Aucune donnée</div>';
-
     return `<div class="stats shadow w-full flex-wrap">${parts.join('')}</div>`;
 }
 

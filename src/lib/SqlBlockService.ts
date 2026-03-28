@@ -90,6 +90,7 @@ const CHART_ROLES_ORDERED = [
     'BOXPLOT',
     'XAXIS', 'YAXIS', 'CATEGORY',
     'COLOR', 'COLORS', 'LABELS', 'RANGE',
+    'TEXT_LARGE', 'TEXT_MEDIUM', 'TEXT_SMALL',
     'LABEL', 'PERCENT', 'COMPARE', 'TREND', 'XLINE', 'YLINE',
 ];
 const CHART_ROLES_SET = new Set(CHART_ROLES_ORDERED);
@@ -101,6 +102,12 @@ const CHART_ROLES_SET = new Set(CHART_ROLES_ORDERED);
 const CHART_AXIS_ROLES = new Set(['XAXIS', 'YAXIS', 'CATEGORY', 'COLOR', 'COLORS']);
 
 export function buildChartFinalSelect(fromSource: string, cfg: ChartConfig): string {
+    // Préfixe LABEL si un titre est défini
+    let prefix = '';
+    if (cfg.label?.trim()) {
+        const escaped = cfg.label.trim().replace(/'/g, "''");
+        prefix = `SELECT '${escaped}'::LABEL;\n`;
+    }
     // Axe / catégorie / couleur en premier, puis les données
     const sorted = [...cfg.columns].sort((a, b) => {
         const aAxis = CHART_AXIS_ROLES.has(a.role.toUpperCase()) ? 0 : 1;
@@ -113,7 +120,7 @@ export function buildChartFinalSelect(fromSource: string, cfg: ChartConfig): str
         const alias = col.label?.trim() ? ` AS "${col.label.trim()}"` : '';
         return `  ${quotedCol}::${role}${alias}`;
     });
-    return `SELECT\n${parts.join(',\n')}\nFROM ${fromSource}`;
+    return `${prefix}SELECT\n${parts.join(',\n')}\nFROM ${fromSource}`;
 }
 
 /**
@@ -122,23 +129,29 @@ export function buildChartFinalSelect(fromSource: string, cfg: ChartConfig): str
  * Retourne null si aucun rôle chart n'est trouvé.
  */
 export function parseChartFinalSelect(selectSql: string): ChartConfig | null {
+    // Extrait le titre depuis SELECT '...'::LABEL; s'il est présent en tête
+    let cfgLabel: string | undefined;
+    const labelM = selectSql.match(/^\s*SELECT\s+'([^']*)'\s*::LABEL\s*;/i);
+    if (labelM) cfgLabel = labelM[1];
+
     const rolesPattern = CHART_ROLES_ORDERED.join('|');
-    // Match: ("col" | col)::ROLE [AS ("label" | label)]
+    // Match: ("col" | col | 'literal')::ROLE [AS ("label" | label)]
     const re = new RegExp(
-        `(?:"([^"]+)"|([\\w]+))\\s*::\\s*(${rolesPattern})(?:\\s+AS\\s+(?:"([^"]+)"|([\\w]+)))?`,
+        `(?:"([^"]+)"|'([^']*)'|([\\w]+))\\s*::\\s*(${rolesPattern})(?:\\s+AS\\s+(?:"([^"]+)"|([\\w]+)))?`,
         'gi'
     );
     const columns: ChartColumnRole[] = [];
     let m: RegExpExecArray | null;
     while ((m = re.exec(selectSql)) !== null) {
-        const column = m[1] ?? m[2];
-        const role = m[3].toUpperCase();
-        const label = m[4] ?? m[5] ?? undefined;
-        if (column && CHART_ROLES_SET.has(role)) {
+        const column = m[1] ?? m[2] ?? m[3];
+        const role = m[4].toUpperCase();
+        const label = m[5] ?? m[6] ?? undefined;
+        // Skip LABEL role — it's a title, not a data column
+        if (column && CHART_ROLES_SET.has(role) && role !== 'LABEL') {
             columns.push({ column, role, label });
         }
     }
-    if (!columns.length) return null;
+    if (!columns.length && !cfgLabel) return null;
 
     // Déduire le chartType depuis les rôles présents (même logique que EChartSqlParser)
     const roleSet = new Set(columns.map(c => c.role));
@@ -154,9 +167,12 @@ export function parseChartFinalSelect(selectSql: string): ChartConfig | null {
     else if (has('DONUTCHART_PERCENT') || has('DONUTCHART')) chartType = 'donut';
     else if (has('GAUGE_PERCENT') || has('GAUGE')) chartType = 'gauge';
     else if (has('BOXPLOT')) chartType = 'boxplot';
-    else if (has('LABEL') || has('PERCENT') || has('COMPARE') || has('TREND')) chartType = 'kpi';
+    else if (has('TEXT_LARGE') || has('TEXT_MEDIUM') || has('TEXT_SMALL')) chartType = 'stat';
+    else if (has('PERCENT') || has('COMPARE') || has('TREND')) chartType = 'kpi';
 
-    return { chartType, columns };
+    const cfg: ChartConfig = { chartType, columns };
+    if (cfgLabel) cfg.label = cfgLabel;
+    return cfg;
 }
 
 export function astToSql(ast: SqlBlockAst): string {
