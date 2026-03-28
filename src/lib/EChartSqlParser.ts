@@ -861,7 +861,7 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
         axisLine: { lineStyle: axisLineStyle },
         axisTick: { show: false },
         splitLine: { show: false },
-        axisLabel: { color: textColor, fontSize: 11, distance: 15, formatter: innerLabelFmt },
+        axisLabel: { color: textColor, fontSize: 11, distance: 25, formatter: innerLabelFmt },
         // Progress bar for simple gauges (no explicit labels/colors) — like reference
         progress: {
             show: !gaugeAxisLabels && !gaugeColors,
