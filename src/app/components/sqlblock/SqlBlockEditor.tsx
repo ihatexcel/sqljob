@@ -226,6 +226,8 @@ function computeStepSchemas(
         const next = applyStepToSchema(step, cols, types)
         cols = next.cols; types = next.types
     }
+    // Entry n = output of last step (= correct input for a new step appended after all existing steps)
+    schemas.push({ columns: [...cols], colTypes: { ...types } })
     return schemas
 }
 
@@ -2745,9 +2747,10 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
         return async (column: string, selectLimit: number, fromLimit: number): Promise<{ values: string[]; hasMore: boolean }> => {
             if (!ast.source || !column) return { values: [], hasMore: false }
             try {
+                const cleanAst = { ...ast, chartConfig: undefined }
                 const inputSql = stepIdx === 0
                     ? `SELECT * FROM ${quoteId(ast.source)}`
-                    : stepSql(ast, stepIdx - 1)
+                    : stepSql(cleanAst, stepIdx - 1)
                 if (!inputSql) return { values: [], hasMore: false }
                 const col = `"${column.replace(/"/g, '""')}"`
                 // Applique le fromLimit en sous-couche pour éviter de scanner toute la table
@@ -2965,11 +2968,8 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
 
                 const n = ast.steps.length
                 const mainTables = Object.keys(_duckdbTables ?? {}).filter(t => !t.startsWith('_sqlblock.'))
-                const newStepInputSchema = dynamicSchemas[n] ?? (
-                    n === 0
-                        ? { columns: sourceColumns.map(c => c.name), colTypes: Object.fromEntries(sourceColumns.map(c => [c.name, c.type])) }
-                        : (stepSchemas[n - 1] ?? { columns: sourceColumns.map(c => c.name), colTypes: {} })
-                )
+                // stepSchemas[n] = output of last step (input for the new step being added)
+                const newStepInputSchema = dynamicSchemas[n] ?? stepSchemas[n] ?? { columns: sourceColumns.map(c => c.name), colTypes: Object.fromEntries(sourceColumns.map(c => [c.name, c.type])) }
                 const stepsSection = (
                     <>
                         <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide shrink-0">Étapes</span>
