@@ -106,6 +106,29 @@ const CHART_TYPE_CONFIGS: Record<string, { label: string; icon: string; roles: R
 
 const NONE_VALUE = '__none__'
 
+/** Correspondance entre rôles compatibles lors d'un changement de type. */
+const ROLE_COMPAT_MAP: Record<string, string> = {
+    'BARCHART':   'LINECHART',
+    'LINECHART':  'BARCHART',
+    'PIECHART':   'DONUTCHART',
+    'DONUTCHART': 'PIECHART',
+}
+
+/** Transfère les colonnes existantes vers un nouveau type en mappant les rôles compatibles. */
+function migrateColumnsForType(oldColumns: ChartColumnRole[], newType: string): ChartColumnRole[] {
+    const newConfig = CHART_TYPE_CONFIGS[newType]
+    if (!newConfig) return []
+    const newRoles = new Set(newConfig.roles.map(r => r.role))
+    return oldColumns
+        .map(col => {
+            if (newRoles.has(col.role)) return col
+            const mapped = ROLE_COMPAT_MAP[col.role]
+            if (mapped && newRoles.has(mapped)) return { ...col, role: mapped }
+            return null
+        })
+        .filter(Boolean) as ChartColumnRole[]
+}
+
 /** Retourne les entrées d'un rôle dans la config. */
 function getEntriesForRole(columns: ChartColumnRole[], role: string): ChartColumnRole[] {
     return columns.filter(c => c.role === role)
@@ -206,9 +229,12 @@ export function ChartConfigEditor({ chartConfig, availableColumns, availableColT
     }, [availableKey]) // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleTypeChange = useCallback((newType: string) => {
-        const newCfg = defaultConfigForType(newType, availableColumns)
+        const migrated = migrateColumnsForType(columns, newType)
+        const newCfg = migrated.length > 0
+            ? { chartType: newType, columns: migrated }
+            : defaultConfigForType(newType, availableColumns)
         onChange(newCfg)
-    }, [availableColumns, onChange])
+    }, [columns, availableColumns, onChange])
 
     const handleSingleRoleChange = useCallback((role: string, col: string | null) => {
         // Reset label when column changes
