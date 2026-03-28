@@ -134302,12 +134302,10 @@ function _fmtVal(At) {
 function buildKpiHtml(At, yt, xt) {
   var Et, kt, Tt;
   const { roleMap: wt } = yt, Ct = At[0] || {};
-  return (Et = wt.TEXT_LARGE) != null && Et.length || (kt = wt.TEXT_MEDIUM) != null && kt.length || (Tt = wt.TEXT_SMALL) != null && Tt.length ? _buildStatHtml(Ct, wt, xt ?? null) : _buildKpiLegacy(Ct, wt, xt ?? null);
+  return (Et = wt.TEXT_LARGE) != null && Et.length || (kt = wt.TEXT_MEDIUM) != null && kt.length || (Tt = wt.TEXT_SMALL) != null && Tt.length ? _buildStatHtml(Ct, wt) : _buildKpiLegacy(Ct, wt);
 }
 function _buildStatHtml(At, yt, xt) {
-  const wt = [];
-  xt && wt.push(`<div style="text-align:center;font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted-foreground,#888);margin-bottom:.75rem">${_esc(xt)}</div>`);
-  const Ct = [
+  const wt = [], Ct = [
     ["TEXT_LARGE", "clamp(2.5rem,8vw,4.5rem)"],
     ["TEXT_MEDIUM", "clamp(1.5rem,5vw,2.75rem)"],
     ["TEXT_SMALL", "clamp(1rem,3vw,1.5rem)"]
@@ -134315,10 +134313,10 @@ function _buildStatHtml(At, yt, xt) {
   let St = null;
   for (const [Et, kt] of Ct)
     for (const Tt of yt[Et] || []) {
-      const $t = At[Tt.originalName], Lt = _fmtVal($t), It = Tt.displayName !== Et ? Tt.displayName : "";
+      const $t = At[Tt.originalName], Lt = _fmtVal($t), It = Tt.displayName !== Et ? Tt.displayName : "", Rt = It && It.toLowerCase() !== "null" ? It : "";
       St === null && typeof $t == "number" ? St = $t : St === null && $t !== null && $t !== void 0 && !isNaN(Number($t)) && (St = Number($t)), wt.push(`<div style="text-align:center;margin-bottom:.25rem">
   <div style="font-size:${kt};font-weight:700;line-height:1.05;color:var(--foreground,#111)">${Lt}</div>
-  ${It ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-top:.2rem">${_esc(It)}</div>` : ""}
+  ${Rt ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-top:.2rem">${_esc(Rt)}</div>` : ""}
 </div>`);
     }
   for (const Et of yt.COMPARE || []) {
@@ -134337,34 +134335,37 @@ function _buildStatHtml(At, yt, xt) {
 }
 function _buildKpiLegacy(At, yt, xt) {
   const wt = [];
-  xt && wt.push(`<div style="text-align:center;font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted-foreground,#888);margin-bottom:.75rem">${_esc(xt)}</div>`);
-  const Ct = [...yt.KPI || [], ...yt.LABEL || []];
-  for (const St of Ct) {
-    const Et = _str(At[St.originalName]), kt = St.displayName !== "KPI" && St.displayName !== "LABEL" ? St.displayName : "";
+  function Ct(Et, kt, Tt = "") {
+    const $t = Et !== kt ? Et : Tt;
+    return $t && $t.toLowerCase() !== "null" ? $t : "";
+  }
+  const St = [...yt.KPI || [], ...yt.LABEL || []];
+  for (const Et of St) {
+    const kt = _str(At[Et.originalName]), Tt = Ct(Et.displayName, "KPI") || Ct(Et.displayName, "LABEL");
     wt.push(`<div style="text-align:center;margin-bottom:.5rem">
-  ${kt ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-bottom:.2rem">${_esc(kt)}</div>` : ""}
-  <div style="font-size:clamp(2.5rem,8vw,5rem);font-weight:700;line-height:1.05;color:var(--foreground,#111)">${_esc(Et)}</div>
+  <div style="font-size:clamp(2.5rem,8vw,5rem);font-weight:700;line-height:1.05;color:var(--foreground,#111)">${_esc(kt)}</div>
+  ${Tt ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-top:.2rem">${_esc(Tt)}</div>` : ""}
 </div>`);
   }
-  for (const St of yt.PERCENT || []) {
-    const Et = _num(At[St.originalName]), kt = Et >= 75 ? "#16a34a" : Et >= 40 ? "#ca8a04" : "#dc2626", Tt = St.displayName !== "PERCENT" ? St.displayName : "";
+  for (const Et of yt.PERCENT || []) {
+    const kt = _num(At[Et.originalName]), Tt = kt >= 75 ? "#16a34a" : kt >= 40 ? "#ca8a04" : "#dc2626", $t = Ct(Et.displayName, "PERCENT");
     wt.push(`<div style="text-align:center;margin-bottom:.5rem">
-  ${Tt ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-bottom:.2rem">${_esc(Tt)}</div>` : ""}
-  <div style="font-size:clamp(2.5rem,8vw,5rem);font-weight:700;line-height:1.05;color:${kt}">${Et.toFixed(1)}%</div>
+  <div style="font-size:clamp(2.5rem,8vw,5rem);font-weight:700;line-height:1.05;color:${Tt}">${kt.toFixed(1)}%</div>
+  ${$t ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-top:.2rem">${_esc($t)}</div>` : ""}
 </div>`);
   }
-  for (const St of yt.COMPARE || []) {
-    const Et = _num(At[St.originalName]), kt = Et >= 0 ? "+" : "", Tt = Et >= 0 ? "#16a34a" : "#dc2626", $t = Et >= 0 ? "▲" : "▼", Lt = St.displayName !== "COMPARE" ? St.displayName : "Comparaison";
+  for (const Et of yt.COMPARE || []) {
+    const kt = _num(At[Et.originalName]), Tt = kt >= 0 ? "+" : "", $t = kt >= 0 ? "#16a34a" : "#dc2626", Lt = kt >= 0 ? "▲" : "▼", It = Ct(Et.displayName, "COMPARE", "Comparaison");
     wt.push(`<div style="text-align:center;margin-bottom:.5rem">
-  ${Lt ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-bottom:.2rem">${_esc(Lt)}</div>` : ""}
-  <div style="font-size:clamp(2.5rem,8vw,5rem);font-weight:700;line-height:1.05;color:${Tt}">${$t} ${kt}${Et}</div>
+  <div style="font-size:clamp(2.5rem,8vw,5rem);font-weight:700;line-height:1.05;color:${$t}">${Lt} ${Tt}${kt}</div>
+  ${It ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-top:.2rem">${_esc(It)}</div>` : ""}
 </div>`);
   }
-  for (const St of yt.TREND || []) {
-    const Et = _num(At[St.originalName]), kt = Et > 0, Tt = Et === 0, $t = Tt ? "→" : kt ? "↑" : "↓", Lt = Tt ? "#ca8a04" : kt ? "#16a34a" : "#dc2626", It = kt ? "+" : "", Rt = St.displayName !== "TREND" ? St.displayName : "Tendance";
+  for (const Et of yt.TREND || []) {
+    const kt = _num(At[Et.originalName]), Tt = kt > 0, $t = kt === 0, Lt = $t ? "→" : Tt ? "↑" : "↓", It = $t ? "#ca8a04" : Tt ? "#16a34a" : "#dc2626", Rt = Tt ? "+" : "", Dt = Ct(Et.displayName, "TREND", "Tendance");
     wt.push(`<div style="text-align:center;margin-bottom:.5rem">
-  ${Rt ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-bottom:.2rem">${_esc(Rt)}</div>` : ""}
-  <div style="font-size:clamp(2.5rem,8vw,5rem);font-weight:700;line-height:1.05;color:${Lt}">${$t} ${It}${Et}</div>
+  <div style="font-size:clamp(2.5rem,8vw,5rem);font-weight:700;line-height:1.05;color:${It}">${Lt} ${Rt}${kt}</div>
+  ${Dt ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-top:.2rem">${_esc(Dt)}</div>` : ""}
 </div>`);
   }
   return wt.length === 0 ? '<div style="padding:1rem;color:#888;font-size:.875rem;text-align:center">Aucune donnée</div>' : `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem 2rem;height:100%;box-sizing:border-box">${wt.join(`
@@ -137971,7 +137972,7 @@ function SqlTableBody({ cell: At, path: yt, cellIndex: xt, showTextResult: wt = 
             }
           ),
           jt && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-            At._kpiLabel && Zt === "table" && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm font-semibold text-foreground mb-1 shrink-0", children: At._kpiLabel }),
+            At._kpiLabel && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm font-semibold text-foreground mb-1 shrink-0", children: At._kpiLabel }),
             Ct && At.type === "sql" && Jt && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-2 mb-1 shrink-0", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex rounded border border-border overflow-hidden text-xs", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(
                 "button",
