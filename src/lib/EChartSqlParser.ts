@@ -1144,7 +1144,7 @@ function _buildKpiHtml(row: any, roleMap: Record<string, ColumnRole[]>, title: s
         const sublabel = _sub(col.displayName, 'KPI');
         parts.push(`<div style="text-align:center;margin-bottom:.5rem">
   <div style="font-size:clamp(1.5rem,8vw,3rem);font-weight:700;line-height:1.05;color:var(--foreground,#111)">${_esc(val)}</div>
-  ${sublabel ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-top:.2rem">${_esc(sublabel)}</div>` : ''}
+  ${sublabel ? `<div style="font-size:clamp(.9rem,2.5vw,1.15rem);color:var(--muted-foreground,#888);margin-top:.2rem">${_esc(sublabel)}</div>` : ''}
 </div>`);
     }
     // PERCENT / COMPARE / TREND / TREND_PERCENT — côte à côte sur une ligne
