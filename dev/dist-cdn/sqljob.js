@@ -134260,7 +134260,7 @@ function _buildGaugeOption(At, yt, xt, wt, Ct) {
     progress: {
       show: !Jt && !Ht,
       width: Zt,
-      itemStyle: { color: "#5470c6" }
+      itemStyle: { color: _getChartColors()[0] }
     },
     detail: {
       fontSize: 20,
