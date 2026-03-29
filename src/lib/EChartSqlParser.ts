@@ -34,6 +34,7 @@ const KNOWN_ROLES = [
     'LABELS',
     'RANGE',
     'KPI',
+    'ICON',
     'LABEL',
     'PERCENT',
     'COMPARE',
@@ -1125,6 +1126,16 @@ function _buildKpiHtml(row: any, roleMap: Record<string, ColumnRole[]>, title: s
     function _sub(display: string, role: string, fallback = ''): string {
         const raw = display !== role ? display : fallback;
         return raw && raw.toLowerCase() !== 'null' ? raw : '';
+    }
+
+    // ICON (optional — shown between label and value)
+    const iconCol = (roleMap['ICON'] || [])[0];
+    if (iconCol) {
+        const raw = _str(row[iconCol.originalName]);
+        if (raw && raw.toLowerCase() !== 'null') {
+            const iconId = raw.includes(':') ? raw : `lucide:${raw}`;
+            parts.push(`<div style="display:flex;justify-content:center;margin-bottom:.25rem"><span class="iconify" data-icon="${_esc(iconId)}" style="font-size:2rem;color:var(--primary,#555)"></span></div>`);
+        }
     }
 
     // KPI value columns
