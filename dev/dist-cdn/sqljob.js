@@ -133303,6 +133303,7 @@ const SqlBlockService = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.def
     icon: "material-symbols-light:123",
     roles: [
       { role: "KPI", label: "Valeur", multiple: !0, optional: !1, hasLabel: !0 },
+      { role: "ICON", label: "Icône", multiple: !1, optional: !0, hasLabel: !1 },
       { role: "PERCENT", label: "Pourcentage", multiple: !1, optional: !0, hasLabel: !0 },
       { role: "COMPARE", label: "Comparaison", multiple: !1, optional: !0, hasLabel: !0 },
       { role: "TREND", label: "Tendance", multiple: !1, optional: !0, hasLabel: !0 },
@@ -133680,6 +133681,7 @@ const DUCKDB_TYPES = [
   "LABELS",
   "RANGE",
   "KPI",
+  "ICON",
   "LABEL",
   "PERCENT",
   "COMPARE",
@@ -134387,35 +134389,43 @@ function buildKpiHtml(At, yt, xt) {
 }
 function _buildKpiHtml(At, yt, xt) {
   const wt = [];
-  function Ct(Tt, $t, Lt = "") {
-    const It = Tt !== $t ? Tt : Lt;
-    return It && It.toLowerCase() !== "null" ? It : "";
+  function Ct($t, Lt, It = "") {
+    const Rt = $t !== Lt ? $t : It;
+    return Rt && Rt.toLowerCase() !== "null" ? Rt : "";
   }
-  for (const Tt of yt.KPI || []) {
-    const $t = _str(At[Tt.originalName]), Lt = Ct(Tt.displayName, "KPI");
+  const St = (yt.ICON || [])[0];
+  if (St) {
+    const $t = _str(At[St.originalName]);
+    if ($t && $t.toLowerCase() !== "null") {
+      const Lt = $t.includes(":") ? $t : `lucide:${$t}`;
+      wt.push(`<div style="display:flex;justify-content:center;margin-bottom:.25rem"><span class="iconify" data-icon="${_esc(Lt)}" style="font-size:2rem;color:var(--primary,#555)"></span></div>`);
+    }
+  }
+  for (const $t of yt.KPI || []) {
+    const Lt = _str(At[$t.originalName]), It = Ct($t.displayName, "KPI");
     wt.push(`<div style="text-align:center;margin-bottom:.5rem">
-  <div style="font-size:clamp(2rem,8vw,3.5rem);font-weight:700;line-height:1.05;color:var(--foreground,#111)">${_esc($t)}</div>
-  ${Lt ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-top:.2rem">${_esc(Lt)}</div>` : ""}
+  <div style="font-size:clamp(2rem,8vw,3.5rem);font-weight:700;line-height:1.05;color:var(--foreground,#111)">${_esc(Lt)}</div>
+  ${It ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-top:.2rem">${_esc(It)}</div>` : ""}
 </div>`);
   }
-  const St = [], Et = "rgba(128,128,128,.12)", kt = "var(--foreground,#111)";
-  for (const Tt of yt.PERCENT || []) {
-    const $t = _num(At[Tt.originalName]), Lt = Ct(Tt.displayName, "PERCENT"), It = Lt ? `<span style="color:var(--muted-foreground,#888)">${_esc(Lt)} : </span>` : "";
-    St.push(`<span style="white-space:nowrap;font-size:.8rem">${It}<span style="background:${Et};color:${kt};border-radius:.35rem;padding:.1rem .45rem;font-weight:700">${$t.toFixed(1)}%</span></span>`);
+  const Et = [], kt = "rgba(128,128,128,.12)", Tt = "var(--foreground,#111)";
+  for (const $t of yt.PERCENT || []) {
+    const Lt = _num(At[$t.originalName]), It = Ct($t.displayName, "PERCENT"), Rt = It ? `<span style="color:var(--muted-foreground,#888)">${_esc(It)} : </span>` : "";
+    Et.push(`<span style="white-space:nowrap;font-size:.8rem">${Rt}<span style="background:${kt};color:${Tt};border-radius:.35rem;padding:.1rem .45rem;font-weight:700">${Lt.toFixed(1)}%</span></span>`);
   }
-  for (const Tt of yt.COMPARE || []) {
-    const $t = At[Tt.originalName], Lt = typeof $t == "number" ? $t : $t != null && !isNaN(Number($t)) ? Number($t) : null, It = Lt !== null ? _fmtVal(Lt) : _esc(_str($t)), Rt = Ct(Tt.displayName, "COMPARE"), Dt = Rt ? `<span style="color:var(--muted-foreground,#888)">${_esc(Rt)} : </span>` : "";
-    St.push(`<span style="white-space:nowrap;font-size:.8rem;font-weight:600;color:${kt}">${Dt}${It}</span>`);
+  for (const $t of yt.COMPARE || []) {
+    const Lt = At[$t.originalName], It = typeof Lt == "number" ? Lt : Lt != null && !isNaN(Number(Lt)) ? Number(Lt) : null, Rt = It !== null ? _fmtVal(It) : _esc(_str(Lt)), Dt = Ct($t.displayName, "COMPARE"), jt = Dt ? `<span style="color:var(--muted-foreground,#888)">${_esc(Dt)} : </span>` : "";
+    Et.push(`<span style="white-space:nowrap;font-size:.8rem;font-weight:600;color:${Tt}">${jt}${Rt}</span>`);
   }
-  for (const Tt of yt.TREND || []) {
-    const $t = _num(At[Tt.originalName]), Lt = $t > 0, It = $t === 0, Rt = It ? "#ca8a04" : Lt ? "#16a34a" : "#dc2626", Dt = It ? "#ca8a0418" : Lt ? "#16a34a18" : "#dc262618", jt = It ? "→" : Lt ? "↑" : "↓", Nt = Lt ? "+" : "", Mt = Ct(Tt.displayName, "TREND"), Ot = Mt ? `<span style="color:var(--muted-foreground,#888)">${_esc(Mt)} : </span>` : "";
-    St.push(`<span style="white-space:nowrap;font-size:.8rem">${Ot}<span style="background:${Dt};color:${Rt};border-radius:.35rem;padding:.1rem .45rem;font-weight:700">${Nt}${$t} ${jt}</span></span>`);
+  for (const $t of yt.TREND || []) {
+    const Lt = _num(At[$t.originalName]), It = Lt > 0, Rt = Lt === 0, Dt = Rt ? "#ca8a04" : It ? "#16a34a" : "#dc2626", jt = Rt ? "#ca8a0418" : It ? "#16a34a18" : "#dc262618", Nt = Rt ? "→" : It ? "↑" : "↓", Mt = It ? "+" : "", Ot = Ct($t.displayName, "TREND"), Bt = Ot ? `<span style="color:var(--muted-foreground,#888)">${_esc(Ot)} : </span>` : "";
+    Et.push(`<span style="white-space:nowrap;font-size:.8rem">${Bt}<span style="background:${jt};color:${Dt};border-radius:.35rem;padding:.1rem .45rem;font-weight:700">${Mt}${Lt} ${Nt}</span></span>`);
   }
-  for (const Tt of yt.TREND_PERCENT || []) {
-    const $t = _num(At[Tt.originalName]), Lt = $t > 0, It = $t === 0, Rt = It ? "#ca8a04" : Lt ? "#16a34a" : "#dc2626", Dt = It ? "#ca8a0418" : Lt ? "#16a34a18" : "#dc262618", jt = It ? "→" : Lt ? "↑" : "↓", Nt = Lt ? "+" : "", Mt = Ct(Tt.displayName, "TREND_PERCENT"), Ot = Mt ? `<span style="color:var(--muted-foreground,#888)">${_esc(Mt)} : </span>` : "";
-    St.push(`<span style="white-space:nowrap;font-size:.8rem">${Ot}<span style="background:${Dt};color:${Rt};border-radius:.35rem;padding:.1rem .45rem;font-weight:700">${Nt}${$t.toFixed(1)}% ${jt}</span></span>`);
+  for (const $t of yt.TREND_PERCENT || []) {
+    const Lt = _num(At[$t.originalName]), It = Lt > 0, Rt = Lt === 0, Dt = Rt ? "#ca8a04" : It ? "#16a34a" : "#dc2626", jt = Rt ? "#ca8a0418" : It ? "#16a34a18" : "#dc262618", Nt = Rt ? "→" : It ? "↑" : "↓", Mt = It ? "+" : "", Ot = Ct($t.displayName, "TREND_PERCENT"), Bt = Ot ? `<span style="color:var(--muted-foreground,#888)">${_esc(Ot)} : </span>` : "";
+    Et.push(`<span style="white-space:nowrap;font-size:.8rem">${Bt}<span style="background:${jt};color:${Dt};border-radius:.35rem;padding:.1rem .45rem;font-weight:700">${Mt}${Lt.toFixed(1)}% ${Nt}</span></span>`);
   }
-  return St.length > 0 && wt.push(`<div style="display:flex;flex-wrap:wrap;gap:.5rem 1rem;justify-content:center;align-items:center;margin-top:.25rem">${St.join("")}</div>`), wt.length === 0 ? '<div style="padding:1rem;color:#888;font-size:.875rem;text-align:center">Aucune donnée</div>' : `<div style="text-align:center;padding:.5rem">${wt.join(`
+  return Et.length > 0 && wt.push(`<div style="display:flex;flex-wrap:wrap;gap:.5rem 1rem;justify-content:center;align-items:center;margin-top:.25rem">${Et.join("")}</div>`), wt.length === 0 ? '<div style="padding:1rem;color:#888;font-size:.875rem;text-align:center">Aucune donnée</div>' : `<div style="text-align:center;padding:.5rem">${wt.join(`
 `)}</div>`;
 }
 function buildTableColumnRenderers(At) {
