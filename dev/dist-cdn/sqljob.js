@@ -132384,6 +132384,7 @@ hm(xv, "CHART_TYPE_NAMES", [
   "LABEL",
   // KPI roles
   "KPI",
+  "ICON",
   "PERCENT",
   "COMPARE",
   "TREND_PERCENT",
