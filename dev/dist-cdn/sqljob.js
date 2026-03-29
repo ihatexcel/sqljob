@@ -134406,8 +134406,8 @@ function _buildKpiHtml(At, yt, xt) {
   for (const $t of yt.KPI || []) {
     const Lt = _str(At[$t.originalName]), It = Ct($t.displayName, "KPI");
     wt.push(`<div style="text-align:center;margin-bottom:.5rem">
+  ${It ? `<div style="font-size:clamp(1rem,3vw,1.4rem);color:var(--muted-foreground,#888);margin-bottom:.2rem">${_esc(It)}</div>` : ""}
   <div style="font-size:clamp(1.5rem,8vw,3rem);font-weight:700;line-height:1.05;color:var(--foreground,#111)">${_esc(Lt)}</div>
-  ${It ? `<div style="font-size:clamp(1rem,3vw,1.4rem);color:var(--muted-foreground,#888);margin-top:.2rem">${_esc(It)}</div>` : ""}
 </div>`);
   }
   const Et = [], kt = "rgba(128,128,128,.12)", Tt = "var(--foreground,#111)";
