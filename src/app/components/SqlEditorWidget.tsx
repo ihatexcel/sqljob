@@ -81,7 +81,7 @@ export function SqlEditorWidget({
         const stripped = stripMaterializePrefix(fullSql)
         // Bloquer si plusieurs instructions SQL (hors LABEL prefix) : l'UI visuelle ne supporte qu'une seule instruction
         const stmts = stripped.split(';').map(s => s.trim()).filter(Boolean)
-        const nonLabelStmts = stmts.filter(s => !/^\s*SELECT\s+.+?::LABEL\b/i.test(s))
+        const nonLabelStmts = stmts.filter(s => !/^\s*SELECT\s+.+?::(?:LABEL|SUBLABEL)\b/i.test(s))
         if (nonLabelStmts.length > 1) {
             alert("L'édition du SQL via l'UI n'est possible que si une seule instruction SQL est présente.")
             return
