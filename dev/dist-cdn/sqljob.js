@@ -132283,7 +132283,7 @@ const xv = class xv {
     return { strippedSql: yt.replace(Ct, (Et, kt, Tt, $t, Lt, It) => {
       const Rt = Tt.toUpperCase();
       let Dt, jt;
-      return kt.startsWith("[") ? (Dt = Lt ?? It ?? Rt, jt = kt + ($t ?? ` AS "${Rt}"`)) : kt.startsWith('"') && kt.endsWith('"') || kt.startsWith("'") && kt.endsWith("'") ? (Dt = Lt ?? It ?? kt.slice(1, -1), jt = kt + ($t ?? "")) : kt !== ")" && /^\d/.test(kt) && kt.includes(".") ? (Dt = Lt ?? It ?? kt, jt = kt + ($t ?? "")) : (Dt = Lt ?? It ?? (kt === ")" ? null : kt.split(".").at(-1)), jt = kt + ($t ?? "")), Dt && (xt[Dt] = Rt), jt;
+      return kt.startsWith("[") ? (Dt = Lt ?? It ?? Rt, jt = kt + ($t ?? ` AS "${Rt}"`)) : kt.startsWith('"') && kt.endsWith('"') ? (Dt = Lt ?? It ?? kt.slice(1, -1), jt = kt + ($t ?? "")) : kt.startsWith("'") && kt.endsWith("'") ? (Dt = Lt ?? It ?? kt.slice(1, -1), jt = $t ? kt + $t : `${kt} AS "${Dt.replace(/"/g, '\\"')}"`) : kt !== ")" && /^\d/.test(kt) && kt.includes(".") ? (Dt = Lt ?? It ?? kt, jt = kt + ($t ?? "")) : (Dt = Lt ?? It ?? (kt === ")" ? null : kt.split(".").at(-1)), jt = kt + ($t ?? "")), Dt && (xt[Dt] = Rt), jt;
     }), columnTypes: xt };
   }
   /** Exécute une requête et retourne les lignes + les types DuckDB de chaque colonne.
