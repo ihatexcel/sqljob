@@ -36,6 +36,7 @@ const KNOWN_ROLES = [
     'KPI',
     'ICON',
     'LABEL',
+    'SUBLABEL',
     'PERCENT',
     'COMPARE',
     'TREND_PERCENT',

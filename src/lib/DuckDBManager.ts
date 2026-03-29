@@ -201,7 +201,7 @@
                 'BOXPLOT',
                 'GAUGE', 'GAUGE_PERCENT',
                 'CATEGORY', 'COLOR', 'COLORS', 'RANGE', 'LABELS',
-                'XLINE', 'YLINE', 'LABEL',
+                'XLINE', 'YLINE', 'LABEL', 'SUBLABEL',
                 // KPI roles
                 'KPI', 'ICON', 'PERCENT', 'COMPARE', 'TREND_PERCENT', 'TREND',
                 // Layout/filter roles (hors scope rendu mais on les crée pour la syntaxe)

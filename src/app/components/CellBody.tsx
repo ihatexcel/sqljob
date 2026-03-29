@@ -504,7 +504,7 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
             )}
             {/* Titre dynamique — centré, sous les boutons */}
             {cell._kpiLabel && (
-                <div className="text-base font-semibold text-foreground mb-0.5 shrink-0 text-center w-full">{cell._kpiLabel}</div>
+                <div style={{fontSize:'clamp(1.1rem,3vw,1.5rem)'}} className="font-semibold text-foreground mb-0.5 shrink-0 text-center w-full">{cell._kpiLabel}</div>
             )}
             {/* Mode graphique */}
             {vizMode === 'chart' && hasChart && (
@@ -536,6 +536,10 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
                 </div>
             ))}
             </>)}
+            {/* Sous-titre — centré sous la visualisation */}
+            {cell._sublabel && (
+                <div style={{fontSize:'clamp(0.8rem,2vw,1rem)'}} className="text-muted-foreground text-center w-full mt-1 shrink-0">{cell._sublabel}</div>
+            )}
             <ResultInfo cell={cell} devOnly />
             </div>
         </div>

@@ -2613,14 +2613,16 @@ function ChartPreviewInEditor({ cell }: { cell: any }) {
 
     if (cell._kpiHtml) return (
         <div className="overflow-auto text-center">
-            {cell._kpiLabel && <div className="text-base font-semibold text-foreground mb-0.5">{cell._kpiLabel}</div>}
+            {cell._kpiLabel && <div style={{fontSize:'clamp(1.1rem,3vw,1.5rem)'}} className="font-semibold text-foreground mb-0.5">{cell._kpiLabel}</div>}
             <div dangerouslySetInnerHTML={{ __html: cell._kpiHtml }} />
+            {cell._sublabel && <div style={{fontSize:'clamp(0.8rem,2vw,1rem)'}} className="text-muted-foreground text-center mt-1">{cell._sublabel}</div>}
         </div>
     )
     return (
         <div className="flex flex-col min-h-0">
-            {cell._kpiLabel && <div className="text-base font-semibold text-foreground mb-0.5 text-center shrink-0">{cell._kpiLabel}</div>}
+            {cell._kpiLabel && <div style={{fontSize:'clamp(1.1rem,3vw,1.5rem)'}} className="font-semibold text-foreground mb-0.5 text-center shrink-0">{cell._kpiLabel}</div>}
             <div ref={chartRef} className="flex-1 min-h-[200px]" />
+            {cell._sublabel && <div style={{fontSize:'clamp(0.8rem,2vw,1rem)'}} className="text-muted-foreground text-center mt-1 shrink-0">{cell._sublabel}</div>}
         </div>
     )
 }
