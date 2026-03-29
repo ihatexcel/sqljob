@@ -132465,6 +132465,7 @@ const CHART_ROLES_ORDERED = [
   "LABELS",
   "RANGE",
   "KPI",
+  "ICON",
   "LABEL",
   "PERCENT",
   "COMPARE",
