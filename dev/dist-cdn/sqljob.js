@@ -136980,7 +136980,7 @@ LIMIT 0`), Au = {};
   function ks(gu) {
     var Au;
     const Xu = stripMaterializePrefix(gu);
-    if (Xu.split(";").map((np) => np.trim()).filter(Boolean).filter((np) => !/^\s*SELECT\s+.+?::LABEL\b/i.test(np)).length > 1) {
+    if (Xu.split(";").map((np) => np.trim()).filter(Boolean).filter((np) => !/^\s*SELECT\s+.+?::(?:LABEL|SUBLABEL)\b/i.test(np)).length > 1) {
       const np = getOrInitConfig(At);
       np.degraded = !0, np.manualSql = Xu, np.sql = buildDisplaySql(At.name, Xu, ((Au = np.ast) == null ? void 0 : Au.materialized) ?? "ephemeral"), Br(!0), Tt();
       return;
@@ -137003,7 +137003,7 @@ LIMIT 0`), Au = {};
   }
   function ms() {
     const gu = getOrInitConfig(At), Xu = stripMaterializePrefix(gu.manualSql || En);
-    if (Xu.split(";").map((Au) => Au.trim()).filter(Boolean).filter((Au) => !/^\s*SELECT\s+.+?::LABEL\b/i.test(Au)).length > 1) {
+    if (Xu.split(";").map((Au) => Au.trim()).filter(Boolean).filter((Au) => !/^\s*SELECT\s+.+?::(?:LABEL|SUBLABEL)\b/i.test(Au)).length > 1) {
       Br(!0);
       return;
     }
@@ -137604,7 +137604,7 @@ function SqlEditorWidget({
   function Br() {
     var Nn;
     const sn = ConfigManager.getCellQuery(At, Mt) || "", tn = stripMaterializePrefix(sn);
-    if (tn.split(";").map((go) => go.trim()).filter(Boolean).filter((go) => !/^\s*SELECT\s+.+?::LABEL\b/i.test(go)).length > 1) {
+    if (tn.split(";").map((go) => go.trim()).filter(Boolean).filter((go) => !/^\s*SELECT\s+.+?::(?:LABEL|SUBLABEL)\b/i.test(go)).length > 1) {
       alert("L'édition du SQL via l'UI n'est possible que si une seule instruction SQL est présente.");
       return;
     }
