@@ -930,7 +930,7 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
         progress: {
             show: !gaugeAxisLabels && !gaugeColors,
             width: barWidth,
-            itemStyle: { color: '#5470c6' },
+            itemStyle: { color: _getChartColors()[0] },
         },
         detail: {
             fontSize: 20, fontWeight: 'bold', color: textColor,
