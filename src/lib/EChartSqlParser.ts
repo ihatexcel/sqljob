@@ -1134,7 +1134,7 @@ function _buildKpiHtml(row: any, roleMap: Record<string, ColumnRole[]>, title: s
         const raw = _str(row[iconCol.originalName]);
         if (raw && raw.toLowerCase() !== 'null') {
             const iconId = raw.includes(':') ? raw : `lucide:${raw}`;
-            parts.push(`<div style="display:flex;justify-content:center;margin-bottom:.25rem"><span class="iconify" data-icon="${_esc(iconId)}" style="font-size:2rem;color:var(--primary,#555)"></span></div>`);
+            parts.push(`<div style="display:flex;justify-content:center;margin-bottom:.25rem"><span class="iconify" data-icon="${_esc(iconId)}" style="font-size:clamp(1.5rem,8vw,3rem);color:var(--primary,#555)"></span></div>`);
         }
     }
 
@@ -1143,7 +1143,7 @@ function _buildKpiHtml(row: any, roleMap: Record<string, ColumnRole[]>, title: s
         const val = _str(row[col.originalName]);
         const sublabel = _sub(col.displayName, 'KPI');
         parts.push(`<div style="text-align:center;margin-bottom:.5rem">
-  <div style="font-size:clamp(2rem,8vw,3.5rem);font-weight:700;line-height:1.05;color:var(--foreground,#111)">${_esc(val)}</div>
+  <div style="font-size:clamp(1.5rem,8vw,3rem);font-weight:700;line-height:1.05;color:var(--foreground,#111)">${_esc(val)}</div>
   ${sublabel ? `<div style="font-size:.75rem;color:var(--muted-foreground,#888);margin-top:.2rem">${_esc(sublabel)}</div>` : ''}
 </div>`);
     }
