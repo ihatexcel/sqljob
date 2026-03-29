@@ -291,6 +291,7 @@ export interface ChartConfig {
     chartType: string;          // 'bar' | 'line' | 'bar+line' | 'pie' | 'donut' | 'gauge' | 'boxplot' | 'kpi'
     columns: ChartColumnRole[]; // rôles dans l'ordre du SELECT final
     label?: string;             // titre affiché (stat/kpi) — génère SELECT '...'::LABEL; dans le SQL
+    sublabel?: string;          // sous-titre affiché sous la visualisation — génère SELECT '...'::SUBLABEL;
 }
 
 // ─── AST root ─────────────────────────────────────────────────────────────────
