@@ -270,7 +270,10 @@
                     } else if (expr.startsWith("'") && expr.endsWith("'")) {
                         // Single-quoted string literal 'text' → colName is the string content
                         colName = dqAlias ?? bareAlias ?? expr.slice(1, -1);
-                        replacement = expr + (asClause ?? '');
+                        // Without an explicit alias, DuckDB names the column with the quotes included
+                        // (e.g. 'calendar-days' → column "'calendar-days'"). Inject AS to match colName.
+                        replacement = asClause ? expr + asClause : `${expr} AS "${colName.replace(/"/g, '\\"')}"`;
+
                     } else if (expr !== ')' && /^\d/.test(expr) && expr.includes('.')) {
                         // Numeric literal with decimal point (e.g. 0.22)
                         colName = dqAlias ?? bareAlias ?? expr;
