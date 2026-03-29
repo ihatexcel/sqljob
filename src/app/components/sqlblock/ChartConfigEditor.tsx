@@ -32,6 +32,7 @@ const CHART_TYPE_CONFIGS: Record<string, { label: string; icon: string; roles: R
         icon: 'material-symbols-light:123',
         roles: [
             { role: 'KPI',           label: 'Valeur',        multiple: true,  optional: false, hasLabel: true },
+            { role: 'ICON',          label: 'Icône',         multiple: false, optional: true,  hasLabel: false },
             { role: 'PERCENT',       label: 'Pourcentage',   multiple: false, optional: true,  hasLabel: true },
             { role: 'COMPARE',       label: 'Comparaison',   multiple: false, optional: true,  hasLabel: true },
             { role: 'TREND',         label: 'Tendance',      multiple: false, optional: true,  hasLabel: true },
