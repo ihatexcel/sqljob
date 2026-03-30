@@ -45181,19 +45181,17 @@ const c_ = class c_ {
   static encodeUTF8ToBase64(yt) {
     return btoa(unescape(encodeURIComponent(yt)));
   }
-  /** Compresse une chaîne en gzip puis encode en base64 (pour snapshots Univer) */
+  /** Compresse une chaîne UTF-8 en gzip puis encode en base64 (pour snapshots Univer) */
   static async compressToGzipBase64(yt) {
-    const wt = new TextEncoder().encode(yt), Ct = new window.CompressionStream("gzip"), St = Ct.writable.getWriter();
-    St.write(wt), St.close();
-    const Et = await new Response(Ct.readable).arrayBuffer(), kt = new Uint8Array(Et);
-    let Tt = "";
-    for (let $t = 0; $t < kt.length; $t++) Tt += String.fromCharCode(kt[$t]);
-    return btoa(Tt);
+    const xt = new TextEncoder().encode(yt), wt = await FileHandler.compressGzip(xt.buffer);
+    return FileHandler.arrayBufferToBase64(wt);
   }
-  /** Décompresse un base64 gzip en chaîne (pour snapshots Univer) */
+  /** Décompresse un base64 gzip en chaîne UTF-8 (pour snapshots Univer) */
   static async decompressFromGzipBase64(yt) {
-    const xt = atob(yt), wt = Uint8Array.from(xt, (Et) => Et.charCodeAt(0)), Ct = new window.DecompressionStream("gzip"), St = Ct.writable.getWriter();
-    return St.write(wt), St.close(), await new Response(Ct.readable).text();
+    const xt = FileHandler.base64ToUint8Array(yt), wt = await FileHandler.decompressGzip(
+      xt.buffer.slice(xt.byteOffset, xt.byteOffset + xt.byteLength)
+    );
+    return new TextDecoder().decode(wt);
   }
   /**
    * Génère un ID unique pour un groupe
