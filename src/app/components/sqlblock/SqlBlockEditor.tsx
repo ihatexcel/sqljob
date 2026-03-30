@@ -2629,7 +2629,7 @@ function ChartPreviewInEditor({ cell }: { cell: any }) {
 
 // ─── SqlBlockEditor (composant principal) ─────────────────────────────────────
 
-export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCell, skipExecution, modalOpen, allowedMaterializeModes }: { cell: any; path: number[]; cellIndex: number; onExitUiMode?: () => void; fromSqlCell?: boolean; skipExecution?: boolean; modalOpen?: boolean; allowedMaterializeModes?: string[] }) {
+export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCell, skipExecution, modalOpen, allowedMaterializeModes, openVizConfigTrigger }: { cell: any; path: number[]; cellIndex: number; onExitUiMode?: () => void; fromSqlCell?: boolean; skipExecution?: boolean; modalOpen?: boolean; allowedMaterializeModes?: string[]; openVizConfigTrigger?: number }) {
     const { forceUpdate, _duckdbTables, db, runCellAt } = useNotebookStore(useShallow(s => ({
         forceUpdate: s.forceUpdate,
         _duckdbTables: s._duckdbTables,
@@ -2859,6 +2859,14 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
     const [vizConfigOpen, setVizConfigOpen] = useState(false)
     // Flag : on n'auto-active qu'une seule fois par version du SQL (évite de re-forcer après switch manuel)
     const hasAutoActivatedVizRef = useRef(false)
+
+    // Ouvre la modale de config viz quand le trigger change (déclenché depuis CellBody)
+    useEffect(() => {
+        if (openVizConfigTrigger && openVizConfigTrigger > 0) {
+            setVizConfigOpen(true)
+            fetchChartSchema()
+        }
+    }, [openVizConfigTrigger]) // eslint-disable-line
 
     // cellule factice pour SqlDataTable quand on affiche un aperçu step ou source
     const displayCell = showingEye && eyeData

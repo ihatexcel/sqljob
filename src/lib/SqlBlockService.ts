@@ -101,7 +101,7 @@ const CHART_ROLES_SET = new Set(CHART_ROLES_ORDERED);
 const CHART_AXIS_ROLES = new Set(['XAXIS', 'YAXIS', 'CATEGORY', 'COLOR', 'COLORS']);
 
 export function buildChartFinalSelect(fromSource: string, cfg: ChartConfig): string {
-    // Préfixe LABEL / SUBLABEL si définis
+    // Préfixe LABEL / SUBLABEL / ICON si définis
     let prefix = '';
     if (cfg.label?.trim()) {
         const escaped = cfg.label.trim().replace(/'/g, "''");
@@ -110,6 +110,10 @@ export function buildChartFinalSelect(fromSource: string, cfg: ChartConfig): str
     if ((cfg as any).sublabel?.trim()) {
         const escaped = (cfg as any).sublabel.trim().replace(/'/g, "''");
         prefix += `SELECT '${escaped}'::SUBLABEL;\n`;
+    }
+    if ((cfg as any).icon?.trim()) {
+        const escaped = (cfg as any).icon.trim().replace(/'/g, "''");
+        prefix += `SELECT '${escaped}'::ICON;\n`;
     }
     // Axe / catégorie / couleur en premier, puis les données
     const sorted = [...cfg.columns].sort((a, b) => {
@@ -142,13 +146,16 @@ export function buildChartFinalSelect(fromSource: string, cfg: ChartConfig): str
  * Retourne null si aucun rôle chart n'est trouvé.
  */
 export function parseChartFinalSelect(selectSql: string): ChartConfig | null {
-    // Extrait le titre/sous-titre depuis SELECT '...'::LABEL; et SELECT '...'::SUBLABEL;
+    // Extrait le titre/sous-titre/icône depuis SELECT '...'::LABEL; SELECT '...'::SUBLABEL; SELECT '...'::ICON;
     let cfgLabel: string | undefined;
     let cfgSublabel: string | undefined;
+    let cfgIcon: string | undefined;
     const labelM = selectSql.match(/SELECT\s+'([^']*)'\s*::LABEL\s*;/i);
     if (labelM) cfgLabel = labelM[1];
     const sublabelM = selectSql.match(/SELECT\s+'([^']*)'\s*::SUBLABEL\s*;/i);
     if (sublabelM) cfgSublabel = sublabelM[1];
+    const iconM = selectSql.match(/SELECT\s+'([^']*)'\s*::ICON\s*;/i);
+    if (iconM) cfgIcon = iconM[1];
 
     const rolesPattern = CHART_ROLES_ORDERED.join('|');
     // Match: ("col" | {{param}} | 'literal' | (expression) | unquoted)::ROLE [AS ("label" | label)]
@@ -163,8 +170,8 @@ export function parseChartFinalSelect(selectSql: string): ChartConfig | null {
     while ((m = re.exec(selectSql)) !== null) {
         const role = m[6].toUpperCase();
         const label = m[7] ?? m[8] ?? undefined;
-        // Skip LABEL role — it's a title prefix, not a data column
-        if (!CHART_ROLES_SET.has(role) || role === 'LABEL') continue;
+        // Skip LABEL / SUBLABEL / ICON roles — they are prefix statements, not data columns
+        if (!CHART_ROLES_SET.has(role) || role === 'LABEL' || role === 'SUBLABEL' || role === 'ICON') continue;
 
         let column: string;
         let valueKind: FilterValueKind | undefined;
@@ -195,7 +202,7 @@ export function parseChartFinalSelect(selectSql: string): ChartConfig | null {
         if (valueKind !== 'column') entry.valueKind = valueKind;
         columns.push(entry);
     }
-    if (!columns.length && !cfgLabel) return null;
+    if (!columns.length && !cfgLabel && !cfgIcon) return null;
 
     // Déduire le chartType depuis les rôles présents (même logique que EChartSqlParser)
     const roleSet = new Set(columns.map(c => c.role));
@@ -216,6 +223,7 @@ export function parseChartFinalSelect(selectSql: string): ChartConfig | null {
     const cfg: ChartConfig = { chartType, columns };
     if (cfgLabel) cfg.label = cfgLabel;
     if (cfgSublabel) (cfg as any).sublabel = cfgSublabel;
+    if (cfgIcon) (cfg as any).icon = cfgIcon;
     return cfg;
 }
 
