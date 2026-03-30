@@ -1051,6 +1051,105 @@ function GenericHtmlBody({ cell, path, cellIndex }: any) {
     )
 }
 
+// ─── UniverSheetBody ──────────────────────────────────────────────────────────
+function UniverSheetBody({ cell, path, cellIndex }: any) {
+    const {
+        devMode, showSqlEditorVisible, hasCellHeight, runCellAt,
+        captureUniverSnapshot, exportUniverToXlsx, _rev,
+    } = useNotebookStore(useShallow(s => ({
+        devMode: s.devMode,
+        showSqlEditorVisible: s.showSqlEditorVisible,
+        hasCellHeight: s.hasCellHeight,
+        runCellAt: s.runCellAt,
+        captureUniverSnapshot: s.captureUniverSnapshot,
+        exportUniverToXlsx: s.exportUniverToXlsx,
+        _rev: s._rev,
+    })))
+
+    const hasHeight = hasCellHeight(cell)
+    const mh = '400px'
+
+    // Déclenche l'exécution si la cellule a déjà des données mais que l'instance
+    // n'est pas encore prête (ex: rechargement de la page ou navigation d'onglet)
+    useEffect(() => {
+        if (cell._univerReady) return
+        const container = document.getElementById('univer-' + cell._id)
+        if (!container) return
+        if (cell._status === 'success' && !cell._univerReady) {
+            runCellAt(path, cellIndex)
+        }
+    }, [_rev])
+
+    const [saving, setSaving] = useState(false)
+    const [exporting, setExporting] = useState(false)
+
+    const handleSaveSnapshot = useCallback(async () => {
+        if (saving) return
+        setSaving(true)
+        try { await captureUniverSnapshot(cell) } catch (e) { console.error(e) } finally { setSaving(false) }
+    }, [cell, captureUniverSnapshot, saving])
+
+    const handleExportXlsx = useCallback(async () => {
+        if (exporting) return
+        setExporting(true)
+        try { await exportUniverToXlsx(cell) } catch (e) { console.error(e) } finally { setExporting(false) }
+    }, [cell, exportUniverToXlsx, exporting])
+
+    return (
+        <div className="flex flex-col gap-2">
+            {/* Éditeur SQL */}
+            {showSqlEditorVisible?.(cell) && (
+                <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex} placeholder="SELECT * FROM source1" />
+            )}
+
+            {/* Skeleton pendant le chargement initial */}
+            {cell._status === 'running' && !cell._univerReady && (
+                <div
+                    className="animate-pulse bg-muted rounded-lg"
+                    style={{ minHeight: hasHeight ? undefined : mh, flex: hasHeight ? 1 : undefined }}
+                />
+            )}
+
+            {/* Container Univer — toujours présent dans le DOM pour que l'effet de
+                PerspectiveBody puisse trouver l'élément */}
+            <div
+                id={`univer-${cell._id}`}
+                className={`rounded-lg border overflow-hidden${hasHeight ? ' flex-1 min-h-0' : ''}`}
+                style={{
+                    minHeight: hasHeight ? undefined : mh,
+                    display: cell._univerReady ? 'block' : 'none',
+                }}
+            />
+
+            {/* Boutons d'action */}
+            {cell._univerReady && (
+                <div className="flex gap-2 flex-wrap">
+                    {devMode && (
+                        <button
+                            className="flex items-center gap-1 px-3 py-1 rounded bg-muted hover:bg-muted/80 text-sm border"
+                            onClick={handleSaveSnapshot}
+                            disabled={saving}
+                            title="Enregistre l'état actuel du classeur dans le snapshot (écrase la requête SQL)"
+                        >
+                            {saving ? '⏳' : '💾'} {saving ? 'Enregistrement...' : 'Enregistrer snapshot'}
+                        </button>
+                    )}
+                    <button
+                        className="flex items-center gap-1 px-3 py-1 rounded bg-muted hover:bg-muted/80 text-sm border"
+                        onClick={handleExportXlsx}
+                        disabled={exporting}
+                        title="Exporte le classeur actuel au format .xlsx"
+                    >
+                        {exporting ? '⏳' : '📥'} {exporting ? 'Export...' : 'Exporter XLSX'}
+                    </button>
+                </div>
+            )}
+
+            <ResultInfo cell={cell} />
+        </div>
+    )
+}
+
 // ─── CellBody principal ───────────────────────────────────────────────────────
 export function CellBody({ cell, path, cellIndex, group }: { cell: any, path: number[], cellIndex: number, group: any }) {
     const {
@@ -1091,6 +1190,8 @@ export function CellBody({ cell, path, cellIndex, group }: { cell: any, path: nu
                 return <PdfmeBody cell={cell} path={path} cellIndex={cellIndex} />
             case 'perspective':
                 return <PerspectiveBody cell={cell} path={path} cellIndex={cellIndex} />
+            case 'univerSheet':
+                return <UniverSheetBody cell={cell} path={path} cellIndex={cellIndex} />
             default: return null
         }
     }

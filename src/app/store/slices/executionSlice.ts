@@ -9,6 +9,41 @@ import { EChartSqlParser } from '../../../lib/EChartSqlParser'
 import { formatValueForInputType } from '../../../lib/utils'
 import { FileHandler } from '../../../lib/FileHandler'
 
+/**
+ * Convertit un tableau de lignes SQL en IWorkbookData Univer.
+ * La première ligne contient les noms de colonnes, les suivantes les données.
+ */
+function _buildUniverWorkbookFromRows(rows: any[], cellId: string): any {
+    const sheetId = 'sheet-' + cellId
+    const cellData: Record<number, Record<number, { v: any }>> = {}
+    if (!rows || rows.length === 0) {
+        return { id: 'wb-' + cellId, name: 'Sheet', sheets: { [sheetId]: { id: sheetId, name: 'Sheet1', cellData } } }
+    }
+    const columns = Object.keys(rows[0])
+    // En-têtes en ligne 0
+    cellData[0] = {}
+    columns.forEach((col, ci) => { cellData[0][ci] = { v: col } })
+    // Données
+    rows.forEach((row, ri) => {
+        cellData[ri + 1] = {}
+        columns.forEach((col, ci) => {
+            const val = row[col]
+            cellData[ri + 1][ci] = { v: val === null || val === undefined ? '' : val }
+        })
+    })
+    return {
+        id: 'wb-' + cellId,
+        name: 'Sheet',
+        sheets: {
+            [sheetId]: {
+                id: sheetId,
+                name: 'Sheet1',
+                cellData,
+            }
+        }
+    }
+}
+
 /** Détecte si un SQL contient une instruction DDL (CREATE, DROP, ALTER, INSERT, UPDATE, DELETE…).
  *  Utilisé pour décider si le schéma DuckDB doit être rafraîchi après exécution. */
 const DDL_RE = /^\s*(CREATE|DROP|ALTER|INSERT|UPDATE|DELETE|TRUNCATE|RENAME|COMMENT)\b/im
@@ -1250,6 +1285,133 @@ export const createExecutionSlice = (set: any, get: any) => ({
             throw error
         } finally {
             cell._perspectiveRendering = false
+        }
+    },
+
+    // ─── Univer Sheet ─────────────────────────────────────────────────────────
+
+    async executeUniverSheetCell(cell) {
+        get().setStatus('Chargement de Univer...', 'loading')
+        await CDNManager.loadUniver()
+
+        // Réinitialiser l'état de rendu
+        cell._univerReady = false
+        set((s: any) => ({ _rev: s._rev + 1 }))
+
+        // Détruire l'instance précédente si elle existe
+        if (cell._univerInstance) {
+            try { cell._univerInstance.dispose?.() } catch (_) {}
+            cell._univerInstance = null
+            cell._univerAPI = null
+        }
+
+        // Attendre le container DOM (pattern identique à Perspective)
+        const containerId = 'univer-' + cell._id
+        let waited = 0
+        while (!document.getElementById(containerId) && waited < 2000) {
+            await new Promise(r => setTimeout(r, 50))
+            waited += 50
+        }
+        const container = document.getElementById(containerId)
+        if (!container) throw new Error('Container DOM introuvable pour Univer Sheet')
+
+        // Initialiser Univer via le preset CDN
+        const univerLib = (window as any).UniverPresetSheetsCore
+        if (!univerLib) throw new Error('Bibliothèque Univer introuvable (CDN non chargé)')
+
+        const { createUniver, defaultTheme, LocaleType, UniverSheetsPreset } = univerLib
+        const { univer, univerAPI } = createUniver({
+            locale: LocaleType.EN_US,
+            theme: defaultTheme,
+            presets: [
+                UniverSheetsPreset({ container }),
+            ],
+        })
+        cell._univerInstance = univer
+        cell._univerAPI = univerAPI
+
+        // Charger les données
+        if (cell.snapshot && String(cell.snapshot).trim()) {
+            // Snapshot gzip+base64 → décompresser et charger
+            get().setStatus('Chargement du snapshot...', 'loading')
+            try {
+                const json = await ConfigManager.decompressFromGzipBase64(cell.snapshot.trim())
+                const workbookData = JSON.parse(json)
+                univerAPI.createWorkbook(workbookData)
+            } catch (e) {
+                console.error('[univerSheet] Erreur décompression snapshot:', e)
+                throw new Error('Snapshot Univer invalide : ' + e.message)
+            }
+        } else {
+            const sql = ConfigManager.getCellQuery(cell, 0)?.trim()
+            if (sql) {
+                get().setStatus('Exécution de la requête SQL...', 'loading')
+                const finalSql = get().parseQueryWithParameters(sql)
+                const { rows } = await DuckDBManager.executeQueryWithSchema(finalSql)
+                const workbookData = _buildUniverWorkbookFromRows(rows, cell._id)
+                univerAPI.createWorkbook(workbookData)
+            } else {
+                // Feuille vide
+                univerAPI.createWorkbook({ id: 'wb-' + cell._id, name: cell.name || 'Sheet', sheets: {} })
+            }
+        }
+
+        // Mode lecture seule en mode client
+        const isReadOnly = !get().devMode && (cell.readOnly !== false)
+        if (isReadOnly) {
+            try { univerAPI.setEditable?.(false) } catch (_) {}
+        }
+
+        // Observer les modifications en devMode
+        if (get().devMode && univer?.onCommandExecuted) {
+            univer.onCommandExecuted(() => {
+                cell._univerModified = true
+            })
+        }
+
+        cell._univerReady = true
+        const rowCount = cell.snapshot ? '(snapshot)' : ''
+        cell._resultInfo = '✅ Sheet prête ' + rowCount
+        get().setStatus('Univer Sheet prête', 'success')
+    },
+
+    async captureUniverSnapshot(cell) {
+        if (!cell._univerAPI) return
+        try {
+            const workbook = cell._univerAPI.getActiveWorkbook?.()
+            if (!workbook) return
+            const snapshot = workbook.save?.()
+            if (!snapshot) return
+            const json = JSON.stringify(snapshot)
+            cell.snapshot = await ConfigManager.compressToGzipBase64(json)
+            // Effacer la query SQL : le snapshot prend le dessus à l'import
+            const q = ConfigManager.ensureCellQueries(cell, 'main')
+            if (q) q.sql = ''
+            cell._univerModified = false
+            set((s: any) => ({ _rev: s._rev + 1 }))
+        } catch (e) {
+            console.error('[univerSheet] Erreur capture snapshot:', e)
+            throw e
+        }
+    },
+
+    async exportUniverToXlsx(cell) {
+        if (!cell._univerAPI) throw new Error('Univer non initialisé')
+        get().setStatus('Chargement du plugin export...', 'loading')
+        await CDNManager.loadUniverExport()
+
+        const exportLib = (window as any).UniverImportExport
+        if (!exportLib) throw new Error('Plugin export Univer introuvable (CDN non chargé)')
+
+        try {
+            const { exportXLSX } = exportLib
+            const blob = await exportXLSX(cell._univerAPI)
+            const fileName = (cell.name || 'sheet') + '.xlsx'
+            FileHandler.downloadFile(blob, fileName)
+            get().setStatus('Export XLSX terminé', 'success')
+        } catch (e) {
+            console.error('[univerSheet] Erreur export XLSX:', e)
+            throw e
         }
     },
 
