@@ -404,6 +404,7 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
     const showResult = devMode || (cell.queries?.[0]?.showQueryResult !== false)
 
     const [sqlBlockUiMode, setSqlBlockUiMode] = useState(false)
+    const [vizConfigTrigger, setVizConfigTrigger] = useState(0)
     const sqlAtOpenRef = useRef<string>('')
 
     /** Ferme la modale : rafraîchit seulement si le SQL a changé, puis nettoie les subcells. */
@@ -466,6 +467,7 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
                                 skipExecution={true}
                                 modalOpen={sqlBlockUiMode}
                                 onExitUiMode={handleCloseModal}
+                                openVizConfigTrigger={vizConfigTrigger}
                             />
                         </div>
                     </div>
@@ -487,19 +489,36 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
                 />
             )}
             {showResult && (<>
-            {/* Toggle Tableau/Graphique — visible au hover, uniquement pour les charts ECharts (pas KPI) */}
-            {cell.type === 'sql' && cell._echartsOption && (
+            {/* Toggle Tableau/Graphique + bouton config visualisation — visible au hover */}
+            {cell.type === 'sql' && (cell._echartsOption || cell._kpiHtml) && (
                 <div className="opacity-0 group-hover/sqlbody:opacity-100 transition-opacity flex items-center gap-2 mb-1 shrink-0">
-                    <div className="flex rounded border border-border overflow-hidden text-xs">
-                        <button onClick={() => setVizMode('chart')}
-                            className={`px-2 py-0.5 transition-colors ${vizMode === 'chart' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}>
-                            Graphique
+                    {cell._echartsOption && (
+                        <div className="flex rounded border border-border overflow-hidden text-xs">
+                            <button onClick={() => setVizMode('chart')}
+                                className={`px-2 py-0.5 transition-colors ${vizMode === 'chart' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}>
+                                Graphique
+                            </button>
+                            <button onClick={() => setVizMode('table')}
+                                className={`px-2 py-0.5 transition-colors ${vizMode === 'table' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}>
+                                Tableau
+                            </button>
+                        </div>
+                    )}
+                    {devMode && (
+                        <button
+                            onClick={() => {
+                                sqlAtOpenRef.current = ConfigManager.getCellQuery(cell, 'main') || ''
+                                openSqlblockSession()
+                                setSqlBlockUiMode(true)
+                                setVizConfigTrigger(v => v + 1)
+                                runCellAt(path, cellIndex)
+                            }}
+                            className="inline-flex items-center justify-center h-5 w-5 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors ml-auto"
+                            title="Configurer la visualisation"
+                        >
+                            <Icon name="settings" size={13} />
                         </button>
-                        <button onClick={() => setVizMode('table')}
-                            className={`px-2 py-0.5 transition-colors ${vizMode === 'table' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}>
-                            Tableau
-                        </button>
-                    </div>
+                    )}
                 </div>
             )}
             {/* Titre dynamique — centré, sous les boutons */}

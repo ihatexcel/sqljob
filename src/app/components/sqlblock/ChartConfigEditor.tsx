@@ -32,7 +32,6 @@ const CHART_TYPE_CONFIGS: Record<string, { label: string; icon: string; roles: R
         icon: 'material-symbols-light:123',
         roles: [
             { role: 'KPI',           label: 'Valeur',        multiple: true,  optional: false, hasLabel: true },
-            { role: 'ICON',          label: 'Icône',         multiple: false, optional: true,  hasLabel: false },
             { role: 'PERCENT',       label: 'Pourcentage',   multiple: false, optional: true,  hasLabel: true },
             { role: 'COMPARE',       label: 'Comparaison',   multiple: false, optional: true,  hasLabel: true },
             { role: 'TREND',         label: 'Tendance',      multiple: false, optional: true,  hasLabel: true },
@@ -233,6 +232,7 @@ export function ChartConfigEditor({ chartConfig, availableColumns, availableColT
 
     const cfgLabel: string = (chartConfig as any)?.label ?? ''
     const cfgSublabel: string = (chartConfig as any)?.sublabel ?? ''
+    const cfgIcon: string = (chartConfig as any)?.icon ?? ''
 
     const handleTypeChange = useCallback((newType: string) => {
         const migrated = migrateColumnsForType(columns, newType)
@@ -242,6 +242,7 @@ export function ChartConfigEditor({ chartConfig, availableColumns, availableColT
         const cfg: any = { ...base }
         if ((chartConfig as any)?.label) cfg.label = (chartConfig as any).label
         if ((chartConfig as any)?.sublabel) cfg.sublabel = (chartConfig as any).sublabel
+        if ((chartConfig as any)?.icon) cfg.icon = (chartConfig as any).icon
         onChange(cfg)
     }, [columns, availableColumns, onChange, chartConfig])
 
@@ -249,23 +250,34 @@ export function ChartConfigEditor({ chartConfig, availableColumns, availableColT
         const cfg: any = { chartType, columns }
         if (val) cfg.label = val
         if (cfgSublabel) cfg.sublabel = cfgSublabel
+        if (cfgIcon) cfg.icon = cfgIcon
         onChange(cfg)
-    }, [chartType, columns, cfgSublabel, onChange])
+    }, [chartType, columns, cfgSublabel, cfgIcon, onChange])
 
     const handleSublabelChange = useCallback((val: string) => {
         const cfg: any = { chartType, columns }
         if (cfgLabel) cfg.label = cfgLabel
         if (val) cfg.sublabel = val
+        if (cfgIcon) cfg.icon = cfgIcon
         onChange(cfg)
-    }, [chartType, columns, cfgLabel, onChange])
+    }, [chartType, columns, cfgLabel, cfgIcon, onChange])
 
-    // Émet un ChartConfig en préservant le label/sublabel titre
+    const handleIconChange = useCallback((val: string) => {
+        const cfg: any = { chartType, columns }
+        if (cfgLabel) cfg.label = cfgLabel
+        if (cfgSublabel) cfg.sublabel = cfgSublabel
+        if (val) cfg.icon = val
+        onChange(cfg)
+    }, [chartType, columns, cfgLabel, cfgSublabel, onChange])
+
+    // Émet un ChartConfig en préservant le label/sublabel/icon titre
     const emit = useCallback((cols: ChartColumnRole[]) => {
         const cfg: any = { chartType, columns: cols }
         if (cfgLabel) cfg.label = cfgLabel
         if (cfgSublabel) cfg.sublabel = cfgSublabel
+        if (cfgIcon) cfg.icon = cfgIcon
         onChange(cfg)
-    }, [chartType, cfgLabel, cfgSublabel, onChange])
+    }, [chartType, cfgLabel, cfgSublabel, cfgIcon, onChange])
 
     const handleSingleRoleChange = useCallback((role: string, col: string | null, kind?: FilterValueKind) => {
         const existing = getEntriesForRole(columns, role)[0]
@@ -338,6 +350,20 @@ export function ChartConfigEditor({ chartConfig, availableColumns, availableColT
                     placeholder="Sous-titre affiché en dessous"
                     className="h-6 text-xs px-1.5 border border-border rounded bg-background flex-1"
                 />
+            </div>
+            {/* Icône */}
+            <div className="flex items-center gap-2">
+                <span className="text-xs text-muted-foreground w-28 shrink-0">Icône</span>
+                <input
+                    type="text"
+                    value={cfgIcon}
+                    onChange={e => handleIconChange(e.target.value)}
+                    placeholder="ex: mdi:star, lucide:home"
+                    className="h-6 text-xs px-1.5 border border-border rounded bg-background flex-1"
+                />
+                {cfgIcon && (
+                    <span className="iconify shrink-0" data-icon={cfgIcon} style={{ fontSize: '1.1rem', color: 'var(--primary)' }} />
+                )}
             </div>
 
             {/* Slots de rôles (vide si datatable) */}
