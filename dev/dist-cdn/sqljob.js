@@ -134450,7 +134450,7 @@ function _buildKpiHtml(At, yt, xt) {
     const Lt = _str(At[$t.originalName]), It = Ct($t.displayName, "KPI");
     wt.push(`<div style="text-align:center;margin-bottom:.5rem">
   ${It ? `<div style="font-size:clamp(1rem,3vw,1.4rem);color:var(--muted-foreground,#888);margin-bottom:.2rem">${_esc(It)}</div>` : ""}
-  <div style="font-size:clamp(1.5rem,8vw,3rem);font-weight:700;line-height:1.05;color:var(--foreground,#111)">${_esc(Lt)}</div>
+  <div style="font-size:clamp(1.5rem,8vw,2.5rem);font-weight:700;line-height:1.05;color:var(--foreground,#111)">${_esc(Lt)}</div>
 </div>`);
   }
   const Et = [], kt = "rgba(128,128,128,.12)", Tt = "var(--foreground,#111)";
@@ -134470,7 +134470,7 @@ function _buildKpiHtml(At, yt, xt) {
     const Lt = _num(At[$t.originalName]), It = Lt > 0, Rt = Lt === 0, Dt = Rt ? "#ca8a04" : It ? "#16a34a" : "#dc2626", jt = Rt ? "#ca8a0418" : It ? "#16a34a18" : "#dc262618", Nt = Rt ? "→" : It ? "↑" : "↓", Mt = It ? "+" : "", Ot = Ct($t.displayName, "TREND_PERCENT"), Bt = Ot ? `<span style="color:var(--muted-foreground,#888)">${_esc(Ot)} : </span>` : "";
     Et.push(`<span style="white-space:nowrap;font-size:.8rem">${Bt}<span style="background:${jt};color:${Dt};border-radius:.35rem;padding:.1rem .45rem;font-weight:700">${Mt}${Lt.toFixed(1)}% ${Nt}</span></span>`);
   }
-  return Et.length > 0 && wt.push(`<div style="display:flex;flex-wrap:wrap;gap:.5rem 1rem;justify-content:center;align-items:center;margin-top:.25rem">${Et.join("")}</div>`), wt.length === 0 ? '<div style="padding:1rem;color:#888;font-size:.875rem;text-align:center">Aucune donnée</div>' : `<div style="text-align:center;padding:.5rem">${wt.join(`
+  return Et.length > 0 && wt.push(`<div style="display:flex;flex-wrap:wrap;gap:.5rem 1rem;justify-content:center;align-items:center;margin-top:.25rem">${Et.join("")}</div>`), wt.length === 0 ? '<div style="padding:1rem;color:#888;font-size:.875rem;text-align:center">Aucune donnée</div>' : `<div style="text-align:center">${wt.join(`
 `)}</div>`;
 }
 function buildTableColumnRenderers(At) {
