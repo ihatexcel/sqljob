@@ -263,8 +263,8 @@ export function astToSql(ast: SqlBlockAst): string {
     const finalSelect = chartConfig?.columns?.length
         ? buildChartFinalSelect(lastName, chartConfig)
         : `SELECT * FROM ${lastName}`;
-    // Hoist SELECT '...'::LABEL; and SELECT '...'::SUBLABEL; before WITH so DuckDB can parse cleanly
-    const prefixM = finalSelect.match(/^((SELECT\s+'[^']*'\s*::(?:LABEL|SUBLABEL)\s*;\n?)+)/i);
+    // Hoist config prefix SELECTs (LABEL/SUBLABEL/ICON) before WITH so DuckDB can parse cleanly
+    const prefixM = finalSelect.match(/^((SELECT\s+(?:'[^']*'\s*::(?:LABEL|SUBLABEL|ICON)\b\s*(?:,\s*)?)+;\n?)+)/i);
     const hoistPrefix = prefixM ? prefixM[1] : '';
     const body = hoistPrefix ? finalSelect.slice(hoistPrefix.length) : finalSelect;
     return `${hoistPrefix}WITH\n${ctes.join(',\n')}\n${body}`;
@@ -1311,35 +1311,45 @@ function tryParseSimpleSmart(sql: string, materialize: SqlBlockMaterialize): Sql
  * par CTE (P1+). Les CTEs non parsables deviennent des steps custom_sql.
  */
 export function sqlToAstSmart(sql: string, materialize: SqlBlockMaterialize = 'view'): SqlParseResult {
-    // Extraire SELECT '...'::LABEL; et SELECT '...'::SUBLABEL; en tête avant parsing
-    // → permet d'éditer via l'UI même quand le SQL commence par ces préfixes
+    // Extraire les préfixes de configuration (LABEL, SUBLABEL, ICON) en tête avant parsing
+    // Supporte le format combiné : SELECT 'x'::LABEL, 'y'::SUBLABEL, 'z'::ICON;
+    // et les formats individuels legacy : SELECT 'x'::LABEL; / SELECT 'y'::SUBLABEL; / SELECT 'z'::ICON;
     let labelPrefix: string | null = null;
     let sublabelPrefix: string | null = null;
+    let iconPrefix: string | null = null;
     let sqlBody = sql;
-    const labelM = sqlBody.match(/^(\s*SELECT\s+'[^']*'\s*::LABEL\s*;[ \t]*\r?\n?)/i);
-    if (labelM) {
-        const valM = labelM[1].match(/SELECT\s+'([^']*)'\s*::LABEL/i);
-        if (valM) labelPrefix = valM[1];
-        sqlBody = sqlBody.slice(labelM[1].length);
-    }
-    const sublabelM = sqlBody.match(/^(\s*SELECT\s+'[^']*'\s*::SUBLABEL\s*;[ \t]*\r?\n?)/i);
-    if (sublabelM) {
-        const valM = sublabelM[1].match(/SELECT\s+'([^']*)'\s*::SUBLABEL/i);
-        if (valM) sublabelPrefix = valM[1];
-        sqlBody = sqlBody.slice(sublabelM[1].length);
+    // Extraire un ou plusieurs SELECT de configuration en tête (format combiné ou individuel)
+    let extracted = true;
+    while (extracted) {
+        extracted = false;
+        const cfgM = sqlBody.match(/^(\s*SELECT\s+(?:'[^']*'\s*::(?:LABEL|SUBLABEL|ICON)\b\s*(?:,\s*)?)+;[ \t]*\r?\n?)/i);
+        if (cfgM) {
+            const block = cfgM[1];
+            const lM = block.match(/'([^']*)'\s*::LABEL\b/i);
+            const sM = block.match(/'([^']*)'\s*::SUBLABEL\b/i);
+            const iM = block.match(/'([^']*)'\s*::ICON\b/i);
+            if (lM || sM || iM) {
+                if (lM && labelPrefix === null) labelPrefix = lM[1];
+                if (sM && sublabelPrefix === null) sublabelPrefix = sM[1];
+                if (iM && iconPrefix === null) iconPrefix = iM[1];
+                sqlBody = sqlBody.slice(block.length);
+                extracted = true;
+            }
+        }
     }
 
-    /** Injecte label/sublabel dans l'AST si présents */
+    /** Injecte label/sublabel/icon dans l'AST si présents */
     function withLabel(ast: SqlBlockAst): SqlBlockAst {
-        if (labelPrefix === null && sublabelPrefix === null) return ast;
+        if (labelPrefix === null && sublabelPrefix === null && iconPrefix === null) return ast;
         const base = ast.chartConfig ?? { chartType: 'kpi', columns: [] };
         const chartConfig: ChartConfig = { ...base };
         if (labelPrefix !== null) chartConfig.label = labelPrefix;
         if (sublabelPrefix !== null) (chartConfig as any).sublabel = sublabelPrefix;
+        if (iconPrefix !== null) (chartConfig as any).icon = iconPrefix;
         return { ...ast, chartConfig };
     }
     function withLabelResult(r: SqlParseResult): SqlParseResult {
-        if (labelPrefix === null && sublabelPrefix === null) return r;
+        if (labelPrefix === null && sublabelPrefix === null && iconPrefix === null) return r;
         if (!r.compatible || !r.ast) return r;
         return { ...r, ast: withLabel(r.ast) };
     }
