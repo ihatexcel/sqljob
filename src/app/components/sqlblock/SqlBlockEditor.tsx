@@ -2862,10 +2862,26 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
 
     // Ouvre la modale de config viz quand le trigger change (déclenché depuis CellBody)
     useEffect(() => {
-        if (openVizConfigTrigger && openVizConfigTrigger > 0) {
-            setVizConfigOpen(true)
-            fetchChartSchema()
+        if (!openVizConfigTrigger || openVizConfigTrigger <= 0) return
+        // Si l'AST est vide (cellule jamais ouverte en mode UI), parser le SQL brut d'abord
+        const currentCfg = getOrInitConfig(cell)
+        if (!currentCfg.ast?.source && !currentCfg.ast?.steps?.length && !currentCfg.ast?.chartConfig) {
+            const rawSql = currentCfg.sql || ''
+            if (rawSql.trim()) {
+                const result = sqlToAstSmart(rawSql, currentCfg.ast?.materialized ?? 'ephemeral')
+                if (result.compatible && result.ast) {
+                    currentCfg.ast = result.ast
+                    currentCfg.degraded = false
+                    currentCfg.manualSql = null
+                    forceUpdate()
+                    // fetchChartSchema sera rappelé via l'effect stepsKey/source après le re-render
+                    setVizConfigOpen(true)
+                    return
+                }
+            }
         }
+        setVizConfigOpen(true)
+        fetchChartSchema()
     }, [openVizConfigTrigger]) // eslint-disable-line
 
     // cellule factice pour SqlDataTable quand on affiche un aperçu step ou source
