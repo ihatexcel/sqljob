@@ -134442,7 +134442,7 @@ function _buildKpiHtml(At, yt, xt) {
   if (St) {
     const $t = _str(At[St.originalName]);
     if ($t && $t.toLowerCase() !== "null") {
-      const Lt = $t.includes(":") ? $t : `lucide:${$t}`;
+      const Lt = $t;
       wt.push(`<div style="display:flex;justify-content:center;margin-bottom:.25rem"><span class="iconify" data-icon="${_esc(Lt)}" style="font-size:clamp(1.5rem,8vw,3rem);color:var(--primary,#555)"></span></div>`);
     }
   }
