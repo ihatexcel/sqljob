@@ -250,6 +250,7 @@ export const CELL_TYPE_SCHEMAS = {
                         _univerInstance: null,
                         _univerAPI: null,
                         _univerModified: false,
+                        _univerScheduled: false,
                     },
                     commonParams: ['name', 'title', 'queries'],
                     queryCount: 1,
@@ -267,7 +268,7 @@ export const CELL_TYPE_SCHEMAS = {
                     },
                     bodyFamily: 'univerSheet',
                     bodyConfig: { minHeight: '400px' },
-                    bodyDisplay: { showSkeleton: { when: 'running' } }
+                    bodyDisplay: { showSkeleton: { excludeWhenSqlEditor: true } }
                 },
                 perspective: {
                     executeHandler: 'executePerspectiveCell',

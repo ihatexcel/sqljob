@@ -1054,29 +1054,33 @@ function GenericHtmlBody({ cell, path, cellIndex }: any) {
 // ─── UniverSheetBody ──────────────────────────────────────────────────────────
 function UniverSheetBody({ cell, path, cellIndex }: any) {
     const {
-        devMode, showSqlEditorVisible, hasCellHeight, runCellAt,
-        captureUniverSnapshot, exportUniverToXlsx, _rev,
+        devMode, showSqlEditorVisible, hasCellHeight,
+        captureUniverSnapshot, exportUniverToXlsx, renderUniverInContainer, _rev,
     } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         showSqlEditorVisible: s.showSqlEditorVisible,
         hasCellHeight: s.hasCellHeight,
-        runCellAt: s.runCellAt,
         captureUniverSnapshot: s.captureUniverSnapshot,
         exportUniverToXlsx: s.exportUniverToXlsx,
+        renderUniverInContainer: s.renderUniverInContainer,
         _rev: s._rev,
     })))
 
     const hasHeight = hasCellHeight(cell)
     const mh = '400px'
 
-    // Déclenche l'exécution si la cellule a déjà des données mais que l'instance
-    // n'est pas encore prête (ex: rechargement de la page ou navigation d'onglet)
+    // Pattern identique à PerspectiveBody :
+    // quand le composant se monte (post-running, showContent devient true),
+    // si _univerScheduled=true et _univerAPI=null, relancer le rendu.
     useEffect(() => {
-        if (cell._univerReady) return
+        if (!cell._univerReady) return
         const container = document.getElementById('univer-' + cell._id)
         if (!container) return
-        if (cell._status === 'success' && !cell._univerReady) {
-            runCellAt(path, cellIndex)
+        if (cell._univerScheduled && !cell._univerAPI) {
+            renderUniverInContainer(cell).catch((e: any) => {
+                cell._univerReady = false
+                cell._resultInfo = '❌ ' + e.message
+            })
         }
     }, [_rev])
 
