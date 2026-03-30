@@ -1145,7 +1145,7 @@ function _buildKpiHtml(row: any, roleMap: Record<string, ColumnRole[]>, title: s
         const sublabel = _sub(col.displayName, 'KPI');
         parts.push(`<div style="text-align:center;margin-bottom:.5rem">
   ${sublabel ? `<div style="font-size:clamp(1rem,3vw,1.4rem);color:var(--muted-foreground,#888);margin-bottom:.2rem">${_esc(sublabel)}</div>` : ''}
-  <div style="font-size:clamp(1.5rem,8vw,3rem);font-weight:700;line-height:1.05;color:var(--foreground,#111)">${_esc(val)}</div>
+  <div style="font-size:clamp(1.5rem,8vw,2.5rem);font-weight:700;line-height:1.05;color:var(--foreground,#111)">${_esc(val)}</div>
 </div>`);
     }
     // PERCENT / COMPARE / TREND / TREND_PERCENT — côte à côte sur une ligne
@@ -1202,7 +1202,7 @@ function _buildKpiHtml(row: any, roleMap: Record<string, ColumnRole[]>, title: s
     }
 
     if (parts.length === 0) return '<div style="padding:1rem;color:#888;font-size:.875rem;text-align:center">Aucune donnée</div>';
-    return `<div style="text-align:center;padding:.5rem">${parts.join('\n')}</div>`;
+    return `<div style="text-align:center">${parts.join('\n')}</div>`;
 }
 
 // ─── Table cell HTML builder ──────────────────────────────────────────────────
