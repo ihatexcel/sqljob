@@ -3,7 +3,7 @@ var aS = (At) => {
   throw TypeError(At);
 };
 var AS = (At, yt, xt) => yt in At ? bS(At, yt, { enumerable: !0, configurable: !0, writable: !0, value: xt }) : At[yt] = xt;
-var hm = (At, yt, xt) => AS(At, typeof yt != "symbol" ? yt + "" : yt, xt), iS = (At, yt, xt) => yt.has(At) || aS("Cannot " + xt);
+var cm = (At, yt, xt) => AS(At, typeof yt != "symbol" ? yt + "" : yt, xt), iS = (At, yt, xt) => yt.has(At) || aS("Cannot " + xt);
 var oS = (At, yt, xt) => (iS(At, yt, "read from private field"), xt ? xt.call(At) : yt.get(At)), sS = (At, yt, xt) => yt.has(At) ? aS("Cannot add the same private member more than once") : yt instanceof WeakSet ? yt.add(At) : yt.set(At, xt), FC = (At, yt, xt, wt) => (iS(At, yt, "write to private field"), wt ? wt.call(At, xt) : yt.set(At, xt), xt);
 function _mergeNamespaces(At, yt) {
   for (var xt = 0; xt < yt.length; xt++) {
@@ -14368,11 +14368,11 @@ ErrorPane.displayName = "ErrorPane";
 class ErrorBoundary extends reactExports.Component {
   constructor() {
     super(...arguments);
-    hm(this, "state", {
+    cm(this, "state", {
       hasError: !1,
       error: null
     });
-    hm(this, "handleRetry", () => {
+    cm(this, "handleRetry", () => {
       this.props.onRetry && this.props.onRetry();
     });
   }
@@ -24767,6 +24767,34 @@ FROM v_source LIMIT 10`, engine: "sql", showQueryEditor: !1 },
         defaultButtonLabel: "📑 Générer le PDF"
       }
     },
+    univerSheet: {
+      executeHandler: "executeUniverSheetCell",
+      defaultNamePrefix: "sheet",
+      exportFields: ["queries", "snapshot", "readOnly", "title"],
+      initProps: {
+        _univerReady: !1,
+        _univerInstance: null,
+        _univerAPI: null,
+        _univerModified: !1
+      },
+      commonParams: ["name", "title", "queries"],
+      queryCount: 1,
+      queryNames: ["main"],
+      queryLabels: { main: "Requête SQL (données initiales, optionnel)" },
+      specificParams: [
+        { key: "queries.main.showQueryEditor", label: "Afficher l'éditeur SQL en mode client", inputType: "checkbox" },
+        { key: "readOnly", label: "Lecture seule en mode client", tooltip: "Toujours éditable en mode développeur", inputType: "checkbox" },
+        { key: "snapshot", label: "Snapshot Univer (base64 gzip)", tooltip: "Snapshot compressé du classeur — généré automatiquement à l'export si modifié", inputType: "textarea", rows: 4 }
+      ],
+      defaults: {
+        queries: [{ name: "main", sql: "", engine: "sql", showQueryEditor: !1 }],
+        readOnly: !0,
+        snapshot: ""
+      },
+      bodyFamily: "univerSheet",
+      bodyConfig: { minHeight: "400px" },
+      bodyDisplay: { showSkeleton: { when: "running" } }
+    },
     perspective: {
       executeHandler: "executePerspectiveCell",
       defaultNamePrefix: "perspective",
@@ -24884,7 +24912,7 @@ class GistEncrypt {
     return yt && yt[this.ENCRYPTED_MARKER] === !0 && !!yt.ciphertext && !!yt.salt && yt.iv !== void 0;
   }
 }
-hm(GistEncrypt, "ENCRYPTED_MARKER", "_encrypted"), hm(GistEncrypt, "DEFAULT_ITERATIONS", 6e5);
+cm(GistEncrypt, "ENCRYPTED_MARKER", "_encrypted"), cm(GistEncrypt, "DEFAULT_ITERATIONS", 6e5);
 let rangeFrom = [], rangeTo = [];
 (() => {
   let At = "lc,34,7n,7,7b,19,,,,2,,2,,,20,b,1c,l,g,,2t,7,2,6,2,2,,4,z,,u,r,2j,b,1m,9,9,,o,4,,9,,3,,5,17,3,3b,f,,w,1j,,,,4,8,4,,3,7,a,2,t,,1m,,,,2,4,8,,9,,a,2,q,,2,2,1l,,4,2,4,2,2,3,3,,u,2,3,,b,2,1l,,4,5,,2,4,,k,2,m,6,,,1m,,,2,,4,8,,7,3,a,2,u,,1n,,,,c,,9,,14,,3,,1l,3,5,3,,4,7,2,b,2,t,,1m,,2,,2,,3,,5,2,7,2,b,2,s,2,1l,2,,,2,4,8,,9,,a,2,t,,20,,4,,2,3,,,8,,29,,2,7,c,8,2q,,2,9,b,6,22,2,r,,,,,,1j,e,,5,,2,5,b,,10,9,,2u,4,,6,,2,2,2,p,2,4,3,g,4,d,,2,2,6,,f,,jj,3,qa,3,t,3,t,2,u,2,1s,2,,7,8,,2,b,9,,19,3,3b,2,y,,3a,3,4,2,9,,6,3,63,2,2,,1m,,,7,,,,,2,8,6,a,2,,1c,h,1r,4,1c,7,,,5,,14,9,c,2,w,4,2,2,,3,1k,,,2,3,,,3,1m,8,2,2,48,3,,d,,7,4,,6,,3,2,5i,1m,,5,ek,,5f,x,2da,3,3x,,2o,w,fe,6,2x,2,n9w,4,,a,w,2,28,2,7k,,3,,4,,p,2,5,,47,2,q,i,d,,12,8,p,b,1a,3,1c,,2,4,2,2,13,,1v,6,2,2,2,2,c,,8,,1b,,1f,,,3,2,2,5,2,,,16,2,8,,6m,,2,,4,,fn4,,kh,g,g,g,a6,2,gt,,6a,,45,5,1ae,3,,2,5,4,14,3,4,,4l,2,fx,4,ar,2,49,b,4w,,1i,f,1k,3,1d,4,2,2,1x,3,10,5,,8,1q,,c,2,1g,9,a,4,2,,2n,3,2,,,2,6,,4g,,3,8,l,2,1l,2,,,,,m,,e,7,3,5,5f,8,2,3,,,n,,29,,2,6,,,2,,,2,,2,6j,,2,4,6,2,,2,r,2,2d,8,2,,,2,2y,,,,2,6,,,2t,3,2,4,,5,77,9,,2,6t,,a,2,,,4,,40,4,2,2,4,,w,a,14,6,2,4,8,,9,6,2,3,1a,d,,2,ba,7,,6,,,2a,m,2,7,,2,,2,3e,6,3,,,2,,7,,,20,2,3,,,,9n,2,f0b,5,1n,7,t4,,1r,4,29,,f5k,2,43q,,,3,4,5,8,8,2,7,u,4,44,3,1iz,1j,4,1e,8,,e,,m,5,,f,11s,7,,h,2,7,,2,,5,79,7,c5,4,15s,7,31,7,240,5,gx7k,2o,3k,6o".split(",").map((yt) => yt ? parseInt(yt, 36) : 1);
@@ -43500,14 +43528,14 @@ const lazy$2 = (At) => {
 };
 class NodeSqlParser {
   constructor(yt = {}) {
-    hm(this, "opts");
-    hm(this, "parser", null);
+    cm(this, "opts");
+    cm(this, "parser", null);
     // Record the column number to the offset amount
-    hm(this, "offsetRecord", {});
+    cm(this, "offsetRecord", {});
     /**
      * Lazy import of the node-sql-parser package and create a new Parser instance.
      */
-    hm(this, "getParser", lazy$2(async () => {
+    cm(this, "getParser", lazy$2(async () => {
       if (this.parser)
         return this.parser;
       const yt = await Promise.resolve().then(() => index$7), { Parser: xt } = yt.default || yt;
@@ -44187,9 +44215,9 @@ const defaultSqlHoverTheme = (At = "light") => {
 };
 class SqlStructureAnalyzer {
   constructor(yt) {
-    hm(this, "parser");
-    hm(this, "cache", /* @__PURE__ */ new Map());
-    hm(this, "MAX_CACHE_SIZE", 10);
+    cm(this, "parser");
+    cm(this, "cache", /* @__PURE__ */ new Map());
+    cm(this, "MAX_CACHE_SIZE", 10);
     this.parser = yt;
   }
   /**
@@ -44361,10 +44389,10 @@ const updateSqlStatementsEffect = StateEffect.define(), sqlGutterStateField = St
 class SqlGutterMarker extends GutterMarker {
   constructor(xt, wt, Ct = !0, St = !0) {
     super();
-    hm(this, "config");
-    hm(this, "isCurrent");
-    hm(this, "isValid");
-    hm(this, "isFocused");
+    cm(this, "config");
+    cm(this, "isCurrent");
+    cm(this, "isValid");
+    cm(this, "isFocused");
     this.config = xt, this.isCurrent = wt, this.isValid = Ct, this.isFocused = St;
   }
   toDOM() {
@@ -44712,10 +44740,37 @@ class CDNManager {
         window.perspectiveClient = xt.default, this.perspectiveLoaded = !0;
       })(), this.perspectiveLoadingPromise);
   }
+  /**
+   * Charge le preset Univer Sheets depuis CDN (lazy, dédupliqué).
+   * Expose window.UniverPresetSheetsCore après chargement.
+   */
+  static async loadUniver() {
+    if (!this.univerLoaded)
+      return this.univerLoadingPromise ? this.univerLoadingPromise : (this.univerLoadingPromise = (async () => {
+        const yt = "https://unpkg.com/@univerjs/preset-sheets-core/lib/index.css";
+        if (!document.querySelector(`link[href="${yt}"]`)) {
+          const xt = document.createElement("link");
+          xt.rel = "stylesheet", xt.href = yt, await new Promise((wt, Ct) => {
+            xt.onload = () => wt(), xt.onerror = () => wt(), document.head.appendChild(xt);
+          });
+        }
+        await this.loadScript("https://unpkg.com/@univerjs/preset-sheets-core/lib/umd/index.js"), this.univerLoaded = !0;
+      })(), this.univerLoadingPromise);
+  }
+  /**
+   * Charge le plugin export XLSX Univer depuis CDN (lazy, dédupliqué).
+   * Expose window.UniverImportExport après chargement.
+   */
+  static async loadUniverExport() {
+    if (!this.univerExportLoaded)
+      return this.univerExportLoadingPromise ? this.univerExportLoadingPromise : (this.univerExportLoadingPromise = (async () => {
+        await this.loadUniver(), await this.loadScript("https://unpkg.com/@mertdeveci55/univer-import-export/dist/index.umd.js"), this.univerExportLoaded = !0;
+      })(), this.univerExportLoadingPromise);
+  }
 }
-hm(CDNManager, "loadedScripts", /* @__PURE__ */ new Set()), hm(CDNManager, "loadingPromises", /* @__PURE__ */ new Map()), hm(CDNManager, "loadedStyles", /* @__PURE__ */ new Set()), hm(CDNManager, "easyMDELoadingPromise", null), // CodeMirror SQL — bundlé via npm (@marimo-team/codemirror-sql + @codemirror/*)
+cm(CDNManager, "loadedScripts", /* @__PURE__ */ new Set()), cm(CDNManager, "loadingPromises", /* @__PURE__ */ new Map()), cm(CDNManager, "loadedStyles", /* @__PURE__ */ new Set()), cm(CDNManager, "easyMDELoadingPromise", null), // CodeMirror SQL — bundlé via npm (@marimo-team/codemirror-sql + @codemirror/*)
 // loadCodeMirrorSQL() résout immédiatement (modules déjà importés statiquement)
-hm(CDNManager, "codeMirrorSQLLoaded", !0), hm(CDNManager, "codeMirrorSQLModules", {
+cm(CDNManager, "codeMirrorSQLLoaded", !0), cm(CDNManager, "codeMirrorSQLModules", {
   EditorView,
   EditorState,
   basicSetup,
@@ -44724,7 +44779,8 @@ hm(CDNManager, "codeMirrorSQLLoaded", !0), hm(CDNManager, "codeMirrorSQLModules"
   sqlExtension,
   cteCompletionSource,
   oneDark
-}), hm(CDNManager, "codeMirrorSQLLoadingPromise", null), hm(CDNManager, "echartsLoaded", !1), hm(CDNManager, "echartsLoadingPromise", null), hm(CDNManager, "perspectiveLoaded", !1), hm(CDNManager, "perspectiveLoadingPromise", null);
+}), cm(CDNManager, "codeMirrorSQLLoadingPromise", null), cm(CDNManager, "echartsLoaded", !1), cm(CDNManager, "echartsLoadingPromise", null), cm(CDNManager, "perspectiveLoaded", !1), cm(CDNManager, "perspectiveLoadingPromise", null), // ─── Univer Sheet ─────────────────────────────────────────────────────────
+cm(CDNManager, "univerLoaded", !1), cm(CDNManager, "univerLoadingPromise", null), cm(CDNManager, "univerExportLoaded", !1), cm(CDNManager, "univerExportLoadingPromise", null);
 class FileHandler {
   static getMimeTypeFromFileName(yt) {
     const xt = yt.split(".").pop().toLowerCase();
@@ -45125,6 +45181,20 @@ const c_ = class c_ {
   static encodeUTF8ToBase64(yt) {
     return btoa(unescape(encodeURIComponent(yt)));
   }
+  /** Compresse une chaîne en gzip puis encode en base64 (pour snapshots Univer) */
+  static async compressToGzipBase64(yt) {
+    const wt = new TextEncoder().encode(yt), Ct = new window.CompressionStream("gzip"), St = Ct.writable.getWriter();
+    St.write(wt), St.close();
+    const Et = await new Response(Ct.readable).arrayBuffer(), kt = new Uint8Array(Et);
+    let Tt = "";
+    for (let $t = 0; $t < kt.length; $t++) Tt += String.fromCharCode(kt[$t]);
+    return btoa(Tt);
+  }
+  /** Décompresse un base64 gzip en chaîne (pour snapshots Univer) */
+  static async decompressFromGzipBase64(yt) {
+    const xt = atob(yt), wt = Uint8Array.from(xt, (Et) => Et.charCodeAt(0)), Ct = new window.DecompressionStream("gzip"), St = Ct.writable.getWriter();
+    return St.write(wt), St.close(), await new Response(Ct.readable).text();
+  }
   /**
    * Génère un ID unique pour un groupe
    */
@@ -45384,7 +45454,7 @@ const c_ = class c_ {
     };
   }
 };
-hm(c_, "SQLJOB_VERSION", "0.1");
+cm(c_, "SQLJOB_VERSION", "0.1");
 let ConfigManager = c_;
 function exportConfigToJson(At) {
   const yt = [];
@@ -72486,17 +72556,17 @@ function keccakP$2(At, yt = 24) {
 let Keccak$2 = class mS {
   // NOTE: we accept arguments in bytes instead of bits here.
   constructor(yt, xt, wt, Ct = !1, St = 24) {
-    hm(this, "state");
-    hm(this, "pos", 0);
-    hm(this, "posOut", 0);
-    hm(this, "finished", !1);
-    hm(this, "state32");
-    hm(this, "destroyed", !1);
-    hm(this, "blockLen");
-    hm(this, "suffix");
-    hm(this, "outputLen");
-    hm(this, "enableXOF", !1);
-    hm(this, "rounds");
+    cm(this, "state");
+    cm(this, "pos", 0);
+    cm(this, "posOut", 0);
+    cm(this, "finished", !1);
+    cm(this, "state32");
+    cm(this, "destroyed", !1);
+    cm(this, "blockLen");
+    cm(this, "suffix");
+    cm(this, "outputLen");
+    cm(this, "enableXOF", !1);
+    cm(this, "rounds");
     if (this.blockLen = yt, this.suffix = xt, this.outputLen = wt, this.enableXOF = Ct, this.rounds = St, anumber(wt, "outputLen"), !(0 < yt && yt < 200))
       throw new Error("only keccak-f1600 function is supported");
     this.state = new Uint8Array(200), this.state32 = u32(this.state);
@@ -110748,8 +110818,8 @@ function isUnitSpec(At) {
 }
 class CompositeMarkNormalizer {
   constructor(yt, xt) {
-    hm(this, "name");
-    hm(this, "run");
+    cm(this, "name");
+    cm(this, "run");
     this.name = yt, this.run = xt;
   }
   hasMatchingType(yt) {
@@ -112435,7 +112505,7 @@ function getLineOverlay(At, yt = {}) {
 }
 class PathOverlayNormalizer {
   constructor() {
-    hm(this, "name", "path-overlay");
+    cm(this, "name", "path-overlay");
   }
   hasMatchingType(yt, xt) {
     if (isUnitSpec(yt)) {
@@ -112582,7 +112652,7 @@ function replaceRepeaterInMapping(At, yt) {
 }
 class RuleForRangedLineNormalizer {
   constructor() {
-    hm(this, "name", "RuleForRangedLine");
+    cm(this, "name", "RuleForRangedLine");
   }
   hasMatchingType(yt) {
     if (isUnitSpec(yt)) {
@@ -112607,7 +112677,7 @@ class RuleForRangedLineNormalizer {
 class CoreNormalizer extends SpecMapper {
   constructor() {
     super(...arguments);
-    hm(this, "nonFacetUnitNormalizers", [
+    cm(this, "nonFacetUnitNormalizers", [
       boxPlotNormalizer,
       errorBarNormalizer,
       errorBandNormalizer,
@@ -113036,8 +113106,8 @@ function extractTopLevelProperties(At, yt) {
 }
 class Split {
   constructor(yt = {}, xt = {}) {
-    hm(this, "explicit");
-    hm(this, "implicit");
+    cm(this, "explicit");
+    cm(this, "implicit");
     this.explicit = yt, this.implicit = xt;
   }
   clone() {
@@ -113106,9 +113176,9 @@ function mergeValuesWithExplicit(At, yt, xt, wt, Ct = defaultTieBreaker) {
 class AncestorParse extends Split {
   constructor(xt = {}, wt = {}, Ct = !1) {
     super(xt, wt);
-    hm(this, "explicit");
-    hm(this, "implicit");
-    hm(this, "parseNothing");
+    cm(this, "explicit");
+    cm(this, "implicit");
+    cm(this, "parseNothing");
     this.explicit = xt, this.implicit = wt, this.parseNothing = Ct;
   }
   clone() {
@@ -113174,10 +113244,10 @@ function getScaleDataSourceForHandlingInvalidValues(At) {
 }
 class DataFlowNode {
   constructor(yt, xt) {
-    hm(this, "debugName");
-    hm(this, "_children", []);
-    hm(this, "_parent", null);
-    hm(this, "_hash");
+    cm(this, "debugName");
+    cm(this, "_children", []);
+    cm(this, "_parent", null);
+    cm(this, "_hash");
     this.debugName = xt, yt && (this.parent = yt);
   }
   /**
@@ -113244,10 +113314,10 @@ let OutputNode$1 = class extends DataFlowNode {
    */
   constructor(xt, wt, Ct, St) {
     super(xt, wt);
-    hm(this, "type");
-    hm(this, "refCounts");
-    hm(this, "_source");
-    hm(this, "_name");
+    cm(this, "type");
+    cm(this, "refCounts");
+    cm(this, "_source");
+    cm(this, "_name");
     this.type = Ct, this.refCounts = St, this._source = this._name = wt, this.refCounts && !(this._name in this.refCounts) && (this.refCounts[this._name] = 0);
   }
   clone() {
@@ -113291,7 +113361,7 @@ function offsetAs(At) {
 class TimeUnitNode extends DataFlowNode {
   constructor(xt, wt) {
     super(xt);
-    hm(this, "timeUnits");
+    cm(this, "timeUnits");
     this.timeUnits = wt;
   }
   clone() {
@@ -113429,11 +113499,11 @@ function interpolateExpr([At, yt], xt) {
 const TUPLE_FIELDS = "_tuple_fields";
 class SelectionProjectionComponent {
   constructor(...yt) {
-    hm(this, "hasChannel");
-    hm(this, "hasField");
-    hm(this, "hasSelectionId");
-    hm(this, "timeUnit");
-    hm(this, "items");
+    cm(this, "hasChannel");
+    cm(this, "hasField");
+    cm(this, "hasSelectionId");
+    cm(this, "timeUnit");
+    cm(this, "items");
     this.items = yt, this.hasChannel = {}, this.hasField = {}, this.hasSelectionId = !1;
   }
 }
@@ -114843,10 +114913,10 @@ function getDependentFields(At) {
 class FilterNode extends DataFlowNode {
   constructor(xt, wt, Ct) {
     super(xt);
-    hm(this, "model");
-    hm(this, "filter");
-    hm(this, "expr");
-    hm(this, "_dependentFields");
+    cm(this, "model");
+    cm(this, "filter");
+    cm(this, "expr");
+    cm(this, "_dependentFields");
     this.model = wt, this.filter = Ct, this.expr = expression(this.model, this.filter, this), this._dependentFields = getDependentFields(this.expr);
   }
   clone() {
@@ -115281,8 +115351,8 @@ function defaultZindex(At, yt) {
 class CalculateNode extends DataFlowNode {
   constructor(xt, wt) {
     super(xt);
-    hm(this, "transform");
-    hm(this, "_dependentFields");
+    cm(this, "transform");
+    cm(this, "_dependentFields");
     this.transform = wt, this._dependentFields = getDependentFields(this.transform.calculate);
   }
   clone() {
@@ -115958,7 +116028,7 @@ function createBinComponent(At, yt, xt) {
 class BinNode extends DataFlowNode {
   constructor(xt, wt) {
     super(xt);
-    hm(this, "bins");
+    cm(this, "bins");
     this.bins = wt;
   }
   clone() {
@@ -116067,8 +116137,8 @@ class AggregateNode extends DataFlowNode {
    */
   constructor(xt, wt, Ct) {
     super(xt);
-    hm(this, "dimensions");
-    hm(this, "measures");
+    cm(this, "dimensions");
+    cm(this, "measures");
     this.dimensions = wt, this.measures = Ct;
   }
   clone() {
@@ -116155,13 +116225,13 @@ class FacetNode extends DataFlowNode {
    */
   constructor(xt, wt, Ct, St) {
     super(xt);
-    hm(this, "model");
-    hm(this, "name");
-    hm(this, "data");
-    hm(this, "column");
-    hm(this, "row");
-    hm(this, "facet");
-    hm(this, "childModel");
+    cm(this, "model");
+    cm(this, "name");
+    cm(this, "data");
+    cm(this, "column");
+    cm(this, "row");
+    cm(this, "facet");
+    cm(this, "childModel");
     this.model = wt, this.name = Ct, this.data = St;
     for (const Et of FACET_CHANNELS) {
       const kt = wt.facet[Et];
@@ -116372,7 +116442,7 @@ function getImplicitFromSelection(At) {
 class ParseNode extends DataFlowNode {
   constructor(xt, wt) {
     super(xt);
-    hm(this, "_parse");
+    cm(this, "_parse");
     this._parse = wt;
   }
   clone() {
@@ -116470,7 +116540,7 @@ class IdentifierNode extends DataFlowNode {
 class GraticuleNode extends DataFlowNode {
   constructor(xt, wt) {
     super(xt);
-    hm(this, "params");
+    cm(this, "params");
     this.params = wt;
   }
   clone() {
@@ -116494,7 +116564,7 @@ class GraticuleNode extends DataFlowNode {
 class SequenceNode extends DataFlowNode {
   constructor(xt, wt) {
     super(xt);
-    hm(this, "params");
+    cm(this, "params");
     this.params = wt;
   }
   clone() {
@@ -116519,9 +116589,9 @@ class SequenceNode extends DataFlowNode {
 class SourceNode extends DataFlowNode {
   constructor(xt) {
     super(null);
-    hm(this, "_data");
-    hm(this, "_name");
-    hm(this, "_generator");
+    cm(this, "_data");
+    cm(this, "_name");
+    cm(this, "_generator");
     xt ?? (xt = { name: "source" });
     let wt;
     if (isGenerator(xt) || (wt = xt.format ? { ...omit(xt.format, ["parse"]) } : {}), isInlineData(xt))
@@ -116637,7 +116707,7 @@ class MergeIdenticalNodes extends TopDownOptimizer {
 class RemoveUnnecessaryIdentifierNodes extends TopDownOptimizer {
   constructor(xt) {
     super();
-    hm(this, "requiresSelectionId");
+    cm(this, "requiresSelectionId");
     this.requiresSelectionId = xt && requiresSelectionId(xt);
   }
   run(xt) {
@@ -116735,7 +116805,7 @@ class MergeAggregates extends BottomUpOptimizer {
 class MergeBins extends BottomUpOptimizer {
   constructor(xt) {
     super();
-    hm(this, "model");
+    cm(this, "model");
     this.model = xt;
   }
   run(xt) {
@@ -116786,7 +116856,7 @@ class MergeOutputs extends BottomUpOptimizer {
 class JoinAggregateTransformNode extends DataFlowNode {
   constructor(xt, wt) {
     super(xt);
-    hm(this, "transform");
+    cm(this, "transform");
     this.transform = wt;
   }
   clone() {
@@ -116825,7 +116895,7 @@ class JoinAggregateTransformNode extends DataFlowNode {
 class FilterInvalidNode extends DataFlowNode {
   constructor(xt, wt) {
     super(xt);
-    hm(this, "filter");
+    cm(this, "filter");
     this.filter = wt;
   }
   clone() {
@@ -116889,7 +116959,7 @@ function isValidAsArray(At) {
 class StackNode extends DataFlowNode {
   constructor(xt, wt) {
     super(xt);
-    hm(this, "_stack");
+    cm(this, "_stack");
     this._stack = wt;
   }
   clone() {
@@ -117003,7 +117073,7 @@ class StackNode extends DataFlowNode {
 class WindowTransformNode extends DataFlowNode {
   constructor(xt, wt) {
     super(xt);
-    hm(this, "transform");
+    cm(this, "transform");
     this.transform = wt;
   }
   clone() {
@@ -117129,7 +117199,7 @@ function optimizeDataflow(At, yt) {
 }
 class SignalRefWrapper {
   constructor(yt) {
-    hm(this, "signal");
+    cm(this, "signal");
     Object.defineProperty(this, "signal", {
       enumerable: !0,
       get: yt
@@ -117635,10 +117705,10 @@ class ProjectionComponent extends Split {
       // all explicit properties of projection
       { name: xt }
     );
-    hm(this, "specifiedProjection");
-    hm(this, "size");
-    hm(this, "data");
-    hm(this, "merged", !1);
+    cm(this, "specifiedProjection");
+    cm(this, "size");
+    cm(this, "data");
+    cm(this, "merged", !1);
     this.specifiedProjection = wt, this.size = Ct, this.data = St;
   }
   /**
@@ -117751,7 +117821,7 @@ class ScaleComponent extends Split {
       // no initial explicit property
       { name: xt }
     );
-    hm(this, "merged", !1);
+    cm(this, "merged", !1);
     this.setWithExplicit("type", wt);
   }
   /**
@@ -118318,7 +118388,7 @@ function parseNonUnitScaleCore(At) {
 }
 class NameMap {
   constructor() {
-    hm(this, "nameMap");
+    cm(this, "nameMap");
     this.nameMap = {};
   }
   rename(yt, xt) {
@@ -118347,24 +118417,24 @@ function isLayerModel(At) {
 }
 let Model$1 = class {
   constructor(yt, xt, wt, Ct, St, Et, kt) {
-    hm(this, "type");
-    hm(this, "parent");
-    hm(this, "config");
-    hm(this, "name");
-    hm(this, "size");
-    hm(this, "title");
-    hm(this, "description");
-    hm(this, "data");
-    hm(this, "transforms");
-    hm(this, "layout");
+    cm(this, "type");
+    cm(this, "parent");
+    cm(this, "config");
+    cm(this, "name");
+    cm(this, "size");
+    cm(this, "title");
+    cm(this, "description");
+    cm(this, "data");
+    cm(this, "transforms");
+    cm(this, "layout");
     /** Name map for scales, which can be renamed by a model's parent. */
-    hm(this, "scaleNameMap");
+    cm(this, "scaleNameMap");
     /** Name map for projections, which can be renamed by a model's parent. */
-    hm(this, "projectionNameMap");
+    cm(this, "projectionNameMap");
     /** Name map for signals, which can be renamed by a model's parent. */
-    hm(this, "signalNameMap");
-    hm(this, "component");
-    hm(this, "view");
+    cm(this, "signalNameMap");
+    cm(this, "component");
+    cm(this, "view");
     this.type = xt, this.parent = wt, this.config = St, this.parent = wt, this.config = St, this.view = replaceExprRef(kt), this.name = yt.name ?? Ct, this.title = isText(yt.title) ? { text: yt.title } : yt.title ? replaceExprRef(yt.title) : void 0, this.scaleNameMap = wt ? wt.scaleNameMap : new NameMap(), this.projectionNameMap = wt ? wt.projectionNameMap : new NameMap(), this.signalNameMap = wt ? wt.signalNameMap : new NameMap(), this.data = yt.data, this.description = yt.description, this.transforms = normalizeTransform(yt.transform ?? []), this.layout = xt === "layer" || xt === "unit" ? {} : extractCompositionLayout(yt, xt, St), this.component = {
       data: {
         sources: wt ? wt.component.data.sources : [],
@@ -118617,7 +118687,7 @@ class ModelWithField extends Model$1 {
 class DensityTransformNode extends DataFlowNode {
   constructor(xt, wt) {
     super(xt);
-    hm(this, "transform");
+    cm(this, "transform");
     this.transform = wt, this.transform = duplicate(wt);
     const Ct = this.transform.as ?? [void 0, void 0];
     this.transform.as = [Ct[0] ?? "value", Ct[1] ?? "density"];
@@ -118648,7 +118718,7 @@ class DensityTransformNode extends DataFlowNode {
 class ExtentTransformNode extends DataFlowNode {
   constructor(xt, wt) {
     super(xt);
-    hm(this, "transform");
+    cm(this, "transform");
     this.transform = wt, this.transform = duplicate(wt);
   }
   clone() {
@@ -118675,7 +118745,7 @@ class ExtentTransformNode extends DataFlowNode {
 class FlattenTransformNode extends DataFlowNode {
   constructor(xt, wt) {
     super(xt);
-    hm(this, "transform");
+    cm(this, "transform");
     this.transform = wt, this.transform = duplicate(wt);
     const { flatten: Ct, as: St = [] } = this.transform;
     this.transform.as = Ct.map((Et, kt) => St[kt] ?? Et);
@@ -118704,7 +118774,7 @@ class FlattenTransformNode extends DataFlowNode {
 class FoldTransformNode extends DataFlowNode {
   constructor(xt, wt) {
     super(xt);
-    hm(this, "transform");
+    cm(this, "transform");
     this.transform = wt, this.transform = duplicate(wt);
     const Ct = this.transform.as ?? [void 0, void 0];
     this.transform.as = [Ct[0] ?? "key", Ct[1] ?? "value"];
@@ -118733,9 +118803,9 @@ class FoldTransformNode extends DataFlowNode {
 class GeoJSONNode extends DataFlowNode {
   constructor(xt, wt, Ct, St) {
     super(xt);
-    hm(this, "fields");
-    hm(this, "geojson");
-    hm(this, "signal");
+    cm(this, "fields");
+    cm(this, "geojson");
+    cm(this, "signal");
     this.fields = wt, this.geojson = Ct, this.signal = St;
   }
   clone() {
@@ -118791,9 +118861,9 @@ class GeoJSONNode extends DataFlowNode {
 class GeoPointNode extends DataFlowNode {
   constructor(xt, wt, Ct, St) {
     super(xt);
-    hm(this, "projection");
-    hm(this, "fields");
-    hm(this, "as");
+    cm(this, "projection");
+    cm(this, "fields");
+    cm(this, "as");
     this.projection = wt, this.fields = Ct, this.as = St;
   }
   clone() {
@@ -118838,7 +118908,7 @@ class GeoPointNode extends DataFlowNode {
 class ImputeNode extends DataFlowNode {
   constructor(xt, wt) {
     super(xt);
-    hm(this, "transform");
+    cm(this, "transform");
     this.transform = wt;
   }
   clone() {
@@ -118911,7 +118981,7 @@ class ImputeNode extends DataFlowNode {
 class LoessTransformNode extends DataFlowNode {
   constructor(xt, wt) {
     super(xt);
-    hm(this, "transform");
+    cm(this, "transform");
     this.transform = wt, this.transform = duplicate(wt);
     const Ct = this.transform.as ?? [void 0, void 0];
     this.transform.as = [Ct[0] ?? wt.on, Ct[1] ?? wt.loess];
@@ -118941,8 +119011,8 @@ class LoessTransformNode extends DataFlowNode {
 class LookupNode extends DataFlowNode {
   constructor(xt, wt, Ct) {
     super(xt);
-    hm(this, "transform");
-    hm(this, "secondary");
+    cm(this, "transform");
+    cm(this, "secondary");
     this.transform = wt, this.secondary = Ct;
   }
   clone() {
@@ -119005,7 +119075,7 @@ class LookupNode extends DataFlowNode {
 class QuantileTransformNode extends DataFlowNode {
   constructor(xt, wt) {
     super(xt);
-    hm(this, "transform");
+    cm(this, "transform");
     this.transform = wt, this.transform = duplicate(wt);
     const Ct = this.transform.as ?? [void 0, void 0];
     this.transform.as = [Ct[0] ?? "prob", Ct[1] ?? "value"];
@@ -119034,7 +119104,7 @@ class QuantileTransformNode extends DataFlowNode {
 class RegressionTransformNode extends DataFlowNode {
   constructor(xt, wt) {
     super(xt);
-    hm(this, "transform");
+    cm(this, "transform");
     this.transform = wt, this.transform = duplicate(wt);
     const Ct = this.transform.as ?? [void 0, void 0];
     this.transform.as = [Ct[0] ?? wt.on, Ct[1] ?? wt.regression];
@@ -119064,7 +119134,7 @@ class RegressionTransformNode extends DataFlowNode {
 class PivotTransformNode extends DataFlowNode {
   constructor(xt, wt) {
     super(xt);
-    hm(this, "transform");
+    cm(this, "transform");
     this.transform = wt;
   }
   clone() {
@@ -119096,7 +119166,7 @@ class PivotTransformNode extends DataFlowNode {
 class SampleTransformNode extends DataFlowNode {
   constructor(xt, wt) {
     super(xt);
-    hm(this, "transform");
+    cm(this, "transform");
     this.transform = wt;
   }
   clone() {
@@ -119315,9 +119385,9 @@ function facetSortFieldName(At, yt, xt) {
 class FacetModel extends ModelWithField {
   constructor(xt, wt, Ct, St) {
     super(xt, "facet", wt, Ct, St, xt.resolve);
-    hm(this, "facet");
-    hm(this, "child");
-    hm(this, "children");
+    cm(this, "facet");
+    cm(this, "child");
+    cm(this, "children");
     this.child = buildModel(xt.spec, this, this.getName("child"), void 0, St), this.children = [this.child], this.facet = this.initFacet(xt.facet);
   }
   initFacet(xt) {
@@ -119699,7 +119769,7 @@ class ConcatModel extends Model$1 {
   constructor(xt, wt, Ct, St) {
     var Et, kt, Tt, $t;
     super(xt, "concat", wt, Ct, St, xt.resolve);
-    hm(this, "children");
+    cm(this, "children");
     (((kt = (Et = xt.resolve) == null ? void 0 : Et.axis) == null ? void 0 : kt.x) === "shared" || (($t = (Tt = xt.resolve) == null ? void 0 : Tt.axis) == null ? void 0 : $t.y) === "shared") && warn(CONCAT_CANNOT_SHARE_AXIS), this.children = this.getChildren(xt).map((Lt, It) => buildModel(Lt, this, this.getName(`concat_${It}`), void 0, St));
   }
   parseData() {
@@ -119787,9 +119857,9 @@ const AXIS_COMPONENT_PROPERTIES_INDEX = {
 class AxisComponent extends Split {
   constructor(xt = {}, wt = {}, Ct = !1) {
     super();
-    hm(this, "explicit");
-    hm(this, "implicit");
-    hm(this, "mainExtracted");
+    cm(this, "explicit");
+    cm(this, "implicit");
+    cm(this, "mainExtracted");
     this.explicit = xt, this.implicit = wt, this.mainExtracted = Ct;
   }
   clone() {
@@ -120484,19 +120554,19 @@ function interactiveFlag(At) {
 class UnitModel extends ModelWithField {
   constructor(xt, wt, Ct, St = {}, Et) {
     super(xt, "unit", wt, Ct, Et, void 0, isFrameMixins(xt) ? xt.view : void 0);
-    hm(this, "markDef");
-    hm(this, "encoding");
-    hm(this, "specifiedScales", {});
-    hm(this, "stack");
-    hm(this, "specifiedAxes", {});
-    hm(this, "specifiedLegends", {});
-    hm(this, "specifiedProjection", {});
-    hm(this, "selection", []);
-    hm(this, "children", []);
+    cm(this, "markDef");
+    cm(this, "encoding");
+    cm(this, "specifiedScales", {});
+    cm(this, "stack");
+    cm(this, "specifiedAxes", {});
+    cm(this, "specifiedLegends", {});
+    cm(this, "specifiedProjection", {});
+    cm(this, "selection", []);
+    cm(this, "children", []);
     /**
      * Corrects the data references in marks after assemble.
      */
-    hm(this, "correctDataNames", (xt) => {
+    cm(this, "correctDataNames", (xt) => {
       var wt, Ct, St;
       return (wt = xt.from) != null && wt.data && (xt.from.data = this.lookupDataSource(xt.from.data), "time" in this.encoding && (xt.from.data = xt.from.data + CURR)), (St = (Ct = xt.from) == null ? void 0 : Ct.facet) != null && St.data && (xt.from.facet.data = this.lookupDataSource(xt.from.facet.data)), xt;
     });
@@ -120648,7 +120718,7 @@ class LayerModel extends Model$1 {
     super(xt, "layer", wt, Ct, Et, xt.resolve, xt.view);
     // HACK: This should be (LayerModel | UnitModel)[], but setting the correct type leads to weird error.
     // So I'm just putting generic Model for now
-    hm(this, "children");
+    cm(this, "children");
     const kt = {
       ...St,
       ...xt.width ? { width: xt.width } : {},
@@ -121754,15 +121824,15 @@ let Handler$1 = class {
     /**
      * The handler function. We bind this to this function in the constructor.
      */
-    hm(this, "call");
+    cm(this, "call");
     /**
      * Complete tooltip options.
      */
-    hm(this, "options");
+    cm(this, "options");
     /**
      * The tooltip html element.
      */
-    hm(this, "el");
+    cm(this, "el");
     this.options = { ...DEFAULT_OPTIONS, ...yt };
     const xt = this.options.id;
     if (this.el = null, this.call = this.tooltipHandler.bind(this), !this.options.disableDefaultStyle && !document.getElementById(this.options.styleId)) {
@@ -132354,10 +132424,10 @@ const xv = class xv {
     return xv.dbInstance;
   }
 };
-hm(xv, "dbInstance", null), hm(xv, "connInstance", null), hm(xv, "duckdbModuleRef", null), hm(xv, "currentEngine", "duckdb-wasm"), // 'duckdb-wasm' | 'ducklings'
-hm(xv, "workerRef", null), // Versions et URLs des CDN (chargés dynamiquement selon le moteur)
-hm(xv, "DUCKDB_WASM_VERSION", "1.33.1-dev18.0"), hm(xv, "DUCKLINGS_VERSION", "1.4.4"), // Tous les types taleshape à créer dans DuckDB pour que ::XAXIS etc. fonctionne
-hm(xv, "CHART_TYPE_NAMES", [
+cm(xv, "dbInstance", null), cm(xv, "connInstance", null), cm(xv, "duckdbModuleRef", null), cm(xv, "currentEngine", "duckdb-wasm"), // 'duckdb-wasm' | 'ducklings'
+cm(xv, "workerRef", null), // Versions et URLs des CDN (chargés dynamiquement selon le moteur)
+cm(xv, "DUCKDB_WASM_VERSION", "1.33.1-dev18.0"), cm(xv, "DUCKLINGS_VERSION", "1.4.4"), // Tous les types taleshape à créer dans DuckDB pour que ::XAXIS etc. fonctionne
+cm(xv, "CHART_TYPE_NAMES", [
   // Chart roles
   "XAXIS",
   "YAXIS",
@@ -132403,7 +132473,7 @@ hm(xv, "CHART_TYPE_NAMES", [
   "DATEPICKER_FROM",
   "DATEPICKER_TO",
   "INPUT"
-]), hm(xv, "_chartTypesInitialized", !1);
+]), cm(xv, "_chartTypesInitialized", !1);
 let DuckDBManager = xv;
 const CTE_PREFIX = "_sqlblock_s", STEP_TYPE_SLUG = {
   select_columns: "select",
@@ -134546,7 +134616,7 @@ function getTableColumnDisplayNames(At) {
 }
 class EChartSqlParser {
 }
-hm(EChartSqlParser, "parseColumnRoles", parseColumnRoles), hm(EChartSqlParser, "buildEChartsOption", buildEChartsOption), hm(EChartSqlParser, "buildKpiHtml", buildKpiHtml), hm(EChartSqlParser, "buildTableColumnRenderers", buildTableColumnRenderers), hm(EChartSqlParser, "getTableColumnDisplayNames", getTableColumnDisplayNames), hm(EChartSqlParser, "detectChartType", _detectChartType);
+cm(EChartSqlParser, "parseColumnRoles", parseColumnRoles), cm(EChartSqlParser, "buildEChartsOption", buildEChartsOption), cm(EChartSqlParser, "buildKpiHtml", buildKpiHtml), cm(EChartSqlParser, "buildTableColumnRenderers", buildTableColumnRenderers), cm(EChartSqlParser, "getTableColumnDisplayNames", getTableColumnDisplayNames), cm(EChartSqlParser, "detectChartType", _detectChartType);
 const NUMERIC_ARROW_RE = /^(Int|Uint|Float|Decimal)/i;
 function colMeta(At, yt) {
   const xt = At == null ? void 0 : At[yt];
@@ -138640,6 +138710,103 @@ function PerspectiveBody({ cell: At, path: yt, cellIndex: xt }) {
     )
   ] });
 }
+function UniverSheetBody({ cell: At, path: yt, cellIndex: xt }) {
+  const {
+    devMode: wt,
+    showSqlEditorVisible: Ct,
+    hasCellHeight: St,
+    runCellAt: Et,
+    captureUniverSnapshot: kt,
+    exportUniverToXlsx: Tt,
+    _rev: $t
+  } = useNotebookStore(useShallow((Bt) => ({
+    devMode: Bt.devMode,
+    showSqlEditorVisible: Bt.showSqlEditorVisible,
+    hasCellHeight: Bt.hasCellHeight,
+    runCellAt: Bt.runCellAt,
+    captureUniverSnapshot: Bt.captureUniverSnapshot,
+    exportUniverToXlsx: Bt.exportUniverToXlsx,
+    _rev: Bt._rev
+  }))), Lt = St(At), It = "400px";
+  reactExports.useEffect(() => {
+    At._univerReady || !document.getElementById("univer-" + At._id) || At._status === "success" && !At._univerReady && Et(yt, xt);
+  }, [$t]);
+  const [Rt, Dt] = reactExports.useState(!1), [jt, Nt] = reactExports.useState(!1), Mt = reactExports.useCallback(async () => {
+    if (!Rt) {
+      Dt(!0);
+      try {
+        await kt(At);
+      } catch (Bt) {
+        console.error(Bt);
+      } finally {
+        Dt(!1);
+      }
+    }
+  }, [At, kt, Rt]), Ot = reactExports.useCallback(async () => {
+    if (!jt) {
+      Nt(!0);
+      try {
+        await Tt(At);
+      } catch (Bt) {
+        console.error(Bt);
+      } finally {
+        Nt(!1);
+      }
+    }
+  }, [At, Tt, jt]);
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
+    (Ct == null ? void 0 : Ct(At)) && /* @__PURE__ */ jsxRuntimeExports.jsx(SqlEditorWidget, { cell: At, path: yt, cellIndex: xt, placeholder: "SELECT * FROM source1" }),
+    At._status === "running" && !At._univerReady && /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "div",
+      {
+        className: "animate-pulse bg-muted rounded-lg",
+        style: { minHeight: Lt ? void 0 : It, flex: Lt ? 1 : void 0 }
+      }
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "div",
+      {
+        id: `univer-${At._id}`,
+        className: `rounded-lg border overflow-hidden${Lt ? " flex-1 min-h-0" : ""}`,
+        style: {
+          minHeight: Lt ? void 0 : It,
+          display: At._univerReady ? "block" : "none"
+        }
+      }
+    ),
+    At._univerReady && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-2 flex-wrap", children: [
+      wt && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "button",
+        {
+          className: "flex items-center gap-1 px-3 py-1 rounded bg-muted hover:bg-muted/80 text-sm border",
+          onClick: Mt,
+          disabled: Rt,
+          title: "Enregistre l'état actuel du classeur dans le snapshot (écrase la requête SQL)",
+          children: [
+            Rt ? "⏳" : "💾",
+            " ",
+            Rt ? "Enregistrement..." : "Enregistrer snapshot"
+          ]
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "button",
+        {
+          className: "flex items-center gap-1 px-3 py-1 rounded bg-muted hover:bg-muted/80 text-sm border",
+          onClick: Ot,
+          disabled: jt,
+          title: "Exporte le classeur actuel au format .xlsx",
+          children: [
+            jt ? "⏳" : "📥",
+            " ",
+            jt ? "Export..." : "Exporter XLSX"
+          ]
+        }
+      )
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(ResultInfo, { cell: At })
+  ] });
+}
 function CellBody({ cell: At, path: yt, cellIndex: xt, group: wt }) {
   const {
     devMode: Ct,
@@ -138682,6 +138849,8 @@ function CellBody({ cell: At, path: yt, cellIndex: xt, group: wt }) {
         return /* @__PURE__ */ jsxRuntimeExports.jsx(PdfmeBody, { cell: At, path: yt, cellIndex: xt });
       case "perspective":
         return /* @__PURE__ */ jsxRuntimeExports.jsx(PerspectiveBody, { cell: At, path: yt, cellIndex: xt });
+      case "univerSheet":
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(UniverSheetBody, { cell: At, path: yt, cellIndex: xt });
       default:
         return null;
     }
@@ -143936,8 +144105,8 @@ class GitHubGistManager {
     return `https://ihatexcel.github.io/sqljob/?gist=${xt}`;
   }
 }
-hm(GitHubGistManager, "CLIENT_ID", ""), // À configurer par l'utilisateur
-hm(GitHubGistManager, "REDIRECT_URI", window.location.origin + window.location.pathname), hm(GitHubGistManager, "ACCESS_TOKEN_KEY", "github_access_token");
+cm(GitHubGistManager, "CLIENT_ID", ""), // À configurer par l'utilisateur
+cm(GitHubGistManager, "REDIRECT_URI", window.location.origin + window.location.pathname), cm(GitHubGistManager, "ACCESS_TOKEN_KEY", "github_access_token");
 function initializeCell(At, yt, xt = {}) {
   const wt = xt.generateId || (() => "cell_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9)), Ct = {
     ...At,
@@ -144616,6 +144785,21 @@ const createExportSlice = (At, yt) => ({
   // ─── Config dans le store — remplace ConfigManager.buildConfigFromState(this.pages, ...) ───
   async buildExportConfig(xt = {}) {
     const wt = yt(), Ct = xt.devMode ?? wt.devMode, St = xt.showLayout ?? wt.showLayout, Et = xt.includeFileData ?? !1, kt = localStorage.getItem(STORAGE_PRESET) || "default", Tt = kt === "custom" && localStorage.getItem(STORAGE_LIGHT) || "", $t = kt === "custom" && localStorage.getItem(STORAGE_DARK) || "";
+    try {
+      let Lt = function(Rt) {
+        for (const Dt of Rt || []) {
+          for (const jt of Dt.cells || []) It.push(jt);
+          Lt(Dt.children || []);
+        }
+      };
+      const It = [];
+      for (const Rt of wt.pages || [])
+        Lt(Rt.groups || []), Lt(Rt.linkGroups || []);
+      for (const Rt of It)
+        Rt.type === "univerSheet" && Rt._univerModified && Rt._univerAPI && await yt().captureUniverSnapshot(Rt);
+    } catch (Lt) {
+      console.warn("[exportSlice] Erreur capture snapshots Univer:", Lt);
+    }
     return ConfigManager.buildConfigFromState(
       wt.pages,
       Ct,
@@ -145845,6 +146029,30 @@ function formatValueForInputType(At, yt) {
   }
   return String(At);
 }
+function _buildUniverWorkbookFromRows(At, yt) {
+  const xt = "sheet-" + yt, wt = {};
+  if (!At || At.length === 0)
+    return { id: "wb-" + yt, name: "Sheet", sheets: { [xt]: { id: xt, name: "Sheet1", cellData: wt } } };
+  const Ct = Object.keys(At[0]);
+  return wt[0] = {}, Ct.forEach((St, Et) => {
+    wt[0][Et] = { v: St };
+  }), At.forEach((St, Et) => {
+    wt[Et + 1] = {}, Ct.forEach((kt, Tt) => {
+      const $t = St[kt];
+      wt[Et + 1][Tt] = { v: $t ?? "" };
+    });
+  }), {
+    id: "wb-" + yt,
+    name: "Sheet",
+    sheets: {
+      [xt]: {
+        id: xt,
+        name: "Sheet1",
+        cellData: wt
+      }
+    }
+  };
+}
 const DDL_RE = /^\s*(CREATE|DROP|ALTER|INSERT|UPDATE|DELETE|TRUNCATE|RENAME|COMMENT)\b/im;
 function sqlIsDdl(At) {
   return At.split(";").some((yt) => DDL_RE.test(yt));
@@ -146587,6 +146795,87 @@ ${Zt}
       xt._perspectiveRendering = !1;
     }
   },
+  // ─── Univer Sheet ─────────────────────────────────────────────────────────
+  async executeUniverSheetCell(xt) {
+    var Nt, Mt, Ot, Bt;
+    if (yt().setStatus("Chargement de Univer...", "loading"), await CDNManager.loadUniver(), xt._univerReady = !1, At((zt) => ({ _rev: zt._rev + 1 })), xt._univerInstance) {
+      try {
+        (Mt = (Nt = xt._univerInstance).dispose) == null || Mt.call(Nt);
+      } catch {
+      }
+      xt._univerInstance = null, xt._univerAPI = null;
+    }
+    const wt = "univer-" + xt._id;
+    let Ct = 0;
+    for (; !document.getElementById(wt) && Ct < 2e3; )
+      await new Promise((zt) => setTimeout(zt, 50)), Ct += 50;
+    const St = document.getElementById(wt);
+    if (!St) throw new Error("Container DOM introuvable pour Univer Sheet");
+    const Et = window.UniverPresetSheetsCore;
+    if (!Et) throw new Error("Bibliothèque Univer introuvable (CDN non chargé)");
+    const { createUniver: kt, defaultTheme: Tt, LocaleType: $t, UniverSheetsPreset: Lt } = Et, { univer: It, univerAPI: Rt } = kt({
+      locale: $t.EN_US,
+      theme: Tt,
+      presets: [
+        Lt({ container: St })
+      ]
+    });
+    if (xt._univerInstance = It, xt._univerAPI = Rt, xt.snapshot && String(xt.snapshot).trim()) {
+      yt().setStatus("Chargement du snapshot...", "loading");
+      try {
+        const zt = await ConfigManager.decompressFromGzipBase64(xt.snapshot.trim()), Yt = JSON.parse(zt);
+        Rt.createWorkbook(Yt);
+      } catch (zt) {
+        throw console.error("[univerSheet] Erreur décompression snapshot:", zt), new Error("Snapshot Univer invalide : " + zt.message);
+      }
+    } else {
+      const zt = (Ot = ConfigManager.getCellQuery(xt, 0)) == null ? void 0 : Ot.trim();
+      if (zt) {
+        yt().setStatus("Exécution de la requête SQL...", "loading");
+        const Yt = yt().parseQueryWithParameters(zt), { rows: Kt } = await DuckDBManager.executeQueryWithSchema(Yt), Jt = _buildUniverWorkbookFromRows(Kt, xt._id);
+        Rt.createWorkbook(Jt);
+      } else
+        Rt.createWorkbook({ id: "wb-" + xt._id, name: xt.name || "Sheet", sheets: {} });
+    }
+    if (!yt().devMode && xt.readOnly !== !1)
+      try {
+        (Bt = Rt.setEditable) == null || Bt.call(Rt, !1);
+      } catch {
+      }
+    yt().devMode && (It != null && It.onCommandExecuted) && It.onCommandExecuted(() => {
+      xt._univerModified = !0;
+    }), xt._univerReady = !0;
+    const jt = xt.snapshot ? "(snapshot)" : "";
+    xt._resultInfo = "✅ Sheet prête " + jt, yt().setStatus("Univer Sheet prête", "success");
+  },
+  async captureUniverSnapshot(xt) {
+    var wt, Ct, St;
+    if (xt._univerAPI)
+      try {
+        const Et = (Ct = (wt = xt._univerAPI).getActiveWorkbook) == null ? void 0 : Ct.call(wt);
+        if (!Et) return;
+        const kt = (St = Et.save) == null ? void 0 : St.call(Et);
+        if (!kt) return;
+        const Tt = JSON.stringify(kt);
+        xt.snapshot = await ConfigManager.compressToGzipBase64(Tt);
+        const $t = ConfigManager.ensureCellQueries(xt, "main");
+        $t && ($t.sql = ""), xt._univerModified = !1, At((Lt) => ({ _rev: Lt._rev + 1 }));
+      } catch (Et) {
+        throw console.error("[univerSheet] Erreur capture snapshot:", Et), Et;
+      }
+  },
+  async exportUniverToXlsx(xt) {
+    if (!xt._univerAPI) throw new Error("Univer non initialisé");
+    yt().setStatus("Chargement du plugin export...", "loading"), await CDNManager.loadUniverExport();
+    const wt = window.UniverImportExport;
+    if (!wt) throw new Error("Plugin export Univer introuvable (CDN non chargé)");
+    try {
+      const { exportXLSX: Ct } = wt, St = await Ct(xt._univerAPI), Et = (xt.name || "sheet") + ".xlsx";
+      FileHandler.downloadFile(St, Et), yt().setStatus("Export XLSX terminé", "success");
+    } catch (Ct) {
+      throw console.error("[univerSheet] Erreur export XLSX:", Ct), Ct;
+    }
+  },
   async runGroupsFromIndex(xt) {
     const wt = yt().getGroups();
     for (let Ct = xt; Ct < wt.length; Ct++)
@@ -147017,7 +147306,8 @@ function buildInitialState() {
       { type: "sqlStat", label: "Stat SQL", icon: "monitoring" },
       { type: "publipostageWord", label: "Publipostage Word", icon: "description" },
       { type: "pdfme", label: "PDF (pdfme)", icon: "picture-as-pdf" },
-      { type: "perspective", label: "Perspective Viewer", icon: "analytics" }
+      { type: "perspective", label: "Perspective Viewer", icon: "analytics" },
+      { type: "univerSheet", label: "Univer Sheet", icon: "table-chart" }
     ],
     _tables: {},
     _duckdbTables: {},
@@ -148502,7 +148792,7 @@ Solution : servir via HTTP → npm run dev:cdn puis ouvrir http://localhost:5174
 class SQLJobApp extends HTMLElement {
   constructor() {
     super(...arguments);
-    hm(this, "_root", null);
+    cm(this, "_root", null);
   }
   connectedCallback() {
     this._root = createRoot$1(this), this._root.render(React$2.createElement(App));
@@ -149349,7 +149639,7 @@ function requireBigInteger() {
       }, R1 = /^[A-Za-z_]/, O1 = dy([["A", "Z"], ["a", "z"], "_"], !1, !1), H1 = /^[A-Za-z0-9_]/, Zp = dy([["A", "Z"], ["a", "z"], ["0", "9"], "_"], !1, !1), Km = /^[A-Za-z0-9_:\u4E00-\u9FA5\xC0-\u017F]/, U$ = dy([["A", "Z"], ["a", "z"], ["0", "9"], "_", ":", ["一", "龥"], ["À", "ſ"]], !1, !1), uv = A0(":", !1), tv = A0("OVER", !0), o$ = A0("filter", !0), I$ = A0("BOTH", !0), w1 = A0("LEADING", !0), Cv = A0("TRAILING", !0), Y$ = A0("trim", !0), Hv = A0("AT TIME ZONE", !0), W$ = A0("CENTURY", !0), R$ = A0("DAY", !0), z$ = A0("DATE", !0), Jv = A0("DECADE", !0), nA = A0("DOW", !0), oA = A0("DOY", !0), M$ = A0("EPOCH", !0), Kv = A0("HOUR", !0), Mv = A0("ISODOW", !0), TA = A0("ISOYEAR", !0), pA = A0("MICROSECONDS", !0), H$ = A0("MILLENNIUM", !0), Iv = A0("MILLISECONDS", !0), Gv = A0("MINUTE", !0), xA = A0("MONTH", !0), LA = A0("QUARTER", !0), NA = A0("SECOND", !0), IA = A0("TIMEZONE", !0), gv = A0("TIMEZONE_HOUR", !0), Vy = A0("TIMEZONE_MINUTE", !0), yy = A0("WEEK", !0), AA = A0("YEAR", !0), eA = A0("u&", !0), aA = function(Wr, vn) {
         return { type: Wr.toLowerCase(), value: vn[1].join("") };
       }, xy = /^[^"\\\0-\x1F\x7F]/, ty = dy(['"', "\\", ["\0", ""], ""], !0, !1), wA = /^[^'\\]/, Pv = dy(["'", "\\"], !0, !1), SA = A0("\\'", !1), oy = A0('\\"', !1), qA = A0("\\\\", !1), RA = A0("\\/", !1), iA = A0("\\b", !1), ky = A0("\\f", !1), Oo = A0("\\n", !1), Cl = A0("\\r", !1), su = A0("\\t", !1), Yl = A0("\\u", !1), dp = A0("\\", !1), Zu = A0("''", !1), wl = A0('""', !1), lu = A0("``", !1), Uu = /^[\n\r]/, Xp = dy([`
-`, "\r"], !1, !1), T0 = /^[0-9]/, j0 = dy([["0", "9"]], !1, !1), fm = /^[0-9a-fA-F]/, Sm = dy([["0", "9"], ["a", "f"], ["A", "F"]], !1, !1), Nm = /^[eE]/, qm = dy(["e", "E"], !1, !1), l1 = /^[+\-]/, B1 = dy(["+", "-"], !1, !1), E1 = A0("NULL", !0), h$ = A0("NOT NULL", !0), d$ = A0("TRUE", !0), jo = A0("TO", !0), Su = A0("FALSE", !0), fs = A0("DROP", !0), e0 = A0("USE", !0), m0 = A0("ALTER", !0), a0 = A0("SELECT", !0), xm = A0("UPDATE", !0), N0 = A0("CREATE", !0), r1 = A0("TEMPORARY", !0), Q0 = A0("DELETE", !0), q0 = A0("INSERT", !0), z1 = A0("RECURSIVE", !0), U1 = A0("REPLACE", !0), im = A0("RENAME", !0), Fm = A0("IGNORE", !0), r$ = A0("PARTITION", !0), j1 = A0("INTO", !0), G1 = A0("OVERWRITE", !0), Zm = A0("FROM", !0), Gm = A0("UNLOCK", !0), q1 = A0("AS", !0), p$ = A0("TABLE", !0), J1 = A0("TABLES", !0), P$ = A0("DATABASE", !0), Q$ = A0("SCHEMA", !0), C$ = A0("ON", !0), V1 = A0("LEFT", !0), b$ = A0("RIGHT", !0), cA = A0("FULL", !0), jv = A0("CROSS", !0), Yv = A0("INNER", !0), DA = A0("JOIN", !0), wy = A0("OUTER", !0), v_ = A0("UNION", !0), Dy = A0("VALUES", !0), N_ = A0("USING", !0), i_ = A0("WHERE", !0), wv = A0("GROUP", !0), Vv = A0("BY", !0), tA = A0("ORDER", !0), uy = A0("HAVING", !0), EA = A0("LIMIT", !0), Ey = A0("OFFSET", !0), Cy = A0("ASC", !0), e_ = A0("DESC", !0), f_ = A0("ALL", !0), L_ = A0("DISTINCT", !0), M_ = A0("BETWEEN", !0), Wx = A0("IN", !0), nx = A0("IS", !0), $x = A0("LIKE", !0), W_ = A0("RLIKE", !0), Q_ = A0("EXISTS", !0), jy = A0("NOT", !0), XA = A0("AND", !0), o_ = A0("OR", !0), I_ = A0("COUNT", !0), ax = A0("MAX", !0), y2 = A0("MIN", !0), S1 = A0("SUM", !0), _$ = A0("AVG", !0), dA = A0("EXTRACT", !0), CA = A0("CALL", !0), Iy = A0("CASE", !0), fy = A0("WHEN", !0), KA = A0("THEN", !0), Ty = A0("ELSE", !0), C_ = A0("END", !0), ix = A0("CAST", !0), s2 = A0("ARRAY", !0), l2 = A0("ARRAY_AGG", !0), P_ = A0("CHAR", !0), O_ = A0("VARCHAR", !0), F_ = A0("NUMERIC", !0), Qx = A0("DECIMAL", !0), s$ = A0("SIGNED", !0), Rv = A0("STRING", !0), ry = A0("UNSIGNED", !0), e$ = A0("INT", !0), Z$ = A0("ZEROFILL", !0), yv = A0("INTEGER", !0), q$ = A0("JSON", !0), Zv = A0("SMALLINT", !0), ZA = A0("TINYINT", !0), sA = A0("TINYTEXT", !0), kA = A0("TEXT", !0), b_ = A0("MEDIUMTEXT", !0), A_ = A0("LONGTEXT", !0), MA = A0("BIGINT", !0), Ny = A0("FLOAT", !0), rw = A0("REAL", !0), gp = A0("DOUBLE", !0), g0 = A0("DATETIME", !0), Os = A0("ROWS", !0), Mu = A0("TIME", !0), Ap = A0("TIMESTAMP", !0), M0 = A0("TRUNCATE", !0), tm = A0("USER", !0), mm = A0("CURRENT_DATE", !0), jm = A0("INTERVAL", !0), o1 = A0("CURRENT_TIME", !0), k$ = A0("CURRENT_TIMESTAMP", !0), qv = A0("CURRENT_USER", !0), yA = A0("SESSION_USER", !0), PA = A0("SYSTEM_USER", !0), HA = A0("GLOBAL", !0), y_ = A0("SESSION", !0), vx = A0("PERSIST", !0), L2 = A0("PERSIST_ONLY", !0), Dr = A0("@", !1), Bp = A0("@@", !1), Yx = A0("$", !1), t_ = A0("return", !0), I2 = A0(":=", !1), Ul = A0("DUAL", !0), H0 = A0("ADD", !0), bx = A0("COLUMN", !0), Dw = A0("INDEX", !0), Fw = A0("FULLTEXT", !0), l0 = A0("SPATIAL", !0), Bw = A0("COMMENT", !0), Nx = A0("CONSTRAINT", !0), ox = A0("REFERENCES", !0), __ = A0("SQL_CALC_FOUND_ROWS", !0), Lr = A0("SQL_CACHE", !0), Up = A0("SQL_NO_CACHE", !0), gw = A0("SQL_SMALL_RESULT", !0), ux = A0("SQL_BIG_RESULT", !0), nw = A0("SQL_BUFFER_RESULT", !0), Ml = A0(",", !1), k0 = A0("[", !1), Y_ = A0("]", !1), eE = A0(";", !1), $w = A0("->", !1), Qp = A0("||", !1), Qw = A0("&&", !1), Uw = A0("/*", !1), jw = A0("*/", !1), zw = A0("--", !1), qx = A0("#", !1), P2 = { type: "any" }, aw = /^[ \t\n\r]/, Xx = dy([" ", "	", `
+`, "\r"], !1, !1), T0 = /^[0-9]/, j0 = dy([["0", "9"]], !1, !1), dm = /^[0-9a-fA-F]/, Sm = dy([["0", "9"], ["a", "f"], ["A", "F"]], !1, !1), Nm = /^[eE]/, qm = dy(["e", "E"], !1, !1), l1 = /^[+\-]/, B1 = dy(["+", "-"], !1, !1), E1 = A0("NULL", !0), h$ = A0("NOT NULL", !0), d$ = A0("TRUE", !0), jo = A0("TO", !0), Su = A0("FALSE", !0), fs = A0("DROP", !0), e0 = A0("USE", !0), m0 = A0("ALTER", !0), a0 = A0("SELECT", !0), xm = A0("UPDATE", !0), N0 = A0("CREATE", !0), r1 = A0("TEMPORARY", !0), Q0 = A0("DELETE", !0), q0 = A0("INSERT", !0), z1 = A0("RECURSIVE", !0), U1 = A0("REPLACE", !0), im = A0("RENAME", !0), Fm = A0("IGNORE", !0), r$ = A0("PARTITION", !0), j1 = A0("INTO", !0), G1 = A0("OVERWRITE", !0), Zm = A0("FROM", !0), Gm = A0("UNLOCK", !0), q1 = A0("AS", !0), p$ = A0("TABLE", !0), J1 = A0("TABLES", !0), P$ = A0("DATABASE", !0), Q$ = A0("SCHEMA", !0), C$ = A0("ON", !0), V1 = A0("LEFT", !0), b$ = A0("RIGHT", !0), cA = A0("FULL", !0), jv = A0("CROSS", !0), Yv = A0("INNER", !0), DA = A0("JOIN", !0), wy = A0("OUTER", !0), v_ = A0("UNION", !0), Dy = A0("VALUES", !0), N_ = A0("USING", !0), i_ = A0("WHERE", !0), wv = A0("GROUP", !0), Vv = A0("BY", !0), tA = A0("ORDER", !0), uy = A0("HAVING", !0), EA = A0("LIMIT", !0), Ey = A0("OFFSET", !0), Cy = A0("ASC", !0), e_ = A0("DESC", !0), f_ = A0("ALL", !0), L_ = A0("DISTINCT", !0), M_ = A0("BETWEEN", !0), Wx = A0("IN", !0), nx = A0("IS", !0), $x = A0("LIKE", !0), W_ = A0("RLIKE", !0), Q_ = A0("EXISTS", !0), jy = A0("NOT", !0), XA = A0("AND", !0), o_ = A0("OR", !0), I_ = A0("COUNT", !0), ax = A0("MAX", !0), y2 = A0("MIN", !0), S1 = A0("SUM", !0), _$ = A0("AVG", !0), dA = A0("EXTRACT", !0), CA = A0("CALL", !0), Iy = A0("CASE", !0), fy = A0("WHEN", !0), KA = A0("THEN", !0), Ty = A0("ELSE", !0), C_ = A0("END", !0), ix = A0("CAST", !0), s2 = A0("ARRAY", !0), l2 = A0("ARRAY_AGG", !0), P_ = A0("CHAR", !0), O_ = A0("VARCHAR", !0), F_ = A0("NUMERIC", !0), Qx = A0("DECIMAL", !0), s$ = A0("SIGNED", !0), Rv = A0("STRING", !0), ry = A0("UNSIGNED", !0), e$ = A0("INT", !0), Z$ = A0("ZEROFILL", !0), yv = A0("INTEGER", !0), q$ = A0("JSON", !0), Zv = A0("SMALLINT", !0), ZA = A0("TINYINT", !0), sA = A0("TINYTEXT", !0), kA = A0("TEXT", !0), b_ = A0("MEDIUMTEXT", !0), A_ = A0("LONGTEXT", !0), MA = A0("BIGINT", !0), Ny = A0("FLOAT", !0), rw = A0("REAL", !0), gp = A0("DOUBLE", !0), g0 = A0("DATETIME", !0), Os = A0("ROWS", !0), Mu = A0("TIME", !0), Ap = A0("TIMESTAMP", !0), M0 = A0("TRUNCATE", !0), tm = A0("USER", !0), mm = A0("CURRENT_DATE", !0), jm = A0("INTERVAL", !0), o1 = A0("CURRENT_TIME", !0), k$ = A0("CURRENT_TIMESTAMP", !0), qv = A0("CURRENT_USER", !0), yA = A0("SESSION_USER", !0), PA = A0("SYSTEM_USER", !0), HA = A0("GLOBAL", !0), y_ = A0("SESSION", !0), vx = A0("PERSIST", !0), L2 = A0("PERSIST_ONLY", !0), Dr = A0("@", !1), Bp = A0("@@", !1), Yx = A0("$", !1), t_ = A0("return", !0), I2 = A0(":=", !1), Ul = A0("DUAL", !0), H0 = A0("ADD", !0), bx = A0("COLUMN", !0), Dw = A0("INDEX", !0), Fw = A0("FULLTEXT", !0), l0 = A0("SPATIAL", !0), Bw = A0("COMMENT", !0), Nx = A0("CONSTRAINT", !0), ox = A0("REFERENCES", !0), __ = A0("SQL_CALC_FOUND_ROWS", !0), Lr = A0("SQL_CACHE", !0), Up = A0("SQL_NO_CACHE", !0), gw = A0("SQL_SMALL_RESULT", !0), ux = A0("SQL_BIG_RESULT", !0), nw = A0("SQL_BUFFER_RESULT", !0), Ml = A0(",", !1), k0 = A0("[", !1), Y_ = A0("]", !1), eE = A0(";", !1), $w = A0("->", !1), Qp = A0("||", !1), Qw = A0("&&", !1), Uw = A0("/*", !1), jw = A0("*/", !1), zw = A0("--", !1), qx = A0("#", !1), P2 = { type: "any" }, aw = /^[ \t\n\r]/, Xx = dy([" ", "	", `
 `, "\r"], !1, !1), _2 = function(Wr) {
         return { dataType: Wr };
       }, Mx = A0("boolean", !0), Sr = 0, Dp = 0, q2 = [{ line: 1, column: 1 }], zy = 0, GA = [], xl = 0;
@@ -150892,7 +151182,7 @@ function requireBigInteger() {
       }
       function Z_() {
         var Wr;
-        return fm.test(Et.charAt(Sr)) ? (Wr = Et.charAt(Sr), Sr++) : (Wr = $t, xl === 0 && Pp(Sm)), Wr;
+        return dm.test(Et.charAt(Sr)) ? (Wr = Et.charAt(Sr), Sr++) : (Wr = $t, xl === 0 && Pp(Sm)), Wr;
       }
       function Tx() {
         var Wr, vn, Hn, eo;
@@ -151617,7 +151907,7 @@ function requireBigInteger() {
         return Bo[Hr.toUpperCase()] === !0;
       }, iA = r0('"', !1), ky = /^[^"]/, Oo = np(['"'], !0, !1), Cl = /^[^']/, su = np(["'"], !0, !1), Yl = r0("`", !1), dp = /^[^`]/, Zu = np(["`"], !0, !1), wl = function(Hr, mn) {
         return Hr + mn.join("");
-      }, lu = /^[A-Za-z_]/, Uu = np([["A", "Z"], ["a", "z"], "_"], !1, !1), Xp = /^[A-Za-z0-9_\-]/, T0 = np([["A", "Z"], ["a", "z"], ["0", "9"], "_", "-"], !1, !1), j0 = /^[A-Za-z0-9_:\u4E00-\u9FA5\xC0-\u017F]/, fm = np([["A", "Z"], ["a", "z"], ["0", "9"], "_", ":", ["一", "龥"], ["À", "ſ"]], !1, !1), Sm = r0(":", !1), Nm = r0("string_agg", !0), qm = r0("ANY_VALUE", !0), l1 = r0("YEAR_MONTH", !0), B1 = r0("DAY_HOUR", !0), E1 = r0("DAY_MINUTE", !0), h$ = r0("DAY_SECOND", !0), d$ = r0("DAY_MICROSECOND", !0), jo = r0("HOUR_MINUTE", !0), Su = r0("HOUR_SECOND", !0), fs = r0("HOUR_MICROSECOND", !0), e0 = r0("MINUTE_SECOND", !0), m0 = r0("MINUTE_MICROSECOND", !0), a0 = r0("SECOND_MICROSECOND", !0), xm = r0("TIMEZONE_HOUR", !0), N0 = r0("TIMEZONE_MINUTE", !0), r1 = r0("CENTURY", !0), Q0 = r0("DAYOFWEEK", !0), q0 = r0("DAY", !0), z1 = r0("DATE", !0), U1 = r0("DECADE", !0), im = r0("DOW", !0), Fm = r0("DOY", !0), r$ = r0("EPOCH", !0), j1 = r0("HOUR", !0), G1 = r0("ISODOW", !0), Zm = r0("ISOWEEK", !0), Gm = r0("ISOYEAR", !0), q1 = r0("MICROSECONDS", !0), p$ = r0("MILLENNIUM", !0), J1 = r0("MILLISECONDS", !0), P$ = r0("MINUTE", !0), Q$ = r0("MONTH", !0), C$ = r0("QUARTER", !0), V1 = r0("SECOND", !0), b$ = r0("TIME", !0), cA = r0("TIMEZONE", !0), jv = r0("WEEK", !0), Yv = r0("YEAR", !0), DA = r0("DATE_TRUNC", !0), wy = r0("R", !0), v_ = function(Hr, mn) {
+      }, lu = /^[A-Za-z_]/, Uu = np([["A", "Z"], ["a", "z"], "_"], !1, !1), Xp = /^[A-Za-z0-9_\-]/, T0 = np([["A", "Z"], ["a", "z"], ["0", "9"], "_", "-"], !1, !1), j0 = /^[A-Za-z0-9_:\u4E00-\u9FA5\xC0-\u017F]/, dm = np([["A", "Z"], ["a", "z"], ["0", "9"], "_", ":", ["一", "龥"], ["À", "ſ"]], !1, !1), Sm = r0(":", !1), Nm = r0("string_agg", !0), qm = r0("ANY_VALUE", !0), l1 = r0("YEAR_MONTH", !0), B1 = r0("DAY_HOUR", !0), E1 = r0("DAY_MINUTE", !0), h$ = r0("DAY_SECOND", !0), d$ = r0("DAY_MICROSECOND", !0), jo = r0("HOUR_MINUTE", !0), Su = r0("HOUR_SECOND", !0), fs = r0("HOUR_MICROSECOND", !0), e0 = r0("MINUTE_SECOND", !0), m0 = r0("MINUTE_MICROSECOND", !0), a0 = r0("SECOND_MICROSECOND", !0), xm = r0("TIMEZONE_HOUR", !0), N0 = r0("TIMEZONE_MINUTE", !0), r1 = r0("CENTURY", !0), Q0 = r0("DAYOFWEEK", !0), q0 = r0("DAY", !0), z1 = r0("DATE", !0), U1 = r0("DECADE", !0), im = r0("DOW", !0), Fm = r0("DOY", !0), r$ = r0("EPOCH", !0), j1 = r0("HOUR", !0), G1 = r0("ISODOW", !0), Zm = r0("ISOWEEK", !0), Gm = r0("ISOYEAR", !0), q1 = r0("MICROSECONDS", !0), p$ = r0("MILLENNIUM", !0), J1 = r0("MILLISECONDS", !0), P$ = r0("MINUTE", !0), Q$ = r0("MONTH", !0), C$ = r0("QUARTER", !0), V1 = r0("SECOND", !0), b$ = r0("TIME", !0), cA = r0("TIMEZONE", !0), jv = r0("WEEK", !0), Yv = r0("YEAR", !0), DA = r0("DATE_TRUNC", !0), wy = r0("R", !0), v_ = function(Hr, mn) {
         return { type: Hr.toLowerCase(), value: mn[1].join("") };
       }, Dy = /^[^"\\\0-\x1F\x7F]/, N_ = np(['"', "\\", ["\0", ""], ""], !0, !1), i_ = /^[^'\\]/, wv = np(["'", "\\"], !0, !1), Vv = r0("\\'", !1), tA = r0('\\"', !1), uy = r0("\\\\", !1), EA = r0("\\/", !1), Ey = r0("\\b", !1), Cy = r0("\\f", !1), e_ = r0("\\n", !1), f_ = r0("\\r", !1), L_ = r0("\\t", !1), M_ = r0("\\u", !1), Wx = r0("\\", !1), nx = r0("''", !1), $x = r0('""', !1), W_ = r0("``", !1), Q_ = /^[\n\r]/, jy = np([`
 `, "\r"], !1, !1), XA = /^[0-9]/, o_ = np([["0", "9"]], !1, !1), I_ = /^[0-9a-fA-F]/, ax = np([["0", "9"], ["a", "f"], ["A", "F"]], !1, !1), y2 = /^[eE]/, S1 = np(["e", "E"], !1, !1), _$ = /^[+\-]/, dA = np(["+", "-"], !1, !1), CA = r0("NULL", !0), Iy = r0("NOT NULL", !0), fy = r0("TRUE", !0), KA = r0("TO", !0), Ty = r0("FALSE", !0), C_ = r0("DROP", !0), ix = r0("USE", !0), s2 = r0("SELECT", !0), l2 = r0("RECURSIVE", !0), P_ = r0("IGNORE", !0), O_ = r0("PARTITION", !0), F_ = r0("INTO", !0), Qx = r0("FROM", !0), s$ = r0("UNLOCK", !0), Rv = r0("TABLE", !0), ry = r0("TABLES", !0), e$ = r0("ON", !0), Z$ = r0("LEFT", !0), yv = r0("RIGHT", !0), q$ = r0("FULL", !0), Zv = r0("INNER", !0), ZA = r0("CROSS", !0), sA = r0("JOIN", !0), kA = r0("OUTER", !0), b_ = r0("OVER", !0), A_ = r0("UNION", !0), MA = r0("VALUE", !0), Ny = r0("VALUES", !0), rw = r0("USING", !0), gp = r0("WHERE", !0), g0 = r0("GROUP", !0), Os = r0("ORDER", !0), Mu = r0("HAVING", !0), Ap = r0("QUALIFY", !0), M0 = r0("WINDOW", !0), tm = r0("ORDINAL", !0), mm = r0("SAFE_ORDINAL", !0), jm = r0("LIMIT", !0), o1 = r0("OFFSET", !0), k$ = r0("SAFE_OFFSET", !0), qv = r0("ASC", !0), yA = r0("DESC", !0), PA = r0("ALL", !0), HA = r0("DISTINCT", !0), y_ = r0("BETWEEN", !0), vx = r0("IN", !0), L2 = r0("IS", !0), Dr = r0("LIKE", !0), Bp = r0("EXISTS", !0), Yx = r0("AND", !0), t_ = r0("OR", !0), I2 = r0("COUNT", !0), Ul = r0("MAX", !0), H0 = r0("MIN", !0), bx = r0("SUM", !0), Dw = r0("AVG", !0), Fw = r0("EXTRACT", !0), l0 = r0("CALL", !0), Bw = r0("CASE", !0), Nx = r0("WHEN", !0), ox = r0("THEN", !0), __ = r0("ELSE", !0), Lr = r0("END", !0), Up = r0("CAST", !0), gw = r0("SAFE_CAST", !0), ux = r0("ARRAY", !0), nw = r0("ARRAY_AGG", !0), Ml = r0("STRING_AGG", !0), k0 = r0("BYTES", !0), Y_ = r0("BOOL", !0), eE = r0("GEOGRAPHY", !0), $w = r0("NUMERIC", !0), Qp = r0("DECIMAL", !0), Qw = r0("SIGNED", !0), Uw = r0("UNSIGNED", !0), jw = r0("INT64", !0), zw = r0("INTEGER", !0), qx = r0("JSON", !0), P2 = r0("STRING", !0), aw = r0("STRUCT", !0), Xx = r0("FLOAT64", !0), _2 = r0("DATETIME", !0), Mx = r0("TIMESTAMP", !0), Sr = r0("TRUNCATE", !0), Dp = r0("CURRENT_DATE", !0), q2 = r0("INTERVAL", !0), zy = r0("CURRENT_TIME", !0), GA = r0("CURRENT_TIMESTAMP", !0), xl = r0("SESSION_USER", !0), A0 = r0("GLOBAL", !0), dy = r0("SESSION", !0), vw = r0("PIVOT", !0), Nw = r0("PERSIST", !0), Pp = r0("PERSIST_ONLY", !0), Ax = r0("VIEW", !0), x_ = r0("ADD", !0), Hw = r0("COLUMN", !0), iw = r0("INDEX", !0), R2 = r0("FULLTEXT", !0), yx = r0("COMMENT", !0), lE = r0("REFERENCES", !0), bw = r0(",", !1), tE = r0("[", !1), uE = r0("]", !1), Gw = r0(";", !1), Yw = r0("||", !1), qw = r0("&&", !1), rE = r0("/*", !1), u2 = r0("*/", !1), hE = r0("--", !1), Aw = r0("#", !1), Xw = { type: "any" }, K2 = /^[ \t\n\r]/, oE = np([" ", "	", `
@@ -153136,7 +153426,7 @@ function requireBigInteger() {
       }
       function Sn() {
         var Hr;
-        return j0.test(Et.charAt(gr)) ? (Hr = Et.charAt(gr), gr++) : (Hr = $t, Qs === 0 && up(fm)), Hr;
+        return j0.test(Et.charAt(gr)) ? (Hr = Et.charAt(gr), gr++) : (Hr = $t, Qs === 0 && up(dm)), Hr;
       }
       function Qn() {
         var Hr, mn, Vn;
@@ -153973,7 +154263,7 @@ function requireBigInteger() {
       }, tv = /^[A-Za-z_\u4E00-\u9FA5\xC0-\u017F]/, o$ = Y_([["A", "Z"], ["a", "z"], "_", ["一", "龥"], ["À", "ſ"]], !1, !1), I$ = /^[A-Za-z0-9_$\u4E00-\u9FA5\xC0-\u017F]/, w1 = Y_([["A", "Z"], ["a", "z"], ["0", "9"], "_", "$", ["一", "龥"], ["À", "ſ"]], !1, !1), Cv = /^[A-Za-z0-9_:\u4E00-\u9FA5\xC0-\u017F]/, Y$ = Y_([["A", "Z"], ["a", "z"], ["0", "9"], "_", ":", ["一", "龥"], ["À", "ſ"]], !1, !1), Hv = k0(":", !1), W$ = function(Xr, pn) {
         return { type: Xr.toLowerCase(), value: pn[1].join("") };
       }, R$ = /^[^"\\\0-\x1F\x7F]/, z$ = Y_(['"', "\\", ["\0", ""], ""], !0, !1), Jv = /^[^'\\]/, nA = Y_(["'", "\\"], !0, !1), oA = k0("\\'", !1), M$ = k0('\\"', !1), Kv = k0("\\\\", !1), Mv = k0("\\/", !1), TA = k0("\\b", !1), pA = k0("\\f", !1), H$ = k0("\\n", !1), Iv = k0("\\r", !1), Gv = k0("\\t", !1), xA = k0("\\u", !1), LA = k0("\\", !1), NA = k0("''", !1), IA = k0('""', !1), gv = k0("``", !1), Vy = /^[\n\r]/, yy = Y_([`
-`, "\r"], !1, !1), AA = k0(".", !1), eA = /^[0-9]/, aA = Y_([["0", "9"]], !1, !1), xy = /^[0-9a-fA-F]/, ty = Y_([["0", "9"], ["a", "f"], ["A", "F"]], !1, !1), wA = /^[eE]/, Pv = Y_(["e", "E"], !1, !1), SA = /^[+\-]/, oy = Y_(["+", "-"], !1, !1), qA = k0("NULL", !0), RA = k0("NOT NULL", !0), iA = k0("TRUE", !0), ky = k0("TO", !0), Oo = k0("FALSE", !0), Cl = k0("DROP", !0), su = k0("USE", !0), Yl = k0("ALTER", !0), dp = k0("SELECT", !0), Zu = k0("UPDATE", !0), wl = k0("CREATE", !0), lu = k0("TEMPORARY", !0), Uu = k0("DELETE", !0), Xp = k0("INSERT", !0), T0 = k0("RECURSIVE", !0), j0 = k0("REPLACE", !0), fm = k0("RENAME", !0), Sm = k0("IGNORE", !0), Nm = k0("PARTITION", !0), qm = k0("INTO", !0), l1 = k0("FROM", !0), B1 = k0("UNLOCK", !0), E1 = k0("AS", !0), h$ = k0("TABLE", !0), d$ = k0("TABLES", !0), jo = k0("DATABASE", !0), Su = k0("SCHEMA", !0), fs = k0("ON", !0), e0 = k0("LEFT", !0), m0 = k0("RIGHT", !0), a0 = k0("FULL", !0), xm = k0("INNER", !0), N0 = k0("JOIN", !0), r1 = k0("OUTER", !0), Q0 = k0("OVER", !0), q0 = k0("UNION", !0), z1 = k0("MINUS", !0), U1 = k0("INTERSECT", !0), im = k0("EXCEPT", !0), Fm = k0("VALUES", !0), r$ = k0("USING", !0), j1 = k0("WHERE", !0), G1 = k0("GROUP", !0), Zm = k0("BY", !0), Gm = k0("ORDER", !0), q1 = k0("HAVING", !0), p$ = k0("FETCH", !0), J1 = k0("OFFSET", !0), P$ = k0("ASC", !0), Q$ = k0("DESC", !0), C$ = k0("ALL", !0), V1 = k0("DISTINCT", !0), b$ = k0("BETWEEN", !0), cA = k0("IN", !0), jv = k0("IS", !0), Yv = k0("LIKE", !0), DA = k0("EXISTS", !0), wy = k0("AND", !0), v_ = k0("OR", !0), Dy = k0("COUNT", !0), N_ = k0("MAX", !0), i_ = k0("MIN", !0), wv = k0("SUM", !0), Vv = k0("AVG", !0), tA = k0("CALL", !0), uy = k0("CASE", !0), EA = k0("WHEN", !0), Ey = k0("THEN", !0), Cy = k0("ELSE", !0), e_ = k0("END", !0), f_ = k0("CAST", !0), L_ = k0("CHAR", !0), M_ = k0("VARCHAR", !0), Wx = k0("NUMERIC", !0), nx = k0("DECIMAL", !0), $x = k0("SIGNED", !0), W_ = k0("UNSIGNED", !0), Q_ = k0("INT", !0), jy = k0("ZEROFILL", !0), XA = k0("INTEGER", !0), o_ = k0("JSON", !0), I_ = k0("SMALLINT", !0), ax = k0("TINYINT", !0), y2 = k0("TINYTEXT", !0), S1 = k0("TEXT", !0), _$ = k0("MEDIUMTEXT", !0), dA = k0("LONGTEXT", !0), CA = k0("BIGINT", !0), Iy = k0("FLOAT", !0), fy = k0("DOUBLE", !0), KA = k0("DATE", !0), Ty = k0("DATETIME", !0), C_ = k0("TIME", !0), ix = k0("TIMESTAMP", !0), s2 = k0("TRUNCATE", !0), l2 = k0("USER", !0), P_ = k0("CURRENT_DATE", !0), O_ = k0("INTERVAL", !0), F_ = k0("YEAR", !0), Qx = k0("MONTH", !0), s$ = k0("DAY", !0), Rv = k0("HOUR", !0), ry = k0("MINUTE", !0), e$ = k0("SECOND", !0), Z$ = k0("CURRENT_TIME", !0), yv = k0("CURRENT_TIMESTAMP", !0), q$ = k0("CURRENT_USER", !0), Zv = k0("SESSION_USER", !0), ZA = k0("SYSTEM_USER", !0), sA = k0("GLOBAL", !0), kA = k0("SESSION", !0), b_ = k0("PERSIST", !0), A_ = k0("PERSIST_ONLY", !0), MA = k0("@", !1), Ny = k0("@@", !1), rw = k0("$", !1), gp = k0("return", !0), g0 = k0(":=", !1), Os = k0("DUAL", !0), Mu = k0("ADD", !0), Ap = k0("COLUMN", !0), M0 = k0("INDEX", !0), tm = k0("FULLTEXT", !0), mm = k0("SPATIAL", !0), jm = k0("COMMENT", !0), o1 = k0("CONSTRAINT", !0), k$ = k0("REFERENCES", !0), qv = k0("SQL_CALC_FOUND_ROWS", !0), yA = k0("SQL_CACHE", !0), PA = k0("SQL_NO_CACHE", !0), HA = k0("SQL_SMALL_RESULT", !0), y_ = k0("SQL_BIG_RESULT", !0), vx = k0("SQL_BUFFER_RESULT", !0), L2 = k0(",", !1), Dr = k0("[", !1), Bp = k0("]", !1), Yx = k0(";", !1), t_ = k0("->", !1), I2 = k0("->>", !1), Ul = k0("||", !1), H0 = k0("&&", !1), bx = k0("/*", !1), Dw = k0("*/", !1), Fw = k0("--", !1), l0 = k0("#", !1), Bw = { type: "any" }, Nx = /^[ \t\n\r]/, ox = Y_([" ", "	", `
+`, "\r"], !1, !1), AA = k0(".", !1), eA = /^[0-9]/, aA = Y_([["0", "9"]], !1, !1), xy = /^[0-9a-fA-F]/, ty = Y_([["0", "9"], ["a", "f"], ["A", "F"]], !1, !1), wA = /^[eE]/, Pv = Y_(["e", "E"], !1, !1), SA = /^[+\-]/, oy = Y_(["+", "-"], !1, !1), qA = k0("NULL", !0), RA = k0("NOT NULL", !0), iA = k0("TRUE", !0), ky = k0("TO", !0), Oo = k0("FALSE", !0), Cl = k0("DROP", !0), su = k0("USE", !0), Yl = k0("ALTER", !0), dp = k0("SELECT", !0), Zu = k0("UPDATE", !0), wl = k0("CREATE", !0), lu = k0("TEMPORARY", !0), Uu = k0("DELETE", !0), Xp = k0("INSERT", !0), T0 = k0("RECURSIVE", !0), j0 = k0("REPLACE", !0), dm = k0("RENAME", !0), Sm = k0("IGNORE", !0), Nm = k0("PARTITION", !0), qm = k0("INTO", !0), l1 = k0("FROM", !0), B1 = k0("UNLOCK", !0), E1 = k0("AS", !0), h$ = k0("TABLE", !0), d$ = k0("TABLES", !0), jo = k0("DATABASE", !0), Su = k0("SCHEMA", !0), fs = k0("ON", !0), e0 = k0("LEFT", !0), m0 = k0("RIGHT", !0), a0 = k0("FULL", !0), xm = k0("INNER", !0), N0 = k0("JOIN", !0), r1 = k0("OUTER", !0), Q0 = k0("OVER", !0), q0 = k0("UNION", !0), z1 = k0("MINUS", !0), U1 = k0("INTERSECT", !0), im = k0("EXCEPT", !0), Fm = k0("VALUES", !0), r$ = k0("USING", !0), j1 = k0("WHERE", !0), G1 = k0("GROUP", !0), Zm = k0("BY", !0), Gm = k0("ORDER", !0), q1 = k0("HAVING", !0), p$ = k0("FETCH", !0), J1 = k0("OFFSET", !0), P$ = k0("ASC", !0), Q$ = k0("DESC", !0), C$ = k0("ALL", !0), V1 = k0("DISTINCT", !0), b$ = k0("BETWEEN", !0), cA = k0("IN", !0), jv = k0("IS", !0), Yv = k0("LIKE", !0), DA = k0("EXISTS", !0), wy = k0("AND", !0), v_ = k0("OR", !0), Dy = k0("COUNT", !0), N_ = k0("MAX", !0), i_ = k0("MIN", !0), wv = k0("SUM", !0), Vv = k0("AVG", !0), tA = k0("CALL", !0), uy = k0("CASE", !0), EA = k0("WHEN", !0), Ey = k0("THEN", !0), Cy = k0("ELSE", !0), e_ = k0("END", !0), f_ = k0("CAST", !0), L_ = k0("CHAR", !0), M_ = k0("VARCHAR", !0), Wx = k0("NUMERIC", !0), nx = k0("DECIMAL", !0), $x = k0("SIGNED", !0), W_ = k0("UNSIGNED", !0), Q_ = k0("INT", !0), jy = k0("ZEROFILL", !0), XA = k0("INTEGER", !0), o_ = k0("JSON", !0), I_ = k0("SMALLINT", !0), ax = k0("TINYINT", !0), y2 = k0("TINYTEXT", !0), S1 = k0("TEXT", !0), _$ = k0("MEDIUMTEXT", !0), dA = k0("LONGTEXT", !0), CA = k0("BIGINT", !0), Iy = k0("FLOAT", !0), fy = k0("DOUBLE", !0), KA = k0("DATE", !0), Ty = k0("DATETIME", !0), C_ = k0("TIME", !0), ix = k0("TIMESTAMP", !0), s2 = k0("TRUNCATE", !0), l2 = k0("USER", !0), P_ = k0("CURRENT_DATE", !0), O_ = k0("INTERVAL", !0), F_ = k0("YEAR", !0), Qx = k0("MONTH", !0), s$ = k0("DAY", !0), Rv = k0("HOUR", !0), ry = k0("MINUTE", !0), e$ = k0("SECOND", !0), Z$ = k0("CURRENT_TIME", !0), yv = k0("CURRENT_TIMESTAMP", !0), q$ = k0("CURRENT_USER", !0), Zv = k0("SESSION_USER", !0), ZA = k0("SYSTEM_USER", !0), sA = k0("GLOBAL", !0), kA = k0("SESSION", !0), b_ = k0("PERSIST", !0), A_ = k0("PERSIST_ONLY", !0), MA = k0("@", !1), Ny = k0("@@", !1), rw = k0("$", !1), gp = k0("return", !0), g0 = k0(":=", !1), Os = k0("DUAL", !0), Mu = k0("ADD", !0), Ap = k0("COLUMN", !0), M0 = k0("INDEX", !0), tm = k0("FULLTEXT", !0), mm = k0("SPATIAL", !0), jm = k0("COMMENT", !0), o1 = k0("CONSTRAINT", !0), k$ = k0("REFERENCES", !0), qv = k0("SQL_CALC_FOUND_ROWS", !0), yA = k0("SQL_CACHE", !0), PA = k0("SQL_NO_CACHE", !0), HA = k0("SQL_SMALL_RESULT", !0), y_ = k0("SQL_BIG_RESULT", !0), vx = k0("SQL_BUFFER_RESULT", !0), L2 = k0(",", !1), Dr = k0("[", !1), Bp = k0("]", !1), Yx = k0(";", !1), t_ = k0("->", !1), I2 = k0("->>", !1), Ul = k0("||", !1), H0 = k0("&&", !1), bx = k0("/*", !1), Dw = k0("*/", !1), Fw = k0("--", !1), l0 = k0("#", !1), Bw = { type: "any" }, Nx = /^[ \t\n\r]/, ox = Y_([" ", "	", `
 `, "\r"], !1, !1), __ = function(Xr) {
         return { dataType: Xr };
       }, Lr = 0, Up = 0, gw = [{ line: 1, column: 1 }], ux = 0, nw = [], Ml = 0;
@@ -155435,7 +155725,7 @@ function requireBigInteger() {
       }
       function h2() {
         var Xr, pn, zn, zr;
-        return Xr = Lr, Et.substr(Lr, 6).toLowerCase() === "rename" ? (pn = Et.substr(Lr, 6), Lr += 6) : (pn = $t, Ml === 0 && Qp(fm)), pn !== $t ? (zn = Lr, Ml++, zr = Wm(), Ml--, zr === $t ? zn = void 0 : (Lr = zn, zn = $t), zn !== $t ? Xr = pn = [pn, zn] : (Lr = Xr, Xr = $t)) : (Lr = Xr, Xr = $t), Xr;
+        return Xr = Lr, Et.substr(Lr, 6).toLowerCase() === "rename" ? (pn = Et.substr(Lr, 6), Lr += 6) : (pn = $t, Ml === 0 && Qp(dm)), pn !== $t ? (zn = Lr, Ml++, zr = Wm(), Ml--, zr === $t ? zn = void 0 : (Lr = zn, zn = $t), zn !== $t ? Xr = pn = [pn, zn] : (Lr = Xr, Xr = $t)) : (Lr = Xr, Xr = $t), Xr;
       }
       function l_() {
         var Xr, pn, zn, zr;
@@ -156062,7 +156352,7 @@ function requireBigInteger() {
         return Mo(Mr, rn);
       }, Dm = Kp("!", !1), Im = Kp(">=", !1), Tm = Kp(">", !1), p1 = Kp("<=", !1), N1 = Kp("<>", !1), $1 = Kp("<", !1), _1 = Kp("!=", !1), R1 = Kp("ESCAPE", !0), O1 = Kp("+", !1), H1 = Kp("-", !1), Zp = Kp("*", !1), Km = Kp("/", !1), U$ = Kp("%", !1), uv = Kp("$", !1), tv = Kp("~", !1), o$ = Kp("?|", !1), I$ = Kp("?&", !1), w1 = Kp("?", !1), Cv = Kp("#-", !1), Y$ = Kp("#>>", !1), Hv = Kp("#>", !1), W$ = Kp("@>", !1), R$ = Kp("<@", !1), z$ = function(Mr) {
         return ym[Mr.toUpperCase()] === !0;
-      }, Jv = Kp('"', !1), nA = /^[^"]/, oA = S_(['"'], !0, !1), M$ = /^[^']/, Kv = S_(["'"], !0, !1), Mv = Kp("`", !1), TA = /^[^`]/, pA = S_(["`"], !0, !1), H$ = /^[A-Za-z_\u4E00-\u9FA5\xC0-\u017F]/, Iv = S_([["A", "Z"], ["a", "z"], "_", ["一", "龥"], ["À", "ſ"]], !1, !1), Gv = /^[A-Za-z0-9_\-$\u4E00-\u9FA5\xC0-\u017F]/, xA = S_([["A", "Z"], ["a", "z"], ["0", "9"], "_", "-", "$", ["一", "龥"], ["À", "ſ"]], !1, !1), LA = /^[A-Za-z0-9_]/, NA = S_([["A", "Z"], ["a", "z"], ["0", "9"], "_"], !1, !1), IA = Kp(":", !1), gv = Kp("OVER", !0), Vy = Kp("POSITION", !0), yy = Kp("VALUE", !0), AA = Kp("NULL", !0), eA = Kp("ABSENT", !0), aA = Kp("json_object", !0), xy = Kp("BOTH", !0), ty = Kp("LEADING", !0), wA = Kp("TRAILING", !0), Pv = Kp("trim", !0), SA = Kp("placing", !0), oy = Kp("for", !0), qA = Kp("overlay", !0), RA = Kp("SUBSTRING", !0), iA = Kp("CENTURY", !0), ky = Kp("DAY", !0), Oo = Kp("DATE", !0), Cl = Kp("DECADE", !0), su = Kp("DOW", !0), Yl = Kp("DOY", !0), dp = Kp("EPOCH", !0), Zu = Kp("HOUR", !0), wl = Kp("ISODOW", !0), lu = Kp("ISOYEAR", !0), Uu = Kp("MICROSECONDS", !0), Xp = Kp("MILLENNIUM", !0), T0 = Kp("MILLISECONDS", !0), j0 = Kp("MINUTE", !0), fm = Kp("MONTH", !0), Sm = Kp("QUARTER", !0), Nm = Kp("SECOND", !0), qm = Kp("TIMEZONE", !0), l1 = Kp("TIMEZONE_HOUR", !0), B1 = Kp("TIMEZONE_MINUTE", !0), E1 = Kp("WEEK", !0), h$ = Kp("YEAR", !0), d$ = /^[^"\\\0-\x1F\x7F]/, jo = S_(['"', "\\", ["\0", ""], ""], !0, !1), Su = /^[^'\\]/, fs = S_(["'", "\\"], !0, !1), e0 = Kp("\\'", !1), m0 = Kp('\\"', !1), a0 = Kp("\\\\", !1), xm = Kp("\\/", !1), N0 = Kp("\\b", !1), r1 = Kp("\\f", !1), Q0 = Kp("\\n", !1), q0 = Kp("\\r", !1), z1 = Kp("\\t", !1), U1 = Kp("\\u", !1), im = Kp("\\", !1), Fm = Kp("''", !1), r$ = Kp('""', !1), j1 = Kp("``", !1), G1 = /^[\n\r]/, Zm = S_([`
+      }, Jv = Kp('"', !1), nA = /^[^"]/, oA = S_(['"'], !0, !1), M$ = /^[^']/, Kv = S_(["'"], !0, !1), Mv = Kp("`", !1), TA = /^[^`]/, pA = S_(["`"], !0, !1), H$ = /^[A-Za-z_\u4E00-\u9FA5\xC0-\u017F]/, Iv = S_([["A", "Z"], ["a", "z"], "_", ["一", "龥"], ["À", "ſ"]], !1, !1), Gv = /^[A-Za-z0-9_\-$\u4E00-\u9FA5\xC0-\u017F]/, xA = S_([["A", "Z"], ["a", "z"], ["0", "9"], "_", "-", "$", ["一", "龥"], ["À", "ſ"]], !1, !1), LA = /^[A-Za-z0-9_]/, NA = S_([["A", "Z"], ["a", "z"], ["0", "9"], "_"], !1, !1), IA = Kp(":", !1), gv = Kp("OVER", !0), Vy = Kp("POSITION", !0), yy = Kp("VALUE", !0), AA = Kp("NULL", !0), eA = Kp("ABSENT", !0), aA = Kp("json_object", !0), xy = Kp("BOTH", !0), ty = Kp("LEADING", !0), wA = Kp("TRAILING", !0), Pv = Kp("trim", !0), SA = Kp("placing", !0), oy = Kp("for", !0), qA = Kp("overlay", !0), RA = Kp("SUBSTRING", !0), iA = Kp("CENTURY", !0), ky = Kp("DAY", !0), Oo = Kp("DATE", !0), Cl = Kp("DECADE", !0), su = Kp("DOW", !0), Yl = Kp("DOY", !0), dp = Kp("EPOCH", !0), Zu = Kp("HOUR", !0), wl = Kp("ISODOW", !0), lu = Kp("ISOYEAR", !0), Uu = Kp("MICROSECONDS", !0), Xp = Kp("MILLENNIUM", !0), T0 = Kp("MILLISECONDS", !0), j0 = Kp("MINUTE", !0), dm = Kp("MONTH", !0), Sm = Kp("QUARTER", !0), Nm = Kp("SECOND", !0), qm = Kp("TIMEZONE", !0), l1 = Kp("TIMEZONE_HOUR", !0), B1 = Kp("TIMEZONE_MINUTE", !0), E1 = Kp("WEEK", !0), h$ = Kp("YEAR", !0), d$ = /^[^"\\\0-\x1F\x7F]/, jo = S_(['"', "\\", ["\0", ""], ""], !0, !1), Su = /^[^'\\]/, fs = S_(["'", "\\"], !0, !1), e0 = Kp("\\'", !1), m0 = Kp('\\"', !1), a0 = Kp("\\\\", !1), xm = Kp("\\/", !1), N0 = Kp("\\b", !1), r1 = Kp("\\f", !1), Q0 = Kp("\\n", !1), q0 = Kp("\\r", !1), z1 = Kp("\\t", !1), U1 = Kp("\\u", !1), im = Kp("\\", !1), Fm = Kp("''", !1), r$ = Kp('""', !1), j1 = Kp("``", !1), G1 = /^[\n\r]/, Zm = S_([`
 `, "\r"], !1, !1), Gm = Kp(".", !1), q1 = /^[0-9]/, p$ = S_([["0", "9"]], !1, !1), J1 = /^[0-9a-fA-F]/, P$ = S_([["0", "9"], ["a", "f"], ["A", "F"]], !1, !1), Q$ = /^[eE]/, C$ = S_(["e", "E"], !1, !1), V1 = /^[+\-]/, b$ = S_(["+", "-"], !1, !1), cA = Kp("NOT NULL", !0), jv = Kp("TRUE", !0), Yv = Kp("TO", !0), DA = Kp("FALSE", !0), wy = Kp("DROP", !0), v_ = Kp("USE", !0), Dy = Kp("ALTER", !0), N_ = Kp("SELECT", !0), i_ = Kp("UPDATE", !0), wv = Kp("CREATE", !0), Vv = Kp("TEMPORARY", !0), tA = Kp("DELETE", !0), uy = Kp("INSERT", !0), EA = Kp("RECURSIVE", !0), Ey = Kp("REPLACE", !0), Cy = Kp("RETURNING", !0), e_ = Kp("RENAME", !0), f_ = Kp("IGNORE", !0), L_ = Kp("PARTITION", !0), M_ = Kp("INTO", !0), Wx = Kp("FROM", !0), nx = Kp("AS", !0), $x = Kp("TABLE", !0), W_ = Kp("TABLESPACE", !0), Q_ = Kp("DATABASE", !0), jy = Kp("NATURAL", !0), XA = Kp("LEFT", !0), o_ = Kp("RIGHT", !0), I_ = Kp("FULL", !0), ax = Kp("INNER", !0), y2 = Kp("JOIN", !0), S1 = Kp("CROSS", !0), _$ = Kp("APPLY", !0), dA = Kp("OUTER", !0), CA = Kp("UNION", !0), Iy = Kp("INTERSECT", !0), fy = Kp("EXCEPT", !0), KA = Kp("VALUES", !0), Ty = Kp("USING", !0), C_ = Kp("WHERE", !0), ix = Kp("GROUP", !0), s2 = Kp("BY", !0), l2 = Kp("ORDER", !0), P_ = Kp("HAVING", !0), O_ = Kp("LIMIT", !0), F_ = Kp("ASC", !0), Qx = Kp("DESC", !0), s$ = Kp("ALL", !0), Rv = Kp("DISTINCT", !0), ry = Kp("BETWEEN", !0), e$ = Kp("IS", !0), Z$ = Kp("LIKE", !0), yv = Kp("SIMILAR", !0), q$ = Kp("EXISTS", !0), Zv = Kp("AND", !0), ZA = Kp("OR", !0), sA = Kp("COUNT", !0), kA = Kp("MAX", !0), b_ = Kp("MIN", !0), A_ = Kp("SUM", !0), MA = Kp("AVG", !0), Ny = Kp("COLLECT", !0), rw = Kp("RANK", !0), gp = Kp("DENSE_RANK", !0), g0 = Kp("LISTAGG", !0), Os = Kp("ROW_NUMBER", !0), Mu = Kp("TUMBLE", !0), Ap = Kp("EXTRACT", !0), M0 = Kp("CALL", !0), tm = Kp("CASE", !0), mm = Kp("WHEN", !0), jm = Kp("THEN", !0), o1 = Kp("ELSE", !0), k$ = Kp("END", !0), qv = Kp("CAST", !0), yA = Kp("TRY_CAST", !0), PA = Kp("BOOL", !0), HA = Kp("BOOLEAN", !0), y_ = Kp("CHAR", !0), vx = Kp("VARCHAR", !0), L2 = Kp("STRING", !0), Dr = Kp("NUMERIC", !0), Bp = Kp("DECIMAL", !0), Yx = Kp("SIGNED", !0), t_ = Kp("UNSIGNED", !0), I2 = Kp("INT", !0), Ul = Kp("ZEROFILL", !0), H0 = Kp("INTEGER", !0), bx = Kp("JSON", !0), Dw = Kp("JSONB", !0), Fw = Kp("GEOMETRY", !0), l0 = Kp("SMALLINT", !0), Bw = Kp("TINYINT", !0), Nx = Kp("TINYTEXT", !0), ox = Kp("TEXT", !0), __ = Kp("MEDIUMTEXT", !0), Lr = Kp("LONGTEXT", !0), Up = Kp("BIGINT", !0), gw = Kp("FLOAT", !0), ux = Kp("DOUBLE", !0), nw = Kp("DATETIME", !0), Ml = Kp("TIME", !0), k0 = Kp("TIMESTAMP", !0), Y_ = Kp("TRUNCATE", !0), eE = Kp("USER", !0), $w = Kp("UUID", !0), Qp = Kp("ARRAY", !0), Qw = Kp("MAP", !0), Uw = Kp("CURRENT_DATE", !0), jw = Kp("INTERVAL", !0), zw = Kp("CURRENT_TIME", !0), qx = Kp("CURRENT_TIMESTAMP", !0), P2 = Kp("CURRENT_USER", !0), aw = Kp("SESSION_USER", !0), Xx = Kp("SYSTEM_USER", !0), _2 = Kp("GLOBAL", !0), Mx = Kp("SESSION", !0), Sr = Kp("LOCAL", !0), Dp = Kp("PERSIST", !0), q2 = Kp("PERSIST_ONLY", !0), zy = Kp("@", !1), GA = Kp("@@", !1), xl = Kp("return", !0), A0 = Kp(":=", !1), dy = Kp("::", !1), vw = Kp("DUAL", !0), Nw = Kp("ADD", !0), Pp = Kp("COLUMN", !0), Ax = Kp("INDEX", !0), x_ = Kp("FULLTEXT", !0), Hw = Kp("SPATIAL", !0), iw = Kp("COMMENT", !0), R2 = Kp("CONSTRAINT", !0), yx = Kp("CONCURRENTLY", !0), lE = Kp("REFERENCES", !0), bw = Kp("SQL_CALC_FOUND_ROWS", !0), tE = Kp("SQL_CACHE", !0), uE = Kp("SQL_NO_CACHE", !0), Gw = Kp("SQL_SMALL_RESULT", !0), Yw = Kp("SQL_BIG_RESULT", !0), qw = Kp("SQL_BUFFER_RESULT", !0), rE = Kp(",", !1), u2 = Kp("[", !1), hE = Kp("]", !1), Aw = Kp(";", !1), Xw = Kp("->", !1), K2 = Kp("->>", !1), oE = Kp("=>", !1), yw = Kp("||", !1), Ar = Kp("&&", !1), xp = Kp("/*", !1), fx = Kp("*/", !1), gr = Kp("--", !1), Sp = { type: "any" }, qs = Kp("years", !0), d0 = Kp("months", !0), q_ = Kp("days", !0), Qs = Kp("hours", !0), r0 = Kp("minutes", !0), np = Kp("seconds", !0), ow = /^[ \t\n\r]/, ww = S_([" ", "	", `
 `, "\r"], !1, !1), up = function(Mr) {
         return { dataType: Mr };
@@ -156994,7 +157284,7 @@ function requireBigInteger() {
             return No = dr, Et.substr(dr, 4).toLowerCase() === "year" ? (ls = Et.substr(dr, 4), dr += 4) : (ls = $t, Ps === 0 && Ju(h$)), ls !== $t ? (Xs = dr, Ps++, Bl = gm(), Ps--, Bl === $t ? Xs = void 0 : (dr = Xs, Xs = $t), Xs !== $t ? (cp = No, No = ls = "YEAR") : (dr = No, No = $t)) : (dr = No, No = $t), No;
           }()) === $t && (Fn = function() {
             var No, ls, Xs, Bl;
-            return No = dr, Et.substr(dr, 5).toLowerCase() === "month" ? (ls = Et.substr(dr, 5), dr += 5) : (ls = $t, Ps === 0 && Ju(fm)), ls !== $t ? (Xs = dr, Ps++, Bl = gm(), Ps--, Bl === $t ? Xs = void 0 : (dr = Xs, Xs = $t), Xs !== $t ? (cp = No, No = ls = "MONTH") : (dr = No, No = $t)) : (dr = No, No = $t), No;
+            return No = dr, Et.substr(dr, 5).toLowerCase() === "month" ? (ls = Et.substr(dr, 5), dr += 5) : (ls = $t, Ps === 0 && Ju(dm)), ls !== $t ? (Xs = dr, Ps++, Bl = gm(), Ps--, Bl === $t ? Xs = void 0 : (dr = Xs, Xs = $t), Xs !== $t ? (cp = No, No = ls = "MONTH") : (dr = No, No = $t)) : (dr = No, No = $t), No;
           }()) === $t && (Fn = function() {
             var No, ls, Xs, Bl;
             return No = dr, Et.substr(dr, 3).toLowerCase() === "day" ? (ls = Et.substr(dr, 3), dr += 3) : (ls = $t, Ps === 0 && Ju(ky)), ls !== $t ? (Xs = dr, Ps++, Bl = gm(), Ps--, Bl === $t ? Xs = void 0 : (dr = Xs, Xs = $t), Xs !== $t ? (cp = No, No = ls = "DAY") : (dr = No, No = $t)) : (dr = No, No = $t), No;
@@ -157558,7 +157848,7 @@ function requireBigInteger() {
       }
       function YA() {
         var Mr, rn;
-        return Mr = dr, Et.substr(dr, 7).toLowerCase() === "century" ? (rn = Et.substr(dr, 7), dr += 7) : (rn = $t, Ps === 0 && Ju(iA)), rn === $t && (Et.substr(dr, 3).toLowerCase() === "day" ? (rn = Et.substr(dr, 3), dr += 3) : (rn = $t, Ps === 0 && Ju(ky)), rn === $t && (Et.substr(dr, 4).toLowerCase() === "date" ? (rn = Et.substr(dr, 4), dr += 4) : (rn = $t, Ps === 0 && Ju(Oo)), rn === $t && (Et.substr(dr, 6).toLowerCase() === "decade" ? (rn = Et.substr(dr, 6), dr += 6) : (rn = $t, Ps === 0 && Ju(Cl)), rn === $t && (Et.substr(dr, 3).toLowerCase() === "dow" ? (rn = Et.substr(dr, 3), dr += 3) : (rn = $t, Ps === 0 && Ju(su)), rn === $t && (Et.substr(dr, 3).toLowerCase() === "doy" ? (rn = Et.substr(dr, 3), dr += 3) : (rn = $t, Ps === 0 && Ju(Yl)), rn === $t && (Et.substr(dr, 5).toLowerCase() === "epoch" ? (rn = Et.substr(dr, 5), dr += 5) : (rn = $t, Ps === 0 && Ju(dp)), rn === $t && (Et.substr(dr, 4).toLowerCase() === "hour" ? (rn = Et.substr(dr, 4), dr += 4) : (rn = $t, Ps === 0 && Ju(Zu)), rn === $t && (Et.substr(dr, 6).toLowerCase() === "isodow" ? (rn = Et.substr(dr, 6), dr += 6) : (rn = $t, Ps === 0 && Ju(wl)), rn === $t && (Et.substr(dr, 7).toLowerCase() === "isoyear" ? (rn = Et.substr(dr, 7), dr += 7) : (rn = $t, Ps === 0 && Ju(lu)), rn === $t && (Et.substr(dr, 12).toLowerCase() === "microseconds" ? (rn = Et.substr(dr, 12), dr += 12) : (rn = $t, Ps === 0 && Ju(Uu)), rn === $t && (Et.substr(dr, 10).toLowerCase() === "millennium" ? (rn = Et.substr(dr, 10), dr += 10) : (rn = $t, Ps === 0 && Ju(Xp)), rn === $t && (Et.substr(dr, 12).toLowerCase() === "milliseconds" ? (rn = Et.substr(dr, 12), dr += 12) : (rn = $t, Ps === 0 && Ju(T0)), rn === $t && (Et.substr(dr, 6).toLowerCase() === "minute" ? (rn = Et.substr(dr, 6), dr += 6) : (rn = $t, Ps === 0 && Ju(j0)), rn === $t && (Et.substr(dr, 5).toLowerCase() === "month" ? (rn = Et.substr(dr, 5), dr += 5) : (rn = $t, Ps === 0 && Ju(fm)), rn === $t && (Et.substr(dr, 7).toLowerCase() === "quarter" ? (rn = Et.substr(dr, 7), dr += 7) : (rn = $t, Ps === 0 && Ju(Sm)), rn === $t && (Et.substr(dr, 6).toLowerCase() === "second" ? (rn = Et.substr(dr, 6), dr += 6) : (rn = $t, Ps === 0 && Ju(Nm)), rn === $t && (Et.substr(dr, 8).toLowerCase() === "timezone" ? (rn = Et.substr(dr, 8), dr += 8) : (rn = $t, Ps === 0 && Ju(qm)), rn === $t && (Et.substr(dr, 13).toLowerCase() === "timezone_hour" ? (rn = Et.substr(dr, 13), dr += 13) : (rn = $t, Ps === 0 && Ju(l1)), rn === $t && (Et.substr(dr, 15).toLowerCase() === "timezone_minute" ? (rn = Et.substr(dr, 15), dr += 15) : (rn = $t, Ps === 0 && Ju(B1)), rn === $t && (Et.substr(dr, 4).toLowerCase() === "week" ? (rn = Et.substr(dr, 4), dr += 4) : (rn = $t, Ps === 0 && Ju(E1)), rn === $t && (Et.substr(dr, 4).toLowerCase() === "year" ? (rn = Et.substr(dr, 4), dr += 4) : (rn = $t, Ps === 0 && Ju(h$))))))))))))))))))))))), rn !== $t && (cp = Mr, rn = rn), Mr = rn;
+        return Mr = dr, Et.substr(dr, 7).toLowerCase() === "century" ? (rn = Et.substr(dr, 7), dr += 7) : (rn = $t, Ps === 0 && Ju(iA)), rn === $t && (Et.substr(dr, 3).toLowerCase() === "day" ? (rn = Et.substr(dr, 3), dr += 3) : (rn = $t, Ps === 0 && Ju(ky)), rn === $t && (Et.substr(dr, 4).toLowerCase() === "date" ? (rn = Et.substr(dr, 4), dr += 4) : (rn = $t, Ps === 0 && Ju(Oo)), rn === $t && (Et.substr(dr, 6).toLowerCase() === "decade" ? (rn = Et.substr(dr, 6), dr += 6) : (rn = $t, Ps === 0 && Ju(Cl)), rn === $t && (Et.substr(dr, 3).toLowerCase() === "dow" ? (rn = Et.substr(dr, 3), dr += 3) : (rn = $t, Ps === 0 && Ju(su)), rn === $t && (Et.substr(dr, 3).toLowerCase() === "doy" ? (rn = Et.substr(dr, 3), dr += 3) : (rn = $t, Ps === 0 && Ju(Yl)), rn === $t && (Et.substr(dr, 5).toLowerCase() === "epoch" ? (rn = Et.substr(dr, 5), dr += 5) : (rn = $t, Ps === 0 && Ju(dp)), rn === $t && (Et.substr(dr, 4).toLowerCase() === "hour" ? (rn = Et.substr(dr, 4), dr += 4) : (rn = $t, Ps === 0 && Ju(Zu)), rn === $t && (Et.substr(dr, 6).toLowerCase() === "isodow" ? (rn = Et.substr(dr, 6), dr += 6) : (rn = $t, Ps === 0 && Ju(wl)), rn === $t && (Et.substr(dr, 7).toLowerCase() === "isoyear" ? (rn = Et.substr(dr, 7), dr += 7) : (rn = $t, Ps === 0 && Ju(lu)), rn === $t && (Et.substr(dr, 12).toLowerCase() === "microseconds" ? (rn = Et.substr(dr, 12), dr += 12) : (rn = $t, Ps === 0 && Ju(Uu)), rn === $t && (Et.substr(dr, 10).toLowerCase() === "millennium" ? (rn = Et.substr(dr, 10), dr += 10) : (rn = $t, Ps === 0 && Ju(Xp)), rn === $t && (Et.substr(dr, 12).toLowerCase() === "milliseconds" ? (rn = Et.substr(dr, 12), dr += 12) : (rn = $t, Ps === 0 && Ju(T0)), rn === $t && (Et.substr(dr, 6).toLowerCase() === "minute" ? (rn = Et.substr(dr, 6), dr += 6) : (rn = $t, Ps === 0 && Ju(j0)), rn === $t && (Et.substr(dr, 5).toLowerCase() === "month" ? (rn = Et.substr(dr, 5), dr += 5) : (rn = $t, Ps === 0 && Ju(dm)), rn === $t && (Et.substr(dr, 7).toLowerCase() === "quarter" ? (rn = Et.substr(dr, 7), dr += 7) : (rn = $t, Ps === 0 && Ju(Sm)), rn === $t && (Et.substr(dr, 6).toLowerCase() === "second" ? (rn = Et.substr(dr, 6), dr += 6) : (rn = $t, Ps === 0 && Ju(Nm)), rn === $t && (Et.substr(dr, 8).toLowerCase() === "timezone" ? (rn = Et.substr(dr, 8), dr += 8) : (rn = $t, Ps === 0 && Ju(qm)), rn === $t && (Et.substr(dr, 13).toLowerCase() === "timezone_hour" ? (rn = Et.substr(dr, 13), dr += 13) : (rn = $t, Ps === 0 && Ju(l1)), rn === $t && (Et.substr(dr, 15).toLowerCase() === "timezone_minute" ? (rn = Et.substr(dr, 15), dr += 15) : (rn = $t, Ps === 0 && Ju(B1)), rn === $t && (Et.substr(dr, 4).toLowerCase() === "week" ? (rn = Et.substr(dr, 4), dr += 4) : (rn = $t, Ps === 0 && Ju(E1)), rn === $t && (Et.substr(dr, 4).toLowerCase() === "year" ? (rn = Et.substr(dr, 4), dr += 4) : (rn = $t, Ps === 0 && Ju(h$))))))))))))))))))))))), rn !== $t && (cp = Mr, rn = rn), Mr = rn;
       }
       function Xl() {
         var Mr;
@@ -158463,7 +158753,7 @@ function requireBigInteger() {
       }, F0 = /^[A-Za-z_\u4E00-\u9FA5\xC0-\u017F]/, pm = bx([["A", "Z"], ["a", "z"], "_", ["一", "龥"], ["À", "ſ"]], !1, !1), Dm = /^[A-Za-z0-9_$\u4E00-\u9FA5\xC0-\u017F]/, Im = bx([["A", "Z"], ["a", "z"], ["0", "9"], "_", "$", ["一", "龥"], ["À", "ſ"]], !1, !1), Tm = /^[A-Za-z0-9_:\u4E00-\u9FA5\xC0-\u017F]/, p1 = bx([["A", "Z"], ["a", "z"], ["0", "9"], "_", ":", ["一", "龥"], ["À", "ſ"]], !1, !1), N1 = H0(":", !1), $1 = H0("OVER", !0), _1 = H0("AT TIME ZONE", !0), R1 = function(Pr, Cn) {
         return { type: Pr.toLowerCase(), value: Cn[1].join("") };
       }, O1 = /^[^"\\\0-\x1F\x7F]/, H1 = bx(['"', "\\", ["\0", ""], ""], !0, !1), Zp = /^[^'\\]/, Km = bx(["'", "\\"], !0, !1), U$ = H0("\\'", !1), uv = H0('\\"', !1), tv = H0("\\\\", !1), o$ = H0("\\/", !1), I$ = H0("\\b", !1), w1 = H0("\\f", !1), Cv = H0("\\n", !1), Y$ = H0("\\r", !1), Hv = H0("\\t", !1), W$ = H0("\\u", !1), R$ = H0("\\", !1), z$ = H0("''", !1), Jv = H0('""', !1), nA = H0("``", !1), oA = /^[\n\r]/, M$ = bx([`
-`, "\r"], !1, !1), Kv = /^[0-9]/, Mv = bx([["0", "9"]], !1, !1), TA = /^[0-9a-fA-F]/, pA = bx([["0", "9"], ["a", "f"], ["A", "F"]], !1, !1), H$ = /^[eE]/, Iv = bx(["e", "E"], !1, !1), Gv = /^[+\-]/, xA = bx(["+", "-"], !1, !1), LA = H0("NULL", !0), NA = H0("NOT NULL", !0), IA = H0("TRUE", !0), gv = H0("TO", !0), Vy = H0("FALSE", !0), yy = H0("DROP", !0), AA = H0("USE", !0), eA = H0("ALTER", !0), aA = H0("SELECT", !0), xy = H0("UPDATE", !0), ty = H0("CREATE", !0), wA = H0("TEMPORARY", !0), Pv = H0("DELETE", !0), SA = H0("INSERT", !0), oy = H0("RECURSIVE", !0), qA = H0("REPLACE", !0), RA = H0("RENAME", !0), iA = H0("IGNORE", !0), ky = H0("PARTITION", !0), Oo = H0("INTO", !0), Cl = H0("OVERWRITE", !0), su = H0("FROM", !0), Yl = H0("UNLOCK", !0), dp = H0("AS", !0), Zu = H0("TABLE", !0), wl = H0("TABLES", !0), lu = H0("DATABASE", !0), Uu = H0("SCHEMA", !0), Xp = H0("ON", !0), T0 = H0("LEFT", !0), j0 = H0("RIGHT", !0), fm = H0("FULL", !0), Sm = H0("CROSS", !0), Nm = H0("INNER", !0), qm = H0("JOIN", !0), l1 = H0("OUTER", !0), B1 = H0("UNION", !0), E1 = H0("VALUES", !0), h$ = H0("USING", !0), d$ = H0("WHERE", !0), jo = H0("GROUP", !0), Su = H0("BY", !0), fs = H0("ORDER", !0), e0 = H0("HAVING", !0), m0 = H0("LIMIT", !0), a0 = H0("OFFSET", !0), xm = H0("ASC", !0), N0 = H0("DESC", !0), r1 = H0("ALL", !0), Q0 = H0("DISTINCT", !0), q0 = H0("BETWEEN", !0), z1 = H0("IN", !0), U1 = H0("IS", !0), im = H0("LIKE", !0), Fm = H0("RLIKE", !0), r$ = H0("EXISTS", !0), j1 = H0("NOT", !0), G1 = H0("AND", !0), Zm = H0("OR", !0), Gm = H0("COUNT", !0), q1 = H0("MAX", !0), p$ = H0("MIN", !0), J1 = H0("SUM", !0), P$ = H0("AVG", !0), Q$ = H0("CALL", !0), C$ = H0("CASE", !0), V1 = H0("WHEN", !0), b$ = H0("THEN", !0), cA = H0("ELSE", !0), jv = H0("END", !0), Yv = H0("CAST", !0), DA = H0("CHAR", !0), wy = H0("VARCHAR", !0), v_ = H0("NUMERIC", !0), Dy = H0("DECIMAL", !0), N_ = H0("SIGNED", !0), i_ = H0("STRING", !0), wv = H0("UNSIGNED", !0), Vv = H0("INT", !0), tA = H0("ZEROFILL", !0), uy = H0("INTEGER", !0), EA = H0("JSON", !0), Ey = H0("SMALLINT", !0), Cy = H0("TINYINT", !0), e_ = H0("TINYTEXT", !0), f_ = H0("TEXT", !0), L_ = H0("MEDIUMTEXT", !0), M_ = H0("LONGTEXT", !0), Wx = H0("BIGINT", !0), nx = H0("FLOAT", !0), $x = H0("DOUBLE", !0), W_ = H0("DATE", !0), Q_ = H0("DATETIME", !0), jy = H0("ROWS", !0), XA = H0("TIME", !0), o_ = H0("TIMESTAMP", !0), I_ = H0("TRUNCATE", !0), ax = H0("USER", !0), y2 = H0("CURRENT_DATE", !0), S1 = H0("INTERVAL", !0), _$ = H0("YEAR", !0), dA = H0("MONTH", !0), CA = H0("DAY", !0), Iy = H0("HOUR", !0), fy = H0("MINUTE", !0), KA = H0("SECOND", !0), Ty = H0("CURRENT_TIME", !0), C_ = H0("CURRENT_TIMESTAMP", !0), ix = H0("CURRENT_USER", !0), s2 = H0("SESSION_USER", !0), l2 = H0("SYSTEM_USER", !0), P_ = H0("GLOBAL", !0), O_ = H0("SESSION", !0), F_ = H0("PERSIST", !0), Qx = H0("PERSIST_ONLY", !0), s$ = H0("@", !1), Rv = H0("@@", !1), ry = H0("$", !1), e$ = H0("return", !0), Z$ = H0(":=", !1), yv = H0("DUAL", !0), q$ = H0("ADD", !0), Zv = H0("COLUMN", !0), ZA = H0("INDEX", !0), sA = H0("FULLTEXT", !0), kA = H0("SPATIAL", !0), b_ = H0("COMMENT", !0), A_ = H0("CONSTRAINT", !0), MA = H0("REFERENCES", !0), Ny = H0("SQL_CALC_FOUND_ROWS", !0), rw = H0("SQL_CACHE", !0), gp = H0("SQL_NO_CACHE", !0), g0 = H0("SQL_SMALL_RESULT", !0), Os = H0("SQL_BIG_RESULT", !0), Mu = H0("SQL_BUFFER_RESULT", !0), Ap = H0(",", !1), M0 = H0("[", !1), tm = H0("]", !1), mm = H0(";", !1), jm = H0("||", !1), o1 = H0("&&", !1), k$ = H0("/*", !1), qv = H0("*/", !1), yA = H0("--", !1), PA = H0("#", !1), HA = { type: "any" }, y_ = /^[ \t\n\r]/, vx = bx([" ", "	", `
+`, "\r"], !1, !1), Kv = /^[0-9]/, Mv = bx([["0", "9"]], !1, !1), TA = /^[0-9a-fA-F]/, pA = bx([["0", "9"], ["a", "f"], ["A", "F"]], !1, !1), H$ = /^[eE]/, Iv = bx(["e", "E"], !1, !1), Gv = /^[+\-]/, xA = bx(["+", "-"], !1, !1), LA = H0("NULL", !0), NA = H0("NOT NULL", !0), IA = H0("TRUE", !0), gv = H0("TO", !0), Vy = H0("FALSE", !0), yy = H0("DROP", !0), AA = H0("USE", !0), eA = H0("ALTER", !0), aA = H0("SELECT", !0), xy = H0("UPDATE", !0), ty = H0("CREATE", !0), wA = H0("TEMPORARY", !0), Pv = H0("DELETE", !0), SA = H0("INSERT", !0), oy = H0("RECURSIVE", !0), qA = H0("REPLACE", !0), RA = H0("RENAME", !0), iA = H0("IGNORE", !0), ky = H0("PARTITION", !0), Oo = H0("INTO", !0), Cl = H0("OVERWRITE", !0), su = H0("FROM", !0), Yl = H0("UNLOCK", !0), dp = H0("AS", !0), Zu = H0("TABLE", !0), wl = H0("TABLES", !0), lu = H0("DATABASE", !0), Uu = H0("SCHEMA", !0), Xp = H0("ON", !0), T0 = H0("LEFT", !0), j0 = H0("RIGHT", !0), dm = H0("FULL", !0), Sm = H0("CROSS", !0), Nm = H0("INNER", !0), qm = H0("JOIN", !0), l1 = H0("OUTER", !0), B1 = H0("UNION", !0), E1 = H0("VALUES", !0), h$ = H0("USING", !0), d$ = H0("WHERE", !0), jo = H0("GROUP", !0), Su = H0("BY", !0), fs = H0("ORDER", !0), e0 = H0("HAVING", !0), m0 = H0("LIMIT", !0), a0 = H0("OFFSET", !0), xm = H0("ASC", !0), N0 = H0("DESC", !0), r1 = H0("ALL", !0), Q0 = H0("DISTINCT", !0), q0 = H0("BETWEEN", !0), z1 = H0("IN", !0), U1 = H0("IS", !0), im = H0("LIKE", !0), Fm = H0("RLIKE", !0), r$ = H0("EXISTS", !0), j1 = H0("NOT", !0), G1 = H0("AND", !0), Zm = H0("OR", !0), Gm = H0("COUNT", !0), q1 = H0("MAX", !0), p$ = H0("MIN", !0), J1 = H0("SUM", !0), P$ = H0("AVG", !0), Q$ = H0("CALL", !0), C$ = H0("CASE", !0), V1 = H0("WHEN", !0), b$ = H0("THEN", !0), cA = H0("ELSE", !0), jv = H0("END", !0), Yv = H0("CAST", !0), DA = H0("CHAR", !0), wy = H0("VARCHAR", !0), v_ = H0("NUMERIC", !0), Dy = H0("DECIMAL", !0), N_ = H0("SIGNED", !0), i_ = H0("STRING", !0), wv = H0("UNSIGNED", !0), Vv = H0("INT", !0), tA = H0("ZEROFILL", !0), uy = H0("INTEGER", !0), EA = H0("JSON", !0), Ey = H0("SMALLINT", !0), Cy = H0("TINYINT", !0), e_ = H0("TINYTEXT", !0), f_ = H0("TEXT", !0), L_ = H0("MEDIUMTEXT", !0), M_ = H0("LONGTEXT", !0), Wx = H0("BIGINT", !0), nx = H0("FLOAT", !0), $x = H0("DOUBLE", !0), W_ = H0("DATE", !0), Q_ = H0("DATETIME", !0), jy = H0("ROWS", !0), XA = H0("TIME", !0), o_ = H0("TIMESTAMP", !0), I_ = H0("TRUNCATE", !0), ax = H0("USER", !0), y2 = H0("CURRENT_DATE", !0), S1 = H0("INTERVAL", !0), _$ = H0("YEAR", !0), dA = H0("MONTH", !0), CA = H0("DAY", !0), Iy = H0("HOUR", !0), fy = H0("MINUTE", !0), KA = H0("SECOND", !0), Ty = H0("CURRENT_TIME", !0), C_ = H0("CURRENT_TIMESTAMP", !0), ix = H0("CURRENT_USER", !0), s2 = H0("SESSION_USER", !0), l2 = H0("SYSTEM_USER", !0), P_ = H0("GLOBAL", !0), O_ = H0("SESSION", !0), F_ = H0("PERSIST", !0), Qx = H0("PERSIST_ONLY", !0), s$ = H0("@", !1), Rv = H0("@@", !1), ry = H0("$", !1), e$ = H0("return", !0), Z$ = H0(":=", !1), yv = H0("DUAL", !0), q$ = H0("ADD", !0), Zv = H0("COLUMN", !0), ZA = H0("INDEX", !0), sA = H0("FULLTEXT", !0), kA = H0("SPATIAL", !0), b_ = H0("COMMENT", !0), A_ = H0("CONSTRAINT", !0), MA = H0("REFERENCES", !0), Ny = H0("SQL_CALC_FOUND_ROWS", !0), rw = H0("SQL_CACHE", !0), gp = H0("SQL_NO_CACHE", !0), g0 = H0("SQL_SMALL_RESULT", !0), Os = H0("SQL_BIG_RESULT", !0), Mu = H0("SQL_BUFFER_RESULT", !0), Ap = H0(",", !1), M0 = H0("[", !1), tm = H0("]", !1), mm = H0(";", !1), jm = H0("||", !1), o1 = H0("&&", !1), k$ = H0("/*", !1), qv = H0("*/", !1), yA = H0("--", !1), PA = H0("#", !1), HA = { type: "any" }, y_ = /^[ \t\n\r]/, vx = bx([" ", "	", `
 `, "\r"], !1, !1), L2 = function(Pr) {
         return { dataType: Pr };
       }, Dr = 0, Bp = 0, Yx = [{ line: 1, column: 1 }], t_ = 0, I2 = [], Ul = 0;
@@ -159207,7 +159497,7 @@ function requireBigInteger() {
           return kn = Dr, Et.substr(Dr, 5).toLowerCase() === "right" ? (hs = Et.substr(Dr, 5), Dr += 5) : (hs = $t, Ul === 0 && l0(j0)), hs !== $t ? (Ls = Dr, Ul++, Zl = Om(), Ul--, Zl === $t ? Ls = void 0 : (Dr = Ls, Ls = $t), Ls !== $t ? kn = hs = [hs, Ls] : (Dr = kn, kn = $t)) : (Dr = kn, kn = $t), kn;
         }()) !== $t && (Wn = cu()) !== $t ? ((io = Jx()) === $t && (io = null), io !== $t && cu() !== $t && Px() !== $t ? (Bp = Pr, Pr = Cn = "RIGHT JOIN") : (Dr = Pr, Pr = $t)) : (Dr = Pr, Pr = $t), Pr === $t && (Pr = Dr, (Cn = function() {
           var kn, hs, Ls, Zl;
-          return kn = Dr, Et.substr(Dr, 4).toLowerCase() === "full" ? (hs = Et.substr(Dr, 4), Dr += 4) : (hs = $t, Ul === 0 && l0(fm)), hs !== $t ? (Ls = Dr, Ul++, Zl = Om(), Ul--, Zl === $t ? Ls = void 0 : (Dr = Ls, Ls = $t), Ls !== $t ? kn = hs = [hs, Ls] : (Dr = kn, kn = $t)) : (Dr = kn, kn = $t), kn;
+          return kn = Dr, Et.substr(Dr, 4).toLowerCase() === "full" ? (hs = Et.substr(Dr, 4), Dr += 4) : (hs = $t, Ul === 0 && l0(dm)), hs !== $t ? (Ls = Dr, Ul++, Zl = Om(), Ul--, Zl === $t ? Ls = void 0 : (Dr = Ls, Ls = $t), Ls !== $t ? kn = hs = [hs, Ls] : (Dr = kn, kn = $t)) : (Dr = kn, kn = $t), kn;
         }()) !== $t && (Wn = cu()) !== $t ? ((io = Jx()) === $t && (io = null), io !== $t && cu() !== $t && Px() !== $t ? (Bp = Pr, Pr = Cn = "FULL JOIN") : (Dr = Pr, Pr = $t)) : (Dr = Pr, Pr = $t), Pr === $t && (Pr = Dr, Cn = Dr, (Wn = function() {
           var kn, hs, Ls, Zl;
           return kn = Dr, Et.substr(Dr, 5).toLowerCase() === "inner" ? (hs = Et.substr(Dr, 5), Dr += 5) : (hs = $t, Ul === 0 && l0(Nm)), hs !== $t ? (Ls = Dr, Ul++, Zl = Om(), Ul--, Zl === $t ? Ls = void 0 : (Dr = Ls, Ls = $t), Ls !== $t ? kn = hs = [hs, Ls] : (Dr = kn, kn = $t)) : (Dr = kn, kn = $t), kn;
@@ -160568,7 +160858,7 @@ function requireBigInteger() {
         return as(ur, kr);
       }, ty = Fl("BINARY", !0), wA = Fl("MASTER", !0), Pv = Fl("LOGS", !0), SA = Fl("TRIGGERS", !0), oy = Fl("STATUS", !0), qA = Fl("PROCESSLIST", !0), RA = Fl("PROCEDURE", !0), iA = Fl("FUNCTION", !0), ky = Fl("BINLOG", !0), Oo = Fl("EVENTS", !0), Cl = Fl("COLLATION", !0), su = Fl("DATABASES", !0), Yl = Fl("COLUMNS", !0), dp = Fl("INDEXES", !0), Zu = Fl("EVENT", !0), wl = Fl("GRANTS", !0), lu = Fl("SERIALIZABLE", !0), Uu = Fl("REPEATABLE", !0), Xp = Fl("COMMITTED", !0), T0 = Fl("UNCOMMITTED", !0), j0 = function(ur) {
         return { type: "origin", value: "read " + ur.toLowerCase() };
-      }, fm = Fl("ISOLATION", !0), Sm = Fl("LEVEL", !0), Nm = Fl("ONLY", !0), qm = Fl("DEFERRABLE", !0), l1 = Fl("commit", !0), B1 = Fl("rollback", !0), E1 = Fl("begin", !0), h$ = Fl("WORK", !0), d$ = Fl("TRANSACTION", !0), jo = Fl("start", !0), Su = Fl("transaction", !0), fs = Fl("FIELDS", !0), e0 = Fl("TERMINATED", !0), m0 = Fl("OPTIONALLY", !0), a0 = Fl("ENCLOSED", !0), xm = Fl("ESCAPED", !0), N0 = Fl("STARTING", !0), r1 = Fl("LINES", !0), Q0 = Fl("LOAD", !0), q0 = Fl("CONCURRENT", !0), z1 = Fl("INFILE", !0), U1 = Fl("INTO", !0), im = Fl("TABLE", !0), Fm = Fl("ROWS", !0), r$ = Fl("VIEW", !0), j1 = Fl("GRANT", !0), G1 = Fl("OPTION", !0), Zm = function(ur) {
+      }, dm = Fl("ISOLATION", !0), Sm = Fl("LEVEL", !0), Nm = Fl("ONLY", !0), qm = Fl("DEFERRABLE", !0), l1 = Fl("commit", !0), B1 = Fl("rollback", !0), E1 = Fl("begin", !0), h$ = Fl("WORK", !0), d$ = Fl("TRANSACTION", !0), jo = Fl("start", !0), Su = Fl("transaction", !0), fs = Fl("FIELDS", !0), e0 = Fl("TERMINATED", !0), m0 = Fl("OPTIONALLY", !0), a0 = Fl("ENCLOSED", !0), xm = Fl("ESCAPED", !0), N0 = Fl("STARTING", !0), r1 = Fl("LINES", !0), Q0 = Fl("LOAD", !0), q0 = Fl("CONCURRENT", !0), z1 = Fl("INFILE", !0), U1 = Fl("INTO", !0), im = Fl("TABLE", !0), Fm = Fl("ROWS", !0), r$ = Fl("VIEW", !0), j1 = Fl("GRANT", !0), G1 = Fl("OPTION", !0), Zm = function(ur) {
         return { type: "origin", value: Array.isArray(ur) ? ur[0] : ur };
       }, Gm = Fl("ROUTINE", !0), q1 = Fl("EXECUTE", !0), p$ = Fl("ADMIN", !0), J1 = Fl("GRANT", !1), P$ = Fl("PROXY", !1), Q$ = Fl("(", !1), C$ = Fl(")", !1), V1 = /^[0-9]/, b$ = Jm([["0", "9"]], !1, !1), cA = Fl("IN", !0), jv = Fl("SHARE", !0), Yv = Fl("MODE", !0), DA = Fl("WAIT", !0), wy = Fl("NOWAIT", !0), v_ = Fl("SKIP", !0), Dy = Fl("LOCKED", !0), N_ = Fl("NATURAL", !0), i_ = Fl("LANGUAGE", !0), wv = Fl("QUERY", !0), Vv = Fl("EXPANSION", !0), tA = Fl("BOOLEAN", !0), uy = Fl("MATCH", !0), EA = Fl("AGAINST", !1), Ey = Fl("OUTFILE", !0), Cy = Fl("DUMPFILE", !0), e_ = Fl("BTREE", !0), f_ = Fl("HASH", !0), L_ = Fl("PARSER", !0), M_ = Fl("VISIBLE", !0), Wx = Fl("INVISIBLE", !0), nx = Fl("LATERAL", !0), $x = /^[_0-9]/, W_ = Jm(["_", ["0", "9"]], !1, !1), Q_ = Fl("ROLLUP", !0), jy = Fl("?", !1), XA = Fl("=", !1), o_ = Fl("DUPLICATE", !0), I_ = function(ur, kr) {
         return Tl(ur, kr);
@@ -161444,7 +161734,7 @@ function requireBigInteger() {
       }
       function Jl() {
         var ur, kr, Zr, un;
-        return ur = Ft, Et.substr(Ft, 9).toLowerCase() === "isolation" ? (kr = Et.substr(Ft, 9), Ft += 9) : (kr = $t, ga === 0 && Ds(fm)), kr !== $t && So() !== $t ? (Et.substr(Ft, 5).toLowerCase() === "level" ? (Zr = Et.substr(Ft, 5), Ft += 5) : (Zr = $t, ga === 0 && Ds(Sm)), Zr !== $t && So() !== $t && (un = function() {
+        return ur = Ft, Et.substr(Ft, 9).toLowerCase() === "isolation" ? (kr = Et.substr(Ft, 9), Ft += 9) : (kr = $t, ga === 0 && Ds(dm)), kr !== $t && So() !== $t ? (Et.substr(Ft, 5).toLowerCase() === "level" ? (Zr = Et.substr(Ft, 5), Ft += 5) : (Zr = $t, ga === 0 && Ds(Sm)), Zr !== $t && So() !== $t && (un = function() {
           var Gt, qt, nr;
           return Gt = Ft, Et.substr(Ft, 12).toLowerCase() === "serializable" ? (qt = Et.substr(Ft, 12), Ft += 12) : (qt = $t, ga === 0 && Ds(lu)), qt !== $t && (yo = Gt, qt = { type: "origin", value: "serializable" }), (Gt = qt) === $t && (Gt = Ft, Et.substr(Ft, 10).toLowerCase() === "repeatable" ? (qt = Et.substr(Ft, 10), Ft += 10) : (qt = $t, ga === 0 && Ds(Uu)), qt !== $t && So() !== $t ? (Et.substr(Ft, 4).toLowerCase() === "read" ? (nr = Et.substr(Ft, 4), Ft += 4) : (nr = $t, ga === 0 && Ds(AA)), nr !== $t ? (yo = Gt, Gt = qt = { type: "origin", value: "repeatable read" }) : (Ft = Gt, Gt = $t)) : (Ft = Gt, Gt = $t), Gt === $t && (Gt = Ft, Et.substr(Ft, 4).toLowerCase() === "read" ? (qt = Et.substr(Ft, 4), Ft += 4) : (qt = $t, ga === 0 && Ds(AA)), qt !== $t && So() !== $t ? (Et.substr(Ft, 9).toLowerCase() === "committed" ? (nr = Et.substr(Ft, 9), Ft += 9) : (nr = $t, ga === 0 && Ds(Xp)), nr === $t && (Et.substr(Ft, 11).toLowerCase() === "uncommitted" ? (nr = Et.substr(Ft, 11), Ft += 11) : (nr = $t, ga === 0 && Ds(T0))), nr !== $t ? (yo = Gt, Gt = qt = j0(nr)) : (Ft = Gt, Gt = $t)) : (Ft = Gt, Gt = $t))), Gt;
         }()) !== $t ? (yo = ur, ur = kr = { type: "origin", value: "isolation level " + un.value }) : (Ft = ur, ur = $t)) : (Ft = ur, ur = $t), ur === $t && (ur = Ft, Et.substr(Ft, 4).toLowerCase() === "read" ? (kr = Et.substr(Ft, 4), Ft += 4) : (kr = $t, ga === 0 && Ds(AA)), kr !== $t && So() !== $t ? (Et.substr(Ft, 5).toLowerCase() === "write" ? (Zr = Et.substr(Ft, 5), Ft += 5) : (Zr = $t, ga === 0 && Ds(aA)), Zr === $t && (Et.substr(Ft, 4).toLowerCase() === "only" ? (Zr = Et.substr(Ft, 4), Ft += 4) : (Zr = $t, ga === 0 && Ds(Nm))), Zr !== $t ? (yo = ur, ur = kr = j0(Zr)) : (Ft = ur, ur = $t)) : (Ft = ur, ur = $t), ur === $t && (ur = Ft, (kr = rv()) === $t && (kr = null), kr !== $t && So() !== $t ? (Et.substr(Ft, 10).toLowerCase() === "deferrable" ? (Zr = Et.substr(Ft, 10), Ft += 10) : (Zr = $t, ga === 0 && Ds(qm)), Zr !== $t ? (yo = ur, ur = kr = { type: "origin", value: kr ? "not deferrable" : "deferrable" }) : (Ft = ur, ur = $t)) : (Ft = ur, ur = $t))), ur;
@@ -162159,7 +162449,7 @@ function requireBigInteger() {
             var Gt, qt, nr, Cr;
             return Gt = Ft, (qt = function() {
               var dn, wn, Tn, lo, Yo;
-              return dn = Ft, wn = Ft, (Tn = rv()) !== $t && (lo = So()) !== $t && (Yo = dm()) !== $t ? wn = Tn = [Tn, lo, Yo] : (Ft = wn, wn = $t), wn !== $t && (yo = dn, wn = ax(wn)), (dn = wn) === $t && (dn = dm()), dn;
+              return dn = Ft, wn = Ft, (Tn = rv()) !== $t && (lo = So()) !== $t && (Yo = hm()) !== $t ? wn = Tn = [Tn, lo, Yo] : (Ft = wn, wn = $t), wn !== $t && (yo = dn, wn = ax(wn)), (dn = wn) === $t && (dn = hm()), dn;
             }()) !== $t && So() !== $t && (nr = bm()) !== $t && So() !== $t && e1() !== $t && So() !== $t && (Cr = bm()) !== $t ? (yo = Gt, Gt = qt = { op: qt, right: { type: "expr_list", value: [nr, Cr] } }) : (Ft = Gt, Gt = $t), Gt;
           }()) === $t && (un = function() {
             var Gt, qt, nr, Cr, dn;
@@ -162467,7 +162757,7 @@ function requireBigInteger() {
           var Zr, un, Gt, qt;
           return Zr = Ft, (un = Vm()) === $t && (un = null), un !== $t && So() !== $t ? ((Gt = Hr()) === $t && (Gt = null), Gt !== $t && So() !== $t ? ((qt = function() {
             var nr, Cr, dn, wn, Tn;
-            return nr = Ft, (Cr = Gr()) !== $t && So() !== $t ? ((dn = gE()) === $t && (dn = xE()), dn !== $t ? (yo = nr, nr = Cr = { type: "rows", expr: dn }) : (Ft = nr, nr = $t)) : (Ft = nr, nr = $t), nr === $t && (nr = Ft, (Cr = Gr()) !== $t && So() !== $t && (dn = dm()) !== $t && So() !== $t && (wn = xE()) !== $t && So() !== $t && e1() !== $t && So() !== $t && (Tn = gE()) !== $t ? (yo = nr, Cr = _i(dn, { type: "origin", value: "rows" }, { type: "expr_list", value: [wn, Tn] }), nr = Cr) : (Ft = nr, nr = $t)), nr;
+            return nr = Ft, (Cr = Gr()) !== $t && So() !== $t ? ((dn = gE()) === $t && (dn = xE()), dn !== $t ? (yo = nr, nr = Cr = { type: "rows", expr: dn }) : (Ft = nr, nr = $t)) : (Ft = nr, nr = $t), nr === $t && (nr = Ft, (Cr = Gr()) !== $t && So() !== $t && (dn = hm()) !== $t && So() !== $t && (wn = xE()) !== $t && So() !== $t && e1() !== $t && So() !== $t && (Tn = gE()) !== $t ? (yo = nr, Cr = _i(dn, { type: "origin", value: "rows" }, { type: "expr_list", value: [wn, Tn] }), nr = Cr) : (Ft = nr, nr = $t)), nr;
           }()) === $t && (qt = null), qt !== $t ? (yo = Zr, Zr = un = { name: null, partitionby: un, orderby: Gt, window_frame_clause: qt }) : (Ft = Zr, Zr = $t)) : (Ft = Zr, Zr = $t)) : (Ft = Zr, Zr = $t), Zr;
         }()) === $t && (kr = null), kr !== $t && So() !== $t && a$() !== $t ? (yo = ur, ur = { window_specification: kr || {}, parentheses: !0 }) : (Ft = ur, ur = $t)) : (Ft = ur, ur = $t)), ur;
       }
@@ -162879,7 +163169,7 @@ function requireBigInteger() {
         var ur, kr, Zr, un;
         return ur = Ft, Et.substr(Ft, 8).toLowerCase() === "distinct" ? (kr = Et.substr(Ft, 8), Ft += 8) : (kr = $t, ga === 0 && Ds(Py)), kr !== $t ? (Zr = Ft, ga++, un = Gp(), ga--, un === $t ? Zr = void 0 : (Ft = Zr, Zr = $t), Zr !== $t ? (yo = ur, ur = kr = "DISTINCT") : (Ft = ur, ur = $t)) : (Ft = ur, ur = $t), ur;
       }
-      function dm() {
+      function hm() {
         var ur, kr, Zr, un;
         return ur = Ft, Et.substr(Ft, 7).toLowerCase() === "between" ? (kr = Et.substr(Ft, 7), Ft += 7) : (kr = $t, ga === 0 && Ds(U2)), kr !== $t ? (Zr = Ft, ga++, un = Gp(), ga--, un === $t ? Zr = void 0 : (Ft = Zr, Zr = $t), Zr !== $t ? (yo = ur, ur = kr = "BETWEEN") : (Ft = ur, ur = $t)) : (Ft = ur, ur = $t), ur;
       }
@@ -163578,7 +163868,7 @@ function requireBigInteger() {
         return vo(pr, jr);
       }, Zu = Bn("SERIALIZABLE", !0), wl = Bn("REPEATABLE", !0), lu = Bn("READ", !0), Uu = Bn("COMMITTED", !0), Xp = Bn("UNCOMMITTED", !0), T0 = function(pr) {
         return { type: "origin", value: "read " + pr.toLowerCase() };
-      }, j0 = Bn("ISOLATION", !0), fm = Bn("LEVEL", !0), Sm = Bn("WRITE", !0), Nm = Bn("ONLY", !0), qm = Bn("DEFERRABLE", !0), l1 = Bn("commit", !0), B1 = Bn("rollback", !0), E1 = Bn("begin", !0), h$ = Bn("WORK", !0), d$ = Bn("TRANSACTION", !0), jo = Bn("start", !0), Su = Bn("transaction", !0), fs = Bn("FIELDS", !0), e0 = Bn("TERMINATED", !0), m0 = Bn("OPTIONALLY", !0), a0 = Bn("ENCLOSED", !0), xm = Bn("ESCAPED", !0), N0 = Bn("STARTING", !0), r1 = Bn("LINES", !0), Q0 = Bn("LOAD", !0), q0 = Bn("LOW_PRIORITY", !0), z1 = Bn("CONCURRENT", !0), U1 = Bn("INFILE", !0), im = Bn("INTO", !0), Fm = Bn("TABLE", !0), r$ = Bn("ROWS", !0), j1 = Bn("VIEW", !0), G1 = Bn("GRANT", !0), Zm = Bn("OPTION", !0), Gm = function(pr) {
+      }, j0 = Bn("ISOLATION", !0), dm = Bn("LEVEL", !0), Sm = Bn("WRITE", !0), Nm = Bn("ONLY", !0), qm = Bn("DEFERRABLE", !0), l1 = Bn("commit", !0), B1 = Bn("rollback", !0), E1 = Bn("begin", !0), h$ = Bn("WORK", !0), d$ = Bn("TRANSACTION", !0), jo = Bn("start", !0), Su = Bn("transaction", !0), fs = Bn("FIELDS", !0), e0 = Bn("TERMINATED", !0), m0 = Bn("OPTIONALLY", !0), a0 = Bn("ENCLOSED", !0), xm = Bn("ESCAPED", !0), N0 = Bn("STARTING", !0), r1 = Bn("LINES", !0), Q0 = Bn("LOAD", !0), q0 = Bn("LOW_PRIORITY", !0), z1 = Bn("CONCURRENT", !0), U1 = Bn("INFILE", !0), im = Bn("INTO", !0), Fm = Bn("TABLE", !0), r$ = Bn("ROWS", !0), j1 = Bn("VIEW", !0), G1 = Bn("GRANT", !0), Zm = Bn("OPTION", !0), Gm = function(pr) {
         return { type: "origin", value: Array.isArray(pr) ? pr[0] : pr };
       }, q1 = Bn("ROUTINE", !0), p$ = Bn("EXECUTE", !0), J1 = Bn("ADMIN", !0), P$ = Bn("GRANT", !1), Q$ = Bn("PROXY", !1), C$ = Bn("(", !1), V1 = Bn(")", !1), b$ = Bn("IN", !0), cA = Bn("SHARE", !0), jv = Bn("MODE", !0), Yv = Bn("WAIT", !0), DA = Bn("NOWAIT", !0), wy = Bn("SKIP", !0), v_ = Bn("LOCKED", !0), Dy = Bn("NATURAL", !0), N_ = Bn("LANGUAGE", !0), i_ = Bn("QUERY", !0), wv = Bn("EXPANSION", !0), Vv = Bn("BOOLEAN", !0), tA = Bn("MATCH", !0), uy = Bn("AGAINST", !1), EA = Bn("OUTFILE", !0), Ey = Bn("DUMPFILE", !0), Cy = Bn("BTREE", !0), e_ = Bn("HASH", !0), f_ = Bn("PARSER", !0), L_ = Bn("VISIBLE", !0), M_ = Bn("INVISIBLE", !0), Wx = Bn("LATERAL", !0), nx = /^[_0-9]/, $x = ss(["_", ["0", "9"]], !1, !1), W_ = Bn("ROLLUP", !0), Q_ = Bn("?", !1), jy = Bn("=", !1), XA = Bn("DUPLICATE", !0), o_ = function(pr, jr) {
         return To(pr, jr);
@@ -164439,7 +164729,7 @@ function requireBigInteger() {
       }
       function w$() {
         var pr, jr, nn, hn;
-        return pr = Vt, Et.substr(Vt, 9).toLowerCase() === "isolation" ? (jr = Et.substr(Vt, 9), Vt += 9) : (jr = $t, zr === 0 && Ft(j0)), jr !== $t && fo() !== $t ? (Et.substr(Vt, 5).toLowerCase() === "level" ? (nn = Et.substr(Vt, 5), Vt += 5) : (nn = $t, zr === 0 && Ft(fm)), nn !== $t && fo() !== $t && (hn = function() {
+        return pr = Vt, Et.substr(Vt, 9).toLowerCase() === "isolation" ? (jr = Et.substr(Vt, 9), Vt += 9) : (jr = $t, zr === 0 && Ft(j0)), jr !== $t && fo() !== $t ? (Et.substr(Vt, 5).toLowerCase() === "level" ? (nn = Et.substr(Vt, 5), Vt += 5) : (nn = $t, zr === 0 && Ft(dm)), nn !== $t && fo() !== $t && (hn = function() {
           var na, _i, Po;
           return na = Vt, Et.substr(Vt, 12).toLowerCase() === "serializable" ? (_i = Et.substr(Vt, 12), Vt += 12) : (_i = $t, zr === 0 && Ft(Zu)), _i !== $t && (ns = na, _i = { type: "origin", value: "serializable" }), (na = _i) === $t && (na = Vt, Et.substr(Vt, 10).toLowerCase() === "repeatable" ? (_i = Et.substr(Vt, 10), Vt += 10) : (_i = $t, zr === 0 && Ft(wl)), _i !== $t && fo() !== $t ? (Et.substr(Vt, 4).toLowerCase() === "read" ? (Po = Et.substr(Vt, 4), Vt += 4) : (Po = $t, zr === 0 && Ft(lu)), Po !== $t ? (ns = na, na = _i = { type: "origin", value: "repeatable read" }) : (Vt = na, na = $t)) : (Vt = na, na = $t), na === $t && (na = Vt, Et.substr(Vt, 4).toLowerCase() === "read" ? (_i = Et.substr(Vt, 4), Vt += 4) : (_i = $t, zr === 0 && Ft(lu)), _i !== $t && fo() !== $t ? (Et.substr(Vt, 9).toLowerCase() === "committed" ? (Po = Et.substr(Vt, 9), Vt += 9) : (Po = $t, zr === 0 && Ft(Uu)), Po === $t && (Et.substr(Vt, 11).toLowerCase() === "uncommitted" ? (Po = Et.substr(Vt, 11), Vt += 11) : (Po = $t, zr === 0 && Ft(Xp))), Po !== $t ? (ns = na, na = _i = T0(Po)) : (Vt = na, na = $t)) : (Vt = na, na = $t))), na;
         }()) !== $t ? (ns = pr, pr = jr = { type: "origin", value: "isolation level " + hn.value }) : (Vt = pr, pr = $t)) : (Vt = pr, pr = $t), pr === $t && (pr = Vt, Et.substr(Vt, 4).toLowerCase() === "read" ? (jr = Et.substr(Vt, 4), Vt += 4) : (jr = $t, zr === 0 && Ft(lu)), jr !== $t && fo() !== $t ? (Et.substr(Vt, 5).toLowerCase() === "write" ? (nn = Et.substr(Vt, 5), Vt += 5) : (nn = $t, zr === 0 && Ft(Sm)), nn === $t && (Et.substr(Vt, 4).toLowerCase() === "only" ? (nn = Et.substr(Vt, 4), Vt += 4) : (nn = $t, zr === 0 && Ft(Nm))), nn !== $t ? (ns = pr, pr = jr = T0(nn)) : (Vt = pr, pr = $t)) : (Vt = pr, pr = $t), pr === $t && (pr = Vt, (jr = us()) === $t && (jr = null), jr !== $t && fo() !== $t ? (Et.substr(Vt, 10).toLowerCase() === "deferrable" ? (nn = Et.substr(Vt, 10), Vt += 10) : (nn = $t, zr === 0 && Ft(qm)), nn !== $t ? (ns = pr, pr = jr = { type: "origin", value: jr ? "not deferrable" : "deferrable" }) : (Vt = pr, pr = $t)) : (Vt = pr, pr = $t))), pr;
@@ -165857,7 +166147,7 @@ function requireBigInteger() {
         var pr, jr, nn, hn;
         return pr = Vt, Et.substr(Vt, 3).toLowerCase() === "bit" ? (jr = Et.substr(Vt, 3), Vt += 3) : (jr = $t, zr === 0 && Ft(jA)), jr !== $t ? (nn = Vt, zr++, hn = G0(), zr--, hn === $t ? nn = void 0 : (Vt = nn, nn = $t), nn !== $t ? (ns = pr, pr = jr = "BIT") : (Vt = pr, pr = $t)) : (Vt = pr, pr = $t), pr;
       }
-      function dm() {
+      function hm() {
         var pr, jr, nn, hn;
         return pr = Vt, Et.substr(Vt, 7).toLowerCase() === "numeric" ? (jr = Et.substr(Vt, 7), Vt += 7) : (jr = $t, zr === 0 && Ft(Wt)), jr !== $t ? (nn = Vt, zr++, hn = G0(), zr--, hn === $t ? nn = void 0 : (Vt = nn, nn = $t), nn !== $t ? (ns = pr, pr = jr = "NUMERIC") : (Vt = pr, pr = $t)) : (Vt = pr, pr = $t), pr;
       }
@@ -166190,7 +166480,7 @@ function requireBigInteger() {
         var pr;
         return (pr = $o()) === $t && (pr = function() {
           var jr, nn, hn, na, _i, Po, as, Tl, Rl, pu, yu, kp;
-          if (jr = Vt, (nn = dm()) === $t && (nn = um()) === $t && (nn = g1()) === $t && (nn = T1()) === $t && (nn = Q1()) === $t && (nn = rv()) === $t && (nn = e1()) === $t && (nn = U0()) === $t && (nn = Ry()) === $t && (nn = Xy()) === $t && (nn = lm()), nn !== $t) if ((hn = fo()) !== $t) if ((na = wp()) !== $t) if ((_i = fo()) !== $t) {
+          if (jr = Vt, (nn = hm()) === $t && (nn = um()) === $t && (nn = g1()) === $t && (nn = T1()) === $t && (nn = Q1()) === $t && (nn = rv()) === $t && (nn = e1()) === $t && (nn = U0()) === $t && (nn = Ry()) === $t && (nn = Xy()) === $t && (nn = lm()), nn !== $t) if ((hn = fo()) !== $t) if ((na = wp()) !== $t) if ((_i = fo()) !== $t) {
             if (Po = [], pm.test(Et.charAt(Vt)) ? (as = Et.charAt(Vt), Vt++) : (as = $t, zr === 0 && Ft(Dm)), as !== $t) for (; as !== $t; ) Po.push(as), pm.test(Et.charAt(Vt)) ? (as = Et.charAt(Vt), Vt++) : (as = $t, zr === 0 && Ft(Dm));
             else Po = $t;
             if (Po !== $t) if ((as = fo()) !== $t) {
@@ -166209,14 +166499,14 @@ function requireBigInteger() {
           else Vt = jr, jr = $t;
           var Qu, yp;
           if (jr === $t) {
-            if (jr = Vt, (nn = dm()) === $t && (nn = um()) === $t && (nn = g1()) === $t && (nn = T1()) === $t && (nn = Q1()) === $t && (nn = rv()) === $t && (nn = e1()) === $t && (nn = U0()) === $t && (nn = Ry()) === $t && (nn = Xy()) === $t && (nn = lm()), nn !== $t) {
+            if (jr = Vt, (nn = hm()) === $t && (nn = um()) === $t && (nn = g1()) === $t && (nn = T1()) === $t && (nn = Q1()) === $t && (nn = rv()) === $t && (nn = e1()) === $t && (nn = U0()) === $t && (nn = Ry()) === $t && (nn = Xy()) === $t && (nn = lm()), nn !== $t) {
               if (hn = [], pm.test(Et.charAt(Vt)) ? (na = Et.charAt(Vt), Vt++) : (na = $t, zr === 0 && Ft(Dm)), na !== $t) for (; na !== $t; ) hn.push(na), pm.test(Et.charAt(Vt)) ? (na = Et.charAt(Vt), Vt++) : (na = $t, zr === 0 && Ft(Dm));
               else hn = $t;
               hn !== $t && (na = fo()) !== $t ? ((_i = mv()) === $t && (_i = null), _i !== $t ? (ns = jr, nn = function(c0, ur, kr) {
                 return { dataType: c0, length: parseInt(ur.join(""), 10), suffix: kr };
               }(nn, hn, _i), jr = nn) : (Vt = jr, jr = $t)) : (Vt = jr, jr = $t);
             } else Vt = jr, jr = $t;
-            jr === $t && (jr = Vt, (nn = dm()) === $t && (nn = um()) === $t && (nn = g1()) === $t && (nn = T1()) === $t && (nn = Q1()) === $t && (nn = rv()) === $t && (nn = e1()) === $t && (nn = U0()) === $t && (nn = Ry()) === $t && (nn = Xy()) === $t && (nn = lm()), nn !== $t && (hn = fo()) !== $t ? ((na = mv()) === $t && (na = null), na !== $t && (_i = fo()) !== $t ? (ns = jr, nn = /* @__PURE__ */ function(c0, ur) {
+            jr === $t && (jr = Vt, (nn = hm()) === $t && (nn = um()) === $t && (nn = g1()) === $t && (nn = T1()) === $t && (nn = Q1()) === $t && (nn = rv()) === $t && (nn = e1()) === $t && (nn = U0()) === $t && (nn = Ry()) === $t && (nn = Xy()) === $t && (nn = lm()), nn !== $t && (hn = fo()) !== $t ? ((na = mv()) === $t && (na = null), na !== $t && (_i = fo()) !== $t ? (ns = jr, nn = /* @__PURE__ */ function(c0, ur) {
               return { dataType: c0, suffix: ur };
             }(nn, na), jr = nn) : (Vt = jr, jr = $t)) : (Vt = jr, jr = $t));
           }
@@ -166470,7 +166760,7 @@ function requireBigInteger() {
         return { type: "origin", value: Array.isArray(Gt) ? Gt[0] : Gt };
       }, oy = Ut("CONNECT", !0), qA = Ut("PRIVILEGES", !0), RA = function(Gt) {
         return { type: "origin", value: Gt };
-      }, iA = Ut("SEQUENCE", !0), ky = Ut("DATABASE", !0), Oo = Ut("DOMAIN", !1), Cl = Ut("FUNCTION", !1), su = Ut("ROUTINE", !0), Yl = Ut("LANGUAGE", !0), dp = Ut("LARGE", !0), Zu = Ut("SCHEMA", !1), wl = Ut("FUNCTIONS", !0), lu = Ut("PROCEDURES", !0), Uu = Ut("ROUTINES", !0), Xp = Ut("PUBLIC", !0), T0 = Ut("GRANT", !0), j0 = Ut("OPTION", !0), fm = Ut("ADMIN", !0), Sm = Ut("REVOKE", !0), Nm = Ut("ELSEIF", !0), qm = Ut("THEN", !0), l1 = Ut("END", !0), B1 = Ut("DEBUG", !0), E1 = Ut("LOG", !0), h$ = Ut("INFO", !0), d$ = Ut("NOTICE", !0), jo = Ut("WARNING", !0), Su = Ut("EXCEPTION", !0), fs = Ut("MESSAGE", !0), e0 = Ut("DETAIL", !0), m0 = Ut("HINT", !0), a0 = Ut("ERRCODE", !0), xm = Ut("COLUMN", !0), N0 = Ut("CONSTRAINT", !0), r1 = Ut("DATATYPE", !0), Q0 = Ut("TABLE", !0), q0 = Ut("SQLSTATE", !0), z1 = Ut("RAISE", !0), U1 = Ut("LOOP", !0), im = Ut(";", !1), Fm = Ut("(", !1), r$ = Ut(")", !1), j1 = Ut('"', !1), G1 = Ut("OUTFILE", !0), Zm = Ut("DUMPFILE", !0), Gm = Ut("BTREE", !0), q1 = Ut("HASH", !0), p$ = Ut("GIST", !0), J1 = Ut("GIN", !0), P$ = Ut("WITH", !0), Q$ = Ut("PARSER", !0), C$ = Ut("VISIBLE", !0), V1 = Ut("INVISIBLE", !0), b$ = function(Gt, qt) {
+      }, iA = Ut("SEQUENCE", !0), ky = Ut("DATABASE", !0), Oo = Ut("DOMAIN", !1), Cl = Ut("FUNCTION", !1), su = Ut("ROUTINE", !0), Yl = Ut("LANGUAGE", !0), dp = Ut("LARGE", !0), Zu = Ut("SCHEMA", !1), wl = Ut("FUNCTIONS", !0), lu = Ut("PROCEDURES", !0), Uu = Ut("ROUTINES", !0), Xp = Ut("PUBLIC", !0), T0 = Ut("GRANT", !0), j0 = Ut("OPTION", !0), dm = Ut("ADMIN", !0), Sm = Ut("REVOKE", !0), Nm = Ut("ELSEIF", !0), qm = Ut("THEN", !0), l1 = Ut("END", !0), B1 = Ut("DEBUG", !0), E1 = Ut("LOG", !0), h$ = Ut("INFO", !0), d$ = Ut("NOTICE", !0), jo = Ut("WARNING", !0), Su = Ut("EXCEPTION", !0), fs = Ut("MESSAGE", !0), e0 = Ut("DETAIL", !0), m0 = Ut("HINT", !0), a0 = Ut("ERRCODE", !0), xm = Ut("COLUMN", !0), N0 = Ut("CONSTRAINT", !0), r1 = Ut("DATATYPE", !0), Q0 = Ut("TABLE", !0), q0 = Ut("SQLSTATE", !0), z1 = Ut("RAISE", !0), U1 = Ut("LOOP", !0), im = Ut(";", !1), Fm = Ut("(", !1), r$ = Ut(")", !1), j1 = Ut('"', !1), G1 = Ut("OUTFILE", !0), Zm = Ut("DUMPFILE", !0), Gm = Ut("BTREE", !0), q1 = Ut("HASH", !0), p$ = Ut("GIST", !0), J1 = Ut("GIN", !0), P$ = Ut("WITH", !0), Q$ = Ut("PARSER", !0), C$ = Ut("VISIBLE", !0), V1 = Ut("INVISIBLE", !0), b$ = function(Gt, qt) {
         return qt.unshift(Gt), qt.forEach((nr) => {
           const { table: Cr, as: dn } = nr;
           un[Cr] = Cr, dn && (un[dn] = Cr), function(wn) {
@@ -166880,7 +167170,7 @@ function requireBigInteger() {
             return { revoke: "from", grant: "to" }[Xt.type].toLowerCase() === Rr[0].toLowerCase();
           }(nr, 0, dn) ? void 0 : $t) !== $t && (wn = $o()) !== $t && (Tn = ex()) !== $t && (lo = $o()) !== $t ? ((Yo = function() {
             var Xt, vr, Rr;
-            return Xt = Ht, Vx() !== $t && $o() !== $t ? (Et.substr(Ht, 5).toLowerCase() === "admin" ? (vr = Et.substr(Ht, 5), Ht += 5) : (vr = $t, oo === 0 && Ms(fm)), vr !== $t && $o() !== $t ? (Et.substr(Ht, 6).toLowerCase() === "option" ? (Rr = Et.substr(Ht, 6), Ht += 6) : (Rr = $t, oo === 0 && Ms(j0)), Rr !== $t ? (Do = Xt, Xt = { type: "origin", value: "with admin option" }) : (Ht = Xt, Xt = $t)) : (Ht = Xt, Xt = $t)) : (Ht = Xt, Xt = $t), Xt;
+            return Xt = Ht, Vx() !== $t && $o() !== $t ? (Et.substr(Ht, 5).toLowerCase() === "admin" ? (vr = Et.substr(Ht, 5), Ht += 5) : (vr = $t, oo === 0 && Ms(dm)), vr !== $t && $o() !== $t ? (Et.substr(Ht, 6).toLowerCase() === "option" ? (Rr = Et.substr(Ht, 6), Ht += 6) : (Rr = $t, oo === 0 && Ms(j0)), Rr !== $t ? (Do = Xt, Xt = { type: "origin", value: "with admin option" }) : (Ht = Xt, Xt = $t)) : (Ht = Xt, Xt = $t)) : (Ht = Xt, Xt = $t), Xt;
           }()) === $t && (Yo = null), Yo !== $t ? (Do = qt, nr = function(Xt, vr, Rr, Kr, Rn) {
             return { tableList: Array.from(kr), columnList: yp(Zr), ast: { ...Xt, keyword: "role", objects: vr.map((Kn) => ({ priv: { type: "string", value: Kn } })), to_from: Rr[0], user_or_roles: Kr, with: Rn } };
           }(nr, Cr, dn, Tn, Yo), qt = nr) : (Ht = qt, qt = $t)) : (Ht = qt, qt = $t)) : (Ht = qt, qt = $t)) : (Ht = qt, qt = $t)), qt;
@@ -168488,9 +168778,9 @@ function requireBigInteger() {
           return { type: "function", name: { name: [{ type: "default", value: lo }] }, args: Yo || { type: "expr_list", value: [] }, over: zo, ...as() };
         }(qt, Cr, dn)) : (Ht = Gt, Gt = $t)) : (Ht = Gt, Gt = $t)) : (Ht = Gt, Gt = $t), Gt === $t && (Gt = function() {
           var lo, Yo, zo, Ys, Hl;
-          lo = Ht, (Yo = dm()) !== $t && $o() !== $t && L$() !== $t && $o() !== $t && (zo = qy()) !== $t && $o() !== $t && Uv() !== $t && $o() !== $t ? ((Ys = Io()) === $t && (Ys = iu()) === $t && (Ys = xo()) === $t && (Ys = xr()), Ys === $t && (Ys = null), Ys !== $t && $o() !== $t && (Hl = xs()) !== $t && $o() !== $t && lv() !== $t ? (Do = lo, Au = zo, Xt = Ys, vr = Hl, Yo = { type: Yo.toLowerCase(), args: { field: Au, cast_type: Xt, source: vr }, ...as() }, lo = Yo) : (Ht = lo, lo = $t)) : (Ht = lo, lo = $t);
+          lo = Ht, (Yo = hm()) !== $t && $o() !== $t && L$() !== $t && $o() !== $t && (zo = qy()) !== $t && $o() !== $t && Uv() !== $t && $o() !== $t ? ((Ys = Io()) === $t && (Ys = iu()) === $t && (Ys = xo()) === $t && (Ys = xr()), Ys === $t && (Ys = null), Ys !== $t && $o() !== $t && (Hl = xs()) !== $t && $o() !== $t && lv() !== $t ? (Do = lo, Au = zo, Xt = Ys, vr = Hl, Yo = { type: Yo.toLowerCase(), args: { field: Au, cast_type: Xt, source: vr }, ...as() }, lo = Yo) : (Ht = lo, lo = $t)) : (Ht = lo, lo = $t);
           var Au, Xt, vr;
-          return lo === $t && (lo = Ht, (Yo = dm()) !== $t && $o() !== $t && L$() !== $t && $o() !== $t && (zo = qy()) !== $t && $o() !== $t && Uv() !== $t && $o() !== $t && (Ys = xs()) !== $t && $o() !== $t && (Hl = lv()) !== $t ? (Do = lo, Yo = function(Rr, Kr, Rn) {
+          return lo === $t && (lo = Ht, (Yo = hm()) !== $t && $o() !== $t && L$() !== $t && $o() !== $t && (zo = qy()) !== $t && $o() !== $t && Uv() !== $t && $o() !== $t && (Ys = xs()) !== $t && $o() !== $t && (Hl = lv()) !== $t ? (Do = lo, Yo = function(Rr, Kr, Rn) {
             return { type: Rr.toLowerCase(), args: { field: Kr, source: Rn }, ...as() };
           }(Yo, zo, Ys), lo = Yo) : (Ht = lo, lo = $t)), lo;
         }()) === $t && (Gt = Ht, (qt = bE()) !== $t && $o() !== $t ? ((nr = gy()) === $t && (nr = null), nr !== $t ? (Do = Gt, Gt = qt = { type: "function", name: { name: [{ type: "origin", value: qt }] }, over: nr, ...as() }) : (Ht = Gt, Gt = $t)) : (Ht = Gt, Gt = $t), Gt === $t && (Gt = Ht, (qt = Pu()) !== $t && $o() !== $t && (nr = L$()) !== $t && $o() !== $t ? ((Cr = Il()) === $t && (Cr = null), Cr !== $t && $o() !== $t && lv() !== $t ? (Do = Gt, Gt = qt = function(lo, Yo) {
@@ -168855,7 +169145,7 @@ function requireBigInteger() {
         var Gt, qt, nr, Cr;
         return Gt = Ht, Et.substr(Ht, 5).toLowerCase() === "array" ? (qt = Et.substr(Ht, 5), Ht += 5) : (qt = $t, oo === 0 && Ms(N2)), qt !== $t ? (nr = Ht, oo++, Cr = w0(), oo--, Cr === $t ? nr = void 0 : (Ht = nr, nr = $t), nr !== $t ? (Do = Gt, Gt = qt = "ARRAY") : (Ht = Gt, Gt = $t)) : (Ht = Gt, Gt = $t), Gt;
       }
-      function dm() {
+      function hm() {
         var Gt, qt, nr, Cr;
         return Gt = Ht, Et.substr(Ht, 7).toLowerCase() === "extract" ? (qt = Et.substr(Ht, 7), Ht += 7) : (qt = $t, oo === 0 && Ms(Wm)), qt !== $t ? (nr = Ht, oo++, Cr = w0(), oo--, Cr === $t ? nr = void 0 : (Ht = nr, nr = $t), nr !== $t ? (Do = Gt, Gt = qt = "EXTRACT") : (Ht = Gt, Gt = $t)) : (Ht = Gt, Gt = $t), Gt;
       }
@@ -169578,7 +169868,7 @@ function requireBigInteger() {
         return { resource: "sequence", prefix: er.toLowerCase(), value: wr };
       }, Kl = Cs("NO", !0), bu = Cs("MAXVALUE", !0), op = Cs("START", !0), u0 = function(er, wr, Ur) {
         return { resource: "sequence", prefix: wr ? er.toLowerCase() + " with" : er.toLowerCase(), value: Ur };
-      }, Tp = Cs("RESTART", !0), Hp = Cs("CACHE", !0), Cu = Cs("CYCLE", !0), Lu = Cs("OWNED", !0), mu = Cs("NONE", !0), lp = Cs("INCLUDE", !0), Hu = Cs("NULLS", !0), Wp = Cs("FIRST", !0), b0 = Cs("LAST", !0), Yp = Cs("MODULUS", !0), Ou = Cs("REMAINDER", !0), S0 = Cs("FOR", !0), B0 = Cs("OF", !0), wm = Cs("AUTO_INCREMENT", !0), uu = Cs("UNIQUE", !0), $p = Cs("KEY", !0), ip = Cs("PRIMARY", !0), sp = Cs("GENERATED", !0), zu = Cs("BY", !0), xu = Cs("DEFAULT", !0), Ip = Cs("AS", !0), Gu = Cs("IDENTITY", !0), Op = Cs("COLUMN_FORMAT", !0), mp = Cs("FIXED", !0), Ep = Cs("DYNAMIC", !0), qp = Cs("STORAGE", !0), i0 = Cs("DISK", !0), P0 = Cs("MEMORY", !0), L0 = Cs("CASCADE", !0), F0 = Cs("RESTRICT", !0), pm = Cs("ONLY", !0), Dm = Cs("CONTINUE", !0), Im = Cs("OUT", !0), Tm = Cs("VARIADIC", !0), p1 = Cs("OWNER", !0), N1 = Cs("LOGGED", !0), $1 = Cs("UNLOGGED", !0), _1 = Cs("only", !0), R1 = Cs("CONSTRAINT", !0), O1 = Cs("CURRENT_ROLE", !0), H1 = Cs("CURRENT_USER", !0), Zp = Cs("SESSION_USER", !0), Km = Cs("ALGORITHM", !0), U$ = Cs("INSTANT", !0), uv = Cs("INPLACE", !0), tv = Cs("COPY", !0), o$ = Cs("LOCK", !0), I$ = Cs("SHARED", !0), w1 = Cs("EXCLUSIVE", !0), Cv = Cs("data", !0), Y$ = Cs("type", !0), Hv = Cs("REPLICA", !0), W$ = Cs("FULL", !0), R$ = Cs("NOTHING", !0), z$ = Cs("PRIMARY KEY", !0), Jv = Cs("FOREIGN KEY", !0), nA = Cs("ENFORCED", !0), oA = Cs("MATCH FULL", !0), M$ = Cs("MATCH PARTIAL", !0), Kv = Cs("MATCH SIMPLE", !0), Mv = Cs("SET NULL", !0), TA = Cs("NO ACTION", !0), pA = Cs("SET DEFAULT", !0), H$ = Cs("TRIGGER", !0), Iv = Cs("BEFORE", !0), Gv = Cs("AFTER", !0), xA = Cs("INSTEAD OF", !0), LA = Cs("EXECUTE", !0), NA = Cs("PROCEDURE", !0), IA = Cs("DEFERRABLE", !0), gv = Cs("INITIALLY IMMEDIATE", !0), Vy = Cs("INITIALLY DEFERRED", !0), yy = Cs("EACH", !0), AA = Cs("ROW", !0), eA = Cs("STATEMENT", !0), aA = Cs("CHARACTER", !0), xy = Cs("SET", !0), ty = Cs("CHARSET", !0), wA = Cs("COLLATE", !0), Pv = Cs("AVG_ROW_LENGTH", !0), SA = Cs("KEY_BLOCK_SIZE", !0), oy = Cs("MAX_ROWS", !0), qA = Cs("MIN_ROWS", !0), RA = Cs("STATS_SAMPLE_PAGES", !0), iA = Cs("CONNECTION", !0), ky = Cs("COMPRESSION", !0), Oo = Cs("'", !1), Cl = Cs("ZLIB", !0), su = Cs("LZ4", !0), Yl = Cs("ENGINE", !0), dp = Cs("IN", !0), Zu = Cs("ACCESS SHARE", !0), wl = Cs("ROW SHARE", !0), lu = Cs("ROW EXCLUSIVE", !0), Uu = Cs("SHARE UPDATE EXCLUSIVE", !0), Xp = Cs("SHARE ROW EXCLUSIVE", !0), T0 = Cs("ACCESS EXCLUSIVE", !0), j0 = Cs("SHARE", !0), fm = Cs("MODE", !0), Sm = Cs("NOWAIT", !0), Nm = Cs("TABLES", !0), qm = Cs("PREPARE", !0), l1 = Cs("USAGE", !0), B1 = function(er) {
+      }, Tp = Cs("RESTART", !0), Hp = Cs("CACHE", !0), Cu = Cs("CYCLE", !0), Lu = Cs("OWNED", !0), mu = Cs("NONE", !0), lp = Cs("INCLUDE", !0), Hu = Cs("NULLS", !0), Wp = Cs("FIRST", !0), b0 = Cs("LAST", !0), Yp = Cs("MODULUS", !0), Ou = Cs("REMAINDER", !0), S0 = Cs("FOR", !0), B0 = Cs("OF", !0), wm = Cs("AUTO_INCREMENT", !0), uu = Cs("UNIQUE", !0), $p = Cs("KEY", !0), ip = Cs("PRIMARY", !0), sp = Cs("GENERATED", !0), zu = Cs("BY", !0), xu = Cs("DEFAULT", !0), Ip = Cs("AS", !0), Gu = Cs("IDENTITY", !0), Op = Cs("COLUMN_FORMAT", !0), mp = Cs("FIXED", !0), Ep = Cs("DYNAMIC", !0), qp = Cs("STORAGE", !0), i0 = Cs("DISK", !0), P0 = Cs("MEMORY", !0), L0 = Cs("CASCADE", !0), F0 = Cs("RESTRICT", !0), pm = Cs("ONLY", !0), Dm = Cs("CONTINUE", !0), Im = Cs("OUT", !0), Tm = Cs("VARIADIC", !0), p1 = Cs("OWNER", !0), N1 = Cs("LOGGED", !0), $1 = Cs("UNLOGGED", !0), _1 = Cs("only", !0), R1 = Cs("CONSTRAINT", !0), O1 = Cs("CURRENT_ROLE", !0), H1 = Cs("CURRENT_USER", !0), Zp = Cs("SESSION_USER", !0), Km = Cs("ALGORITHM", !0), U$ = Cs("INSTANT", !0), uv = Cs("INPLACE", !0), tv = Cs("COPY", !0), o$ = Cs("LOCK", !0), I$ = Cs("SHARED", !0), w1 = Cs("EXCLUSIVE", !0), Cv = Cs("data", !0), Y$ = Cs("type", !0), Hv = Cs("REPLICA", !0), W$ = Cs("FULL", !0), R$ = Cs("NOTHING", !0), z$ = Cs("PRIMARY KEY", !0), Jv = Cs("FOREIGN KEY", !0), nA = Cs("ENFORCED", !0), oA = Cs("MATCH FULL", !0), M$ = Cs("MATCH PARTIAL", !0), Kv = Cs("MATCH SIMPLE", !0), Mv = Cs("SET NULL", !0), TA = Cs("NO ACTION", !0), pA = Cs("SET DEFAULT", !0), H$ = Cs("TRIGGER", !0), Iv = Cs("BEFORE", !0), Gv = Cs("AFTER", !0), xA = Cs("INSTEAD OF", !0), LA = Cs("EXECUTE", !0), NA = Cs("PROCEDURE", !0), IA = Cs("DEFERRABLE", !0), gv = Cs("INITIALLY IMMEDIATE", !0), Vy = Cs("INITIALLY DEFERRED", !0), yy = Cs("EACH", !0), AA = Cs("ROW", !0), eA = Cs("STATEMENT", !0), aA = Cs("CHARACTER", !0), xy = Cs("SET", !0), ty = Cs("CHARSET", !0), wA = Cs("COLLATE", !0), Pv = Cs("AVG_ROW_LENGTH", !0), SA = Cs("KEY_BLOCK_SIZE", !0), oy = Cs("MAX_ROWS", !0), qA = Cs("MIN_ROWS", !0), RA = Cs("STATS_SAMPLE_PAGES", !0), iA = Cs("CONNECTION", !0), ky = Cs("COMPRESSION", !0), Oo = Cs("'", !1), Cl = Cs("ZLIB", !0), su = Cs("LZ4", !0), Yl = Cs("ENGINE", !0), dp = Cs("IN", !0), Zu = Cs("ACCESS SHARE", !0), wl = Cs("ROW SHARE", !0), lu = Cs("ROW EXCLUSIVE", !0), Uu = Cs("SHARE UPDATE EXCLUSIVE", !0), Xp = Cs("SHARE ROW EXCLUSIVE", !0), T0 = Cs("ACCESS EXCLUSIVE", !0), j0 = Cs("SHARE", !0), dm = Cs("MODE", !0), Sm = Cs("NOWAIT", !0), Nm = Cs("TABLES", !0), qm = Cs("PREPARE", !0), l1 = Cs("USAGE", !0), B1 = function(er) {
         return { type: "origin", value: Array.isArray(er) ? er[0] : er };
       }, E1 = Cs("CONNECT", !0), h$ = Cs("PRIVILEGES", !0), d$ = function(er) {
         return { type: "origin", value: er };
@@ -169645,13 +169935,13 @@ function requireBigInteger() {
           var wr, Ur, an, ba, Eo, uo, rs;
           wr = Pt, (Ur = vm()) !== $t && no() !== $t && (an = vo()) !== $t && no() !== $t ? ((ba = Yr()) === $t && (ba = null), ba !== $t && no() !== $t && (Eo = nE()) !== $t ? (ao = wr, Ks = Ur, Gl = an, Ru = ba, (Ku = Eo) && Ku.forEach((Lp) => w_.add(`${Ks}::${[Lp.db, Lp.schema].filter(Boolean).join(".") || null}::${Lp.table}`)), Ur = { tableList: Array.from(w_), columnList: tw(E_), ast: { type: Ks.toLowerCase(), keyword: Gl.toLowerCase(), prefix: Ru, name: Ku } }, wr = Ur) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t);
           var Ks, Gl, Ru, Ku;
-          return wr === $t && (wr = Pt, (Ur = vm()) !== $t && no() !== $t && (an = Jy()) !== $t && no() !== $t ? ((ba = kE()) === $t && (ba = null), ba !== $t && no() !== $t ? ((Eo = Yr()) === $t && (Eo = null), Eo !== $t && no() !== $t && (uo = Un()) !== $t && no() !== $t ? (Et.substr(Pt, 7).toLowerCase() === "cascade" ? (rs = Et.substr(Pt, 7), Pt += 7) : (rs = $t, Dn === 0 && As(L0)), rs === $t && (Et.substr(Pt, 8).toLowerCase() === "restrict" ? (rs = Et.substr(Pt, 8), Pt += 8) : (rs = $t, Dn === 0 && As(F0))), rs === $t && (rs = null), rs !== $t ? (ao = wr, Ur = function(Lp, bp, o0, I0, V0, cm) {
-            return { tableList: Array.from(w_), columnList: tw(E_), ast: { type: Lp.toLowerCase(), keyword: bp.toLowerCase(), prefix: [o0, I0].filter(($m) => $m).join(" "), name: V0, options: cm && [{ type: "origin", value: cm }] } };
+          return wr === $t && (wr = Pt, (Ur = vm()) !== $t && no() !== $t && (an = Jy()) !== $t && no() !== $t ? ((ba = kE()) === $t && (ba = null), ba !== $t && no() !== $t ? ((Eo = Yr()) === $t && (Eo = null), Eo !== $t && no() !== $t && (uo = Un()) !== $t && no() !== $t ? (Et.substr(Pt, 7).toLowerCase() === "cascade" ? (rs = Et.substr(Pt, 7), Pt += 7) : (rs = $t, Dn === 0 && As(L0)), rs === $t && (Et.substr(Pt, 8).toLowerCase() === "restrict" ? (rs = Et.substr(Pt, 8), Pt += 8) : (rs = $t, Dn === 0 && As(F0))), rs === $t && (rs = null), rs !== $t ? (ao = wr, Ur = function(Lp, bp, o0, I0, V0, fm) {
+            return { tableList: Array.from(w_), columnList: tw(E_), ast: { type: Lp.toLowerCase(), keyword: bp.toLowerCase(), prefix: [o0, I0].filter(($m) => $m).join(" "), name: V0, options: fm && [{ type: "origin", value: fm }] } };
           }(Ur, an, ba, Eo, uo, rs), wr = Ur) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t), wr === $t && (wr = Pt, (Ur = vm()) !== $t && no() !== $t && (an = function() {
             var Lp, bp, o0, I0;
             return Lp = Pt, Et.substr(Pt, 4).toLowerCase() === "type" ? (bp = Et.substr(Pt, 4), Pt += 4) : (bp = $t, Dn === 0 && As(tu)), bp !== $t ? (o0 = Pt, Dn++, I0 = U0(), Dn--, I0 === $t ? o0 = void 0 : (Pt = o0, o0 = $t), o0 !== $t ? (ao = Lp, Lp = bp = "TYPE") : (Pt = Lp, Lp = $t)) : (Pt = Lp, Lp = $t), Lp;
           }()) !== $t && no() !== $t ? ((ba = Yr()) === $t && (ba = null), ba !== $t && no() !== $t && (Eo = Ix()) !== $t && no() !== $t ? (Et.substr(Pt, 7).toLowerCase() === "cascade" ? (uo = Et.substr(Pt, 7), Pt += 7) : (uo = $t, Dn === 0 && As(L0)), uo === $t && (Et.substr(Pt, 8).toLowerCase() === "restrict" ? (uo = Et.substr(Pt, 8), Pt += 8) : (uo = $t, Dn === 0 && As(F0))), uo === $t && (uo = null), uo !== $t ? (ao = wr, Ur = function(Lp, bp, o0, I0, V0) {
-            return { tableList: Array.from(w_), columnList: tw(E_), ast: { type: Lp.toLowerCase(), keyword: bp.toLowerCase(), prefix: [o0].filter((cm) => cm).join(" "), name: I0, options: V0 && [{ type: "origin", value: V0 }] } };
+            return { tableList: Array.from(w_), columnList: tw(E_), ast: { type: Lp.toLowerCase(), keyword: bp.toLowerCase(), prefix: [o0].filter((fm) => fm).join(" "), name: I0, options: V0 && [{ type: "origin", value: V0 }] } };
           }(Ur, an, ba, Eo, uo), wr = Ur) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t), wr === $t && (wr = Pt, (Ur = vm()) !== $t && no() !== $t && (an = nm()) !== $t && no() !== $t ? ((ba = Yr()) === $t && (ba = null), ba !== $t && no() !== $t && (Eo = nE()) !== $t && no() !== $t ? ((uo = function() {
             var Lp, bp;
             return Lp = Pt, Et.substr(Pt, 8).toLowerCase() === "restrict" ? (bp = Et.substr(Pt, 8), Pt += 8) : (bp = $t, Dn === 0 && As(F0)), bp === $t && (Et.substr(Pt, 7).toLowerCase() === "cascade" ? (bp = Et.substr(Pt, 7), Pt += 7) : (bp = $t, Dn === 0 && As(L0))), bp !== $t && (ao = Lp, bp = bp.toLowerCase()), Lp = bp;
@@ -169673,8 +169963,8 @@ function requireBigInteger() {
               }()) !== $t && no() !== $t ? (P1 = Pt, (i$ = Pu()) !== $t && (y$ = no()) !== $t && (kv = us()) !== $t ? P1 = i$ = [i$, y$, kv] : (Pt = P1, P1 = $t), P1 === $t && (P1 = null), P1 !== $t ? (ao = Em, em = { type: "partition_of", keyword: "partition of", table: s1, for_values: zm, tablespace: (Wy = P1) && Wy[2] }, Em = em) : (Pt = Em, Em = $t)) : (Pt = Em, Em = $t)) : (Pt = Em, Em = $t);
               var Wy;
               return Em;
-            }()) !== $t ? (ao = Ur, bp = an, o0 = ba, I0 = Eo, V0 = uo, $m = Ks, (cm = rs) && cm.forEach((Em) => w_.add(`create::${[Em.db, Em.schema].filter(Boolean).join(".") || null}::${Em.table}`)), an = { tableList: Array.from(w_), columnList: tw(E_), ast: { type: bp[0].toLowerCase(), keyword: "table", temporary: o0 && o0[0].toLowerCase(), unlogged: I0, if_not_exists: V0, table: cm, partition_of: $m } }, Ur = an) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t);
-            var bp, o0, I0, V0, cm, $m;
+            }()) !== $t ? (ao = Ur, bp = an, o0 = ba, I0 = Eo, V0 = uo, $m = Ks, (fm = rs) && fm.forEach((Em) => w_.add(`create::${[Em.db, Em.schema].filter(Boolean).join(".") || null}::${Em.table}`)), an = { tableList: Array.from(w_), columnList: tw(E_), ast: { type: bp[0].toLowerCase(), keyword: "table", temporary: o0 && o0[0].toLowerCase(), unlogged: I0, if_not_exists: V0, table: fm, partition_of: $m } }, Ur = an) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t);
+            var bp, o0, I0, V0, fm, $m;
             return Ur === $t && (Ur = Pt, (an = Ay()) !== $t && no() !== $t ? ((ba = ey()) === $t && (ba = By()), ba === $t && (ba = null), ba !== $t && no() !== $t ? ((Eo = So()) === $t && (Eo = null), Eo !== $t && no() !== $t && vo() !== $t && no() !== $t ? ((uo = Ev()) === $t && (uo = null), uo !== $t && no() !== $t && (rs = nE()) !== $t && no() !== $t ? ((Ks = function() {
               var Em, em, Pm, s1, zm, P1, i$, y$, kv;
               if (Em = Pt, (em = Av()) !== $t) if (no() !== $t) if ((Pm = O0()) !== $t) {
@@ -169705,7 +169995,7 @@ function requireBigInteger() {
               return zm && zm.forEach((i$) => w_.add(`create::${[i$.db, i$.schema].filter(Boolean).join(".") || null}::${i$.table}`)), { tableList: Array.from(w_), columnList: tw(E_), ast: { type: Em[0].toLowerCase(), keyword: "table", temporary: em && em[0].toLowerCase(), unlogged: Pm, if_not_exists: s1, table: zm, like: P1 } };
             }(an, ba, Eo, uo, rs, Ks), Ur = an) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t))), Ur;
           }()) === $t && (wr = function() {
-            var Ur, an, ba, Eo, uo, rs, Ks, Gl, Ru, Ku, Lp, bp, o0, I0, V0, cm, $m, Em, em, Pm, s1;
+            var Ur, an, ba, Eo, uo, rs, Ks, Gl, Ru, Ku, Lp, bp, o0, I0, V0, fm, $m, Em, em, Pm, s1;
             return Ur = Pt, (an = Ay()) !== $t && no() !== $t ? (ba = Pt, (Eo = kr()) !== $t && (uo = no()) !== $t && (rs = mv()) !== $t ? ba = Eo = [Eo, uo, rs] : (Pt = ba, ba = $t), ba === $t && (ba = null), ba !== $t && (Eo = no()) !== $t ? ((uo = M2()) === $t && (uo = null), uo !== $t && (rs = no()) !== $t ? (Et.substr(Pt, 7).toLowerCase() === "trigger" ? (Ks = Et.substr(Pt, 7), Pt += 7) : (Ks = $t, Dn === 0 && As(H$)), Ks !== $t && no() !== $t && (Gl = e1()) !== $t && no() !== $t ? (Et.substr(Pt, 6).toLowerCase() === "before" ? (Ru = Et.substr(Pt, 6), Pt += 6) : (Ru = $t, Dn === 0 && As(Iv)), Ru === $t && (Et.substr(Pt, 5).toLowerCase() === "after" ? (Ru = Et.substr(Pt, 5), Pt += 5) : (Ru = $t, Dn === 0 && As(Gv)), Ru === $t && (Et.substr(Pt, 10).toLowerCase() === "instead of" ? (Ru = Et.substr(Pt, 10), Pt += 10) : (Ru = $t, Dn === 0 && As(xA)))), Ru !== $t && no() !== $t && (Ku = function() {
               var zm, P1, i$, y$, kv, Wy, Uy, fE;
               if (zm = Pt, (P1 = Xs()) !== $t) {
@@ -169713,12 +170003,12 @@ function requireBigInteger() {
                 i$ !== $t ? (ao = zm, P1 = Rw(P1, i$), zm = P1) : (Pt = zm, zm = $t);
               } else Pt = zm, zm = $t;
               return zm;
-            }()) !== $t && no() !== $t ? (Et.substr(Pt, 2).toLowerCase() === "on" ? (Lp = Et.substr(Pt, 2), Pt += 2) : (Lp = $t, Dn === 0 && As(Ro)), Lp !== $t && no() !== $t && (bp = by()) !== $t && no() !== $t ? (o0 = Pt, (I0 = Jr()) !== $t && (V0 = no()) !== $t && (cm = by()) !== $t ? o0 = I0 = [I0, V0, cm] : (Pt = o0, o0 = $t), o0 === $t && (o0 = null), o0 !== $t && (I0 = no()) !== $t ? ((V0 = function() {
+            }()) !== $t && no() !== $t ? (Et.substr(Pt, 2).toLowerCase() === "on" ? (Lp = Et.substr(Pt, 2), Pt += 2) : (Lp = $t, Dn === 0 && As(Ro)), Lp !== $t && no() !== $t && (bp = by()) !== $t && no() !== $t ? (o0 = Pt, (I0 = Jr()) !== $t && (V0 = no()) !== $t && (fm = by()) !== $t ? o0 = I0 = [I0, V0, fm] : (Pt = o0, o0 = $t), o0 === $t && (o0 = null), o0 !== $t && (I0 = no()) !== $t ? ((V0 = function() {
               var zm, P1, i$, y$, kv;
               zm = Pt, P1 = Pt, Et.substr(Pt, 3).toLowerCase() === "not" ? (i$ = Et.substr(Pt, 3), Pt += 3) : (i$ = $t, Dn === 0 && As(ks)), i$ === $t && (i$ = null), i$ !== $t && (y$ = no()) !== $t ? (Et.substr(Pt, 10).toLowerCase() === "deferrable" ? (kv = Et.substr(Pt, 10), Pt += 10) : (kv = $t, Dn === 0 && As(IA)), kv !== $t ? P1 = i$ = [i$, y$, kv] : (Pt = P1, P1 = $t)) : (Pt = P1, P1 = $t), P1 !== $t && (i$ = no()) !== $t ? (Et.substr(Pt, 19).toLowerCase() === "initially immediate" ? (y$ = Et.substr(Pt, 19), Pt += 19) : (y$ = $t, Dn === 0 && As(gv)), y$ === $t && (Et.substr(Pt, 18).toLowerCase() === "initially deferred" ? (y$ = Et.substr(Pt, 18), Pt += 18) : (y$ = $t, Dn === 0 && As(Vy))), y$ !== $t ? (ao = zm, Uy = y$, P1 = { keyword: (Wy = P1) && Wy[0] ? Wy[0].toLowerCase() + " deferrable" : "deferrable", args: Uy && Uy.toLowerCase() }, zm = P1) : (Pt = zm, zm = $t)) : (Pt = zm, zm = $t);
               var Wy, Uy;
               return zm;
-            }()) === $t && (V0 = null), V0 !== $t && (cm = no()) !== $t ? (($m = function() {
+            }()) === $t && (V0 = null), V0 !== $t && (fm = no()) !== $t ? (($m = function() {
               var zm, P1, i$, y$;
               zm = Pt, Et.substr(Pt, 3).toLowerCase() === "for" ? (P1 = Et.substr(Pt, 3), Pt += 3) : (P1 = $t, Dn === 0 && As(S0)), P1 !== $t && no() !== $t ? (Et.substr(Pt, 4).toLowerCase() === "each" ? (i$ = Et.substr(Pt, 4), Pt += 4) : (i$ = $t, Dn === 0 && As(yy)), i$ === $t && (i$ = null), i$ !== $t && no() !== $t ? (Et.substr(Pt, 3).toLowerCase() === "row" ? (y$ = Et.substr(Pt, 3), Pt += 3) : (y$ = $t, Dn === 0 && As(AA)), y$ === $t && (Et.substr(Pt, 9).toLowerCase() === "statement" ? (y$ = Et.substr(Pt, 9), Pt += 9) : (y$ = $t, Dn === 0 && As(eA))), y$ !== $t ? (ao = zm, kv = P1, Uy = y$, P1 = { keyword: (Wy = i$) ? `${kv.toLowerCase()} ${Wy.toLowerCase()}` : kv.toLowerCase(), args: Uy.toLowerCase() }, zm = P1) : (Pt = zm, zm = $t)) : (Pt = zm, zm = $t)) : (Pt = zm, zm = $t);
               var kv, Wy, Uy;
@@ -169731,11 +170021,11 @@ function requireBigInteger() {
             }(0, ba, uo, Ks, Gl, Ru, Ku, 0, bp, o0, V0, $m, Em, 0, Pm, s1), Ur = an) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t), Ur;
           }()) === $t && (wr = function() {
             var Ur, an, ba, Eo, uo, rs, Ks, Gl, Ru, Ku, Lp, bp, o0, I0;
-            Ur = Pt, (an = Ay()) !== $t && no() !== $t ? (Et.substr(Pt, 9).toLowerCase() === "extension" ? (ba = Et.substr(Pt, 9), Pt += 9) : (ba = $t, Dn === 0 && As(Nt)), ba !== $t && no() !== $t ? ((Eo = Ev()) === $t && (Eo = null), Eo !== $t && no() !== $t ? ((uo = e1()) === $t && (uo = gu()), uo !== $t && no() !== $t ? ((rs = jr()) === $t && (rs = null), rs !== $t && no() !== $t ? (Ks = Pt, Et.substr(Pt, 6).toLowerCase() === "schema" ? (Gl = Et.substr(Pt, 6), Pt += 6) : (Gl = $t, Dn === 0 && As(Mt)), Gl !== $t && (Ru = no()) !== $t && (Ku = e1()) !== $t ? Ks = Gl = [Gl, Ru, Ku] : (Pt = Ks, Ks = $t), Ks === $t && (Ks = gu()), Ks === $t && (Ks = null), Ks !== $t && (Gl = no()) !== $t ? (Ru = Pt, Et.substr(Pt, 7).toLowerCase() === "version" ? (Ku = Et.substr(Pt, 7), Pt += 7) : (Ku = $t, Dn === 0 && As(Ot)), Ku !== $t && (Lp = no()) !== $t ? ((bp = e1()) === $t && (bp = gu()), bp !== $t ? Ru = Ku = [Ku, Lp, bp] : (Pt = Ru, Ru = $t)) : (Pt = Ru, Ru = $t), Ru === $t && (Ru = null), Ru !== $t && (Ku = no()) !== $t ? (Lp = Pt, (bp = Jr()) !== $t && (o0 = no()) !== $t ? ((I0 = e1()) === $t && (I0 = gu()), I0 !== $t ? Lp = bp = [bp, o0, I0] : (Pt = Lp, Lp = $t)) : (Pt = Lp, Lp = $t), Lp === $t && (Lp = null), Lp !== $t ? (ao = Ur, V0 = Eo, cm = uo, $m = rs, Em = Ks, em = Ru, Pm = Lp, an = { type: "create", keyword: ba.toLowerCase(), if_not_exists: V0, extension: SC(cm), with: $m && $m[0].toLowerCase(), schema: SC(Em && Em[2].toLowerCase()), version: SC(em && em[2]), from: SC(Pm && Pm[2]) }, Ur = an) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t);
-            var V0, cm, $m, Em, em, Pm;
+            Ur = Pt, (an = Ay()) !== $t && no() !== $t ? (Et.substr(Pt, 9).toLowerCase() === "extension" ? (ba = Et.substr(Pt, 9), Pt += 9) : (ba = $t, Dn === 0 && As(Nt)), ba !== $t && no() !== $t ? ((Eo = Ev()) === $t && (Eo = null), Eo !== $t && no() !== $t ? ((uo = e1()) === $t && (uo = gu()), uo !== $t && no() !== $t ? ((rs = jr()) === $t && (rs = null), rs !== $t && no() !== $t ? (Ks = Pt, Et.substr(Pt, 6).toLowerCase() === "schema" ? (Gl = Et.substr(Pt, 6), Pt += 6) : (Gl = $t, Dn === 0 && As(Mt)), Gl !== $t && (Ru = no()) !== $t && (Ku = e1()) !== $t ? Ks = Gl = [Gl, Ru, Ku] : (Pt = Ks, Ks = $t), Ks === $t && (Ks = gu()), Ks === $t && (Ks = null), Ks !== $t && (Gl = no()) !== $t ? (Ru = Pt, Et.substr(Pt, 7).toLowerCase() === "version" ? (Ku = Et.substr(Pt, 7), Pt += 7) : (Ku = $t, Dn === 0 && As(Ot)), Ku !== $t && (Lp = no()) !== $t ? ((bp = e1()) === $t && (bp = gu()), bp !== $t ? Ru = Ku = [Ku, Lp, bp] : (Pt = Ru, Ru = $t)) : (Pt = Ru, Ru = $t), Ru === $t && (Ru = null), Ru !== $t && (Ku = no()) !== $t ? (Lp = Pt, (bp = Jr()) !== $t && (o0 = no()) !== $t ? ((I0 = e1()) === $t && (I0 = gu()), I0 !== $t ? Lp = bp = [bp, o0, I0] : (Pt = Lp, Lp = $t)) : (Pt = Lp, Lp = $t), Lp === $t && (Lp = null), Lp !== $t ? (ao = Ur, V0 = Eo, fm = uo, $m = rs, Em = Ks, em = Ru, Pm = Lp, an = { type: "create", keyword: ba.toLowerCase(), if_not_exists: V0, extension: SC(fm), with: $m && $m[0].toLowerCase(), schema: SC(Em && Em[2].toLowerCase()), version: SC(em && em[2]), from: SC(Pm && Pm[2]) }, Ur = an) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t);
+            var V0, fm, $m, Em, em, Pm;
             return Ur;
           }()) === $t && (wr = function() {
-            var Ur, an, ba, Eo, uo, rs, Ks, Gl, Ru, Ku, Lp, bp, o0, I0, V0, cm, $m, Em, em, Pm;
+            var Ur, an, ba, Eo, uo, rs, Ks, Gl, Ru, Ku, Lp, bp, o0, I0, V0, fm, $m, Em, em, Pm;
             Ur = Pt, (an = Ay()) !== $t && no() !== $t ? ((ba = Jw()) === $t && (ba = null), ba !== $t && no() !== $t && (Eo = Jy()) !== $t && no() !== $t ? ((uo = Ev()) === $t && (uo = null), uo !== $t ? ((rs = kE()) === $t && (rs = null), rs !== $t && no() !== $t ? ((Ks = Dl()) === $t && (Ks = null), Ks !== $t && no() !== $t && (Gl = Du()) !== $t && no() !== $t && (Ru = by()) !== $t && no() !== $t ? ((Ku = bE()) === $t && (Ku = null), Ku !== $t && no() !== $t && Av() !== $t && no() !== $t && (Lp = function() {
               var _E, TE, RE, EE, IE, FE, BE, UE;
               if (_E = Pt, (TE = $0()) !== $t) {
@@ -169748,14 +170038,14 @@ function requireBigInteger() {
               return _E = Pt, Et.substr(Pt, 7).toLowerCase() === "include" ? (TE = Et.substr(Pt, 7), Pt += 7) : (TE = $t, Dn === 0 && As(lp)), TE !== $t && no() !== $t && Av() !== $t && no() !== $t && (RE = Go()) !== $t && no() !== $t && Sv() !== $t ? (ao = _E, TE = function(EE, IE) {
                 return { type: EE.toLowerCase(), keyword: EE.toLowerCase(), columns: IE };
               }(TE, RE), _E = TE) : (Pt = _E, _E = $t), _E;
-            }()) === $t && (bp = null), bp !== $t && no() !== $t ? (o0 = Pt, (I0 = jr()) !== $t && (V0 = no()) !== $t && (cm = Av()) !== $t && ($m = no()) !== $t && (Em = function() {
+            }()) === $t && (bp = null), bp !== $t && no() !== $t ? (o0 = Pt, (I0 = jr()) !== $t && (V0 = no()) !== $t && (fm = Av()) !== $t && ($m = no()) !== $t && (Em = function() {
               var _E, TE, RE, EE, IE, FE, BE, UE;
               if (_E = Pt, (TE = mw()) !== $t) {
                 for (RE = [], EE = Pt, (IE = no()) !== $t && (FE = bv()) !== $t && (BE = no()) !== $t && (UE = mw()) !== $t ? EE = IE = [IE, FE, BE, UE] : (Pt = EE, EE = $t); EE !== $t; ) RE.push(EE), EE = Pt, (IE = no()) !== $t && (FE = bv()) !== $t && (BE = no()) !== $t && (UE = mw()) !== $t ? EE = IE = [IE, FE, BE, UE] : (Pt = EE, EE = $t);
                 RE !== $t ? (ao = _E, TE = Rw(TE, RE), _E = TE) : (Pt = _E, _E = $t);
               } else Pt = _E, _E = $t;
               return _E;
-            }()) !== $t && (em = no()) !== $t && (Pm = Sv()) !== $t ? o0 = I0 = [I0, V0, cm, $m, Em, em, Pm] : (Pt = o0, o0 = $t), o0 === $t && (o0 = null), o0 !== $t && (I0 = no()) !== $t ? (V0 = Pt, (cm = Pu()) !== $t && ($m = no()) !== $t && (Em = e1()) !== $t ? V0 = cm = [cm, $m, Em] : (Pt = V0, V0 = $t), V0 === $t && (V0 = null), V0 !== $t && (cm = no()) !== $t ? (($m = $v()) === $t && ($m = null), $m !== $t && (Em = no()) !== $t ? (ao = Ur, s1 = an, zm = ba, P1 = Eo, i$ = uo, y$ = rs, kv = Ks, Wy = Gl, Uy = Ru, fE = Ku, dE = Lp, T2 = bp, DE = o0, ME = V0, OE = $m, an = { tableList: Array.from(w_), columnList: tw(E_), ast: { type: s1[0].toLowerCase(), index_type: zm && zm.toLowerCase(), keyword: P1.toLowerCase(), concurrently: y$ && y$.toLowerCase(), index: kv, if_not_exists: i$, on_kw: Wy[0].toLowerCase(), table: Uy, index_using: fE, index_columns: dE, include: T2, with: DE && DE[4], with_before_where: !0, tablespace: ME && { type: "origin", value: ME[2] }, where: OE } }, Ur = an) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t);
+            }()) !== $t && (em = no()) !== $t && (Pm = Sv()) !== $t ? o0 = I0 = [I0, V0, fm, $m, Em, em, Pm] : (Pt = o0, o0 = $t), o0 === $t && (o0 = null), o0 !== $t && (I0 = no()) !== $t ? (V0 = Pt, (fm = Pu()) !== $t && ($m = no()) !== $t && (Em = e1()) !== $t ? V0 = fm = [fm, $m, Em] : (Pt = V0, V0 = $t), V0 === $t && (V0 = null), V0 !== $t && (fm = no()) !== $t ? (($m = $v()) === $t && ($m = null), $m !== $t && (Em = no()) !== $t ? (ao = Ur, s1 = an, zm = ba, P1 = Eo, i$ = uo, y$ = rs, kv = Ks, Wy = Gl, Uy = Ru, fE = Ku, dE = Lp, T2 = bp, DE = o0, ME = V0, OE = $m, an = { tableList: Array.from(w_), columnList: tw(E_), ast: { type: s1[0].toLowerCase(), index_type: zm && zm.toLowerCase(), keyword: P1.toLowerCase(), concurrently: y$ && y$.toLowerCase(), index: kv, if_not_exists: i$, on_kw: Wy[0].toLowerCase(), table: Uy, index_using: fE, index_columns: dE, include: T2, with: DE && DE[4], with_before_where: !0, tablespace: ME && { type: "origin", value: ME[2] }, where: OE } }, Ur = an) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t);
             var s1, zm, P1, i$, y$, kv, Wy, Uy, fE, dE, T2, DE, ME, OE;
             return Ur;
           }()) === $t && (wr = function() {
@@ -169778,17 +170068,17 @@ function requireBigInteger() {
             }(an, ba, Eo, uo, rs), Ur = an) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t), Ur;
           }()) === $t && (wr = function() {
             var Ur, an, ba, Eo, uo, rs, Ks, Gl, Ru;
-            return Ur = Pt, (an = Ay()) !== $t && no() !== $t ? (Et.substr(Pt, 6).toLowerCase() === "domain" ? (ba = Et.substr(Pt, 6), Pt += 6) : (ba = $t, Dn === 0 && As(Vu)), ba !== $t && no() !== $t && (Eo = by()) !== $t && no() !== $t ? ((uo = to()) === $t && (uo = null), uo !== $t && no() !== $t && (rs = jE()) !== $t && no() !== $t ? ((Ks = Am()) === $t && (Ks = null), Ks !== $t && no() !== $t ? ((Gl = Vm()) === $t && (Gl = null), Gl !== $t && no() !== $t ? ((Ru = Co()) === $t && (Ru = null), Ru !== $t ? (ao = Ur, an = function(Ku, Lp, bp, o0, I0, V0, cm, $m) {
+            return Ur = Pt, (an = Ay()) !== $t && no() !== $t ? (Et.substr(Pt, 6).toLowerCase() === "domain" ? (ba = Et.substr(Pt, 6), Pt += 6) : (ba = $t, Dn === 0 && As(Vu)), ba !== $t && no() !== $t && (Eo = by()) !== $t && no() !== $t ? ((uo = to()) === $t && (uo = null), uo !== $t && no() !== $t && (rs = jE()) !== $t && no() !== $t ? ((Ks = Am()) === $t && (Ks = null), Ks !== $t && no() !== $t ? ((Gl = Vm()) === $t && (Gl = null), Gl !== $t && no() !== $t ? ((Ru = Co()) === $t && (Ru = null), Ru !== $t ? (ao = Ur, an = function(Ku, Lp, bp, o0, I0, V0, fm, $m) {
               $m && ($m.type = "constraint");
-              const Em = [V0, cm, $m].filter((em) => em);
+              const Em = [V0, fm, $m].filter((em) => em);
               return { tableList: Array.from(w_), columnList: tw(E_), ast: { type: Ku[0].toLowerCase(), keyword: Lp.toLowerCase(), domain: { schema: bp.db, name: bp.table }, as: o0 && o0[0] && o0[0].toLowerCase(), target: I0, create_definitions: Em } };
             }(an, ba, Eo, uo, rs, Ks, Gl, Ru), Ur = an) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t), Ur;
           }()) === $t && (wr = function() {
             var Ur, an, ba, Eo, uo;
             Ur = Pt, (an = Ay()) !== $t && no() !== $t ? (Et.substr(Pt, 4).toLowerCase() === "type" ? (ba = Et.substr(Pt, 4), Pt += 4) : (ba = $t, Dn === 0 && As(tu)), ba !== $t && no() !== $t && (Eo = by()) !== $t && no() !== $t ? ((uo = function() {
               var Ku, Lp, bp, o0, I0;
-              Ku = Pt, (Lp = to()) !== $t && no() !== $t ? ((bp = Kr()) === $t && (Et.substr(Pt, 5).toLowerCase() === "range" ? (bp = Et.substr(Pt, 5), Pt += 5) : (bp = $t, Dn === 0 && As(vu))), bp !== $t && no() !== $t && (o0 = Av()) !== $t && no() !== $t ? ((I0 = j_()) === $t && (I0 = null), I0 !== $t && no() !== $t && Sv() !== $t ? (ao = Ku, V0 = bp, (cm = I0).parentheses = !0, Lp = { as: "as", resource: V0.toLowerCase(), create_definitions: cm }, Ku = Lp) : (Pt = Ku, Ku = $t)) : (Pt = Ku, Ku = $t)) : (Pt = Ku, Ku = $t);
-              var V0, cm;
+              Ku = Pt, (Lp = to()) !== $t && no() !== $t ? ((bp = Kr()) === $t && (Et.substr(Pt, 5).toLowerCase() === "range" ? (bp = Et.substr(Pt, 5), Pt += 5) : (bp = $t, Dn === 0 && As(vu))), bp !== $t && no() !== $t && (o0 = Av()) !== $t && no() !== $t ? ((I0 = j_()) === $t && (I0 = null), I0 !== $t && no() !== $t && Sv() !== $t ? (ao = Ku, V0 = bp, (fm = I0).parentheses = !0, Lp = { as: "as", resource: V0.toLowerCase(), create_definitions: fm }, Ku = Lp) : (Pt = Ku, Ku = $t)) : (Pt = Ku, Ku = $t)) : (Pt = Ku, Ku = $t);
+              var V0, fm;
               return Ku === $t && (Ku = Pt, (Lp = to()) !== $t && no() !== $t && (bp = Av()) !== $t && no() !== $t ? ((o0 = function() {
                 var $m, Em, em, Pm, s1, zm, P1, i$;
                 if ($m = Pt, (Em = om()) !== $t) {
@@ -169803,15 +170093,15 @@ function requireBigInteger() {
             var rs, Ks, Gl, Ru;
             return Ur;
           }()) === $t && (wr = function() {
-            var Ur, an, ba, Eo, uo, rs, Ks, Gl, Ru, Ku, Lp, bp, o0, I0, V0, cm, $m, Em;
-            return Ur = Pt, (an = Ay()) !== $t && no() !== $t ? (ba = Pt, (Eo = kr()) !== $t && (uo = no()) !== $t && (rs = mv()) !== $t ? ba = Eo = [Eo, uo, rs] : (Pt = ba, ba = $t), ba === $t && (ba = null), ba !== $t && (Eo = no()) !== $t ? ((uo = ey()) === $t && (uo = By()), uo === $t && (uo = null), uo !== $t && (rs = no()) !== $t ? ((Ks = $o()) === $t && (Ks = null), Ks !== $t && no() !== $t && nm() !== $t && no() !== $t && (Gl = by()) !== $t && no() !== $t ? (Ru = Pt, (Ku = Av()) !== $t && (Lp = no()) !== $t && (bp = Go()) !== $t && (o0 = no()) !== $t && (I0 = Sv()) !== $t ? Ru = Ku = [Ku, Lp, bp, o0, I0] : (Pt = Ru, Ru = $t), Ru === $t && (Ru = null), Ru !== $t && (Ku = no()) !== $t ? (Lp = Pt, (bp = jr()) !== $t && (o0 = no()) !== $t && (I0 = Av()) !== $t && (V0 = no()) !== $t && (cm = function() {
+            var Ur, an, ba, Eo, uo, rs, Ks, Gl, Ru, Ku, Lp, bp, o0, I0, V0, fm, $m, Em;
+            return Ur = Pt, (an = Ay()) !== $t && no() !== $t ? (ba = Pt, (Eo = kr()) !== $t && (uo = no()) !== $t && (rs = mv()) !== $t ? ba = Eo = [Eo, uo, rs] : (Pt = ba, ba = $t), ba === $t && (ba = null), ba !== $t && (Eo = no()) !== $t ? ((uo = ey()) === $t && (uo = By()), uo === $t && (uo = null), uo !== $t && (rs = no()) !== $t ? ((Ks = $o()) === $t && (Ks = null), Ks !== $t && no() !== $t && nm() !== $t && no() !== $t && (Gl = by()) !== $t && no() !== $t ? (Ru = Pt, (Ku = Av()) !== $t && (Lp = no()) !== $t && (bp = Go()) !== $t && (o0 = no()) !== $t && (I0 = Sv()) !== $t ? Ru = Ku = [Ku, Lp, bp, o0, I0] : (Pt = Ru, Ru = $t), Ru === $t && (Ru = null), Ru !== $t && (Ku = no()) !== $t ? (Lp = Pt, (bp = jr()) !== $t && (o0 = no()) !== $t && (I0 = Av()) !== $t && (V0 = no()) !== $t && (fm = function() {
               var em, Pm, s1, zm, P1, i$, y$, kv;
               if (em = Pt, (Pm = gn()) !== $t) {
                 for (s1 = [], zm = Pt, (P1 = no()) !== $t && (i$ = bv()) !== $t && (y$ = no()) !== $t && (kv = gn()) !== $t ? zm = P1 = [P1, i$, y$, kv] : (Pt = zm, zm = $t); zm !== $t; ) s1.push(zm), zm = Pt, (P1 = no()) !== $t && (i$ = bv()) !== $t && (y$ = no()) !== $t && (kv = gn()) !== $t ? zm = P1 = [P1, i$, y$, kv] : (Pt = zm, zm = $t);
                 s1 !== $t ? (ao = em, Pm = Rw(Pm, s1), em = Pm) : (Pt = em, em = $t);
               } else Pt = em, em = $t;
               return em;
-            }()) !== $t && ($m = no()) !== $t && (Em = Sv()) !== $t ? Lp = bp = [bp, o0, I0, V0, cm, $m, Em] : (Pt = Lp, Lp = $t), Lp === $t && (Lp = null), Lp !== $t && (bp = no()) !== $t && (o0 = to()) !== $t && (I0 = no()) !== $t && (V0 = Mm()) !== $t && (cm = no()) !== $t ? (($m = function() {
+            }()) !== $t && ($m = no()) !== $t && (Em = Sv()) !== $t ? Lp = bp = [bp, o0, I0, V0, fm, $m, Em] : (Pt = Lp, Lp = $t), Lp === $t && (Lp = null), Lp !== $t && (bp = no()) !== $t && (o0 = to()) !== $t && (I0 = no()) !== $t && (V0 = Mm()) !== $t && (fm = no()) !== $t ? (($m = function() {
               var em, Pm, s1, zm, P1;
               return em = Pt, (Pm = jr()) !== $t && no() !== $t ? (Et.substr(Pt, 8).toLowerCase() === "cascaded" ? (s1 = Et.substr(Pt, 8), Pt += 8) : (s1 = $t, Dn === 0 && As(Bt)), s1 === $t && (Et.substr(Pt, 5).toLowerCase() === "local" ? (s1 = Et.substr(Pt, 5), Pt += 5) : (s1 = $t, Dn === 0 && As(zt))), s1 !== $t && no() !== $t ? (Et.substr(Pt, 5).toLowerCase() === "check" ? (zm = Et.substr(Pt, 5), Pt += 5) : (zm = $t, Dn === 0 && As(Yt)), zm !== $t && no() !== $t ? (Et.substr(Pt, 6) === "OPTION" ? (P1 = "OPTION", Pt += 6) : (P1 = $t, Dn === 0 && As(Kt)), P1 !== $t ? (ao = em, Pm = function(i$) {
                 return `with ${i$.toLowerCase()} check option`;
@@ -169822,14 +170112,14 @@ function requireBigInteger() {
           }()) === $t && (wr = function() {
             var Ur, an, ba, Eo, uo, rs, Ks, Gl, Ru;
             Ur = Pt, (an = Ay()) !== $t && no() !== $t ? (ba = Pt, (Eo = kr()) !== $t && (uo = no()) !== $t && (rs = mv()) !== $t ? ba = Eo = [Eo, uo, rs] : (Pt = ba, ba = $t), ba === $t && (ba = null), ba !== $t && (Eo = no()) !== $t ? (Et.substr(Pt, 9).toLowerCase() === "aggregate" ? (uo = Et.substr(Pt, 9), Pt += 9) : (uo = $t, Dn === 0 && As(Br)), uo !== $t && (rs = no()) !== $t && (Ks = by()) !== $t && no() !== $t && Av() !== $t && no() !== $t && (Gl = mn()) !== $t && no() !== $t && Sv() !== $t && no() !== $t && Av() !== $t && no() !== $t && (Ru = function() {
-              var o0, I0, V0, cm, $m, Em, em, Pm;
+              var o0, I0, V0, fm, $m, Em, em, Pm;
               if (o0 = Pt, (I0 = function() {
                 var s1, zm, P1, i$, y$;
                 s1 = Pt, Et.substr(Pt, 5).toLowerCase() === "sfunc" ? (zm = Et.substr(Pt, 5), Pt += 5) : (zm = $t, Dn === 0 && As(Er)), zm !== $t && no() !== $t && b1() !== $t && no() !== $t && (P1 = by()) !== $t && no() !== $t && bv() !== $t && no() !== $t ? (Et.substr(Pt, 5).toLowerCase() === "stype" ? (i$ = Et.substr(Pt, 5), Pt += 5) : (i$ = $t, Dn === 0 && As(Ir)), i$ !== $t && no() !== $t && b1() !== $t && no() !== $t && (y$ = jE()) !== $t ? (ao = s1, Wy = y$, zm = [{ type: "sfunc", symbol: "=", value: { schema: (kv = P1).db, name: kv.table } }, { type: "stype", symbol: "=", value: Wy }], s1 = zm) : (Pt = s1, s1 = $t)) : (Pt = s1, s1 = $t);
                 var kv, Wy;
                 return s1;
               }()) !== $t) {
-                for (V0 = [], cm = Pt, ($m = no()) !== $t && (Em = bv()) !== $t && (em = no()) !== $t && (Pm = Mn()) !== $t ? cm = $m = [$m, Em, em, Pm] : (Pt = cm, cm = $t); cm !== $t; ) V0.push(cm), cm = Pt, ($m = no()) !== $t && (Em = bv()) !== $t && (em = no()) !== $t && (Pm = Mn()) !== $t ? cm = $m = [$m, Em, em, Pm] : (Pt = cm, cm = $t);
+                for (V0 = [], fm = Pt, ($m = no()) !== $t && (Em = bv()) !== $t && (em = no()) !== $t && (Pm = Mn()) !== $t ? fm = $m = [$m, Em, em, Pm] : (Pt = fm, fm = $t); fm !== $t; ) V0.push(fm), fm = Pt, ($m = no()) !== $t && (Em = bv()) !== $t && (em = no()) !== $t && (Pm = Mn()) !== $t ? fm = $m = [$m, Em, em, Pm] : (Pt = fm, fm = $t);
                 V0 !== $t ? (ao = o0, I0 = Rw(I0, V0), o0 = I0) : (Pt = o0, o0 = $t);
               } else Pt = o0, o0 = $t;
               return o0;
@@ -169840,10 +170130,10 @@ function requireBigInteger() {
         }()) === $t && (er = zs()) === $t && (er = function() {
           var wr, Ur, an, ba, Eo, uo, rs, Ks, Gl;
           wr = Pt, (Ur = Xu()) !== $t && no() !== $t ? ((an = vo()) === $t && (an = null), an !== $t && no() !== $t ? (Et.substr(Pt, 4).toLowerCase() === "only" ? (ba = Et.substr(Pt, 4), Pt += 4) : (ba = $t, Dn === 0 && As(pm)), ba === $t && (ba = null), ba !== $t && no() !== $t && (Eo = function() {
-            var V0, cm, $m, Em, em, Pm, s1, zm;
-            if (V0 = Pt, (cm = Hr()) !== $t) {
+            var V0, fm, $m, Em, em, Pm, s1, zm;
+            if (V0 = Pt, (fm = Hr()) !== $t) {
               for ($m = [], Em = Pt, (em = no()) !== $t && (Pm = bv()) !== $t && (s1 = no()) !== $t && (zm = Hr()) !== $t ? Em = em = [em, Pm, s1, zm] : (Pt = Em, Em = $t); Em !== $t; ) $m.push(Em), Em = Pt, (em = no()) !== $t && (Pm = bv()) !== $t && (s1 = no()) !== $t && (zm = Hr()) !== $t ? Em = em = [em, Pm, s1, zm] : (Pt = Em, Em = $t);
-              $m !== $t ? (ao = V0, cm = Rw(cm, $m), V0 = cm) : (Pt = V0, V0 = $t);
+              $m !== $t ? (ao = V0, fm = Rw(fm, $m), V0 = fm) : (Pt = V0, V0 = $t);
             } else Pt = V0, V0 = $t;
             return V0;
           }()) !== $t && no() !== $t ? (uo = Pt, Et.substr(Pt, 7).toLowerCase() === "restart" ? (rs = Et.substr(Pt, 7), Pt += 7) : (rs = $t, Dn === 0 && As(Tp)), rs === $t && (Et.substr(Pt, 8).toLowerCase() === "continue" ? (rs = Et.substr(Pt, 8), Pt += 8) : (rs = $t, Dn === 0 && As(Dm))), rs !== $t && (Ks = no()) !== $t ? (Et.substr(Pt, 8).toLowerCase() === "identity" ? (Gl = Et.substr(Pt, 8), Pt += 8) : (Gl = $t, Dn === 0 && As(Gu)), Gl !== $t ? uo = rs = [rs, Ks, Gl] : (Pt = uo, uo = $t)) : (Pt = uo, uo = $t), uo === $t && (uo = null), uo !== $t && (rs = no()) !== $t ? (Et.substr(Pt, 7).toLowerCase() === "cascade" ? (Ks = Et.substr(Pt, 7), Pt += 7) : (Ks = $t, Dn === 0 && As(L0)), Ks === $t && (Et.substr(Pt, 8).toLowerCase() === "restrict" ? (Ks = Et.substr(Pt, 8), Pt += 8) : (Ks = $t, Dn === 0 && As(F0))), Ks === $t && (Ks = null), Ks !== $t ? (ao = wr, Ru = Ur, Ku = an, Lp = ba, bp = Eo, o0 = uo, I0 = Ks, Ur = { tableList: Array.from(w_), columnList: tw(E_), ast: { type: Ru.toLowerCase(), keyword: Ku && Ku.toLowerCase() || "table", prefix: Lp, name: bp, suffix: [o0 && [o0[0], o0[2]].join(" "), I0].filter((V0) => V0).map((V0) => ({ type: "origin", value: V0 })) } }, wr = Ur) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t);
@@ -169882,9 +170172,9 @@ function requireBigInteger() {
           return (wr = function() {
             var Ur, an, ba, Eo, uo, rs, Ks;
             Ur = Pt, (an = a$()) !== $t && no() !== $t ? ((ba = vo()) === $t && (ba = null), ba !== $t && no() !== $t ? ((Eo = Yr()) === $t && (Eo = null), Eo !== $t && no() !== $t ? (Et.substr(Pt, 4).toLowerCase() === "only" ? (uo = Et.substr(Pt, 4), Pt += 4) : (uo = $t, Dn === 0 && As(_1)), uo === $t && (uo = null), uo !== $t && no() !== $t && (rs = by()) !== $t && no() !== $t && (Ks = function() {
-              var bp, o0, I0, V0, cm, $m, Em, em;
+              var bp, o0, I0, V0, fm, $m, Em, em;
               if (bp = Pt, (o0 = xs()) !== $t) {
-                for (I0 = [], V0 = Pt, (cm = no()) !== $t && ($m = bv()) !== $t && (Em = no()) !== $t && (em = xs()) !== $t ? V0 = cm = [cm, $m, Em, em] : (Pt = V0, V0 = $t); V0 !== $t; ) I0.push(V0), V0 = Pt, (cm = no()) !== $t && ($m = bv()) !== $t && (Em = no()) !== $t && (em = xs()) !== $t ? V0 = cm = [cm, $m, Em, em] : (Pt = V0, V0 = $t);
+                for (I0 = [], V0 = Pt, (fm = no()) !== $t && ($m = bv()) !== $t && (Em = no()) !== $t && (em = xs()) !== $t ? V0 = fm = [fm, $m, Em, em] : (Pt = V0, V0 = $t); V0 !== $t; ) I0.push(V0), V0 = Pt, (fm = no()) !== $t && ($m = bv()) !== $t && (Em = no()) !== $t && (em = xs()) !== $t ? V0 = fm = [fm, $m, Em, em] : (Pt = V0, V0 = $t);
                 I0 !== $t ? (ao = bp, o0 = Rw(o0, I0), bp = o0) : (Pt = bp, bp = $t);
               } else Pt = bp, bp = $t;
               return bp;
@@ -169908,8 +170198,8 @@ function requireBigInteger() {
             return Ur = Pt, (an = a$()) !== $t && no() !== $t ? (Et.substr(Pt, 8).toLowerCase() === "function" ? (ba = Et.substr(Pt, 8), Pt += 8) : (ba = $t, Dn === 0 && As(Fs)), ba !== $t && no() !== $t && (Eo = by()) !== $t && no() !== $t ? (uo = Pt, (rs = Av()) !== $t && (Ks = no()) !== $t ? ((Gl = Mo()) === $t && (Gl = null), Gl !== $t && (Ru = no()) !== $t && (Ku = Sv()) !== $t ? uo = rs = [rs, Ks, Gl, Ru, Ku] : (Pt = uo, uo = $t)) : (Pt = uo, uo = $t), uo === $t && (uo = null), uo !== $t && (rs = no()) !== $t ? ((Ks = Il()) === $t && (Ks = Eu()) === $t && (Ks = nu()), Ks !== $t ? (ao = Ur, an = function(Lp, bp, o0, I0) {
               const V0 = Lp.toLowerCase();
               I0.resource = V0, I0[V0] = I0.table, delete I0.table;
-              const cm = {};
-              return o0 && o0[0] && (cm.parentheses = !0), cm.expr = o0 && o0[2], { tableList: Array.from(w_), columnList: tw(E_), ast: { type: "alter", keyword: V0, name: { schema: bp.db, name: bp.table }, args: cm, expr: I0 } };
+              const fm = {};
+              return o0 && o0[0] && (fm.parentheses = !0), fm.expr = o0 && o0[2], { tableList: Array.from(w_), columnList: tw(E_), ast: { type: "alter", keyword: V0, name: { schema: bp.db, name: bp.table }, args: fm, expr: I0 } };
             }(ba, Eo, uo, Ks), Ur = an) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t), Ur;
           }()) === $t && (wr = function() {
             var Ur, an, ba, Eo, uo, rs;
@@ -169961,7 +170251,7 @@ function requireBigInteger() {
             return Ku = Pt, Et.substr(Pt, 4).toLowerCase() === "lock" ? (Lp = Et.substr(Pt, 4), Pt += 4) : (Lp = $t, Dn === 0 && As(o$)), Lp !== $t ? (bp = Pt, Dn++, o0 = U0(), Dn--, o0 === $t ? bp = void 0 : (Pt = bp, bp = $t), bp !== $t ? Ku = Lp = [Lp, bp] : (Pt = Ku, Ku = $t)) : (Pt = Ku, Ku = $t), Ku;
           }()) !== $t && no() !== $t ? ((an = vo()) === $t && (an = null), an !== $t && no() !== $t && (ba = nE()) !== $t && no() !== $t ? ((Eo = function() {
             var Ku, Lp, bp, o0;
-            return Ku = Pt, Et.substr(Pt, 2).toLowerCase() === "in" ? (Lp = Et.substr(Pt, 2), Pt += 2) : (Lp = $t, Dn === 0 && As(dp)), Lp !== $t && no() !== $t ? (Et.substr(Pt, 12).toLowerCase() === "access share" ? (bp = Et.substr(Pt, 12), Pt += 12) : (bp = $t, Dn === 0 && As(Zu)), bp === $t && (Et.substr(Pt, 9).toLowerCase() === "row share" ? (bp = Et.substr(Pt, 9), Pt += 9) : (bp = $t, Dn === 0 && As(wl)), bp === $t && (Et.substr(Pt, 13).toLowerCase() === "row exclusive" ? (bp = Et.substr(Pt, 13), Pt += 13) : (bp = $t, Dn === 0 && As(lu)), bp === $t && (Et.substr(Pt, 22).toLowerCase() === "share update exclusive" ? (bp = Et.substr(Pt, 22), Pt += 22) : (bp = $t, Dn === 0 && As(Uu)), bp === $t && (Et.substr(Pt, 19).toLowerCase() === "share row exclusive" ? (bp = Et.substr(Pt, 19), Pt += 19) : (bp = $t, Dn === 0 && As(Xp)), bp === $t && (Et.substr(Pt, 9).toLowerCase() === "exclusive" ? (bp = Et.substr(Pt, 9), Pt += 9) : (bp = $t, Dn === 0 && As(w1)), bp === $t && (Et.substr(Pt, 16).toLowerCase() === "access exclusive" ? (bp = Et.substr(Pt, 16), Pt += 16) : (bp = $t, Dn === 0 && As(T0)), bp === $t && (Et.substr(Pt, 5).toLowerCase() === "share" ? (bp = Et.substr(Pt, 5), Pt += 5) : (bp = $t, Dn === 0 && As(j0))))))))), bp !== $t && no() !== $t ? (Et.substr(Pt, 4).toLowerCase() === "mode" ? (o0 = Et.substr(Pt, 4), Pt += 4) : (o0 = $t, Dn === 0 && As(fm)), o0 !== $t ? (ao = Ku, Lp = { mode: `in ${bp.toLowerCase()} mode` }, Ku = Lp) : (Pt = Ku, Ku = $t)) : (Pt = Ku, Ku = $t)) : (Pt = Ku, Ku = $t), Ku;
+            return Ku = Pt, Et.substr(Pt, 2).toLowerCase() === "in" ? (Lp = Et.substr(Pt, 2), Pt += 2) : (Lp = $t, Dn === 0 && As(dp)), Lp !== $t && no() !== $t ? (Et.substr(Pt, 12).toLowerCase() === "access share" ? (bp = Et.substr(Pt, 12), Pt += 12) : (bp = $t, Dn === 0 && As(Zu)), bp === $t && (Et.substr(Pt, 9).toLowerCase() === "row share" ? (bp = Et.substr(Pt, 9), Pt += 9) : (bp = $t, Dn === 0 && As(wl)), bp === $t && (Et.substr(Pt, 13).toLowerCase() === "row exclusive" ? (bp = Et.substr(Pt, 13), Pt += 13) : (bp = $t, Dn === 0 && As(lu)), bp === $t && (Et.substr(Pt, 22).toLowerCase() === "share update exclusive" ? (bp = Et.substr(Pt, 22), Pt += 22) : (bp = $t, Dn === 0 && As(Uu)), bp === $t && (Et.substr(Pt, 19).toLowerCase() === "share row exclusive" ? (bp = Et.substr(Pt, 19), Pt += 19) : (bp = $t, Dn === 0 && As(Xp)), bp === $t && (Et.substr(Pt, 9).toLowerCase() === "exclusive" ? (bp = Et.substr(Pt, 9), Pt += 9) : (bp = $t, Dn === 0 && As(w1)), bp === $t && (Et.substr(Pt, 16).toLowerCase() === "access exclusive" ? (bp = Et.substr(Pt, 16), Pt += 16) : (bp = $t, Dn === 0 && As(T0)), bp === $t && (Et.substr(Pt, 5).toLowerCase() === "share" ? (bp = Et.substr(Pt, 5), Pt += 5) : (bp = $t, Dn === 0 && As(j0))))))))), bp !== $t && no() !== $t ? (Et.substr(Pt, 4).toLowerCase() === "mode" ? (o0 = Et.substr(Pt, 4), Pt += 4) : (o0 = $t, Dn === 0 && As(dm)), o0 !== $t ? (ao = Ku, Lp = { mode: `in ${bp.toLowerCase()} mode` }, Ku = Lp) : (Pt = Ku, Ku = $t)) : (Pt = Ku, Ku = $t)) : (Pt = Ku, Ku = $t), Ku;
           }()) === $t && (Eo = null), Eo !== $t && no() !== $t ? (Et.substr(Pt, 6).toLowerCase() === "nowait" ? (uo = Et.substr(Pt, 6), Pt += 6) : (uo = $t, Dn === 0 && As(Sm)), uo === $t && (uo = null), uo !== $t ? (ao = wr, rs = an, Gl = Eo, Ru = uo, (Ks = ba) && Ks.forEach((Ku) => w_.add(`lock::${[Ku.db, Ku.schema].filter(Boolean).join(".") || null}::${Ku.table}`)), Ur = { tableList: Array.from(w_), columnList: tw(E_), ast: { type: "lock", keyword: rs && rs.toLowerCase(), tables: Ks.map((Ku) => ({ table: Ku })), lock_mode: Gl, nowait: Ru } }, wr = Ur) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t);
           var rs, Ks, Gl, Ru;
           return wr;
@@ -169981,9 +170271,9 @@ function requireBigInteger() {
         }()) === $t && (er = function() {
           var wr, Ur, an, ba, Eo, uo, rs, Ks, Gl, Ru, Ku;
           wr = Pt, (Ur = N$()) !== $t && no() !== $t && (an = function() {
-            var bp, o0, I0, V0, cm, $m, Em, em;
+            var bp, o0, I0, V0, fm, $m, Em, em;
             if (bp = Pt, (o0 = Jp()) !== $t) {
-              for (I0 = [], V0 = Pt, (cm = no()) !== $t && ($m = bv()) !== $t && (Em = no()) !== $t && (em = Jp()) !== $t ? V0 = cm = [cm, $m, Em, em] : (Pt = V0, V0 = $t); V0 !== $t; ) I0.push(V0), V0 = Pt, (cm = no()) !== $t && ($m = bv()) !== $t && (Em = no()) !== $t && (em = Jp()) !== $t ? V0 = cm = [cm, $m, Em, em] : (Pt = V0, V0 = $t);
+              for (I0 = [], V0 = Pt, (fm = no()) !== $t && ($m = bv()) !== $t && (Em = no()) !== $t && (em = Jp()) !== $t ? V0 = fm = [fm, $m, Em, em] : (Pt = V0, V0 = $t); V0 !== $t; ) I0.push(V0), V0 = Pt, (fm = no()) !== $t && ($m = bv()) !== $t && (Em = no()) !== $t && (em = Jp()) !== $t ? V0 = fm = [fm, $m, Em, em] : (Pt = V0, V0 = $t);
               I0 !== $t ? (ao = bp, o0 = Rw(o0, I0), bp = o0) : (Pt = bp, bp = $t);
             } else Pt = bp, bp = $t;
             return bp;
@@ -169991,17 +170281,17 @@ function requireBigInteger() {
             var bp, o0, I0;
             return bp = Pt, (o0 = vo()) === $t && (Et.substr(Pt, 8).toLowerCase() === "sequence" ? (o0 = Et.substr(Pt, 8), Pt += 8) : (o0 = $t, Dn === 0 && As(jo)), o0 === $t && (Et.substr(Pt, 8).toLowerCase() === "database" ? (o0 = Et.substr(Pt, 8), Pt += 8) : (o0 = $t, Dn === 0 && As(Su)), o0 === $t && (Et.substr(Pt, 6) === "DOMAIN" ? (o0 = "DOMAIN", Pt += 6) : (o0 = $t, Dn === 0 && As(fs)), o0 === $t && (Et.substr(Pt, 8) === "FUNCTION" ? (o0 = "FUNCTION", Pt += 8) : (o0 = $t, Dn === 0 && As(e0)), o0 === $t && (Et.substr(Pt, 9).toLowerCase() === "procedure" ? (o0 = Et.substr(Pt, 9), Pt += 9) : (o0 = $t, Dn === 0 && As(NA)), o0 === $t && (Et.substr(Pt, 7).toLowerCase() === "routine" ? (o0 = Et.substr(Pt, 7), Pt += 7) : (o0 = $t, Dn === 0 && As(m0)), o0 === $t && (Et.substr(Pt, 8).toLowerCase() === "language" ? (o0 = Et.substr(Pt, 8), Pt += 8) : (o0 = $t, Dn === 0 && As(a0)), o0 === $t && (Et.substr(Pt, 5).toLowerCase() === "large" ? (o0 = Et.substr(Pt, 5), Pt += 5) : (o0 = $t, Dn === 0 && As(xm)), o0 === $t && (Et.substr(Pt, 6) === "SCHEMA" ? (o0 = "SCHEMA", Pt += 6) : (o0 = $t, Dn === 0 && As(N0))))))))))), o0 !== $t && (ao = bp, o0 = { type: "origin", value: o0.toUpperCase() }), (bp = o0) === $t && (bp = Pt, (o0 = as()) !== $t && no() !== $t ? (Et.substr(Pt, 6).toLowerCase() === "tables" ? (I0 = Et.substr(Pt, 6), Pt += 6) : (I0 = $t, Dn === 0 && As(Nm)), I0 === $t && (Et.substr(Pt, 8).toLowerCase() === "sequence" ? (I0 = Et.substr(Pt, 8), Pt += 8) : (I0 = $t, Dn === 0 && As(jo)), I0 === $t && (Et.substr(Pt, 9).toLowerCase() === "functions" ? (I0 = Et.substr(Pt, 9), Pt += 9) : (I0 = $t, Dn === 0 && As(r1)), I0 === $t && (Et.substr(Pt, 10).toLowerCase() === "procedures" ? (I0 = Et.substr(Pt, 10), Pt += 10) : (I0 = $t, Dn === 0 && As(Q0)), I0 === $t && (Et.substr(Pt, 8).toLowerCase() === "routines" ? (I0 = Et.substr(Pt, 8), Pt += 8) : (I0 = $t, Dn === 0 && As(q0)))))), I0 !== $t && no() !== $t && pu() !== $t && no() !== $t && Bs() !== $t ? (ao = bp, bp = o0 = { type: "origin", value: `all ${I0} in schema` }) : (Pt = bp, bp = $t)) : (Pt = bp, bp = $t)), bp;
           }()) === $t && (Eo = null), Eo !== $t && (uo = no()) !== $t && (rs = function() {
-            var bp, o0, I0, V0, cm, $m, Em, em;
+            var bp, o0, I0, V0, fm, $m, Em, em;
             if (bp = Pt, (o0 = bm()) !== $t) {
-              for (I0 = [], V0 = Pt, (cm = no()) !== $t && ($m = bv()) !== $t && (Em = no()) !== $t && (em = bm()) !== $t ? V0 = cm = [cm, $m, Em, em] : (Pt = V0, V0 = $t); V0 !== $t; ) I0.push(V0), V0 = Pt, (cm = no()) !== $t && ($m = bv()) !== $t && (Em = no()) !== $t && (em = bm()) !== $t ? V0 = cm = [cm, $m, Em, em] : (Pt = V0, V0 = $t);
+              for (I0 = [], V0 = Pt, (fm = no()) !== $t && ($m = bv()) !== $t && (Em = no()) !== $t && (em = bm()) !== $t ? V0 = fm = [fm, $m, Em, em] : (Pt = V0, V0 = $t); V0 !== $t; ) I0.push(V0), V0 = Pt, (fm = no()) !== $t && ($m = bv()) !== $t && (Em = no()) !== $t && (em = bm()) !== $t ? V0 = fm = [fm, $m, Em, em] : (Pt = V0, V0 = $t);
               I0 !== $t ? (ao = bp, o0 = Rw(o0, I0), bp = o0) : (Pt = bp, bp = $t);
             } else Pt = bp, bp = $t;
             return bp;
           }()) !== $t && (Ks = no()) !== $t ? ((Gl = L1()) === $t && (Gl = Jr()), Gl !== $t ? (ao = Pt, Lp = Gl, ({ revoke: "from", grant: "to" }[Ur.type].toLowerCase() === Lp[0].toLowerCase() ? void 0 : $t) !== $t && no() !== $t && (Ru = n$()) !== $t && no() !== $t ? ((Ku = function() {
             var bp, o0, I0;
             return bp = Pt, jr() !== $t && no() !== $t ? (Et.substr(Pt, 5).toLowerCase() === "grant" ? (o0 = Et.substr(Pt, 5), Pt += 5) : (o0 = $t, Dn === 0 && As(U1)), o0 !== $t && no() !== $t ? (Et.substr(Pt, 6).toLowerCase() === "option" ? (I0 = Et.substr(Pt, 6), Pt += 6) : (I0 = $t, Dn === 0 && As(im)), I0 !== $t ? (ao = bp, bp = { type: "origin", value: "with grant option" }) : (Pt = bp, bp = $t)) : (Pt = bp, bp = $t)) : (Pt = bp, bp = $t), bp;
-          }()) === $t && (Ku = null), Ku !== $t ? (ao = wr, Ur = function(bp, o0, I0, V0, cm, $m, Em) {
-            return { tableList: Array.from(w_), columnList: tw(E_), ast: { ...bp, keyword: "priv", objects: o0, on: { object_type: I0, priv_level: V0 }, to_from: cm[0], user_or_roles: $m, with: Em } };
+          }()) === $t && (Ku = null), Ku !== $t ? (ao = wr, Ur = function(bp, o0, I0, V0, fm, $m, Em) {
+            return { tableList: Array.from(w_), columnList: tw(E_), ast: { ...bp, keyword: "priv", objects: o0, on: { object_type: I0, priv_level: V0 }, to_from: fm[0], user_or_roles: $m, with: Em } };
           }(Ur, an, Eo, rs, Gl, Ru, Ku), wr = Ur) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t);
           var Lp;
           return wr === $t && (wr = Pt, (Ur = N$()) !== $t && no() !== $t && (an = $u()) !== $t && no() !== $t ? ((ba = L1()) === $t && (ba = Jr()), ba !== $t ? (ao = Pt, (function(bp, o0, I0) {
@@ -170009,8 +170299,8 @@ function requireBigInteger() {
           }(Ur, 0, ba) ? void 0 : $t) !== $t && (Eo = no()) !== $t && (uo = n$()) !== $t && (rs = no()) !== $t ? ((Ks = function() {
             var bp, o0, I0;
             return bp = Pt, jr() !== $t && no() !== $t ? (Et.substr(Pt, 5).toLowerCase() === "admin" ? (o0 = Et.substr(Pt, 5), Pt += 5) : (o0 = $t, Dn === 0 && As(Fm)), o0 !== $t && no() !== $t ? (Et.substr(Pt, 6).toLowerCase() === "option" ? (I0 = Et.substr(Pt, 6), Pt += 6) : (I0 = $t, Dn === 0 && As(im)), I0 !== $t ? (ao = bp, bp = { type: "origin", value: "with admin option" }) : (Pt = bp, bp = $t)) : (Pt = bp, bp = $t)) : (Pt = bp, bp = $t), bp;
-          }()) === $t && (Ks = null), Ks !== $t ? (ao = wr, Ur = function(bp, o0, I0, V0, cm) {
-            return { tableList: Array.from(w_), columnList: tw(E_), ast: { ...bp, keyword: "role", objects: o0.map(($m) => ({ priv: { type: "string", value: $m } })), to_from: I0[0], user_or_roles: V0, with: cm } };
+          }()) === $t && (Ks = null), Ks !== $t ? (ao = wr, Ur = function(bp, o0, I0, V0, fm) {
+            return { tableList: Array.from(w_), columnList: tw(E_), ast: { ...bp, keyword: "role", objects: o0.map(($m) => ({ priv: { type: "string", value: $m } })), to_from: I0[0], user_or_roles: V0, with: fm } };
           }(Ur, an, ba, uo, Ks), wr = Ur) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t)), wr;
         }()) === $t && (er = function() {
           var wr, Ur, an, ba, Eo, uo, rs, Ks, Gl, Ru, Ku, Lp, bp;
@@ -170021,8 +170311,8 @@ function requireBigInteger() {
               s1 !== $t ? (ao = em, Pm = Rw(Pm, s1, 1), em = Pm) : (Pt = em, em = $t);
             } else Pt = em, em = $t;
             return em;
-          }()) === $t && (rs = null), rs !== $t && no() !== $t ? (Ks = Pt, (Gl = nr()) !== $t && (Ru = no()) !== $t && (Ku = Hm()) !== $t ? Ks = Gl = [Gl, Ru, Ku] : (Pt = Ks, Ks = $t), Ks === $t && (Ks = null), Ks !== $t && (Gl = no()) !== $t ? ((Ru = HE()) === $t && (Ru = null), Ru !== $t && (Ku = no()) !== $t ? (Et.substr(Pt, 3).toLowerCase() === "end" ? (Lp = Et.substr(Pt, 3), Pt += 3) : (Lp = $t, Dn === 0 && As(Zm)), Lp !== $t && no() !== $t ? (Et.substr(Pt, 2).toLowerCase() === "if" ? (bp = Et.substr(Pt, 2), Pt += 2) : (bp = $t, Dn === 0 && As(Rt)), bp !== $t ? (ao = wr, o0 = an, I0 = Eo, V0 = uo, cm = rs, $m = Ks, Em = Ru, Ur = { tableList: Array.from(w_), columnList: tw(E_), ast: { type: "if", keyword: "if", boolean_expr: o0, semicolons: [V0 || "", Em || ""], prefix: { type: "origin", value: "then" }, if_expr: I0, elseif_expr: cm, else_expr: $m && $m[2], suffix: { type: "origin", value: "end if" } } }, wr = Ur) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t);
-          var o0, I0, V0, cm, $m, Em;
+          }()) === $t && (rs = null), rs !== $t && no() !== $t ? (Ks = Pt, (Gl = nr()) !== $t && (Ru = no()) !== $t && (Ku = Hm()) !== $t ? Ks = Gl = [Gl, Ru, Ku] : (Pt = Ks, Ks = $t), Ks === $t && (Ks = null), Ks !== $t && (Gl = no()) !== $t ? ((Ru = HE()) === $t && (Ru = null), Ru !== $t && (Ku = no()) !== $t ? (Et.substr(Pt, 3).toLowerCase() === "end" ? (Lp = Et.substr(Pt, 3), Pt += 3) : (Lp = $t, Dn === 0 && As(Zm)), Lp !== $t && no() !== $t ? (Et.substr(Pt, 2).toLowerCase() === "if" ? (bp = Et.substr(Pt, 2), Pt += 2) : (bp = $t, Dn === 0 && As(Rt)), bp !== $t ? (ao = wr, o0 = an, I0 = Eo, V0 = uo, fm = rs, $m = Ks, Em = Ru, Ur = { tableList: Array.from(w_), columnList: tw(E_), ast: { type: "if", keyword: "if", boolean_expr: o0, semicolons: [V0 || "", Em || ""], prefix: { type: "origin", value: "then" }, if_expr: I0, elseif_expr: fm, else_expr: $m && $m[2], suffix: { type: "origin", value: "end if" } } }, wr = Ur) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t);
+          var o0, I0, V0, fm, $m, Em;
           return wr;
         }()) === $t && (er = function() {
           var wr, Ur, an, ba, Eo;
@@ -170033,14 +170323,14 @@ function requireBigInteger() {
             var Gl, Ru, Ku, Lp, bp, o0, I0, V0;
             if (Gl = Pt, (Ru = gu()) !== $t) {
               for (Ku = [], Lp = Pt, (bp = no()) !== $t && (o0 = bv()) !== $t && (I0 = no()) !== $t && (V0 = GE()) !== $t ? Lp = bp = [bp, o0, I0, V0] : (Pt = Lp, Lp = $t); Lp !== $t; ) Ku.push(Lp), Lp = Pt, (bp = no()) !== $t && (o0 = bv()) !== $t && (I0 = no()) !== $t && (V0 = GE()) !== $t ? Lp = bp = [bp, o0, I0, V0] : (Pt = Lp, Lp = $t);
-              Ku !== $t ? (ao = Gl, Ru = { type: "format", keyword: Ru, expr: (cm = Ku) && cm.map(($m) => $m[3]) }, Gl = Ru) : (Pt = Gl, Gl = $t);
+              Ku !== $t ? (ao = Gl, Ru = { type: "format", keyword: Ru, expr: (fm = Ku) && fm.map(($m) => $m[3]) }, Gl = Ru) : (Pt = Gl, Gl = $t);
             } else Pt = Gl, Gl = $t;
-            var cm;
+            var fm;
             return Gl === $t && (Gl = Pt, Et.substr(Pt, 8).toLowerCase() === "sqlstate" ? (Ru = Et.substr(Pt, 8), Pt += 8) : (Ru = $t, Dn === 0 && As(wy)), Ru !== $t && (Ku = no()) !== $t && (Lp = gu()) !== $t ? (ao = Gl, Gl = Ru = { type: "sqlstate", keyword: { type: "origin", value: "SQLSTATE" }, expr: [Lp] }) : (Pt = Gl, Gl = $t), Gl === $t && (Gl = Pt, (Ru = Dl()) !== $t && (ao = Gl, Ru = { type: "condition", expr: [{ type: "default", value: Ru }] }), Gl = Ru)), Gl;
           }()) === $t && (ba = null), ba !== $t && no() !== $t ? ((Eo = function() {
-            var Gl, Ru, Ku, Lp, bp, o0, I0, V0, cm, $m;
+            var Gl, Ru, Ku, Lp, bp, o0, I0, V0, fm, $m;
             if (Gl = Pt, (Ru = pr()) !== $t) if (no() !== $t) if (Et.substr(Pt, 7).toLowerCase() === "message" ? (Ku = Et.substr(Pt, 7), Pt += 7) : (Ku = $t, Dn === 0 && As(C$)), Ku === $t && (Et.substr(Pt, 6).toLowerCase() === "detail" ? (Ku = Et.substr(Pt, 6), Pt += 6) : (Ku = $t, Dn === 0 && As(V1)), Ku === $t && (Et.substr(Pt, 4).toLowerCase() === "hint" ? (Ku = Et.substr(Pt, 4), Pt += 4) : (Ku = $t, Dn === 0 && As(b$)), Ku === $t && (Et.substr(Pt, 7).toLowerCase() === "errcode" ? (Ku = Et.substr(Pt, 7), Pt += 7) : (Ku = $t, Dn === 0 && As(cA)), Ku === $t && (Et.substr(Pt, 6).toLowerCase() === "column" ? (Ku = Et.substr(Pt, 6), Pt += 6) : (Ku = $t, Dn === 0 && As(jv)), Ku === $t && (Et.substr(Pt, 10).toLowerCase() === "constraint" ? (Ku = Et.substr(Pt, 10), Pt += 10) : (Ku = $t, Dn === 0 && As(R1)), Ku === $t && (Et.substr(Pt, 8).toLowerCase() === "datatype" ? (Ku = Et.substr(Pt, 8), Pt += 8) : (Ku = $t, Dn === 0 && As(Yv)), Ku === $t && (Et.substr(Pt, 5).toLowerCase() === "table" ? (Ku = Et.substr(Pt, 5), Pt += 5) : (Ku = $t, Dn === 0 && As(DA)), Ku === $t && (Et.substr(Pt, 6).toLowerCase() === "schema" ? (Ku = Et.substr(Pt, 6), Pt += 6) : (Ku = $t, Dn === 0 && As(Mt)))))))))), Ku !== $t) if (no() !== $t) if (b1() !== $t) if (no() !== $t) if ((Lp = Uv()) !== $t) {
-              for (bp = [], o0 = Pt, (I0 = no()) !== $t && (V0 = bv()) !== $t && (cm = no()) !== $t && ($m = Uv()) !== $t ? o0 = I0 = [I0, V0, cm, $m] : (Pt = o0, o0 = $t); o0 !== $t; ) bp.push(o0), o0 = Pt, (I0 = no()) !== $t && (V0 = bv()) !== $t && (cm = no()) !== $t && ($m = Uv()) !== $t ? o0 = I0 = [I0, V0, cm, $m] : (Pt = o0, o0 = $t);
+              for (bp = [], o0 = Pt, (I0 = no()) !== $t && (V0 = bv()) !== $t && (fm = no()) !== $t && ($m = Uv()) !== $t ? o0 = I0 = [I0, V0, fm, $m] : (Pt = o0, o0 = $t); o0 !== $t; ) bp.push(o0), o0 = Pt, (I0 = no()) !== $t && (V0 = bv()) !== $t && (fm = no()) !== $t && ($m = Uv()) !== $t ? o0 = I0 = [I0, V0, fm, $m] : (Pt = o0, o0 = $t);
               bp !== $t ? (ao = Gl, Ru = function(Em, em, Pm) {
                 const s1 = [em];
                 return Pm && Pm.forEach((zm) => s1.push(zm[3])), { type: "using", option: Em, symbol: "=", expr: s1 };
@@ -170103,16 +170393,16 @@ function requireBigInteger() {
         return (er = u1()) === $t && (er = function() {
           var wr, Ur, an, ba, Eo, uo, rs, Ks;
           return wr = Pt, (Ur = no()) !== $t ? ((an = G0()) === $t && (an = null), an !== $t && no() !== $t && lv() !== $t && no() !== $t && (ba = nE()) !== $t && no() !== $t && bn() !== $t && no() !== $t && (Eo = UA()) !== $t && no() !== $t ? ((uo = H_()) === $t && (uo = null), uo !== $t && no() !== $t ? ((rs = $v()) === $t && (rs = null), rs !== $t && no() !== $t ? ((Ks = sE()) === $t && (Ks = null), Ks !== $t ? (ao = wr, Ur = function(Gl, Ru, Ku, Lp, bp, o0) {
-            const I0 = {}, V0 = (cm) => {
-              const { server: $m, db: Em, schema: em, as: Pm, table: s1, join: zm } = cm, P1 = zm ? "select" : "update", i$ = [$m, Em, em].filter(Boolean).join(".") || null;
+            const I0 = {}, V0 = (fm) => {
+              const { server: $m, db: Em, schema: em, as: Pm, table: s1, join: zm } = fm, P1 = zm ? "select" : "update", i$ = [$m, Em, em].filter(Boolean).join(".") || null;
               Em && (I0[s1] = i$), s1 && w_.add(`${P1}::${i$}::${s1}`);
             };
-            return Ru && Ru.forEach(V0), Lp && Lp.forEach(V0), Ku && Ku.forEach((cm) => {
-              if (cm.table) {
-                const $m = nS(cm.table);
+            return Ru && Ru.forEach(V0), Lp && Lp.forEach(V0), Ku && Ku.forEach((fm) => {
+              if (fm.table) {
+                const $m = nS(fm.table);
                 w_.add(`update::${I0[$m] || null}::${$m}`);
               }
-              E_.add(`update::${cm.table}::${cm.column.expr.value}`);
+              E_.add(`update::${fm.table}::${fm.column.expr.value}`);
             }), { tableList: Array.from(w_), columnList: tw(E_), ast: { with: Gl, type: "update", table: Ru, set: Ku, from: Lp, where: bp, returning: o0 } };
           }(an, ba, Eo, uo, rs, Ks), wr = Ur) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t), wr;
         }()) === $t && (er = function() {
@@ -170121,19 +170411,19 @@ function requireBigInteger() {
             var Ru, Ku, Lp, bp;
             return Ru = Pt, Du() !== $t && no() !== $t ? (Et.substr(Pt, 8).toLowerCase() === "conflict" ? (Ku = Et.substr(Pt, 8), Pt += 8) : (Ku = $t, Dn === 0 && As(Z$)), Ku !== $t && no() !== $t ? ((Lp = function() {
               var o0, I0, V0;
-              return o0 = Pt, (I0 = Av()) !== $t && no() !== $t && (V0 = Ix()) !== $t && no() !== $t && Sv() !== $t ? (ao = o0, I0 = /* @__PURE__ */ function(cm) {
-                return { type: "column", expr: cm, parentheses: !0 };
+              return o0 = Pt, (I0 = Av()) !== $t && no() !== $t && (V0 = Ix()) !== $t && no() !== $t && Sv() !== $t ? (ao = o0, I0 = /* @__PURE__ */ function(fm) {
+                return { type: "column", expr: fm, parentheses: !0 };
               }(V0), o0 = I0) : (Pt = o0, o0 = $t), o0;
             }()) === $t && (Lp = null), Lp !== $t && no() !== $t && (bp = function() {
-              var o0, I0, V0, cm, $m;
-              return o0 = Pt, Et.substr(Pt, 2).toLowerCase() === "do" ? (I0 = Et.substr(Pt, 2), Pt += 2) : (I0 = $t, Dn === 0 && As(e$)), I0 !== $t && no() !== $t ? (Et.substr(Pt, 7).toLowerCase() === "nothing" ? (V0 = Et.substr(Pt, 7), Pt += 7) : (V0 = $t, Dn === 0 && As(R$)), V0 !== $t ? (ao = o0, o0 = I0 = { keyword: "do", expr: { type: "origin", value: "nothing" } }) : (Pt = o0, o0 = $t)) : (Pt = o0, o0 = $t), o0 === $t && (o0 = Pt, Et.substr(Pt, 2).toLowerCase() === "do" ? (I0 = Et.substr(Pt, 2), Pt += 2) : (I0 = $t, Dn === 0 && As(e$)), I0 !== $t && no() !== $t && (V0 = lv()) !== $t && no() !== $t && bn() !== $t && no() !== $t && (cm = UA()) !== $t && no() !== $t ? (($m = $v()) === $t && ($m = null), $m !== $t ? (ao = o0, o0 = I0 = { keyword: "do", expr: { type: "update", set: cm, where: $m } }) : (Pt = o0, o0 = $t)) : (Pt = o0, o0 = $t)), o0;
+              var o0, I0, V0, fm, $m;
+              return o0 = Pt, Et.substr(Pt, 2).toLowerCase() === "do" ? (I0 = Et.substr(Pt, 2), Pt += 2) : (I0 = $t, Dn === 0 && As(e$)), I0 !== $t && no() !== $t ? (Et.substr(Pt, 7).toLowerCase() === "nothing" ? (V0 = Et.substr(Pt, 7), Pt += 7) : (V0 = $t, Dn === 0 && As(R$)), V0 !== $t ? (ao = o0, o0 = I0 = { keyword: "do", expr: { type: "origin", value: "nothing" } }) : (Pt = o0, o0 = $t)) : (Pt = o0, o0 = $t), o0 === $t && (o0 = Pt, Et.substr(Pt, 2).toLowerCase() === "do" ? (I0 = Et.substr(Pt, 2), Pt += 2) : (I0 = $t, Dn === 0 && As(e$)), I0 !== $t && no() !== $t && (V0 = lv()) !== $t && no() !== $t && bn() !== $t && no() !== $t && (fm = UA()) !== $t && no() !== $t ? (($m = $v()) === $t && ($m = null), $m !== $t ? (ao = o0, o0 = I0 = { keyword: "do", expr: { type: "update", set: fm, where: $m } }) : (Pt = o0, o0 = $t)) : (Pt = o0, o0 = $t)), o0;
             }()) !== $t ? (ao = Ru, Ru = { type: "conflict", keyword: "on", target: Lp, action: bp }) : (Pt = Ru, Ru = $t)) : (Pt = Ru, Ru = $t)) : (Pt = Ru, Ru = $t), Ru;
           }()) === $t && (Ks = null), Ks !== $t && no() !== $t ? ((Gl = sE()) === $t && (Gl = null), Gl !== $t ? (ao = wr, Ur = function(Ru, Ku, Lp, bp, o0, I0, V0) {
             if (Ku && (w_.add(`insert::${[Ku.db, Ku.schema].filter(Boolean).join(".") || null}::${Ku.table}`), Ku.as = null), bp) {
-              let cm = Ku && Ku.table || null;
+              let fm = Ku && Ku.table || null;
               Array.isArray(o0.values) && o0.values.forEach(($m, Em) => {
                 if ($m.value.length != bp.length) throw new Error("Error: column count doesn't match value count at row " + (Em + 1));
-              }), bp.forEach(($m) => E_.add(`insert::${cm}::${$m.value}`));
+              }), bp.forEach(($m) => E_.add(`insert::${fm}::${$m.value}`));
             }
             return { tableList: Array.from(w_), columnList: tw(E_), ast: { type: Ru, table: [Ku], columns: bp, values: o0, partition: Lp, conflict: I0, returning: V0 } };
           }(Ur, ba, Eo, uo, rs, Ks, Gl), wr = Ur) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t), wr;
@@ -170141,15 +170431,15 @@ function requireBigInteger() {
           var wr, Ur, an, ba, Eo, uo, rs, Ks;
           return wr = Pt, (Ur = AE()) !== $t && no() !== $t ? ((an = wE()) === $t && (an = null), an !== $t && no() !== $t ? ((ba = Nr()) === $t && (ba = null), ba !== $t && no() !== $t && (Eo = by()) !== $t && no() !== $t ? ((uo = pE()) === $t && (uo = null), uo !== $t && no() !== $t && (rs = k2()) !== $t && no() !== $t ? ((Ks = sE()) === $t && (Ks = null), Ks !== $t ? (ao = wr, Ur = function(Gl, Ru, Ku, Lp, bp, o0, I0) {
             Lp && (w_.add(`insert::${[Lp.db, Lp.schema].filter(Boolean).join(".") || null}::${Lp.table}`), E_.add(`insert::${Lp.table}::(.*)`), Lp.as = null);
-            const V0 = [Ru, Ku].filter((cm) => cm).map((cm) => cm[0] && cm[0].toLowerCase()).join(" ");
+            const V0 = [Ru, Ku].filter((fm) => fm).map((fm) => fm[0] && fm[0].toLowerCase()).join(" ");
             return { tableList: Array.from(w_), columnList: tw(E_), ast: { type: Gl, table: [Lp], columns: null, values: o0, partition: bp, prefix: V0, returning: I0 } };
           }(Ur, an, ba, Eo, uo, rs, Ks), wr = Ur) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t), wr;
         }()) === $t && (er = function() {
           var wr, Ur, an, ba, Eo, uo;
           return wr = Pt, (Ur = jx()) !== $t && no() !== $t ? ((an = nE()) === $t && (an = null), an !== $t && no() !== $t && (ba = H_()) !== $t && no() !== $t ? ((Eo = $v()) === $t && (Eo = null), Eo !== $t && no() !== $t ? ((uo = sE()) === $t && (uo = null), uo !== $t ? (ao = wr, Ur = function(rs, Ks, Gl, Ru) {
             if (Ks && Ks.forEach((Ku) => {
-              const { db: Lp, as: bp, schema: o0, table: I0, join: V0 } = Ku, cm = V0 ? "select" : "delete", $m = [Lp, o0].filter(Boolean).join(".") || null;
-              I0 && w_.add(`${cm}::${$m}::${I0}`), V0 || E_.add(`delete::${I0}::(.*)`);
+              const { db: Lp, as: bp, schema: o0, table: I0, join: V0 } = Ku, fm = V0 ? "select" : "delete", $m = [Lp, o0].filter(Boolean).join(".") || null;
+              I0 && w_.add(`${fm}::${$m}::${I0}`), V0 || E_.add(`delete::${I0}::(.*)`);
             }), rs === null && Ks.length === 1) {
               const Ku = Ks[0];
               rs = [{ db: Ku.db, schema: Ku.schema, table: Ku.table, as: Ku.as, addition: !0 }];
@@ -170233,8 +170523,8 @@ function requireBigInteger() {
       }
       function Ho() {
         var er, wr, Ur, an, ba, Eo, uo, rs, Ks, Gl, Ru, Ku;
-        return er = Pt, (wr = e1()) !== $t ? (ao = Pt, (wr.toLowerCase() !== "begin" ? void 0 : $t) !== $t && no() !== $t ? (Et.substr(Pt, 8).toLowerCase() === "constant" ? (Ur = Et.substr(Pt, 8), Pt += 8) : (Ur = $t, Dn === 0 && As(tn)), Ur === $t && (Ur = null), Ur !== $t && no() !== $t && (an = jE()) !== $t && no() !== $t ? ((ba = Am()) === $t && (ba = null), ba !== $t && no() !== $t ? (Eo = Pt, (uo = c0()) !== $t && (rs = no()) !== $t && (Ks = V$()) !== $t ? Eo = uo = [uo, rs, Ks] : (Pt = Eo, Eo = $t), Eo === $t && (Eo = null), Eo !== $t && (uo = no()) !== $t ? (rs = Pt, (Ks = ev()) === $t && (Et.substr(Pt, 2) === ":=" ? (Ks = ":=", Pt += 2) : (Ks = $t, Dn === 0 && As(Vr))), Ks === $t && (Ks = null), Ks !== $t && (Gl = no()) !== $t ? (Ru = Pt, Dn++, Et.substr(Pt, 5).toLowerCase() === "begin" ? (Ku = Et.substr(Pt, 5), Pt += 5) : (Ku = $t, Dn === 0 && As(sn)), Dn--, Ku !== $t ? (Pt = Ru, Ru = void 0) : Ru = $t, Ru === $t && (Ru = co()) === $t && (Ru = Uv()), Ru !== $t ? rs = Ks = [Ks, Gl, Ru] : (Pt = rs, rs = $t)) : (Pt = rs, rs = $t), rs === $t && (rs = null), rs !== $t && (Ks = no()) !== $t ? ((Gl = HE()) === $t && (Gl = null), Gl !== $t ? (ao = er, er = wr = function(Lp, bp, o0, I0, V0, cm, $m) {
-          return { keyword: "variable", name: Lp, constant: bp, datatype: o0, collate: I0, not_null: V0 && "not null", definition: cm && cm[0] && { type: "default", keyword: cm[0], value: cm[2] } };
+        return er = Pt, (wr = e1()) !== $t ? (ao = Pt, (wr.toLowerCase() !== "begin" ? void 0 : $t) !== $t && no() !== $t ? (Et.substr(Pt, 8).toLowerCase() === "constant" ? (Ur = Et.substr(Pt, 8), Pt += 8) : (Ur = $t, Dn === 0 && As(tn)), Ur === $t && (Ur = null), Ur !== $t && no() !== $t && (an = jE()) !== $t && no() !== $t ? ((ba = Am()) === $t && (ba = null), ba !== $t && no() !== $t ? (Eo = Pt, (uo = c0()) !== $t && (rs = no()) !== $t && (Ks = V$()) !== $t ? Eo = uo = [uo, rs, Ks] : (Pt = Eo, Eo = $t), Eo === $t && (Eo = null), Eo !== $t && (uo = no()) !== $t ? (rs = Pt, (Ks = ev()) === $t && (Et.substr(Pt, 2) === ":=" ? (Ks = ":=", Pt += 2) : (Ks = $t, Dn === 0 && As(Vr))), Ks === $t && (Ks = null), Ks !== $t && (Gl = no()) !== $t ? (Ru = Pt, Dn++, Et.substr(Pt, 5).toLowerCase() === "begin" ? (Ku = Et.substr(Pt, 5), Pt += 5) : (Ku = $t, Dn === 0 && As(sn)), Dn--, Ku !== $t ? (Pt = Ru, Ru = void 0) : Ru = $t, Ru === $t && (Ru = co()) === $t && (Ru = Uv()), Ru !== $t ? rs = Ks = [Ks, Gl, Ru] : (Pt = rs, rs = $t)) : (Pt = rs, rs = $t), rs === $t && (rs = null), rs !== $t && (Ks = no()) !== $t ? ((Gl = HE()) === $t && (Gl = null), Gl !== $t ? (ao = er, er = wr = function(Lp, bp, o0, I0, V0, fm, $m) {
+          return { keyword: "variable", name: Lp, constant: bp, datatype: o0, collate: I0, not_null: V0 && "not null", definition: fm && fm[0] && { type: "default", keyword: fm[0], value: fm[2] } };
         }(wr, Ur, an, ba, Eo, rs)) : (Pt = er, er = $t)) : (Pt = er, er = $t)) : (Pt = er, er = $t)) : (Pt = er, er = $t)) : (Pt = er, er = $t)) : (Pt = er, er = $t)) : (Pt = er, er = $t), er;
       }
       function gs() {
@@ -170251,12 +170541,12 @@ function requireBigInteger() {
       }
       function Gs() {
         var er, wr, Ur, an, ba, Eo, uo, rs, Ks, Gl, Ru, Ku, Lp, bp, o0, I0, V0;
-        if (er = Pt, Et.substr(Pt, 8) === "LANGUAGE" ? (wr = "LANGUAGE", Pt += 8) : (wr = $t, Dn === 0 && As(En)), wr !== $t && (Ur = no()) !== $t && (an = e1()) !== $t && (ba = no()) !== $t ? (ao = er, er = wr = { prefix: "LANGUAGE", type: "default", value: an }) : (Pt = er, er = $t), er === $t && (er = Pt, Et.substr(Pt, 8).toLowerCase() === "transorm" ? (wr = Et.substr(Pt, 8), Pt += 8) : (wr = $t, Dn === 0 && As(fn)), wr !== $t && (Ur = no()) !== $t ? (an = Pt, Et.substr(Pt, 3) === "FOR" ? (ba = "FOR", Pt += 3) : (ba = $t, Dn === 0 && As(Nn)), ba !== $t && (Eo = no()) !== $t ? (Et.substr(Pt, 4) === "TYPE" ? (uo = "TYPE", Pt += 4) : (uo = $t, Dn === 0 && As(go)), uo !== $t && (rs = no()) !== $t && (Ks = e1()) !== $t ? an = ba = [ba, Eo, uo, rs, Ks] : (Pt = an, an = $t)) : (Pt = an, an = $t), an === $t && (an = null), an !== $t && (ba = no()) !== $t ? (ao = er, er = wr = (V0 = an) ? { prefix: ["TRANSORM", V0[0].toUpperCase(), V0[2].toUpperCase()].join(" "), type: "default", value: V0[4] } : { type: "origin", value: "TRANSORM" }) : (Pt = er, er = $t)) : (Pt = er, er = $t), er === $t && (er = Pt, Et.substr(Pt, 6).toLowerCase() === "window" ? (wr = Et.substr(Pt, 6), Pt += 6) : (wr = $t, Dn === 0 && As(On)), wr === $t && (Et.substr(Pt, 9).toLowerCase() === "immutable" ? (wr = Et.substr(Pt, 9), Pt += 9) : (wr = $t, Dn === 0 && As(In)), wr === $t && (Et.substr(Pt, 6).toLowerCase() === "stable" ? (wr = Et.substr(Pt, 6), Pt += 6) : (wr = $t, Dn === 0 && As(bo)), wr === $t && (Et.substr(Pt, 8).toLowerCase() === "volatile" ? (wr = Et.substr(Pt, 8), Pt += 8) : (wr = $t, Dn === 0 && As(ho)), wr === $t && (Et.substr(Pt, 6).toLowerCase() === "strict" ? (wr = Et.substr(Pt, 6), Pt += 6) : (wr = $t, Dn === 0 && As(Wo)))))), wr !== $t && (Ur = no()) !== $t ? (ao = er, er = wr = { type: "origin", value: wr }) : (Pt = er, er = $t), er === $t && (er = Pt, Et.substr(Pt, 3).toLowerCase() === "not" ? (wr = Et.substr(Pt, 3), Pt += 3) : (wr = $t, Dn === 0 && As(ks)), wr === $t && (wr = null), wr !== $t && (Ur = no()) !== $t ? (Et.substr(Pt, 9).toLowerCase() === "leakproof" ? (an = Et.substr(Pt, 9), Pt += 9) : (an = $t, Dn === 0 && As(os)), an !== $t && (ba = no()) !== $t ? (ao = er, er = wr = { type: "origin", value: [wr, "LEAKPROOF"].filter((cm) => cm).join(" ") }) : (Pt = er, er = $t)) : (Pt = er, er = $t), er === $t && (er = Pt, Et.substr(Pt, 6).toLowerCase() === "called" ? (wr = Et.substr(Pt, 6), Pt += 6) : (wr = $t, Dn === 0 && As(ds)), wr === $t && (wr = Pt, Et.substr(Pt, 7).toLowerCase() === "returns" ? (Ur = Et.substr(Pt, 7), Pt += 7) : (Ur = $t, Dn === 0 && As(Qr)), Ur !== $t && (an = no()) !== $t ? (Et.substr(Pt, 4).toLowerCase() === "null" ? (ba = Et.substr(Pt, 4), Pt += 4) : (ba = $t, Dn === 0 && As(Ko)), ba !== $t ? wr = Ur = [Ur, an, ba] : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t)), wr === $t && (wr = null), wr !== $t && (Ur = no()) !== $t ? (Et.substr(Pt, 2).toLowerCase() === "on" ? (an = Et.substr(Pt, 2), Pt += 2) : (an = $t, Dn === 0 && As(Ro)), an !== $t && (ba = no()) !== $t ? (Et.substr(Pt, 4).toLowerCase() === "null" ? (Eo = Et.substr(Pt, 4), Pt += 4) : (Eo = $t, Dn === 0 && As(Ko)), Eo !== $t && (uo = no()) !== $t ? (Et.substr(Pt, 5).toLowerCase() === "input" ? (rs = Et.substr(Pt, 5), Pt += 5) : (rs = $t, Dn === 0 && As(wo)), rs !== $t && (Ks = no()) !== $t ? (ao = er, er = wr = function(cm) {
-          return Array.isArray(cm) && (cm = [cm[0], cm[2]].join(" ")), { type: "origin", value: cm + " ON NULL INPUT" };
-        }(wr)) : (Pt = er, er = $t)) : (Pt = er, er = $t)) : (Pt = er, er = $t)) : (Pt = er, er = $t), er === $t && (er = Pt, Et.substr(Pt, 8).toLowerCase() === "external" ? (wr = Et.substr(Pt, 8), Pt += 8) : (wr = $t, Dn === 0 && As(Ts)), wr === $t && (wr = null), wr !== $t && (Ur = no()) !== $t ? (Et.substr(Pt, 8).toLowerCase() === "security" ? (an = Et.substr(Pt, 8), Pt += 8) : (an = $t, Dn === 0 && As(Rs)), an !== $t && (ba = no()) !== $t ? (Et.substr(Pt, 7).toLowerCase() === "invoker" ? (Eo = Et.substr(Pt, 7), Pt += 7) : (Eo = $t, Dn === 0 && As(ms)), Eo === $t && (Et.substr(Pt, 7).toLowerCase() === "definer" ? (Eo = Et.substr(Pt, 7), Pt += 7) : (Eo = $t, Dn === 0 && As(ws))), Eo !== $t && (uo = no()) !== $t ? (ao = er, er = wr = function(cm, $m) {
-          return { type: "origin", value: [cm, "SECURITY", $m].filter((Em) => Em).join(" ") };
-        }(wr, Eo)) : (Pt = er, er = $t)) : (Pt = er, er = $t)) : (Pt = er, er = $t), er === $t && (er = Pt, Et.substr(Pt, 8).toLowerCase() === "parallel" ? (wr = Et.substr(Pt, 8), Pt += 8) : (wr = $t, Dn === 0 && As(Ns)), wr !== $t && (Ur = no()) !== $t ? (Et.substr(Pt, 6).toLowerCase() === "unsafe" ? (an = Et.substr(Pt, 6), Pt += 6) : (an = $t, Dn === 0 && As(Vs)), an === $t && (Et.substr(Pt, 10).toLowerCase() === "restricted" ? (an = Et.substr(Pt, 10), Pt += 10) : (an = $t, Dn === 0 && As(Nl)), an === $t && (Et.substr(Pt, 4).toLowerCase() === "safe" ? (an = Et.substr(Pt, 4), Pt += 4) : (an = $t, Dn === 0 && As(Tu)))), an !== $t && (ba = no()) !== $t ? (ao = er, er = wr = function(cm) {
-          return { type: "origin", value: ["PARALLEL", cm].join(" ") };
+        if (er = Pt, Et.substr(Pt, 8) === "LANGUAGE" ? (wr = "LANGUAGE", Pt += 8) : (wr = $t, Dn === 0 && As(En)), wr !== $t && (Ur = no()) !== $t && (an = e1()) !== $t && (ba = no()) !== $t ? (ao = er, er = wr = { prefix: "LANGUAGE", type: "default", value: an }) : (Pt = er, er = $t), er === $t && (er = Pt, Et.substr(Pt, 8).toLowerCase() === "transorm" ? (wr = Et.substr(Pt, 8), Pt += 8) : (wr = $t, Dn === 0 && As(fn)), wr !== $t && (Ur = no()) !== $t ? (an = Pt, Et.substr(Pt, 3) === "FOR" ? (ba = "FOR", Pt += 3) : (ba = $t, Dn === 0 && As(Nn)), ba !== $t && (Eo = no()) !== $t ? (Et.substr(Pt, 4) === "TYPE" ? (uo = "TYPE", Pt += 4) : (uo = $t, Dn === 0 && As(go)), uo !== $t && (rs = no()) !== $t && (Ks = e1()) !== $t ? an = ba = [ba, Eo, uo, rs, Ks] : (Pt = an, an = $t)) : (Pt = an, an = $t), an === $t && (an = null), an !== $t && (ba = no()) !== $t ? (ao = er, er = wr = (V0 = an) ? { prefix: ["TRANSORM", V0[0].toUpperCase(), V0[2].toUpperCase()].join(" "), type: "default", value: V0[4] } : { type: "origin", value: "TRANSORM" }) : (Pt = er, er = $t)) : (Pt = er, er = $t), er === $t && (er = Pt, Et.substr(Pt, 6).toLowerCase() === "window" ? (wr = Et.substr(Pt, 6), Pt += 6) : (wr = $t, Dn === 0 && As(On)), wr === $t && (Et.substr(Pt, 9).toLowerCase() === "immutable" ? (wr = Et.substr(Pt, 9), Pt += 9) : (wr = $t, Dn === 0 && As(In)), wr === $t && (Et.substr(Pt, 6).toLowerCase() === "stable" ? (wr = Et.substr(Pt, 6), Pt += 6) : (wr = $t, Dn === 0 && As(bo)), wr === $t && (Et.substr(Pt, 8).toLowerCase() === "volatile" ? (wr = Et.substr(Pt, 8), Pt += 8) : (wr = $t, Dn === 0 && As(ho)), wr === $t && (Et.substr(Pt, 6).toLowerCase() === "strict" ? (wr = Et.substr(Pt, 6), Pt += 6) : (wr = $t, Dn === 0 && As(Wo)))))), wr !== $t && (Ur = no()) !== $t ? (ao = er, er = wr = { type: "origin", value: wr }) : (Pt = er, er = $t), er === $t && (er = Pt, Et.substr(Pt, 3).toLowerCase() === "not" ? (wr = Et.substr(Pt, 3), Pt += 3) : (wr = $t, Dn === 0 && As(ks)), wr === $t && (wr = null), wr !== $t && (Ur = no()) !== $t ? (Et.substr(Pt, 9).toLowerCase() === "leakproof" ? (an = Et.substr(Pt, 9), Pt += 9) : (an = $t, Dn === 0 && As(os)), an !== $t && (ba = no()) !== $t ? (ao = er, er = wr = { type: "origin", value: [wr, "LEAKPROOF"].filter((fm) => fm).join(" ") }) : (Pt = er, er = $t)) : (Pt = er, er = $t), er === $t && (er = Pt, Et.substr(Pt, 6).toLowerCase() === "called" ? (wr = Et.substr(Pt, 6), Pt += 6) : (wr = $t, Dn === 0 && As(ds)), wr === $t && (wr = Pt, Et.substr(Pt, 7).toLowerCase() === "returns" ? (Ur = Et.substr(Pt, 7), Pt += 7) : (Ur = $t, Dn === 0 && As(Qr)), Ur !== $t && (an = no()) !== $t ? (Et.substr(Pt, 4).toLowerCase() === "null" ? (ba = Et.substr(Pt, 4), Pt += 4) : (ba = $t, Dn === 0 && As(Ko)), ba !== $t ? wr = Ur = [Ur, an, ba] : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t)), wr === $t && (wr = null), wr !== $t && (Ur = no()) !== $t ? (Et.substr(Pt, 2).toLowerCase() === "on" ? (an = Et.substr(Pt, 2), Pt += 2) : (an = $t, Dn === 0 && As(Ro)), an !== $t && (ba = no()) !== $t ? (Et.substr(Pt, 4).toLowerCase() === "null" ? (Eo = Et.substr(Pt, 4), Pt += 4) : (Eo = $t, Dn === 0 && As(Ko)), Eo !== $t && (uo = no()) !== $t ? (Et.substr(Pt, 5).toLowerCase() === "input" ? (rs = Et.substr(Pt, 5), Pt += 5) : (rs = $t, Dn === 0 && As(wo)), rs !== $t && (Ks = no()) !== $t ? (ao = er, er = wr = function(fm) {
+          return Array.isArray(fm) && (fm = [fm[0], fm[2]].join(" ")), { type: "origin", value: fm + " ON NULL INPUT" };
+        }(wr)) : (Pt = er, er = $t)) : (Pt = er, er = $t)) : (Pt = er, er = $t)) : (Pt = er, er = $t), er === $t && (er = Pt, Et.substr(Pt, 8).toLowerCase() === "external" ? (wr = Et.substr(Pt, 8), Pt += 8) : (wr = $t, Dn === 0 && As(Ts)), wr === $t && (wr = null), wr !== $t && (Ur = no()) !== $t ? (Et.substr(Pt, 8).toLowerCase() === "security" ? (an = Et.substr(Pt, 8), Pt += 8) : (an = $t, Dn === 0 && As(Rs)), an !== $t && (ba = no()) !== $t ? (Et.substr(Pt, 7).toLowerCase() === "invoker" ? (Eo = Et.substr(Pt, 7), Pt += 7) : (Eo = $t, Dn === 0 && As(ms)), Eo === $t && (Et.substr(Pt, 7).toLowerCase() === "definer" ? (Eo = Et.substr(Pt, 7), Pt += 7) : (Eo = $t, Dn === 0 && As(ws))), Eo !== $t && (uo = no()) !== $t ? (ao = er, er = wr = function(fm, $m) {
+          return { type: "origin", value: [fm, "SECURITY", $m].filter((Em) => Em).join(" ") };
+        }(wr, Eo)) : (Pt = er, er = $t)) : (Pt = er, er = $t)) : (Pt = er, er = $t), er === $t && (er = Pt, Et.substr(Pt, 8).toLowerCase() === "parallel" ? (wr = Et.substr(Pt, 8), Pt += 8) : (wr = $t, Dn === 0 && As(Ns)), wr !== $t && (Ur = no()) !== $t ? (Et.substr(Pt, 6).toLowerCase() === "unsafe" ? (an = Et.substr(Pt, 6), Pt += 6) : (an = $t, Dn === 0 && As(Vs)), an === $t && (Et.substr(Pt, 10).toLowerCase() === "restricted" ? (an = Et.substr(Pt, 10), Pt += 10) : (an = $t, Dn === 0 && As(Nl)), an === $t && (Et.substr(Pt, 4).toLowerCase() === "safe" ? (an = Et.substr(Pt, 4), Pt += 4) : (an = $t, Dn === 0 && As(Tu)))), an !== $t && (ba = no()) !== $t ? (ao = er, er = wr = function(fm) {
+          return { type: "origin", value: ["PARALLEL", fm].join(" ") };
         }(an)) : (Pt = er, er = $t)) : (Pt = er, er = $t), er === $t))))))) {
           if (er = Pt, (wr = to()) !== $t) if ((Ur = no()) !== $t) {
             if (an = [], Ws.test(Et.charAt(Pt)) ? (ba = Et.charAt(Pt), Pt++) : (ba = $t, Dn === 0 && As(Pl)), ba !== $t) for (; ba !== $t; ) an.push(ba), Ws.test(Et.charAt(Pt)) ? (ba = Et.charAt(Pt), Pt++) : (ba = $t, Dn === 0 && As(Pl));
@@ -170264,8 +170554,8 @@ function requireBigInteger() {
             if (an !== $t) if ((ba = no()) !== $t) if ((Eo = zs()) === $t && (Eo = null), Eo !== $t) if ((uo = no()) !== $t) if (Et.substr(Pt, 5).toLowerCase() === "begin" ? (rs = Et.substr(Pt, 5), Pt += 5) : (rs = $t, Dn === 0 && As(sn)), rs === $t && (rs = null), rs !== $t) if ((Ks = no()) !== $t) if ((Gl = m$()) !== $t) if (no() !== $t) if ((Ru = Cr()) === $t && (Ru = null), Ru !== $t) if (ao = Pt, I0 = Ru, ((o0 = rs) && I0 || !o0 && !I0 ? void 0 : $t) !== $t) if (no() !== $t) if ((Ku = HE()) === $t && (Ku = null), Ku !== $t) if (no() !== $t) {
               if (Lp = [], ap.test(Et.charAt(Pt)) ? (bp = Et.charAt(Pt), Pt++) : (bp = $t, Dn === 0 && As(El)), bp !== $t) for (; bp !== $t; ) Lp.push(bp), ap.test(Et.charAt(Pt)) ? (bp = Et.charAt(Pt), Pt++) : (bp = $t, Dn === 0 && As(El));
               else Lp = $t;
-              Lp !== $t && (bp = no()) !== $t ? (ao = er, er = wr = function(cm, $m, Em, em, Pm, s1) {
-                const zm = cm.join(""), P1 = s1.join("");
+              Lp !== $t && (bp = no()) !== $t ? (ao = er, er = wr = function(fm, $m, Em, em, Pm, s1) {
+                const zm = fm.join(""), P1 = s1.join("");
                 if (zm !== P1) throw new Error(`start symbol '${zm}'is not same with end symbol '${P1}'`);
                 return { type: "as", declare: $m && $m.ast, begin: Em, expr: Array.isArray(em.ast) ? em.ast.flat() : [em.ast], end: Pm && Pm[0], symbol: zm };
               }(an, Eo, rs, Gl, Ru, Lp)) : (Pt = er, er = $t);
@@ -170284,17 +170574,17 @@ function requireBigInteger() {
             else Pt = er, er = $t;
           } else Pt = er, er = $t;
           else Pt = er, er = $t;
-          er === $t && (er = Pt, Et.substr(Pt, 4).toLowerCase() === "cost" ? (wr = Et.substr(Pt, 4), Pt += 4) : (wr = $t, Dn === 0 && As(Al)), wr === $t && (Et.substr(Pt, 4).toLowerCase() === "rows" ? (wr = Et.substr(Pt, 4), Pt += 4) : (wr = $t, Dn === 0 && As(po))), wr !== $t && (Ur = no()) !== $t && (an = _0()) !== $t && (ba = no()) !== $t ? (ao = er, er = wr = function(cm, $m) {
-            return $m.prefix = cm, $m;
-          }(wr, an)) : (Pt = er, er = $t), er === $t && (er = Pt, Et.substr(Pt, 7).toLowerCase() === "support" ? (wr = Et.substr(Pt, 7), Pt += 7) : (wr = $t, Dn === 0 && As(jn)), wr !== $t && (Ur = no()) !== $t && (an = uC()) !== $t && (ba = no()) !== $t ? (ao = er, er = wr = function(cm) {
-            return { prefix: "support", type: "default", value: [cm.schema && cm.schema.value, cm.name.value].filter(($m) => $m).join(".") };
-          }(an)) : (Pt = er, er = $t), er === $t && (er = Pt, (wr = bn()) !== $t && (Ur = no()) !== $t && (an = e1()) !== $t && (ba = no()) !== $t ? (Eo = Pt, Et.substr(Pt, 2).toLowerCase() === "to" ? (uo = Et.substr(Pt, 2), Pt += 2) : (uo = $t, Dn === 0 && As(Gn)), uo === $t && (Et.charCodeAt(Pt) === 61 ? (uo = "=", Pt++) : (uo = $t, Dn === 0 && As(so))), uo !== $t && (rs = no()) !== $t && (Ks = $u()) !== $t ? Eo = uo = [uo, rs, Ks] : (Pt = Eo, Eo = $t), Eo === $t && (Eo = Pt, (uo = Jr()) !== $t && (rs = no()) !== $t ? (Et.substr(Pt, 7).toLowerCase() === "current" ? (Ks = Et.substr(Pt, 7), Pt += 7) : (Ks = $t, Dn === 0 && As(Xo)), Ks !== $t ? Eo = uo = [uo, rs, Ks] : (Pt = Eo, Eo = $t)) : (Pt = Eo, Eo = $t)), Eo === $t && (Eo = null), Eo !== $t && (uo = no()) !== $t ? (ao = er, er = wr = function(cm, $m) {
+          er === $t && (er = Pt, Et.substr(Pt, 4).toLowerCase() === "cost" ? (wr = Et.substr(Pt, 4), Pt += 4) : (wr = $t, Dn === 0 && As(Al)), wr === $t && (Et.substr(Pt, 4).toLowerCase() === "rows" ? (wr = Et.substr(Pt, 4), Pt += 4) : (wr = $t, Dn === 0 && As(po))), wr !== $t && (Ur = no()) !== $t && (an = _0()) !== $t && (ba = no()) !== $t ? (ao = er, er = wr = function(fm, $m) {
+            return $m.prefix = fm, $m;
+          }(wr, an)) : (Pt = er, er = $t), er === $t && (er = Pt, Et.substr(Pt, 7).toLowerCase() === "support" ? (wr = Et.substr(Pt, 7), Pt += 7) : (wr = $t, Dn === 0 && As(jn)), wr !== $t && (Ur = no()) !== $t && (an = uC()) !== $t && (ba = no()) !== $t ? (ao = er, er = wr = function(fm) {
+            return { prefix: "support", type: "default", value: [fm.schema && fm.schema.value, fm.name.value].filter(($m) => $m).join(".") };
+          }(an)) : (Pt = er, er = $t), er === $t && (er = Pt, (wr = bn()) !== $t && (Ur = no()) !== $t && (an = e1()) !== $t && (ba = no()) !== $t ? (Eo = Pt, Et.substr(Pt, 2).toLowerCase() === "to" ? (uo = Et.substr(Pt, 2), Pt += 2) : (uo = $t, Dn === 0 && As(Gn)), uo === $t && (Et.charCodeAt(Pt) === 61 ? (uo = "=", Pt++) : (uo = $t, Dn === 0 && As(so))), uo !== $t && (rs = no()) !== $t && (Ks = $u()) !== $t ? Eo = uo = [uo, rs, Ks] : (Pt = Eo, Eo = $t), Eo === $t && (Eo = Pt, (uo = Jr()) !== $t && (rs = no()) !== $t ? (Et.substr(Pt, 7).toLowerCase() === "current" ? (Ks = Et.substr(Pt, 7), Pt += 7) : (Ks = $t, Dn === 0 && As(Xo)), Ks !== $t ? Eo = uo = [uo, rs, Ks] : (Pt = Eo, Eo = $t)) : (Pt = Eo, Eo = $t)), Eo === $t && (Eo = null), Eo !== $t && (uo = no()) !== $t ? (ao = er, er = wr = function(fm, $m) {
             let Em;
             if ($m) {
               const em = Array.isArray($m[2]) ? $m[2] : [$m[2]];
               Em = { prefix: $m[0], expr: em.map((Pm) => ({ type: "default", value: Pm })) };
             }
-            return { type: "set", parameter: cm, value: Em };
+            return { type: "set", parameter: fm, value: Em };
           }(an, Eo)) : (Pt = er, er = $t)) : (Pt = er, er = $t), er === $t && (er = ZC()))));
         }
         return er;
@@ -170306,8 +170596,8 @@ function requireBigInteger() {
           return Ku = Pt, Et.substr(Pt, 7).toLowerCase() === "returns" ? (Lp = Et.substr(Pt, 7), Pt += 7) : (Lp = $t, Dn === 0 && As(Qr)), Lp !== $t && no() !== $t ? (Et.substr(Pt, 5).toLowerCase() === "setof" ? (bp = Et.substr(Pt, 5), Pt += 5) : (bp = $t, Dn === 0 && As(ln)), bp === $t && (bp = null), bp !== $t && no() !== $t ? ((o0 = jE()) === $t && (o0 = by()), o0 !== $t ? (ao = Ku, Ku = Lp = { type: "returns", keyword: bp, expr: o0 }) : (Pt = Ku, Ku = $t)) : (Pt = Ku, Ku = $t)) : (Pt = Ku, Ku = $t), Ku === $t && (Ku = Pt, Et.substr(Pt, 7).toLowerCase() === "returns" ? (Lp = Et.substr(Pt, 7), Pt += 7) : (Lp = $t, Dn === 0 && As(Qr)), Lp !== $t && no() !== $t && (bp = vo()) !== $t && no() !== $t && (o0 = Av()) !== $t && no() !== $t && (I0 = Bo()) !== $t && no() !== $t && Sv() !== $t ? (ao = Ku, Ku = Lp = { type: "returns", keyword: "table", expr: I0 }) : (Pt = Ku, Ku = $t)), Ku;
         }()) === $t && (rs = null), rs !== $t) if (no() !== $t) {
           for (Ks = [], Gl = Gs(); Gl !== $t; ) Ks.push(Gl), Gl = Gs();
-          Ks !== $t && (Gl = no()) !== $t ? ((Ru = HE()) === $t && (Ru = null), Ru !== $t && no() !== $t ? (ao = er, er = function(Ku, Lp, bp, o0, I0, V0, cm) {
-            return { tableList: Array.from(w_), columnList: tw(E_), ast: { args: I0 || [], type: "create", replace: Lp && "or replace", name: o0, returns: V0, keyword: bp && bp.toLowerCase(), options: cm || [] } };
+          Ks !== $t && (Gl = no()) !== $t ? ((Ru = HE()) === $t && (Ru = null), Ru !== $t && no() !== $t ? (ao = er, er = function(Ku, Lp, bp, o0, I0, V0, fm) {
+            return { tableList: Array.from(w_), columnList: tw(E_), ast: { args: I0 || [], type: "create", replace: Lp && "or replace", name: o0, returns: V0, keyword: bp && bp.toLowerCase(), options: fm || [] } };
           }(0, wr, an, Eo, uo, rs, Ks)) : (Pt = er, er = $t)) : (Pt = er, er = $t);
         } else Pt = er, er = $t;
         else Pt = er, er = $t;
@@ -170396,9 +170686,9 @@ function requireBigInteger() {
           return uo = Pt, Et.substr(Pt, 7).toLowerCase() === "storage" ? (rs = Et.substr(Pt, 7), Pt += 7) : (rs = $t, Dn === 0 && As(qp)), rs !== $t && no() !== $t ? (Et.substr(Pt, 4).toLowerCase() === "disk" ? (Ks = Et.substr(Pt, 4), Pt += 4) : (Ks = $t, Dn === 0 && As(i0)), Ks === $t && (Et.substr(Pt, 6).toLowerCase() === "memory" ? (Ks = Et.substr(Pt, 6), Pt += 6) : (Ks = $t, Dn === 0 && As(P0))), Ks !== $t ? (ao = uo, rs = { type: "storage", value: Ks.toLowerCase() }, uo = rs) : (Pt = uo, uo = $t)) : (Pt = uo, uo = $t), uo;
         }()) !== $t && (ao = er, wr = { storage: wr }), (er = wr) === $t && (er = Pt, (wr = No()) !== $t && (ao = er, wr = { reference_definition: wr }), (er = wr) === $t && (er = Pt, (wr = function() {
           var uo, rs, Ks, Gl, Ru, Ku, Lp, bp;
-          return uo = Pt, (rs = Fn()) === $t && (rs = null), rs !== $t && no() !== $t ? (Et.substr(Pt, 5).toLowerCase() === "check" ? (Ks = Et.substr(Pt, 5), Pt += 5) : (Ks = $t, Dn === 0 && As(Yt)), Ks !== $t && no() !== $t && Av() !== $t && no() !== $t && (Gl = Kw()) !== $t && no() !== $t && Sv() !== $t && no() !== $t ? (Ru = Pt, (Ku = c0()) === $t && (Ku = null), Ku !== $t && (Lp = no()) !== $t ? (Et.substr(Pt, 8).toLowerCase() === "enforced" ? (bp = Et.substr(Pt, 8), Pt += 8) : (bp = $t, Dn === 0 && As(nA)), bp !== $t ? Ru = Ku = [Ku, Lp, bp] : (Pt = Ru, Ru = $t)) : (Pt = Ru, Ru = $t), Ru === $t && (Ru = null), Ru !== $t ? (ao = uo, rs = function(o0, I0, V0, cm) {
+          return uo = Pt, (rs = Fn()) === $t && (rs = null), rs !== $t && no() !== $t ? (Et.substr(Pt, 5).toLowerCase() === "check" ? (Ks = Et.substr(Pt, 5), Pt += 5) : (Ks = $t, Dn === 0 && As(Yt)), Ks !== $t && no() !== $t && Av() !== $t && no() !== $t && (Gl = Kw()) !== $t && no() !== $t && Sv() !== $t && no() !== $t ? (Ru = Pt, (Ku = c0()) === $t && (Ku = null), Ku !== $t && (Lp = no()) !== $t ? (Et.substr(Pt, 8).toLowerCase() === "enforced" ? (bp = Et.substr(Pt, 8), Pt += 8) : (bp = $t, Dn === 0 && As(nA)), bp !== $t ? Ru = Ku = [Ku, Lp, bp] : (Pt = Ru, Ru = $t)) : (Pt = Ru, Ru = $t), Ru === $t && (Ru = null), Ru !== $t ? (ao = uo, rs = function(o0, I0, V0, fm) {
             const $m = [];
-            return cm && $m.push(cm[0], cm[2]), { constraint_type: I0.toLowerCase(), keyword: o0 && o0.keyword, constraint: o0 && o0.constraint, definition: [V0], enforced: $m.filter((Em) => Em).join(" ").toLowerCase(), resource: "constraint" };
+            return fm && $m.push(fm[0], fm[2]), { constraint_type: I0.toLowerCase(), keyword: o0 && o0.keyword, constraint: o0 && o0.constraint, definition: [V0], enforced: $m.filter((Em) => Em).join(" ").toLowerCase(), resource: "constraint" };
           }(rs, Ks, Gl, Ru), uo = rs) : (Pt = uo, uo = $t)) : (Pt = uo, uo = $t)) : (Pt = uo, uo = $t), uo;
         }()) !== $t && (ao = er, wr = { check: wr }), (er = wr) === $t && (er = Pt, (wr = Bl()) !== $t && no() !== $t ? ((Ur = b1()) === $t && (Ur = null), Ur !== $t && no() !== $t && (an = us()) !== $t ? (ao = er, er = wr = /* @__PURE__ */ function(uo, rs, Ks) {
           return { character_set: { type: uo, value: Ks, symbol: rs } };
@@ -170515,8 +170805,8 @@ function requireBigInteger() {
           return wr;
         }()) === $t && (er = Il()) === $t && (er = Wu()) === $t && (er = jp()) === $t && (er = Eu()) === $t && (er = function() {
           var wr, Ur, an, ba, Eo, uo, rs, Ks, Gl, Ru, Ku, Lp, bp, o0;
-          return wr = Pt, (Ur = a$()) !== $t && no() !== $t ? ((an = zv()) === $t && (an = null), an !== $t && no() !== $t && (ba = Un()) !== $t && no() !== $t ? (Eo = Pt, (uo = bn()) !== $t && (rs = no()) !== $t ? (Et.substr(Pt, 4).toLowerCase() === "data" ? (Ks = Et.substr(Pt, 4), Pt += 4) : (Ks = $t, Dn === 0 && As(Cv)), Ks !== $t ? Eo = uo = [uo, rs, Ks] : (Pt = Eo, Eo = $t)) : (Pt = Eo, Eo = $t), Eo === $t && (Eo = null), Eo !== $t && (uo = no()) !== $t ? (Et.substr(Pt, 4).toLowerCase() === "type" ? (rs = Et.substr(Pt, 4), Pt += 4) : (rs = $t, Dn === 0 && As(Y$)), rs !== $t && (Ks = no()) !== $t && (Gl = jE()) !== $t && no() !== $t ? ((Ru = Am()) === $t && (Ru = null), Ru !== $t && no() !== $t ? (Ku = Pt, (Lp = pr()) !== $t && (bp = no()) !== $t && (o0 = Uv()) !== $t ? Ku = Lp = [Lp, bp, o0] : (Pt = Ku, Ku = $t), Ku === $t && (Ku = null), Ku !== $t ? (ao = wr, Ur = function(I0, V0, cm, $m, Em, em) {
-            return V0.suffix = cm ? "set data type" : "type", { action: "alter", column: V0, keyword: I0, resource: "column", definition: $m, collate: Em, using: em && em[2], type: "alter" };
+          return wr = Pt, (Ur = a$()) !== $t && no() !== $t ? ((an = zv()) === $t && (an = null), an !== $t && no() !== $t && (ba = Un()) !== $t && no() !== $t ? (Eo = Pt, (uo = bn()) !== $t && (rs = no()) !== $t ? (Et.substr(Pt, 4).toLowerCase() === "data" ? (Ks = Et.substr(Pt, 4), Pt += 4) : (Ks = $t, Dn === 0 && As(Cv)), Ks !== $t ? Eo = uo = [uo, rs, Ks] : (Pt = Eo, Eo = $t)) : (Pt = Eo, Eo = $t), Eo === $t && (Eo = null), Eo !== $t && (uo = no()) !== $t ? (Et.substr(Pt, 4).toLowerCase() === "type" ? (rs = Et.substr(Pt, 4), Pt += 4) : (rs = $t, Dn === 0 && As(Y$)), rs !== $t && (Ks = no()) !== $t && (Gl = jE()) !== $t && no() !== $t ? ((Ru = Am()) === $t && (Ru = null), Ru !== $t && no() !== $t ? (Ku = Pt, (Lp = pr()) !== $t && (bp = no()) !== $t && (o0 = Uv()) !== $t ? Ku = Lp = [Lp, bp, o0] : (Pt = Ku, Ku = $t), Ku === $t && (Ku = null), Ku !== $t ? (ao = wr, Ur = function(I0, V0, fm, $m, Em, em) {
+            return V0.suffix = fm ? "set data type" : "type", { action: "alter", column: V0, keyword: I0, resource: "column", definition: $m, collate: Em, using: em && em[2], type: "alter" };
           }(an, ba, Eo, Gl, Ru, Ku), wr = Ur) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t), wr;
         }()) === $t && (er = function() {
           var wr, Ur, an, ba, Eo;
@@ -170719,7 +171009,7 @@ function requireBigInteger() {
       function Mm() {
         var er, wr;
         return er = Pt, L$() !== $t && no() !== $t ? (Et.charCodeAt(Pt) === 59 ? (wr = ";", Pt++) : (wr = $t, Dn === 0 && As(y2)), wr !== $t ? (ao = er, er = { type: "select" }) : (Pt = er, er = $t)) : (Pt = er, er = $t), er === $t && (er = function() {
-          var Ur, an, ba, Eo, uo, rs, Ks, Gl, Ru, Ku, Lp, bp, o0, I0, V0, cm;
+          var Ur, an, ba, Eo, uo, rs, Ks, Gl, Ru, Ku, Lp, bp, o0, I0, V0, fm;
           return Ur = Pt, (an = no()) !== $t ? ((ba = G0()) === $t && (ba = null), ba !== $t && no() !== $t && L$() !== $t && lC() !== $t ? ((Eo = function() {
             var $m, Em, em, Pm, s1, zm;
             if ($m = Pt, (Em = G$()) !== $t) {
@@ -170758,10 +171048,10 @@ function requireBigInteger() {
               } else Pt = em, em = $t;
               return em;
             }()) !== $t ? (ao = $m, $m = { keyword: "window", type: "window", expr: Em }) : (Pt = $m, $m = $t), $m;
-          }()) === $t && (V0 = null), V0 !== $t && no() !== $t ? ((cm = pw()) === $t && (cm = null), cm !== $t ? (ao = Ur, an = function($m, Em, em, Pm, s1, zm, P1, i$, y$, kv, Wy, Uy, fE, dE) {
+          }()) === $t && (V0 = null), V0 !== $t && no() !== $t ? ((fm = pw()) === $t && (fm = null), fm !== $t ? (ao = Ur, an = function($m, Em, em, Pm, s1, zm, P1, i$, y$, kv, Wy, Uy, fE, dE) {
             if (s1 && P1 || s1 && dE || P1 && dE || s1 && P1 && dE) throw new Error("A given SQL statement can contain at most one INTO clause");
             return zm && zm.forEach((T2) => T2.table && w_.add(`select::${[T2.db, T2.schema].filter(Boolean).join(".") || null}::${T2.table}`)), { with: $m, type: "select", options: Em, distinct: em, columns: Pm, into: { ...s1 || P1 || dE || {}, position: (s1 ? "column" : P1 && "from") || dE && "end" }, from: zm, where: i$, groupby: y$, having: kv, orderby: Wy, limit: Uy, window: fE };
-          }(ba, Eo, uo, rs, Ks, Gl, Ru, Ku, Lp, bp, o0, I0, V0, cm), Ur = an) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t), Ur;
+          }(ba, Eo, uo, rs, Ks, Gl, Ru, Ku, Lp, bp, o0, I0, V0, fm), Ur = an) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t)) : (Pt = Ur, Ur = $t), Ur;
         }()) === $t && (er = Tv()), er;
       }
       function G0() {
@@ -170860,12 +171150,12 @@ function requireBigInteger() {
               if (I0 && I0.type === "select" && (!(bp.parentheses_symbol || bp.parentheses || bp.ast.parentheses || bp.ast.parentheses_symbol) || I0.columns.length !== 1 || I0.columns[0].expr.column === "*")) throw new Error("invalid column clause with select statement");
               if (!o0 || o0.length === 0) return bp;
               const V0 = o0.length;
-              let cm = o0[V0 - 1][3];
+              let fm = o0[V0 - 1][3];
               for (let $m = V0 - 1; $m >= 0; $m--) {
                 const Em = $m === 0 ? bp : o0[$m - 1][3];
-                cm = VE(o0[$m][1], Em, cm);
+                fm = VE(o0[$m][1], Em, fm);
               }
-              return cm;
+              return fm;
             }(uo, rs), Eo = uo) : (Pt = Eo, Eo = $t);
           } else Pt = Eo, Eo = $t;
           return Eo;
@@ -170895,8 +171185,8 @@ function requireBigInteger() {
               for (Eo = [], uo = Pt, (rs = no()) !== $t ? ((Ks = iy()) === $t && (Ks = rA()), Ks !== $t && (Gl = no()) !== $t && (Ru = pv()) !== $t ? uo = rs = [rs, Ks, Gl, Ru] : (Pt = uo, uo = $t)) : (Pt = uo, uo = $t); uo !== $t; ) Eo.push(uo), uo = Pt, (rs = no()) !== $t ? ((Ks = iy()) === $t && (Ks = rA()), Ks !== $t && (Gl = no()) !== $t && (Ru = pv()) !== $t ? uo = rs = [rs, Ks, Gl, Ru] : (Pt = uo, uo = $t)) : (Pt = uo, uo = $t);
               if (Eo !== $t) if ((uo = no()) !== $t) {
                 for (rs = [], Ks = Qv(); Ks !== $t; ) rs.push(Ks), Ks = Qv();
-                rs !== $t && (Ks = no()) !== $t ? ((Gl = Gp()) === $t && (Gl = null), Gl !== $t ? (ao = er, er = wr = function(bp, o0, I0, V0, cm) {
-                  return bp.type === "column_ref" && V0.length && (bp.column.options = { type: "expr_list", value: V0.flat(), separator: " " }), { ...o0, as: cm, type: "cast", expr: bp, tail: I0 && I0[0] && { operator: I0[0][1], expr: I0[0][3] } };
+                rs !== $t && (Ks = no()) !== $t ? ((Gl = Gp()) === $t && (Gl = null), Gl !== $t ? (ao = er, er = wr = function(bp, o0, I0, V0, fm) {
+                  return bp.type === "column_ref" && V0.length && (bp.column.options = { type: "expr_list", value: V0.flat(), separator: " " }), { ...o0, as: fm, type: "cast", expr: bp, tail: I0 && I0[0] && { operator: I0[0][1], expr: I0[0][3] } };
                 }(wr, an, Eo, rs, Gl)) : (Pt = er, er = $t)) : (Pt = er, er = $t);
               } else Pt = er, er = $t;
               else Pt = er, er = $t;
@@ -170984,7 +171274,7 @@ function requireBigInteger() {
           var an, ba, Eo, uo, rs, Ks, Gl, Ru, Ku, Lp, bp;
           if (an = Pt, (ba = zx()) !== $t) if (no() !== $t) if ((Eo = xE()) !== $t) if (no() !== $t) if ((uo = pr()) !== $t) if (no() !== $t) if (Av() !== $t) if (no() !== $t) if ((rs = us()) !== $t) {
             for (Ks = [], Gl = Pt, (Ru = no()) !== $t && (Ku = bv()) !== $t && (Lp = no()) !== $t && (bp = us()) !== $t ? Gl = Ru = [Ru, Ku, Lp, bp] : (Pt = Gl, Gl = $t); Gl !== $t; ) Ks.push(Gl), Gl = Pt, (Ru = no()) !== $t && (Ku = bv()) !== $t && (Lp = no()) !== $t && (bp = us()) !== $t ? Gl = Ru = [Ru, Ku, Lp, bp] : (Pt = Gl, Gl = $t);
-            Ks !== $t && (Gl = no()) !== $t && (Ru = Sv()) !== $t ? (ao = an, o0 = ba, V0 = rs, cm = Ks, (I0 = Eo).join = o0, I0.using = Rw(V0, cm), an = ba = I0) : (Pt = an, an = $t);
+            Ks !== $t && (Gl = no()) !== $t && (Ru = Sv()) !== $t ? (ao = an, o0 = ba, V0 = rs, fm = Ks, (I0 = Eo).join = o0, I0.using = Rw(V0, fm), an = ba = I0) : (Pt = an, an = $t);
           } else Pt = an, an = $t;
           else Pt = an, an = $t;
           else Pt = an, an = $t;
@@ -170994,7 +171284,7 @@ function requireBigInteger() {
           else Pt = an, an = $t;
           else Pt = an, an = $t;
           else Pt = an, an = $t;
-          var o0, I0, V0, cm;
+          var o0, I0, V0, fm;
           return an === $t && (an = Pt, (ba = zx()) !== $t && no() !== $t && (Eo = xE()) !== $t && no() !== $t ? ((uo = Hx()) === $t && (uo = null), uo !== $t ? (ao = an, ba = function($m, Em, em) {
             return Em.join = $m, Em.on = em, Em;
           }(ba, Eo, uo), an = ba) : (Pt = an, an = $t)) : (Pt = an, an = $t), an === $t && (an = Pt, (ba = zx()) === $t && (ba = vs()), ba !== $t && no() !== $t && (Eo = Av()) !== $t && no() !== $t ? ((uo = u1()) === $t && (uo = nE()), uo !== $t && no() !== $t && Sv() !== $t && no() !== $t ? ((rs = Gp()) === $t && (rs = null), rs !== $t && (Ks = no()) !== $t ? ((Gl = Hx()) === $t && (Gl = null), Gl !== $t ? (ao = an, ba = function($m, Em, em, Pm) {
@@ -171326,7 +171616,7 @@ function requireBigInteger() {
           }()) === $t && (Eo = function() {
             var uo, rs, Ks, Gl, Ru, Ku, Lp, bp, o0;
             return uo = Pt, (rs = yu()) !== $t && (Ks = no()) !== $t && (Gl = Ow()) !== $t ? (ao = uo, uo = rs = { op: "IS", right: Gl }) : (Pt = uo, uo = $t), uo === $t && (uo = Pt, (rs = yu()) !== $t && (Ks = no()) !== $t ? (Gl = Pt, (Ru = Tl()) !== $t && (Ku = no()) !== $t && (Lp = Jr()) !== $t && (bp = no()) !== $t && (o0 = by()) !== $t ? Gl = Ru = [Ru, Ku, Lp, bp, o0] : (Pt = Gl, Gl = $t), Gl !== $t ? (ao = uo, rs = function(I0) {
-              const { db: V0, table: cm } = I0.pop(), $m = cm === "*" ? "*" : `"${cm}"`;
+              const { db: V0, table: fm } = I0.pop(), $m = fm === "*" ? "*" : `"${fm}"`;
               return { op: "IS", right: { type: "default", value: "DISTINCT FROM " + (V0 ? `"${V0}".${$m}` : $m) } };
             }(Gl), uo = rs) : (Pt = uo, uo = $t)) : (Pt = uo, uo = $t), uo === $t && (uo = Pt, rs = Pt, (Ks = yu()) !== $t && (Gl = no()) !== $t && (Ru = c0()) !== $t ? rs = Ks = [Ks, Gl, Ru] : (Pt = rs, rs = $t), rs !== $t && (Ks = no()) !== $t && (Gl = Ow()) !== $t ? (ao = uo, rs = /* @__PURE__ */ function(I0) {
               return { op: "IS NOT", right: I0 };
@@ -171334,14 +171624,14 @@ function requireBigInteger() {
           }()) === $t && (Eo = function() {
             var uo, rs, Ks, Gl;
             uo = Pt, (rs = function() {
-              var bp, o0, I0, V0, cm;
-              bp = Pt, o0 = Pt, (I0 = c0()) !== $t && (V0 = no()) !== $t ? ((cm = kp()) === $t && (cm = Qu()), cm !== $t ? o0 = I0 = [I0, V0, cm] : (Pt = o0, o0 = $t)) : (Pt = o0, o0 = $t), o0 !== $t && (ao = bp, o0 = ($m = o0)[0] + " " + $m[2]);
+              var bp, o0, I0, V0, fm;
+              bp = Pt, o0 = Pt, (I0 = c0()) !== $t && (V0 = no()) !== $t ? ((fm = kp()) === $t && (fm = Qu()), fm !== $t ? o0 = I0 = [I0, V0, fm] : (Pt = o0, o0 = $t)) : (Pt = o0, o0 = $t), o0 !== $t && (ao = bp, o0 = ($m = o0)[0] + " " + $m[2]);
               var $m;
-              return (bp = o0) === $t && (bp = kp()) === $t && (bp = Qu()) === $t && (bp = Pt, Et.substr(Pt, 7).toLowerCase() === "similar" ? (o0 = Et.substr(Pt, 7), Pt += 7) : (o0 = $t, Dn === 0 && As(MA)), o0 !== $t && (I0 = no()) !== $t && (V0 = L1()) !== $t ? (ao = bp, bp = o0 = "SIMILAR TO") : (Pt = bp, bp = $t), bp === $t && (bp = Pt, (o0 = c0()) !== $t && (I0 = no()) !== $t ? (Et.substr(Pt, 7).toLowerCase() === "similar" ? (V0 = Et.substr(Pt, 7), Pt += 7) : (V0 = $t, Dn === 0 && As(MA)), V0 !== $t && (cm = no()) !== $t && L1() !== $t ? (ao = bp, bp = o0 = "NOT SIMILAR TO") : (Pt = bp, bp = $t)) : (Pt = bp, bp = $t))), bp;
+              return (bp = o0) === $t && (bp = kp()) === $t && (bp = Qu()) === $t && (bp = Pt, Et.substr(Pt, 7).toLowerCase() === "similar" ? (o0 = Et.substr(Pt, 7), Pt += 7) : (o0 = $t, Dn === 0 && As(MA)), o0 !== $t && (I0 = no()) !== $t && (V0 = L1()) !== $t ? (ao = bp, bp = o0 = "SIMILAR TO") : (Pt = bp, bp = $t), bp === $t && (bp = Pt, (o0 = c0()) !== $t && (I0 = no()) !== $t ? (Et.substr(Pt, 7).toLowerCase() === "similar" ? (V0 = Et.substr(Pt, 7), Pt += 7) : (V0 = $t, Dn === 0 && As(MA)), V0 !== $t && (fm = no()) !== $t && L1() !== $t ? (ao = bp, bp = o0 = "NOT SIMILAR TO") : (Pt = bp, bp = $t)) : (Pt = bp, bp = $t))), bp;
             }()) !== $t && no() !== $t ? ((Ks = co()) === $t && (Ks = X$()), Ks !== $t && no() !== $t ? ((Gl = function() {
               var bp, o0, I0;
-              return bp = Pt, Et.substr(Pt, 6).toLowerCase() === "escape" ? (o0 = Et.substr(Pt, 6), Pt += 6) : (o0 = $t, Dn === 0 && As(Os)), o0 !== $t && no() !== $t && (I0 = gu()) !== $t ? (ao = bp, o0 = /* @__PURE__ */ function(V0, cm) {
-                return { type: "ESCAPE", value: cm };
+              return bp = Pt, Et.substr(Pt, 6).toLowerCase() === "escape" ? (o0 = Et.substr(Pt, 6), Pt += 6) : (o0 = $t, Dn === 0 && As(Os)), o0 !== $t && no() !== $t && (I0 = gu()) !== $t ? (ao = bp, o0 = /* @__PURE__ */ function(V0, fm) {
+                return { type: "ESCAPE", value: fm };
               }(0, I0), bp = o0) : (Pt = bp, bp = $t), bp;
             }()) === $t && (Gl = null), Gl !== $t ? (ao = uo, Ru = rs, Ku = Ks, (Lp = Gl) && (Ku.escape = Lp), uo = rs = { op: Ru, right: Ku }) : (Pt = uo, uo = $t)) : (Pt = uo, uo = $t)) : (Pt = uo, uo = $t);
             var Ru, Ku, Lp;
@@ -171407,24 +171697,24 @@ function requireBigInteger() {
         var er, wr, Ur, an, ba, Eo;
         return (er = function() {
           var uo, rs, Ks, Gl, Ru, Ku, Lp, bp, o0;
-          return uo = Pt, (rs = dn()) !== $t && no() !== $t && (Ks = Av()) !== $t && no() !== $t && (Gl = Uv()) !== $t && no() !== $t && (Ru = to()) !== $t && no() !== $t && (Ku = jE()) !== $t && no() !== $t && (Lp = Sv()) !== $t ? (ao = uo, rs = function(I0, V0, cm) {
-            return { type: "cast", keyword: I0.toLowerCase(), expr: V0, symbol: "as", target: [cm] };
-          }(rs, Gl, Ku), uo = rs) : (Pt = uo, uo = $t), uo === $t && (uo = Pt, (rs = dn()) !== $t && no() !== $t && (Ks = Av()) !== $t && no() !== $t && (Gl = Uv()) !== $t && no() !== $t && (Ru = to()) !== $t && no() !== $t && (Ku = Tn()) !== $t && no() !== $t && (Lp = Av()) !== $t && no() !== $t && (bp = Um()) !== $t && no() !== $t && Sv() !== $t && no() !== $t && (o0 = Sv()) !== $t ? (ao = uo, rs = function(I0, V0, cm) {
-            return { type: "cast", keyword: I0.toLowerCase(), expr: V0, symbol: "as", target: [{ dataType: "DECIMAL(" + cm + ")" }] };
-          }(rs, Gl, bp), uo = rs) : (Pt = uo, uo = $t), uo === $t && (uo = Pt, (rs = dn()) !== $t && no() !== $t && (Ks = Av()) !== $t && no() !== $t && (Gl = Uv()) !== $t && no() !== $t && (Ru = to()) !== $t && no() !== $t && (Ku = Tn()) !== $t && no() !== $t && (Lp = Av()) !== $t && no() !== $t && (bp = Um()) !== $t && no() !== $t && bv() !== $t && no() !== $t && (o0 = Um()) !== $t && no() !== $t && Sv() !== $t && no() !== $t && Sv() !== $t ? (ao = uo, rs = function(I0, V0, cm, $m) {
-            return { type: "cast", keyword: I0.toLowerCase(), expr: V0, symbol: "as", target: [{ dataType: "DECIMAL(" + cm + ", " + $m + ")" }] };
+          return uo = Pt, (rs = dn()) !== $t && no() !== $t && (Ks = Av()) !== $t && no() !== $t && (Gl = Uv()) !== $t && no() !== $t && (Ru = to()) !== $t && no() !== $t && (Ku = jE()) !== $t && no() !== $t && (Lp = Sv()) !== $t ? (ao = uo, rs = function(I0, V0, fm) {
+            return { type: "cast", keyword: I0.toLowerCase(), expr: V0, symbol: "as", target: [fm] };
+          }(rs, Gl, Ku), uo = rs) : (Pt = uo, uo = $t), uo === $t && (uo = Pt, (rs = dn()) !== $t && no() !== $t && (Ks = Av()) !== $t && no() !== $t && (Gl = Uv()) !== $t && no() !== $t && (Ru = to()) !== $t && no() !== $t && (Ku = Tn()) !== $t && no() !== $t && (Lp = Av()) !== $t && no() !== $t && (bp = Um()) !== $t && no() !== $t && Sv() !== $t && no() !== $t && (o0 = Sv()) !== $t ? (ao = uo, rs = function(I0, V0, fm) {
+            return { type: "cast", keyword: I0.toLowerCase(), expr: V0, symbol: "as", target: [{ dataType: "DECIMAL(" + fm + ")" }] };
+          }(rs, Gl, bp), uo = rs) : (Pt = uo, uo = $t), uo === $t && (uo = Pt, (rs = dn()) !== $t && no() !== $t && (Ks = Av()) !== $t && no() !== $t && (Gl = Uv()) !== $t && no() !== $t && (Ru = to()) !== $t && no() !== $t && (Ku = Tn()) !== $t && no() !== $t && (Lp = Av()) !== $t && no() !== $t && (bp = Um()) !== $t && no() !== $t && bv() !== $t && no() !== $t && (o0 = Um()) !== $t && no() !== $t && Sv() !== $t && no() !== $t && Sv() !== $t ? (ao = uo, rs = function(I0, V0, fm, $m) {
+            return { type: "cast", keyword: I0.toLowerCase(), expr: V0, symbol: "as", target: [{ dataType: "DECIMAL(" + fm + ", " + $m + ")" }] };
           }(rs, Gl, bp, o0), uo = rs) : (Pt = uo, uo = $t), uo === $t && (uo = Pt, (rs = dn()) !== $t && no() !== $t && (Ks = Av()) !== $t && no() !== $t && (Gl = Uv()) !== $t && no() !== $t && (Ru = to()) !== $t && no() !== $t && (Ku = function() {
             var I0;
             return (I0 = function() {
-              var V0, cm, $m, Em;
-              return V0 = Pt, Et.substr(Pt, 6).toLowerCase() === "signed" ? (cm = Et.substr(Pt, 6), Pt += 6) : (cm = $t, Dn === 0 && As($y)), cm !== $t ? ($m = Pt, Dn++, Em = U0(), Dn--, Em === $t ? $m = void 0 : (Pt = $m, $m = $t), $m !== $t ? (ao = V0, V0 = cm = "SIGNED") : (Pt = V0, V0 = $t)) : (Pt = V0, V0 = $t), V0;
+              var V0, fm, $m, Em;
+              return V0 = Pt, Et.substr(Pt, 6).toLowerCase() === "signed" ? (fm = Et.substr(Pt, 6), Pt += 6) : (fm = $t, Dn === 0 && As($y)), fm !== $t ? ($m = Pt, Dn++, Em = U0(), Dn--, Em === $t ? $m = void 0 : (Pt = $m, $m = $t), $m !== $t ? (ao = V0, V0 = fm = "SIGNED") : (Pt = V0, V0 = $t)) : (Pt = V0, V0 = $t), V0;
             }()) === $t && (I0 = lo()), I0;
-          }()) !== $t && no() !== $t ? ((Lp = zo()) === $t && (Lp = null), Lp !== $t && no() !== $t && (bp = Sv()) !== $t ? (ao = uo, rs = function(I0, V0, cm, $m) {
-            return { type: "cast", keyword: I0.toLowerCase(), expr: V0, symbol: "as", target: [{ dataType: cm + ($m ? " " + $m : "") }] };
+          }()) !== $t && no() !== $t ? ((Lp = zo()) === $t && (Lp = null), Lp !== $t && no() !== $t && (bp = Sv()) !== $t ? (ao = uo, rs = function(I0, V0, fm, $m) {
+            return { type: "cast", keyword: I0.toLowerCase(), expr: V0, symbol: "as", target: [{ dataType: fm + ($m ? " " + $m : "") }] };
           }(rs, Gl, Ku, Lp), uo = rs) : (Pt = uo, uo = $t)) : (Pt = uo, uo = $t), uo === $t && (uo = Pt, (rs = Av()) !== $t && no() !== $t ? ((Ks = Ly()) === $t && (Ks = Xv()) === $t && (Ks = nv()), Ks !== $t && no() !== $t && (Gl = Sv()) !== $t && no() !== $t ? ((Ru = yn()) === $t && (Ru = null), Ru !== $t ? (ao = uo, rs = function(I0, V0) {
             return I0.parentheses = !0, V0 ? { ...V0, type: "cast", keyword: "cast", expr: I0 } : I0;
           }(Ks, Ru), uo = rs) : (Pt = uo, uo = $t)) : (Pt = uo, uo = $t)) : (Pt = uo, uo = $t), uo === $t && (uo = Pt, (rs = i2()) === $t && (rs = function() {
-            var I0, V0, cm;
+            var I0, V0, fm;
             I0 = Pt, (V0 = function() {
               var em, Pm, s1, zm, P1, i$, y$, kv, Wy;
               return em = Pt, (Pm = function() {
@@ -171477,44 +171767,44 @@ function requireBigInteger() {
               }()), zm !== $t && (P1 = no()) !== $t && Av() !== $t && no() !== $t && (i$ = Iw()) !== $t && no() !== $t && Sv() !== $t ? (ao = em, Pm = function(y$, kv, Wy) {
                 return { type: "aggr_func", name: y$ ? `${y$[0]}.${kv}` : kv, args: Wy };
               }(Pm, zm, i$), em = Pm) : (Pt = em, em = $t)) : (Pt = em, em = $t), em;
-            }()), V0 !== $t && no() !== $t ? ((cm = function() {
+            }()), V0 !== $t && no() !== $t ? ((fm = function() {
               var em, Pm, s1;
               return em = Pt, Et.substr(Pt, 6).toLowerCase() === "filter" ? (Pm = Et.substr(Pt, 6), Pt += 6) : (Pm = $t, Dn === 0 && As(nw)), Pm !== $t && no() !== $t && Av() !== $t && no() !== $t && (s1 = $v()) !== $t && no() !== $t && Sv() !== $t ? (ao = em, em = Pm = { keyword: "filter", parentheses: !0, where: s1 }) : (Pt = em, em = $t), em;
-            }()) === $t && (cm = null), cm !== $t ? (ao = I0, $m = V0, (Em = cm) && ($m.filter = Em), I0 = V0 = $m) : (Pt = I0, I0 = $t)) : (Pt = I0, I0 = $t);
+            }()) === $t && (fm = null), fm !== $t ? (ao = I0, $m = V0, (Em = fm) && ($m.filter = Em), I0 = V0 = $m) : (Pt = I0, I0 = $t)) : (Pt = I0, I0 = $t);
             var $m, Em;
             return I0;
           }()) === $t && (rs = function() {
             var I0;
             return (I0 = function() {
-              var V0, cm, $m;
-              return V0 = Pt, (cm = function() {
+              var V0, fm, $m;
+              return V0 = Pt, (fm = function() {
                 var Em;
                 return Et.substr(Pt, 10).toLowerCase() === "row_number" ? (Em = Et.substr(Pt, 10), Pt += 10) : (Em = $t, Dn === 0 && As(Y_)), Em === $t && (Et.substr(Pt, 10).toLowerCase() === "dense_rank" ? (Em = Et.substr(Pt, 10), Pt += 10) : (Em = $t, Dn === 0 && As(eE)), Em === $t && (Et.substr(Pt, 4).toLowerCase() === "rank" ? (Em = Et.substr(Pt, 4), Pt += 4) : (Em = $t, Dn === 0 && As($w)))), Em;
-              }()) !== $t && no() !== $t && Av() !== $t && no() !== $t && Sv() !== $t && no() !== $t && ($m = b2()) !== $t ? (ao = V0, cm = /* @__PURE__ */ function(Em, em) {
+              }()) !== $t && no() !== $t && Av() !== $t && no() !== $t && Sv() !== $t && no() !== $t && ($m = b2()) !== $t ? (ao = V0, fm = /* @__PURE__ */ function(Em, em) {
                 return { type: "window_func", name: Em, over: em };
-              }(cm, $m), V0 = cm) : (Pt = V0, V0 = $t), V0;
+              }(fm, $m), V0 = fm) : (Pt = V0, V0 = $t), V0;
             }()) === $t && (I0 = function() {
-              var V0, cm, $m, Em, em;
-              return V0 = Pt, (cm = function() {
+              var V0, fm, $m, Em, em;
+              return V0 = Pt, (fm = function() {
                 var Pm;
                 return Et.substr(Pt, 3).toLowerCase() === "lag" ? (Pm = Et.substr(Pt, 3), Pt += 3) : (Pm = $t, Dn === 0 && As(Qp)), Pm === $t && (Et.substr(Pt, 4).toLowerCase() === "lead" ? (Pm = Et.substr(Pt, 4), Pt += 4) : (Pm = $t, Dn === 0 && As(Qw)), Pm === $t && (Et.substr(Pt, 9).toLowerCase() === "nth_value" ? (Pm = Et.substr(Pt, 9), Pt += 9) : (Pm = $t, Dn === 0 && As(Uw)))), Pm;
-              }()) !== $t && no() !== $t && Av() !== $t && no() !== $t && ($m = j_()) !== $t && no() !== $t && Sv() !== $t && no() !== $t ? ((Em = iE()) === $t && (Em = null), Em !== $t && no() !== $t && (em = b2()) !== $t ? (ao = V0, cm = /* @__PURE__ */ function(Pm, s1, zm, P1) {
+              }()) !== $t && no() !== $t && Av() !== $t && no() !== $t && ($m = j_()) !== $t && no() !== $t && Sv() !== $t && no() !== $t ? ((Em = iE()) === $t && (Em = null), Em !== $t && no() !== $t && (em = b2()) !== $t ? (ao = V0, fm = /* @__PURE__ */ function(Pm, s1, zm, P1) {
                 return { type: "window_func", name: Pm, args: s1, over: P1, consider_nulls: zm };
-              }(cm, $m, Em, em), V0 = cm) : (Pt = V0, V0 = $t)) : (Pt = V0, V0 = $t), V0;
+              }(fm, $m, Em, em), V0 = fm) : (Pt = V0, V0 = $t)) : (Pt = V0, V0 = $t), V0;
             }()) === $t && (I0 = function() {
-              var V0, cm, $m, Em, em;
-              return V0 = Pt, (cm = function() {
+              var V0, fm, $m, Em, em;
+              return V0 = Pt, (fm = function() {
                 var Pm;
                 return Et.substr(Pt, 11).toLowerCase() === "first_value" ? (Pm = Et.substr(Pt, 11), Pt += 11) : (Pm = $t, Dn === 0 && As(Ml)), Pm === $t && (Et.substr(Pt, 10).toLowerCase() === "last_value" ? (Pm = Et.substr(Pt, 10), Pt += 10) : (Pm = $t, Dn === 0 && As(k0))), Pm;
-              }()) !== $t && no() !== $t && Av() !== $t && no() !== $t && ($m = Uv()) !== $t && no() !== $t && Sv() !== $t && no() !== $t ? ((Em = iE()) === $t && (Em = null), Em !== $t && no() !== $t && (em = b2()) !== $t ? (ao = V0, cm = /* @__PURE__ */ function(Pm, s1, zm, P1) {
+              }()) !== $t && no() !== $t && Av() !== $t && no() !== $t && ($m = Uv()) !== $t && no() !== $t && Sv() !== $t && no() !== $t ? ((Em = iE()) === $t && (Em = null), Em !== $t && no() !== $t && (em = b2()) !== $t ? (ao = V0, fm = /* @__PURE__ */ function(Pm, s1, zm, P1) {
                 return { type: "window_func", name: Pm, args: { type: "expr_list", value: [s1] }, over: P1, consider_nulls: zm };
-              }(cm, $m, Em, em), V0 = cm) : (Pt = V0, V0 = $t)) : (Pt = V0, V0 = $t), V0;
+              }(fm, $m, Em, em), V0 = fm) : (Pt = V0, V0 = $t)) : (Pt = V0, V0 = $t), V0;
             }()), I0;
           }()) === $t && (rs = o2()) === $t && (rs = qo()) === $t && (rs = co()) === $t && (rs = function() {
-            var I0, V0, cm, $m, Em, em, Pm, s1;
-            return I0 = Pt, Gt() !== $t && no() !== $t && (V0 = yE()) !== $t && no() !== $t ? ((cm = g2()) === $t && (cm = null), cm !== $t && no() !== $t && ($m = Cr()) !== $t && no() !== $t ? ((Em = Gt()) === $t && (Em = null), Em !== $t ? (ao = I0, Pm = V0, (s1 = cm) && Pm.push(s1), I0 = { type: "case", expr: null, args: Pm }) : (Pt = I0, I0 = $t)) : (Pt = I0, I0 = $t)) : (Pt = I0, I0 = $t), I0 === $t && (I0 = Pt, Gt() !== $t && no() !== $t && (V0 = Uv()) !== $t && no() !== $t && (cm = yE()) !== $t && no() !== $t ? (($m = g2()) === $t && ($m = null), $m !== $t && no() !== $t && (Em = Cr()) !== $t && no() !== $t ? ((em = Gt()) === $t && (em = null), em !== $t ? (ao = I0, I0 = function(zm, P1, i$) {
+            var I0, V0, fm, $m, Em, em, Pm, s1;
+            return I0 = Pt, Gt() !== $t && no() !== $t && (V0 = yE()) !== $t && no() !== $t ? ((fm = g2()) === $t && (fm = null), fm !== $t && no() !== $t && ($m = Cr()) !== $t && no() !== $t ? ((Em = Gt()) === $t && (Em = null), Em !== $t ? (ao = I0, Pm = V0, (s1 = fm) && Pm.push(s1), I0 = { type: "case", expr: null, args: Pm }) : (Pt = I0, I0 = $t)) : (Pt = I0, I0 = $t)) : (Pt = I0, I0 = $t), I0 === $t && (I0 = Pt, Gt() !== $t && no() !== $t && (V0 = Uv()) !== $t && no() !== $t && (fm = yE()) !== $t && no() !== $t ? (($m = g2()) === $t && ($m = null), $m !== $t && no() !== $t && (Em = Cr()) !== $t && no() !== $t ? ((em = Gt()) === $t && (em = null), em !== $t ? (ao = I0, I0 = function(zm, P1, i$) {
               return i$ && P1.push(i$), { type: "case", expr: zm, args: P1 };
-            }(V0, cm, $m)) : (Pt = I0, I0 = $t)) : (Pt = I0, I0 = $t)) : (Pt = I0, I0 = $t)), I0;
+            }(V0, fm, $m)) : (Pt = I0, I0 = $t)) : (Pt = I0, I0 = $t)) : (Pt = I0, I0 = $t)), I0;
           }()) === $t && (rs = Xv()) === $t && (rs = nv()), rs !== $t && no() !== $t ? ((Ks = yn()) === $t && (Ks = null), Ks !== $t ? (ao = uo, rs = function(I0, V0) {
             return V0 ? { ...V0, type: "cast", keyword: "cast", expr: I0 } : I0;
           }(rs, Ks), uo = rs) : (Pt = uo, uo = $t)) : (Pt = uo, uo = $t)))))), uo;
@@ -171616,11 +171906,11 @@ function requireBigInteger() {
       }
       function s0() {
         var er;
-        return (er = lm()) === $t && (er = dm()) === $t && (er = um()), er;
+        return (er = lm()) === $t && (er = hm()) === $t && (er = um()), er;
       }
       function E0() {
         var er, wr;
-        return er = Pt, (wr = lm()) === $t && (wr = dm()) === $t && (wr = um()), wr !== $t && (ao = er, wr = wr.value), er = wr;
+        return er = Pt, (wr = lm()) === $t && (wr = hm()) === $t && (wr = um()), wr !== $t && (ao = er, wr = wr.value), er = wr;
       }
       function lm() {
         var er, wr, Ur, an;
@@ -171631,7 +171921,7 @@ function requireBigInteger() {
         } else Pt = er, er = $t;
         return er;
       }
-      function dm() {
+      function hm() {
         var er, wr, Ur, an;
         if (er = Pt, Et.charCodeAt(Pt) === 39 ? (wr = "'", Pt++) : (wr = $t, Dn === 0 && As(Oo)), wr !== $t) {
           if (Ur = [], H0.test(Et.charAt(Pt)) ? (an = Et.charAt(Pt), Pt++) : (an = $t, Dn === 0 && As(bx)), an !== $t) for (; an !== $t; ) Ur.push(an), H0.test(Et.charAt(Pt)) ? (an = Et.charAt(Pt), Pt++) : (an = $t, Dn === 0 && As(bx));
@@ -171719,10 +172009,10 @@ function requireBigInteger() {
           for (Eo = [], uo = Pt, (rs = no()) !== $t ? ((Ks = ur()) === $t && (Ks = kr()), Ks !== $t && (Gl = no()) !== $t && (Ru = Uv()) !== $t ? uo = rs = [rs, Ks, Gl, Ru] : (Pt = uo, uo = $t)) : (Pt = uo, uo = $t); uo !== $t; ) Eo.push(uo), uo = Pt, (rs = no()) !== $t ? ((Ks = ur()) === $t && (Ks = kr()), Ks !== $t && (Gl = no()) !== $t && (Ru = Uv()) !== $t ? uo = rs = [rs, Ks, Gl, Ru] : (Pt = uo, uo = $t)) : (Pt = uo, uo = $t);
           Eo !== $t && (uo = no()) !== $t ? ((rs = Ky()) === $t && (rs = null), rs !== $t && (Ks = no()) !== $t ? ((Gl = Gx()) === $t && (Gl = null), Gl !== $t ? (ao = er, er = wr = function(Ku, Lp, bp, o0, I0) {
             const V0 = bp.length;
-            let cm = Lp;
-            cm.parentheses = !0;
-            for (let $m = 0; $m < V0; ++$m) cm = VE(bp[$m][1], cm, bp[$m][3]);
-            return { distinct: Ku, expr: cm, orderby: I0, separator: o0 };
+            let fm = Lp;
+            fm.parentheses = !0;
+            for (let $m = 0; $m < V0; ++$m) fm = VE(bp[$m][1], fm, bp[$m][3]);
+            return { distinct: Ku, expr: fm, orderby: I0, separator: o0 };
           }(wr, an, Eo, rs, Gl)) : (Pt = er, er = $t)) : (Pt = er, er = $t)) : (Pt = er, er = $t);
         } else Pt = er, er = $t;
         else Pt = er, er = $t;
@@ -171792,8 +172082,8 @@ function requireBigInteger() {
       function o2() {
         var er, wr, Ur, an, ba, Eo, uo;
         return (er = fA()) === $t && (er = fv()) === $t && (er = ov()) === $t && (er = function() {
-          var rs, Ks, Gl, Ru, Ku, Lp, bp, o0, I0, V0, cm;
-          return rs = Pt, Et.substr(Pt, 9).toLowerCase() === "substring" ? (Ks = Et.substr(Pt, 9), Pt += 9) : (Ks = $t, Dn === 0 && As(vw)), Ks !== $t && no() !== $t && Av() !== $t && no() !== $t && (Gl = s0()) !== $t && no() !== $t && (Ru = bv()) !== $t && (Ku = no()) !== $t && (Lp = _0()) !== $t && (bp = no()) !== $t && (o0 = bv()) !== $t && (I0 = no()) !== $t && (V0 = _0()) !== $t && (cm = no()) !== $t && Sv() !== $t ? (ao = rs, rs = Ks = { type: "function", name: { name: [{ type: "origin", value: "substring" }] }, args: { type: "expr_list", value: [Gl, Lp, V0] } }) : (Pt = rs, rs = $t), rs === $t && (rs = Pt, Et.substr(Pt, 9).toLowerCase() === "substring" ? (Ks = Et.substr(Pt, 9), Pt += 9) : (Ks = $t, Dn === 0 && As(vw)), Ks !== $t && no() !== $t && Av() !== $t && no() !== $t && (Gl = s0()) !== $t && no() !== $t && (Ru = Jr()) !== $t && (Ku = no()) !== $t && (Lp = s0()) !== $t && (bp = no()) !== $t ? (o0 = Pt, Et.substr(Pt, 3).toLowerCase() === "for" ? (I0 = Et.substr(Pt, 3), Pt += 3) : (I0 = $t, Dn === 0 && As(S0)), I0 !== $t && (V0 = no()) !== $t && (cm = s0()) !== $t ? o0 = I0 = [I0, V0, cm] : (Pt = o0, o0 = $t), o0 === $t && (o0 = null), o0 !== $t && (I0 = no()) !== $t && (V0 = Sv()) !== $t ? (ao = rs, rs = Ks = function($m, Em, em) {
+          var rs, Ks, Gl, Ru, Ku, Lp, bp, o0, I0, V0, fm;
+          return rs = Pt, Et.substr(Pt, 9).toLowerCase() === "substring" ? (Ks = Et.substr(Pt, 9), Pt += 9) : (Ks = $t, Dn === 0 && As(vw)), Ks !== $t && no() !== $t && Av() !== $t && no() !== $t && (Gl = s0()) !== $t && no() !== $t && (Ru = bv()) !== $t && (Ku = no()) !== $t && (Lp = _0()) !== $t && (bp = no()) !== $t && (o0 = bv()) !== $t && (I0 = no()) !== $t && (V0 = _0()) !== $t && (fm = no()) !== $t && Sv() !== $t ? (ao = rs, rs = Ks = { type: "function", name: { name: [{ type: "origin", value: "substring" }] }, args: { type: "expr_list", value: [Gl, Lp, V0] } }) : (Pt = rs, rs = $t), rs === $t && (rs = Pt, Et.substr(Pt, 9).toLowerCase() === "substring" ? (Ks = Et.substr(Pt, 9), Pt += 9) : (Ks = $t, Dn === 0 && As(vw)), Ks !== $t && no() !== $t && Av() !== $t && no() !== $t && (Gl = s0()) !== $t && no() !== $t && (Ru = Jr()) !== $t && (Ku = no()) !== $t && (Lp = s0()) !== $t && (bp = no()) !== $t ? (o0 = Pt, Et.substr(Pt, 3).toLowerCase() === "for" ? (I0 = Et.substr(Pt, 3), Pt += 3) : (I0 = $t, Dn === 0 && As(S0)), I0 !== $t && (V0 = no()) !== $t && (fm = s0()) !== $t ? o0 = I0 = [I0, V0, fm] : (Pt = o0, o0 = $t), o0 === $t && (o0 = null), o0 !== $t && (I0 = no()) !== $t && (V0 = Sv()) !== $t ? (ao = rs, rs = Ks = function($m, Em, em) {
             const Pm = [{ type: "origin", value: "from" }], s1 = { type: "expr_list", value: [$m, Em] };
             return em && (Pm.push({ type: "origin", value: "for" }), s1.value.push(em[2])), { type: "function", name: { name: [{ type: "origin", value: "substring" }] }, args: s1, separator: Pm };
           }(Gl, Lp, o0)) : (Pt = rs, rs = $t)) : (Pt = rs, rs = $t), rs === $t && (rs = Pt, Et.substr(Pt, 9).toLowerCase() === "substring" ? (Ks = Et.substr(Pt, 9), Pt += 9) : (Ks = $t, Dn === 0 && As(vw)), Ks !== $t && no() !== $t && Av() !== $t && no() !== $t && (Gl = s0()) !== $t && no() !== $t ? (Ru = Pt, (Ku = Jr()) !== $t && (Lp = no()) !== $t && (bp = _0()) !== $t ? Ru = Ku = [Ku, Lp, bp] : (Pt = Ru, Ru = $t), Ru === $t && (Ru = null), Ru !== $t && (Ku = no()) !== $t ? (Lp = Pt, Et.substr(Pt, 3).toLowerCase() === "for" ? (bp = Et.substr(Pt, 3), Pt += 3) : (bp = $t, Dn === 0 && As(S0)), bp !== $t && (o0 = no()) !== $t && (I0 = _0()) !== $t ? Lp = bp = [bp, o0, I0] : (Pt = Lp, Lp = $t), Lp === $t && (Lp = null), Lp !== $t && (bp = no()) !== $t && (o0 = Sv()) !== $t ? (ao = rs, rs = Ks = function($m, Em, em) {
@@ -171817,8 +172107,8 @@ function requireBigInteger() {
           var rs, Ks, Gl, Ru, Ku;
           rs = Pt, (Ks = un()) !== $t && no() !== $t && Av() !== $t && no() !== $t && (Gl = yr()) !== $t && no() !== $t && Jr() !== $t && no() !== $t ? ((Ru = rp()) === $t && (Ru = Mp()) === $t && (Ru = ku()) === $t && (Ru = Es()), Ru === $t && (Ru = null), Ru !== $t && no() !== $t && (Ku = Uv()) !== $t && no() !== $t && Sv() !== $t ? (ao = rs, Lp = Gl, bp = Ru, o0 = Ku, Ks = { type: Ks.toLowerCase(), args: { field: Lp, cast_type: bp, source: o0 }, ...LE() }, rs = Ks) : (Pt = rs, rs = $t)) : (Pt = rs, rs = $t);
           var Lp, bp, o0;
-          return rs === $t && (rs = Pt, (Ks = un()) !== $t && no() !== $t && Av() !== $t && no() !== $t && (Gl = yr()) !== $t && no() !== $t && Jr() !== $t && no() !== $t && (Ru = Uv()) !== $t && no() !== $t && (Ku = Sv()) !== $t ? (ao = rs, Ks = function(I0, V0, cm) {
-            return { type: I0.toLowerCase(), args: { field: V0, source: cm }, ...LE() };
+          return rs === $t && (rs = Pt, (Ks = un()) !== $t && no() !== $t && Av() !== $t && no() !== $t && (Gl = yr()) !== $t && no() !== $t && Jr() !== $t && no() !== $t && (Ru = Uv()) !== $t && no() !== $t && (Ku = Sv()) !== $t ? (ao = rs, Ks = function(I0, V0, fm) {
+            return { type: I0.toLowerCase(), args: { field: V0, source: fm }, ...LE() };
           }(Ks, Gl, Ru), rs = Ks) : (Pt = rs, rs = $t)), rs;
         }()) === $t && (er = Pt, (wr = Gr()) !== $t && no() !== $t ? ((Ur = Qv()) === $t && (Ur = null), Ur !== $t && no() !== $t ? ((an = Lw()) === $t && (an = null), an !== $t ? (ao = er, er = wr = function(rs, Ks, Gl) {
           const Ru = {};
@@ -172679,15 +172969,15 @@ function requireBigInteger() {
             }(Ur, an), wr = Ur) : (Pt = wr, wr = $t);
           } else Pt = wr, wr = $t;
           return wr === $t && (wr = function() {
-            var Ru, Ku, Lp, bp, o0, I0, V0, cm, $m;
+            var Ru, Ku, Lp, bp, o0, I0, V0, fm, $m;
             if (Ru = Pt, (Ku = ku()) === $t && (Ku = rp()) === $t && (Ku = function() {
               var Em, em, Pm, s1;
               return Em = Pt, Et.substr(Pt, 11).toLowerCase() === "timestamptz" ? (em = Et.substr(Pt, 11), Pt += 11) : (em = $t, Dn === 0 && As(Qn)), em !== $t ? (Pm = Pt, Dn++, s1 = U0(), Dn--, s1 === $t ? Pm = void 0 : (Pt = Pm, Pm = $t), Pm !== $t ? (ao = Em, Em = em = "TIMESTAMPTZ") : (Pt = Em, Em = $t)) : (Pt = Em, Em = $t), Em;
             }()), Ku !== $t) {
               if (Lp = Pt, (bp = no()) !== $t) if ((o0 = Av()) !== $t) if ((I0 = no()) !== $t) {
-                if (V0 = [], JA.test(Et.charAt(Pt)) ? (cm = Et.charAt(Pt), Pt++) : (cm = $t, Dn === 0 && As(Om)), cm !== $t) for (; cm !== $t; ) V0.push(cm), JA.test(Et.charAt(Pt)) ? (cm = Et.charAt(Pt), Pt++) : (cm = $t, Dn === 0 && As(Om));
+                if (V0 = [], JA.test(Et.charAt(Pt)) ? (fm = Et.charAt(Pt), Pt++) : (fm = $t, Dn === 0 && As(Om)), fm !== $t) for (; fm !== $t; ) V0.push(fm), JA.test(Et.charAt(Pt)) ? (fm = Et.charAt(Pt), Pt++) : (fm = $t, Dn === 0 && As(Om));
                 else V0 = $t;
-                V0 !== $t && (cm = no()) !== $t && ($m = Sv()) !== $t ? Lp = bp = [bp, o0, I0, V0, cm, $m] : (Pt = Lp, Lp = $t);
+                V0 !== $t && (fm = no()) !== $t && ($m = Sv()) !== $t ? Lp = bp = [bp, o0, I0, V0, fm, $m] : (Pt = Lp, Lp = $t);
               } else Pt = Lp, Lp = $t;
               else Pt = Lp, Lp = $t;
               else Pt = Lp, Lp = $t;
@@ -172716,10 +173006,10 @@ function requireBigInteger() {
             var Ku, Lp, bp, o0;
             return Ku = Pt, Et.substr(Pt, 8).toLowerCase() === "geometry" ? (Lp = Et.substr(Pt, 8), Pt += 8) : (Lp = $t, Dn === 0 && As(zl)), Lp !== $t ? (bp = Pt, Dn++, o0 = U0(), Dn--, o0 === $t ? bp = void 0 : (Pt = bp, bp = $t), bp !== $t ? (ao = Ku, Ku = Lp = "GEOMETRY") : (Pt = Ku, Ku = $t)) : (Pt = Ku, Ku = $t), Ku;
           }()) !== $t ? (an = Pt, (ba = no()) !== $t && (Eo = Av()) !== $t && (uo = no()) !== $t && (rs = function() {
-            var Ku, Lp, bp, o0, I0, V0, cm;
+            var Ku, Lp, bp, o0, I0, V0, fm;
             if (Ku = Pt, Et.substr(Pt, 5).toLowerCase() === "point" ? (Lp = Et.substr(Pt, 5), Pt += 5) : (Lp = $t, Dn === 0 && As(w$)), Lp === $t && (Et.substr(Pt, 10).toLowerCase() === "linestring" ? (Lp = Et.substr(Pt, 10), Pt += 10) : (Lp = $t, Dn === 0 && As(T$)), Lp === $t && (Et.substr(Pt, 7).toLowerCase() === "polygon" ? (Lp = Et.substr(Pt, 7), Pt += 7) : (Lp = $t, Dn === 0 && As(F$)), Lp === $t && (Et.substr(Pt, 10).toLowerCase() === "multipoint" ? (Lp = Et.substr(Pt, 10), Pt += 10) : (Lp = $t, Dn === 0 && As(Wr)), Lp === $t && (Et.substr(Pt, 15).toLowerCase() === "multilinestring" ? (Lp = Et.substr(Pt, 15), Pt += 15) : (Lp = $t, Dn === 0 && As(vn)), Lp === $t && (Et.substr(Pt, 12).toLowerCase() === "multipolygon" ? (Lp = Et.substr(Pt, 12), Pt += 12) : (Lp = $t, Dn === 0 && As(Hn)), Lp === $t && (Et.substr(Pt, 18).toLowerCase() === "geometrycollection" ? (Lp = Et.substr(Pt, 18), Pt += 18) : (Lp = $t, Dn === 0 && As(eo)))))))), Lp !== $t) if (no() !== $t) {
               if (bp = Pt, (o0 = bv()) !== $t) if ((I0 = no()) !== $t) {
-                if (V0 = [], JA.test(Et.charAt(Pt)) ? (cm = Et.charAt(Pt), Pt++) : (cm = $t, Dn === 0 && As(Om)), cm !== $t) for (; cm !== $t; ) V0.push(cm), JA.test(Et.charAt(Pt)) ? (cm = Et.charAt(Pt), Pt++) : (cm = $t, Dn === 0 && As(Om));
+                if (V0 = [], JA.test(Et.charAt(Pt)) ? (fm = Et.charAt(Pt), Pt++) : (fm = $t, Dn === 0 && As(Om)), fm !== $t) for (; fm !== $t; ) V0.push(fm), JA.test(Et.charAt(Pt)) ? (fm = Et.charAt(Pt), Pt++) : (fm = $t, Dn === 0 && As(Om));
                 else V0 = $t;
                 V0 !== $t ? bp = o0 = [o0, I0, V0] : (Pt = bp, bp = $t);
               } else Pt = bp, bp = $t;
@@ -172924,12 +173214,12 @@ function requireBigInteger() {
           if (er = Pt, (wr = wn()) === $t && (wr = Tn()) === $t && (wr = Yo()) === $t && (wr = zo()) === $t && (wr = Ys()) === $t && (wr = Xt()) === $t && (wr = vr()) === $t && (wr = Rr()) === $t && (wr = Rn()) === $t && (wr = Pt, (Ur = Kn()) !== $t && (an = no()) !== $t ? (Et.substr(Pt, 9).toLowerCase() === "precision" ? (ba = Et.substr(Pt, 9), Pt += 9) : (ba = $t, Dn === 0 && As(I1)), ba !== $t ? wr = Ur = [Ur, an, ba] : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t), wr === $t && (wr = Kn()) === $t && (wr = Hl()) === $t && (wr = Au()) === $t && (wr = xa()) === $t && (wr = Lo())), wr !== $t) {
             if (Ur = [], JA.test(Et.charAt(Pt)) ? (an = Et.charAt(Pt), Pt++) : (an = $t, Dn === 0 && As(Om)), an !== $t) for (; an !== $t; ) Ur.push(an), JA.test(Et.charAt(Pt)) ? (an = Et.charAt(Pt), Pt++) : (an = $t, Dn === 0 && As(Om));
             else Ur = $t;
-            Ur !== $t && (an = no()) !== $t ? ((ba = NC()) === $t && (ba = null), ba !== $t ? (ao = er, er = wr = function(V0, cm, $m) {
-              return { dataType: Array.isArray(V0) ? `${V0[0].toUpperCase()} ${V0[2].toUpperCase()}` : V0, length: parseInt(cm.join(""), 10), suffix: $m };
+            Ur !== $t && (an = no()) !== $t ? ((ba = NC()) === $t && (ba = null), ba !== $t ? (ao = er, er = wr = function(V0, fm, $m) {
+              return { dataType: Array.isArray(V0) ? `${V0[0].toUpperCase()} ${V0[2].toUpperCase()}` : V0, length: parseInt(fm.join(""), 10), suffix: $m };
             }(wr, Ur, ba)) : (Pt = er, er = $t)) : (Pt = er, er = $t);
           } else Pt = er, er = $t;
-          er === $t && (er = Pt, (wr = wn()) === $t && (wr = Tn()) === $t && (wr = Yo()) === $t && (wr = zo()) === $t && (wr = Ys()) === $t && (wr = Xt()) === $t && (wr = vr()) === $t && (wr = Rr()) === $t && (wr = Rn()) === $t && (wr = Pt, (Ur = Kn()) !== $t && (an = no()) !== $t ? (Et.substr(Pt, 9).toLowerCase() === "precision" ? (ba = Et.substr(Pt, 9), Pt += 9) : (ba = $t, Dn === 0 && As(I1)), ba !== $t ? wr = Ur = [Ur, an, ba] : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t), wr === $t && (wr = Kn()) === $t && (wr = Hl()) === $t && (wr = Au()) === $t && (wr = xa()) === $t && (wr = Lo())), wr !== $t && (Ur = no()) !== $t ? ((an = NC()) === $t && (an = null), an !== $t && (ba = no()) !== $t ? (ao = er, er = wr = function(V0, cm) {
-            return { dataType: Array.isArray(V0) ? `${V0[0].toUpperCase()} ${V0[2].toUpperCase()}` : V0, suffix: cm };
+          er === $t && (er = Pt, (wr = wn()) === $t && (wr = Tn()) === $t && (wr = Yo()) === $t && (wr = zo()) === $t && (wr = Ys()) === $t && (wr = Xt()) === $t && (wr = vr()) === $t && (wr = Rr()) === $t && (wr = Rn()) === $t && (wr = Pt, (Ur = Kn()) !== $t && (an = no()) !== $t ? (Et.substr(Pt, 9).toLowerCase() === "precision" ? (ba = Et.substr(Pt, 9), Pt += 9) : (ba = $t, Dn === 0 && As(I1)), ba !== $t ? wr = Ur = [Ur, an, ba] : (Pt = wr, wr = $t)) : (Pt = wr, wr = $t), wr === $t && (wr = Kn()) === $t && (wr = Hl()) === $t && (wr = Au()) === $t && (wr = xa()) === $t && (wr = Lo())), wr !== $t && (Ur = no()) !== $t ? ((an = NC()) === $t && (an = null), an !== $t && (ba = no()) !== $t ? (ao = er, er = wr = function(V0, fm) {
+            return { dataType: Array.isArray(V0) ? `${V0[0].toUpperCase()} ${V0[2].toUpperCase()}` : V0, suffix: fm };
           }(wr, an)) : (Pt = er, er = $t)) : (Pt = er, er = $t));
         }
         return er;
@@ -173074,7 +173364,7 @@ function requireBigInteger() {
         return { type: "origin", value: Array.isArray(Xt) ? Xt[0] : Xt };
       }, oy = Pr("CONNECT", !0), qA = Pr("PRIVILEGES", !0), RA = function(Xt) {
         return { type: "origin", value: Xt };
-      }, iA = Pr("SEQUENCE", !0), ky = Pr("DATABASE", !0), Oo = Pr("DOMAIN", !1), Cl = Pr("FUNCTION", !1), su = Pr("ROUTINE", !0), Yl = Pr("LANGUAGE", !0), dp = Pr("LARGE", !0), Zu = Pr("SCHEMA", !1), wl = Pr("FUNCTIONS", !0), lu = Pr("PROCEDURES", !0), Uu = Pr("ROUTINES", !0), Xp = Pr("PUBLIC", !0), T0 = Pr("GRANT", !0), j0 = Pr("OPTION", !0), fm = Pr("ADMIN", !0), Sm = Pr("REVOKE", !0), Nm = Pr("ELSEIF", !0), qm = Pr("THEN", !0), l1 = Pr("END", !0), B1 = Pr("DEBUG", !0), E1 = Pr("LOG", !0), h$ = Pr("INFO", !0), d$ = Pr("NOTICE", !0), jo = Pr("WARNING", !0), Su = Pr("EXCEPTION", !0), fs = Pr("MESSAGE", !0), e0 = Pr("DETAIL", !0), m0 = Pr("HINT", !0), a0 = Pr("ERRCODE", !0), xm = Pr("COLUMN", !0), N0 = Pr("CONSTRAINT", !0), r1 = Pr("DATATYPE", !0), Q0 = Pr("TABLE", !0), q0 = Pr("SQLSTATE", !0), z1 = Pr("RAISE", !0), U1 = Pr("LOOP", !0), im = Pr("begin", !0), Fm = Pr("commit", !0), r$ = Pr("rollback", !0), j1 = Pr(";", !1), G1 = Pr("(", !1), Zm = Pr(")", !1), Gm = Pr('"', !1), q1 = Pr("OUTFILE", !0), p$ = Pr("DUMPFILE", !0), J1 = Pr("BTREE", !0), P$ = Pr("HASH", !0), Q$ = Pr("GIST", !0), C$ = Pr("GIN", !0), V1 = Pr("WITH", !0), b$ = Pr("PARSER", !0), cA = Pr("VISIBLE", !0), jv = Pr("INVISIBLE", !0), Yv = function(Xt, vr) {
+      }, iA = Pr("SEQUENCE", !0), ky = Pr("DATABASE", !0), Oo = Pr("DOMAIN", !1), Cl = Pr("FUNCTION", !1), su = Pr("ROUTINE", !0), Yl = Pr("LANGUAGE", !0), dp = Pr("LARGE", !0), Zu = Pr("SCHEMA", !1), wl = Pr("FUNCTIONS", !0), lu = Pr("PROCEDURES", !0), Uu = Pr("ROUTINES", !0), Xp = Pr("PUBLIC", !0), T0 = Pr("GRANT", !0), j0 = Pr("OPTION", !0), dm = Pr("ADMIN", !0), Sm = Pr("REVOKE", !0), Nm = Pr("ELSEIF", !0), qm = Pr("THEN", !0), l1 = Pr("END", !0), B1 = Pr("DEBUG", !0), E1 = Pr("LOG", !0), h$ = Pr("INFO", !0), d$ = Pr("NOTICE", !0), jo = Pr("WARNING", !0), Su = Pr("EXCEPTION", !0), fs = Pr("MESSAGE", !0), e0 = Pr("DETAIL", !0), m0 = Pr("HINT", !0), a0 = Pr("ERRCODE", !0), xm = Pr("COLUMN", !0), N0 = Pr("CONSTRAINT", !0), r1 = Pr("DATATYPE", !0), Q0 = Pr("TABLE", !0), q0 = Pr("SQLSTATE", !0), z1 = Pr("RAISE", !0), U1 = Pr("LOOP", !0), im = Pr("begin", !0), Fm = Pr("commit", !0), r$ = Pr("rollback", !0), j1 = Pr(";", !1), G1 = Pr("(", !1), Zm = Pr(")", !1), Gm = Pr('"', !1), q1 = Pr("OUTFILE", !0), p$ = Pr("DUMPFILE", !0), J1 = Pr("BTREE", !0), P$ = Pr("HASH", !0), Q$ = Pr("GIST", !0), C$ = Pr("GIN", !0), V1 = Pr("WITH", !0), b$ = Pr("PARSER", !0), cA = Pr("VISIBLE", !0), jv = Pr("INVISIBLE", !0), Yv = function(Xt, vr) {
         return vr.unshift(Xt), vr.forEach((Rr) => {
           const { table: Kr, as: Rn } = Rr;
           Au[Kr] = Kr, Rn && (Au[Rn] = Kr), function(Kn) {
@@ -173426,7 +173716,7 @@ function requireBigInteger() {
           vr = Ut, (Rr = function() {
             var Lo, Es, yl, Vl;
             return Lo = Ut, Et.substr(Ut, 10).toLowerCase() === "deallocate" ? (Es = Et.substr(Ut, 10), Ut += 10) : (Es = $t, mo === 0 && kn(np)), Es !== $t ? (yl = Ut, mo++, Vl = Gp(), mo--, Vl === $t ? yl = void 0 : (Ut = yl, yl = $t), yl !== $t ? (Us = Lo, Lo = Es = "DEALLOCATE") : (Ut = Lo, Lo = $t)) : (Ut = Lo, Lo = $t), Lo;
-          }()) !== $t && $n() !== $t ? (Et.substr(Ut, 7).toLowerCase() === "prepare" ? (Kr = Et.substr(Ut, 7), Ut += 7) : (Kr = $t, mo === 0 && kn(wA)), Kr === $t && (Kr = null), Kr !== $t && $n() !== $t ? ((Rn = S$()) === $t && (Rn = dm()), Rn !== $t ? (Us = vr, Kn = Kr, xa = Rn, Rr = { tableList: Array.from(zo), columnList: Tn(Ys), ast: { type: "deallocate", keyword: Kn, expr: { type: "default", value: xa } } }, vr = Rr) : (Ut = vr, vr = $t)) : (Ut = vr, vr = $t)) : (Ut = vr, vr = $t);
+          }()) !== $t && $n() !== $t ? (Et.substr(Ut, 7).toLowerCase() === "prepare" ? (Kr = Et.substr(Ut, 7), Ut += 7) : (Kr = $t, mo === 0 && kn(wA)), Kr === $t && (Kr = null), Kr !== $t && $n() !== $t ? ((Rn = S$()) === $t && (Rn = hm()), Rn !== $t ? (Us = vr, Kn = Kr, xa = Rn, Rr = { tableList: Array.from(zo), columnList: Tn(Ys), ast: { type: "deallocate", keyword: Kn, expr: { type: "default", value: xa } } }, vr = Rr) : (Ut = vr, vr = $t)) : (Ut = vr, vr = $t)) : (Ut = vr, vr = $t);
           var Kn, xa;
           return vr;
         }()) === $t && (Xt = function() {
@@ -173440,7 +173730,7 @@ function requireBigInteger() {
             return Xu;
           }()) !== $t && $n() !== $t && (Rn = Un()) !== $t && $n() !== $t ? ((Kn = function() {
             var Xu, Mp, f0;
-            return Xu = Ut, (Mp = qr()) === $t && (Et.substr(Ut, 8).toLowerCase() === "sequence" ? (Mp = Et.substr(Ut, 8), Ut += 8) : (Mp = $t, mo === 0 && kn(iA)), Mp === $t && (Et.substr(Ut, 8).toLowerCase() === "database" ? (Mp = Et.substr(Ut, 8), Ut += 8) : (Mp = $t, mo === 0 && kn(ky)), Mp === $t && (Et.substr(Ut, 6) === "DOMAIN" ? (Mp = "DOMAIN", Ut += 6) : (Mp = $t, mo === 0 && kn(Oo)), Mp === $t && (Et.substr(Ut, 8) === "FUNCTION" ? (Mp = "FUNCTION", Ut += 8) : (Mp = $t, mo === 0 && kn(Cl)), Mp === $t && (Et.substr(Ut, 9).toLowerCase() === "procedure" ? (Mp = Et.substr(Ut, 9), Ut += 9) : (Mp = $t, mo === 0 && kn(U$)), Mp === $t && (Et.substr(Ut, 7).toLowerCase() === "routine" ? (Mp = Et.substr(Ut, 7), Ut += 7) : (Mp = $t, mo === 0 && kn(su)), Mp === $t && (Et.substr(Ut, 8).toLowerCase() === "language" ? (Mp = Et.substr(Ut, 8), Ut += 8) : (Mp = $t, mo === 0 && kn(Yl)), Mp === $t && (Et.substr(Ut, 5).toLowerCase() === "large" ? (Mp = Et.substr(Ut, 5), Ut += 5) : (Mp = $t, mo === 0 && kn(dp)), Mp === $t && (Et.substr(Ut, 6) === "SCHEMA" ? (Mp = "SCHEMA", Ut += 6) : (Mp = $t, mo === 0 && kn(Zu))))))))))), Mp !== $t && (Us = Xu, Mp = { type: "origin", value: Mp.toUpperCase() }), (Xu = Mp) === $t && (Xu = Ut, (Mp = dm()) !== $t && $n() !== $t ? (Et.substr(Ut, 6).toLowerCase() === "tables" ? (f0 = Et.substr(Ut, 6), Ut += 6) : (f0 = $t, mo === 0 && kn(ty)), f0 === $t && (Et.substr(Ut, 8).toLowerCase() === "sequence" ? (f0 = Et.substr(Ut, 8), Ut += 8) : (f0 = $t, mo === 0 && kn(iA)), f0 === $t && (Et.substr(Ut, 9).toLowerCase() === "functions" ? (f0 = Et.substr(Ut, 9), Ut += 9) : (f0 = $t, mo === 0 && kn(wl)), f0 === $t && (Et.substr(Ut, 10).toLowerCase() === "procedures" ? (f0 = Et.substr(Ut, 10), Ut += 10) : (f0 = $t, mo === 0 && kn(lu)), f0 === $t && (Et.substr(Ut, 8).toLowerCase() === "routines" ? (f0 = Et.substr(Ut, 8), Ut += 8) : (f0 = $t, mo === 0 && kn(Uu)))))), f0 !== $t && $n() !== $t && T1() !== $t && $n() !== $t && xn() !== $t ? (Us = Xu, Xu = Mp = { type: "origin", value: `all ${f0} in schema` }) : (Ut = Xu, Xu = $t)) : (Ut = Xu, Xu = $t)), Xu;
+            return Xu = Ut, (Mp = qr()) === $t && (Et.substr(Ut, 8).toLowerCase() === "sequence" ? (Mp = Et.substr(Ut, 8), Ut += 8) : (Mp = $t, mo === 0 && kn(iA)), Mp === $t && (Et.substr(Ut, 8).toLowerCase() === "database" ? (Mp = Et.substr(Ut, 8), Ut += 8) : (Mp = $t, mo === 0 && kn(ky)), Mp === $t && (Et.substr(Ut, 6) === "DOMAIN" ? (Mp = "DOMAIN", Ut += 6) : (Mp = $t, mo === 0 && kn(Oo)), Mp === $t && (Et.substr(Ut, 8) === "FUNCTION" ? (Mp = "FUNCTION", Ut += 8) : (Mp = $t, mo === 0 && kn(Cl)), Mp === $t && (Et.substr(Ut, 9).toLowerCase() === "procedure" ? (Mp = Et.substr(Ut, 9), Ut += 9) : (Mp = $t, mo === 0 && kn(U$)), Mp === $t && (Et.substr(Ut, 7).toLowerCase() === "routine" ? (Mp = Et.substr(Ut, 7), Ut += 7) : (Mp = $t, mo === 0 && kn(su)), Mp === $t && (Et.substr(Ut, 8).toLowerCase() === "language" ? (Mp = Et.substr(Ut, 8), Ut += 8) : (Mp = $t, mo === 0 && kn(Yl)), Mp === $t && (Et.substr(Ut, 5).toLowerCase() === "large" ? (Mp = Et.substr(Ut, 5), Ut += 5) : (Mp = $t, mo === 0 && kn(dp)), Mp === $t && (Et.substr(Ut, 6) === "SCHEMA" ? (Mp = "SCHEMA", Ut += 6) : (Mp = $t, mo === 0 && kn(Zu))))))))))), Mp !== $t && (Us = Xu, Mp = { type: "origin", value: Mp.toUpperCase() }), (Xu = Mp) === $t && (Xu = Ut, (Mp = hm()) !== $t && $n() !== $t ? (Et.substr(Ut, 6).toLowerCase() === "tables" ? (f0 = Et.substr(Ut, 6), Ut += 6) : (f0 = $t, mo === 0 && kn(ty)), f0 === $t && (Et.substr(Ut, 8).toLowerCase() === "sequence" ? (f0 = Et.substr(Ut, 8), Ut += 8) : (f0 = $t, mo === 0 && kn(iA)), f0 === $t && (Et.substr(Ut, 9).toLowerCase() === "functions" ? (f0 = Et.substr(Ut, 9), Ut += 9) : (f0 = $t, mo === 0 && kn(wl)), f0 === $t && (Et.substr(Ut, 10).toLowerCase() === "procedures" ? (f0 = Et.substr(Ut, 10), Ut += 10) : (f0 = $t, mo === 0 && kn(lu)), f0 === $t && (Et.substr(Ut, 8).toLowerCase() === "routines" ? (f0 = Et.substr(Ut, 8), Ut += 8) : (f0 = $t, mo === 0 && kn(Uu)))))), f0 !== $t && $n() !== $t && T1() !== $t && $n() !== $t && xn() !== $t ? (Us = Xu, Xu = Mp = { type: "origin", value: `all ${f0} in schema` }) : (Ut = Xu, Xu = $t)) : (Ut = Xu, Xu = $t)), Xu;
           }()) === $t && (Kn = null), Kn !== $t && (xa = $n()) !== $t && (Lo = function() {
             var Xu, Mp, f0, v0, D0, K0, Rm, nm;
             if (Xu = Ut, (Mp = T$()) !== $t) {
@@ -173459,7 +173749,7 @@ function requireBigInteger() {
             return { revoke: "from", grant: "to" }[Xu.type].toLowerCase() === f0[0].toLowerCase();
           }(Rr, 0, Rn) ? void 0 : $t) !== $t && (Kn = $n()) !== $t && (xa = Wr()) !== $t && (Lo = $n()) !== $t ? ((Es = function() {
             var Xu, Mp, f0;
-            return Xu = Ut, Dl() !== $t && $n() !== $t ? (Et.substr(Ut, 5).toLowerCase() === "admin" ? (Mp = Et.substr(Ut, 5), Ut += 5) : (Mp = $t, mo === 0 && kn(fm)), Mp !== $t && $n() !== $t ? (Et.substr(Ut, 6).toLowerCase() === "option" ? (f0 = Et.substr(Ut, 6), Ut += 6) : (f0 = $t, mo === 0 && kn(j0)), f0 !== $t ? (Us = Xu, Xu = { type: "origin", value: "with admin option" }) : (Ut = Xu, Xu = $t)) : (Ut = Xu, Xu = $t)) : (Ut = Xu, Xu = $t), Xu;
+            return Xu = Ut, Dl() !== $t && $n() !== $t ? (Et.substr(Ut, 5).toLowerCase() === "admin" ? (Mp = Et.substr(Ut, 5), Ut += 5) : (Mp = $t, mo === 0 && kn(dm)), Mp !== $t && $n() !== $t ? (Et.substr(Ut, 6).toLowerCase() === "option" ? (f0 = Et.substr(Ut, 6), Ut += 6) : (f0 = $t, mo === 0 && kn(j0)), f0 !== $t ? (Us = Xu, Xu = { type: "origin", value: "with admin option" }) : (Ut = Xu, Xu = $t)) : (Ut = Xu, Xu = $t)) : (Ut = Xu, Xu = $t), Xu;
           }()) === $t && (Es = null), Es !== $t ? (Us = vr, Rr = function(Xu, Mp, f0, v0, D0) {
             return { tableList: Array.from(zo), columnList: Tn(Ys), ast: { ...Xu, keyword: "role", objects: Mp.map((K0) => ({ priv: { type: "string", value: K0 } })), to_from: f0[0], user_or_roles: v0, with: D0 } };
           }(Rr, Kr, Rn, xa, Es), vr = Rr) : (Ut = vr, vr = $t)) : (Ut = vr, vr = $t)) : (Ut = vr, vr = $t)) : (Ut = vr, vr = $t)), vr;
@@ -173608,7 +173898,7 @@ function requireBigInteger() {
         return Xt = Ut, (vr = function() {
           var Rn, Kn, xa, Lo;
           return Rn = Ut, Et.substr(Ut, 5).toLowerCase() === "union" ? (Kn = Et.substr(Ut, 5), Ut += 5) : (Kn = $t, mo === 0 && kn(B_)), Kn !== $t ? (xa = Ut, mo++, Lo = Gp(), mo--, Lo === $t ? xa = void 0 : (Ut = xa, xa = $t), xa !== $t ? Rn = Kn = [Kn, xa] : (Ut = Rn, Rn = $t)) : (Ut = Rn, Rn = $t), Rn;
-        }()) !== $t && $n() !== $t ? ((Rr = dm()) === $t && (Rr = um()), Rr === $t && (Rr = null), Rr !== $t ? (Us = Xt, Xt = vr = (Kr = Rr) ? "union " + Kr.toLowerCase() : "union") : (Ut = Xt, Xt = $t)) : (Ut = Xt, Xt = $t), Xt === $t && (Xt = Ut, (vr = function() {
+        }()) !== $t && $n() !== $t ? ((Rr = hm()) === $t && (Rr = um()), Rr === $t && (Rr = null), Rr !== $t ? (Us = Xt, Xt = vr = (Kr = Rr) ? "union " + Kr.toLowerCase() : "union") : (Ut = Xt, Xt = $t)) : (Ut = Xt, Xt = $t), Xt === $t && (Xt = Ut, (vr = function() {
           var Rn, Kn, xa, Lo;
           return Rn = Ut, Et.substr(Ut, 9).toLowerCase() === "intersect" ? (Kn = Et.substr(Ut, 9), Ut += 9) : (Kn = $t, mo === 0 && kn(d_)), Kn !== $t ? (xa = Ut, mo++, Lo = Gp(), mo--, Lo === $t ? xa = void 0 : (Ut = xa, xa = $t), xa !== $t ? Rn = Kn = [Kn, xa] : (Ut = Rn, Rn = $t)) : (Ut = Rn, Rn = $t), Rn;
         }()) !== $t && (Us = Xt, vr = "intersect"), (Xt = vr) === $t && (Xt = Ut, (vr = function() {
@@ -174009,7 +174299,7 @@ function requireBigInteger() {
       }
       function f$() {
         var Xt, vr, Rr, Kr;
-        return Xt = Ut, dm() !== $t ? (vr = Ut, (Rr = $n()) !== $t ? (Et.substr(Ut, 10).toLowerCase() === "privileges" ? (Kr = Et.substr(Ut, 10), Ut += 10) : (Kr = $t, mo === 0 && kn(qA)), Kr !== $t ? vr = Rr = [Rr, Kr] : (Ut = vr, vr = $t)) : (Ut = vr, vr = $t), vr === $t && (vr = null), vr !== $t ? (Us = Xt, Xt = { type: "origin", value: vr ? "all privileges" : "all" }) : (Ut = Xt, Xt = $t)) : (Ut = Xt, Xt = $t), Xt;
+        return Xt = Ut, hm() !== $t ? (vr = Ut, (Rr = $n()) !== $t ? (Et.substr(Ut, 10).toLowerCase() === "privileges" ? (Kr = Et.substr(Ut, 10), Ut += 10) : (Kr = $t, mo === 0 && kn(qA)), Kr !== $t ? vr = Rr = [Rr, Kr] : (Ut = vr, vr = $t)) : (Ut = vr, vr = $t), vr === $t && (vr = null), vr !== $t ? (Us = Xt, Xt = { type: "origin", value: vr ? "all privileges" : "all" }) : (Ut = Xt, Xt = $t)) : (Ut = Xt, Xt = $t), Xt;
       }
       function hv() {
         var Xt;
@@ -174175,7 +174465,7 @@ function requireBigInteger() {
       }
       function qu() {
         var Xt, vr, Rr, Kr, Rn, Kn, xa, Lo;
-        if (Xt = Ut, (vr = dm()) === $t && (vr = Ut, (Rr = wE()) !== $t ? (Kr = Ut, mo++, Rn = Gp(), mo--, Rn === $t ? Kr = void 0 : (Ut = Kr, Kr = $t), Kr !== $t ? vr = Rr = [Rr, Kr] : (Ut = vr, vr = $t)) : (Ut = vr, vr = $t), vr === $t && (vr = wE())), vr !== $t) {
+        if (Xt = Ut, (vr = hm()) === $t && (vr = Ut, (Rr = wE()) !== $t ? (Kr = Ut, mo++, Rn = Gp(), mo--, Rn === $t ? Kr = void 0 : (Ut = Kr, Kr = $t), Kr !== $t ? vr = Rr = [Rr, Kr] : (Ut = vr, vr = $t)) : (Ut = vr, vr = $t), vr === $t && (vr = wE())), vr !== $t) {
           for (Rr = [], Kr = Ut, (Rn = $n()) !== $t && (Kn = M1()) !== $t && (xa = $n()) !== $t && (Lo = n1()) !== $t ? Kr = Rn = [Rn, Kn, xa, Lo] : (Ut = Kr, Kr = $t); Kr !== $t; ) Rr.push(Kr), Kr = Ut, (Rn = $n()) !== $t && (Kn = M1()) !== $t && (xa = $n()) !== $t && (Lo = n1()) !== $t ? Kr = Rn = [Rn, Kn, xa, Lo] : (Ut = Kr, Kr = $t);
           Rr !== $t ? (Us = Xt, Xt = vr = function(Es, yl) {
             Ys.add("select::null::(.*)");
@@ -174467,7 +174757,7 @@ function requireBigInteger() {
         return Xt = Ut, vr = Ut, (Rr = function() {
           var Lo, Es, yl, Vl;
           return Lo = Ut, Et.substr(Ut, 5).toLowerCase() === "limit" ? (Es = Et.substr(Ut, 5), Ut += 5) : (Es = $t, mo === 0 && kn(x2)), Es !== $t ? (yl = Ut, mo++, Vl = Gp(), mo--, Vl === $t ? yl = void 0 : (Ut = yl, yl = $t), yl !== $t ? Lo = Es = [Es, yl] : (Ut = Lo, Lo = $t)) : (Ut = Lo, Lo = $t), Lo;
-        }()) !== $t && (Kr = $n()) !== $t ? ((Rn = Am()) === $t && (Rn = dm()), Rn !== $t ? vr = Rr = [Rr, Kr, Rn] : (Ut = vr, vr = $t)) : (Ut = vr, vr = $t), vr === $t && (vr = null), vr !== $t && (Rr = $n()) !== $t ? (Kr = Ut, (Rn = function() {
+        }()) !== $t && (Kr = $n()) !== $t ? ((Rn = Am()) === $t && (Rn = hm()), Rn !== $t ? vr = Rr = [Rr, Kr, Rn] : (Ut = vr, vr = $t)) : (Ut = vr, vr = $t), vr === $t && (vr = null), vr !== $t && (Rr = $n()) !== $t ? (Kr = Ut, (Rn = function() {
           var Lo, Es, yl, Vl;
           return Lo = Ut, Et.substr(Ut, 6).toLowerCase() === "offset" ? (Es = Et.substr(Ut, 6), Ut += 6) : (Es = $t, mo === 0 && kn(j2)), Es !== $t ? (yl = Ut, mo++, Vl = Gp(), mo--, Vl === $t ? yl = void 0 : (Ut = yl, yl = $t), yl !== $t ? (Us = Lo, Lo = Es = "OFFSET") : (Ut = Lo, Lo = $t)) : (Ut = Lo, Lo = $t), Lo;
         }()) !== $t && (Kn = $n()) !== $t && (xa = Am()) !== $t ? Kr = Rn = [Rn, Kn, xa] : (Ut = Kr, Kr = $t), Kr === $t && (Kr = null), Kr !== $t ? (Us = Xt, Xt = vr = function(Lo, Es) {
@@ -175451,7 +175741,7 @@ function requireBigInteger() {
         var Xt, vr, Rr, Kr;
         return Xt = Ut, Et.substr(Ut, 4).toLowerCase() === "desc" ? (vr = Et.substr(Ut, 4), Ut += 4) : (vr = $t, mo === 0 && kn(h_)), vr !== $t ? (Rr = Ut, mo++, Kr = Gp(), mo--, Kr === $t ? Rr = void 0 : (Ut = Rr, Rr = $t), Rr !== $t ? (Us = Xt, Xt = vr = "DESC") : (Ut = Xt, Xt = $t)) : (Ut = Xt, Xt = $t), Xt;
       }
-      function dm() {
+      function hm() {
         var Xt, vr, Rr, Kr;
         return Xt = Ut, Et.substr(Ut, 3).toLowerCase() === "all" ? (vr = Et.substr(Ut, 3), Ut += 3) : (vr = $t, mo === 0 && kn(Ex)), vr !== $t ? (Rr = Ut, mo++, Kr = Gp(), mo--, Kr === $t ? Rr = void 0 : (Ut = Rr, Rr = $t), Rr !== $t ? (Us = Xt, Xt = vr = "ALL") : (Ut = Xt, Xt = $t)) : (Ut = Xt, Xt = $t), Xt;
       }
@@ -176249,7 +176539,7 @@ function requireBigInteger() {
         return Yr + gn.join("");
       }, qA = /^[A-Za-z_]/, RA = q_([["A", "Z"], ["a", "z"], "_"], !1, !1), iA = /^[A-Za-z0-9_]/, ky = q_([["A", "Z"], ["a", "z"], ["0", "9"], "_"], !1, !1), Oo = /^[A-Za-z0-9_:\u4E00-\u9FA5\xC0-\u017F]/, Cl = q_([["A", "Z"], ["a", "z"], ["0", "9"], "_", ":", ["一", "龥"], ["À", "ſ"]], !1, !1), su = d0(":", !1), Yl = d0("_binary", !0), dp = d0("X", !0), Zu = /^[0-9A-Fa-f]/, wl = q_([["0", "9"], ["A", "F"], ["a", "f"]], !1, !1), lu = d0("b", !0), Uu = d0("0x", !1), Xp = function(Yr, gn) {
         return { type: Yr.toLowerCase(), value: gn[1].join("") };
-      }, T0 = /^[^"\\\0-\x1F\x7F]/, j0 = q_(['"', "\\", ["\0", ""], ""], !0, !1), fm = /^[^'\\]/, Sm = q_(["'", "\\"], !0, !1), Nm = d0("\\'", !1), qm = d0('\\"', !1), l1 = d0("\\\\", !1), B1 = d0("\\/", !1), E1 = d0("\\b", !1), h$ = d0("\\f", !1), d$ = d0("\\n", !1), jo = d0("\\r", !1), Su = d0("\\t", !1), fs = d0("\\u", !1), e0 = d0("\\", !1), m0 = d0("''", !1), a0 = d0('""', !1), xm = d0("``", !1), N0 = /^[\n\r]/, r1 = q_([`
+      }, T0 = /^[^"\\\0-\x1F\x7F]/, j0 = q_(['"', "\\", ["\0", ""], ""], !0, !1), dm = /^[^'\\]/, Sm = q_(["'", "\\"], !0, !1), Nm = d0("\\'", !1), qm = d0('\\"', !1), l1 = d0("\\\\", !1), B1 = d0("\\/", !1), E1 = d0("\\b", !1), h$ = d0("\\f", !1), d$ = d0("\\n", !1), jo = d0("\\r", !1), Su = d0("\\t", !1), fs = d0("\\u", !1), e0 = d0("\\", !1), m0 = d0("''", !1), a0 = d0('""', !1), xm = d0("``", !1), N0 = /^[\n\r]/, r1 = q_([`
 `, "\r"], !1, !1), Q0 = d0(".", !1), q0 = /^[0-9]/, z1 = q_([["0", "9"]], !1, !1), U1 = /^[0-9a-fA-F]/, im = q_([["0", "9"], ["a", "f"], ["A", "F"]], !1, !1), Fm = /^[eE]/, r$ = q_(["e", "E"], !1, !1), j1 = /^[+\-]/, G1 = q_(["+", "-"], !1, !1), Zm = d0("ANALYZE", !0), Gm = d0("ATTACH", !0), q1 = d0("NULL", !0), p$ = d0("NOT NULL", !0), J1 = d0("TRUE", !0), P$ = d0("TO", !0), Q$ = d0("FALSE", !0), C$ = d0("SHOW", !0), V1 = d0("DROP", !0), b$ = d0("USE", !0), cA = d0("ALTER", !0), jv = d0("SELECT", !0), Yv = d0("UPDATE", !0), DA = d0("CREATE", !0), wy = d0("TEMPORARY", !0), v_ = d0("TEMP", !0), Dy = d0("DELETE", !0), N_ = d0("INSERT", !0), i_ = d0("RECURSIVE", !0), wv = d0("RENAME", !0), Vv = d0("RETURNING", !0), tA = d0("PARTITION", !0), uy = d0("INTO", !0), EA = d0("FROM", !0), Ey = d0("UNLOCK", !0), Cy = d0("TABLE", !0), e_ = d0("TABLES", !0), f_ = d0("DATABASE", !0), L_ = d0("SCHEMA", !0), M_ = d0("LEFT", !0), Wx = d0("INNER", !0), nx = d0("JOIN", !0), $x = d0("OUTER", !0), W_ = d0("OVER", !0), Q_ = d0("UNION", !0), jy = d0("VALUES", !0), XA = d0("USING", !0), o_ = d0("WHERE", !0), I_ = d0("GROUP", !0), ax = d0("BY", !0), y2 = d0("ORDER", !0), S1 = d0("HAVING", !0), _$ = d0("LIMIT", !0), dA = d0("OFFSET", !0), CA = d0("ASC", !0), Iy = d0("DESC", !0), fy = d0("DESCRIBE", !0), KA = d0("ALL", !0), Ty = d0("DISTINCT", !0), C_ = d0("BETWEEN", !0), ix = d0("IN", !0), s2 = d0("IS", !0), l2 = d0("LIKE", !0), P_ = d0("RLIKE", !0), O_ = d0("REGEXP", !0), F_ = d0("EXISTS", !0), Qx = d0("AND", !0), s$ = d0("OR", !0), Rv = d0("COUNT", !0), ry = d0("GROUP_CONCAT", !0), e$ = d0("MAX", !0), Z$ = d0("MIN", !0), yv = d0("SUM", !0), q$ = d0("AVG", !0), Zv = d0("CALL", !0), ZA = d0("CASE", !0), sA = d0("WHEN", !0), kA = d0("THEN", !0), b_ = d0("ELSE", !0), A_ = d0("CAST", !0), MA = d0("BIT", !0), Ny = d0("CHAR", !0), rw = d0("VARCHAR", !0), gp = d0("NUMERIC", !0), g0 = d0("DECIMAL", !0), Os = d0("SIGNED", !0), Mu = d0("UNSIGNED", !0), Ap = d0("INT", !0), M0 = d0("ZEROFILL", !0), tm = d0("INTEGER", !0), mm = d0("JSON", !0), jm = d0("SMALLINT", !0), o1 = d0("TINYINT", !0), k$ = d0("TINYTEXT", !0), qv = d0("TEXT", !0), yA = d0("MEDIUMTEXT", !0), PA = d0("LONGTEXT", !0), HA = d0("BIGINT", !0), y_ = d0("ENUM", !0), vx = d0("FLOAT", !0), L2 = d0("DOUBLE", !0), Dr = d0("REAL", !0), Bp = d0("DATE", !0), Yx = d0("DATETIME", !0), t_ = d0("TIME", !0), I2 = d0("TIMESTAMP", !0), Ul = d0("TRUNCATE", !0), H0 = d0("USER", !0), bx = d0("CURRENT_DATE", !0), Dw = d0("INTERVAL", !0), Fw = d0("YEAR", !0), l0 = d0("MONTH", !0), Bw = d0("DAY", !0), Nx = d0("HOUR", !0), ox = d0("MINUTE", !0), __ = d0("SECOND", !0), Lr = d0("CURRENT_TIME", !0), Up = d0("CURRENT_TIMESTAMP", !0), gw = d0("CURRENT_USER", !0), ux = d0("SESSION_USER", !0), nw = d0("SYSTEM_USER", !0), Ml = d0("GLOBAL", !0), k0 = d0("SESSION", !0), Y_ = d0("PERSIST", !0), eE = d0("PERSIST_ONLY", !0), $w = d0("VIEW", !0), Qp = d0("@", !1), Qw = d0("@@", !1), Uw = d0("$", !1), jw = d0("return", !0), zw = d0(":=", !1), qx = d0("DUAL", !0), P2 = d0("ADD", !0), aw = d0("COLUMN", !0), Xx = d0("INDEX", !0), _2 = d0("MODIFY", !0), Mx = d0("FULLTEXT", !0), Sr = d0("SPATIAL", !0), Dp = d0("COMMENT", !0), q2 = d0("CONSTRAINT", !0), zy = d0("REFERENCES", !0), GA = d0("SQL_CALC_FOUND_ROWS", !0), xl = d0("SQL_CACHE", !0), A0 = d0("SQL_NO_CACHE", !0), dy = d0("SQL_SMALL_RESULT", !0), vw = d0("SQL_BIG_RESULT", !0), Nw = d0("SQL_BUFFER_RESULT", !0), Pp = d0(",", !1), Ax = d0("[", !1), x_ = d0("]", !1), Hw = d0(";", !1), iw = d0("->", !1), R2 = d0("->>", !1), yx = d0("&&", !1), lE = d0("/*", !1), bw = d0("*/", !1), tE = d0("--", !1), uE = d0("#", !1), Gw = { type: "any" }, Yw = /^[ \t\n\r]/, qw = q_([" ", "	", `
 `, "\r"], !1, !1), rE = d0("blob", !0), u2 = d0("tinyblob", !0), hE = d0("mediumblob", !0), Aw = d0("longblob", !0), Xw = d0("boolean", !0), K2 = function(Yr) {
         return { dataType: Yr };
@@ -177844,7 +178134,7 @@ function requireBigInteger() {
       }
       function Ov() {
         var Yr;
-        return fm.test(Et.charAt(Ar)) ? (Yr = Et.charAt(Ar), Ar++) : (Yr = $t, qs === 0 && np(Sm)), Yr === $t && (Yr = zl()), Yr;
+        return dm.test(Et.charAt(Ar)) ? (Yr = Et.charAt(Ar), Ar++) : (Yr = $t, qs === 0 && np(Sm)), Yr === $t && (Yr = zl()), Yr;
       }
       function zl() {
         var Yr, gn, Mn, qn, Bo, Ho, gs, zs, Gs, wu;
@@ -178603,7 +178893,7 @@ function requireBigInteger() {
             Go.clear(), us.forEach((Hs) => Go.add(Hs));
           }(Xv);
         }), qr;
-      }, Zu = Jn("FORCESEEK", !0), wl = Jn("SPATIAL_WINDOW_MAX_CELLS", !0), lu = Jn("NOEXPAND", !0), Uu = Jn("FORCESCAN", !0), Xp = Jn("HOLDLOCK", !0), T0 = Jn("NOLOCK", !0), j0 = Jn("NOWAIT", !0), fm = Jn("PAGLOCK", !0), Sm = Jn("READCOMMITTED", !0), Nm = Jn("READCOMMITTEDLOCK", !0), qm = Jn("READPAST", !0), l1 = Jn("READUNCOMMITTED", !0), B1 = Jn("REPEATABLEREAD ", !0), E1 = Jn("ROWLOCK", !0), h$ = Jn("SERIALIZABLE", !0), d$ = Jn("SNAPSHOT", !0), jo = Jn("TABLOCK", !0), Su = Jn("TABLOCKX", !0), fs = Jn("UPDLOCK", !0), e0 = Jn("XLOCK", !0), m0 = Jn("##", !1), a0 = Jn("#", !1), xm = Jn("FIRST", !0), N0 = Jn("ROWS", !0), r1 = Jn("ONLY", !0), Q0 = Jn("NEXT", !0), q0 = Jn("RAW", !0), z1 = Jn("AUTO", !0), U1 = Jn("EXPLICIT", !0), im = function(Tr) {
+      }, Zu = Jn("FORCESEEK", !0), wl = Jn("SPATIAL_WINDOW_MAX_CELLS", !0), lu = Jn("NOEXPAND", !0), Uu = Jn("FORCESCAN", !0), Xp = Jn("HOLDLOCK", !0), T0 = Jn("NOLOCK", !0), j0 = Jn("NOWAIT", !0), dm = Jn("PAGLOCK", !0), Sm = Jn("READCOMMITTED", !0), Nm = Jn("READCOMMITTEDLOCK", !0), qm = Jn("READPAST", !0), l1 = Jn("READUNCOMMITTED", !0), B1 = Jn("REPEATABLEREAD ", !0), E1 = Jn("ROWLOCK", !0), h$ = Jn("SERIALIZABLE", !0), d$ = Jn("SNAPSHOT", !0), jo = Jn("TABLOCK", !0), Su = Jn("TABLOCKX", !0), fs = Jn("UPDLOCK", !0), e0 = Jn("XLOCK", !0), m0 = Jn("##", !1), a0 = Jn("#", !1), xm = Jn("FIRST", !0), N0 = Jn("ROWS", !0), r1 = Jn("ONLY", !0), Q0 = Jn("NEXT", !0), q0 = Jn("RAW", !0), z1 = Jn("AUTO", !0), U1 = Jn("EXPLICIT", !0), im = function(Tr) {
         return { keyword: Tr };
       }, Fm = Jn("PATH", !0), r$ = Jn("XML", !0), j1 = Jn("JSON", !0), G1 = Jn("=", !1), Zm = function(Tr, qr) {
         return Tw(Tr, qr);
@@ -178676,9 +178966,9 @@ function requireBigInteger() {
           if (Un = rr, (qo = my()) !== $t) {
             for (Go = [], us = rr, (Hs = ps()) !== $t && (Dl = Zw()) !== $t && ($u = ps()) !== $t && (zp = my()) !== $t ? us = Hs = [Hs, Dl, $u, zp] : (rr = us, us = $t); us !== $t; ) Go.push(us), us = rr, (Hs = ps()) !== $t && (Dl = Zw()) !== $t && ($u = ps()) !== $t && (zp = my()) !== $t ? us = Hs = [Hs, Dl, $u, zp] : (rr = us, us = $t);
             Go !== $t ? (Wt = Un, qo = function(s0, E0) {
-              const lm = s0 && s0.ast || s0, dm = E0 && E0.length && E0[0].length >= 4 ? [lm] : lm;
-              for (let um = 0; um < E0.length; um++) E0[um][3] && E0[um][3].length !== 0 && dm.push(E0[um][3] && E0[um][3].ast || E0[um][3]);
-              return { tableList: Array.from(rA), columnList: iy(Xv), ast: dm };
+              const lm = s0 && s0.ast || s0, hm = E0 && E0.length && E0[0].length >= 4 ? [lm] : lm;
+              for (let um = 0; um < E0.length; um++) E0[um][3] && E0[um][3].length !== 0 && hm.push(E0[um][3] && E0[um][3].ast || E0[um][3]);
+              return { tableList: Array.from(rA), columnList: iy(Xv), ast: hm };
             }(qo, Go), Un = qo) : (rr = Un, Un = $t);
           } else rr = Un, Un = $t;
           return Un;
@@ -178690,19 +178980,19 @@ function requireBigInteger() {
           var qr, xn, Un, qo, Go, us, Hs;
           qr = rr, (xn = vs()) !== $t && ps() !== $t && (Un = $0()) !== $t && ps() !== $t ? ((qo = gx()) === $t && (qo = null), qo !== $t && ps() !== $t && (Go = Ht()) !== $t ? (Wt = qr, Dl = xn, $u = Un, zp = qo, (s0 = Go) && s0.forEach((E0) => rA.add(`${Dl}::${[E0.server, E0.db, E0.schema].filter(Boolean).join(".") || null}::${E0.table}`)), xn = { tableList: Array.from(rA), columnList: iy(Xv), ast: { type: Dl.toLowerCase(), keyword: $u.toLowerCase(), prefix: zp, name: s0 } }, qr = xn) : (rr = qr, qr = $t)) : (rr = qr, qr = $t);
           var Dl, $u, zp, s0;
-          return qr === $t && (qr = rr, (xn = vs()) !== $t && ps() !== $t ? (Et.substr(rr, 9).toLowerCase() === "procedure" ? (Un = Et.substr(rr, 9), rr += 9) : (Un = $t, ys === 0 && ju(Nn)), Un !== $t && ps() !== $t && (qo = K1()) !== $t ? (Wt = qr, xn = function(E0, lm, dm) {
-            return { tableList: Array.from(rA), columnList: iy(Xv), ast: { type: E0.toLowerCase(), keyword: lm.toLowerCase(), name: dm } };
+          return qr === $t && (qr = rr, (xn = vs()) !== $t && ps() !== $t ? (Et.substr(rr, 9).toLowerCase() === "procedure" ? (Un = Et.substr(rr, 9), rr += 9) : (Un = $t, ys === 0 && ju(Nn)), Un !== $t && ps() !== $t && (qo = K1()) !== $t ? (Wt = qr, xn = function(E0, lm, hm) {
+            return { tableList: Array.from(rA), columnList: iy(Xv), ast: { type: E0.toLowerCase(), keyword: lm.toLowerCase(), name: hm } };
           }(xn, Un, qo), qr = xn) : (rr = qr, qr = $t)) : (rr = qr, qr = $t), qr === $t && (qr = rr, (xn = vs()) !== $t && ps() !== $t && (Un = mw()) !== $t && ps() !== $t && (qo = t$()) !== $t && ps() !== $t && (Go = om()) !== $t && ps() !== $t && (us = Ut()) !== $t && ps() !== $t ? ((Hs = function() {
-            var E0, lm, dm, um, g1, T1;
+            var E0, lm, hm, um, g1, T1;
             if (E0 = rr, (lm = J_()) === $t && (lm = $y()), lm !== $t) {
-              for (dm = [], um = rr, (g1 = ps()) !== $t ? ((T1 = J_()) === $t && (T1 = $y()), T1 !== $t ? um = g1 = [g1, T1] : (rr = um, um = $t)) : (rr = um, um = $t); um !== $t; ) dm.push(um), um = rr, (g1 = ps()) !== $t ? ((T1 = J_()) === $t && (T1 = $y()), T1 !== $t ? um = g1 = [g1, T1] : (rr = um, um = $t)) : (rr = um, um = $t);
-              dm !== $t ? (Wt = E0, lm = Mt(lm, dm), E0 = lm) : (rr = E0, E0 = $t);
+              for (hm = [], um = rr, (g1 = ps()) !== $t ? ((T1 = J_()) === $t && (T1 = $y()), T1 !== $t ? um = g1 = [g1, T1] : (rr = um, um = $t)) : (rr = um, um = $t); um !== $t; ) hm.push(um), um = rr, (g1 = ps()) !== $t ? ((T1 = J_()) === $t && (T1 = $y()), T1 !== $t ? um = g1 = [g1, T1] : (rr = um, um = $t)) : (rr = um, um = $t);
+              hm !== $t ? (Wt = E0, lm = Mt(lm, hm), E0 = lm) : (rr = E0, E0 = $t);
             } else rr = E0, E0 = $t;
             return E0;
-          }()) === $t && (Hs = null), Hs !== $t && ps() !== $t ? (Wt = qr, xn = function(E0, lm, dm, um, g1) {
-            return { tableList: Array.from(rA), columnList: iy(Xv), ast: { type: E0.toLowerCase(), keyword: lm.toLowerCase(), name: dm, table: um, options: g1 } };
-          }(xn, Un, qo, us, Hs), qr = xn) : (rr = qr, qr = $t)) : (rr = qr, qr = $t), qr === $t && (qr = rr, (xn = vs()) !== $t && ps() !== $t && (Un = O0()) !== $t && ps() !== $t ? ((qo = gx()) === $t && (qo = null), qo !== $t && ps() !== $t && (Go = Ht()) !== $t ? (Wt = qr, xn = function(E0, lm, dm, um) {
-            return { tableList: Array.from(rA), columnList: iy(Xv), ast: { type: E0.toLowerCase(), keyword: lm.toLowerCase(), prefix: dm, name: um } };
+          }()) === $t && (Hs = null), Hs !== $t && ps() !== $t ? (Wt = qr, xn = function(E0, lm, hm, um, g1) {
+            return { tableList: Array.from(rA), columnList: iy(Xv), ast: { type: E0.toLowerCase(), keyword: lm.toLowerCase(), name: hm, table: um, options: g1 } };
+          }(xn, Un, qo, us, Hs), qr = xn) : (rr = qr, qr = $t)) : (rr = qr, qr = $t), qr === $t && (qr = rr, (xn = vs()) !== $t && ps() !== $t && (Un = O0()) !== $t && ps() !== $t ? ((qo = gx()) === $t && (qo = null), qo !== $t && ps() !== $t && (Go = Ht()) !== $t ? (Wt = qr, xn = function(E0, lm, hm, um) {
+            return { tableList: Array.from(rA), columnList: iy(Xv), ast: { type: E0.toLowerCase(), keyword: lm.toLowerCase(), prefix: hm, name: um } };
           }(xn, Un, qo, Go), qr = xn) : (rr = qr, qr = $t)) : (rr = qr, qr = $t)))), qr;
         }()) === $t && (Tr = function() {
           var qr;
@@ -178725,17 +179015,17 @@ function requireBigInteger() {
               }()) === $t && (Q1 = rr, Bv() !== $t && ps() !== $t && (rv = T1()) !== $t && ps() !== $t && uA() !== $t ? (Wt = Q1, (e1 = rv).parentheses = !0, Q1 = e1) : (rr = Q1, Q1 = $t));
               var e1;
               return Q1;
-            }()) !== $t ? (Wt = xn, E0 = Un, lm = qo, dm = Go, g1 = Hs, (um = us) && um.forEach((T1) => rA.add(`create::${[T1.server, T1.db, T1.schema].filter(Boolean).join(".") || null}::${T1.table}`)), Un = { tableList: Array.from(rA), columnList: iy(Xv), ast: { type: E0[0].toLowerCase(), keyword: "table", temporary: lm && lm[0].toLowerCase(), if_not_exists: dm, table: um, like: g1 } }, xn = Un) : (rr = xn, xn = $t)) : (rr = xn, xn = $t)) : (rr = xn, xn = $t));
-            var E0, lm, dm, um, g1;
+            }()) !== $t ? (Wt = xn, E0 = Un, lm = qo, hm = Go, g1 = Hs, (um = us) && um.forEach((T1) => rA.add(`create::${[T1.server, T1.db, T1.schema].filter(Boolean).join(".") || null}::${T1.table}`)), Un = { tableList: Array.from(rA), columnList: iy(Xv), ast: { type: E0[0].toLowerCase(), keyword: "table", temporary: lm && lm[0].toLowerCase(), if_not_exists: hm, table: um, like: g1 } }, xn = Un) : (rr = xn, xn = $t)) : (rr = xn, xn = $t)) : (rr = xn, xn = $t));
+            var E0, lm, hm, um, g1;
             return xn;
           }()) === $t && (qr = function() {
-            var xn, Un, qo, Go, us, Hs, Dl, $u, zp, s0, E0, lm, dm, um, g1, T1, Q1, rv;
+            var xn, Un, qo, Go, us, Hs, Dl, $u, zp, s0, E0, lm, hm, um, g1, T1, Q1, rv;
             xn = rr, (Un = gn()) !== $t && ps() !== $t ? ((qo = gE()) === $t && (qo = xE()) === $t && (qo = zx()), qo === $t && (qo = null), qo !== $t && ps() !== $t && (Go = mw()) !== $t && ps() !== $t && (us = K1()) !== $t && ps() !== $t && (Hs = om()) !== $t && ps() !== $t && (Dl = Ut()) !== $t && ps() !== $t && Bv() !== $t && ps() !== $t && ($u = Z_()) !== $t && ps() !== $t && uA() !== $t && ps() !== $t ? ((zp = function() {
               var fv, ov, vE;
               return fv = rr, Et.substr(rr, 7).toLowerCase() === "include" ? (ov = Et.substr(rr, 7), rr += 7) : (ov = $t, ys === 0 && ju(jt)), ov !== $t && ps() !== $t && Bv() !== $t && ps() !== $t && (vE = a1()) !== $t && ps() !== $t && uA() !== $t ? (Wt = fv, ov = function(zA, Sy) {
                 return { type: zA.toLowerCase(), keyword: zA.toLowerCase(), columns: Sy };
               }(ov, vE), fv = ov) : (rr = fv, fv = $t), fv;
-            }()) === $t && (zp = null), zp !== $t && ps() !== $t ? ((s0 = Ym()) === $t && (s0 = null), s0 !== $t && ps() !== $t ? (E0 = rr, (lm = Pn()) !== $t && (dm = ps()) !== $t && (um = Bv()) !== $t && (g1 = ps()) !== $t && (T1 = Sn()) !== $t && (Q1 = ps()) !== $t && (rv = uA()) !== $t ? E0 = lm = [lm, dm, um, g1, T1, Q1, rv] : (rr = E0, E0 = $t), E0 === $t && (E0 = null), E0 !== $t && (lm = ps()) !== $t ? ((dm = Xm()) === $t && (dm = null), dm !== $t && (um = ps()) !== $t ? (g1 = rr, Et.substr(rr, 13).toLowerCase() === "filestream_on" ? (T1 = Et.substr(rr, 13), rr += 13) : (T1 = $t, ys === 0 && ju(Nt)), T1 !== $t && (Q1 = ps()) !== $t && (rv = K1()) !== $t ? g1 = T1 = [T1, Q1, rv] : (rr = g1, g1 = $t), g1 === $t && (g1 = null), g1 !== $t ? (Wt = xn, e1 = Un, U0 = qo, Ry = Go, Xy = us, nv = Hs, Lw = Dl, b2 = $u, iE = zp, Ky = s0, Iw = E0, fA = dm, Zy = g1, Un = { tableList: Array.from(rA), columnList: iy(Xv), ast: { type: e1[0].toLowerCase(), index_type: U0 && U0.toLowerCase(), keyword: Ry.toLowerCase(), index: Xy, on_kw: nv[0].toLowerCase(), table: Lw, index_columns: b2, include: iE, where: Ky, with: Iw && Iw[4], on: fA, filestream_on: Zy && { value: Zy[2] } } }, xn = Un) : (rr = xn, xn = $t)) : (rr = xn, xn = $t)) : (rr = xn, xn = $t)) : (rr = xn, xn = $t)) : (rr = xn, xn = $t)) : (rr = xn, xn = $t)) : (rr = xn, xn = $t);
+            }()) === $t && (zp = null), zp !== $t && ps() !== $t ? ((s0 = Ym()) === $t && (s0 = null), s0 !== $t && ps() !== $t ? (E0 = rr, (lm = Pn()) !== $t && (hm = ps()) !== $t && (um = Bv()) !== $t && (g1 = ps()) !== $t && (T1 = Sn()) !== $t && (Q1 = ps()) !== $t && (rv = uA()) !== $t ? E0 = lm = [lm, hm, um, g1, T1, Q1, rv] : (rr = E0, E0 = $t), E0 === $t && (E0 = null), E0 !== $t && (lm = ps()) !== $t ? ((hm = Xm()) === $t && (hm = null), hm !== $t && (um = ps()) !== $t ? (g1 = rr, Et.substr(rr, 13).toLowerCase() === "filestream_on" ? (T1 = Et.substr(rr, 13), rr += 13) : (T1 = $t, ys === 0 && ju(Nt)), T1 !== $t && (Q1 = ps()) !== $t && (rv = K1()) !== $t ? g1 = T1 = [T1, Q1, rv] : (rr = g1, g1 = $t), g1 === $t && (g1 = null), g1 !== $t ? (Wt = xn, e1 = Un, U0 = qo, Ry = Go, Xy = us, nv = Hs, Lw = Dl, b2 = $u, iE = zp, Ky = s0, Iw = E0, fA = hm, Zy = g1, Un = { tableList: Array.from(rA), columnList: iy(Xv), ast: { type: e1[0].toLowerCase(), index_type: U0 && U0.toLowerCase(), keyword: Ry.toLowerCase(), index: Xy, on_kw: nv[0].toLowerCase(), table: Lw, index_columns: b2, include: iE, where: Ky, with: Iw && Iw[4], on: fA, filestream_on: Zy && { value: Zy[2] } } }, xn = Un) : (rr = xn, xn = $t)) : (rr = xn, xn = $t)) : (rr = xn, xn = $t)) : (rr = xn, xn = $t)) : (rr = xn, xn = $t)) : (rr = xn, xn = $t)) : (rr = xn, xn = $t);
             var e1, U0, Ry, Xy, nv, Lw, b2, iE, Ky, Iw, fA, Zy;
             return xn;
           }()) === $t && (qr = function() {
@@ -178799,9 +179089,9 @@ function requireBigInteger() {
           return (qr = function() {
             var xn, Un, qo, Go;
             xn = rr, (Un = Ev()) !== $t && ps() !== $t && $0() !== $t && ps() !== $t && (qo = Ht()) !== $t && ps() !== $t && (Go = function() {
-              var Dl, $u, zp, s0, E0, lm, dm, um;
+              var Dl, $u, zp, s0, E0, lm, hm, um;
               if (Dl = rr, ($u = ou()) !== $t) {
-                for (zp = [], s0 = rr, (E0 = ps()) !== $t && (lm = $v()) !== $t && (dm = ps()) !== $t && (um = ou()) !== $t ? s0 = E0 = [E0, lm, dm, um] : (rr = s0, s0 = $t); s0 !== $t; ) zp.push(s0), s0 = rr, (E0 = ps()) !== $t && (lm = $v()) !== $t && (dm = ps()) !== $t && (um = ou()) !== $t ? s0 = E0 = [E0, lm, dm, um] : (rr = s0, s0 = $t);
+                for (zp = [], s0 = rr, (E0 = ps()) !== $t && (lm = $v()) !== $t && (hm = ps()) !== $t && (um = ou()) !== $t ? s0 = E0 = [E0, lm, hm, um] : (rr = s0, s0 = $t); s0 !== $t; ) zp.push(s0), s0 = rr, (E0 = ps()) !== $t && (lm = $v()) !== $t && (hm = ps()) !== $t && (um = ou()) !== $t ? s0 = E0 = [E0, lm, hm, um] : (rr = s0, s0 = $t);
                 zp !== $t ? (Wt = Dl, $u = Bt($u, zp), Dl = $u) : (rr = Dl, Dl = $t);
               } else rr = Dl, Dl = $t;
               return Dl;
@@ -178811,24 +179101,24 @@ function requireBigInteger() {
           }()) === $t && (qr = function() {
             var xn, Un, qo, Go, us, Hs, Dl, $u, zp, s0, E0;
             return xn = rr, (Un = Ev()) !== $t && ps() !== $t && O0() !== $t && ps() !== $t && (qo = Ut()) !== $t && ps() !== $t ? (Go = rr, (us = Bv()) !== $t && (Hs = ps()) !== $t && (Dl = function() {
-              var lm, dm, um, g1, T1, Q1, rv, e1;
-              if (lm = rr, (dm = t$()) !== $t) {
+              var lm, hm, um, g1, T1, Q1, rv, e1;
+              if (lm = rr, (hm = t$()) !== $t) {
                 for (um = [], g1 = rr, (T1 = ps()) !== $t && (Q1 = $v()) !== $t && (rv = ps()) !== $t && (e1 = t$()) !== $t ? g1 = T1 = [T1, Q1, rv, e1] : (rr = g1, g1 = $t); g1 !== $t; ) um.push(g1), g1 = rr, (T1 = ps()) !== $t && (Q1 = $v()) !== $t && (rv = ps()) !== $t && (e1 = t$()) !== $t ? g1 = T1 = [T1, Q1, rv, e1] : (rr = g1, g1 = $t);
-                um !== $t ? (Wt = lm, dm = Bt(dm, um), lm = dm) : (rr = lm, lm = $t);
+                um !== $t ? (Wt = lm, hm = Bt(hm, um), lm = hm) : (rr = lm, lm = $t);
               } else rr = lm, lm = $t;
               return lm;
             }()) !== $t && ($u = ps()) !== $t && (zp = uA()) !== $t ? Go = us = [us, Hs, Dl, $u, zp] : (rr = Go, Go = $t), Go === $t && (Go = null), Go !== $t && (us = ps()) !== $t ? (Hs = rr, (Dl = Pn()) !== $t && ($u = ps()) !== $t && (zp = function() {
-              var lm, dm, um, g1, T1, Q1, rv, e1;
-              if (lm = rr, (dm = Qt()) !== $t) {
+              var lm, hm, um, g1, T1, Q1, rv, e1;
+              if (lm = rr, (hm = Qt()) !== $t) {
                 for (um = [], g1 = rr, (T1 = ps()) !== $t && (Q1 = $v()) !== $t && (rv = ps()) !== $t && (e1 = Qt()) !== $t ? g1 = T1 = [T1, Q1, rv, e1] : (rr = g1, g1 = $t); g1 !== $t; ) um.push(g1), g1 = rr, (T1 = ps()) !== $t && (Q1 = $v()) !== $t && (rv = ps()) !== $t && (e1 = Qt()) !== $t ? g1 = T1 = [T1, Q1, rv, e1] : (rr = g1, g1 = $t);
-                um !== $t ? (Wt = lm, dm = Rt(dm, um), lm = dm) : (rr = lm, lm = $t);
+                um !== $t ? (Wt = lm, hm = Rt(hm, um), lm = hm) : (rr = lm, lm = $t);
               } else rr = lm, lm = $t;
               return lm;
             }()) !== $t ? Hs = Dl = [Dl, $u, zp] : (rr = Hs, Hs = $t), Hs === $t && (Hs = null), Hs !== $t && (Dl = ps()) !== $t && ($u = Vp()) !== $t && (zp = ps()) !== $t && (s0 = $A()) !== $t && ps() !== $t ? ((E0 = function() {
-              var lm, dm, um;
-              return lm = rr, Pn() !== $t && ps() !== $t ? (Et.substr(rr, 5).toLowerCase() === "check" ? (dm = Et.substr(rr, 5), rr += 5) : (dm = $t, ys === 0 && ju(bo)), dm !== $t && ps() !== $t ? (Et.substr(rr, 6).toLowerCase() === "option" ? (um = Et.substr(rr, 6), rr += 6) : (um = $t, ys === 0 && ju(ho)), um !== $t ? (Wt = lm, lm = "with check option") : (rr = lm, lm = $t)) : (rr = lm, lm = $t)) : (rr = lm, lm = $t), lm;
-            }()) === $t && (E0 = null), E0 !== $t ? (Wt = xn, Un = function(lm, dm, um, g1, T1) {
-              return lm && lm.length > 0 && lm.forEach((Q1) => rA.add(`alter::${[Q1.server, Q1.db, Q1.schema].filter(Boolean).join(".") || null}::${Q1.table}`)), { tableList: Array.from(rA), columnList: iy(Xv), ast: { type: "alter", keyword: "view", view: lm, columns: dm && dm[2], attributes: um && um[2], select: g1, with: T1 } };
+              var lm, hm, um;
+              return lm = rr, Pn() !== $t && ps() !== $t ? (Et.substr(rr, 5).toLowerCase() === "check" ? (hm = Et.substr(rr, 5), rr += 5) : (hm = $t, ys === 0 && ju(bo)), hm !== $t && ps() !== $t ? (Et.substr(rr, 6).toLowerCase() === "option" ? (um = Et.substr(rr, 6), rr += 6) : (um = $t, ys === 0 && ju(ho)), um !== $t ? (Wt = lm, lm = "with check option") : (rr = lm, lm = $t)) : (rr = lm, lm = $t)) : (rr = lm, lm = $t), lm;
+            }()) === $t && (E0 = null), E0 !== $t ? (Wt = xn, Un = function(lm, hm, um, g1, T1) {
+              return lm && lm.length > 0 && lm.forEach((Q1) => rA.add(`alter::${[Q1.server, Q1.db, Q1.schema].filter(Boolean).join(".") || null}::${Q1.table}`)), { tableList: Array.from(rA), columnList: iy(Xv), ast: { type: "alter", keyword: "view", view: lm, columns: hm && hm[2], attributes: um && um[2], select: g1, with: T1 } };
             }(qo, Go, Hs, s0, E0), xn = Un) : (rr = xn, xn = $t)) : (rr = xn, xn = $t)) : (rr = xn, xn = $t)) : (rr = xn, xn = $t), xn;
           }()), qr;
         }()) === $t && (Tr = function() {
@@ -178871,9 +179161,9 @@ function requireBigInteger() {
         }()) === $t && (Tr = function() {
           var qr, xn, Un, qo, Go, us;
           qr = rr, (xn = u1()) !== $t && ps() !== $t && (Un = function() {
-            var Dl, $u, zp, s0, E0, lm, dm, um;
+            var Dl, $u, zp, s0, E0, lm, hm, um;
             if (Dl = rr, ($u = Bm()) !== $t) {
-              for (zp = [], s0 = rr, (E0 = ps()) !== $t && (lm = $v()) !== $t && (dm = ps()) !== $t && (um = Bm()) !== $t ? s0 = E0 = [E0, lm, dm, um] : (rr = s0, s0 = $t); s0 !== $t; ) zp.push(s0), s0 = rr, (E0 = ps()) !== $t && (lm = $v()) !== $t && (dm = ps()) !== $t && (um = Bm()) !== $t ? s0 = E0 = [E0, lm, dm, um] : (rr = s0, s0 = $t);
+              for (zp = [], s0 = rr, (E0 = ps()) !== $t && (lm = $v()) !== $t && (hm = ps()) !== $t && (um = Bm()) !== $t ? s0 = E0 = [E0, lm, hm, um] : (rr = s0, s0 = $t); s0 !== $t; ) zp.push(s0), s0 = rr, (E0 = ps()) !== $t && (lm = $v()) !== $t && (hm = ps()) !== $t && (um = Bm()) !== $t ? s0 = E0 = [E0, lm, hm, um] : (rr = s0, s0 = $t);
               zp !== $t ? (Wt = Dl, $u = Bt($u, zp), Dl = $u) : (rr = Dl, Dl = $t);
             } else rr = Dl, Dl = $t;
             return Dl;
@@ -178885,9 +179175,9 @@ function requireBigInteger() {
         }()) === $t && (Tr = function() {
           var qr, xn, Un, qo;
           qr = rr, Et.substr(rr, 7).toLowerCase() === "execute" ? (xn = Et.substr(rr, 7), rr += 7) : (xn = $t, ys === 0 && ju(Vr)), xn === $t && (Et.substr(rr, 4).toLowerCase() === "exec" ? (xn = Et.substr(rr, 4), rr += 4) : (xn = $t, ys === 0 && ju(sn))), xn !== $t && ps() !== $t && (Un = Ut()) !== $t && ps() !== $t ? ((qo = function() {
-            var Dl, $u, zp, s0, E0, lm, dm, um;
+            var Dl, $u, zp, s0, E0, lm, hm, um;
             if (Dl = rr, ($u = Oy()) !== $t) {
-              for (zp = [], s0 = rr, (E0 = ps()) !== $t && (lm = $v()) !== $t && (dm = ps()) !== $t && (um = Oy()) !== $t ? s0 = E0 = [E0, lm, dm, um] : (rr = s0, s0 = $t); s0 !== $t; ) zp.push(s0), s0 = rr, (E0 = ps()) !== $t && (lm = $v()) !== $t && (dm = ps()) !== $t && (um = Oy()) !== $t ? s0 = E0 = [E0, lm, dm, um] : (rr = s0, s0 = $t);
+              for (zp = [], s0 = rr, (E0 = ps()) !== $t && (lm = $v()) !== $t && (hm = ps()) !== $t && (um = Oy()) !== $t ? s0 = E0 = [E0, lm, hm, um] : (rr = s0, s0 = $t); s0 !== $t; ) zp.push(s0), s0 = rr, (E0 = ps()) !== $t && (lm = $v()) !== $t && (hm = ps()) !== $t && (um = Oy()) !== $t ? s0 = E0 = [E0, lm, hm, um] : (rr = s0, s0 = $t);
               zp !== $t ? (Wt = Dl, $u = K$($u, zp), Dl = $u) : (rr = Dl, Dl = $t);
             } else rr = Dl, Dl = $t;
             return Dl;
@@ -178896,8 +179186,8 @@ function requireBigInteger() {
           return qr;
         }()) === $t && (Tr = function() {
           var qr, xn, Un, qo, Go, us, Hs, Dl, $u, zp;
-          qr = rr, Et.substr(rr, 2).toLowerCase() === "if" ? (xn = Et.substr(rr, 2), rr += 2) : (xn = $t, ys === 0 && ju(En)), xn !== $t && ps() !== $t && (Un = ss()) !== $t && ps() !== $t && (qo = my()) !== $t && ps() !== $t ? ((Go = Zw()) === $t && (Go = null), Go !== $t && ps() !== $t ? ((us = Mo()) === $t && (us = null), us !== $t && ps() !== $t ? (Hs = rr, (Dl = Ll()) !== $t && ($u = ps()) !== $t && (zp = my()) !== $t ? Hs = Dl = [Dl, $u, zp] : (rr = Hs, Hs = $t), Hs === $t && (Hs = null), Hs !== $t && (Dl = ps()) !== $t ? (($u = Zw()) === $t && ($u = null), $u !== $t ? (Wt = qr, s0 = Un, E0 = qo, lm = Go, dm = us, um = Hs, g1 = $u, xn = { tableList: Array.from(rA), columnList: iy(Xv), ast: { type: "if", keyword: "if", boolean_expr: s0, semicolons: [lm || "", g1 || ""], go: dm, if_expr: E0, else_expr: um && um[2] } }, qr = xn) : (rr = qr, qr = $t)) : (rr = qr, qr = $t)) : (rr = qr, qr = $t)) : (rr = qr, qr = $t)) : (rr = qr, qr = $t);
-          var s0, E0, lm, dm, um, g1;
+          qr = rr, Et.substr(rr, 2).toLowerCase() === "if" ? (xn = Et.substr(rr, 2), rr += 2) : (xn = $t, ys === 0 && ju(En)), xn !== $t && ps() !== $t && (Un = ss()) !== $t && ps() !== $t && (qo = my()) !== $t && ps() !== $t ? ((Go = Zw()) === $t && (Go = null), Go !== $t && ps() !== $t ? ((us = Mo()) === $t && (us = null), us !== $t && ps() !== $t ? (Hs = rr, (Dl = Ll()) !== $t && ($u = ps()) !== $t && (zp = my()) !== $t ? Hs = Dl = [Dl, $u, zp] : (rr = Hs, Hs = $t), Hs === $t && (Hs = null), Hs !== $t && (Dl = ps()) !== $t ? (($u = Zw()) === $t && ($u = null), $u !== $t ? (Wt = qr, s0 = Un, E0 = qo, lm = Go, hm = us, um = Hs, g1 = $u, xn = { tableList: Array.from(rA), columnList: iy(Xv), ast: { type: "if", keyword: "if", boolean_expr: s0, semicolons: [lm || "", g1 || ""], go: hm, if_expr: E0, else_expr: um && um[2] } }, qr = xn) : (rr = qr, qr = $t)) : (rr = qr, qr = $t)) : (rr = qr, qr = $t)) : (rr = qr, qr = $t)) : (rr = qr, qr = $t);
+          var s0, E0, lm, hm, um, g1;
           return qr;
         }()), Tr;
       }
@@ -178906,18 +179196,18 @@ function requireBigInteger() {
         return (Tr = p_()) === $t && (Tr = function() {
           var qr, xn, Un, qo, Go, us, Hs;
           return qr = rr, (xn = ps()) !== $t ? ((Un = Yy()) === $t && (Un = null), Un !== $t && ps() !== $t && Yr() !== $t && ps() !== $t && (qo = Ht()) !== $t && ps() !== $t && Bu() !== $t && ps() !== $t && (Go = function() {
-            var Dl, $u, zp, s0, E0, lm, dm, um;
+            var Dl, $u, zp, s0, E0, lm, hm, um;
             if (Dl = rr, ($u = kn()) !== $t) {
-              for (zp = [], s0 = rr, (E0 = ps()) !== $t && (lm = $v()) !== $t && (dm = ps()) !== $t && (um = kn()) !== $t ? s0 = E0 = [E0, lm, dm, um] : (rr = s0, s0 = $t); s0 !== $t; ) zp.push(s0), s0 = rr, (E0 = ps()) !== $t && (lm = $v()) !== $t && (dm = ps()) !== $t && (um = kn()) !== $t ? s0 = E0 = [E0, lm, dm, um] : (rr = s0, s0 = $t);
+              for (zp = [], s0 = rr, (E0 = ps()) !== $t && (lm = $v()) !== $t && (hm = ps()) !== $t && (um = kn()) !== $t ? s0 = E0 = [E0, lm, hm, um] : (rr = s0, s0 = $t); s0 !== $t; ) zp.push(s0), s0 = rr, (E0 = ps()) !== $t && (lm = $v()) !== $t && (hm = ps()) !== $t && (um = kn()) !== $t ? s0 = E0 = [E0, lm, hm, um] : (rr = s0, s0 = $t);
               zp !== $t ? (Wt = Dl, $u = Bt($u, zp), Dl = $u) : (rr = Dl, Dl = $t);
             } else rr = Dl, Dl = $t;
             return Dl;
           }()) !== $t && ps() !== $t ? ((us = Xl()) === $t && (us = null), us !== $t && ps() !== $t ? ((Hs = Ym()) === $t && (Hs = null), Hs !== $t ? (Wt = qr, xn = function(Dl, $u, zp, s0, E0) {
-            const lm = {}, dm = (um) => {
+            const lm = {}, hm = (um) => {
               const { server: g1, db: T1, schema: Q1, as: rv, table: e1, join: U0 } = um, Ry = U0 ? "select" : "update", Xy = [g1, T1, Q1].filter(Boolean).join(".") || null;
               T1 && (lm[e1] = Xy), e1 && rA.add(`${Ry}::${Xy}::${e1}`);
             };
-            return $u && $u.forEach(dm), s0 && s0.forEach(dm), zp && zp.forEach((um) => {
+            return $u && $u.forEach(hm), s0 && s0.forEach(hm), zp && zp.forEach((um) => {
               if (um.table) {
                 const g1 = Ow(um.table);
                 rA.add(`update::${lm[g1] || null}::${g1}`);
@@ -178930,9 +179220,9 @@ function requireBigInteger() {
           return qr = rr, (xn = Zl()) !== $t && ps() !== $t ? ((Un = Gs()) === $t && (Un = null), Un !== $t && ps() !== $t && (qo = Ut()) !== $t && ps() !== $t ? ((Go = Ls()) === $t && (Go = null), Go !== $t && ps() !== $t && Bv() !== $t && ps() !== $t && (us = a1()) !== $t && ps() !== $t && uA() !== $t && ps() !== $t && (Hs = hs()) !== $t ? (Wt = qr, xn = function(Dl, $u, zp, s0, E0) {
             if ($u && (rA.add(`insert::${[$u.server, $u.db, $u.schema].filter(Boolean).join(".") || null}::${$u.table}`), $u.as = null), s0) {
               let lm = $u && $u.table || null;
-              Array.isArray(E0.values) && E0.values.forEach((dm, um) => {
-                if (dm.value.length != s0.length) throw new Error("Error: column count doesn't match value count at row " + (um + 1));
-              }), s0.forEach((dm) => Xv.add(`insert::${lm}::${dm}`));
+              Array.isArray(E0.values) && E0.values.forEach((hm, um) => {
+                if (hm.value.length != s0.length) throw new Error("Error: column count doesn't match value count at row " + (um + 1));
+              }), s0.forEach((hm) => Xv.add(`insert::${lm}::${hm}`));
             }
             return { tableList: Array.from(rA), columnList: iy(Xv), ast: { type: Dl, table: [$u], columns: s0, values: E0, partition: zp } };
           }(xn, qo, Go, us, Hs), qr = xn) : (rr = qr, qr = $t)) : (rr = qr, qr = $t)) : (rr = qr, qr = $t), qr;
@@ -178940,15 +179230,15 @@ function requireBigInteger() {
           var qr, xn, Un, qo, Go, us, Hs;
           return qr = rr, (xn = Zl()) !== $t && ps() !== $t ? ((Un = gs()) === $t && (Un = null), Un !== $t && ps() !== $t ? ((qo = Gs()) === $t && (qo = null), qo !== $t && ps() !== $t && (Go = Ut()) !== $t && ps() !== $t ? ((us = Ls()) === $t && (us = null), us !== $t && ps() !== $t && (Hs = hs()) !== $t ? (Wt = qr, xn = function(Dl, $u, zp, s0, E0, lm) {
             s0 && (rA.add(`insert::${[s0.server, s0.db, s0.schema].filter(Boolean).join(".") || null}::${s0.table}`), Xv.add(`insert::${s0.table}::(.*)`), s0.as = null);
-            const dm = [$u, zp].filter((um) => um).map((um) => um[0] && um[0].toLowerCase()).join(" ");
-            return { tableList: Array.from(rA), columnList: iy(Xv), ast: { type: Dl, table: [s0], columns: null, values: lm, partition: E0, prefix: dm } };
+            const hm = [$u, zp].filter((um) => um).map((um) => um[0] && um[0].toLowerCase()).join(" ");
+            return { tableList: Array.from(rA), columnList: iy(Xv), ast: { type: Dl, table: [s0], columns: null, values: lm, partition: E0, prefix: hm } };
           }(xn, Un, qo, Go, us, Hs), qr = xn) : (rr = qr, qr = $t)) : (rr = qr, qr = $t)) : (rr = qr, qr = $t)) : (rr = qr, qr = $t), qr;
         }()) === $t && (Tr = function() {
           var qr, xn, Un, qo, Go;
           return qr = rr, (xn = qn()) !== $t && ps() !== $t ? ((Un = Ht()) === $t && (Un = null), Un !== $t && ps() !== $t && (qo = Xl()) !== $t && ps() !== $t ? ((Go = Ym()) === $t && (Go = null), Go !== $t ? (Wt = qr, xn = function(us, Hs, Dl) {
             if (Hs && Hs.forEach(($u) => {
-              const { server: zp, db: s0, schema: E0, as: lm, table: dm, join: um } = $u, g1 = um ? "select" : "delete", T1 = [zp, s0, E0].filter(Boolean).join(".") || null;
-              dm && rA.add(`${g1}::${T1}::${dm}`), um || Xv.add(`delete::${dm}::(.*)`);
+              const { server: zp, db: s0, schema: E0, as: lm, table: hm, join: um } = $u, g1 = um ? "select" : "delete", T1 = [zp, s0, E0].filter(Boolean).join(".") || null;
+              hm && rA.add(`${g1}::${T1}::${hm}`), um || Xv.add(`delete::${hm}::(.*)`);
             }), us === null && Hs.length === 1) {
               const $u = Hs[0];
               us = [{ db: $u.db, schema: $u.schema, table: $u.table, as: $u.as, addition: !0 }];
@@ -179029,8 +179319,8 @@ function requireBigInteger() {
           const us = [];
           return Go && us.push("primary"), us.push("key"), { primary_key: us.join(" ").toLowerCase("") };
         }(qr)) : (rr = Tr, Tr = $t)) : (rr = Tr, Tr = $t), Tr === $t && (Tr = rr, (qr = function() {
-          var Go, us, Hs, Dl, $u, zp, s0, E0, lm, dm, um, g1;
-          return Go = rr, Et.substr(rr, 8).toLowerCase() === "identity" ? (us = Et.substr(rr, 8), rr += 8) : (us = $t, ys === 0 && ju(Jt)), us !== $t && ps() !== $t ? (Hs = rr, (Dl = Bv()) !== $t && ($u = ps()) !== $t && (zp = Dn()) !== $t && (s0 = ps()) !== $t && (E0 = $v()) !== $t && (lm = ps()) !== $t && (dm = Dn()) !== $t && (um = ps()) !== $t && (g1 = uA()) !== $t ? Hs = Dl = [Dl, $u, zp, s0, E0, lm, dm, um, g1] : (rr = Hs, Hs = $t), Hs === $t && (Hs = null), Hs !== $t ? (Wt = Go, us = function(T1) {
+          var Go, us, Hs, Dl, $u, zp, s0, E0, lm, hm, um, g1;
+          return Go = rr, Et.substr(rr, 8).toLowerCase() === "identity" ? (us = Et.substr(rr, 8), rr += 8) : (us = $t, ys === 0 && ju(Jt)), us !== $t && ps() !== $t ? (Hs = rr, (Dl = Bv()) !== $t && ($u = ps()) !== $t && (zp = Dn()) !== $t && (s0 = ps()) !== $t && (E0 = $v()) !== $t && (lm = ps()) !== $t && (hm = Dn()) !== $t && (um = ps()) !== $t && (g1 = uA()) !== $t ? Hs = Dl = [Dl, $u, zp, s0, E0, lm, hm, um, g1] : (rr = Hs, Hs = $t), Hs === $t && (Hs = null), Hs !== $t ? (Wt = Go, us = function(T1) {
             return { keyword: "identity", seed: T1 && T1[2], increment: T1 && T1[6], parentheses: !!T1 };
           }(Hs), Go = us) : (rr = Go, Go = $t)) : (rr = Go, Go = $t), Go;
         }()) !== $t && (Wt = Tr, qr = { auto_increment: qr }), (Tr = qr) === $t && (Tr = rr, (qr = a2()) !== $t && (Wt = Tr, qr = { comment: qr }), (Tr = qr) === $t && (Tr = rr, (qr = WA()) !== $t && (Wt = Tr, qr = { collate: qr }), (Tr = qr) === $t && (Tr = rr, (qr = function() {
@@ -179050,9 +179340,9 @@ function requireBigInteger() {
           if (us = rr, (Hs = r_()) !== $t) if (ps() !== $t) {
             for (Dl = [], $u = rr, (zp = ps()) !== $t && (s0 = r_()) !== $t ? $u = zp = [zp, s0] : (rr = $u, $u = $t); $u !== $t; ) Dl.push($u), $u = rr, (zp = ps()) !== $t && (s0 = r_()) !== $t ? $u = zp = [zp, s0] : (rr = $u, $u = $t);
             Dl !== $t ? (Wt = us, us = Hs = function(E0, lm) {
-              let dm = E0;
-              for (let um = 0; um < lm.length; um++) dm = { ...dm, ...lm[um][1] };
-              return dm;
+              let hm = E0;
+              for (let um = 0; um < lm.length; um++) hm = { ...hm, ...lm[um][1] };
+              return hm;
             }(Hs, Dl)) : (rr = us, us = $t);
           } else rr = us, us = $t;
           else rr = us, us = $t;
@@ -179170,8 +179460,8 @@ function requireBigInteger() {
         return (Tr = function() {
           var qr, xn, Un, qo, Go, us;
           qr = rr, (xn = Dv()) === $t && (xn = null), xn !== $t && ps() !== $t ? (Et.substr(rr, 11).toLowerCase() === "primary key" ? (Un = Et.substr(rr, 11), rr += 11) : (Un = $t, ys === 0 && ju(ms)), Un !== $t && ps() !== $t ? ((qo = Ln()) === $t && (qo = null), qo !== $t && ps() !== $t && (Go = ny()) !== $t && ps() !== $t ? ((us = function() {
-            var E0, lm, dm, um;
-            return E0 = rr, (lm = Pn()) !== $t && ps() !== $t && Bv() !== $t && ps() !== $t && (dm = Sn()) !== $t && ps() !== $t && uA() !== $t && ps() !== $t && om() !== $t && ps() !== $t && p2() !== $t && ps() !== $t && (um = x$()) !== $t && ps() !== $t && n2() !== $t ? (Wt = E0, E0 = lm = { with: dm, on: um }) : (rr = E0, E0 = $t), E0 === $t && (E0 = rr, (lm = Qn()) === $t && (lm = Sn()), lm !== $t && (Wt = E0, lm = /* @__PURE__ */ function(g1) {
+            var E0, lm, hm, um;
+            return E0 = rr, (lm = Pn()) !== $t && ps() !== $t && Bv() !== $t && ps() !== $t && (hm = Sn()) !== $t && ps() !== $t && uA() !== $t && ps() !== $t && om() !== $t && ps() !== $t && p2() !== $t && ps() !== $t && (um = x$()) !== $t && ps() !== $t && n2() !== $t ? (Wt = E0, E0 = lm = { with: hm, on: um }) : (rr = E0, E0 = $t), E0 === $t && (E0 = rr, (lm = Qn()) === $t && (lm = Sn()), lm !== $t && (Wt = E0, lm = /* @__PURE__ */ function(g1) {
               return { index_options: g1 };
             }(lm)), E0 = lm), E0;
           }()) === $t && (us = null), us !== $t ? (Wt = qr, Dl = Un, $u = qo, zp = Go, s0 = us, xn = { constraint: (Hs = xn) && Hs.constraint, definition: zp, constraint_type: Dl.toLowerCase(), keyword: Hs && Hs.keyword, index_type: $u, resource: "constraint", ...s0 }, qr = xn) : (rr = qr, qr = $t)) : (rr = qr, qr = $t)) : (rr = qr, qr = $t)) : (rr = qr, qr = $t);
@@ -179179,8 +179469,8 @@ function requireBigInteger() {
           return qr;
         }()) === $t && (Tr = function() {
           var qr, xn, Un, qo, Go, us, Hs, Dl;
-          qr = rr, (xn = Dv()) === $t && (xn = null), xn !== $t && ps() !== $t && (Un = gE()) !== $t && ps() !== $t ? ((qo = mw()) === $t && (qo = nE()), qo === $t && (qo = null), qo !== $t && ps() !== $t ? ((Go = j$()) === $t && (Go = null), Go !== $t && ps() !== $t ? ((us = Ln()) === $t && (us = null), us !== $t && ps() !== $t && (Hs = ny()) !== $t && ps() !== $t ? ((Dl = Qn()) === $t && (Dl = null), Dl !== $t ? (Wt = qr, zp = Un, s0 = qo, E0 = Go, lm = us, dm = Hs, um = Dl, xn = { constraint: ($u = xn) && $u.constraint, definition: dm, constraint_type: s0 && `${zp.toLowerCase()} ${s0.toLowerCase()}` || zp.toLowerCase(), keyword: $u && $u.keyword, index_type: lm, index: E0, resource: "constraint", index_options: um }, qr = xn) : (rr = qr, qr = $t)) : (rr = qr, qr = $t)) : (rr = qr, qr = $t)) : (rr = qr, qr = $t)) : (rr = qr, qr = $t);
-          var $u, zp, s0, E0, lm, dm, um;
+          qr = rr, (xn = Dv()) === $t && (xn = null), xn !== $t && ps() !== $t && (Un = gE()) !== $t && ps() !== $t ? ((qo = mw()) === $t && (qo = nE()), qo === $t && (qo = null), qo !== $t && ps() !== $t ? ((Go = j$()) === $t && (Go = null), Go !== $t && ps() !== $t ? ((us = Ln()) === $t && (us = null), us !== $t && ps() !== $t && (Hs = ny()) !== $t && ps() !== $t ? ((Dl = Qn()) === $t && (Dl = null), Dl !== $t ? (Wt = qr, zp = Un, s0 = qo, E0 = Go, lm = us, hm = Hs, um = Dl, xn = { constraint: ($u = xn) && $u.constraint, definition: hm, constraint_type: s0 && `${zp.toLowerCase()} ${s0.toLowerCase()}` || zp.toLowerCase(), keyword: $u && $u.keyword, index_type: lm, index: E0, resource: "constraint", index_options: um }, qr = xn) : (rr = qr, qr = $t)) : (rr = qr, qr = $t)) : (rr = qr, qr = $t)) : (rr = qr, qr = $t)) : (rr = qr, qr = $t);
+          var $u, zp, s0, E0, lm, hm, um;
           return qr;
         }()) === $t && (Tr = function() {
           var qr, xn, Un, qo, Go, us;
@@ -179189,8 +179479,8 @@ function requireBigInteger() {
           return qr;
         }()) === $t && (Tr = gm()) === $t && (Tr = function() {
           var qr, xn, Un, qo, Go, us, Hs, Dl, $u, zp;
-          return qr = rr, (xn = Dv()) === $t && (xn = null), xn !== $t && ps() !== $t && (Un = c1()) !== $t && ps() !== $t && (qo = Is()) !== $t && ps() !== $t ? (Et.substr(rr, 3).toLowerCase() === "for" ? (Go = Et.substr(rr, 3), rr += 3) : (Go = $t, ys === 0 && ju(Ns)), Go !== $t && ps() !== $t ? ((us = j$()) === $t && (us = null), us !== $t && ps() !== $t ? (Hs = rr, (Dl = Pn()) !== $t && ($u = ps()) !== $t && (zp = mn()) !== $t ? Hs = Dl = [Dl, $u, zp] : (rr = Hs, Hs = $t), Hs === $t && (Hs = null), Hs !== $t ? (Wt = qr, xn = function(s0, E0, lm, dm, um) {
-            return { constraint_type: E0[0].toLowerCase(), keyword: s0 && s0.keyword, constraint: s0 && s0.constraint, definition: [lm], resource: "constraint", for: dm, with_values: um && { type: "origin", value: "with values" } };
+          return qr = rr, (xn = Dv()) === $t && (xn = null), xn !== $t && ps() !== $t && (Un = c1()) !== $t && ps() !== $t && (qo = Is()) !== $t && ps() !== $t ? (Et.substr(rr, 3).toLowerCase() === "for" ? (Go = Et.substr(rr, 3), rr += 3) : (Go = $t, ys === 0 && ju(Ns)), Go !== $t && ps() !== $t ? ((us = j$()) === $t && (us = null), us !== $t && ps() !== $t ? (Hs = rr, (Dl = Pn()) !== $t && ($u = ps()) !== $t && (zp = mn()) !== $t ? Hs = Dl = [Dl, $u, zp] : (rr = Hs, Hs = $t), Hs === $t && (Hs = null), Hs !== $t ? (Wt = qr, xn = function(s0, E0, lm, hm, um) {
+            return { constraint_type: E0[0].toLowerCase(), keyword: s0 && s0.keyword, constraint: s0 && s0.constraint, definition: [lm], resource: "constraint", for: hm, with_values: um && { type: "origin", value: "with values" } };
           }(xn, Un, qo, us, Hs), qr = xn) : (rr = qr, qr = $t)) : (rr = qr, qr = $t)) : (rr = qr, qr = $t)) : (rr = qr, qr = $t), qr;
         }()), Tr;
       }
@@ -179258,8 +179548,8 @@ function requireBigInteger() {
         else rr = Tr, Tr = $t;
         else rr = Tr, Tr = $t;
         if (Tr === $t) if (Tr = rr, ps() !== $t) if (Pn() !== $t) if ((qr = ps()) !== $t) if ((xn = function() {
-          var lm, dm, um, g1;
-          return lm = rr, Et.substr(rr, 9).toLowerCase() === "recursive" ? (dm = Et.substr(rr, 9), rr += 9) : (dm = $t, ys === 0 && ju(t_)), dm !== $t ? (um = rr, ys++, g1 = Lm(), ys--, g1 === $t ? um = void 0 : (rr = um, um = $t), um !== $t ? lm = dm = [dm, um] : (rr = lm, lm = $t)) : (rr = lm, lm = $t), lm;
+          var lm, hm, um, g1;
+          return lm = rr, Et.substr(rr, 9).toLowerCase() === "recursive" ? (hm = Et.substr(rr, 9), rr += 9) : (hm = $t, ys === 0 && ju(t_)), hm !== $t ? (um = rr, ys++, g1 = Lm(), ys--, g1 === $t ? um = void 0 : (rr = um, um = $t), um !== $t ? lm = hm = [hm, um] : (rr = lm, lm = $t)) : (rr = lm, lm = $t), lm;
         }()) !== $t) if ((Un = ps()) !== $t) if ((qo = cv()) !== $t) {
           for (Go = [], us = rr, (Hs = ps()) !== $t && (Dl = $v()) !== $t && ($u = ps()) !== $t && (zp = cv()) !== $t ? us = Hs = [Hs, Dl, $u, zp] : (rr = us, us = $t); us !== $t; ) Go.push(us), us = rr, (Hs = ps()) !== $t && (Dl = $v()) !== $t && ($u = ps()) !== $t && (zp = cv()) !== $t ? us = Hs = [Hs, Dl, $u, zp] : (rr = us, us = $t);
           Go !== $t ? (Wt = Tr, E0 = Go, (s0 = qo).recursive = !0, Tr = K$(s0, E0)) : (rr = Tr, Tr = $t);
@@ -179284,41 +179574,41 @@ function requireBigInteger() {
       function $A() {
         var Tr, qr, xn, Un, qo, Go, us, Hs, Dl, $u, zp, s0, E0, lm;
         return Tr = rr, ps() !== $t ? ((qr = Yy()) === $t && (qr = null), qr !== $t && ps() !== $t && function() {
-          var dm, um, g1, T1;
-          return dm = rr, Et.substr(rr, 6).toLowerCase() === "select" ? (um = Et.substr(rr, 6), rr += 6) : (um = $t, ys === 0 && ju(y_)), um !== $t ? (g1 = rr, ys++, T1 = Lm(), ys--, T1 === $t ? g1 = void 0 : (rr = g1, g1 = $t), g1 !== $t ? dm = um = [um, g1] : (rr = dm, dm = $t)) : (rr = dm, dm = $t), dm;
+          var hm, um, g1, T1;
+          return hm = rr, Et.substr(rr, 6).toLowerCase() === "select" ? (um = Et.substr(rr, 6), rr += 6) : (um = $t, ys === 0 && ju(y_)), um !== $t ? (g1 = rr, ys++, T1 = Lm(), ys--, T1 === $t ? g1 = void 0 : (rr = g1, g1 = $t), g1 !== $t ? hm = um = [um, g1] : (rr = hm, hm = $t)) : (rr = hm, hm = $t), hm;
         }() !== $t && Gx() !== $t ? ((xn = function() {
-          var dm, um, g1, T1, Q1, rv;
-          if (dm = rr, (um = Wv()) !== $t) {
+          var hm, um, g1, T1, Q1, rv;
+          if (hm = rr, (um = Wv()) !== $t) {
             for (g1 = [], T1 = rr, (Q1 = ps()) !== $t && (rv = Wv()) !== $t ? T1 = Q1 = [Q1, rv] : (rr = T1, T1 = $t); T1 !== $t; ) g1.push(T1), T1 = rr, (Q1 = ps()) !== $t && (rv = Wv()) !== $t ? T1 = Q1 = [Q1, rv] : (rr = T1, T1 = $t);
-            g1 !== $t ? (Wt = dm, um = function(e1, U0) {
+            g1 !== $t ? (Wt = hm, um = function(e1, U0) {
               const Ry = [e1];
               for (let Xy = 0, nv = U0.length; Xy < nv; ++Xy) Ry.push(U0[Xy][1]);
               return Ry;
-            }(um, g1), dm = um) : (rr = dm, dm = $t);
-          } else rr = dm, dm = $t;
-          return dm;
+            }(um, g1), hm = um) : (rr = hm, hm = $t);
+          } else rr = hm, hm = $t;
+          return hm;
         }()) === $t && (xn = null), xn !== $t && ps() !== $t ? ((Un = Mr()) === $t && (Un = null), Un !== $t && ps() !== $t ? ((qo = function() {
-          var dm, um, g1, T1, Q1;
-          dm = rr, (um = m$()) !== $t && ps() !== $t && (g1 = Bv()) !== $t && ps() !== $t && (T1 = Cs()) !== $t && ps() !== $t && uA() !== $t && ps() !== $t ? (Et.substr(rr, 7).toLowerCase() === "percent" ? (Q1 = Et.substr(rr, 7), rr += 7) : (Q1 = $t, ys === 0 && ju(TA)), Q1 === $t && (Q1 = null), Q1 !== $t ? (Wt = dm, um = { value: T1, percent: (rv = Q1) && rv.toLowerCase(), parentheses: !0 }, dm = um) : (rr = dm, dm = $t)) : (rr = dm, dm = $t);
+          var hm, um, g1, T1, Q1;
+          hm = rr, (um = m$()) !== $t && ps() !== $t && (g1 = Bv()) !== $t && ps() !== $t && (T1 = Cs()) !== $t && ps() !== $t && uA() !== $t && ps() !== $t ? (Et.substr(rr, 7).toLowerCase() === "percent" ? (Q1 = Et.substr(rr, 7), rr += 7) : (Q1 = $t, ys === 0 && ju(TA)), Q1 === $t && (Q1 = null), Q1 !== $t ? (Wt = hm, um = { value: T1, percent: (rv = Q1) && rv.toLowerCase(), parentheses: !0 }, hm = um) : (rr = hm, hm = $t)) : (rr = hm, hm = $t);
           var rv;
-          return dm === $t && (dm = rr, (um = m$()) !== $t && ps() !== $t && (g1 = Cs()) !== $t && ps() !== $t ? (Et.substr(rr, 7).toLowerCase() === "percent" ? (T1 = Et.substr(rr, 7), rr += 7) : (T1 = $t, ys === 0 && ju(TA)), T1 === $t && (T1 = null), T1 !== $t ? (Wt = dm, um = function(e1, U0) {
+          return hm === $t && (hm = rr, (um = m$()) !== $t && ps() !== $t && (g1 = Cs()) !== $t && ps() !== $t ? (Et.substr(rr, 7).toLowerCase() === "percent" ? (T1 = Et.substr(rr, 7), rr += 7) : (T1 = $t, ys === 0 && ju(TA)), T1 === $t && (T1 = null), T1 !== $t ? (Wt = hm, um = function(e1, U0) {
             return { value: e1, percent: U0 && U0.toLowerCase() };
-          }(g1, T1), dm = um) : (rr = dm, dm = $t)) : (rr = dm, dm = $t)), dm;
+          }(g1, T1), hm = um) : (rr = hm, hm = $t)) : (rr = hm, hm = $t)), hm;
         }()) === $t && (qo = null), qo !== $t && ps() !== $t && (Go = Ux()) !== $t && ps() !== $t ? ((us = function() {
-          var dm, um;
-          return dm = rr, Gs() !== $t && ps() !== $t && (um = K1()) !== $t ? (Wt = dm, dm = { type: "into", expr: um }) : (rr = dm, dm = $t), dm;
+          var hm, um;
+          return hm = rr, Gs() !== $t && ps() !== $t && (um = K1()) !== $t ? (Wt = hm, hm = { type: "into", expr: um }) : (rr = hm, hm = $t), hm;
         }()) === $t && (us = null), us !== $t && ps() !== $t ? ((Hs = Xl()) === $t && (Hs = null), Hs !== $t && ps() !== $t ? ((Dl = Ym()) === $t && (Dl = null), Dl !== $t && ps() !== $t ? (($u = function() {
-          var dm, um, g1;
-          return dm = rr, (um = Jo()) !== $t && ps() !== $t && xs() !== $t && ps() !== $t && (g1 = ns()) !== $t ? (Wt = dm, um = { columns: g1.value }, dm = um) : (rr = dm, dm = $t), dm;
+          var hm, um, g1;
+          return hm = rr, (um = Jo()) !== $t && ps() !== $t && xs() !== $t && ps() !== $t && (g1 = ns()) !== $t ? (Wt = hm, um = { columns: g1.value }, hm = um) : (rr = hm, hm = $t), hm;
         }()) === $t && ($u = null), $u !== $t && ps() !== $t ? ((zp = function() {
-          var dm, um;
-          return dm = rr, function() {
+          var hm, um;
+          return hm = rr, function() {
             var g1, T1, Q1, rv;
             return g1 = rr, Et.substr(rr, 6).toLowerCase() === "having" ? (T1 = Et.substr(rr, 6), rr += 6) : (T1 = $t, ys === 0 && ju(Mx)), T1 !== $t ? (Q1 = rr, ys++, rv = Lm(), ys--, rv === $t ? Q1 = void 0 : (rr = Q1, Q1 = $t), Q1 !== $t ? g1 = T1 = [T1, Q1] : (rr = g1, g1 = $t)) : (rr = g1, g1 = $t), g1;
-          }() !== $t && ps() !== $t && (um = Is()) !== $t ? (Wt = dm, dm = um) : (rr = dm, dm = $t), dm;
+          }() !== $t && ps() !== $t && (um = Is()) !== $t ? (Wt = hm, hm = um) : (rr = hm, hm = $t), hm;
         }()) === $t && (zp = null), zp !== $t && ps() !== $t ? ((s0 = Pr()) === $t && (s0 = null), s0 !== $t && ps() !== $t ? ((E0 = io()) === $t && (E0 = null), E0 !== $t && ps() !== $t ? ((lm = function() {
-          var dm;
-          return (dm = function() {
+          var hm;
+          return (hm = function() {
             var um, g1, T1, Q1;
             um = rr, Et.substr(rr, 3).toLowerCase() === "for" ? (g1 = Et.substr(rr, 3), rr += 3) : (g1 = $t, ys === 0 && ju(Ns)), g1 !== $t && ps() !== $t ? (Et.substr(rr, 4).toLowerCase() === "json" ? (T1 = Et.substr(rr, 4), rr += 4) : (T1 = $t, ys === 0 && ju(j1)), T1 !== $t && ps() !== $t && (Q1 = function() {
               var e1, U0;
@@ -179326,7 +179616,7 @@ function requireBigInteger() {
             }()) !== $t ? (Wt = um, rv = Q1, g1 = { type: "for json", ...rv }, um = g1) : (rr = um, um = $t)) : (rr = um, um = $t);
             var rv;
             return um;
-          }()) === $t && (dm = function() {
+          }()) === $t && (hm = function() {
             var um, g1, T1, Q1;
             um = rr, Et.substr(rr, 3).toLowerCase() === "for" ? (g1 = Et.substr(rr, 3), rr += 3) : (g1 = $t, ys === 0 && ju(Ns)), g1 !== $t && ps() !== $t ? (Et.substr(rr, 3).toLowerCase() === "xml" ? (T1 = Et.substr(rr, 3), rr += 3) : (T1 = $t, ys === 0 && ju(r$)), T1 !== $t && ps() !== $t && (Q1 = function() {
               var e1, U0, Ry, Xy, nv, Lw, b2, iE;
@@ -179336,9 +179626,9 @@ function requireBigInteger() {
             }()) !== $t ? (Wt = um, rv = Q1, g1 = { type: "for xml", ...rv }, um = g1) : (rr = um, um = $t)) : (rr = um, um = $t);
             var rv;
             return um;
-          }()), dm;
-        }()) === $t && (lm = null), lm !== $t ? (Wt = Tr, Tr = function(dm, um, g1, T1, Q1, rv, e1, U0, Ry, Xy, nv, Lw, b2) {
-          return e1 && e1.forEach((iE) => iE.table && rA.add(`select::${[iE.server, iE.db, iE.schema].filter(Boolean).join(".") || null}::${iE.table}`)), { with: dm, type: "select", options: um, distinct: g1, columns: Q1, into: { ...rv || {}, position: rv && "column" }, from: e1, for: b2, where: U0, groupby: Ry, having: Xy, top: T1, orderby: nv, limit: Lw };
+          }()), hm;
+        }()) === $t && (lm = null), lm !== $t ? (Wt = Tr, Tr = function(hm, um, g1, T1, Q1, rv, e1, U0, Ry, Xy, nv, Lw, b2) {
+          return e1 && e1.forEach((iE) => iE.table && rA.add(`select::${[iE.server, iE.db, iE.schema].filter(Boolean).join(".") || null}::${iE.table}`)), { with: hm, type: "select", options: um, distinct: g1, columns: Q1, into: { ...rv || {}, position: rv && "column" }, from: e1, for: b2, where: U0, groupby: Ry, having: Xy, top: T1, orderby: nv, limit: Lw };
         }(qr, xn, Un, qo, Go, us, Hs, Dl, $u, zp, s0, E0, lm)) : (rr = Tr, Tr = $t)) : (rr = Tr, Tr = $t)) : (rr = Tr, Tr = $t)) : (rr = Tr, Tr = $t)) : (rr = Tr, Tr = $t)) : (rr = Tr, Tr = $t)) : (rr = Tr, Tr = $t)) : (rr = Tr, Tr = $t)) : (rr = Tr, Tr = $t)) : (rr = Tr, Tr = $t)) : (rr = Tr, Tr = $t)) : (rr = Tr, Tr = $t)) : (rr = Tr, Tr = $t), Tr;
       }
       function Wv() {
@@ -179385,9 +179675,9 @@ function requireBigInteger() {
           const Dl = Hs && Hs[0] || null;
           return Xv.add(`select::${Dl}::(.*)`), { expr: { type: "column_ref", table: Dl, column: "*" }, as: null };
         }(qr)) : (rr = Tr, Tr = $t), Tr === $t && (Tr = rr, (qr = function() {
-          var Hs, Dl, $u, zp, s0, E0, lm, dm;
+          var Hs, Dl, $u, zp, s0, E0, lm, hm;
           if (Hs = rr, (Dl = ss()) !== $t) {
-            for ($u = [], zp = rr, (s0 = ps()) !== $t ? ((E0 = Xs()) === $t && (E0 = Bl()) === $t && (E0 = $E()), E0 !== $t && (lm = ps()) !== $t && (dm = ss()) !== $t ? zp = s0 = [s0, E0, lm, dm] : (rr = zp, zp = $t)) : (rr = zp, zp = $t); zp !== $t; ) $u.push(zp), zp = rr, (s0 = ps()) !== $t ? ((E0 = Xs()) === $t && (E0 = Bl()) === $t && (E0 = $E()), E0 !== $t && (lm = ps()) !== $t && (dm = ss()) !== $t ? zp = s0 = [s0, E0, lm, dm] : (rr = zp, zp = $t)) : (rr = zp, zp = $t);
+            for ($u = [], zp = rr, (s0 = ps()) !== $t ? ((E0 = Xs()) === $t && (E0 = Bl()) === $t && (E0 = $E()), E0 !== $t && (lm = ps()) !== $t && (hm = ss()) !== $t ? zp = s0 = [s0, E0, lm, hm] : (rr = zp, zp = $t)) : (rr = zp, zp = $t); zp !== $t; ) $u.push(zp), zp = rr, (s0 = ps()) !== $t ? ((E0 = Xs()) === $t && (E0 = Bl()) === $t && (E0 = $E()), E0 !== $t && (lm = ps()) !== $t && (hm = ss()) !== $t ? zp = s0 = [s0, E0, lm, hm] : (rr = zp, zp = $t)) : (rr = zp, zp = $t);
             $u !== $t ? (Wt = Hs, Dl = function(um, g1) {
               const T1 = um.ast;
               if (T1 && T1.type === "select" && (!(um.parentheses_symbol || um.parentheses || um.ast.parentheses || um.ast.parentheses_symbol) || T1.columns.length !== 1 || T1.columns[0].expr.column === "*")) throw new Error("invalid column clause with select statement");
@@ -179425,15 +179715,15 @@ function requireBigInteger() {
         return Tr = rr, wu() !== $t && ps() !== $t && (qr = Ht()) !== $t && ps() !== $t ? ((xn = function() {
           var Go, us, Hs, Dl, $u;
           Go = rr, (us = function() {
-            var E0, lm, dm, um;
-            return E0 = rr, Et.substr(rr, 5).toLowerCase() === "pivot" ? (lm = Et.substr(rr, 5), rr += 5) : (lm = $t, ys === 0 && ju(sw)), lm !== $t ? (dm = rr, ys++, um = Lm(), ys--, um === $t ? dm = void 0 : (rr = dm, dm = $t), dm !== $t ? (Wt = E0, E0 = lm = "PIVOT") : (rr = E0, E0 = $t)) : (rr = E0, E0 = $t), E0;
+            var E0, lm, hm, um;
+            return E0 = rr, Et.substr(rr, 5).toLowerCase() === "pivot" ? (lm = Et.substr(rr, 5), rr += 5) : (lm = $t, ys === 0 && ju(sw)), lm !== $t ? (hm = rr, ys++, um = Lm(), ys--, um === $t ? hm = void 0 : (rr = hm, hm = $t), hm !== $t ? (Wt = E0, E0 = lm = "PIVOT") : (rr = E0, E0 = $t)) : (rr = E0, E0 = $t), E0;
           }()) !== $t && ps() !== $t && Bv() !== $t && ps() !== $t && (Hs = Js()) !== $t && ps() !== $t && (Dl = mr()) !== $t && ps() !== $t && uA() !== $t && ps() !== $t ? (($u = YA()) === $t && ($u = null), $u !== $t ? (Wt = Go, zp = Dl, s0 = $u, us = { type: "pivot", expr: Hs, ...zp, as: s0 }, Go = us) : (rr = Go, Go = $t)) : (rr = Go, Go = $t);
           var zp, s0;
           return Go === $t && (Go = rr, (us = function() {
-            var E0, lm, dm, um;
-            return E0 = rr, Et.substr(rr, 7).toLowerCase() === "unpivot" ? (lm = Et.substr(rr, 7), rr += 7) : (lm = $t, ys === 0 && ju(lw)), lm !== $t ? (dm = rr, ys++, um = Lm(), ys--, um === $t ? dm = void 0 : (rr = dm, dm = $t), dm !== $t ? (Wt = E0, E0 = lm = "UNPIVOT") : (rr = E0, E0 = $t)) : (rr = E0, E0 = $t), E0;
-          }()) !== $t && ps() !== $t && Bv() !== $t && ps() !== $t && (Hs = t$()) !== $t && ps() !== $t && (Dl = mr()) !== $t && ps() !== $t && uA() !== $t && ps() !== $t ? (($u = YA()) === $t && ($u = null), $u !== $t ? (Wt = Go, us = function(E0, lm, dm) {
-            return { type: "unpivot", expr: E0, ...lm, as: dm };
+            var E0, lm, hm, um;
+            return E0 = rr, Et.substr(rr, 7).toLowerCase() === "unpivot" ? (lm = Et.substr(rr, 7), rr += 7) : (lm = $t, ys === 0 && ju(lw)), lm !== $t ? (hm = rr, ys++, um = Lm(), ys--, um === $t ? hm = void 0 : (rr = hm, hm = $t), hm !== $t ? (Wt = E0, E0 = lm = "UNPIVOT") : (rr = E0, E0 = $t)) : (rr = E0, E0 = $t), E0;
+          }()) !== $t && ps() !== $t && Bv() !== $t && ps() !== $t && (Hs = t$()) !== $t && ps() !== $t && (Dl = mr()) !== $t && ps() !== $t && uA() !== $t && ps() !== $t ? (($u = YA()) === $t && ($u = null), $u !== $t ? (Wt = Go, us = function(E0, lm, hm) {
+            return { type: "unpivot", expr: E0, ...lm, as: hm };
           }(Hs, Dl, $u), Go = us) : (rr = Go, Go = $t)) : (rr = Go, Go = $t)), Go;
         }()) === $t && (xn = null), xn !== $t ? (Wt = Tr, qo = xn, (Un = qr)[0] && (Un[0].operator = qo), Tr = Un) : (rr = Tr, Tr = $t)) : (rr = Tr, Tr = $t), Tr;
       }
@@ -179525,10 +179815,10 @@ function requireBigInteger() {
           var Un, qo, Go, us, Hs, Dl;
           Un = rr, (qo = oo()) !== $t && ps() !== $t && (Go = am()) !== $t && ps() !== $t && (us = Vn()) !== $t && ps() !== $t && Bv() !== $t && ps() !== $t && (Hs = vA()) !== $t && ps() !== $t && (Dl = uA()) !== $t ? (Wt = Un, $u = qo, s0 = Hs, (zp = Go).join = $u, zp.using = s0, Un = qo = zp) : (rr = Un, Un = $t);
           var $u, zp, s0;
-          return Un === $t && (Un = rr, (qo = oo()) !== $t && ps() !== $t && (Go = am()) !== $t && ps() !== $t ? ((us = Xm()) === $t && (us = null), us !== $t ? (Wt = Un, qo = function(E0, lm, dm) {
-            return lm.join = E0, lm.on = dm, lm;
-          }(qo, Go, us), Un = qo) : (rr = Un, Un = $t)) : (rr = Un, Un = $t), Un === $t && (Un = rr, (qo = oo()) === $t && (qo = gA()), qo !== $t && ps() !== $t && (Go = Bv()) !== $t && ps() !== $t && (us = p_()) !== $t && ps() !== $t && uA() !== $t && ps() !== $t ? ((Hs = YA()) === $t && (Hs = null), Hs !== $t && ps() !== $t ? ((Dl = Xm()) === $t && (Dl = null), Dl !== $t ? (Wt = Un, qo = function(E0, lm, dm, um) {
-            return lm.parentheses = !0, { expr: lm, as: dm, join: E0, on: um };
+          return Un === $t && (Un = rr, (qo = oo()) !== $t && ps() !== $t && (Go = am()) !== $t && ps() !== $t ? ((us = Xm()) === $t && (us = null), us !== $t ? (Wt = Un, qo = function(E0, lm, hm) {
+            return lm.join = E0, lm.on = hm, lm;
+          }(qo, Go, us), Un = qo) : (rr = Un, Un = $t)) : (rr = Un, Un = $t), Un === $t && (Un = rr, (qo = oo()) === $t && (qo = gA()), qo !== $t && ps() !== $t && (Go = Bv()) !== $t && ps() !== $t && (us = p_()) !== $t && ps() !== $t && uA() !== $t && ps() !== $t ? ((Hs = YA()) === $t && (Hs = null), Hs !== $t && ps() !== $t ? ((Dl = Xm()) === $t && (Dl = null), Dl !== $t ? (Wt = Un, qo = function(E0, lm, hm, um) {
+            return lm.parentheses = !0, { expr: lm, as: hm, join: E0, on: um };
           }(qo, us, Hs, Dl), Un = qo) : (rr = Un, Un = $t)) : (rr = Un, Un = $t)) : (rr = Un, Un = $t))), Un;
         }()) !== $t ? (Wt = Tr, Tr = qr) : (rr = Tr, Tr = $t)), Tr;
       }
@@ -179536,7 +179826,7 @@ function requireBigInteger() {
         var Tr, qr, xn, Un, qo, Go;
         return Tr = rr, Et.substr(rr, 9).toLowerCase() === "forceseek" ? (qr = Et.substr(rr, 9), rr += 9) : (qr = $t, ys === 0 && ju(Zu)), qr !== $t && ps() !== $t && Bv() !== $t && ps() !== $t && (xn = K1()) !== $t && ps() !== $t && (Un = Bv()) !== $t && ps() !== $t && (qo = Ms()) !== $t && ps() !== $t && uA() !== $t && ps() !== $t && uA() !== $t ? (Wt = Tr, Tr = qr = { keyword: "forceseek", index: xn, index_columns: qo, parentheses: !0 }) : (rr = Tr, Tr = $t), Tr === $t && (Tr = rr, Et.substr(rr, 24).toLowerCase() === "spatial_window_max_cells" ? (qr = Et.substr(rr, 24), rr += 24) : (qr = $t, ys === 0 && ju(wl)), qr !== $t && ps() !== $t && qy() !== $t && ps() !== $t && (xn = Dn()) !== $t ? (Wt = Tr, Tr = qr = { keyword: "spatial_window_max_cells", expr: xn }) : (rr = Tr, Tr = $t), Tr === $t && (Tr = rr, Et.substr(rr, 8).toLowerCase() === "noexpand" ? (qr = Et.substr(rr, 8), rr += 8) : (qr = $t, ys === 0 && ju(lu)), qr === $t && (qr = null), qr !== $t && ps() !== $t && mw() !== $t && ps() !== $t && (xn = Bv()) !== $t && ps() !== $t && (Un = vA()) !== $t && ps() !== $t && (qo = uA()) !== $t ? (Wt = Tr, Tr = qr = { keyword: "index", expr: Un, parentheses: !0, prefix: (Go = qr) && Go.toLowerCase() }) : (rr = Tr, Tr = $t), Tr === $t && (Tr = rr, Et.substr(rr, 8).toLowerCase() === "noexpand" ? (qr = Et.substr(rr, 8), rr += 8) : (qr = $t, ys === 0 && ju(lu)), qr === $t && (qr = null), qr !== $t && ps() !== $t && mw() !== $t && ps() !== $t && (xn = qy()) !== $t && ps() !== $t && (Un = K1()) !== $t ? (Wt = Tr, Tr = qr = function(us, Hs) {
           return { keyword: "index", expr: Hs, prefix: us && us.toLowerCase() };
-        }(qr, Un)) : (rr = Tr, Tr = $t), Tr === $t && (Tr = rr, Et.substr(rr, 8).toLowerCase() === "noexpand" ? (qr = Et.substr(rr, 8), rr += 8) : (qr = $t, ys === 0 && ju(lu)), qr === $t && (Et.substr(rr, 9).toLowerCase() === "forcescan" ? (qr = Et.substr(rr, 9), rr += 9) : (qr = $t, ys === 0 && ju(Uu)), qr === $t && (Et.substr(rr, 9).toLowerCase() === "forceseek" ? (qr = Et.substr(rr, 9), rr += 9) : (qr = $t, ys === 0 && ju(Zu)), qr === $t && (Et.substr(rr, 8).toLowerCase() === "holdlock" ? (qr = Et.substr(rr, 8), rr += 8) : (qr = $t, ys === 0 && ju(Xp)), qr === $t && (Et.substr(rr, 6).toLowerCase() === "nolock" ? (qr = Et.substr(rr, 6), rr += 6) : (qr = $t, ys === 0 && ju(T0)), qr === $t && (Et.substr(rr, 6).toLowerCase() === "nowait" ? (qr = Et.substr(rr, 6), rr += 6) : (qr = $t, ys === 0 && ju(j0)), qr === $t && (Et.substr(rr, 7).toLowerCase() === "paglock" ? (qr = Et.substr(rr, 7), rr += 7) : (qr = $t, ys === 0 && ju(fm)), qr === $t && (Et.substr(rr, 13).toLowerCase() === "readcommitted" ? (qr = Et.substr(rr, 13), rr += 13) : (qr = $t, ys === 0 && ju(Sm)), qr === $t && (Et.substr(rr, 17).toLowerCase() === "readcommittedlock" ? (qr = Et.substr(rr, 17), rr += 17) : (qr = $t, ys === 0 && ju(Nm)), qr === $t && (Et.substr(rr, 8).toLowerCase() === "readpast" ? (qr = Et.substr(rr, 8), rr += 8) : (qr = $t, ys === 0 && ju(qm)), qr === $t && (Et.substr(rr, 15).toLowerCase() === "readuncommitted" ? (qr = Et.substr(rr, 15), rr += 15) : (qr = $t, ys === 0 && ju(l1)), qr === $t && (Et.substr(rr, 15).toLowerCase() === "repeatableread " ? (qr = Et.substr(rr, 15), rr += 15) : (qr = $t, ys === 0 && ju(B1)), qr === $t && (Et.substr(rr, 7).toLowerCase() === "rowlock" ? (qr = Et.substr(rr, 7), rr += 7) : (qr = $t, ys === 0 && ju(E1)), qr === $t && (Et.substr(rr, 12).toLowerCase() === "serializable" ? (qr = Et.substr(rr, 12), rr += 12) : (qr = $t, ys === 0 && ju(h$)), qr === $t && (Et.substr(rr, 8).toLowerCase() === "snapshot" ? (qr = Et.substr(rr, 8), rr += 8) : (qr = $t, ys === 0 && ju(d$)), qr === $t && (Et.substr(rr, 7).toLowerCase() === "tablock" ? (qr = Et.substr(rr, 7), rr += 7) : (qr = $t, ys === 0 && ju(jo)), qr === $t && (Et.substr(rr, 8).toLowerCase() === "tablockx" ? (qr = Et.substr(rr, 8), rr += 8) : (qr = $t, ys === 0 && ju(Su)), qr === $t && (Et.substr(rr, 7).toLowerCase() === "updlock" ? (qr = Et.substr(rr, 7), rr += 7) : (qr = $t, ys === 0 && ju(fs)), qr === $t && (Et.substr(rr, 5).toLowerCase() === "xlock" ? (qr = Et.substr(rr, 5), rr += 5) : (qr = $t, ys === 0 && ju(e0)))))))))))))))))))), qr !== $t && (Wt = Tr, qr = /* @__PURE__ */ function(us) {
+        }(qr, Un)) : (rr = Tr, Tr = $t), Tr === $t && (Tr = rr, Et.substr(rr, 8).toLowerCase() === "noexpand" ? (qr = Et.substr(rr, 8), rr += 8) : (qr = $t, ys === 0 && ju(lu)), qr === $t && (Et.substr(rr, 9).toLowerCase() === "forcescan" ? (qr = Et.substr(rr, 9), rr += 9) : (qr = $t, ys === 0 && ju(Uu)), qr === $t && (Et.substr(rr, 9).toLowerCase() === "forceseek" ? (qr = Et.substr(rr, 9), rr += 9) : (qr = $t, ys === 0 && ju(Zu)), qr === $t && (Et.substr(rr, 8).toLowerCase() === "holdlock" ? (qr = Et.substr(rr, 8), rr += 8) : (qr = $t, ys === 0 && ju(Xp)), qr === $t && (Et.substr(rr, 6).toLowerCase() === "nolock" ? (qr = Et.substr(rr, 6), rr += 6) : (qr = $t, ys === 0 && ju(T0)), qr === $t && (Et.substr(rr, 6).toLowerCase() === "nowait" ? (qr = Et.substr(rr, 6), rr += 6) : (qr = $t, ys === 0 && ju(j0)), qr === $t && (Et.substr(rr, 7).toLowerCase() === "paglock" ? (qr = Et.substr(rr, 7), rr += 7) : (qr = $t, ys === 0 && ju(dm)), qr === $t && (Et.substr(rr, 13).toLowerCase() === "readcommitted" ? (qr = Et.substr(rr, 13), rr += 13) : (qr = $t, ys === 0 && ju(Sm)), qr === $t && (Et.substr(rr, 17).toLowerCase() === "readcommittedlock" ? (qr = Et.substr(rr, 17), rr += 17) : (qr = $t, ys === 0 && ju(Nm)), qr === $t && (Et.substr(rr, 8).toLowerCase() === "readpast" ? (qr = Et.substr(rr, 8), rr += 8) : (qr = $t, ys === 0 && ju(qm)), qr === $t && (Et.substr(rr, 15).toLowerCase() === "readuncommitted" ? (qr = Et.substr(rr, 15), rr += 15) : (qr = $t, ys === 0 && ju(l1)), qr === $t && (Et.substr(rr, 15).toLowerCase() === "repeatableread " ? (qr = Et.substr(rr, 15), rr += 15) : (qr = $t, ys === 0 && ju(B1)), qr === $t && (Et.substr(rr, 7).toLowerCase() === "rowlock" ? (qr = Et.substr(rr, 7), rr += 7) : (qr = $t, ys === 0 && ju(E1)), qr === $t && (Et.substr(rr, 12).toLowerCase() === "serializable" ? (qr = Et.substr(rr, 12), rr += 12) : (qr = $t, ys === 0 && ju(h$)), qr === $t && (Et.substr(rr, 8).toLowerCase() === "snapshot" ? (qr = Et.substr(rr, 8), rr += 8) : (qr = $t, ys === 0 && ju(d$)), qr === $t && (Et.substr(rr, 7).toLowerCase() === "tablock" ? (qr = Et.substr(rr, 7), rr += 7) : (qr = $t, ys === 0 && ju(jo)), qr === $t && (Et.substr(rr, 8).toLowerCase() === "tablockx" ? (qr = Et.substr(rr, 8), rr += 8) : (qr = $t, ys === 0 && ju(Su)), qr === $t && (Et.substr(rr, 7).toLowerCase() === "updlock" ? (qr = Et.substr(rr, 7), rr += 7) : (qr = $t, ys === 0 && ju(fs)), qr === $t && (Et.substr(rr, 5).toLowerCase() === "xlock" ? (qr = Et.substr(rr, 5), rr += 5) : (qr = $t, ys === 0 && ju(e0)))))))))))))))))))), qr !== $t && (Wt = Tr, qr = /* @__PURE__ */ function(us) {
           return { keyword: "literal_string", expr: { type: "origin", value: us } };
         }(qr)), Tr = qr)))), Tr;
       }
@@ -179820,8 +180110,8 @@ function requireBigInteger() {
         return (Tr = yo()) === $t && (Tr = function() {
           var Go, us, Hs;
           Go = rr, (us = function() {
-            var zp, s0, E0, lm, dm;
-            return zp = rr, s0 = rr, (E0 = ls()) !== $t && (lm = ps()) !== $t && (dm = No()) !== $t ? s0 = E0 = [E0, lm, dm] : (rr = s0, s0 = $t), s0 !== $t && (Wt = zp, s0 = q1(s0)), (zp = s0) === $t && (zp = No()), zp;
+            var zp, s0, E0, lm, hm;
+            return zp = rr, s0 = rr, (E0 = ls()) !== $t && (lm = ps()) !== $t && (hm = No()) !== $t ? s0 = E0 = [E0, lm, hm] : (rr = s0, s0 = $t), s0 !== $t && (Wt = zp, s0 = q1(s0)), (zp = s0) === $t && (zp = No()), zp;
           }()) !== $t && ps() !== $t && Bv() !== $t && ps() !== $t && (Hs = p_()) !== $t && ps() !== $t && uA() !== $t ? (Wt = Go, Dl = us, ($u = Hs).parentheses = !0, us = vv(Dl, $u), Go = us) : (rr = Go, Go = $t);
           var Dl, $u;
           return Go;
@@ -179839,8 +180129,8 @@ function requireBigInteger() {
           }()) === $t && (Go = R0()) === $t && (Go = function() {
             var us, Hs, Dl, $u;
             return us = rr, (Hs = function() {
-              var zp, s0, E0, lm, dm;
-              return zp = rr, s0 = rr, (E0 = ls()) !== $t && (lm = ps()) !== $t && (dm = rn()) !== $t ? s0 = E0 = [E0, lm, dm] : (rr = s0, s0 = $t), s0 !== $t && (Wt = zp, s0 = q1(s0)), (zp = s0) === $t && (zp = rn()), zp;
+              var zp, s0, E0, lm, hm;
+              return zp = rr, s0 = rr, (E0 = ls()) !== $t && (lm = ps()) !== $t && (hm = rn()) !== $t ? s0 = E0 = [E0, lm, hm] : (rr = s0, s0 = $t), s0 !== $t && (Wt = zp, s0 = q1(s0)), (zp = s0) === $t && (zp = rn()), zp;
             }()) !== $t && ps() !== $t && (Dl = ga()) !== $t && ps() !== $t && Xs() !== $t && ps() !== $t && ($u = ga()) !== $t ? (Wt = us, us = Hs = { op: Hs, right: { type: "expr_list", value: [Dl, $u] } }) : (rr = us, us = $t), us;
           }()) === $t && (Go = function() {
             var us, Hs, Dl, $u, zp;
@@ -179910,8 +180200,8 @@ function requireBigInteger() {
           }(qo, Go, Dl, $u), Un = qo) : (rr = Un, Un = $t), Un === $t && (Un = rr, (qo = hp()) !== $t && ps() !== $t && Bv() !== $t && ps() !== $t && (Go = ss()) !== $t && ps() !== $t && Vp() !== $t && ps() !== $t && (us = function() {
             var zp;
             return (zp = function() {
-              var s0, E0, lm, dm;
-              return s0 = rr, Et.substr(rr, 6).toLowerCase() === "signed" ? (E0 = Et.substr(rr, 6), rr += 6) : (E0 = $t, ys === 0 && ju(q_)), E0 !== $t ? (lm = rr, ys++, dm = Lm(), ys--, dm === $t ? lm = void 0 : (rr = lm, lm = $t), lm !== $t ? (Wt = s0, s0 = E0 = "SIGNED") : (rr = s0, s0 = $t)) : (rr = s0, s0 = $t), s0;
+              var s0, E0, lm, hm;
+              return s0 = rr, Et.substr(rr, 6).toLowerCase() === "signed" ? (E0 = Et.substr(rr, 6), rr += 6) : (E0 = $t, ys === 0 && ju(q_)), E0 !== $t ? (lm = rr, ys++, hm = Lm(), ys--, hm === $t ? lm = void 0 : (rr = lm, lm = $t), lm !== $t ? (Wt = s0, s0 = E0 = "SIGNED") : (rr = s0, s0 = $t)) : (rr = s0, s0 = $t), s0;
             }()) === $t && (zp = iv()), zp;
           }()) !== $t && ps() !== $t ? ((Hs = Tv()) === $t && (Hs = null), Hs !== $t && ps() !== $t && (Dl = uA()) !== $t ? (Wt = Un, qo = function(zp, s0, E0, lm) {
             return { type: "cast", keyword: zp.toLowerCase(), expr: s0, symbol: "as", target: [{ dataType: E0 + (lm ? " " + lm : "") }] };
@@ -179932,11 +180222,11 @@ function requireBigInteger() {
       }
       function t$() {
         var Tr, qr, xn, Un, qo, Go, us, Hs, Dl, $u, zp;
-        return Tr = rr, qr = rr, (xn = K1()) !== $t && (Un = ps()) !== $t && (qo = Hx()) !== $t ? qr = xn = [xn, Un, qo] : (rr = qr, qr = $t), qr === $t && (qr = null), qr !== $t && (xn = ps()) !== $t ? (Un = rr, (qo = K1()) !== $t && (Go = ps()) !== $t && (us = Hx()) !== $t ? Un = qo = [qo, Go, us] : (rr = Un, Un = $t), Un === $t && (Un = null), Un !== $t && (qo = ps()) !== $t ? (Go = rr, (us = K1()) !== $t && (Hs = ps()) !== $t && (Dl = Hx()) !== $t ? Go = us = [us, Hs, Dl] : (rr = Go, Go = $t), Go === $t && (Go = null), Go !== $t && (us = ps()) !== $t && (Hs = j$()) !== $t ? (Dl = rr, ($u = ps()) !== $t && (zp = WA()) !== $t ? Dl = $u = [$u, zp] : (rr = Dl, Dl = $t), Dl === $t && (Dl = null), Dl !== $t ? (Wt = Tr, Tr = qr = function(s0, E0, lm, dm, um) {
+        return Tr = rr, qr = rr, (xn = K1()) !== $t && (Un = ps()) !== $t && (qo = Hx()) !== $t ? qr = xn = [xn, Un, qo] : (rr = qr, qr = $t), qr === $t && (qr = null), qr !== $t && (xn = ps()) !== $t ? (Un = rr, (qo = K1()) !== $t && (Go = ps()) !== $t && (us = Hx()) !== $t ? Un = qo = [qo, Go, us] : (rr = Un, Un = $t), Un === $t && (Un = null), Un !== $t && (qo = ps()) !== $t ? (Go = rr, (us = K1()) !== $t && (Hs = ps()) !== $t && (Dl = Hx()) !== $t ? Go = us = [us, Hs, Dl] : (rr = Go, Go = $t), Go === $t && (Go = null), Go !== $t && (us = ps()) !== $t && (Hs = j$()) !== $t ? (Dl = rr, ($u = ps()) !== $t && (zp = WA()) !== $t ? Dl = $u = [$u, zp] : (rr = Dl, Dl = $t), Dl === $t && (Dl = null), Dl !== $t ? (Wt = Tr, Tr = qr = function(s0, E0, lm, hm, um) {
           const g1 = { table: null, db: null, schema: null };
           s0 !== null && (g1.table = s0[0]), E0 !== null && (g1.table = E0[0], g1.schema = s0[0]), lm !== null && (g1.table = lm[0], g1.db = s0[0], g1.schema = E0[0]);
           const T1 = [g1.db, g1.schema, g1.table].filter(Boolean).join(".") || "null";
-          return Xv.add(`select::${T1}::${dm}`), { type: "column_ref", ...g1, column: dm, collate: um && um[1] };
+          return Xv.add(`select::${T1}::${hm}`), { type: "column_ref", ...g1, column: hm, collate: um && um[1] };
         }(qr, Un, Go, Hs, Dl)) : (rr = Tr, Tr = $t)) : (rr = Tr, Tr = $t)) : (rr = Tr, Tr = $t)) : (rr = Tr, Tr = $t), Tr;
       }
       function a1() {
@@ -180144,12 +180434,12 @@ function requireBigInteger() {
         var Tr, qr, xn, Un, qo, Go, us, Hs, Dl, $u, zp;
         if (Tr = rr, (qr = Mr()) === $t && (qr = null), qr !== $t) if (ps() !== $t) if ((xn = Bv()) !== $t) if (ps() !== $t) if ((Un = ss()) !== $t) if (ps() !== $t) if ((qo = uA()) !== $t) if (ps() !== $t) {
           for (Go = [], us = rr, (Hs = ps()) !== $t ? ((Dl = Xs()) === $t && (Dl = Bl()), Dl !== $t && ($u = ps()) !== $t && (zp = ss()) !== $t ? us = Hs = [Hs, Dl, $u, zp] : (rr = us, us = $t)) : (rr = us, us = $t); us !== $t; ) Go.push(us), us = rr, (Hs = ps()) !== $t ? ((Dl = Xs()) === $t && (Dl = Bl()), Dl !== $t && ($u = ps()) !== $t && (zp = ss()) !== $t ? us = Hs = [Hs, Dl, $u, zp] : (rr = us, us = $t)) : (rr = us, us = $t);
-          Go !== $t && (us = ps()) !== $t ? ((Hs = vn()) === $t && (Hs = null), Hs !== $t && (Dl = ps()) !== $t ? (($u = Pr()) === $t && ($u = null), $u !== $t ? (Wt = Tr, Tr = qr = function(s0, E0, lm, dm, um) {
+          Go !== $t && (us = ps()) !== $t ? ((Hs = vn()) === $t && (Hs = null), Hs !== $t && (Dl = ps()) !== $t ? (($u = Pr()) === $t && ($u = null), $u !== $t ? (Wt = Tr, Tr = qr = function(s0, E0, lm, hm, um) {
             const g1 = lm.length;
             let T1 = E0;
             T1.parentheses = !0;
             for (let Q1 = 0; Q1 < g1; ++Q1) T1 = rx(lm[Q1][1], T1, lm[Q1][3]);
-            return { distinct: s0, expr: T1, orderby: um, separator: dm };
+            return { distinct: s0, expr: T1, orderby: um, separator: hm };
           }(qr, Un, Go, Hs, $u)) : (rr = Tr, Tr = $t)) : (rr = Tr, Tr = $t)) : (rr = Tr, Tr = $t);
         } else rr = Tr, Tr = $t;
         else rr = Tr, Tr = $t;
@@ -180159,8 +180449,8 @@ function requireBigInteger() {
         else rr = Tr, Tr = $t;
         else rr = Tr, Tr = $t;
         else rr = Tr, Tr = $t;
-        return Tr === $t && (Tr = rr, (qr = Mr()) === $t && (qr = null), qr !== $t && ps() !== $t && (xn = Us()) !== $t && ps() !== $t ? ((Un = vn()) === $t && (Un = null), Un !== $t && ps() !== $t ? ((qo = Pr()) === $t && (qo = null), qo !== $t ? (Wt = Tr, Tr = qr = /* @__PURE__ */ function(s0, E0, lm, dm) {
-          return { distinct: s0, expr: E0, orderby: dm, separator: lm };
+        return Tr === $t && (Tr = rr, (qr = Mr()) === $t && (qr = null), qr !== $t && ps() !== $t && (xn = Us()) !== $t && ps() !== $t ? ((Un = vn()) === $t && (Un = null), Un !== $t && ps() !== $t ? ((qo = Pr()) === $t && (qo = null), qo !== $t ? (Wt = Tr, Tr = qr = /* @__PURE__ */ function(s0, E0, lm, hm) {
+          return { distinct: s0, expr: E0, orderby: hm, separator: lm };
         }(qr, xn, Un, qo)) : (rr = Tr, Tr = $t)) : (rr = Tr, Tr = $t)) : (rr = Tr, Tr = $t)), Tr;
       }
       function eo() {
@@ -180882,18 +181172,18 @@ function requireBigInteger() {
             return { dataType: Dl, length: "max" };
           }(0, Un), qr = xn) : (rr = qr, qr = $t)) : (rr = qr, qr = $t)) : (rr = qr, qr = $t)) : (rr = qr, qr = $t)) : (rr = qr, qr = $t), qr === $t && (qr = rr, (xn = p2()) === $t && (xn = null), xn !== $t && ps() !== $t ? ((Un = Fp()) === $t && (Un = Jp()) === $t && (Un = bm()) === $t && (Un = i1()), Un !== $t && ps() !== $t ? ((qo = n2()) === $t && (qo = null), qo !== $t ? (Wt = rr, (z_(xn, 0, qo) ? $t : void 0) !== $t ? (Wt = qr, xn = jA(0, Un), qr = xn) : (rr = qr, qr = $t)) : (rr = qr, qr = $t)) : (rr = qr, qr = $t)) : (rr = qr, qr = $t))), qr;
         }()) === $t && (Tr = function() {
-          var qr, xn, Un, qo, Go, us, Hs, Dl, $u, zp, s0, E0, lm, dm, um;
+          var qr, xn, Un, qo, Go, us, Hs, Dl, $u, zp, s0, E0, lm, hm, um;
           if (qr = rr, (xn = p2()) === $t && (xn = null), xn !== $t) if (ps() !== $t) if ((Un = N$()) === $t && (Un = m1()) === $t && (Un = A$()) === $t && (Un = Tv()) === $t && (Un = Mm()) === $t && (Un = G0()) === $t && (Un = d1()) === $t && (Un = w0()) === $t && (Un = G$()) === $t && (Un = J$()), Un !== $t) if ((qo = ps()) !== $t) if ((Go = n2()) === $t && (Go = null), Go !== $t) if (Wt = rr, (z_(xn, 0, Go) ? $t : void 0) !== $t) if ((us = ps()) !== $t) if ((Hs = Bv()) !== $t) if ((Dl = ps()) !== $t) {
             if ($u = [], MA.test(Et.charAt(rr)) ? (zp = Et.charAt(rr), rr++) : (zp = $t, ys === 0 && ju(Ny)), zp !== $t) for (; zp !== $t; ) $u.push(zp), MA.test(Et.charAt(rr)) ? (zp = Et.charAt(rr), rr++) : (zp = $t, ys === 0 && ju(Ny));
             else $u = $t;
             if ($u !== $t) if ((zp = ps()) !== $t) {
               if (s0 = rr, (E0 = $v()) !== $t) if ((lm = ps()) !== $t) {
-                if (dm = [], MA.test(Et.charAt(rr)) ? (um = Et.charAt(rr), rr++) : (um = $t, ys === 0 && ju(Ny)), um !== $t) for (; um !== $t; ) dm.push(um), MA.test(Et.charAt(rr)) ? (um = Et.charAt(rr), rr++) : (um = $t, ys === 0 && ju(Ny));
-                else dm = $t;
-                dm !== $t ? s0 = E0 = [E0, lm, dm] : (rr = s0, s0 = $t);
+                if (hm = [], MA.test(Et.charAt(rr)) ? (um = Et.charAt(rr), rr++) : (um = $t, ys === 0 && ju(Ny)), um !== $t) for (; um !== $t; ) hm.push(um), MA.test(Et.charAt(rr)) ? (um = Et.charAt(rr), rr++) : (um = $t, ys === 0 && ju(Ny));
+                else hm = $t;
+                hm !== $t ? s0 = E0 = [E0, lm, hm] : (rr = s0, s0 = $t);
               } else rr = s0, s0 = $t;
               else rr = s0, s0 = $t;
-              s0 === $t && (s0 = null), s0 !== $t && (E0 = ps()) !== $t && (lm = uA()) !== $t && (dm = ps()) !== $t ? ((um = Uv()) === $t && (um = null), um !== $t ? (Wt = qr, g1 = s0, T1 = um, xn = { dataType: Un, length: parseInt($u.join(""), 10), scale: g1 && parseInt(g1[2].join(""), 10), parentheses: !0, suffix: T1 }, qr = xn) : (rr = qr, qr = $t)) : (rr = qr, qr = $t);
+              s0 === $t && (s0 = null), s0 !== $t && (E0 = ps()) !== $t && (lm = uA()) !== $t && (hm = ps()) !== $t ? ((um = Uv()) === $t && (um = null), um !== $t ? (Wt = qr, g1 = s0, T1 = um, xn = { dataType: Un, length: parseInt($u.join(""), 10), scale: g1 && parseInt(g1[2].join(""), 10), parentheses: !0, suffix: T1 }, qr = xn) : (rr = qr, qr = $t)) : (rr = qr, qr = $t);
             } else rr = qr, qr = $t;
             else rr = qr, qr = $t;
           } else rr = qr, qr = $t;
@@ -180957,8 +181247,8 @@ function requireBigInteger() {
           else rr = qr, qr = $t;
           else rr = qr, qr = $t;
           return qr === $t && (qr = rr, (xn = p2()) === $t && (xn = null), xn !== $t && ps() !== $t ? ((Un = B$()) === $t && (Un = function() {
-            var E0, lm, dm, um;
-            return E0 = rr, Et.substr(rr, 13).toLowerCase() === "smalldatetime" ? (lm = Et.substr(rr, 13), rr += 13) : (lm = $t, ys === 0 && ju(Ju)), lm !== $t ? (dm = rr, ys++, um = Lm(), ys--, um === $t ? dm = void 0 : (rr = dm, dm = $t), dm !== $t ? (Wt = E0, E0 = lm = "SMALLDATETIME") : (rr = E0, E0 = $t)) : (rr = E0, E0 = $t), E0;
+            var E0, lm, hm, um;
+            return E0 = rr, Et.substr(rr, 13).toLowerCase() === "smalldatetime" ? (lm = Et.substr(rr, 13), rr += 13) : (lm = $t, ys === 0 && ju(Ju)), lm !== $t ? (hm = rr, ys++, um = Lm(), ys--, um === $t ? hm = void 0 : (rr = hm, hm = $t), hm !== $t ? (Wt = E0, E0 = lm = "SMALLDATETIME") : (rr = E0, E0 = $t)) : (rr = E0, E0 = $t), E0;
           }()) === $t && (Un = bA()) === $t && (Un = gy()) === $t && (Un = pv()) === $t && (Un = Fy()) === $t && (Un = S$()), Un !== $t && ps() !== $t ? ((qo = n2()) === $t && (qo = null), qo !== $t ? (Wt = rr, (z_(xn, 0, qo) ? $t : void 0) !== $t ? (Wt = qr, xn = jA(0, Un), qr = xn) : (rr = qr, qr = $t)) : (rr = qr, qr = $t)) : (rr = qr, qr = $t)) : (rr = qr, qr = $t)), qr;
         }()) === $t && (Tr = function() {
           var qr, xn, Un, qo;
@@ -181119,7 +181409,7 @@ function requireBigInteger() {
         }), Nr;
       }, nA = Yu("ROWCOUNT", !0), oA = Yu("TIMELIMIT", !0), M$ = Yu("=>", !1), Kv = Yu("GENERATOR", !0), Mv = Yu("LATERAL", !0), TA = Yu("TABLESAMPLE", !0), pA = Yu("REPEATABLE", !0), H$ = Yu("CROSS", !0), Iv = Yu("PRECEDING", !0), Gv = Yu("RANGE", !0), xA = Yu("FOLLOWING", !0), LA = Yu("CURRENT", !0), NA = Yu("UNBOUNDED", !0), IA = Yu("=", !1), gv = Yu("DO", !0), Vy = Yu("NOTHING", !0), yy = Yu("CONFLICT", !0), AA = function(lr, Nr) {
         return By(lr, Nr);
-      }, eA = Yu("!", !1), aA = Yu(">=", !1), xy = Yu(">", !1), ty = Yu("<=", !1), wA = Yu("<>", !1), Pv = Yu("<", !1), SA = Yu("!=", !1), oy = Yu("SIMILAR", !0), qA = Yu("ESCAPE", !0), RA = Yu("+", !1), iA = Yu("-", !1), ky = Yu("*", !1), Oo = Yu("/", !1), Cl = Yu("%", !1), su = Yu("||", !1), Yl = Yu("$", !1), dp = Yu("~", !1), Zu = Yu("?|", !1), wl = Yu("?&", !1), lu = Yu("?", !1), Uu = Yu("#-", !1), Xp = Yu("#>>", !1), T0 = Yu("#>", !1), j0 = Yu("@>", !1), fm = Yu("<@", !1), Sm = Yu("E", !0), Nm = function(lr) {
+      }, eA = Yu("!", !1), aA = Yu(">=", !1), xy = Yu(">", !1), ty = Yu("<=", !1), wA = Yu("<>", !1), Pv = Yu("<", !1), SA = Yu("!=", !1), oy = Yu("SIMILAR", !0), qA = Yu("ESCAPE", !0), RA = Yu("+", !1), iA = Yu("-", !1), ky = Yu("*", !1), Oo = Yu("/", !1), Cl = Yu("%", !1), su = Yu("||", !1), Yl = Yu("$", !1), dp = Yu("~", !1), Zu = Yu("?|", !1), wl = Yu("?&", !1), lu = Yu("?", !1), Uu = Yu("#-", !1), Xp = Yu("#>>", !1), T0 = Yu("#>", !1), j0 = Yu("@>", !1), dm = Yu("<@", !1), Sm = Yu("E", !0), Nm = function(lr) {
         return { type: "default", value: lr };
       }, qm = function(lr) {
         return Lv[lr.toUpperCase()] === !0;
@@ -181773,7 +182063,7 @@ function requireBigInteger() {
         var lr, Nr, Jr, bn;
         return lr = Qt, V2() !== $t && xr() !== $t ? ((Nr = J$()) === $t && (Nr = G0()), Nr !== $t && xr() !== $t && (Jr = function() {
           var to, vo, To;
-          return to = Qt, (vo = dm()) !== $t && xr() !== $t && fv() !== $t && xr() !== $t ? ((To = Js()) === $t && (To = null), To !== $t && xr() !== $t && ov() !== $t ? (ou = to, to = vo = { type: "function", name: { name: [{ type: "origin", value: vo }] }, args: To }) : (Qt = to, to = $t)) : (Qt = to, to = $t), to === $t && (to = Qt, Et.substr(Qt, 8).toLowerCase() === "restrict" ? (vo = Et.substr(Qt, 8), Qt += 8) : (vo = $t, Uo === 0 && zl(Rs)), vo === $t && (Et.substr(Qt, 7).toLowerCase() === "cascade" ? (vo = Et.substr(Qt, 7), Qt += 7) : (vo = $t, Uo === 0 && zl(Ts)), vo === $t && (Et.substr(Qt, 8).toLowerCase() === "set null" ? (vo = Et.substr(Qt, 8), Qt += 8) : (vo = $t, Uo === 0 && zl(Ss)), vo === $t && (Et.substr(Qt, 9).toLowerCase() === "no action" ? (vo = Et.substr(Qt, 9), Qt += 9) : (vo = $t, Uo === 0 && zl(Ol)), vo === $t && (Et.substr(Qt, 11).toLowerCase() === "set default" ? (vo = Et.substr(Qt, 11), Qt += 11) : (vo = $t, Uo === 0 && zl(Kl)), vo === $t && (vo = dm()))))), vo !== $t && (ou = to, vo = { type: "origin", value: vo.toLowerCase() }), to = vo), to;
+          return to = Qt, (vo = hm()) !== $t && xr() !== $t && fv() !== $t && xr() !== $t ? ((To = Js()) === $t && (To = null), To !== $t && xr() !== $t && ov() !== $t ? (ou = to, to = vo = { type: "function", name: { name: [{ type: "origin", value: vo }] }, args: To }) : (Qt = to, to = $t)) : (Qt = to, to = $t), to === $t && (to = Qt, Et.substr(Qt, 8).toLowerCase() === "restrict" ? (vo = Et.substr(Qt, 8), Qt += 8) : (vo = $t, Uo === 0 && zl(Rs)), vo === $t && (Et.substr(Qt, 7).toLowerCase() === "cascade" ? (vo = Et.substr(Qt, 7), Qt += 7) : (vo = $t, Uo === 0 && zl(Ts)), vo === $t && (Et.substr(Qt, 8).toLowerCase() === "set null" ? (vo = Et.substr(Qt, 8), Qt += 8) : (vo = $t, Uo === 0 && zl(Ss)), vo === $t && (Et.substr(Qt, 9).toLowerCase() === "no action" ? (vo = Et.substr(Qt, 9), Qt += 9) : (vo = $t, Uo === 0 && zl(Ol)), vo === $t && (Et.substr(Qt, 11).toLowerCase() === "set default" ? (vo = Et.substr(Qt, 11), Qt += 11) : (vo = $t, Uo === 0 && zl(Kl)), vo === $t && (vo = hm()))))), vo !== $t && (ou = to, vo = { type: "origin", value: vo.toLowerCase() }), to = vo), to;
         }()) !== $t ? (ou = lr, bn = Jr, lr = { type: "on " + Nr[0].toLowerCase(), value: bn }) : (Qt = lr, lr = $t)) : (Qt = lr, lr = $t), lr;
       }
       function Us() {
@@ -182587,7 +182877,7 @@ function requireBigInteger() {
         return (lr = function() {
           var vo, To, Bs, $n, Pu, Du, tp, Rp;
           if (vo = Qt, (To = E$()) !== $t) if (xr() !== $t) {
-            for (Bs = [], $n = Qt, (Pu = xr()) !== $t ? (Et.substr(Qt, 2) === "?|" ? (Du = "?|", Qt += 2) : (Du = $t, Uo === 0 && zl(Zu)), Du === $t && (Et.substr(Qt, 2) === "?&" ? (Du = "?&", Qt += 2) : (Du = $t, Uo === 0 && zl(wl)), Du === $t && (Et.charCodeAt(Qt) === 63 ? (Du = "?", Qt++) : (Du = $t, Uo === 0 && zl(lu)), Du === $t && (Et.substr(Qt, 2) === "#-" ? (Du = "#-", Qt += 2) : (Du = $t, Uo === 0 && zl(Uu)), Du === $t && (Et.substr(Qt, 3) === "#>>" ? (Du = "#>>", Qt += 3) : (Du = $t, Uo === 0 && zl(Xp)), Du === $t && (Et.substr(Qt, 2) === "#>" ? (Du = "#>", Qt += 2) : (Du = $t, Uo === 0 && zl(T0)), Du === $t && (Du = yr()) === $t && (Du = o2()) === $t && (Et.substr(Qt, 2) === "@>" ? (Du = "@>", Qt += 2) : (Du = $t, Uo === 0 && zl(j0)), Du === $t && (Et.substr(Qt, 2) === "<@" ? (Du = "<@", Qt += 2) : (Du = $t, Uo === 0 && zl(fm))))))))), Du !== $t && (tp = xr()) !== $t && (Rp = E$()) !== $t ? $n = Pu = [Pu, Du, tp, Rp] : (Qt = $n, $n = $t)) : (Qt = $n, $n = $t); $n !== $t; ) Bs.push($n), $n = Qt, (Pu = xr()) !== $t ? (Et.substr(Qt, 2) === "?|" ? (Du = "?|", Qt += 2) : (Du = $t, Uo === 0 && zl(Zu)), Du === $t && (Et.substr(Qt, 2) === "?&" ? (Du = "?&", Qt += 2) : (Du = $t, Uo === 0 && zl(wl)), Du === $t && (Et.charCodeAt(Qt) === 63 ? (Du = "?", Qt++) : (Du = $t, Uo === 0 && zl(lu)), Du === $t && (Et.substr(Qt, 2) === "#-" ? (Du = "#-", Qt += 2) : (Du = $t, Uo === 0 && zl(Uu)), Du === $t && (Et.substr(Qt, 3) === "#>>" ? (Du = "#>>", Qt += 3) : (Du = $t, Uo === 0 && zl(Xp)), Du === $t && (Et.substr(Qt, 2) === "#>" ? (Du = "#>", Qt += 2) : (Du = $t, Uo === 0 && zl(T0)), Du === $t && (Du = yr()) === $t && (Du = o2()) === $t && (Et.substr(Qt, 2) === "@>" ? (Du = "@>", Qt += 2) : (Du = $t, Uo === 0 && zl(j0)), Du === $t && (Et.substr(Qt, 2) === "<@" ? (Du = "<@", Qt += 2) : (Du = $t, Uo === 0 && zl(fm))))))))), Du !== $t && (tp = xr()) !== $t && (Rp = E$()) !== $t ? $n = Pu = [Pu, Du, tp, Rp] : (Qt = $n, $n = $t)) : (Qt = $n, $n = $t);
+            for (Bs = [], $n = Qt, (Pu = xr()) !== $t ? (Et.substr(Qt, 2) === "?|" ? (Du = "?|", Qt += 2) : (Du = $t, Uo === 0 && zl(Zu)), Du === $t && (Et.substr(Qt, 2) === "?&" ? (Du = "?&", Qt += 2) : (Du = $t, Uo === 0 && zl(wl)), Du === $t && (Et.charCodeAt(Qt) === 63 ? (Du = "?", Qt++) : (Du = $t, Uo === 0 && zl(lu)), Du === $t && (Et.substr(Qt, 2) === "#-" ? (Du = "#-", Qt += 2) : (Du = $t, Uo === 0 && zl(Uu)), Du === $t && (Et.substr(Qt, 3) === "#>>" ? (Du = "#>>", Qt += 3) : (Du = $t, Uo === 0 && zl(Xp)), Du === $t && (Et.substr(Qt, 2) === "#>" ? (Du = "#>", Qt += 2) : (Du = $t, Uo === 0 && zl(T0)), Du === $t && (Du = yr()) === $t && (Du = o2()) === $t && (Et.substr(Qt, 2) === "@>" ? (Du = "@>", Qt += 2) : (Du = $t, Uo === 0 && zl(j0)), Du === $t && (Et.substr(Qt, 2) === "<@" ? (Du = "<@", Qt += 2) : (Du = $t, Uo === 0 && zl(dm))))))))), Du !== $t && (tp = xr()) !== $t && (Rp = E$()) !== $t ? $n = Pu = [Pu, Du, tp, Rp] : (Qt = $n, $n = $t)) : (Qt = $n, $n = $t); $n !== $t; ) Bs.push($n), $n = Qt, (Pu = xr()) !== $t ? (Et.substr(Qt, 2) === "?|" ? (Du = "?|", Qt += 2) : (Du = $t, Uo === 0 && zl(Zu)), Du === $t && (Et.substr(Qt, 2) === "?&" ? (Du = "?&", Qt += 2) : (Du = $t, Uo === 0 && zl(wl)), Du === $t && (Et.charCodeAt(Qt) === 63 ? (Du = "?", Qt++) : (Du = $t, Uo === 0 && zl(lu)), Du === $t && (Et.substr(Qt, 2) === "#-" ? (Du = "#-", Qt += 2) : (Du = $t, Uo === 0 && zl(Uu)), Du === $t && (Et.substr(Qt, 3) === "#>>" ? (Du = "#>>", Qt += 3) : (Du = $t, Uo === 0 && zl(Xp)), Du === $t && (Et.substr(Qt, 2) === "#>" ? (Du = "#>", Qt += 2) : (Du = $t, Uo === 0 && zl(T0)), Du === $t && (Du = yr()) === $t && (Du = o2()) === $t && (Et.substr(Qt, 2) === "@>" ? (Du = "@>", Qt += 2) : (Du = $t, Uo === 0 && zl(j0)), Du === $t && (Et.substr(Qt, 2) === "<@" ? (Du = "<@", Qt += 2) : (Du = $t, Uo === 0 && zl(dm))))))))), Du !== $t && (tp = xr()) !== $t && (Rp = E$()) !== $t ? $n = Pu = [Pu, Du, tp, Rp] : (Qt = $n, $n = $t)) : (Qt = $n, $n = $t);
             Bs !== $t ? (ou = vo, n0 = To, To = (pr = Bs) && pr.length !== 0 ? By(n0, pr) : n0, vo = To) : (Qt = vo, vo = $t);
           } else Qt = vo, vo = $t;
           else Qt = vo, vo = $t;
@@ -182744,7 +183034,7 @@ function requireBigInteger() {
       }
       function $0() {
         var lr, Nr, Jr;
-        return lr = Qt, V2() !== $t && xr() !== $t && G0() !== $t && xr() !== $t && (Nr = dm()) !== $t && xr() !== $t && fv() !== $t && xr() !== $t ? ((Jr = Js()) === $t && (Jr = null), Jr !== $t && xr() !== $t && ov() !== $t ? (ou = lr, lr = { type: "on update", keyword: Nr, parentheses: !0, expr: Jr }) : (Qt = lr, lr = $t)) : (Qt = lr, lr = $t), lr === $t && (lr = Qt, V2() !== $t && xr() !== $t && G0() !== $t && xr() !== $t && (Nr = dm()) !== $t ? (ou = lr, lr = /* @__PURE__ */ function(bn) {
+        return lr = Qt, V2() !== $t && xr() !== $t && G0() !== $t && xr() !== $t && (Nr = hm()) !== $t && xr() !== $t && fv() !== $t && xr() !== $t ? ((Jr = Js()) === $t && (Jr = null), Jr !== $t && xr() !== $t && ov() !== $t ? (ou = lr, lr = { type: "on update", keyword: Nr, parentheses: !0, expr: Jr }) : (Qt = lr, lr = $t)) : (Qt = lr, lr = $t), lr === $t && (lr = Qt, V2() !== $t && xr() !== $t && G0() !== $t && xr() !== $t && (Nr = hm()) !== $t ? (ou = lr, lr = /* @__PURE__ */ function(bn) {
           return { type: "on update", keyword: bn };
         }(Nr)) : (Qt = lr, lr = $t)), lr;
       }
@@ -182983,7 +183273,7 @@ function requireBigInteger() {
         }()) === $t && (lr = function() {
           var Nr, Jr, bn, to;
           return Nr = Qt, Et.substr(Qt, 12).toLowerCase() === "current_time" ? (Jr = Et.substr(Qt, 12), Qt += 12) : (Jr = $t, Uo === 0 && zl(uw)), Jr !== $t ? (bn = Qt, Uo++, to = Gs(), Uo--, to === $t ? bn = void 0 : (Qt = bn, bn = $t), bn !== $t ? (ou = Nr, Nr = Jr = "CURRENT_TIME") : (Qt = Nr, Nr = $t)) : (Qt = Nr, Nr = $t), Nr;
-        }()) === $t && (lr = dm()), lr;
+        }()) === $t && (lr = hm()), lr;
       }
       function Wu() {
         var lr, Nr, Jr, bn;
@@ -183504,7 +183794,7 @@ function requireBigInteger() {
         var lr, Nr, Jr, bn;
         return lr = Qt, Et.substr(Qt, 8).toLowerCase() === "interval" ? (Nr = Et.substr(Qt, 8), Qt += 8) : (Nr = $t, Uo === 0 && zl(Sx)), Nr !== $t ? (Jr = Qt, Uo++, bn = Gs(), Uo--, bn === $t ? Jr = void 0 : (Qt = Jr, Jr = $t), Jr !== $t ? (ou = lr, lr = Nr = "INTERVAL") : (Qt = lr, lr = $t)) : (Qt = lr, lr = $t), lr;
       }
-      function dm() {
+      function hm() {
         var lr, Nr, Jr, bn;
         return lr = Qt, Et.substr(Qt, 17).toLowerCase() === "current_timestamp" ? (Nr = Et.substr(Qt, 17), Qt += 17) : (Nr = $t, Uo === 0 && zl(d2)), Nr !== $t ? (Jr = Qt, Uo++, bn = Gs(), Uo--, bn === $t ? Jr = void 0 : (Qt = Jr, Jr = $t), Jr !== $t ? (ou = lr, lr = Nr = "CURRENT_TIMESTAMP") : (Qt = lr, lr = $t)) : (Qt = lr, lr = $t), lr;
       }
@@ -184148,7 +184438,7 @@ function requireBigInteger() {
         }), Gr;
       }, Jv = vp("LATERAL", !0), nA = vp("TABLESAMPLE", !0), oA = vp("REPEATABLE", !0), M$ = vp("CROSS", !0), Kv = vp("FOLLOWING", !0), Mv = vp("PRECEDING", !0), TA = vp("CURRENT", !0), pA = vp("UNBOUNDED", !0), H$ = vp("=", !1), Iv = vp("DO", !0), Gv = vp("NOTHING", !0), xA = vp("CONFLICT", !0), LA = vp("->", !1), NA = function(yr, Gr) {
         return Iw(yr, Gr);
-      }, IA = vp("!", !1), gv = vp(">=", !1), Vy = vp(">", !1), yy = vp("<=", !1), AA = vp("<>", !1), eA = vp("<", !1), aA = vp("!=", !1), xy = vp("SIMILAR", !0), ty = vp("!~*", !1), wA = vp("~*", !1), Pv = vp("~", !1), SA = vp("!~", !1), oy = vp("ESCAPE", !0), qA = vp("+", !1), RA = vp("-", !1), iA = vp("*", !1), ky = vp("/", !1), Oo = vp("%", !1), Cl = vp("||", !1), su = vp("$", !1), Yl = vp("?", !1), dp = vp("?|", !1), Zu = vp("?&", !1), wl = vp("#-", !1), lu = vp("#>>", !1), Uu = vp("#>", !1), Xp = vp("@>", !1), T0 = vp("<@", !1), j0 = vp("E", !0), fm = function(yr) {
+      }, IA = vp("!", !1), gv = vp(">=", !1), Vy = vp(">", !1), yy = vp("<=", !1), AA = vp("<>", !1), eA = vp("<", !1), aA = vp("!=", !1), xy = vp("SIMILAR", !0), ty = vp("!~*", !1), wA = vp("~*", !1), Pv = vp("~", !1), SA = vp("!~", !1), oy = vp("ESCAPE", !0), qA = vp("+", !1), RA = vp("-", !1), iA = vp("*", !1), ky = vp("/", !1), Oo = vp("%", !1), Cl = vp("||", !1), su = vp("$", !1), Yl = vp("?", !1), dp = vp("?|", !1), Zu = vp("?&", !1), wl = vp("#-", !1), lu = vp("#>>", !1), Uu = vp("#>", !1), Xp = vp("@>", !1), T0 = vp("<@", !1), j0 = vp("E", !0), dm = function(yr) {
         return Ry[yr.toUpperCase()] === !0;
       }, Sm = vp('"', !1), Nm = /^[^"]/, qm = OA(['"'], !0, !1), l1 = /^[^']/, B1 = OA(["'"], !0, !1), E1 = vp("`", !1), h$ = /^[^`]/, d$ = OA(["`"], !0, !1), jo = function(yr) {
         return { type: "default", value: yr };
@@ -185657,7 +185947,7 @@ function requireBigInteger() {
       }
       function BA() {
         var yr, Gr;
-        return yr = Wt, (Gr = Fo()) !== $t ? (fu = Wt, (fm(Gr) ? $t : void 0) !== $t ? (fu = yr, yr = Gr = Gr) : (Wt = yr, yr = $t)) : (Wt = yr, yr = $t), yr === $t && (yr = Wt, (Gr = I1()) !== $t && (fu = yr, Gr = Gr), yr = Gr), yr;
+        return yr = Wt, (Gr = Fo()) !== $t ? (fu = Wt, (dm(Gr) ? $t : void 0) !== $t ? (fu = yr, yr = Gr = Gr) : (Wt = yr, yr = $t)) : (Wt = yr, yr = $t), yr === $t && (yr = Wt, (Gr = I1()) !== $t && (fu = yr, Gr = Gr), yr = Gr), yr;
       }
       function Js() {
         var yr, Gr, xr, yn, co, xo, Io, Zs, iu;
@@ -185708,7 +185998,7 @@ function requireBigInteger() {
       }
       function F$() {
         var yr, Gr;
-        return yr = Wt, (Gr = Fo()) !== $t ? (fu = Wt, (fm(Gr) ? $t : void 0) !== $t ? (fu = yr, yr = Gr = /* @__PURE__ */ function(xr) {
+        return yr = Wt, (Gr = Fo()) !== $t ? (fu = Wt, (dm(Gr) ? $t : void 0) !== $t ? (fu = yr, yr = Gr = /* @__PURE__ */ function(xr) {
           return { type: "default", value: xr };
         }(Gr)) : (Wt = yr, yr = $t)) : (Wt = yr, yr = $t), yr === $t && (yr = ex()), yr;
       }
@@ -185718,13 +186008,13 @@ function requireBigInteger() {
       }
       function vn() {
         var yr, Gr;
-        return yr = Wt, (Gr = eo()) !== $t ? (fu = Wt, (fm(Gr) ? $t : void 0) !== $t ? (fu = yr, yr = Gr = /* @__PURE__ */ function(xr) {
+        return yr = Wt, (Gr = eo()) !== $t ? (fu = Wt, (dm(Gr) ? $t : void 0) !== $t ? (fu = yr, yr = Gr = /* @__PURE__ */ function(xr) {
           return { type: "default", value: xr };
         }(Gr)) : (Wt = yr, yr = $t)) : (Wt = yr, yr = $t), yr === $t && (yr = ex()), yr;
       }
       function Hn() {
         var yr, Gr;
-        return yr = Wt, (Gr = eo()) !== $t ? (fu = Wt, (fm(Gr) ? $t : void 0) !== $t ? (fu = yr, yr = Gr = Gr) : (Wt = yr, yr = $t)) : (Wt = yr, yr = $t), yr === $t && (yr = I1()), yr;
+        return yr = Wt, (Gr = eo()) !== $t ? (fu = Wt, (dm(Gr) ? $t : void 0) !== $t ? (fu = yr, yr = Gr = Gr) : (Wt = yr, yr = $t)) : (Wt = yr, yr = $t), yr === $t && (yr = I1()), yr;
       }
       function eo() {
         var yr, Gr, xr, yn;
@@ -186659,7 +186949,7 @@ function requireBigInteger() {
           return Gr = Wt, (xr = um()) !== $t && Qo() !== $t && (yn = Us()) !== $t && Qo() !== $t && (co = um()) !== $t && Qo() !== $t && (xo = Ms()) !== $t ? (fu = Gr, Gr = xr = { type: "join", ltable: xr, rtable: co, op: yn, on: xo }) : (Wt = Gr, Gr = $t), Gr;
         }()) === $t && (yr = $u()) === $t && (yr = function() {
           var Gr, xr;
-          return Gr = Wt, Tw() !== $t && Qo() !== $t && (xr = dm()) !== $t && Qo() !== $t && Ow() !== $t ? (fu = Gr, Gr = { type: "array", value: xr }) : (Wt = Gr, Gr = $t), Gr;
+          return Gr = Wt, Tw() !== $t && Qo() !== $t && (xr = hm()) !== $t && Qo() !== $t && Ow() !== $t ? (fu = Gr, Gr = { type: "array", value: xr }) : (Wt = Gr, Gr = $t), Gr;
         }()), yr;
       }
       function $u() {
@@ -186691,13 +186981,13 @@ function requireBigInteger() {
       }
       function lm() {
         var yr, Gr, xr;
-        return yr = Wt, (Gr = E0()) !== $t && Qo() !== $t && X$() !== $t && Qo() !== $t ? ((xr = dm()) === $t && (xr = null), xr !== $t && Qo() !== $t && K$() !== $t ? (fu = yr, yr = Gr = function(yn, co) {
+        return yr = Wt, (Gr = E0()) !== $t && Qo() !== $t && X$() !== $t && Qo() !== $t ? ((xr = hm()) === $t && (xr = null), xr !== $t && Qo() !== $t && K$() !== $t ? (fu = yr, yr = Gr = function(yn, co) {
           return { type: "function", name: yn, args: { type: "expr_list", value: co }, ...nv() };
         }(Gr, xr)) : (Wt = yr, yr = $t)) : (Wt = yr, yr = $t), yr === $t && (yr = Wt, (Gr = E0()) !== $t && (fu = yr, Gr = function(yn) {
           return { type: "function", name: yn, args: null, ...nv() };
         }(Gr)), yr = Gr), yr;
       }
-      function dm() {
+      function hm() {
         var yr, Gr, xr, yn, co, xo, Io, Zs;
         if (yr = Wt, (Gr = s0()) !== $t) {
           for (xr = [], yn = Wt, (co = Qo()) !== $t && (xo = vv()) !== $t && (Io = Qo()) !== $t && (Zs = s0()) !== $t ? yn = co = [co, xo, Io, Zs] : (Wt = yn, yn = $t); yn !== $t; ) xr.push(yn), yn = Wt, (co = Qo()) !== $t && (xo = vv()) !== $t && (Io = Qo()) !== $t && (Zs = s0()) !== $t ? yn = co = [co, xo, Io, Zs] : (Wt = yn, yn = $t);
@@ -187450,7 +187740,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
       }
     }
     function Ro(Oo) {
-      var Cl = Oo.as_struct_val, su = Oo.columns, Yl = Oo.collate, dp = Oo.distinct, Zu = Oo.for, wl = Oo.from, lu = Oo.for_sys_time_as_of, Uu = lu === void 0 ? {} : lu, Xp = Oo.locking_read, T0 = Oo.groupby, j0 = Oo.having, fm = Oo.into, Sm = fm === void 0 ? {} : fm, Nm = Oo.isolation, qm = Oo.limit, l1 = Oo.options, B1 = Oo.orderby, E1 = Oo.parentheses_symbol, h$ = Oo.qualify, d$ = Oo.top, jo = Oo.window, Su = Oo.with, fs = Oo.where, e0 = [ds(Su), "SELECT", Bt(Cl)];
+      var Cl = Oo.as_struct_val, su = Oo.columns, Yl = Oo.collate, dp = Oo.distinct, Zu = Oo.for, wl = Oo.from, lu = Oo.for_sys_time_as_of, Uu = lu === void 0 ? {} : lu, Xp = Oo.locking_read, T0 = Oo.groupby, j0 = Oo.having, dm = Oo.into, Sm = dm === void 0 ? {} : dm, Nm = Oo.isolation, qm = Oo.limit, l1 = Oo.options, B1 = Oo.orderby, E1 = Oo.parentheses_symbol, h$ = Oo.qualify, d$ = Oo.top, jo = Oo.window, Su = Oo.with, fs = Oo.where, e0 = [ds(Su), "SELECT", Bt(Cl)];
       Array.isArray(l1) && e0.push(l1.join(" ")), e0.push(function(q0) {
         if (q0) {
           if (typeof q0 == "string") return q0;
@@ -187551,8 +187841,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     }
     function Nl(Oo) {
       if (!Oo) return "";
-      var Cl = Oo.mode, su = Oo.local, Yl = Oo.file, dp = Oo.replace_ignore, Zu = Oo.table, wl = Oo.partition, lu = Oo.character_set, Uu = Oo.column, Xp = Oo.fields, T0 = Oo.lines, j0 = Oo.set, fm = Oo.ignore;
-      return ["LOAD DATA", Bt(Cl), Bt(su), "INFILE", Yt(Yl), Bt(dp), "INTO TABLE", bu(Zu), po(wl), Tt("CHARACTER SET", Yt, lu), ws(Xp), Ns(T0), Vs(fm), H$(Uu), Tt("SET", Rs, j0)].filter(zt).join(" ");
+      var Cl = Oo.mode, su = Oo.local, Yl = Oo.file, dp = Oo.replace_ignore, Zu = Oo.table, wl = Oo.partition, lu = Oo.character_set, Uu = Oo.column, Xp = Oo.fields, T0 = Oo.lines, j0 = Oo.set, dm = Oo.ignore;
+      return ["LOAD DATA", Bt(Cl), Bt(su), "INFILE", Yt(Yl), Bt(dp), "INTO TABLE", bu(Zu), po(wl), Tt("CHARACTER SET", Yt, lu), ws(Xp), Ns(T0), Vs(dm), H$(Uu), Tt("SET", Rs, j0)].filter(zt).join(" ");
     }
     function Tu(Oo) {
       var Cl = Oo.left, su = Oo.right, Yl = Oo.symbol, dp = Oo.keyword;
@@ -187582,8 +187872,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           lu = function(Uu) {
             var Xp = Uu.for;
             if (Xp) {
-              var T0 = Xp.user, j0 = Xp.host, fm = Xp.role_list, Sm = "'".concat(T0, "'");
-              return j0 && (Sm += "@'".concat(j0, "'")), ["FOR", Sm, fm && "USING", fm && fm.map(function(Nm) {
+              var T0 = Xp.user, j0 = Xp.host, dm = Xp.role_list, Sm = "'".concat(T0, "'");
+              return j0 && (Sm += "@'".concat(j0, "'")), ["FOR", Sm, dm && "USING", dm && dm.map(function(Nm) {
                 return "'".concat(Nm, "'");
               }).join(", ")].filter(zt).join(" ");
             }
@@ -187648,21 +187938,21 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
       switch (Cl.toLowerCase()) {
         case "aggregate":
           su = function(Yl) {
-            var dp = Yl.type, Zu = Yl.replace, wl = Yl.keyword, lu = Yl.name, Uu = Yl.args, Xp = Yl.options, T0 = [Bt(dp), Bt(Zu), Bt(wl)], j0 = [Ot(lu.schema), lu.name].filter(zt).join("."), fm = "".concat(Uu.expr.map(p1).join(", ")).concat(Uu.orderby ? [" ORDER", "BY", Uu.orderby.map(p1).join(", ")].join(" ") : "");
-            return T0.push("".concat(j0, "(").concat(fm, ")"), "(".concat(Xp.map(Dm).join(", "), ")")), T0.filter(zt).join(" ");
+            var dp = Yl.type, Zu = Yl.replace, wl = Yl.keyword, lu = Yl.name, Uu = Yl.args, Xp = Yl.options, T0 = [Bt(dp), Bt(Zu), Bt(wl)], j0 = [Ot(lu.schema), lu.name].filter(zt).join("."), dm = "".concat(Uu.expr.map(p1).join(", ")).concat(Uu.orderby ? [" ORDER", "BY", Uu.orderby.map(p1).join(", ")].join(" ") : "");
+            return T0.push("".concat(j0, "(").concat(dm, ")"), "(".concat(Xp.map(Dm).join(", "), ")")), T0.filter(zt).join(" ");
           }(Oo);
           break;
         case "table":
           su = function(Yl) {
-            var dp = Yl.type, Zu = Yl.keyword, wl = Yl.table, lu = Yl.like, Uu = Yl.as, Xp = Yl.temporary, T0 = Yl.if_not_exists, j0 = Yl.create_definitions, fm = Yl.table_options, Sm = Yl.ignore_replace, Nm = Yl.replace, qm = Yl.partition_of, l1 = Yl.query_expr, B1 = Yl.unlogged, E1 = Yl.with, h$ = [Bt(dp), Bt(Nm), Bt(Xp), Bt(B1), Bt(Zu), Bt(T0), op(wl)];
+            var dp = Yl.type, Zu = Yl.keyword, wl = Yl.table, lu = Yl.like, Uu = Yl.as, Xp = Yl.temporary, T0 = Yl.if_not_exists, j0 = Yl.create_definitions, dm = Yl.table_options, Sm = Yl.ignore_replace, Nm = Yl.replace, qm = Yl.partition_of, l1 = Yl.query_expr, B1 = Yl.unlogged, E1 = Yl.with, h$ = [Bt(dp), Bt(Nm), Bt(Xp), Bt(B1), Bt(Zu), Bt(T0), op(wl)];
             if (lu) {
               var d$ = lu.type, jo = op(lu.table);
               return h$.push(Bt(d$), jo), h$.filter(zt).join(" ");
             }
             if (qm) return h$.concat([L0(qm)]).filter(zt).join(" ");
-            if (j0 && h$.push("(".concat(j0.map(i0).join(", "), ")")), fm) {
+            if (j0 && h$.push("(".concat(j0.map(i0).join(", "), ")")), dm) {
               var Su = Dt().database, fs = Su && Su.toLowerCase() === "sqlite" ? ", " : " ";
-              h$.push(fm.map(u0).join(fs));
+              h$.push(dm.map(u0).join(fs));
             }
             if (E1) {
               var e0 = E1.map(function(m0) {
@@ -187675,10 +187965,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           break;
         case "trigger":
           su = Oo.resource === "constraint" ? function(Yl) {
-            var dp = Yl.constraint, Zu = Yl.constraint_kw, wl = Yl.deferrable, lu = Yl.events, Uu = Yl.execute, Xp = Yl.for_each, T0 = Yl.from, j0 = Yl.location, fm = Yl.keyword, Sm = Yl.or, Nm = Yl.type, qm = Yl.table, l1 = Yl.when, B1 = [Bt(Nm), Bt(Sm), Bt(Zu), Bt(fm), Ot(dp), Bt(j0)], E1 = Br(lu);
+            var dp = Yl.constraint, Zu = Yl.constraint_kw, wl = Yl.deferrable, lu = Yl.events, Uu = Yl.execute, Xp = Yl.for_each, T0 = Yl.from, j0 = Yl.location, dm = Yl.keyword, Sm = Yl.or, Nm = Yl.type, qm = Yl.table, l1 = Yl.when, B1 = [Bt(Nm), Bt(Sm), Bt(Zu), Bt(dm), Ot(dp), Bt(j0)], E1 = Br(lu);
             return B1.push(E1, "ON", bu(qm)), T0 && B1.push("FROM", bu(T0)), B1.push.apply(B1, mp(ln(wl)).concat(mp(ln(Xp)))), l1 && B1.push(Bt(l1.type), Zp(l1.cond)), B1.push(Bt(Uu.keyword), Op(Uu.expr)), B1.filter(zt).join(" ");
           }(Oo) : function(Yl) {
-            var dp = Yl.definer, Zu = Yl.for_each, wl = Yl.keyword, lu = Yl.execute, Uu = Yl.type, Xp = Yl.table, T0 = Yl.if_not_exists, j0 = Yl.temporary, fm = Yl.trigger, Sm = Yl.events, Nm = Yl.order, qm = Yl.time, l1 = Yl.when, B1 = [Bt(Uu), Bt(j0), Zp(dp), Bt(wl), Bt(T0), bu(fm), Bt(qm), Sm.map(function(E1) {
+            var dp = Yl.definer, Zu = Yl.for_each, wl = Yl.keyword, lu = Yl.execute, Uu = Yl.type, Xp = Yl.table, T0 = Yl.if_not_exists, j0 = Yl.temporary, dm = Yl.trigger, Sm = Yl.events, Nm = Yl.order, qm = Yl.time, l1 = Yl.when, B1 = [Bt(Uu), Bt(j0), Zp(dp), Bt(wl), Bt(T0), bu(dm), Bt(qm), Sm.map(function(E1) {
               var h$ = [Bt(E1.keyword)], d$ = E1.args;
               return d$ && h$.push(Bt(d$.keyword), d$.columns.map(z$).join(", ")), h$.join(" ");
             }), "ON", bu(Xp), Bt(Zu && Zu.keyword), Bt(Zu && Zu.args), Nm && "".concat(Bt(Nm.keyword), " ").concat(Ot(Nm.trigger)), Tt("WHEN", Zp, l1), Bt(lu.prefix)];
@@ -187700,19 +187990,19 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           break;
         case "function":
           su = function(Yl) {
-            var dp = Yl.type, Zu = Yl.replace, wl = Yl.keyword, lu = Yl.name, Uu = Yl.args, Xp = Yl.returns, T0 = Yl.options, j0 = Yl.last, fm = [Bt(dp), Bt(Zu), Bt(wl)], Sm = [Yt(lu.schema), lu.name.map(Yt).join(".")].filter(zt).join("."), Nm = Uu.map(p1).filter(zt).join(", ");
-            return fm.push("".concat(Sm, "(").concat(Nm, ")"), function(qm) {
+            var dp = Yl.type, Zu = Yl.replace, wl = Yl.keyword, lu = Yl.name, Uu = Yl.args, Xp = Yl.returns, T0 = Yl.options, j0 = Yl.last, dm = [Bt(dp), Bt(Zu), Bt(wl)], Sm = [Yt(lu.schema), lu.name.map(Yt).join(".")].filter(zt).join("."), Nm = Uu.map(p1).filter(zt).join(", ");
+            return dm.push("".concat(Sm, "(").concat(Nm, ")"), function(qm) {
               var l1 = qm.type, B1 = qm.keyword, E1 = qm.expr;
               return [Bt(l1), Bt(B1), Array.isArray(E1) ? "(".concat(E1.map(Kv).join(", "), ")") : F0(E1)].filter(zt).join(" ");
-            }(Xp), T0.map(pm).join(" "), j0), fm.filter(zt).join(" ");
+            }(Xp), T0.map(pm).join(" "), j0), dm.filter(zt).join(" ");
           }(Oo);
           break;
         case "index":
           su = function(Yl) {
-            var dp = Yl.concurrently, Zu = Yl.filestream_on, wl = Yl.keyword, lu = Yl.if_not_exists, Uu = Yl.include, Xp = Yl.index_columns, T0 = Yl.index_type, j0 = Yl.index_using, fm = Yl.index, Sm = Yl.on, Nm = Yl.index_options, qm = Yl.algorithm_option, l1 = Yl.lock_option, B1 = Yl.on_kw, E1 = Yl.table, h$ = Yl.tablespace, d$ = Yl.type, jo = Yl.where, Su = Yl.with, fs = Yl.with_before_where, e0 = Su && "WITH (".concat(Nn(Su).join(", "), ")"), m0 = Uu && "".concat(Bt(Uu.keyword), " (").concat(Uu.columns.map(function(N0) {
+            var dp = Yl.concurrently, Zu = Yl.filestream_on, wl = Yl.keyword, lu = Yl.if_not_exists, Uu = Yl.include, Xp = Yl.index_columns, T0 = Yl.index_type, j0 = Yl.index_using, dm = Yl.index, Sm = Yl.on, Nm = Yl.index_options, qm = Yl.algorithm_option, l1 = Yl.lock_option, B1 = Yl.on_kw, E1 = Yl.table, h$ = Yl.tablespace, d$ = Yl.type, jo = Yl.where, Su = Yl.with, fs = Yl.with_before_where, e0 = Su && "WITH (".concat(Nn(Su).join(", "), ")"), m0 = Uu && "".concat(Bt(Uu.keyword), " (").concat(Uu.columns.map(function(N0) {
               return typeof N0 == "string" ? Ot(N0) : Zp(N0);
-            }).join(", "), ")"), a0 = fm;
-            fm && (a0 = typeof fm == "string" ? Ot(fm) : [Ot(fm.schema), Ot(fm.name)].filter(zt).join("."));
+            }).join(", "), ")"), a0 = dm;
+            dm && (a0 = typeof dm == "string" ? Ot(dm) : [Ot(dm.schema), Ot(dm.name)].filter(zt).join("."));
             var xm = [Bt(d$), Bt(T0), Bt(wl), Bt(lu), Bt(dp), a0, Bt(B1), bu(E1)].concat(mp(En(j0)), ["(".concat(Vr(Xp), ")"), m0, Nn(Nm).join(" "), Tm(qm), Tm(l1), Tt("TABLESPACE", Yt, h$)]);
             return fs ? xm.push(e0, Tt("WHERE", Zp, jo)) : xm.push(Tt("WHERE", Zp, jo), e0), xm.push(Tt("ON", Zp, Sm), Tt("FILESTREAM_ON", Yt, Zu)), xm.filter(zt).join(" ");
           }(Oo);
@@ -187726,14 +188016,14 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         case "database":
         case "schema":
           su = function(Yl) {
-            var dp = Yl.type, Zu = Yl.keyword, wl = Yl.replace, lu = Yl.if_not_exists, Uu = Yl.create_definitions, Xp = Yl[Zu], T0 = Xp.db, j0 = Xp.schema, fm = [Yt(T0), j0.map(Yt).join(".")].filter(zt).join("."), Sm = [Bt(dp), Bt(wl), Bt(Zu), Bt(lu), fm];
+            var dp = Yl.type, Zu = Yl.keyword, wl = Yl.replace, lu = Yl.if_not_exists, Uu = Yl.create_definitions, Xp = Yl[Zu], T0 = Xp.db, j0 = Xp.schema, dm = [Yt(T0), j0.map(Yt).join(".")].filter(zt).join("."), Sm = [Bt(dp), Bt(wl), Bt(Zu), Bt(lu), dm];
             return Uu && Sm.push(Uu.map(u0).join(" ")), Sm.filter(zt).join(" ");
           }(Oo);
           break;
         case "view":
           su = function(Yl) {
-            var dp = Yl.algorithm, Zu = Yl.columns, wl = Yl.definer, lu = Yl.if_not_exists, Uu = Yl.keyword, Xp = Yl.recursive, T0 = Yl.replace, j0 = Yl.select, fm = Yl.sql_security, Sm = Yl.temporary, Nm = Yl.type, qm = Yl.view, l1 = Yl.with, B1 = Yl.with_options, E1 = qm.db, h$ = qm.schema, d$ = qm.view, jo = [Ot(E1), Ot(h$), Ot(d$)].filter(zt).join(".");
-            return [Bt(Nm), Bt(T0), Bt(Sm), Bt(Xp), dp && "ALGORITHM = ".concat(Bt(dp)), Zp(wl), fm && "SQL SECURITY ".concat(Bt(fm)), Bt(Uu), Bt(lu), jo, Zu && "(".concat(Zu.map(Mt).join(", "), ")"), B1 && ["WITH", "(".concat(B1.map(function(Su) {
+            var dp = Yl.algorithm, Zu = Yl.columns, wl = Yl.definer, lu = Yl.if_not_exists, Uu = Yl.keyword, Xp = Yl.recursive, T0 = Yl.replace, j0 = Yl.select, dm = Yl.sql_security, Sm = Yl.temporary, Nm = Yl.type, qm = Yl.view, l1 = Yl.with, B1 = Yl.with_options, E1 = qm.db, h$ = qm.schema, d$ = qm.view, jo = [Ot(E1), Ot(h$), Ot(d$)].filter(zt).join(".");
+            return [Bt(Nm), Bt(T0), Bt(Sm), Bt(Xp), dp && "ALGORITHM = ".concat(Bt(dp)), Zp(wl), dm && "SQL SECURITY ".concat(Bt(dm)), Bt(Uu), Bt(lu), jo, Zu && "(".concat(Zu.map(Mt).join(", "), ")"), B1 && ["WITH", "(".concat(B1.map(function(Su) {
               return Kt(Su).join(" ");
             }).join(", "), ")")].join(" "), "AS", ap(j0), Bt(l1)].filter(zt).join(" ");
           }(Oo);
@@ -187742,7 +188032,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           su = function(Yl) {
             var dp = Yl.as, Zu = Yl.domain, wl = Yl.type, lu = Yl.keyword, Uu = Yl.target, Xp = Yl.create_definitions, T0 = [Bt(wl), Bt(lu), [Ot(Zu.schema), Ot(Zu.name)].filter(zt).join("."), Bt(dp), sr(Uu)];
             if (Xp && Xp.length > 0) {
-              var j0, fm = [], Sm = function(l1, B1) {
+              var j0, dm = [], Sm = function(l1, B1) {
                 var E1 = typeof Symbol < "u" && l1[Symbol.iterator] || l1["@@iterator"];
                 if (!E1) {
                   if (Array.isArray(l1) || (E1 = Ep(l1)) || B1) {
@@ -187779,13 +188069,13 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   var Nm = j0.value, qm = Nm.type;
                   switch (qm) {
                     case "collate":
-                      fm.push(Zp(Nm));
+                      dm.push(Zp(Nm));
                       break;
                     case "default":
-                      fm.push(Bt(qm), Zp(Nm.value));
+                      dm.push(Bt(qm), Zp(Nm.value));
                       break;
                     case "constraint":
-                      fm.push($p(Nm));
+                      dm.push($p(Nm));
                   }
                 }
               } catch (l1) {
@@ -187793,7 +188083,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               } finally {
                 Sm.f();
               }
-              T0.push(fm.filter(zt).join(" "));
+              T0.push(dm.filter(zt).join(" "));
             }
             return T0.filter(zt).join(" ");
           }(Oo);
@@ -187818,11 +188108,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           break;
         case "user":
           su = function(Yl) {
-            var dp = Yl.attribute, Zu = Yl.comment, wl = Yl.default_role, lu = Yl.if_not_exists, Uu = Yl.keyword, Xp = Yl.lock_option, T0 = Yl.password_options, j0 = Yl.require, fm = Yl.resource_options, Sm = Yl.type, Nm = Yl.user.map(function(l1) {
+            var dp = Yl.attribute, Zu = Yl.comment, wl = Yl.default_role, lu = Yl.if_not_exists, Uu = Yl.keyword, Xp = Yl.lock_option, T0 = Yl.password_options, j0 = Yl.require, dm = Yl.resource_options, Sm = Yl.type, Nm = Yl.user.map(function(l1) {
               var B1 = l1.user, E1 = l1.auth_option, h$ = [S0(B1)];
               return E1 && h$.push(Bt(E1.keyword), E1.auth_plugin, Yt(E1.value)), h$.filter(zt).join(" ");
             }).join(", "), qm = [Bt(Sm), Bt(Uu), Bt(lu), Nm];
-            return wl && qm.push(Bt(wl.keyword), wl.value.map(S0).join(", ")), qm.push(Tt(j0 && j0.keyword, Zp, j0 && j0.value)), fm && qm.push(Bt(fm.keyword), fm.value.map(function(l1) {
+            return wl && qm.push(Bt(wl.keyword), wl.value.map(S0).join(", ")), qm.push(Tt(j0 && j0.keyword, Zp, j0 && j0.value)), dm && qm.push(Bt(dm.keyword), dm.value.map(function(l1) {
               return Zp(l1);
             }).join(" ")), T0 && T0.forEach(function(l1) {
               return qm.push(Tt(l1.keyword, Zp, l1.value));
@@ -187864,10 +188154,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
       }).join(" ")), su && Xp.push("ELSE", "".concat(Lu(su.ast || su)).concat(lu[1])), Xp.push(Yt(Uu)), Xp.filter(zt).join(" ");
     }, insert: Xo, load_data: Nl, drop: b0, truncate: b0, replace: Xo, declare: function(Oo) {
       var Cl = Oo.type, su = Oo.declare, Yl = Oo.symbol, dp = [Bt(Cl)], Zu = su.map(function(wl) {
-        var lu = wl.at, Uu = wl.name, Xp = wl.as, T0 = wl.constant, j0 = wl.datatype, fm = wl.not_null, Sm = wl.prefix, Nm = wl.definition, qm = wl.keyword, l1 = [[lu, Uu].filter(zt).join(""), Bt(Xp), Bt(T0)];
+        var lu = wl.at, Uu = wl.name, Xp = wl.as, T0 = wl.constant, j0 = wl.datatype, dm = wl.not_null, Sm = wl.prefix, Nm = wl.definition, qm = wl.keyword, l1 = [[lu, Uu].filter(zt).join(""), Bt(Xp), Bt(T0)];
         switch (qm) {
           case "variable":
-            l1.push(Jv(j0), Zp(wl.collate), Bt(fm)), Nm && l1.push(Bt(Nm.keyword), Zp(Nm.value));
+            l1.push(Jv(j0), Zp(wl.collate), Bt(dm)), Nm && l1.push(Bt(Nm.keyword), Zp(Nm.value));
             break;
           case "cursor":
             l1.push(Bt(Sm));
@@ -187983,7 +188273,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
       return [jn(Oo.target), Gn(Cl)].filter(zt).join(" ");
     }
     function Xo(Oo) {
-      var Cl = Oo.table, su = Oo.type, Yl = Oo.or, dp = Yl === void 0 ? [] : Yl, Zu = Oo.prefix, wl = Zu === void 0 ? "into" : Zu, lu = Oo.columns, Uu = Oo.conflict, Xp = Oo.values, T0 = Oo.where, j0 = Oo.on_duplicate_update, fm = Oo.partition, Sm = Oo.returning, Nm = Oo.set, qm = j0 || {}, l1 = qm.keyword, B1 = qm.set, E1 = [Bt(su), dp.map(Yt).join(" "), Bt(wl), op(Cl), po(fm)];
+      var Cl = Oo.table, su = Oo.type, Yl = Oo.or, dp = Yl === void 0 ? [] : Yl, Zu = Oo.prefix, wl = Zu === void 0 ? "into" : Zu, lu = Oo.columns, Uu = Oo.conflict, Xp = Oo.values, T0 = Oo.where, j0 = Oo.on_duplicate_update, dm = Oo.partition, Sm = Oo.returning, Nm = Oo.set, qm = j0 || {}, l1 = qm.keyword, B1 = qm.set, E1 = [Bt(su), dp.map(Yt).join(" "), Bt(wl), op(Cl), po(dm)];
       return Array.isArray(lu) && E1.push("(".concat(lu.map(Yt).join(", "), ")")), E1.push(Tt(Xp && Xp.type === "values" ? "VALUES" : "", Al, Xp)), E1.push(Tt("ON CONFLICT", so, Uu)), E1.push(Tt("SET", Rs, Nm)), E1.push(Tt("WHERE", Zp, T0)), E1.push(Tt(l1, Rs, B1)), E1.push(Qr(Sm)), E1.filter(zt).join(" ");
     }
     function Fs(Oo) {
@@ -188071,7 +188361,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     }
     function bu(Oo) {
       if (Bt(Oo.type) === "UNNEST") return Vu(Oo);
-      var Cl, su, Yl, dp, Zu = Oo.table, wl = Oo.db, lu = Oo.as, Uu = Oo.expr, Xp = Oo.operator, T0 = Oo.prefix, j0 = Oo.schema, fm = Oo.server, Sm = Oo.suffix, Nm = Oo.tablesample, qm = Oo.temporal_table, l1 = Oo.table_hint, B1 = Oo.surround, E1 = B1 === void 0 ? {} : B1, h$ = Ot(fm, !1, E1.server), d$ = Ot(wl, !1, E1.db), jo = Ot(j0, !1, E1.schema), Su = Zu && Ot(Zu, !1, E1.table);
+      var Cl, su, Yl, dp, Zu = Oo.table, wl = Oo.db, lu = Oo.as, Uu = Oo.expr, Xp = Oo.operator, T0 = Oo.prefix, j0 = Oo.schema, dm = Oo.server, Sm = Oo.suffix, Nm = Oo.tablesample, qm = Oo.temporal_table, l1 = Oo.table_hint, B1 = Oo.surround, E1 = B1 === void 0 ? {} : B1, h$ = Ot(dm, !1, E1.server), d$ = Ot(wl, !1, E1.db), jo = Ot(j0, !1, E1.schema), Su = Zu && Ot(Zu, !1, E1.table);
       if (Uu) switch (Uu.type) {
         case "values":
           var fs = Uu.parentheses, e0 = Uu.values, m0 = Uu.prefix, a0 = [fs && "(", "", fs && ")"], xm = Al(e0);
@@ -188122,8 +188412,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
       var T0 = Oo[0], j0 = [];
       if (T0.type === "dual") return "DUAL";
       j0.push(bu(T0));
-      for (var fm = 1; fm < Oo.length; ++fm) {
-        var Sm = Oo[fm], Nm = Sm.on, qm = Sm.using, l1 = Sm.join, B1 = [], E1 = Array.isArray(Sm) || Object.hasOwnProperty.call(Sm, "joins");
+      for (var dm = 1; dm < Oo.length; ++dm) {
+        var Sm = Oo[dm], Nm = Sm.on, qm = Sm.using, l1 = Sm.join, B1 = [], E1 = Array.isArray(Sm) || Object.hasOwnProperty.call(Sm, "joins");
         B1.push(l1 ? " ".concat(Bt(l1)) : ","), B1.push(E1 ? op(Sm) : bu(Sm)), B1.push(Tt("ON", Zp, Nm)), qm && B1.push("USING (".concat(qm.map(Yt).join(", "), ")")), j0.push(B1.filter(zt).join(" "));
       }
       return j0.filter(zt).join("");
@@ -188253,10 +188543,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
       var Zu, wl = [], lu = mu(Yl);
       try {
         var Uu = function() {
-          var Xp = Zu.value, T0 = Xp.table, j0 = Xp.lock_type, fm = [bu(T0)];
-          j0 && fm.push(["prefix", "type", "suffix"].map(function(Sm) {
+          var Xp = Zu.value, T0 = Xp.table, j0 = Xp.lock_type, dm = [bu(T0)];
+          j0 && dm.push(["prefix", "type", "suffix"].map(function(Sm) {
             return Bt(j0[Sm]);
-          }).filter(zt).join(" ")), wl.push(fm.join(" "));
+          }).filter(zt).join(" ")), wl.push(dm.join(" "));
         };
         for (lu.s(); !(Zu = lu.n()).done; ) Uu();
       } catch (Xp) {
@@ -188265,12 +188555,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         lu.f();
       }
       return dp.push.apply(dp, [wl.join(", ")].concat(lp(function(Xp) {
-        var T0 = Xp.lock_mode, j0 = Xp.nowait, fm = [];
+        var T0 = Xp.lock_mode, j0 = Xp.nowait, dm = [];
         if (T0) {
           var Sm = T0.mode;
-          fm.push(Sm.toUpperCase());
+          dm.push(Sm.toUpperCase());
         }
-        return j0 && fm.push(j0.toUpperCase()), fm;
+        return j0 && dm.push(j0.toUpperCase()), dm;
       }(Oo)))), dp.filter(zt).join(" ");
     }
     function S0(Oo) {
@@ -188279,7 +188569,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     }
     function B0(Oo) {
       var Cl = Oo.type, su = Oo.grant_option_for, Yl = Oo.keyword, dp = Oo.objects, Zu = Oo.on, wl = Oo.to_from, lu = Oo.user_or_roles, Uu = Oo.with, Xp = [Bt(Cl), Yt(su)], T0 = dp.map(function(j0) {
-        var fm = j0.priv, Sm = j0.columns, Nm = [Zp(fm)];
+        var dm = j0.priv, Sm = j0.columns, Nm = [Zp(dm)];
         return Sm && Nm.push("(".concat(Sm.map(z$).join(", "), ")")), Nm.join(" ");
       }).join(", ");
       if (Xp.push(T0), Zu) switch (Xp.push("ON"), Yl) {
@@ -188360,7 +188650,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
       return Zu.join("");
     }
     function Gu(Oo) {
-      for (var Cl = Oo.target, su = Oo.expr, Yl = Oo.keyword, dp = Oo.symbol, Zu = Oo.as, wl = Oo.offset, lu = Oo.parentheses, Uu = Oo.collate, Xp = W$({ expr: su, offset: wl }), T0 = [], j0 = 0, fm = Cl.length; j0 < fm; ++j0) {
+      for (var Cl = Oo.target, su = Oo.expr, Yl = Oo.keyword, dp = Oo.symbol, Zu = Oo.as, wl = Oo.offset, lu = Oo.parentheses, Uu = Oo.collate, Xp = W$({ expr: su, offset: wl }), T0 = [], j0 = 0, dm = Cl.length; j0 < dm; ++j0) {
         var Sm = Cl[j0], Nm = Sm.angle_brackets, qm = Sm.length, l1 = Sm.dataType, B1 = Sm.parentheses, E1 = Sm.quoted, h$ = Sm.scale, d$ = Sm.suffix, jo = Sm.expr, Su = jo ? Zp(jo) : "";
         qm != null && (Su = h$ ? "".concat(qm, ", ").concat(h$) : qm), B1 && (Su = "(".concat(Su, ")")), Nm && (Su = "<".concat(Su, ">")), d$ && d$.length && (Su += " ".concat(d$.map(Yt).join(" ")));
         var fs = "::", e0 = "", m0 = [];
@@ -188378,7 +188668,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         if (!m0) return "";
         var a0 = m0.type, xm = m0.keyword, N0 = m0.orderby;
         return [Bt(a0), Bt(xm), "(".concat(U$(N0, "order by"), ")")].filter(zt).join(" ");
-      }(lu), fm = Zp(Xp), Sm = uv(Yl), Nm = [Yt(dp.schema), dp.name.map(Yt).join(".")].filter(zt).join(".");
+      }(lu), dm = Zp(Xp), Sm = uv(Yl), Nm = [Yt(dp.schema), dp.name.map(Yt).join(".")].filter(zt).join(".");
       if (!Cl) return [Nm, Sm, j0, T0].filter(zt).join(" ");
       var qm = Oo.separator || ", ", l1 = 0;
       if (Bt(Nm) === "TRIM") for (var B1 = 0, E1 = Cl.value.length; B1 < E1; ++B1) {
@@ -188395,7 +188685,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         for (var Su = jo[0], fs = 1, e0 = jo.length; fs < e0; ++fs) Su = [Su, jo[fs]].join(" ".concat(Zp(qm[fs - 1]), " "));
         d$.push(Su);
       } else Bt(Nm) === "TRIM" && l1 > 0 ? d$.push([jo.slice(0, l1 + 1).join(" "), jo.slice(l1 + 1).join(", ")].join(" ")) : d$.push(jo.join(qm));
-      return Zu !== !1 && d$.push(")"), d$.push(R$(su)), d$ = [d$.join(""), fm, Sm].filter(zt).join(" "), [wl ? "(".concat(d$, ")") : d$, j0, T0].filter(zt).join(" ");
+      return Zu !== !1 && d$.push(")"), d$.push(R$(su)), d$ = [d$.join(""), dm, Sm].filter(zt).join(" "), [wl ? "(".concat(d$, ")") : d$, j0, T0].filter(zt).join(" ");
     }
     function mp(Oo) {
       return function(Cl) {
@@ -188498,13 +188788,13 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     }
     function Tm(Oo) {
       if (!Oo) return "";
-      var Cl = Oo.action, su = Oo.create_definitions, Yl = Oo.if_not_exists, dp = Oo.keyword, Zu = Oo.if_exists, wl = Oo.old_column, lu = Oo.prefix, Uu = Oo.resource, Xp = Oo.symbol, T0 = Oo.suffix, j0 = "", fm = [];
+      var Cl = Oo.action, su = Oo.create_definitions, Yl = Oo.if_not_exists, dp = Oo.keyword, Zu = Oo.if_exists, wl = Oo.old_column, lu = Oo.prefix, Uu = Oo.resource, Xp = Oo.symbol, T0 = Oo.suffix, j0 = "", dm = [];
       switch (Uu) {
         case "column":
-          fm = [Kv(Oo)];
+          dm = [Kv(Oo)];
           break;
         case "index":
-          fm = go(Oo), j0 = Oo[Uu];
+          dm = go(Oo), j0 = Oo[Uu];
           break;
         case "table":
         case "schema":
@@ -188522,10 +188812,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           j0 = [Xp, Bt(Oo[Uu])].filter(zt).join(" ");
           break;
         case "constraint":
-          j0 = Ot(Oo[Uu]), fm = [i0(su)];
+          j0 = Ot(Oo[Uu]), dm = [i0(su)];
           break;
         case "partition":
-          fm = [Im(Cl, Oo.partitions)];
+          dm = [Im(Cl, Oo.partitions)];
           break;
         case "key":
           j0 = Ot(Oo[Uu]);
@@ -188535,7 +188825,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             return Nm !== null;
           }).join(" ");
       }
-      var Sm = [Bt(Cl), Bt(dp), Bt(Yl), Bt(Zu), wl && z$(wl), Bt(lu), j0 && j0.trim(), fm.filter(zt).join(" ")];
+      var Sm = [Bt(Cl), Bt(dp), Bt(Yl), Bt(Zu), wl && z$(wl), Bt(lu), j0 && j0.trim(), dm.filter(zt).join(" ")];
       return T0 && Sm.push(Bt(T0.keyword), T0.expr && z$(T0.expr)), Sm.filter(zt).join(" ");
     }
     function p1(Oo) {
@@ -188774,17 +189064,17 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           throw new TypeError(`Invalid attempt to iterate non-iterable instance.
 In order to be iterable, non-array objects must have a [Symbol.iterator]() method.`);
         }
-        var j0, fm = !0, Sm = !1;
+        var j0, dm = !0, Sm = !1;
         return { s: function() {
           Uu = Uu.call(wl);
         }, n: function() {
           var Nm = Uu.next();
-          return fm = Nm.done, Nm;
+          return dm = Nm.done, Nm;
         }, e: function(Nm) {
           Sm = !0, j0 = Nm;
         }, f: function() {
           try {
-            fm || Uu.return == null || Uu.return();
+            dm || Uu.return == null || Uu.return();
           } finally {
             if (Sm) throw j0;
           }
@@ -188803,7 +189093,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
       return su.join("");
     }
     function z$(Oo) {
-      var Cl = Oo.array_index, su = Oo.as, Yl = Oo.column, dp = Oo.collate, Zu = Oo.db, wl = Oo.isDual, lu = Oo.notations, Uu = lu === void 0 ? [] : lu, Xp = Oo.options, T0 = Oo.schema, j0 = Oo.table, fm = Oo.parentheses, Sm = Oo.suffix, Nm = Oo.order_by, qm = Oo.subFields, l1 = qm === void 0 ? [] : qm, B1 = Yl === "*" ? "*" : W$(Yl, wl), E1 = [Zu, T0, j0].filter(zt).map(function(fs) {
+      var Cl = Oo.array_index, su = Oo.as, Yl = Oo.column, dp = Oo.collate, Zu = Oo.db, wl = Oo.isDual, lu = Oo.notations, Uu = lu === void 0 ? [] : lu, Xp = Oo.options, T0 = Oo.schema, j0 = Oo.table, dm = Oo.parentheses, Sm = Oo.suffix, Nm = Oo.order_by, qm = Oo.subFields, l1 = qm === void 0 ? [] : qm, B1 = Yl === "*" ? "*" : W$(Yl, wl), E1 = [Zu, T0, j0].filter(zt).map(function(fs) {
         return "".concat(typeof fs == "string" ? Ot(fs) : Zp(fs));
       }), h$ = E1[0];
       if (h$) {
@@ -188813,7 +189103,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
       var jo = [B1 = ["".concat(B1).concat(R$(Cl))].concat(Cv(l1)).join("."), uv(dp), Zp(Xp), Tt("AS", Zp, su)];
       jo.push(typeof Sm == "string" ? Bt(Sm) : Zp(Sm)), jo.push(Bt(Nm));
       var Su = jo.filter(zt).join(" ");
-      return fm ? "(".concat(Su, ")") : Su;
+      return dm ? "(".concat(Su, ")") : Su;
     }
     function Jv(Oo) {
       if (Oo) {
@@ -188836,7 +189126,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
       }), Cl.filter(zt);
     }
     function oA(Oo) {
-      var Cl = [], su = Oo.nullable, Yl = Oo.character_set, dp = Oo.check, Zu = Oo.comment, wl = Oo.constraint, lu = Oo.collate, Uu = Oo.storage, Xp = Oo.using, T0 = Oo.default_val, j0 = Oo.generated, fm = Oo.auto_increment, Sm = Oo.unique, Nm = Oo.primary_key, qm = Oo.column_format, l1 = Oo.reference_definition, B1 = Oo.generated_by_default, E1 = [Bt(su && su.action), Bt(su && su.value)].filter(zt).join(" ");
+      var Cl = [], su = Oo.nullable, Yl = Oo.character_set, dp = Oo.check, Zu = Oo.comment, wl = Oo.constraint, lu = Oo.collate, Uu = Oo.storage, Xp = Oo.using, T0 = Oo.default_val, j0 = Oo.generated, dm = Oo.auto_increment, Sm = Oo.unique, Nm = Oo.primary_key, qm = Oo.column_format, l1 = Oo.reference_definition, B1 = Oo.generated_by_default, E1 = [Bt(su && su.action), Bt(su && su.value)].filter(zt).join(" ");
       if (j0 || Cl.push(E1), T0) {
         var h$ = T0.type, d$ = T0.value;
         Cl.push(h$.toUpperCase(), Zp(d$));
@@ -188844,7 +189134,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
       var jo = Dt().database;
       return wl && Cl.push(Bt(wl.keyword), Yt(wl.constraint)), Cl.push($p(dp)), Cl.push(function(Su) {
         if (Su) return [Bt(Su.value), "(".concat(Zp(Su.expr), ")"), Bt(Su.storage_type)].filter(zt).join(" ");
-      }(j0)), j0 && Cl.push(E1), Cl.push(tn(fm), Bt(Nm), Bt(Sm), Yt(B1), Ir(Zu)), Cl.push.apply(Cl, Cv(Kt(Yl))), jo.toLowerCase() !== "sqlite" && Cl.push(Zp(lu)), Cl.push.apply(Cl, Cv(Kt(qm))), Cl.push.apply(Cl, Cv(Kt(Uu))), Cl.push.apply(Cl, Cv(nA(l1))), Cl.push(Tt("USING", Zp, Xp)), Cl.filter(zt).join(" ");
+      }(j0)), j0 && Cl.push(E1), Cl.push(tn(dm), Bt(Nm), Bt(Sm), Yt(B1), Ir(Zu)), Cl.push.apply(Cl, Cv(Kt(Yl))), jo.toLowerCase() !== "sqlite" && Cl.push(Zp(lu)), Cl.push.apply(Cl, Cv(Kt(qm))), Cl.push.apply(Cl, Cv(Kt(Uu))), Cl.push.apply(Cl, Cv(nA(l1))), Cl.push(Tt("USING", Zp, Xp)), Cl.filter(zt).join(" ");
     }
     function M$(Oo) {
       var Cl = Oo.order_by, su = Oo.column, Yl = Oo.collate, dp = Oo.nulls, Zu = Oo.opclass, wl = typeof su == "string" ? { type: "column_ref", table: Oo.table, column: su } : I$(I$({}, Oo), {}, { order_by: null });
@@ -189000,7 +189290,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         if (dp && dp.length !== 0) {
           var wl = Zu.type, lu = wl === void 0 ? "table" : wl;
           if (!this["".concat(lu, "List")] || typeof this["".concat(lu, "List")] != "function") throw new Error("".concat(lu, " is not valid check mode"));
-          var Uu, Xp = this["".concat(lu, "List")].bind(this), T0 = Xp(Yl, Zu), j0 = !0, fm = "", Sm = SA(T0);
+          var Uu, Xp = this["".concat(lu, "List")].bind(this), T0 = Xp(Yl, Zu), j0 = !0, dm = "", Sm = SA(T0);
           try {
             for (Sm.s(); !(Uu = Sm.n()).done; ) {
               var Nm, qm = Uu.value, l1 = !1, B1 = SA(dp);
@@ -189018,7 +189308,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 B1.f();
               }
               if (!l1) {
-                fm = qm, j0 = !1;
+                dm = qm, j0 = !1;
                 break;
               }
             }
@@ -189027,7 +189317,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           } finally {
             Sm.f();
           }
-          if (!j0) throw new Error("authority = '".concat(fm, "' is required in ").concat(lu, " whiteList to execute SQL = '").concat(Yl, "'"));
+          if (!j0) throw new Error("authority = '".concat(dm, "' is required in ").concat(lu, " whiteList to execute SQL = '").concat(Yl, "'"));
         }
       } }, { key: "tableList", value: function(Yl, dp) {
         var Zu = this.parse(Yl, dp);
@@ -190176,8 +190466,8 @@ var utils$r = {}, compressions$1 = {}, flate = {}, pako_es5_min = { exports: {} 
     };
     var T0 = { Inflate: Uu, inflate: Xp, inflateRaw: function(jo, Su) {
       return (Su = Su || {}).raw = !0, Xp(jo, Su);
-    }, ungzip: Xp }, j0 = Km.Deflate, fm = Km.deflate, Sm = Km.deflateRaw, Nm = Km.gzip, qm = T0.Inflate, l1 = T0.inflate, B1 = T0.inflateRaw, E1 = T0.ungzip, h$ = ds, d$ = { Deflate: j0, deflate: fm, deflateRaw: Sm, gzip: Nm, Inflate: qm, inflate: l1, inflateRaw: B1, ungzip: E1, constants: h$ };
-    xt.Deflate = j0, xt.Inflate = qm, xt.constants = h$, xt.default = d$, xt.deflate = fm, xt.deflateRaw = Sm, xt.gzip = Nm, xt.inflate = l1, xt.inflateRaw = B1, xt.ungzip = E1, Object.defineProperty(xt, "__esModule", { value: !0 });
+    }, ungzip: Xp }, j0 = Km.Deflate, dm = Km.deflate, Sm = Km.deflateRaw, Nm = Km.gzip, qm = T0.Inflate, l1 = T0.inflate, B1 = T0.inflateRaw, E1 = T0.ungzip, h$ = ds, d$ = { Deflate: j0, deflate: dm, deflateRaw: Sm, gzip: Nm, Inflate: qm, inflate: l1, inflateRaw: B1, ungzip: E1, constants: h$ };
+    xt.Deflate = j0, xt.Inflate = qm, xt.constants = h$, xt.default = d$, xt.deflate = dm, xt.deflateRaw = Sm, xt.gzip = Nm, xt.inflate = l1, xt.inflateRaw = B1, xt.ungzip = E1, Object.defineProperty(xt, "__esModule", { value: !0 });
   });
 })(pako_es5_min, pako_es5_min.exports);
 var pako_es5_minExports = pako_es5_min.exports, USE_TYPEDARRAY = typeof Uint8Array < "u" && typeof Uint16Array < "u" && typeof Uint32Array < "u", pako$5 = pako_es5_minExports;
@@ -202302,8 +202592,8 @@ const X = (At, yt) => {
 };
 class et {
   constructor(yt) {
-    hm(this, "cursor");
-    hm(this, "dt");
+    cm(this, "cursor");
+    cm(this, "dt");
     this.dt = yt, this.cursor = !1;
   }
   setCursor(yt = !1) {
@@ -202349,9 +202639,9 @@ class et {
 }
 class st {
   constructor(yt) {
-    hm(this, "dt");
-    hm(this, "settings");
-    hm(this, "_state");
+    cm(this, "dt");
+    cm(this, "settings");
+    cm(this, "_state");
     this.dt = yt, this.init();
   }
   init() {
@@ -202573,39 +202863,39 @@ const it$2 = { sortable: !0, locale: "en", numeric: !0, caseFirst: "false", sear
 };
 class ot {
   constructor(yt, xt = {}) {
-    hm(this, "columns");
-    hm(this, "containerDOM");
-    hm(this, "_currentPage");
-    hm(this, "data");
-    hm(this, "_dd");
-    hm(this, "dom");
-    hm(this, "_events");
-    hm(this, "hasHeadings");
-    hm(this, "hasRows");
-    hm(this, "headerDOM");
-    hm(this, "_initialHTML");
-    hm(this, "initialized");
-    hm(this, "_label");
-    hm(this, "lastPage");
-    hm(this, "_listeners");
-    hm(this, "onFirstPage");
-    hm(this, "onLastPage");
-    hm(this, "options");
-    hm(this, "_pagerDOMs");
-    hm(this, "_virtualPagerDOM");
-    hm(this, "pages");
-    hm(this, "_rect");
-    hm(this, "rows");
-    hm(this, "_searchData");
-    hm(this, "_searchQueries");
-    hm(this, "_tableAttributes");
-    hm(this, "_tableFooters");
-    hm(this, "_tableCaptions");
-    hm(this, "totalPages");
-    hm(this, "_virtualDOM");
-    hm(this, "_virtualHeaderDOM");
-    hm(this, "wrapperDOM");
-    hm(this, "_onResize", h(() => {
+    cm(this, "columns");
+    cm(this, "containerDOM");
+    cm(this, "_currentPage");
+    cm(this, "data");
+    cm(this, "_dd");
+    cm(this, "dom");
+    cm(this, "_events");
+    cm(this, "hasHeadings");
+    cm(this, "hasRows");
+    cm(this, "headerDOM");
+    cm(this, "_initialHTML");
+    cm(this, "initialized");
+    cm(this, "_label");
+    cm(this, "lastPage");
+    cm(this, "_listeners");
+    cm(this, "onFirstPage");
+    cm(this, "onLastPage");
+    cm(this, "options");
+    cm(this, "_pagerDOMs");
+    cm(this, "_virtualPagerDOM");
+    cm(this, "pages");
+    cm(this, "_rect");
+    cm(this, "rows");
+    cm(this, "_searchData");
+    cm(this, "_searchQueries");
+    cm(this, "_tableAttributes");
+    cm(this, "_tableFooters");
+    cm(this, "_tableCaptions");
+    cm(this, "totalPages");
+    cm(this, "_virtualDOM");
+    cm(this, "_virtualHeaderDOM");
+    cm(this, "wrapperDOM");
+    cm(this, "_onResize", h(() => {
       this._rect = this.containerDOM.getBoundingClientRect(), this._rect.width && this.update(!0);
     }, 250));
     const wt = typeof yt == "string" ? document.querySelector(yt) : yt;
@@ -203060,24 +203350,24 @@ const rt$1 = function(At) {
 } }] };
 class ft {
   constructor(yt, xt = {}) {
-    hm(this, "menuOpen");
-    hm(this, "containerDOM");
-    hm(this, "data");
-    hm(this, "disabled");
-    hm(this, "dt");
-    hm(this, "editing");
-    hm(this, "editingCell");
-    hm(this, "editingRow");
-    hm(this, "event");
-    hm(this, "events");
-    hm(this, "initialized");
-    hm(this, "limits");
-    hm(this, "menuDOM");
-    hm(this, "modalDOM");
-    hm(this, "options");
-    hm(this, "originalRowRender");
-    hm(this, "rect");
-    hm(this, "wrapperDOM");
+    cm(this, "menuOpen");
+    cm(this, "containerDOM");
+    cm(this, "data");
+    cm(this, "disabled");
+    cm(this, "dt");
+    cm(this, "editing");
+    cm(this, "editingCell");
+    cm(this, "editingRow");
+    cm(this, "event");
+    cm(this, "events");
+    cm(this, "initialized");
+    cm(this, "limits");
+    cm(this, "menuDOM");
+    cm(this, "modalDOM");
+    cm(this, "options");
+    cm(this, "originalRowRender");
+    cm(this, "rect");
+    cm(this, "wrapperDOM");
     this.dt = yt, this.options = { ...pt$2, ...xt };
   }
   init() {
@@ -203282,19 +203572,19 @@ const mt = function(At, yt = {}) {
 }, gt = { classes: { button: "datatable-column-filter-button", menu: "datatable-column-filter-menu", container: "datatable-column-filter-container", wrapper: "datatable-column-filter-wrapper" }, labels: { button: "Filter columns within the table" }, hiddenColumns: [] };
 class bt {
   constructor(yt, xt = {}) {
-    hm(this, "addedButtonDOM");
-    hm(this, "menuOpen");
-    hm(this, "buttonDOM");
-    hm(this, "dt");
-    hm(this, "events");
-    hm(this, "initialized");
-    hm(this, "options");
-    hm(this, "menuDOM");
-    hm(this, "containerDOM");
-    hm(this, "wrapperDOM");
-    hm(this, "limits");
-    hm(this, "rect");
-    hm(this, "event");
+    cm(this, "addedButtonDOM");
+    cm(this, "menuOpen");
+    cm(this, "buttonDOM");
+    cm(this, "dt");
+    cm(this, "events");
+    cm(this, "initialized");
+    cm(this, "options");
+    cm(this, "menuDOM");
+    cm(this, "containerDOM");
+    cm(this, "wrapperDOM");
+    cm(this, "limits");
+    cm(this, "rect");
+    cm(this, "event");
     this.dt = yt, this.options = { ...gt, ...xt };
   }
   init() {
@@ -250378,14 +250668,14 @@ function bwipp_gs1process() {
     ["max", 3],
     ["opt", !1],
     ["linters", $a(["lintiso4217"])]
-  ]), fm = /* @__PURE__ */ new Map([
+  ]), dm = /* @__PURE__ */ new Map([
     ["cset", "N"],
     ["min", 1],
     ["max", 15],
     ["opt", !1],
     ["linters", $a([])]
   ]), Sm = /* @__PURE__ */ new Map([
-    ["parts", $a([j0, fm])],
+    ["parts", $a([j0, dm])],
     ["ex", $a(["391n"])],
     ["req", $a([$a([$a(["8020"])])])]
   ]), Nm = /* @__PURE__ */ new Map([
@@ -255874,8 +256164,8 @@ function bwipp_databarexpanded() {
     $_.r = Uu, $k[$j++] = 1 / 0, $_.segments % 4 != 0 && $_.r % 2 == 1 && ($k[$j++] = 0), $k[$j++] = 1, $k[$j++] = 1;
     for (var T0 = 0, j0 = $_.segments - 1; T0 <= j0; T0 += 1)
       $_.pos = T0 + $_.r * $_.segments, $_.pos < $_.datalen && ($aload($get($_.dxw, $_.pos)), $_.pos % 2 == 0 && $aload($get($_.fxw, ~~($_.pos / 2))));
-    var fm = $counttomark() + 2;
-    $k[$j++] = 1, $k[$j++] = 1, $astore($a(fm)), $put($_.rows, $_.r, $k[--$j]), $j--;
+    var dm = $counttomark() + 2;
+    $k[$j++] = 1, $k[$j++] = 1, $astore($a(dm)), $put($_.rows, $_.r, $k[--$j]), $j--;
   }
   if ($ne($_.format, "expandedstacked")) {
     var Sm = $get($_.rows, 0);
@@ -259875,8 +260165,8 @@ function bwipp_datamatrix() {
     for (var T0 = 0, j0 = $_.remcws; T0 < j0; T0++)
       $k[$j++] = 129;
     $_.cws = $a();
-    for (var fm = $_.datlen + 1, Sm = $f($_.datlen + $_.remcws) - 1; fm <= Sm; fm += 1) {
-      $_.i = fm;
+    for (var dm = $_.datlen + 1, Sm = $f($_.datlen + $_.remcws) - 1; dm <= Sm; dm += 1) {
+      $_.i = dm;
       var Nm = ($_.i + 1) * 149 % 253 + 1 + 129;
       if ($k[$j++] = Nm, Nm > 254) {
         var qm = $k[--$j];
@@ -260952,8 +261242,8 @@ function bwipp_qrcode() {
   $_.fpatmap = T0, $_.fpats = $get($_.fpatmap, $_.format);
   for (var j0 = 0; j0 <= 7; j0 += 1) {
     $_.y = j0;
-    for (var fm = 0; fm <= 7; fm += 1) {
-      if ($_.x = fm, $_.fpb0 = $get($get($get($_.fpats, 0), $_.y), $_.x), $_.fpb1 = $get($get($get($_.fpats, 1), $_.y), $_.x), $_.fpb2 = $get($get($get($_.fpats, 2), $_.y), $_.x), $_.fpb3 = $get($get($get($_.fpats, 3), $_.y), $_.x), $_.fpb0 != 9 && $_.y < $_.rows) {
+    for (var dm = 0; dm <= 7; dm += 1) {
+      if ($_.x = dm, $_.fpb0 = $get($get($get($_.fpats, 0), $_.y), $_.x), $_.fpb1 = $get($get($get($_.fpats, 1), $_.y), $_.x), $_.fpb2 = $get($get($get($_.fpats, 2), $_.y), $_.x), $_.fpb3 = $get($get($get($_.fpats, 3), $_.y), $_.x), $_.fpb0 != 9 && $_.y < $_.rows) {
         $k[$j++] = $_.pixs, $k[$j++] = $_.x, $k[$j++] = $_.y, $_.qmv();
         var Sm = $k[--$j];
         $put($k[--$j], Sm, $_.fpb0);
@@ -262042,8 +262332,8 @@ function bwipp_maxicode() {
   for (var T0 = 1, j0 = $_.sec.length - 1; T0 <= j0; T0 += 2)
     $k[$j++] = $get($_.sec, T0);
   $_.sece = $a();
-  var fm = $_.sec.length == 84 ? 20 : 28;
-  $_.scodes = fm, $k[$j++] = "secochk", $k[$j++] = $_.seco, $k[$j++] = $_.scodes, $_.rscodes();
+  var dm = $_.sec.length == 84 ? 20 : 28;
+  $_.scodes = dm, $k[$j++] = "secochk", $k[$j++] = $_.seco, $k[$j++] = $_.scodes, $_.rscodes();
   var Sm = $k[--$j];
   $_[$k[--$j]] = Sm, $k[$j++] = "secechk", $k[$j++] = $_.sece, $k[$j++] = $_.scodes, $_.rscodes();
   var Nm = $k[--$j];
@@ -263177,7 +263467,7 @@ function bwipp_codeone() {
       ;
     $_.cws = $geti($_.cws, 0, $_.j);
   }
-  for (var fm = $_.metrics, Sm = 0, Nm = fm.length; Sm < Nm && ($_.m = $get(fm, Sm), $_.vers = $get($_.m, 0), $_.rows = $get($_.m, 1), $_.cols = $get($_.m, 2), $_.dcol = $get($_.m, 3), $_.dcws = $get($_.m, 4), $_.rscw = $get($_.m, 5), $_.rsbl = $get($_.m, 6), $_.riso = $get($_.m, 7), $_.risi = $get($_.m, 8), $_.risl = $get($_.m, 9), $_.dcpb = ~~($_.dcws / $_.rsbl), $_.ecpb = ~~($_.rscw / $_.rsbl), $_.okay = !0, $ne($_.version, "unset") && $ne($_.version, $_.vers) && ($_.okay = !1), $_.cws.length > $_.dcws && ($_.okay = !1), !$_.okay); Sm++)
+  for (var dm = $_.metrics, Sm = 0, Nm = dm.length; Sm < Nm && ($_.m = $get(dm, Sm), $_.vers = $get($_.m, 0), $_.rows = $get($_.m, 1), $_.cols = $get($_.m, 2), $_.dcol = $get($_.m, 3), $_.dcws = $get($_.m, 4), $_.rscw = $get($_.m, 5), $_.rsbl = $get($_.m, 6), $_.riso = $get($_.m, 7), $_.risi = $get($_.m, 8), $_.risl = $get($_.m, 9), $_.dcpb = ~~($_.dcws / $_.rsbl), $_.ecpb = ~~($_.rscw / $_.rsbl), $_.okay = !0, $ne($_.version, "unset") && $ne($_.version, $_.vers) && ($_.okay = !1), $_.cws.length > $_.dcws && ($_.okay = !1), !$_.okay); Sm++)
     ;
   if ($_.okay || ($k[$j++] = "bwipp.codeoneNoValidSymbol#25082", $k[$j++] = "Maximum length exceeded", bwipp_raiseerror()), $_.stype) {
     $k[$j++] = 1 / 0;
@@ -265540,8 +265830,8 @@ function bwipp_jabcode() {
   }, $_.metapart = $s(40), $_.metabits = $s($_.nummetabits), $_.p = 0, $_.q = 0, !$_.slave)
     $k[$j++] = ~~$round($log($_.colors) / $log(2)) - 1, $k[$j++] = 3, $_.tofixedbits(), $_.addtometapart(), $k[$j++] = $geti($_.metapart, 0, $_.p), $k[$j++] = 2, $k[$j++] = -1, $_.ldpc(), $_.addtometabits(), $_.p = 0, $k[$j++] = $_.metass, $k[$j++] = 1, $_.tofixedbits(), $_.addtometapart(), $k[$j++] = $_.metavf, $k[$j++] = 2, $_.tofixedbits(), $_.addtometapart(), $k[$j++] = $_.metamask, $k[$j++] = 3, $_.tofixedbits(), $_.addtometapart(), $_.hasslaves ? $k[$j++] = "1" : $k[$j++] = "0", $_.addtometapart(), $k[$j++] = $geti($_.metapart, 0, $_.p), $k[$j++] = 2, $k[$j++] = -1, $_.ldpc(), $_.addtometabits(), $_.p = 0, $_.metass == 0 ? ($k[$j++] = $f(~~(($_.cols - 17) / 4) - $get($a([0, 4, 8, 16]), $_.metavf)) - 1, $k[$j++] = $_.metavlen, $_.tofixedbits(), $_.addtometapart()) : ($k[$j++] = ~~(($_.cols - 17) / 4) - 1, $k[$j++] = ~~($_.metavlen / 2), $_.tofixedbits(), $_.addtometapart(), $k[$j++] = ~~(($_.rows - 17) / 4) - 1, $k[$j++] = ~~($_.metavlen / 2), $_.tofixedbits(), $_.addtometapart()), $k[$j++] = $_.datawc - 3, $k[$j++] = ~~($_.metaelen / 2), $_.tofixedbits(), $_.addtometapart(), $k[$j++] = $_.datawr - 4, $k[$j++] = ~~($_.metaelen / 2), $_.tofixedbits(), $_.addtometapart(), $_.hasslaves && ($k[$j++] = 0, $k[$j++] = 4, $_.tofixedbits(), $_.addtometapart()), $k[$j++] = $geti($_.metapart, 0, $_.p), $k[$j++] = 2, $k[$j++] = -1, $_.ldpc(), $_.addtometabits(), $_.p = 0;
   else {
-    var fm = $_.sameshape ? 0 : 1;
-    $k[$j++] = fm, $k[$j++] = 1, $_.tofixedbits(), $_.addtometapart();
+    var dm = $_.sameshape ? 0 : 1;
+    $k[$j++] = dm, $k[$j++] = 1, $_.tofixedbits(), $_.addtometapart();
     var Sm = $_.sameecc ? 0 : 1;
     $k[$j++] = Sm, $k[$j++] = 1, $_.tofixedbits(), $_.addtometapart();
     var Nm = $_.hasslaves ? 1 : 0;
@@ -265672,8 +265962,8 @@ function bwipp_gs1_cc() {
     $k[$j++] = Xp;
     var T0 = $k[$j - 3], j0 = $k[$j - 1];
     $k[$j - 3] = $k[$j - 2], $j -= 2;
-    var fm = $cvrs($s(j0.length), T0, 2);
-    $puti(j0, j0.length - fm.length, fm);
+    var dm = $cvrs($s(j0.length), T0, 2);
+    $puti(j0, j0.length - dm.length, dm);
   }, $_.fnc1 = -1, $_.lnumeric = -2, $_.lalphanumeric = -3, $_.liso646 = -4, $k[$j++] = 1 / 0;
   for (var Rt = 65; Rt <= 90; Rt += 1)
     $k[$j++] = Rt, $k[$j++] = Rt - 65, $k[$j++] = 5, $_.tobin();
@@ -265837,8 +266127,8 @@ function bwipp_gs1_cc() {
       $_.bitcaps = $get($get($_.bitcapsmaps, $_.ccversion), $_.cccolumns - 2), $k[$j++] = -1, $forall($_.bitcaps, function() {
         var j0 = $k[$j - 1];
         if ($ge(j0, $_.used)) {
-          var fm = $k[--$j], Sm = $k[--$j];
-          $k[$j++] = fm, $k[$j++] = Sm;
+          var dm = $k[--$j], Sm = $k[--$j];
+          $k[$j++] = dm, $k[$j++] = Sm;
         }
         $j--;
       });
@@ -288878,12 +289168,12 @@ b`.split(/\n/).length != 3 ? function(mr) {
         Qn > Fr.maxLineLength && (Fr.maxLineLength = Qn, Fr.maxLine = Sn);
       });
     }
-    var fm = function(mr, Fr, Ln) {
+    var dm = function(mr, Fr, Ln) {
       this.text = mr, Pv(this, Fr), this.height = Ln ? Ln(this) : 1;
     };
-    fm.prototype.lineNo = function() {
+    dm.prototype.lineNo = function() {
       return _1(this);
-    }, mu(fm);
+    }, mu(dm);
     function Sm(mr, Fr, Ln, Sn) {
       mr.text = Fr, mr.stateAfter && (mr.stateAfter = null), mr.styles && (mr.styles = null), mr.order != null && (mr.order = null), wA(mr), Pv(mr, Ln);
       var Qn = Sn ? Sn(mr) : 1;
@@ -290514,7 +290804,7 @@ b`.split(/\n/).length != 3 ? function(mr) {
       }
       function $l(Ms, mo) {
         for (var Pr = [], Cn = Ms; Cn < mo; ++Cn)
-          Pr.push(new fm(Do[Cn], Qn(Cn), Sn));
+          Pr.push(new dm(Do[Cn], Qn(Cn), Sn));
         return Pr;
       }
       var Ql = Fr.from, Ht = Fr.to, Do = Fr.text, h0 = Tm(mr, Ql.line), C0 = Tm(mr, Ht.line), am = Tu(Do), oo = Qn(Do.length - 1), Ut = Ht.line - Ql.line;
@@ -290528,7 +290818,7 @@ b`.split(/\n/).length != 3 ? function(mr) {
           Zo(h0, h0.text.slice(0, Ql.ch) + am + h0.text.slice(Ht.ch), oo);
         else {
           var Xm = $l(1, Do.length - 1);
-          Xm.push(new fm(am + h0.text.slice(Ht.ch), oo, Sn)), Zo(h0, h0.text.slice(0, Ql.ch) + Do[0], Qn(0)), mr.insert(Ql.line + 1, Xm);
+          Xm.push(new dm(am + h0.text.slice(Ht.ch), oo, Sn)), Zo(h0, h0.text.slice(0, Ql.ch) + Do[0], Qn(0)), mr.insert(Ql.line + 1, Xm);
         }
       else if (Do.length == 1)
         Zo(h0, h0.text.slice(0, Ql.ch) + Do[0] + C0.text.slice(Ht.ch), Qn(0)), mr.remove(Ql.line + 1, Ut);
@@ -291260,7 +291550,7 @@ b`.split(/\n/).length != 3 ? function(mr) {
     var Zx = 0, My = function(mr, Fr, Ln, Sn, Qn) {
       if (!(this instanceof My))
         return new My(mr, Fr, Ln, Sn, Qn);
-      Ln == null && (Ln = 0), xx.call(this, [new j2([new fm("", null)])]), this.first = Ln, this.scrollTop = this.scrollLeft = 0, this.cantEdit = !1, this.cleanGeneration = 1, this.modeFrontier = this.highlightFrontier = Ln;
+      Ln == null && (Ln = 0), xx.call(this, [new j2([new dm("", null)])]), this.first = Ln, this.scrollTop = this.scrollLeft = 0, this.cantEdit = !1, this.cleanGeneration = 1, this.modeFrontier = this.highlightFrontier = Ln;
       var Zo = Zp(Ln, 0);
       this.sel = A0(Zo), this.history = new uE(null), this.id = ++Zx, this.modeOption = Fr, this.lineSep = Sn, this.direction = Qn == "rtl" ? "rtl" : "ltr", this.extend = !1, typeof mr == "string" && (mr = this.splitLines(mr)), R2(this, { from: Zo, to: Zo, text: mr }), Qs(this, A0(Zo), Rs);
     };
@@ -293857,7 +294147,7 @@ b`.split(/\n/).length != 3 ? function(mr) {
       return Ql;
     }
     function YA(mr) {
-      mr.off = u0, mr.on = bu, mr.wheelEventPixels = Dp, mr.Doc = My, mr.splitLines = ip, mr.countColumn = ds, mr.findColumn = Ns, mr.isWordChar = po, mr.Pass = Ts, mr.signal = Tp, mr.Line = fm, mr.changeEnd = dy, mr.scrollbarModel = Bp, mr.Pos = Zp, mr.cmpPos = Km, mr.modes = Gu, mr.mimeModes = Op, mr.resolveMode = qp, mr.getMode = i0, mr.modeExtensions = P0, mr.extendMode = L0, mr.copyState = F0, mr.startState = Dm, mr.innerMode = pm, mr.commands = Px, mr.keyMap = k_, mr.keyName = Py, mr.isModifierKey = R_, mr.lookupKey = d2, mr.normalizeKeyMap = uw, mr.StringStream = Im, mr.SharedTextMarker = O2, mr.TextMarker = N2, mr.LineWidget = h_, mr.e_preventDefault = lp, mr.e_stopPropagation = Hu, mr.e_stop = b0, mr.addClass = Nn, mr.contains = En, mr.rmClass = Qr, mr.keyNames = kx;
+      mr.off = u0, mr.on = bu, mr.wheelEventPixels = Dp, mr.Doc = My, mr.splitLines = ip, mr.countColumn = ds, mr.findColumn = Ns, mr.isWordChar = po, mr.Pass = Ts, mr.signal = Tp, mr.Line = dm, mr.changeEnd = dy, mr.scrollbarModel = Bp, mr.Pos = Zp, mr.cmpPos = Km, mr.modes = Gu, mr.mimeModes = Op, mr.resolveMode = qp, mr.getMode = i0, mr.modeExtensions = P0, mr.extendMode = L0, mr.copyState = F0, mr.startState = Dm, mr.innerMode = pm, mr.commands = Px, mr.keyMap = k_, mr.keyName = Py, mr.isModifierKey = R_, mr.lookupKey = d2, mr.normalizeKeyMap = uw, mr.StringStream = Im, mr.SharedTextMarker = O2, mr.TextMarker = N2, mr.LineWidget = h_, mr.e_preventDefault = lp, mr.e_stopPropagation = Hu, mr.e_stop = b0, mr.addClass = Nn, mr.contains = En, mr.rmClass = Qr, mr.keyNames = kx;
     }
     Bm(Qt), Fx(Qt);
     var Xl = "iter insert remove copy getEditor constructor".split(" ");
@@ -369879,7 +370169,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           }(dp) || function(wl, lu) {
             var Uu = wl == null ? null : typeof Symbol < "u" && wl[Symbol.iterator] || wl["@@iterator"];
             if (Uu != null) {
-              var Xp, T0, j0, fm, Sm = [], Nm = !0, qm = !1;
+              var Xp, T0, j0, dm, Sm = [], Nm = !0, qm = !1;
               try {
                 if (j0 = (Uu = Uu.call(wl)).next, lu === 0) {
                   if (Object(Uu) !== Uu) return;
@@ -369889,7 +370179,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 qm = !0, T0 = l1;
               } finally {
                 try {
-                  if (!Nm && Uu.return != null && (fm = Uu.return(), Object(fm) !== fm)) return;
+                  if (!Nm && Uu.return != null && (dm = Uu.return(), Object(dm) !== dm)) return;
                 } finally {
                   if (qm) throw T0;
                 }
@@ -369942,7 +370232,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
         var ws = Ts("console");
         function Ns(dp) {
-          var Zu, wl = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {}, lu = wl.topObj, Uu = wl.level, Xp = Uu === void 0 ? 0 : Uu, T0 = wl.getterVal, j0 = T0 !== void 0 && T0, fm = wl.unenumerable, Sm = fm === void 0 || fm, Nm = "", qm = "", l1 = [], B1 = [], E1 = "";
+          var Zu, wl = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {}, lu = wl.topObj, Uu = wl.level, Xp = Uu === void 0 ? 0 : Uu, T0 = wl.getterVal, j0 = T0 !== void 0 && T0, dm = wl.unenumerable, Sm = dm === void 0 || dm, Nm = "", qm = "", l1 = [], B1 = [], E1 = "";
           lu = lu || dp;
           var h$ = { getterVal: j0, unenumerable: Sm, level: Xp + 1 }, d$ = Xp === 0, jo = '<span class="'.concat(ws("key"), '">'), Su = '<span class="'.concat(ws("number"), '">'), fs = '<span class="'.concat(ws("null"), '">'), e0 = '<span class="'.concat(ws("string"), '">'), m0 = '<span class="'.concat(ws("boolean"), '">'), a0 = '<span class="'.concat(ws("special"), '">'), xm = function(p$) {
             return Dt()(p$).replace(/\\n/g, "↵").replace(/\\f|\\r|\\t/g, "").replace(/\\/g, "");
@@ -370015,7 +370305,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
         var z$ = /https?:\/\/([0-9.\-A-Za-z]+)(?::(\d+))?\/[A-Z.a-z0-9/]*\.js/g, Jv = { comment: "", string: "", number: "", keyword: "", operator: "" }, nA = function(dp) {
           function Zu(wl, lu) {
-            var Uu, Xp, T0, j0, fm = lu.type, Sm = fm === void 0 ? "log" : fm, Nm = lu.args, qm = Nm === void 0 ? [] : Nm, l1 = lu.id, B1 = lu.group, E1 = lu.targetGroup, h$ = lu.header, d$ = lu.ignoreFilter, jo = d$ !== void 0 && d$, Su = lu.accessGetter, fs = lu.unenumerable, e0 = lu.lazyEvaluation;
+            var Uu, Xp, T0, j0, dm = lu.type, Sm = dm === void 0 ? "log" : dm, Nm = lu.args, qm = Nm === void 0 ? [] : Nm, l1 = lu.id, B1 = lu.group, E1 = lu.targetGroup, h$ = lu.header, d$ = lu.ignoreFilter, jo = d$ !== void 0 && d$, Su = lu.accessGetter, fs = lu.unenumerable, e0 = lu.lazyEvaluation;
             (0, Et.A)(this, Zu), Xp = this, T0 = Zu, T0 = (0, $t.A)(T0), (Uu = (0, Tt.A)(Xp, R$() ? Reflect.construct(T0, [], (0, $t.A)(Xp).constructor) : T0.apply(Xp, j0))).container = Op()("div"), Uu.count = 1, Uu.width = 0, Uu.height = 0, Uu.isHidden = !1, Uu.columns = [], Uu.elements = {}, Uu.objects = {}, Uu.console = wl, Uu.type = Sm, Uu.group = B1, Uu.targetGroup = E1, Uu.args = qm, Uu.id = l1, Uu.header = h$, Uu.ignoreFilter = jo, Uu.collapsed = !1, Uu.container.log = Uu, Uu.height = 0, Uu.width = 0, Uu.$container = Ip()(Uu.container), Uu.accessGetter = Su, Uu.unenumerable = fs, Uu.lazyEvaluation = e0;
             var m0 = "info";
             switch (Sm) {
@@ -370095,9 +370385,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               new El.A(this, { node: wl[Xp], theme: Uu.console.getOption("theme") });
             });
           } }, { key: "renderObjectViewer", value: function(wl) {
-            var lu = this.console, Uu = this.unenumerable, Xp = this.accessGetter, T0 = this.lazyEvaluation, j0 = lu.c, fm = Ip()(wl), Sm = fm.data("id");
+            var lu = this.console, Uu = this.unenumerable, Xp = this.accessGetter, T0 = this.lazyEvaluation, j0 = lu.c, dm = Ip()(wl), Sm = dm.data("id");
             if (Sm) {
-              var Nm = this.objects[Sm], qm = fm.find(j0(".json"));
+              var Nm = this.objects[Sm], qm = dm.find(j0(".json"));
               if (qm.hasClass(j0("hidden"))) {
                 if (qm.data("init") !== "true") {
                   if (T0) {
@@ -370113,7 +370403,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               } else qm.addClass(j0("hidden"));
             }
           } }, { key: "renderTable", value: function(wl) {
-            var lu = this, Uu = "__LunaConsoleValue", Xp = this.columns, T0 = this.$container, j0 = this.console, fm = j0.c, Sm = T0.find(fm(".data-grid")), Nm = wl[0], qm = new ap.A(Sm.get(0), { columns: Tp()([{ id: "(index)", title: "(index)", sortable: !0 }], En()(Xp, function(l1) {
+            var lu = this, Uu = "__LunaConsoleValue", Xp = this.columns, T0 = this.$container, j0 = this.console, dm = j0.c, Sm = T0.find(dm(".data-grid")), Nm = wl[0], qm = new ap.A(Sm.get(0), { columns: Tp()([{ id: "(index)", title: "(index)", sortable: !0 }], En()(Xp, function(l1) {
               return { id: l1, title: l1 === Uu ? "Value" : l1, sortable: !0 };
             })), theme: j0.getOption("theme") });
             Zt()(Nm, function(l1, B1) {
@@ -370124,8 +370414,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             });
           } }, { key: "extractObj", value: function(wl) {
             var lu = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {}, Uu = arguments.length > 2 ? arguments[2] : void 0, Xp = this.accessGetter, T0 = this.unenumerable;
-            Ss()(lu, { accessGetter: Xp, unenumerable: T0, symbol: T0, timeout: 1e3 }), function(j0, fm, Sm) {
-              var Nm = Im()(j0, fm);
+            Ss()(lu, { accessGetter: Xp, unenumerable: T0, symbol: T0, timeout: 1e3 }), function(j0, dm, Sm) {
+              var Nm = Im()(j0, dm);
               p1()(function() {
                 return Sm(Nm);
               });
@@ -370153,7 +370443,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           } }, { key: "formatMsg", value: function() {
             var wl = this.args, lu = this.type, Uu = this.id, Xp = this.header, T0 = this.group, j0 = this.console.c;
             wl = uu()(wl);
-            var fm, Sm, Nm = "";
+            var dm, Sm, Nm = "";
             switch (lu !== "group" && lu !== "groupCollapsed" || wl.length === 0 && (wl = ["console.group"]), lu) {
               case "log":
               case "info":
@@ -370164,10 +370454,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 Nm = this.formatDir(wl);
                 break;
               case "warn":
-                fm = "warn", Nm = this.formatCommon(wl);
+                dm = "warn", Nm = this.formatCommon(wl);
                 break;
               case "error":
-                Xo()(wl[0]) && wl.length !== 1 && (wl = this.substituteStr(wl)), Sm = wl[0], fm = "error", Sm = vu()(Sm) ? Sm : new Error(this.formatCommon(wl)), Nm = this.formatErr(Sm);
+                Xo()(wl[0]) && wl.length !== 1 && (wl = this.substituteStr(wl)), Sm = wl[0], dm = "error", Sm = vu()(Sm) ? Sm : new Error(this.formatCommon(wl)), Nm = this.formatErr(Sm);
                 break;
               case "table":
                 Nm = this.formatTable(wl);
@@ -370176,20 +370466,20 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 Nm = wl[0];
                 break;
               case "input":
-                Nm = this.formatJs(wl[0]), fm = "input";
+                Nm = this.formatJs(wl[0]), dm = "input";
                 break;
               case "output":
-                Nm = this.formatCommon(wl), fm = "output";
+                Nm = this.formatCommon(wl), dm = "output";
                 break;
               case "groupCollapsed":
-                Nm = this.formatCommon(wl), fm = "caret-right";
+                Nm = this.formatCommon(wl), dm = "caret-right";
                 break;
               case "group":
-                Nm = this.formatCommon(wl), fm = "caret-down";
+                Nm = this.formatCommon(wl), dm = "caret-down";
             }
             Ot()(["log", "debug", "warn"], lu) && this.isSimple() && (Nm = $1()(Nm, function(qm) {
               return '<a href="'.concat(qm, '" target="_blank">').concat(qm, "</a>");
-            })), Nm = this.render({ msg: Nm, type: lu, icon: fm, id: Uu, header: Xp, group: T0 }), this.$container.addClass("".concat(j0("log-container"))).html(Nm), lu === "table" && (Br()(this.columns) || this.renderTable(wl)), Br()(this.elements) || this.renderEl(), this.$content = this.$container.find(j0(".log-content")), this.content = this.$content.get(0);
+            })), Nm = this.render({ msg: Nm, type: lu, icon: dm, id: Uu, header: Xp, group: T0 }), this.$container.addClass("".concat(j0("log-container"))).html(Nm), lu === "table" && (Br()(this.columns) || this.renderTable(wl)), Br()(this.elements) || this.renderEl(), this.$content = this.$container.find(j0(".log-content")), this.content = this.$content.get(0);
           } }, { key: "render", value: function(wl) {
             var lu = this.console.c, Uu = "", Xp = "";
             if (wl.group) for (var T0 = wl.group.indentLevel, j0 = 0; j0 < T0; j0++) Xp += '<div class="'.concat(lu("nesting-level"), '"></div>');
@@ -370200,11 +370490,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           <span>`, "</span> <span>", `</span>
         </div>
       </div>`])), lu("header"), Xp, lu("time-from-container"), wl.header.time, wl.header.from));
-            var fm = "";
-            return wl.icon && (fm = '<div class="'.concat(lu("icon-container"), '"><span class="').concat(lu("icon icon-" + wl.icon), '"></span></div>')), Uu += `
+            var dm = "";
+            return wl.icon && (dm = '<div class="'.concat(lu("icon-container"), '"><span class="').concat(lu("icon icon-" + wl.icon), '"></span></div>')), Uu += `
     <div class="`.concat(lu(wl.type + " log-item"), `">
       `).concat(Xp, `
-      `).concat(fm, `
+      `).concat(dm, `
       <div class="`).concat(lu("count-container hidden"), `">
         <div class="`).concat(lu("count"), `"></div>
       </div>    
@@ -370242,8 +370532,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             return Gn()(wl) ? "{…}" : Vu()(wl) ? uv()('<div class="'.concat(lu("preview"), '">').concat(Ns(wl), "</div>")) : Nt()(wl);
           } }, { key: "formatPreview", value: function(wl) {
             var lu = this, Uu = this.console.c, Xp = o$()();
-            this.lazyEvaluation ? this.objects[Xp] = wl : this.extractObj(wl, {}, function(fm) {
-              lu.objects[Xp] = fm;
+            this.lazyEvaluation ? this.objects[Xp] = wl : this.extractObj(wl, {}, function(dm) {
+              lu.objects[Xp] = dm;
             });
             var T0 = Ot()(["dir", "table"], this.type), j0 = sn(wl);
             return j0 === "Array" && wl.length > 1 ? (j0 = "(".concat(wl.length, ")"), T0 && (j0 = "Array".concat(j0))) : j0 === "RegExp" ? j0 = Nt()(wl) : Kl()(wl) && (j0 = this.formatElName(wl)), '<div class="'.concat(Uu("preview"), '" data-id="').concat(Xp, '">') + '<div class="'.concat(Uu("preview-container"), '">') + '<div class="'.concat(Uu("preview-icon-container"), '"><span class="').concat(Uu("icon icon-caret-right"), '"></span></div>') + '<span class="'.concat(Uu("preview-content-container"), '">') + '<span class="'.concat(Uu("descriptor"), '">').concat(Dt()(j0), "</span> ") + '<span class="'.concat(Uu("object-preview"), '">').concat(T0 ? "" : Ns(wl, { getterVal: this.accessGetter, unenumerable: !1 }), "</span>") + "</span></div>" + '<div class="'.concat(Uu("json hidden"), '"></div></div>');
@@ -370251,8 +370541,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             var lu = Dt()(wl[0]), Uu = !1, Xp = "";
             wl.shift();
             for (var T0 = 0, j0 = lu.length; T0 < j0; T0++) {
-              var fm = lu[T0];
-              if (fm === "%" && wl.length !== 0) {
+              var dm = lu[T0];
+              if (dm === "%" && wl.length !== 0) {
                 T0++;
                 var Sm = wl.shift();
                 switch (lu[T0]) {
@@ -370277,9 +370567,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     Uu && (Xp += "</span>"), Uu = !0, Xp += '<span style="'.concat(oA(Sm), '">');
                     break;
                   default:
-                    T0--, wl.unshift(Sm), Xp += fm;
+                    T0--, wl.unshift(Sm), Xp += dm;
                 }
-              } else Xp += fm;
+              } else Xp += dm;
             }
             return Uu && (Xp += "</span>"), wl.unshift(Xp), wl;
           } }, { key: "formatJs", value: function(wl) {
@@ -370327,7 +370617,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
         var Pv, SA = function(dp) {
           function Zu(wl, lu) {
-            var Uu, Xp, T0 = lu.compName, j0 = (arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : {}).theme, fm = j0 === void 0 ? "light" : j0;
+            var Uu, Xp, T0 = lu.compName, j0 = (arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : {}).theme, dm = j0 === void 0 ? "light" : j0;
             return (0, Et.A)(this, Zu), Uu = function(Sm, Nm, qm) {
               return Nm = (0, $t.A)(Nm), (0, Tt.A)(Sm, wA() ? Reflect.construct(Nm, [], (0, $t.A)(Sm).constructor) : Nm.apply(Sm, qm));
             }(this, Zu), Uu.subComponents = [], Uu.theme = "", Uu.onThemeChange = function(Sm) {
@@ -370339,7 +370629,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   return l1.setOption("theme", Nm);
                 });
               }
-            }), ty().on("change", Uu.onThemeChange), Uu.setOption("theme", fm), Uu;
+            }), ty().on("change", Uu.onThemeChange), Uu.setOption("theme", dm), Uu;
           }
           return (0, It.A)(Zu, dp), (0, kt.A)(Zu, [{ key: "destroy", value: function() {
             var wl = this;
@@ -370350,9 +370640,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             }), lu.html(""), this.emit("destroy"), this.removeAllListeners(), ty().off("change", this.onThemeChange);
           } }, { key: "setOption", value: function(wl, lu) {
             var Uu = this, Xp = this.options, T0 = {};
-            typeof wl == "string" ? T0[wl] = lu : T0 = wl, Zt()(T0, function(j0, fm) {
-              var Sm = Xp[fm];
-              Xp[fm] = j0, j0 !== Sm && Uu.emit("changeOption", fm, j0, Sm);
+            typeof wl == "string" ? T0[wl] = lu : T0 = wl, Zt()(T0, function(j0, dm) {
+              var Sm = Xp[dm];
+              Xp[dm] = j0, j0 !== Sm && Uu.emit("changeOption", dm, j0, Sm);
             });
           } }, { key: "getOption", value: function(wl) {
             return this.options[wl];
@@ -370391,7 +370681,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           function Zu(wl) {
             var lu, Uu, Xp, T0, j0 = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {};
             return (0, Et.A)(this, Zu), Uu = this, Xp = Zu, T0 = [wl, { compName: "console" }, j0], Xp = (0, $t.A)(Xp), (lu = (0, Tt.A)(Uu, RA() ? Reflect.construct(Xp, T0 || [], (0, $t.A)(Uu).constructor) : Xp.apply(Uu, T0))).spaceHeight = 0, lu.topSpaceHeight = 0, lu.bottomSpaceHeight = 0, lu.lastScrollTop = 0, lu.lastTimestamp = 0, lu.speedToleranceFactor = 100, lu.maxSpeedTolerance = 2e3, lu.minSpeedTolerance = 100, lu.logs = [], lu.displayLogs = [], lu.timer = {}, lu.counter = {}, lu.asyncList = [], lu.asyncTimer = null, lu.isAtBottom = !0, lu.groupStack = new (Gv())(), lu.selectedLog = null, lu.onScroll = function() {
-              var fm = lu.container, Sm = fm.scrollHeight, Nm = fm.offsetHeight, qm = fm.scrollTop;
+              var dm = lu.container, Sm = dm.scrollHeight, Nm = dm.offsetHeight, qm = dm.scrollTop;
               if (!(qm <= 0 || Nm + qm > Sm)) {
                 var l1 = !1;
                 (Sm === Nm || Math.abs(Sm - Nm - qm) < 1) && (l1 = !0), lu.isAtBottom = l1;
@@ -370400,22 +370690,22 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 var fs = 0, e0 = 0;
                 B1 < qm ? (fs = lu.minSpeedTolerance, e0 = Su) : (fs = Su, e0 = lu.minSpeedTolerance), lu.topSpaceHeight < qm - fs && lu.topSpaceHeight + lu.el.offsetHeight > qm + Nm + e0 || lu.renderViewport({ topTolerance: 2 * fs, bottomTolerance: 2 * e0 });
               }
-            }, lu.initTpl(), lu.initOptions(j0, { maxNum: 0, asyncRender: !0, showHeader: !1, filter: "", level: ["verbose", "info", "warning", "error"], accessGetter: !1, unenumerable: !0, lazyEvaluation: !0 }), lu.$el = lu.find(".logs"), lu.el = lu.$el.get(0), lu.$fakeEl = lu.find(".fake-logs"), lu.fakeEl = lu.$fakeEl.get(0), lu.$space = lu.find(".logs-space"), lu.space = lu.$space.get(0), ky && (lu.speedToleranceFactor = 800, lu.maxSpeedTolerance = 3e3, lu.minSpeedTolerance = 800), lu.resizeSensor = new (po())(wl), lu.renderViewport = IA()(function(fm) {
-              lu._renderViewport(fm);
-            }, 16), lu.global = { copy: function(fm) {
-              Xo()(fm) || (fm = JSON.stringify(fm, null, 2)), pm()(fm);
-            }, $: function(fm) {
-              return document.querySelector(fm);
-            }, $$: function(fm) {
-              return b0()(document.querySelectorAll(fm));
-            }, $x: function(fm) {
-              return Vy()(fm);
+            }, lu.initTpl(), lu.initOptions(j0, { maxNum: 0, asyncRender: !0, showHeader: !1, filter: "", level: ["verbose", "info", "warning", "error"], accessGetter: !1, unenumerable: !0, lazyEvaluation: !0 }), lu.$el = lu.find(".logs"), lu.el = lu.$el.get(0), lu.$fakeEl = lu.find(".fake-logs"), lu.fakeEl = lu.$fakeEl.get(0), lu.$space = lu.find(".logs-space"), lu.space = lu.$space.get(0), ky && (lu.speedToleranceFactor = 800, lu.maxSpeedTolerance = 3e3, lu.minSpeedTolerance = 800), lu.resizeSensor = new (po())(wl), lu.renderViewport = IA()(function(dm) {
+              lu._renderViewport(dm);
+            }, 16), lu.global = { copy: function(dm) {
+              Xo()(dm) || (dm = JSON.stringify(dm, null, 2)), pm()(dm);
+            }, $: function(dm) {
+              return document.querySelector(dm);
+            }, $$: function(dm) {
+              return b0()(document.querySelectorAll(dm));
+            }, $x: function(dm) {
+              return Vy()(dm);
             }, clear: function() {
               lu.clear();
-            }, dir: function(fm) {
-              lu.dir(fm);
-            }, table: function(fm, Sm) {
-              lu.table(fm, Sm);
+            }, dir: function(dm) {
+              lu.dir(dm);
+            }, table: function(dm, Sm) {
+              lu.table(dm, Sm);
             }, keys: zu() }, lu.bindEvent(), lu;
           }
           return (0, It.A)(Zu, dp), (0, kt.A)(Zu, [{ key: "setGlobal", value: function(wl, lu) {
@@ -370502,11 +370792,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           } }, { key: "insertAsync", value: function(wl, lu, Uu) {
             this.asyncList.push([wl, lu, Uu]), this.handleAsyncList();
           } }, { key: "insertSync", value: function(wl, lu, Uu) {
-            var Xp, T0 = this, j0 = this.logs, fm = this.groupStack, Sm = this.options, Nm = Sm.maxNum, qm = Sm.accessGetter, l1 = Sm.unenumerable, B1 = Sm.lazyEvaluation;
+            var Xp, T0 = this, j0 = this.logs, dm = this.groupStack, Sm = this.options, Nm = Sm.maxNum, qm = Sm.accessGetter, l1 = Sm.unenumerable, B1 = Sm.lazyEvaluation;
             if ((Xp = Xo()(wl) ? { type: wl, args: lu, header: Uu } : wl).type === "groupEnd") return this.lastLog.groupEnd(), void this.groupStack.pop();
-            if (fm.size > 0 && (Xp.group = fm.peek()), H$()(Xp, { id: ++Oo, accessGetter: qm, unenumerable: l1, lazyEvaluation: B1 }), Xp.type === "group" || Xp.type === "groupCollapsed") {
-              var E1 = { id: o$()("group"), collapsed: !1, parent: fm.peek(), indentLevel: fm.size + 1 };
-              Xp.type === "groupCollapsed" && (E1.collapsed = !0), Xp.targetGroup = E1, fm.push(E1);
+            if (dm.size > 0 && (Xp.group = dm.peek()), H$()(Xp, { id: ++Oo, accessGetter: qm, unenumerable: l1, lazyEvaluation: B1 }), Xp.type === "group" || Xp.type === "groupCollapsed") {
+              var E1 = { id: o$()("group"), collapsed: !1, parent: dm.peek(), indentLevel: dm.size + 1 };
+              Xp.type === "groupCollapsed" && (E1.collapsed = !0), Xp.targetGroup = E1, dm.push(E1);
             }
             var h$ = new nA(this, Xp);
             h$.on("updateHeight", function() {
@@ -370533,18 +370823,18 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               if (lu.length === 0) return lu.push(wl), void this.renderViewport();
               var Uu = LA()(lu);
               if (wl.id > Uu.id) return lu.push(wl), void this.renderViewport();
-              for (var Xp, T0 = 0, j0 = lu.length - 1, fm = 0; T0 <= j0; ) {
-                if ((Xp = lu[fm = T0 + Math.floor((j0 - T0) / 2)]).id === wl.id) return;
-                Xp.id < wl.id ? T0 = fm + 1 : j0 = fm - 1;
+              for (var Xp, T0 = 0, j0 = lu.length - 1, dm = 0; T0 <= j0; ) {
+                if ((Xp = lu[dm = T0 + Math.floor((j0 - T0) / 2)]).id === wl.id) return;
+                Xp.id < wl.id ? T0 = dm + 1 : j0 = dm - 1;
               }
-              Xp.id < wl.id ? lu.splice(fm + 1, 0, wl) : lu.splice(fm, 0, wl), this.renderViewport();
+              Xp.id < wl.id ? lu.splice(dm + 1, 0, wl) : lu.splice(dm, 0, wl), this.renderViewport();
             }
           } }, { key: "handleAsyncList", value: function() {
             var wl = this, lu = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : 20, Uu = this.asyncList;
             this.asyncTimer || (this.asyncTimer = setTimeout(function() {
               wl.asyncTimer = null;
-              var Xp, T0, j0 = !1, fm = Uu.length;
-              fm < 1e3 ? (T0 = 200, Xp = 400) : fm < 5e3 ? (T0 = 500, Xp = 800) : fm < 1e4 ? (T0 = 800, Xp = 1e3) : fm < 25e3 ? (T0 = 1e3, Xp = 1200) : fm < 5e4 ? (T0 = 1500, Xp = 1500) : (T0 = 2e3, Xp = 2500), T0 > fm && (T0 = fm, j0 = !0);
+              var Xp, T0, j0 = !1, dm = Uu.length;
+              dm < 1e3 ? (T0 = 200, Xp = 400) : dm < 5e3 ? (T0 = 500, Xp = 800) : dm < 1e4 ? (T0 = 800, Xp = 1e3) : dm < 25e3 ? (T0 = 1e3, Xp = 1200) : dm < 5e4 ? (T0 = 1500, Xp = 1500) : (T0 = 2e3, Xp = 2500), T0 > dm && (T0 = dm, j0 = !0);
               for (var Sm = 0; Sm < T0; Sm++) {
                 var Nm = St(Uu.shift(), 3), qm = Nm[0], l1 = Nm[1], B1 = Nm[2];
                 wl.insertSync(qm, l1, B1);
@@ -370600,10 +370890,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             lu.on("click", Uu(".log-container"), function() {
               Xp.selectLog(this.log);
             }), this.on("changeOption", function(T0, j0) {
-              var fm = wl.logs;
+              var dm = wl.logs;
               switch (T0) {
                 case "maxNum":
-                  j0 > 0 && fm.length > j0 && (wl.logs = fm.slice(fm.length - j0), wl.render());
+                  j0 > 0 && dm.length > j0 && (wl.logs = dm.slice(dm.length - j0), wl.render());
                   break;
                 case "filter":
                   wl.render();
@@ -370613,9 +370903,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               }
             }), this.$container.on("scroll", this.onScroll);
           } }, { key: "_renderViewport", value: function() {
-            var wl = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {}, lu = wl.topTolerance, Uu = lu === void 0 ? 500 : lu, Xp = wl.bottomTolerance, T0 = Xp === void 0 ? 500 : Xp, j0 = this.el, fm = this.container, Sm = this.space;
-            if (!wo()(fm)) {
-              for (var Nm = fm.scrollTop, qm = fm.offsetHeight, l1 = Sm.getBoundingClientRect().width, B1 = Nm - Uu, E1 = Nm + qm + T0, h$ = this.displayLogs, d$ = 0, jo = 0, Su = 0, fs = h$.length, e0 = this.fakeEl, m0 = document.createDocumentFragment(), a0 = [], xm = 0; xm < fs; xm++) {
+            var wl = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {}, lu = wl.topTolerance, Uu = lu === void 0 ? 500 : lu, Xp = wl.bottomTolerance, T0 = Xp === void 0 ? 500 : Xp, j0 = this.el, dm = this.container, Sm = this.space;
+            if (!wo()(dm)) {
+              for (var Nm = dm.scrollTop, qm = dm.offsetHeight, l1 = Sm.getBoundingClientRect().width, B1 = Nm - Uu, E1 = Nm + qm + T0, h$ = this.displayLogs, d$ = 0, jo = 0, Su = 0, fs = h$.length, e0 = this.fakeEl, m0 = document.createDocumentFragment(), a0 = [], xm = 0; xm < fs; xm++) {
                 var N0 = h$[xm], r1 = N0.width;
                 N0.height !== 0 && r1 === l1 || (m0.appendChild(N0.container), a0.push(N0));
               }
@@ -370630,8 +370920,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               }
               for (this.updateSpace(Su), this.updateTopSpace(d$), this.updateBottomSpace(jo); j0.firstChild; ) j0.lastChild && j0.removeChild(j0.lastChild);
               j0.appendChild(z1);
-              var j1 = fm.scrollHeight;
-              this.isAtBottom && Nm <= j1 - qm && (fm.scrollTop = 1e7);
+              var j1 = dm.scrollHeight;
+              this.isAtBottom && Nm <= j1 - qm && (dm.scrollTop = 1e7);
             }
           } }, { key: "initTpl", value: function() {
             this.$container.html(this.c(Km()(Pv || (Pv = (0, wt.A)([`
@@ -371993,7 +372283,7 @@ Response Headers
       </div>
       <div class="detail"></div>`)), this._$network = Os.find(Ou(".network")), this._$detail = Os.find(Ou(".detail")), this._$requests = Os.find(Ou(".requests")), this._$control = Os.find(Ou(".control")), this._$filterText = Os.find(Ou(".filter-text"));
           } }]);
-        }(Nt), wl = xt(2708), lu = xt.n(wl), Uu = xt(1167), Xp = xt.n(Uu), T0 = xt(7181), j0 = xt.n(T0), fm = xt(5784), Sm = xt(96), Nm = xt.n(Sm), qm = xt(896), l1 = xt.n(qm), B1 = xt(438), E1 = xt.n(B1), h$ = xt(6493), d$ = xt.n(h$), jo = xt(6186), Su = xt.n(jo), fs = xt(5241), e0 = xt.n(fs), m0 = xt(2208), a0 = xt.n(m0), xm = xt(5145), N0 = xt.n(xm);
+        }(Nt), wl = xt(2708), lu = xt.n(wl), Uu = xt(1167), Xp = xt.n(Uu), T0 = xt(7181), j0 = xt.n(T0), dm = xt(5784), Sm = xt(96), Nm = xt.n(Sm), qm = xt(896), l1 = xt.n(qm), B1 = xt(438), E1 = xt.n(B1), h$ = xt(6493), d$ = xt.n(h$), jo = xt(6186), Su = xt.n(jo), fs = xt(5241), e0 = xt.n(fs), m0 = xt(2208), a0 = xt.n(m0), xm = xt(5145), N0 = xt.n(xm);
         function r1(gp) {
           for (var g0 = {}, Os = 0, Mu = gp.length; Os < Mu; Os++) {
             var Ap = gp[Os];
@@ -372355,7 +372645,7 @@ Response Headers
           }
           return (0, kt.A)(g0, gp), (0, Ct.A)(g0, [{ key: "init", value: function(Os, Mu) {
             var Ap = this;
-            b$(g0, "init", this)([Os]), this._container = Mu, this._initTpl(), this._htmlEl = document.documentElement, this._detail = new j1(this._$detail, Mu), this.config = this._detail.config, this._splitMediaQuery = new (iA())("screen and (min-width: 680px)"), this._splitMode = this._splitMediaQuery.isMatch(), this._domViewer = new fm.A(this._$domViewer.get(0), { node: this._htmlEl, ignore: function(M0) {
+            b$(g0, "init", this)([Os]), this._container = Mu, this._initTpl(), this._htmlEl = document.documentElement, this._detail = new j1(this._$detail, Mu), this.config = this._detail.config, this._splitMediaQuery = new (iA())("screen and (min-width: 680px)"), this._splitMode = this._splitMediaQuery.isMatch(), this._domViewer = new dm.A(this._$domViewer.get(0), { node: this._htmlEl, ignore: function(M0) {
               return Yp(M0) || function(tm) {
                 for (; tm; ) {
                   var mm = "";
