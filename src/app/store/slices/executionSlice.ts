@@ -17,6 +17,41 @@ function sqlIsDdl(sql: string): boolean {
     return sql.split(';').some(s => DDL_RE.test(s))
 }
 
+/**
+ * Extrait les statements ::LABEL et ::SUBLABEL placés avant la requête principale.
+ * Retourne leur SQL (pour exécution dynamique) et le SQL nettoyé.
+ */
+function extractLabelStatement(sql: string): { labelSql: string | null; sublabelSql: string | null; sql: string } {
+    const stmts = sql.split(/;[ \t]*(?=\r?\n|$)/)
+    let labelSql: string | null = null
+    let sublabelSql: string | null = null
+    const mainStmts: string[] = []
+    for (const stmt of stmts) {
+        const trimmed = stmt.trim()
+        if (!trimmed) continue
+        if (labelSql === null && /^\s*SELECT\s+.+?::LABEL\b/i.test(trimmed)) {
+            labelSql = trimmed
+        } else if (sublabelSql === null && /^\s*SELECT\s+.+?::SUBLABEL\b/i.test(trimmed)) {
+            sublabelSql = trimmed
+        } else {
+            mainStmts.push(trimmed)
+        }
+    }
+    return { labelSql, sublabelSql, sql: mainStmts.join(';\n') }
+}
+
+/** Exécute un statement LABEL et retourne le titre (valeur de la 1ère colonne, 1ère ligne). */
+async function executeLabelStatement(labelSql: string): Promise<string | null> {
+    try {
+        const { rows } = await DuckDBManager.executeQueryWithSchema(labelSql)
+        if (!rows.length) return null
+        const firstVal = Object.values(rows[0])[0]
+        return firstVal !== null && firstVal !== undefined ? String(firstVal) : null
+    } catch {
+        return null
+    }
+}
+
 export const createExecutionSlice = (set: any, get: any) => ({
 
     async runGroupAtPath(path) {
@@ -147,7 +182,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
             for (let i = 0; i < loopValues.length; i++) {
                 const loopValue = loopValues[i]
                 set({ _currentLoopValue: loopValue })
-                get().setStatus(`Boucle ${i + 1}/${loopValues.length}: {{ loop }} = ${loopValue}`, 'loading')
+                get().setStatus(`Boucle ${i + 1}/${loopValues.length}: {{ _loop }} = ${loopValue}`, 'loading')
 
                 const orderedItems = get().getAllItemsSorted(group)
                 for (const item of orderedItems) {
@@ -283,10 +318,11 @@ export const createExecutionSlice = (set: any, get: any) => ({
     async executeSqlRecursiveParseCell(cell) {
         // Si queries[0].sql est vide mais qu'un AST est disponible, reconstituer le SQL
         const q0 = cell.queries?.[0]
+
         if (q0?.ast && !q0.sql?.trim()) {
-            const { astToSql, buildDisplaySql } = await import('../../../lib/SqlBlockService')
+            const { astToSql } = await import('../../../lib/SqlBlockService')
             const selectSql = q0.degraded && q0.manualSql ? q0.manualSql : astToSql(q0.ast)
-            q0.sql = buildDisplaySql(cell.name, selectSql, cell.materialize ?? q0.ast.materialize ?? 'select')
+            q0.sql = selectSql  // SELECT pur — le DDL est assemblé ci-dessous
         }
 
         if (!ConfigManager.getCellQuery(cell, 0)?.trim()) {
@@ -295,7 +331,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
         }
 
         try {
-            const finalQuery = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '')
+            const finalQuery = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '', { _name: cell.name || '' })
 
             get().setStatus('Exécution de la requête...', 'loading')
 
@@ -429,39 +465,112 @@ export const createExecutionSlice = (set: any, get: any) => ({
                     await DuckDBManager.dropFile(fileName)
                 }
             } else {
-                const materialize = cell.materialize ?? 'select'
-                const { quoteId, stripMaterializePrefix } = await import('../../../lib/SqlBlockService')
-                // Normalise le SQL : retire le préfixe DDL éventuel pour obtenir le SELECT brut
-                const isDdl = /^CREATE\s+OR\s+REPLACE\s+/i.test(finalQuery.trim())
-                const selectSql = isDdl ? stripMaterializePrefix(finalQuery) : finalQuery
+                const materialize = cell.materialized ?? 'ephemeral'
 
-                if (materialize !== 'select' && cell.name?.trim()) {
-                    // Créer une VIEW ou TABLE DuckDB depuis le SELECT
+                if (materialize !== 'ephemeral' && cell.name?.trim()) {
+                    const { quoteId, stripMaterializePrefix } = await import('../../../lib/SqlBlockService')
                     const qid = quoteId(cell.name)
-                    const oppositeType = materialize === 'view' ? 'TABLE' : 'VIEW'
-                    try { await DuckDBManager.executeQuery(`DROP ${oppositeType} IF EXISTS ${qid}`) } catch (_) { /* ok */ }
-                    const createSql = materialize === 'table'
-                        ? `CREATE OR REPLACE TABLE ${qid} AS (\n${selectSql}\n)`
-                        : `CREATE OR REPLACE VIEW ${qid} AS (\n${selectSql}\n)`
-                    await DuckDBManager.executeQuery(createSql)
-                    const { rows: results, schemaTypes } = await DuckDBManager.executeQueryWithSchema(
-                        `SELECT * FROM ${qid} LIMIT 1000`
-                    )
-                    cell._results = results
-                    cell._schemaTypes = schemaTypes || {}
-                    cell._resultInfo = `${results.length} ligne(s)${results.length === 1000 ? ' (limité à 1 000)' : ''} — ${materialize === 'table' ? 'TABLE' : 'VIEW'} "${cell.name}" créée`
-                    await get().refreshDuckdbSchema?.()
+                    // stripMaterializePrefix extrait le SELECT pur si finalQuery contient un wrapper
+                    // CREATE OR REPLACE VIEW/TABLE (généré par buildDisplaySql ou ancien format avec DROP).
+                    const selectOnly = stripMaterializePrefix(finalQuery)
+                    if (!sqlIsDdl(selectOnly)) {
+                        // SELECT pur : DROP de l'opposé (silencieux, DuckDB rejette IF EXISTS sur mauvais type)
+                        // puis CREATE OR REPLACE VIEW/TABLE
+                        const oppositeType = materialize === 'view' ? 'TABLE' : 'VIEW'
+                        try { await DuckDBManager.executeQuery(`DROP ${oppositeType} IF EXISTS ${qid}`) } catch (_) {}
+                        await DuckDBManager.executeQuery(`CREATE OR REPLACE ${materialize.toUpperCase()} ${qid} AS (\n${selectOnly}\n)`)
+                        const { rows: results, schemaTypes } = await DuckDBManager.executeQueryWithSchema(
+                            `SELECT * FROM ${qid} LIMIT 1000`
+                        )
+                        cell._results = results
+                        cell._schemaTypes = schemaTypes || {}
+                        cell._resultInfo = `${results.length} ligne(s)${results.length === 1000 ? ' (limité à 1 000)' : ''} — ${materialize === 'table' ? 'TABLE' : 'VIEW'} "${cell.name}" créée`
+                        await get().refreshDuckdbSchema?.()
+                    } else {
+                        // DDL pur (DROP, INSERT…) : exécuter tel quel sans wrapper VIEW/TABLE
+                        cell._echartsOption = null
+                        cell._kpiHtml = null
+                        const { rows: finalResults, schemaTypes } = await DuckDBManager.executeQueryWithSchema(finalQuery)
+                        cell._results = finalResults
+                        cell._schemaTypes = schemaTypes || {}
+                        cell._resultInfo = `✅ ${finalResults.length} ligne(s)`
+                    }
                 } else {
-                    const finalResults = await DuckDBManager.executeQuery(finalQuery)
-                    cell._results = finalResults
-                    cell._resultInfo = `✅ ${finalResults.length} ligne(s)`
-                    if (get().isSqlResultTabular(cell)) {
+                    const chartConfig = q0?.ast?.chartConfig
+                    if (chartConfig?.columns?.length) {
+                        // Mode graphique AST : initChartTypes + strip des annotations + EChartSqlParser
+                        // Extrait SELECT ...::LABEL; et ::SUBLABEL; initiaux si présents
+                        const { labelSql, sublabelSql, sql: mainSql } = extractLabelStatement(finalQuery)
+                        const stmtLabel = labelSql ? await executeLabelStatement(labelSql) : null
+                        const stmtSublabel = sublabelSql ? await executeLabelStatement(sublabelSql) : null
+                        const kpiLabel = stmtLabel ?? chartConfig.label ?? null
+                        const kpiSublabel = stmtSublabel ?? (chartConfig as any).sublabel ?? null
+                        get().setStatus('Chargement ECharts...', 'loading')
+                        await CDNManager.loadECharts()
+                        await DuckDBManager.initChartTypes()
+                        get().setStatus('Exécution de la requête...', 'loading')
+                        const { rows, columnTypes, schemaTypes } = await DuckDBManager.executeQueryWithSchema(mainSql)
                         const maxRows = cell.maxRows || 100000
-                        const truncated = finalResults.length > maxRows
-                        const rawResults = finalResults.slice(0, maxRows)
+                        const rawResults = rows.slice(0, maxRows)
                         _rawTableDataStore.set(cell._id, rawResults)
                         cell._results = rawResults
-                        if (truncated) cell._resultInfo = `✅ ${finalResults.length} ligne(s) (limité à ${maxRows})`
+                        cell._schemaTypes = schemaTypes || {}
+                        cell._columnTypes = columnTypes
+                        cell._resultInfo = `✅ ${rows.length} ligne(s)`
+                        const parsed = EChartSqlParser.parseColumnRoles(rows, columnTypes)
+                        cell._kpiLabel = kpiLabel
+                        cell._sublabel = kpiSublabel
+                        if (parsed.chartType === 'kpi') {
+                            cell._kpiHtml = EChartSqlParser.buildKpiHtml(rows, parsed, kpiLabel ?? undefined)
+                            cell._echartsOption = null
+                        } else {
+                            cell._echartsOption = EChartSqlParser.buildEChartsOption(rows, parsed) ?? null
+                            cell._kpiHtml = null
+                        }
+                    } else {
+                        // Pas de ast.chartConfig : exécuter et détecter automatiquement les rôles ::ROLE
+                        // Extrait SELECT ...::LABEL; et ::SUBLABEL; si présents en tête du SQL
+                        const { labelSql, sublabelSql, sql: mainSql } = extractLabelStatement(finalQuery)
+                        const stmtLabel = labelSql ? await executeLabelStatement(labelSql) : null
+                        const stmtSublabel = sublabelSql ? await executeLabelStatement(sublabelSql) : null
+                        const { rows: finalResults, columnTypes, schemaTypes } = await DuckDBManager.executeQueryWithSchema(mainSql)
+                        const maxRows = cell.maxRows || 100000
+                        cell._schemaTypes = schemaTypes || {}
+                        cell._columnTypes = columnTypes
+
+                        const parsed = EChartSqlParser.parseColumnRoles(finalResults, columnTypes)
+
+                        cell._kpiLabel = stmtLabel
+                        cell._sublabel = stmtSublabel
+                        if (parsed.chartType !== 'unknown') {
+                            // Rôles chart détectés dans le SQL → rendu EChart
+                            get().setStatus('Chargement ECharts...', 'loading')
+                            await CDNManager.loadECharts()
+                            await DuckDBManager.initChartTypes()
+                            const rawResults = finalResults.slice(0, maxRows)
+                            _rawTableDataStore.set(cell._id, rawResults)
+                            cell._results = rawResults
+                            cell._resultInfo = `✅ ${finalResults.length} ligne(s)`
+                            if (parsed.chartType === 'kpi') {
+                                cell._kpiHtml = EChartSqlParser.buildKpiHtml(finalResults, parsed, stmtLabel ?? undefined)
+                                cell._echartsOption = null
+                            } else {
+                                cell._echartsOption = EChartSqlParser.buildEChartsOption(finalResults, parsed) ?? null
+                                cell._kpiHtml = null
+                            }
+                        } else {
+                            cell._echartsOption = null
+                            cell._kpiHtml = null
+                            cell._results = finalResults
+                            cell._resultInfo = `✅ ${finalResults.length} ligne(s)`
+                            if (get().isSqlResultTabular(cell)) {
+                                const truncated = finalResults.length > maxRows
+                                const rawResults = finalResults.slice(0, maxRows)
+                                _rawTableDataStore.set(cell._id, rawResults)
+                                cell._results = rawResults
+                                if (truncated) cell._resultInfo = `✅ ${finalResults.length} ligne(s) (limité à ${maxRows})`
+                            }
+                        }
                     }
                 }
             }
@@ -473,35 +582,12 @@ export const createExecutionSlice = (set: any, get: any) => ({
         }
     },
 
-    async executeTableCell(cell) {
-        if (!ConfigManager.getCellQuery(cell, 0)?.trim()) return
-
-        get().setStatus('Chargement tableau...', 'loading')
-
-        try {
-            const finalQuery = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '')
-
-            get().setStatus('Exécution de la requête...', 'loading')
-
-            const { rows: results, schemaTypes } = await DuckDBManager.executeQueryWithSchema(finalQuery)
-
-            const maxRows = cell.maxRows || 100000
-            const truncated = results.length > maxRows
-            const rawResults = results.slice(0, maxRows)
-            _rawTableDataStore.set(cell._id, rawResults)
-            cell._results = rawResults
-            cell._schemaTypes = schemaTypes || {}
-            cell._resultInfo = `${results.length} ligne(s)` + (truncated ? ` (limité à ${maxRows})` : '')
-
-            get().setStatus('Tableau chargé', 'success')
-            if (sqlIsDdl(finalQuery)) await get().refreshDuckdbSchema?.()
-        } catch (error) {
-            throw error
-        }
+    showSqlEditorVisible(cell) {
+        return get().devMode || ConfigManager.getCellQueryShowQueryEditor(cell, 0)
     },
 
-    showSqlEditorVisible(cell) {
-        return get().devMode || ConfigManager.getCellQueryClientVisible(cell, 0)
+    showQueryResult(cell) {
+        return get().devMode || ConfigManager.getCellQueryShowResult(cell, 0)
     },
 
     isSqlResultTabular(cell) {
@@ -1146,106 +1232,6 @@ export const createExecutionSlice = (set: any, get: any) => ({
             throw error
         } finally {
             cell._perspectiveRendering = false
-        }
-    },
-
-    async executeEchartCell(cell) {
-        if (!ConfigManager.getCellQuery(cell, 0)?.trim()) {
-            throw new Error('Requête SQL manquante')
-        }
-        if (DuckDBManager.currentEngine === 'ducklings') {
-            throw new Error('Les cellules EChart nécessitent le moteur DuckDB WASM. Changez le moteur dans les paramètres.')
-        }
-
-        get().setStatus('Chargement ECharts...', 'loading')
-        await CDNManager.loadECharts()
-
-        get().setStatus('Parsing de la requête SQL...', 'loading')
-
-        try {
-            await DuckDBManager.initChartTypes()
-
-            const finalQuery = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '')
-
-            get().setStatus('Exécution de la requête...', 'loading')
-            const { rows, columnTypes } = await DuckDBManager.executeQueryWithSchema(finalQuery)
-
-            cell._results = rows
-            cell._columnTypes = columnTypes
-
-            const parsed = EChartSqlParser.parseColumnRoles(rows, columnTypes)
-            if (parsed.chartType === 'kpi') {
-                cell._kpiHtml = EChartSqlParser.buildKpiHtml(rows, parsed)
-                cell._echartsOption = null
-            } else {
-                cell._echartsOption = EChartSqlParser.buildEChartsOption(rows, parsed) ?? null
-                cell._kpiHtml = null
-            }
-            cell._echartReady = true
-            set((s: any) => ({ _rev: s._rev + 1 }))
-
-            cell._resultInfo = `✅ ${rows.length} ligne(s)`
-            get().setStatus('EChart chargé', 'success')
-        } catch (error) {
-            cell._echartReady = false
-            throw error
-        }
-    },
-
-    async renderEchartInContainer(cell, fromExecute = false) {
-        const containerId = 'echart-' + cell._id
-        const container = document.getElementById(containerId)
-
-        if (!container || !cell._results || cell._results.length === 0) {
-            return
-        }
-
-        if (cell._echartRendering) return
-        cell._echartRendering = true
-
-        try {
-            if (cell._echartInstance) {
-                cell._echartInstance.dispose()
-                cell._echartInstance = null
-            }
-            if (cell._echartResizeObserver) {
-                cell._echartResizeObserver.disconnect()
-                cell._echartResizeObserver = null
-            }
-
-            const parsed = EChartSqlParser.parseColumnRoles(cell._results, cell._columnTypes)
-            const { chartType } = parsed
-
-            if (chartType === 'kpi') {
-                container.innerHTML = EChartSqlParser.buildKpiHtml(cell._results, parsed)
-                return
-            }
-
-            const option = EChartSqlParser.buildEChartsOption(cell._results, parsed)
-            if (!option) {
-                container.innerHTML = `<div class="flex items-center justify-center h-full text-base-content/50 text-sm p-6 text-center">
-                    Aucun type de graphique reconnu.<br>
-                    Utilisez des alias comme <strong>XAXIS</strong>, <strong>BARCHART</strong>, <strong>LINECHART</strong>, <strong>PIECHART</strong>, <strong>GAUGE</strong>…</div>`
-                return
-            }
-
-            const instance = window.echarts.init(container, null, { renderer: 'canvas' })
-            instance.setOption(option)
-            cell._echartInstance = instance
-
-            const ro = new ResizeObserver(() => {
-                if (cell._echartInstance && !cell._echartInstance.isDisposed()) {
-                    cell._echartInstance.resize()
-                }
-            })
-            ro.observe(container)
-            cell._echartResizeObserver = ro
-
-        } catch (error) {
-            console.error('[EChart] Erreur de rendu:', error)
-            throw error
-        } finally {
-            cell._echartRendering = false
         }
     },
 

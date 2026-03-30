@@ -22,9 +22,9 @@ export const CELL_TYPE_SCHEMAS = {
                     queryNames: ['main'],
                     specificParams: [
                         { key: 'queries.main.engine', label: 'Type de langage', tooltip: "Texte: Markdown saisi directement | SQL: requête retournant du Markdown | JS: expression JavaScript retournant du Markdown", inputType: 'select', options: [{ value: 'text', label: 'Texte' }, { value: 'sql', label: 'SQL' }, { value: 'js', label: 'JavaScript' }] },
-                        { key: 'queries.main.clientVisible', label: "Afficher l'éditeur en mode client", inputType: 'checkbox' }
+                        { key: 'queries.main.showQueryEditor', label: "Afficher l'éditeur en mode client", inputType: 'checkbox' }
                     ],
-                    defaults: { queries: [{ name: 'main', sql: '# Nouvelle section', engine: 'text', clientVisible: false }] },
+                    defaults: { queries: [{ name: 'main', sql: '# Nouvelle section', engine: 'text', showQueryEditor: false }] },
                     bodyFamily: 'markdown',
                     bodyConfig: { devModeToolbar: ['bold', 'italic', 'heading', '|', 'quote', 'unordered-list', 'ordered-list', '|', 'link', 'image', '|', 'preview', '|', 'guide'], devTextareaId: 'markdown_dev_', clientTextareaId: 'markdown_cli_' }
                 },
@@ -52,8 +52,8 @@ export const CELL_TYPE_SCHEMAS = {
                     defaults: {
                         title: 'Glissez-déposez votre fichier ici',
                         queries: [
-                            { name: 'main', sql: "CREATE OR REPLACE TABLE {name} AS SELECT * FROM '{{fileName}}'", engine: 'sql', clientVisible: false },
-                            { name: 'fallback', sql: "CREATE OR REPLACE TABLE {name} AS SELECT * FROM query( CASE WHEN lower('{{fileName}}') LIKE '%.csv' OR lower('{{fileName}}') LIKE '%.csv.gz' THEN 'SELECT * FROM read_csv(''' || '{{fileName}}' || ''', HEADER = true, AUTO_DETECT = true, SAMPLE_SIZE = -1, IGNORE_ERRORS = true, store_rejects = true)' WHEN lower('{{fileName}}') LIKE '%.xlsx' THEN 'SELECT * FROM read_xlsx(''' || '{{fileName}}' || ''', HEADER = true, STOP_AT_EMPTY = false, EMPTY_AS_VARCHAR = true, IGNORE_ERRORS = true)' WHEN lower('{{fileName}}') LIKE '%.tsv' OR lower('{{fileName}}') LIKE '%.tsv.gz' OR lower('{{fileName}}') LIKE '%.txt' OR lower('{{fileName}}') LIKE '%.txt.gz' THEN 'SELECT * FROM read_csv(''' || '{{fileName}}' || ''', HEADER = true, DELIM = ''\t'', AUTO_DETECT = true, SAMPLE_SIZE = -1, IGNORE_ERRORS = true, store_rejects = true)' WHEN lower('{{fileName}}') LIKE '%.parquet' OR lower('{{fileName}}') LIKE '%.parquet.gz' THEN 'SELECT * FROM read_parquet(''' || '{{fileName}}' || ''')' ELSE 'SELECT 1' END );", engine: 'sql', clientVisible: false }
+                            { name: 'main', sql: "CREATE OR REPLACE TABLE {name} AS SELECT * FROM '{{_fileName}}'", engine: 'sql', showQueryEditor: false },
+                            { name: 'fallback', sql: "CREATE OR REPLACE TABLE {name} AS SELECT * FROM query( CASE WHEN lower('{{_fileName}}') LIKE '%.csv' OR lower('{{_fileName}}') LIKE '%.csv.gz' THEN 'SELECT * FROM read_csv(''' || '{{_fileName}}' || ''', HEADER = true, AUTO_DETECT = true, SAMPLE_SIZE = -1, IGNORE_ERRORS = true, store_rejects = true)' WHEN lower('{{_fileName}}') LIKE '%.xlsx' THEN 'SELECT * FROM read_xlsx(''' || '{{_fileName}}' || ''', HEADER = true, STOP_AT_EMPTY = false, EMPTY_AS_VARCHAR = true, IGNORE_ERRORS = true)' WHEN lower('{{_fileName}}') LIKE '%.tsv' OR lower('{{_fileName}}') LIKE '%.tsv.gz' OR lower('{{_fileName}}') LIKE '%.txt' OR lower('{{_fileName}}') LIKE '%.txt.gz' THEN 'SELECT * FROM read_csv(''' || '{{_fileName}}' || ''', HEADER = true, DELIM = ''\t'', AUTO_DETECT = true, SAMPLE_SIZE = -1, IGNORE_ERRORS = true, store_rejects = true)' WHEN lower('{{_fileName}}') LIKE '%.parquet' OR lower('{{_fileName}}') LIKE '%.parquet.gz' THEN 'SELECT * FROM read_parquet(''' || '{{_fileName}}' || ''')' ELSE 'SELECT 1' END );", engine: 'sql', showQueryEditor: false }
                         ],
                         json: { xlsx: { options: { type: 'array', raw: false, dateNF: 'dd/mm/yyyy', cellDates: true }, toCsvOptions: { dateNF: 'dd/mm/yyyy', FS: ',', RS: '\n' }, sheetSelection: { type: { auto: true }, index: 0, name: '' } } }
                     },
@@ -73,38 +73,23 @@ export const CELL_TYPE_SCHEMAS = {
                     bodyFamily: 'buttonRun',
                     bodyConfig: { defaultLabel: 'Exécuter', action: 'runCellsAfter' }
                 },
-                sqlRecursiveParse: {
+                sql: {
                     executeHandler: 'executeSqlRecursiveParseCell',
                     defaultNamePrefix: 'sql',
+                    showNameInHeader: true,
                     hideInViewMode: true,
-                    exportFields: ['queries', 'materialize'],
+                    exportFields: ['queries', 'materialized'],
                     initProps: {},
                     commonParams: ['name', 'queries'],
                     queryCount: 1,
                     queryNames: ['main'],
                     specificParams: [
-                        { key: 'queries.main.clientVisible', label: "Afficher l'éditeur SQL en mode client", tooltip: "Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur. En mode client, seul le résultat sera affiché.", inputType: 'checkbox' }
+                        { key: 'queries.main.showQueryResult', label: "Afficher le résultat en mode client", tooltip: "Si décoché, le datatable et la visualisation ne seront pas affichés en mode client.", inputType: 'checkbox', defaultValue: true },
+                        { key: 'queries.main.showQueryEditor', label: "Afficher l'éditeur SQL en mode client", tooltip: "Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur. En mode client, seul le résultat sera affiché.", inputType: 'checkbox' }
                     ],
-                    defaults: { queries: [{ name: 'main', sql: 'SELECT * FROM source1 LIMIT 100', engine: 'sql', clientVisible: false }] },
+                    defaults: { queries: [{ name: 'main', sql: 'SELECT 1;', engine: 'sql', showQueryEditor: false, showQueryResult: true }] },
                     bodyFamily: 'sqlWithTable',
                     bodyConfig: { queryKey: 'query', showTextResult: true, showResultInfo: true },
-                    bodyDisplay: { showSkeleton: { excludeWhenSqlEditor: true }, resultInfo: { showDevOnly: false } }
-                },
-                table: {
-                    executeHandler: 'executeTableCell',
-                    defaultNamePrefix: 'table',
-                    exportFields: ['queries', 'maxRows'],
-                    initProps: {},
-                    commonParams: ['name', 'queries'],
-                    queryCount: 1,
-                    queryNames: ['main'],
-                    specificParams: [
-                        { key: 'maxRows', label: "Nombre max de lignes", tooltip: "Limite le nombre de lignes affichées dans le tableau pour éviter les surcharges mémoire", inputType: 'number', placeholder: '100000' },
-                        { key: 'queries.main.clientVisible', label: "Afficher l'éditeur SQL en mode client", tooltip: "Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur. En mode client, seul le résultat sera affiché.", inputType: 'checkbox' }
-                    ],
-                    defaults: { queries: [{ name: 'main', sql: 'SELECT * FROM source1 LIMIT 100', engine: 'sql', clientVisible: false }], maxRows: 100000 },
-                    bodyFamily: 'sqlWithTable',
-                    bodyConfig: { queryKey: 'query', showTextResult: false, showResultInfo: true },
                     bodyDisplay: { showSkeleton: { excludeWhenSqlEditor: true }, resultInfo: { showDevOnly: false } }
                 },
                 iframe: {
@@ -118,9 +103,9 @@ export const CELL_TYPE_SCHEMAS = {
                     queryNames: ['main'],
                     specificParams: [
                         { key: 'queries.main.engine', label: 'Type de langage', tooltip: "SQL: requête retournant du HTML | JS: retourne une chaîne HTML | Texte: HTML saisi directement", inputType: 'select', options: [{ value: 'sql', label: 'SQL' }, { value: 'js', label: 'JavaScript' }, { value: 'text', label: 'Texte' }] },
-                        { key: 'queries.main.clientVisible', label: "Afficher l'éditeur SQL en mode client", tooltip: "Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur. En mode client, seul le résultat sera affiché.", inputType: 'checkbox' }
+                        { key: 'queries.main.showQueryEditor', label: "Afficher l'éditeur SQL en mode client", tooltip: "Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur. En mode client, seul le résultat sera affiché.", inputType: 'checkbox' }
                     ],
-                    defaults: { queries: [{ name: 'main', sql: '<html><body><h1>Hello</h1></body></html>', engine: 'text', clientVisible: false }] },
+                    defaults: { queries: [{ name: 'main', sql: '<html><body><h1>Hello</h1></body></html>', engine: 'text', showQueryEditor: false }] },
                     bodyFamily: 'sqlWithIframe',
                     bodyConfig: { useIframeEditor: true },
                     bodyDisplay: { showSkeleton: { excludeWhenSqlEditor: true } }
@@ -139,9 +124,9 @@ export const CELL_TYPE_SCHEMAS = {
                     titleLabel: 'Titre de la stat',
                     titleTooltip: "Titre affiché au-dessus de la valeur statistique",
                     specificParams: [
-                        { key: 'queries.main.clientVisible', label: "Afficher l'éditeur SQL en mode client", tooltip: "Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur. En mode client, seul le résultat sera affiché.", inputType: 'checkbox' }
+                        { key: 'queries.main.showQueryEditor', label: "Afficher l'éditeur SQL en mode client", tooltip: "Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur. En mode client, seul le résultat sera affiché.", inputType: 'checkbox' }
                     ],
-                    defaults: { title: 'Total Lignes', subtitle: '', icon: 'material-symbols-light:join-right', queries: [{ name: 'main', sql: 'SELECT COUNT(*) FROM source1', engine: 'sql', clientVisible: false }] },
+                    defaults: { title: 'Total Lignes', subtitle: '', icon: 'material-symbols-light:join-right', queries: [{ name: 'main', sql: 'SELECT COUNT(*) FROM source1', engine: 'sql', showQueryEditor: false }] },
                     bodyFamily: 'sqlStat',
                     bodyConfig: { defaultIcon: 'mdi:information-outline', showResultInfoDevOnly: true },
                     bodyDisplay: { showSkeleton: { excludeWhenSqlEditor: true }, resultInfo: { showDevOnly: true } }
@@ -179,7 +164,7 @@ export const CELL_TYPE_SCHEMAS = {
                         queries: [{
                             name: 'main', sql: '',
                             engine: 'sql',
-                            clientVisible: false
+                            showQueryEditor: false
                         }]
                     },
                     bodyFamily: 'uiParameter',
@@ -206,8 +191,8 @@ export const CELL_TYPE_SCHEMAS = {
                     specificParams: [],
                     defaults: {
                         queries: [
-                            { name: 'main', sql: 'SELECT * FROM source1 LIMIT 10', engine: 'sql', clientVisible: false },
-                            { name: 'filename', sql: "SELECT 'document_' || STRFTIME(current_timestamp::TIMESTAMP, '%Y-%m-%d_%H-%M-%S') || '.docx' AS filename;", engine: 'sql', clientVisible: false }
+                            { name: 'main', sql: 'SELECT * FROM source1 LIMIT 10', engine: 'sql', showQueryEditor: false },
+                            { name: 'filename', sql: "SELECT 'document_' || STRFTIME(current_timestamp::TIMESTAMP, '%Y-%m-%d_%H-%M-%S') || '.docx' AS filename;", engine: 'sql', showQueryEditor: false }
                         ],
                         buttonLabel: 'Générer les documents'
                     },
@@ -243,8 +228,8 @@ export const CELL_TYPE_SCHEMAS = {
                     defaults: {
                         json: '',
                         queries: [
-                            { name: 'main', sql: "with v_source as (select * from source1 limit 10)\nSELECT 'Titre' as header, 'Pied de page' as footer, json_group_array(json_array(col1, col2, col3)) as datatable\nFROM v_source LIMIT 10", engine: 'sql', clientVisible: false },
-                            { name: 'filename', sql: "SELECT '$loop' || '_2.pdf'", engine: 'sql', clientVisible: false }
+                            { name: 'main', sql: "with v_source as (select * from source1 limit 10)\nSELECT 'Titre' as header, 'Pied de page' as footer, json_group_array(json_array(col1, col2, col3)) as datatable\nFROM v_source LIMIT 10", engine: 'sql', showQueryEditor: false },
+                            { name: 'filename', sql: "SELECT '{{_loop}}' || '_2.pdf'", engine: 'sql', showQueryEditor: false }
                         ],
                         buttonLabel: '📑 Générer le PDF'
                     },
@@ -255,36 +240,6 @@ export const CELL_TYPE_SCHEMAS = {
                         jsonPlaceholder: '{"basePdf": {...}, "schemas": [...]}',
                         defaultButtonLabel: '📑 Générer le PDF'
                     }
-                },
-                echart: {
-                    executeHandler: 'executeEchartCell',
-                    defaultNamePrefix: 'echart',
-                    showInViewWhenResultOrRunning: true,
-                    exportFields: ['queries'],
-                    initProps: { _echartInstance: null, _echartReady: false },
-                    commonParams: ['name', 'queries'],
-                    queryCount: 1,
-                    queryNames: ['main'],
-                    queryLabels: { main: 'Requête SQL (alias de colonnes = rôles visuels)' },
-                    specificParams: [
-                        {
-                            key: 'queries.main.clientVisible',
-                            label: "Afficher l'éditeur SQL en mode client",
-                            tooltip: "Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur. En mode client, seul le graphique sera affiché.",
-                            inputType: 'checkbox'
-                        }
-                    ],
-                    defaults: {
-                        queries: [{
-                            name: 'main',
-                            sql: "SELECT\n    month::XAXIS,\n    revenue::BARCHART AS \"Revenue\",\n    target::LINECHART  AS \"Target\"\nFROM (VALUES\n    ('Jan', 42000, 40000),\n    ('Feb', 38000, 40000),\n    ('Mar', 51000, 45000),\n    ('Apr', 47000, 45000),\n    ('May', 60000, 50000),\n    ('Jun', 55000, 50000)\n) t(month, revenue, target)",
-                            engine: 'sql',
-                            clientVisible: false
-                        }]
-                    },
-                    bodyFamily: 'sqlWithEchart',
-                    bodyConfig: { minHeight: '350px' },
-                    bodyDisplay: { showSkeleton: { excludeWhenSqlEditor: true } }
                 },
                 perspective: {
                     executeHandler: 'executePerspectiveCell',
@@ -299,10 +254,10 @@ export const CELL_TYPE_SCHEMAS = {
                     specificParams: [
                         { key: 'json.perspectiveConfig', label: 'Configuration Perspective (JSON optionnel)', tooltip: "Configuration JSON pour le viewer Perspective (group_by, columns, sort, plugin, theme, etc.)", inputType: 'textarea', rows: 10, placeholder: '{"plugin": "Datagrid", "theme": "Pro Dark", ...}' },
                         { key: 'perspectiveCdns', label: 'CDN Perspective.js à charger', tooltip: "Sélectionnez les modules CDN nécessaires", inputType: 'perspectiveCdns' },
-                        { key: 'queries.main.clientVisible', label: "Afficher l'éditeur SQL en mode client", tooltip: "Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur.", inputType: 'checkbox' }
+                        { key: 'queries.main.showQueryEditor', label: "Afficher l'éditeur SQL en mode client", tooltip: "Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur.", inputType: 'checkbox' }
                     ],
                     defaults: {
-                        queries: [{ name: 'main', sql: 'SELECT * FROM source1', engine: 'sql', clientVisible: false }],
+                        queries: [{ name: 'main', sql: 'SELECT * FROM source1', engine: 'sql', showQueryEditor: false }],
                         json: { perspectiveConfig: '' },
                         perspectiveCdns: { viewer: true, datagrid: true, d3fc: true, openlayers: false }
                     },

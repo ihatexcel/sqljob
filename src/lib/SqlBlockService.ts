@@ -13,6 +13,10 @@ import type {
     SqlBlockConfig,
     SortKey,
     FilterOp,
+    FilterValueKind,
+    ChartConfig,
+    ChartColumnRole,
+    ConditionalRule,
 } from './SqlBlockTypes';
 
 const CTE_PREFIX = '_sqlblock_s';
@@ -72,19 +76,172 @@ function escapeBlockComment(s: string): string {
 // AST → SQL
 // ─────────────────────────────────────────────────────────────────────────────
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Chart SQL — génération et parsing du SELECT final avec annotations TaleShape
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** Rôles TaleShape reconnus pour la détection chart dans le SELECT final. */
+const CHART_ROLES_ORDERED = [
+    'BARCHART_STACKED_PERCENT', 'BARCHART_STACKED', 'BARCHART_PERCENT', 'BARCHART',
+    'LINECHART_PERCENT', 'LINECHART',
+    'PIECHART_PERCENT', 'PIECHART',
+    'DONUTCHART_PERCENT', 'DONUTCHART',
+    'GAUGE_PERCENT', 'GAUGE',
+    'BOXPLOT',
+    'XAXIS', 'YAXIS', 'CATEGORY',
+    'COLOR', 'COLORS', 'LABELS', 'RANGE',
+    'KPI', 'ICON', 'LABEL', 'SUBLABEL', 'PERCENT', 'COMPARE', 'TREND_PERCENT', 'TREND', 'XLINE', 'YLINE',
+];
+const CHART_ROLES_SET = new Set(CHART_ROLES_ORDERED);
+
+/**
+ * Génère un SELECT final avec annotations ::ROLE à partir d'une ChartConfig.
+ * Ex: SELECT "date"::XAXIS, "revenue"::BARCHART AS "Revenue" FROM "last_cte"
+ */
+const CHART_AXIS_ROLES = new Set(['XAXIS', 'YAXIS', 'CATEGORY', 'COLOR', 'COLORS']);
+
+export function buildChartFinalSelect(fromSource: string, cfg: ChartConfig): string {
+    // Préfixe LABEL / SUBLABEL si définis
+    let prefix = '';
+    if (cfg.label?.trim()) {
+        const escaped = cfg.label.trim().replace(/'/g, "''");
+        prefix += `SELECT '${escaped}'::LABEL;\n`;
+    }
+    if ((cfg as any).sublabel?.trim()) {
+        const escaped = (cfg as any).sublabel.trim().replace(/'/g, "''");
+        prefix += `SELECT '${escaped}'::SUBLABEL;\n`;
+    }
+    // Axe / catégorie / couleur en premier, puis les données
+    const sorted = [...cfg.columns].sort((a, b) => {
+        const aAxis = CHART_AXIS_ROLES.has(a.role.toUpperCase()) ? 0 : 1;
+        const bAxis = CHART_AXIS_ROLES.has(b.role.toUpperCase()) ? 0 : 1;
+        return aAxis - bAxis;
+    });
+    const parts = sorted.map(col => {
+        const role = col.role.toUpperCase();
+        const alias = col.label?.trim() ? ` AS "${col.label.trim()}"` : '';
+        let expr: string;
+        if (col.valueKind === 'literal') {
+            const n = Number(col.column);
+            expr = col.column.trim() !== '' && !isNaN(n) ? col.column : `'${col.column.replace(/'/g, "''")}'`;
+        } else if (col.valueKind === 'param') {
+            expr = col.column; // {{paramName}} — pas de quoting
+        } else if (col.valueKind === 'expression') {
+            expr = `(${col.column})`;
+        } else {
+            expr = quoteId(col.column); // colonne (défaut)
+        }
+        return `  ${expr}::${role}${alias}`;
+    });
+    return `${prefix}SELECT\n${parts.join(',\n')}\nFROM ${fromSource}`;
+}
+
+/**
+ * Parse un SELECT final pour extraire une ChartConfig.
+ * Reconnaît la syntaxe: col::ROLE [AS "alias"], ...
+ * Retourne null si aucun rôle chart n'est trouvé.
+ */
+export function parseChartFinalSelect(selectSql: string): ChartConfig | null {
+    // Extrait le titre/sous-titre depuis SELECT '...'::LABEL; et SELECT '...'::SUBLABEL;
+    let cfgLabel: string | undefined;
+    let cfgSublabel: string | undefined;
+    const labelM = selectSql.match(/SELECT\s+'([^']*)'\s*::LABEL\s*;/i);
+    if (labelM) cfgLabel = labelM[1];
+    const sublabelM = selectSql.match(/SELECT\s+'([^']*)'\s*::SUBLABEL\s*;/i);
+    if (sublabelM) cfgSublabel = sublabelM[1];
+
+    const rolesPattern = CHART_ROLES_ORDERED.join('|');
+    // Match: ("col" | {{param}} | 'literal' | (expression) | unquoted)::ROLE [AS ("label" | label)]
+    // Groups: 1=double-quoted col, 2=param({{...}}), 3=single-quoted literal,
+    //         4=parenthesised expression, 5=unquoted
+    const re = new RegExp(
+        `(?:"([^"]+)"|\\{\\{([^}]+)\\}\\}|'([^']*)'|\\(((?:[^()]+|\\([^()]*\\))*)\\)|([\\w.]+))\\s*::\\s*(${rolesPattern})(?:\\s+AS\\s+(?:"([^"]+)"|([\\w]+)))?`,
+        'gi'
+    );
+    const columns: ChartColumnRole[] = [];
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(selectSql)) !== null) {
+        const role = m[6].toUpperCase();
+        const label = m[7] ?? m[8] ?? undefined;
+        // Skip LABEL role — it's a title prefix, not a data column
+        if (!CHART_ROLES_SET.has(role) || role === 'LABEL') continue;
+
+        let column: string;
+        let valueKind: FilterValueKind | undefined;
+
+        if (m[1] !== undefined) {
+            // "double-quoted" → column identifier
+            column = m[1];
+            valueKind = 'column';
+        } else if (m[2] !== undefined) {
+            // {{param}} → parameter
+            column = `{{${m[2]}}}`;
+            valueKind = 'param';
+        } else if (m[3] !== undefined) {
+            // 'single-quoted' → literal string (may be numeric)
+            column = m[3];
+            valueKind = 'literal';
+        } else if (m[4] !== undefined) {
+            // (expression) → SQL expression wrapped in parens
+            column = m[4];
+            valueKind = 'expression';
+        } else {
+            // unquoted word: numeric token → literal, otherwise → column
+            column = m[5];
+            valueKind = /^-?\d+(\.\d+)?([eE][+-]?\d+)?$/.test(column) ? 'literal' : 'column';
+        }
+
+        const entry: ChartColumnRole = { column, role, label };
+        if (valueKind !== 'column') entry.valueKind = valueKind;
+        columns.push(entry);
+    }
+    if (!columns.length && !cfgLabel) return null;
+
+    // Déduire le chartType depuis les rôles présents (même logique que EChartSqlParser)
+    const roleSet = new Set(columns.map(c => c.role));
+    const has = (r: string) => roleSet.has(r);
+    let chartType = 'bar';
+    if (has('BARCHART_STACKED_PERCENT')) chartType = 'bar';
+    else if (has('BARCHART_PERCENT')) chartType = 'bar';
+    else if (has('BARCHART_STACKED')) chartType = 'bar';
+    else if (has('BARCHART') && has('LINECHART')) chartType = 'bar+line';
+    else if (has('BARCHART')) chartType = has('YAXIS') && !has('XAXIS') ? 'bar' : 'bar';
+    else if (has('LINECHART_PERCENT') || has('LINECHART')) chartType = 'line';
+    else if (has('PIECHART_PERCENT') || has('PIECHART')) chartType = 'pie';
+    else if (has('DONUTCHART_PERCENT') || has('DONUTCHART')) chartType = 'donut';
+    else if (has('GAUGE_PERCENT') || has('GAUGE')) chartType = 'gauge';
+    else if (has('BOXPLOT')) chartType = 'boxplot';
+    else if (has('KPI') || has('PERCENT') || has('COMPARE') || has('TREND') || has('TREND_PERCENT')) chartType = 'kpi';
+
+    const cfg: ChartConfig = { chartType, columns };
+    if (cfgLabel) cfg.label = cfgLabel;
+    if (cfgSublabel) (cfg as any).sublabel = cfgSublabel;
+    return cfg;
+}
+
 export function astToSql(ast: SqlBlockAst): string {
-    const { source, steps } = ast;
-    if (!steps || steps.length === 0) return `SELECT * FROM ${quoteId(source)}`;
+    const { source, steps, chartConfig } = ast;
+
+    if (!steps || steps.length === 0) {
+        const from = fromExpr(source);
+        if (chartConfig?.columns?.length) return buildChartFinalSelect(from, chartConfig);
+        return `SELECT * FROM ${from}`;
+    }
     // Step unique sans nom : forme simple (pas de CTE)
-    if (steps.length === 1 && !steps[0].name?.trim()) {
-        const sql = singleStepToSql(quoteId(source), steps[0]);
+    // Exception : custom_sql → toujours en CTE pour préserver la structure (SQL non standard)
+    if (steps.length === 1 && !steps[0].name?.trim() && steps[0].type !== 'custom_sql') {
+        const sql = singleStepToSql(fromExpr(source), steps[0]);
         const desc = steps[0].description?.trim();
-        return desc ? `/* ${escapeBlockComment(desc)} */\n${sql}` : sql;
+        // Pas de forme simple quand chartConfig présent : on passe par CTE pour pouvoir
+        // ajouter le SELECT final avec annotations
+        if (!chartConfig?.columns?.length) {
+            return desc ? `/* ${escapeBlockComment(desc)} */\n${sql}` : sql;
+        }
     }
 
     const ctes: string[] = [];
     for (let i = 0; i < steps.length; i++) {
-        const prevSrc = i === 0 ? quoteId(source) : quoteId(getCteName(steps[i - 1], i - 1));
+        const prevSrc = i === 0 ? fromExpr(source) : quoteId(getCteName(steps[i - 1], i - 1));
         const inner = singleStepToSql(prevSrc, steps[i]);
         const cteName = quoteId(getCteName(steps[i], i));
         const desc = steps[i].description?.trim();
@@ -92,33 +249,51 @@ export function astToSql(ast: SqlBlockAst): string {
         ctes.push(`  ${cteName} AS (\n    ${comment}${inner.replace(/\n/g, '\n    ')}\n  )`);
     }
     const lastName = quoteId(getCteName(steps[steps.length - 1], steps.length - 1));
-    return `WITH\n${ctes.join(',\n')}\nSELECT * FROM ${lastName}`;
+    const finalSelect = chartConfig?.columns?.length
+        ? buildChartFinalSelect(lastName, chartConfig)
+        : `SELECT * FROM ${lastName}`;
+    // Hoist SELECT '...'::LABEL; and SELECT '...'::SUBLABEL; before WITH so DuckDB can parse cleanly
+    const prefixM = finalSelect.match(/^((SELECT\s+'[^']*'\s*::(?:LABEL|SUBLABEL)\s*;\n?)+)/i);
+    const hoistPrefix = prefixM ? prefixM[1] : '';
+    const body = hoistPrefix ? finalSelect.slice(hoistPrefix.length) : finalSelect;
+    return `${hoistPrefix}WITH\n${ctes.join(',\n')}\n${body}`;
 }
 
-export function generateMaterializeQuery(name: string, sql: string, materialize: SqlBlockMaterialize): string {
-    if (materialize === 'select') return sql;
-    const q = quoteId(name);
+export function generateMaterializeQuery(_name: string, sql: string, materialize: SqlBlockMaterialize): string {
+    if (materialize === 'ephemeral') return sql;
+    // {{ _name }} est substitué à l'exécution avec le nom réel de la cellule.
+    // Le DROP de l'opposé est géré à l'exécution (executionSlice), pas affiché ici.
     return materialize === 'table'
-        ? `CREATE OR REPLACE TABLE ${q} AS (\n${sql}\n)`
-        : `CREATE OR REPLACE VIEW ${q} AS (\n${sql}\n)`;
+        ? `CREATE OR REPLACE TABLE {{ _name }} AS (\n${sql}\n)`
+        : `CREATE OR REPLACE VIEW {{ _name }} AS (\n${sql}\n)`;
 }
 
 /** Construit le SQL affiché dans l'éditeur : avec CREATE OR REPLACE pour VIEW/TABLE, SQL brut pour SELECT. */
 export function buildDisplaySql(name: string | null | undefined, selectSql: string, materialize: SqlBlockMaterialize): string {
-    if (!name?.trim() || materialize === 'select') return selectSql;
+    if (!name?.trim() || materialize === 'ephemeral') return selectSql;
     return generateMaterializeQuery(name, selectSql, materialize);
 }
 
-/** Retire le préfixe CREATE OR REPLACE VIEW/TABLE d'un SQL pour extraire le SELECT interne. */
+/** Retire le préfixe DROP + CREATE OR REPLACE VIEW/TABLE d'un SQL pour extraire le SELECT interne.
+ *  Gère les noms quotés ("id"), les templates {{ _name }} et les identifiants bruts. */
 export function stripMaterializePrefix(sql: string): string {
-    const m = sql.match(/^CREATE\s+OR\s+REPLACE\s+(?:VIEW|TABLE)\s+(?:"[^"]*"|\S+)\s+AS\s*\(\s*([\s\S]*?)\s*\)\s*;?\s*$/i);
+    const anyName = `(?:"[^"]*"|\\{\\{[^}]+\\}\\}|\\S+)`;
+    const m = sql.trim().match(new RegExp(
+        `^(?:DROP\\s+(?:VIEW|TABLE)\\s+IF\\s+EXISTS\\s+${anyName}\\s*;\\s*)?` +
+        `CREATE\\s+OR\\s+REPLACE\\s+(?:VIEW|TABLE)\\s+${anyName}\\s+AS\\s*\\(\\s*([\\s\\S]*?)\\s*\\)\\s*;?\\s*$`,
+        'i'
+    ));
     if (m) return m[1].trim();
     return sql.trim();
 }
 
 export function stepSql(ast: SqlBlockAst, stepIndex: number): string {
-    if (!ast.source) return '';
-    if (stepIndex < 0 || !ast.steps?.length) return `SELECT * FROM ${quoteId(ast.source)}`;
+    // Si pas de source ET pas de steps : rien à faire
+    if (!ast.source && !ast.steps?.length) return '';
+    if (stepIndex < 0 || !ast.steps?.length) {
+        if (!ast.source) return '';
+        return `SELECT * FROM ${fromExpr(ast.source)}`;
+    }
     return astToSql({ ...ast, steps: ast.steps.slice(0, stepIndex + 1) });
 }
 
@@ -155,7 +330,23 @@ function tryParseSimpleSelect(sql: string, materialize: SqlBlockMaterialize): Sq
     if (!m) return null;
     const parsed = parseSelectBody(m[1].trim());
     if (!parsed) return null;
-    return { source: unquoteId(m[2].trim()), steps: parsed.step ? [parsed.step] : [], materialize };
+    return { source: unquoteId(m[2].trim()), steps: parsed.step ? [parsed.step] : [], materialized: materialize };
+}
+
+/** Extrait le SELECT final d'un WITH query (le SELECT qui suit tous les CTEs, à profondeur 0). */
+function extractFinalSelectFromWithQuery(sql: string): string | null {
+    const withM = sql.match(/^WITH\s+/i);
+    if (!withM) return null;
+    let pos = withM[0].length;
+    let depth = 0;
+    while (pos < sql.length) {
+        const ch = sql[pos];
+        if (ch === '(') { depth++; pos++; continue; }
+        if (ch === ')') { depth--; pos++; continue; }
+        if (depth === 0 && /^SELECT\b/i.test(sql.slice(pos))) return sql.slice(pos).trim();
+        pos++;
+    }
+    return null;
 }
 
 function tryParseCteChain(sql: string, materialize: SqlBlockMaterialize): SqlBlockAst | null {
@@ -169,7 +360,9 @@ function tryParseCteChain(sql: string, materialize: SqlBlockMaterialize): SqlBlo
         if (!parsed) return null;
         if (parsed.step) steps.push(parsed.step);
     }
-    return { source: unquoteId(ctes[0].source), steps, materialize };
+    const finalSql = extractFinalSelectFromWithQuery(sql);
+    const chartConfig = finalSql ? parseChartFinalSelect(finalSql) ?? undefined : undefined;
+    return { source: unquoteId(ctes[0].source), steps, materialized: materialize, ...(chartConfig ? { chartConfig } : {}) };
 }
 
 interface CteInfo { body: string; source: string }
@@ -427,8 +620,24 @@ function singleStepToSql(source: string, step: SqlBlockStep): string {
             return `SELECT *, ${expr} AS ${quoteId(alias)} FROM ${source}`;
         }
 
+        case 'conditional_column': {
+            const col = quoteId(step.newColumn || 'nouvelle_colonne');
+            const whenClauses = (step.rules ?? [])
+                .filter(r => filterGroupHasContent(r.when))
+                .map(r => {
+                    const cond = filterGroupToSql(r.when);
+                    const thenVal = renderFilterValue(r.then ?? '', r.thenKind);
+                    return `WHEN ${cond} THEN ${thenVal}`;
+                });
+            const elseClause = step.elseValue !== undefined && step.elseValue !== ''
+                ? `ELSE ${renderFilterValue(step.elseValue, step.elseKind)}`
+                : 'ELSE NULL';
+            const caseExpr = `CASE\n    ${whenClauses.join('\n    ')}\n    ${elseClause}\n  END`;
+            return `SELECT *, ${caseExpr} AS ${col} FROM ${source}`;
+        }
+
         case 'custom_sql': {
-            const sql = step.sql?.trim() || `SELECT * FROM {{subquery}}`;
+            const sql = (step.sql?.trim() || `SELECT * FROM {{subquery}}`).replace(/;+\s*$/, '');
             return sql.replace(/\{\{subquery\}\}/g, source);
         }
     }
@@ -466,22 +675,32 @@ function filterGroupToSql(g: FilterGroup): string {
     return g.negate ? `NOT ${expr}` : expr
 }
 
+/** Rendu d'une valeur de filtre selon son mode (literal, column, param). */
+function renderFilterValue(v: string, kind?: FilterValueKind): string {
+    if (kind === 'column')     return quoteId(v)
+    if (kind === 'param')      return v            // {{paramName}} — substitué à l'exécution
+    if (kind === 'expression') return `(${v})`
+    return quoteSqlValue(v)
+}
+
 function conditionToSql(c: FilterCondition): string {
     const col = quoteId(c.column);
+    const val  = renderFilterValue(c.value ?? '', c.valueKind)
+    const valTo = renderFilterValue(c.valueTo ?? '', c.valueToKind)
     switch (c.op) {
-        case '=':       return `${col} = ${quoteSqlValue(c.value ?? '')}`;
-        case '!=':      return `${col} != ${quoteSqlValue(c.value ?? '')}`;
-        case '>':       return `${col} > ${quoteSqlValue(c.value ?? '')}`;
-        case '<':       return `${col} < ${quoteSqlValue(c.value ?? '')}`;
-        case '>=':      return `${col} >= ${quoteSqlValue(c.value ?? '')}`;
-        case '<=':      return `${col} <= ${quoteSqlValue(c.value ?? '')}`;
+        case '=':       return `${col} = ${val}`;
+        case '!=':      return `${col} != ${val}`;
+        case '>':       return `${col} > ${val}`;
+        case '<':       return `${col} < ${val}`;
+        case '>=':      return `${col} >= ${val}`;
+        case '<=':      return `${col} <= ${val}`;
         case 'in':      return `${col} IN (${(c.values ?? []).map(quoteSqlValue).join(', ')})`;
         case 'not_in':  return `${col} NOT IN (${(c.values ?? []).map(quoteSqlValue).join(', ')})`;
         case 'is_null': return `${col} IS NULL`;
         case 'not_null':return `${col} IS NOT NULL`;
-        case 'like':    return `${col} LIKE ${quoteSqlValue(c.value ?? '')}`;
-        case 'ilike':   return `${col} ILIKE ${quoteSqlValue(c.value ?? '')}`;
-        case 'between': return `${col} BETWEEN ${quoteSqlValue(c.value ?? '')} AND ${quoteSqlValue(c.valueTo ?? '')}`;
+        case 'like':    return `${col} LIKE ${val}`;
+        case 'ilike':   return `${col} ILIKE ${val}`;
+        case 'between': return `${col} BETWEEN ${val} AND ${valTo}`;
     }
 }
 
@@ -495,6 +714,11 @@ function quoteSqlValue(v: string): string {
 export function quoteId(name: string): string {
     if (/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)) return name;
     return `"${name.replace(/"/g, '""')}"`;
+}
+
+/** Génère l'expression FROM : sous-requête brute (commence par '(') → as-is, sinon identifiant quoté. */
+function fromExpr(source: string): string {
+    return source.startsWith('(') ? source : quoteId(source);
 }
 
 function unquoteId(name: string): string {
@@ -559,8 +783,11 @@ function extractCtesWithFullBody(sql: string): CteFullInfo[] | null {
         const descM = normalized.match(/^\/\*(.*?)\*\//s);
         const description = descM ? descM[1].trim() : undefined;
         const bodyNoComment = normalized.replace(/^\/\*.*?\*\/\s*/s, '').trim();
+        // Pour PIVOT/UNPIVOT : la vraie source est l'identifiant à l'intérieur de la sous-requête
+        const pivotSrcM = bodyNoComment.match(/\bFROM\s+\(\s*(?:UN)?PIVOT\s+((?:"[^"]*"|\w[\w.]*?))\s+/i);
         const srcM = bodyNoComment.match(/\bFROM\s+((?:"[^"]*"|\S)+)/i);
-        const source = srcM ? unquoteId(srcM[1]) : '';
+        const rawSrcToken = pivotSrcM ? pivotSrcM[1] : srcM ? srcM[1] : null;
+        const source = rawSrcToken && !rawSrcToken.startsWith('(') ? unquoteId(rawSrcToken) : '';
         ctes.push({ name, fullBody: bodyNoComment, source, description });
 
         // Saute la virgule séparatrice
@@ -786,6 +1013,78 @@ function parseRenameList(s: string): { from: string; to: string }[] | null {
     return renames;
 }
 
+/** Splits a comma-separated SQL expression list, respecting parentheses. */
+function splitSelectParts(sql: string): string[] {
+    const parts: string[] = [];
+    let depth = 0, cur = '';
+    for (const ch of sql) {
+        if (ch === '(') depth++;
+        else if (ch === ')') depth--;
+        else if (ch === ',' && depth === 0) { parts.push(cur.trim()); cur = ''; continue; }
+        cur += ch;
+    }
+    if (cur.trim()) parts.push(cur.trim());
+    return parts;
+}
+
+/** Tries to parse a GROUP BY body into a GroupByStep AST node. */
+function tryParseGroupByParts(selectBody: string, groupByBody: string): import('./SqlBlockTypes').GroupByStep | null {
+    const groupCols = splitSelectParts(groupByBody).map(s => unquoteId(s.trim())).filter(Boolean);
+    if (!groupCols.length) return null;
+
+    const selectParts = splitSelectParts(selectBody);
+    const seenGroupCols: string[] = [];
+    const aggregations: import('./SqlBlockTypes').Aggregation[] = [];
+
+    for (const part of selectParts) {
+        const p = part.trim();
+        // Plain column → must be a GROUP BY column
+        const asPlain = unquoteId(p);
+        if (groupCols.includes(asPlain)) { seenGroupCols.push(asPlain); continue; }
+
+        // FN(args) AS alias — greedy match of args handles nested parens
+        const fnM = p.match(/^(\w+)\s*\(([\s\S]+)\)\s+AS\s+("(?:[^"]+)"|[\w]+)\s*$/i);
+        if (!fnM) return null;
+
+        const fn = fnM[1].toUpperCase();
+        const rawArgs = fnM[2].trim();
+        const alias = unquoteId(fnM[3].trim());
+        let agg: import('./SqlBlockTypes').Aggregation | null = null;
+
+        if (fn === 'COUNT') {
+            if (rawArgs === '*') agg = { fn: 'count', column: '*', alias };
+            else {
+                const distM = rawArgs.match(/^DISTINCT\s+([\s\S]+)$/i);
+                agg = distM
+                    ? { fn: 'count_distinct', column: unquoteId(distM[1].trim()), alias }
+                    : { fn: 'count', column: unquoteId(rawArgs), alias };
+            }
+        } else if (fn === 'STRING_AGG') {
+            const p2 = splitSelectParts(rawArgs);
+            const col = unquoteId(p2[0]?.trim() ?? '');
+            const sep = p2[1]?.trim().replace(/^['"]|['"]$/g, '') ?? ', ';
+            agg = { fn: 'string_agg', column: col, alias, separator: sep };
+        } else {
+            const FN_MAP: Record<string, string> = {
+                SUM: 'sum', AVG: 'avg', MIN: 'min', MAX: 'max',
+                MEDIAN: 'median', STDDEV: 'stddev', STDDEV_SAMP: 'stddev', STDDEV_POP: 'stddev',
+                LIST: 'list', ARRAY_AGG: 'list',
+            };
+            const mapped = FN_MAP[fn];
+            if (!mapped) return null;
+            agg = { fn: mapped as any, column: unquoteId(rawArgs), alias };
+        }
+
+        if (!agg) return null;
+        aggregations.push(agg);
+    }
+
+    // Verify all GROUP BY cols appeared in SELECT
+    if (groupCols.some(c => !seenGroupCols.includes(c))) return null;
+
+    return { type: 'group_by', groupCols, aggregations };
+}
+
 /**
  * Parse le corps d'un CTE en un SqlBlockStep.
  * - Retourne null si c'est un SELECT * passthrough (pas de step).
@@ -848,6 +1147,44 @@ function parseCteBodyToStep(
         }
     }
 
+    // ── group_by (SELECT groupCols + AGGs FROM src GROUP BY cols) ──────────────
+    if (!typeHint || typeHint === 'group_by') {
+        const groupM = b.match(/^SELECT\s+([\s\S]+?)\s+FROM\s+(?:"[^"]*"|\S+)\s+GROUP\s+BY\s+([\s\S]+?)\s*;?\s*$/i);
+        if (groupM) {
+            const groupStep = tryParseGroupByParts(groupM[1].trim(), groupM[2].trim());
+            if (groupStep) return groupStep;
+        }
+    }
+
+    // ── pivot (SELECT * FROM (PIVOT src ON col USING fn(col) GROUP BY ...)) ─────
+    if (!typeHint || typeHint === 'pivot') {
+        const pivotM = b.match(/^SELECT\s+\*\s+FROM\s+\(\s*PIVOT\s+(?:"[^"]*"|\S+)\s+ON\s+((?:"[^"]*"|\S+))\s+USING\s+(\w+)\s*\(\s*((?:"[^"]*"|\S+))\s*\)(?:\s+GROUP\s+BY\s+([\s\S]+?))?\s*\)\s*;?\s*$/i);
+        if (pivotM) {
+            return {
+                type: 'pivot',
+                onColumn:    unquoteId(pivotM[1].trim()),
+                valueFn:     pivotM[2].toUpperCase(),
+                valueColumn: unquoteId(pivotM[3].trim()),
+                groupCols:   pivotM[4]
+                    ? splitSelectParts(pivotM[4]).map(c => unquoteId(c.trim())).filter(Boolean)
+                    : [],
+            };
+        }
+    }
+
+    // ── unpivot (SELECT * FROM (UNPIVOT src ON cols INTO NAME name VALUE value)) ─
+    if (!typeHint || typeHint === 'unpivot') {
+        const unpivotM = b.match(/^SELECT\s+\*\s+FROM\s+\(\s*UNPIVOT\s+(?:"[^"]*"|\S+)\s+ON\s+([\s\S]+?)\s+INTO\s+NAME\s+((?:"[^"]*"|\S+))\s+VALUE\s+((?:"[^"]*"|\S+))\s*\)\s*;?\s*$/i);
+        if (unpivotM) {
+            return {
+                type: 'unpivot',
+                columns:  splitSelectParts(unpivotM[1]).map(c => unquoteId(c.trim())).filter(Boolean),
+                nameCol:  unquoteId(unpivotM[2].trim()),
+                valueCol: unquoteId(unpivotM[3].trim()),
+            };
+        }
+    }
+
     // ── Fallback : custom_sql (source → {{subquery}}) ─────────────────────────
     const srcQ = quoteId(sourceName);
     const sqlWithPlaceholder = b
@@ -877,18 +1214,85 @@ function tryParseCteChainSmart(sql: string, materialize: SqlBlockMaterialize): S
         steps.push(step);
     }
 
-    return { source, steps, materialize };
+    const finalSql = extractFinalSelectFromWithQuery(sql);
+    const chartConfig = finalSql ? parseChartFinalSelect(finalSql) ?? undefined : undefined;
+    return { source, steps, materialized: materialize, ...(chartConfig ? { chartConfig } : {}) };
 }
 
-/** Parser simple SELECT (hors CTE) étendu aux patterns P1 (WHERE, ORDER BY, LIMIT). */
+/**
+ * Extrait l'expression FROM complète quand la source est une sous-requête (commence par '(').
+ * Ex: `SELECT * FROM (VALUES ...) t(a, b)` → `(VALUES ...) t(a, b)`
+ */
+function extractSubquerySource(sql: string): string | null {
+    const m = sql.match(/\bFROM\s+(\([\s\S]+)/i);
+    if (!m) return null;
+    return m[1].replace(/\s*;?\s*$/, '').trim();
+}
+
+/** Parser simple SELECT (hors CTE) étendu aux patterns P1 (WHERE, ORDER BY, LIMIT).
+ * Les patterns non reconnus deviennent un step custom_sql (préserve le SQL sans perte). */
 function tryParseSimpleSmart(sql: string, materialize: SqlBlockMaterialize): SqlBlockAst | null {
     const srcM = sql.match(/^SELECT\s+(?:[\s\S]+?)\s+FROM\s+((?:"[^"]*"|\S+))/i);
-    if (!srcM) return null;
-    const source = unquoteId(srcM[1]);
+    if (!srcM) {
+        // Pas de FROM — si le SQL contient des annotations ::ROLE, c'est un SELECT sans source
+        // (ex: SELECT expr::KPI, 'icon'::ICON) → on utilise (SELECT 1) comme source fictive
+        const rolesPattern = CHART_ROLES_ORDERED.join('|');
+        if (new RegExp(`::\\s*(?:${rolesPattern})\\b`, 'i').test(sql)) {
+            const chartConfig = parseChartFinalSelect(sql + '\nFROM (SELECT 1)') ?? undefined;
+            if (chartConfig) return { source: '(SELECT 1)', steps: [], materialized: materialize, chartConfig };
+        }
+        return null;
+    }
+    const firstToken = srcM[1];
+    const source = unquoteId(firstToken);
+
+    // ── Sous-requête comme source (FROM commence par '(') ──────────────────────
+    if (source.startsWith('(')) {
+        // Cas PIVOT : SELECT * FROM (PIVOT <source> ON <col> USING <fn>(<col>) GROUP BY ...)
+        // → parser en PivotStep avec la vraie source DuckDB identifiée
+        const pivotM = sql.match(/^SELECT\s+\*\s+FROM\s+\(\s*PIVOT\s+((?:"[^"]*"|\w[\w.]*?))\s+ON\s+((?:"[^"]*"|\S+))\s+USING\s+(\w+)\s*\(\s*((?:"[^"]*"|\S+))\s*\)(?:\s+GROUP\s+BY\s+([\s\S]+?))?\s*\)\s*;?\s*$/i);
+        if (pivotM) {
+            const pivotSrc = unquoteId(pivotM[1].trim());
+            const onCol    = unquoteId(pivotM[2].trim());
+            const fn       = pivotM[3].toUpperCase();
+            const valueCol = unquoteId(pivotM[4].trim());
+            const groupCols = pivotM[5]
+                ? splitSelectParts(pivotM[5]).map(c => unquoteId(c.trim())).filter(Boolean)
+                : [];
+            return { source: pivotSrc, steps: [{ type: 'pivot', onColumn: onCol, valueColumn: valueCol, valueFn: fn, groupCols }], materialized: materialize };
+        }
+
+        // Cas UNPIVOT : SELECT * FROM (UNPIVOT <source> ON <cols> INTO NAME <name> VALUE <value>)
+        const unpivotM = sql.match(/^SELECT\s+\*\s+FROM\s+\(\s*UNPIVOT\s+((?:"[^"]*"|\w[\w.]*?))\s+ON\s+([\s\S]+?)\s+INTO\s+NAME\s+((?:"[^"]*"|\S+))\s+VALUE\s+((?:"[^"]*"|\S+))\s*\)\s*;?\s*$/i);
+        if (unpivotM) {
+            const unpivotSrc = unquoteId(unpivotM[1].trim());
+            const columns    = splitSelectParts(unpivotM[2]).map(c => unquoteId(c.trim())).filter(Boolean);
+            const nameCol    = unquoteId(unpivotM[3].trim());
+            const valueCol   = unquoteId(unpivotM[4].trim());
+            return { source: unpivotSrc, steps: [{ type: 'unpivot', columns, nameCol, valueCol }], materialized: materialize };
+        }
+
+        // Cas général : extraire l'expression FROM complète comme source brute
+        const rawSource = extractSubquerySource(sql);
+        if (!rawSource) return null;
+
+        const chartConfig = parseChartFinalSelect(sql) ?? undefined;
+        if (chartConfig) return { source: rawSource, steps: [], materialized: materialize, chartConfig };
+
+        // SELECT * FROM (<subquery>) sans roles → SELECT * passthrough (pas de steps)
+        const step = parseCteBodyToStep(sql, null, rawSource);
+        if (step === null) return { source: rawSource, steps: [], materialized: materialize };
+        return { source: rawSource, steps: [step], materialized: materialize };
+    }
+
+    // Si le SELECT contient des annotations ::ROLE, c'est un SELECT final de visualisation
+    const chartConfig = parseChartFinalSelect(sql) ?? undefined;
+    if (chartConfig) return { source, steps: [], materialized: materialize, chartConfig };
+
     const step = parseCteBodyToStep(sql, null, source);
-    if (step === null) return { source, steps: [], materialize }; // SELECT *
-    if (step.type === 'custom_sql') return null; // ne peut pas être parsé proprement
-    return { source, steps: [step], materialize };
+    if (step === null) return { source, steps: [], materialized: materialize }; // SELECT *
+    // custom_sql ou step reconnu → on crée un AST avec ce step (pas de perte de données)
+    return { source, steps: [step], materialized: materialize };
 }
 
 /**
@@ -896,19 +1300,61 @@ function tryParseSimpleSmart(sql: string, materialize: SqlBlockMaterialize): Sql
  * par CTE (P1+). Les CTEs non parsables deviennent des steps custom_sql.
  */
 export function sqlToAstSmart(sql: string, materialize: SqlBlockMaterialize = 'view'): SqlParseResult {
+    // Extraire SELECT '...'::LABEL; et SELECT '...'::SUBLABEL; en tête avant parsing
+    // → permet d'éditer via l'UI même quand le SQL commence par ces préfixes
+    let labelPrefix: string | null = null;
+    let sublabelPrefix: string | null = null;
+    let sqlBody = sql;
+    const labelM = sqlBody.match(/^(\s*SELECT\s+'[^']*'\s*::LABEL\s*;[ \t]*\r?\n?)/i);
+    if (labelM) {
+        const valM = labelM[1].match(/SELECT\s+'([^']*)'\s*::LABEL/i);
+        if (valM) labelPrefix = valM[1];
+        sqlBody = sqlBody.slice(labelM[1].length);
+    }
+    const sublabelM = sqlBody.match(/^(\s*SELECT\s+'[^']*'\s*::SUBLABEL\s*;[ \t]*\r?\n?)/i);
+    if (sublabelM) {
+        const valM = sublabelM[1].match(/SELECT\s+'([^']*)'\s*::SUBLABEL/i);
+        if (valM) sublabelPrefix = valM[1];
+        sqlBody = sqlBody.slice(sublabelM[1].length);
+    }
+
+    /** Injecte label/sublabel dans l'AST si présents */
+    function withLabel(ast: SqlBlockAst): SqlBlockAst {
+        if (labelPrefix === null && sublabelPrefix === null) return ast;
+        const base = ast.chartConfig ?? { chartType: 'kpi', columns: [] };
+        const chartConfig: ChartConfig = { ...base };
+        if (labelPrefix !== null) chartConfig.label = labelPrefix;
+        if (sublabelPrefix !== null) (chartConfig as any).sublabel = sublabelPrefix;
+        return { ...ast, chartConfig };
+    }
+    function withLabelResult(r: SqlParseResult): SqlParseResult {
+        if (labelPrefix === null && sublabelPrefix === null) return r;
+        if (!r.compatible || !r.ast) return r;
+        return { ...r, ast: withLabel(r.ast) };
+    }
+
     // 1. Parser standard (P0)
-    const standard = sqlToAst(sql, materialize);
-    if (standard.compatible && standard.ast) return standard;
+    const standard = sqlToAst(sqlBody, materialize);
+    if (standard.compatible && standard.ast) return withLabelResult(standard);
 
     // 2. Parser par CTE intelligent
-    const normalized = sql.replace(/[ \t]+/g, ' ').trim();
+    const normalized = sqlBody.replace(/[ \t]+/g, ' ').trim();
     const smartCte = tryParseCteChainSmart(normalized, materialize);
-    if (smartCte) return { ast: smartCte, compatible: true };
+    if (smartCte) return withLabelResult({ ast: smartCte, compatible: true });
 
     // 3. Parser simple SELECT étendu (sans CTE)
     const smartSimple = tryParseSimpleSmart(normalized, materialize);
-    if (smartSimple) return { ast: smartSimple, compatible: true };
+    if (smartSimple) return withLabelResult({ ast: smartSimple, compatible: true });
 
-    // 4. Échec : retourne l'erreur d'origine
+    // 4. Fallback ultime : SQL non reconnu → étape custom_sql sans source
+    //    Préserve le SQL intégralement, sans perte de données.
+    if (normalized) {
+        return withLabelResult({
+            ast: { source: '', steps: [{ type: 'custom_sql', sql: normalized }], materialized: materialize },
+            compatible: true,
+        });
+    }
+
+    // 5. Échec : retourne l'erreur d'origine
     return standard;
 }

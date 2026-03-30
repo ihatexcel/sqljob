@@ -93,13 +93,13 @@ export function CellConfigModal() {
                                     <SelectItem value="source">Source</SelectItem>
                                     <SelectItem value="uiParameter">Paramètre UI</SelectItem>
                                     <SelectItem value="buttonRunNextCells">Bouton Exécuter</SelectItem>
-                                    <SelectItem value="sqlRecursiveParse">SQL</SelectItem>
-                                    <SelectItem value="table">Tableau</SelectItem>
+                                    <SelectItem value="sql">SQL</SelectItem>
+
                                     <SelectItem value="iframe">HTML/Iframe</SelectItem>
                                     <SelectItem value="sqlStat">Stat SQL</SelectItem>
                                     <SelectItem value="publipostageWord">Publipostage Word</SelectItem>
                                     <SelectItem value="pdfme">PDF (pdfme)</SelectItem>
-                                    <SelectItem value="echart">EChart (Apache ECharts)</SelectItem>
+
                                     <SelectItem value="perspective">Perspective Viewer</SelectItem>
                                 </SelectContent>
                             </Select>
@@ -181,7 +181,7 @@ export function CellConfigModal() {
                                 {param.inputType === 'checkbox' ? (
                                     <div className="flex items-center gap-3">
                                         <Checkbox
-                                            checked={!!getCellValueByPath(cell, param.key)}
+                                            checked={(() => { const v = getCellValueByPath(cell, param.key); return v === undefined ? (param.defaultValue === true) : !!v; })()}
                                             onCheckedChange={v => { setCellValueByPath(cell, param.key, !!v); forceUpdate() }}
                                         />
                                         <Label className="cursor-pointer">{param.label}</Label>

@@ -75,13 +75,13 @@ export const CELL_TYPE_ICON: Record<string, string> = {
     source:             'folder-open',
     uiParameter:        'tune',
     buttonRunNextCells: 'play-circle',
-    sqlRecursiveParse:  'storage',
-    table:              'table',
+    sql:                'storage',
+
     iframe:             'web',
     sqlStat:            'monitoring',
     publipostageWord:   'description',
     pdfme:              'picture-as-pdf',
-    echart:             'bar-chart',
+
     perspective:        'analytics',
 }
 

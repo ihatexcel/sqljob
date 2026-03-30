@@ -5,7 +5,7 @@
  *
  * Changement clé : buildExportConfig() utilise get() directement → "config dans le store".
  */
-import { ConfigManager } from '../../../lib/ConfigManager'
+import { ConfigManager, exportConfigToJson } from '../../../lib/ConfigManager'
 import { GistEncrypt } from '../../../lib/GistEncrypt'
 import { GitHubGistManager } from '../../../lib/GitHubGistManager'
 import { FileHandler } from '../../../lib/FileHandler'
@@ -124,7 +124,7 @@ export const createExportSlice = (set: any, get: any) => ({
                         const encrypted = await GistEncrypt.encrypt(jsonString, jsonPassphrase)
                         jsonContent = JSON.stringify(encrypted, null, 2)
                     } else {
-                        jsonContent = JSON.stringify(config, null, 2)
+                        jsonContent = exportConfigToJson(config)
                     }
                     const jsonBlob = new Blob([jsonContent], { type: 'application/json' })
                     const jsonFileName = fileName.endsWith('.json') ? fileName : fileName + '.json'
@@ -223,7 +223,7 @@ export const createExportSlice = (set: any, get: any) => ({
             const configScriptContent = btoa(JSON.stringify(encrypted))
             configScriptTag = `    <script type="application/octet-stream" id="defaultConfigBase64" data-encrypted="true">${configScriptContent}</script>\n`
         } else {
-            const configBase64 = ConfigManager.encodeUTF8ToBase64(JSON.stringify(config, null, 2))
+            const configBase64 = ConfigManager.encodeUTF8ToBase64(exportConfigToJson(config))
             configScriptTag = `    <script type="application/octet-stream" id="defaultConfigBase64">${configBase64}</script>\n`
         }
 
@@ -256,7 +256,7 @@ ${configScriptTag}${embeddedScripts}</head>
                 showLayout: exportModal.showLayout,
                 includeFileData: !!exportModal.includeFiles,
             })
-            const json = JSON.stringify(config, null, 2)
+            const json = exportConfigToJson(config)
             await navigator.clipboard.writeText(json)
             return true
         } catch (error: any) {
@@ -377,7 +377,7 @@ ${configScriptTag}${embeddedScripts}</head>
                     name: q.name || 'main',
                     sql: q.sql || '',
                     engine: q.engine || 'sql',
-                    clientVisible: q.clientVisible === true
+                    showQueryEditor: (q.showQueryEditor ?? q.clientVisible) === true
                 }))
             } else {
                 newGroup.queries = []

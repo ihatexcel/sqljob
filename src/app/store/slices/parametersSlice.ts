@@ -22,7 +22,7 @@ export const createParametersSlice = (set: any, get: any) => ({
         }
         for (const group of (groups || [])) collectFromGroup(group)
         if (_currentLoopValue !== null && _currentLoopValue !== undefined) {
-            params['loop'] = _currentLoopValue
+            params['_loop'] = _currentLoopValue
         }
         return params
     },
@@ -43,7 +43,8 @@ export const createParametersSlice = (set: any, get: any) => ({
     findReferencedParams(query: string) {
         if (!query) return []
         const params: string[] = []
-        const regex = /\{\{\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*\}\}/g
+        // Names starting with _ are reserved system variables ({{ _name }}, etc.) — excluded from DAG
+        const regex = /\{\{\s*([a-zA-Z][a-zA-Z0-9_]*)\s*\}\}/g
         let match
         while ((match = regex.exec(query)) !== null) {
             if (!params.includes(match[1])) params.push(match[1])
@@ -54,7 +55,7 @@ export const createParametersSlice = (set: any, get: any) => ({
     findDependentCells(paramName: string) {
         const groups = get().getGroups()
         const dependents: any[] = []
-        const dagTypes = ['uiParameter', 'sqlRecursiveParse', 'table', 'perspective', 'sqlStat']
+        const dagTypes = ['uiParameter', 'sql', 'table', 'perspective', 'sqlStat']
         const searchInGroup = (group: any, path: number[]) => {
             for (let cellIndex = 0; cellIndex < (group.cells || []).length; cellIndex++) {
                 const cell = group.cells[cellIndex]

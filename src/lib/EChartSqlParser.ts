@@ -33,9 +33,13 @@ const KNOWN_ROLES = [
     'COLORS',
     'LABELS',
     'RANGE',
+    'KPI',
+    'ICON',
     'LABEL',
+    'SUBLABEL',
     'PERCENT',
     'COMPARE',
+    'TREND_PERCENT',
     'TREND',
     'XLINE',
     'YLINE',
@@ -57,12 +61,72 @@ export interface ParsedColumnRoles {
     chartType: string;
 }
 
+// ─── Responsive font size via CSS clamp() ────────────────────────────────────
+
+/**
+ * Resolves a CSS clamp() expression to a pixel number by measuring a hidden element.
+ * ECharts/Canvas requires a numeric fontSize — this bridges CSS and Canvas.
+ */
+function _cssClampPx(clampExpr: string, fallback: number): number {
+    if (typeof document === 'undefined') return fallback;
+    const el = document.createElement('div');
+    el.style.cssText = `position:fixed;visibility:hidden;pointer-events:none;font-size:${clampExpr}`;
+    document.body.appendChild(el);
+    const px = parseFloat(getComputedStyle(el).fontSize);
+    document.body.removeChild(el);
+    return isNaN(px) ? fallback : px;
+}
+
+/** Responsive axis label size: clamp(9px, 1vw, 12px) */
+function _axisLabelSize(): number { return _cssClampPx('clamp(9px,1vw,12px)', 11); }
+
 // ─── ECharts default colors (aligned with DaisyUI palette) ──────────────────
 
 const DEFAULT_COLORS = [
     '#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de',
     '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc',
 ];
+
+/**
+ * Returns the chart color palette:
+ * 1. Explicit --chart-1…--chart-5 CSS variables (defined in every theme preset)
+ * 2. Auto-generated from --primary hue (rotates around the color wheel) — for 'default' or custom themes
+ * 3. DEFAULT_COLORS fallback
+ */
+function _getChartColors(): string[] {
+    if (typeof document === 'undefined') return DEFAULT_COLORS;
+    const style = getComputedStyle(document.documentElement);
+
+    // shadcn/ui stores HSL as "H S% L%" (no hsl() wrapper, space-separated).
+    // ECharts/zrender only understands comma-separated hsl(H, S%, L%) — use that.
+    const toHsl = (raw: string) => {
+        const p = raw.trim().split(/\s+/)
+        return p.length >= 3 ? `hsl(${p[0]}, ${p[1]}, ${p[2]})` : raw
+    }
+
+    // 1. Explicit --chart-N overrides
+    const explicit: string[] = [];
+    for (let i = 1; i <= 8; i++) {
+        const v = style.getPropertyValue(`--chart-${i}`).trim();
+        if (v) explicit.push(v.includes(' ') ? toHsl(v) : v);
+    }
+    if (explicit.length >= 3) return explicit;
+
+    // 2. Derive from --primary (shadcn/ui format: "H S% L%")
+    const primaryRaw = style.getPropertyValue('--primary').trim();
+    if (primaryRaw) {
+        const parts = primaryRaw.split(/\s+/).map(parseFloat);
+        if (parts.length >= 3 && !isNaN(parts[0])) {
+            const [h, s, l] = parts;
+            const offsets = [0, 150, 270, 60, 210, 120, 330, 30];
+            const sat = Math.round(Math.min(Math.max(s * 0.85, 45), 78));
+            const lit = Math.round(Math.min(Math.max(l > 55 ? l - 10 : l < 35 ? l + 18 : l, 40), 65));
+            return offsets.map(o => `hsl(${Math.round((h + o) % 360)}, ${sat}%, ${lit}%)`);
+        }
+    }
+
+    return DEFAULT_COLORS;
+}
 
 // ─── Dark theme detection ────────────────────────────────────────────────────
 
@@ -139,6 +203,7 @@ function _detectChartType(roleMap: Record<string, ColumnRole[]>): string {
     if (has('BARCHART_STACKED_PERCENT')) return 'bar_stacked_percent';
     if (has('BARCHART_PERCENT'))         return 'bar_percent';
     if (has('BARCHART_STACKED'))         return 'bar_stacked';
+    if (has('BARCHART') && has('LINECHART')) return 'bar_line';
     if (has('BARCHART')) {
         // Horizontal bar when YAXIS instead of XAXIS
         if (has('YAXIS') && !has('XAXIS')) return 'bar_horizontal';
@@ -153,7 +218,7 @@ function _detectChartType(roleMap: Record<string, ColumnRole[]>): string {
     if (has('GAUGE_PERCENT'))      return 'gauge_percent';
     if (has('GAUGE'))              return 'gauge';
     if (has('BOXPLOT'))            return 'boxplot';
-    if (has('LABEL') || has('PERCENT') || has('COMPARE') || has('TREND')) return 'kpi';
+    if (has('KPI') || has('PERCENT') || has('COMPARE') || has('TREND') || has('TREND_PERCENT')) return 'kpi';
     return 'unknown';
 }
 
@@ -168,7 +233,7 @@ export function buildEChartsOption(results: any[], parsed: ParsedColumnRoles): o
 
     const base = {
         backgroundColor: 'transparent',
-        color: DEFAULT_COLORS,
+        color: _getChartColors(),
         textStyle: { color: textColor, fontFamily: 'inherit' },
         tooltip: { trigger: 'axis', confine: true },
         legend: { show: true, textStyle: { color: textColor } },
@@ -196,6 +261,8 @@ export function buildEChartsOption(results: any[], parsed: ParsedColumnRoles): o
         case 'donut':
         case 'donut_percent':
             return _buildPieOption(results, roleMap, chartType, base, textColor, true);
+        case 'bar_line':
+            return _buildBarLineOption(results, roleMap, base, textColor);
         case 'gauge':
         case 'gauge_percent':
             return _buildGaugeOption(results, roleMap, chartType, base, textColor);
@@ -403,7 +470,7 @@ function _buildBarOption(results, roleMap, chartType, base, textColor, horizonta
         };
     }
 
-    const categoryAxis = { type: 'category', data: axisData, axisLabel: { color: textColor } };
+    const categoryAxis = { type: 'category', data: axisData, axisLabel: { color: textColor, fontSize: _axisLabelSize() } };
     const valueAxis: any = {
         type: 'value',
         axisLabel: {
@@ -427,6 +494,45 @@ function _buildBarOption(results, roleMap, chartType, base, textColor, horizonta
         },
         xAxis: horizontal ? valueAxis : categoryAxis,
         yAxis: horizontal ? categoryAxis : valueAxis,
+        series,
+    };
+}
+
+// ─── Bar + Line mixed chart ───────────────────────────────────────────────────
+
+function _buildBarLineOption(results, roleMap, base, textColor) {
+    const axisCols = roleMap['XAXIS'] || [];
+    const axisCol = axisCols[0]?.originalName;
+    const axisData: string[] = axisCol ? results.map(r => _str(r[axisCol])) : [];
+
+    const barCols: ColumnRole[] = roleMap['BARCHART'] || [];
+    const lineCols: ColumnRole[] = roleMap['LINECHART'] || [];
+
+    const series: any[] = [];
+    for (const vc of barCols) {
+        series.push({
+            name: vc.displayName,
+            type: 'bar',
+            barMaxWidth: 60,
+            emphasis: { focus: 'series' },
+            data: results.map(r => _num(r[vc.originalName])),
+        });
+    }
+    for (const vc of lineCols) {
+        series.push({
+            name: vc.displayName,
+            type: 'line',
+            smooth: true,
+            emphasis: { focus: 'series' },
+            data: results.map(r => _num(r[vc.originalName])),
+        });
+    }
+
+    return {
+        ...base,
+        tooltip: { trigger: 'axis', confine: true, axisPointer: { type: 'shadow' } },
+        xAxis: { type: 'category', data: axisData, axisLabel: { color: textColor, fontSize: _axisLabelSize() } },
+        yAxis: { type: 'value', axisLabel: { color: textColor, fontSize: _axisLabelSize() } },
         series,
     };
 }
@@ -529,7 +635,7 @@ function _buildLineOption(results, roleMap, chartType, base, textColor) {
                 return [name, ...lines].join('<br/>');
             }} : {}),
         },
-        xAxis: { type: 'category', data: axisData, axisLabel: { color: textColor } },
+        xAxis: { type: 'category', data: axisData, axisLabel: { color: textColor, fontSize: _axisLabelSize() } },
         yAxis: {
             type: 'value',
             axisLabel: {
@@ -571,7 +677,9 @@ function _buildPieOption(results, roleMap, chartType, base, textColor, isDonut) 
         return entry;
     });
 
-    const radius = isDonut ? ['38%', '65%'] : '60%';
+    // Radius capped via vmin (shrinks on zoom-in, never exceeds 90px)
+    const outerR = Math.round(_cssClampPx('clamp(55px,8vmin,90px)', 80));
+    const radius = isDonut ? [Math.round(outerR * 0.58), outerR] : outerR;
 
     return {
         ...base,
@@ -724,15 +832,25 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
     if (gaugeColors) {
         axisLineStyle.color = gaugeColors;
     } else if (gaugeAxisLabels) {
-        // Labels without explicit colors: use default gradient for zones
-        axisLineStyle.color = [
-            [0.3, '#91cc75'],
-            [0.7, '#fac858'],
-            [1, '#ee6666'],
-        ];
+        // Labels without explicit colors: use theme chart colors, one per zone
+        const themeColors = _getChartColors();
+        const rangeSpan = max - min || 1;
+        axisLineStyle.color = gaugeAxisLabels.map((item, i) => [
+            Math.min((item.value - min) / rangeSpan, 1),
+            themeColors[i % themeColors.length],
+        ]);
+        // Clamp last fraction to exactly 1
+        axisLineStyle.color[axisLineStyle.color.length - 1][0] = 1;
     } else {
-        // Simple gauge: neutral background arc, progress bar shows value
-        axisLineStyle.color = [[1, '#e0e0e0']];
+        // Simple gauge: neutral arc using theme border color
+        const _style = typeof document !== 'undefined' ? getComputedStyle(document.documentElement) : null;
+        const borderRaw = _style?.getPropertyValue('--border').trim();
+        let arcColor = _isDark() ? '#4a5568' : '#e0e0e0';
+        if (borderRaw) {
+            const p = borderRaw.split(/\s+/);
+            arcColor = p.length >= 3 ? `hsl(${p[0]}, ${p[1]}, ${p[2]})` : borderRaw;
+        }
+        axisLineStyle.color = [[1, arcColor]];
     }
 
     // Default: simple gauge with standard numeric labels
@@ -779,10 +897,10 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
         };
         outerSeries = {
             type: 'gauge', min, max, startAngle, endAngle, splitNumber,
-            center, radius,
+            center, radius: '85%', z: 2,
             pointer: { show: false }, axisLine: { show: false },
             axisTick: { show: false }, splitLine: { show: false },
-            axisLabel: { color: textColor, fontSize: 11, distance: -15, formatter: outerFmt },
+            axisLabel: { color: textColor, fontSize: 11, distance: -20, rotate: 'tangential', formatter: outerFmt },
             detail: { show: false }, data: [],
         };
 
@@ -793,10 +911,10 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
         };
         boldSeries = {
             type: 'gauge', min, max, startAngle, endAngle, splitNumber,
-            center, radius,
+            center, radius: '85%', z: 2,
             pointer: { show: false }, axisLine: { show: false },
             axisTick: { show: false }, splitLine: { show: false },
-            axisLabel: { color: textColor, fontSize: 13, fontWeight: 'bold', distance: -15, formatter: activeFmt },
+            axisLabel: { color: textColor, fontSize: 13, fontWeight: 'bold', distance: -20, rotate: 'tangential', formatter: activeFmt },
             detail: { show: false }, data: [],
         };
     }
@@ -804,41 +922,52 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
     const mainSeries: any = {
         type: 'gauge', min, max, startAngle, endAngle, splitNumber,
         center, radius,
-        // Small triangle pointer at arc edge (matching taleshape reference)
-        pointer: {
-            show: true,
-            icon: 'triangle',
-            length: 14,
-            width: 12,
-            offsetCenter: [0, '-68%'],
-            itemStyle: { color: textColor },
-        },
+        pointer: { show: false },
         title: { show: false },
         axisLine: { lineStyle: axisLineStyle },
         axisTick: { show: false },
         splitLine: { show: false },
-        // distance 38: labels appear just inside inner arc edge (matching reference)
-        axisLabel: { color: textColor, fontSize: 11, distance: 38, formatter: innerLabelFmt },
+        axisLabel: { color: textColor, fontSize: 11, distance: 25, formatter: innerLabelFmt },
         // Progress bar for simple gauges (no explicit labels/colors) — like reference
         progress: {
             show: !gaugeAxisLabels && !gaugeColors,
             width: barWidth,
-            itemStyle: { color: '#5470c6' },
+            itemStyle: { color: _getChartColors()[0] },
         },
         detail: {
-            fontSize: 30, fontWeight: 'bold', color: textColor,
-            width: 120, height: 50,
+            fontSize: 20, fontWeight: 'bold', color: textColor,
+            width: 120, height: 40,
             formatter: isPercent ? '{value}%' : '{value}',
-            // Inside the semicircle arc area (not below it)
             offsetCenter: [0, '-20%'],
         },
+        data: [{ value, name: label }],
+    };
+
+    // Pointer in its own series rendered last so it always appears above the colored arc
+    const pointerSeries: any = {
+        type: 'gauge', min, max, startAngle, endAngle, splitNumber,
+        center, radius,
+        pointer: {
+            show: !!colorsCol,
+            icon: 'triangle',
+            length: 14,
+            width: 12,
+            offsetCenter: [0, '-62%'],
+            itemStyle: { color: textColor },
+        },
+        axisLine: { show: false }, axisTick: { show: false },
+        splitLine: { show: false }, axisLabel: { show: false },
+        progress: { show: false }, detail: { show: false },
+        title: { show: false },
         data: [{ value, name: label }],
     };
 
     return {
         ...base,
         tooltip: { formatter: '{b}: {c}' + (isPercent ? '%' : '') },
-        series: boldSeries ? [mainSeries, outerSeries, boldSeries] : [mainSeries],
+        series: boldSeries
+            ? [mainSeries, outerSeries, boldSeries, pointerSeries]
+            : [mainSeries, pointerSeries],
     };
 }
 
@@ -956,66 +1085,124 @@ function _buildBoxplotOption(results, roleMap, base, textColor) {
     return {
         ...base,
         tooltip: { trigger: 'item', confine: true },
-        xAxis: { type: 'category', data: categories, axisLabel: { color: textColor } },
-        yAxis: { type: 'value', axisLabel: { color: textColor } },
+        xAxis: { type: 'category', data: categories, axisLabel: { color: textColor, fontSize: _axisLabelSize() } },
+        yAxis: { type: 'value', axisLabel: { color: textColor, fontSize: _axisLabelSize() } },
         series: boxSeries,
     };
 }
 
 // ─── KPI card HTML builder (not an ECharts option) ───────────────────────────
 
+function _esc(s: string): string {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function _fmtVal(v: any): string {
+    if (v === null || v === undefined) return '–';
+    if (typeof v === 'number') return v.toLocaleString('fr-FR');
+    return _esc(String(v));
+}
+
 /**
- * Returns an HTML string for a KPI single-value display.
+ * Returns an HTML string for a KPI / Stat single-value display.
  * Used when chartType === 'kpi' (no ECharts instance needed).
+ *
+ * @param label - optional title override (from SELECT '...'::LABEL; or chartConfig.label)
+ *
+ * Two display modes:
+ *  - Stat mode (TEXT_LARGE / TEXT_MEDIUM / TEXT_SMALL present):
+ *    centered card with title, big value, comparison row below
+ *  - KPI mode (legacy LABEL / PERCENT / COMPARE / TREND):
+ *    DaisyUI stat cards side by side
  */
-export function buildKpiHtml(results: any[], parsed: ParsedColumnRoles): string {
-    const { roleMap } = parsed;
+export function buildKpiHtml(results: any[], parsed: ParsedColumnRoles, label?: string): string {
     const row = results[0] || {};
+    return _buildKpiHtml(row, parsed.roleMap, label ?? null);
+}
+
+/** KPI: centered card — KPI / LABEL (compat) / PERCENT / COMPARE / TREND */
+function _buildKpiHtml(row: any, roleMap: Record<string, ColumnRole[]>, title: string | null): string {
     const parts: string[] = [];
 
-    for (const col of (roleMap['LABEL'] || [])) {
-        const val = _str(row[col.originalName]);
-        parts.push(`<div class="stat">
-            <div class="stat-title">${col.displayName !== 'LABEL' ? col.displayName : ''}</div>
-            <div class="stat-value text-primary">${val}</div>
-        </div>`);
+    function _sub(display: string, role: string, fallback = ''): string {
+        const raw = display !== role ? display : fallback;
+        return raw && raw.toLowerCase() !== 'null' ? raw : '';
     }
+
+    // ICON (optional — shown between label and value)
+    const iconCol = (roleMap['ICON'] || [])[0];
+    if (iconCol) {
+        const raw = _str(row[iconCol.originalName]);
+        if (raw && raw.toLowerCase() !== 'null') {
+            const iconId = raw;
+            parts.push(`<div style="display:flex;justify-content:center;margin-bottom:.1rem"><span class="iconify" data-icon="${_esc(iconId)}" style="font-size:clamp(1.5rem,8vw,3rem);color:var(--primary,#555)"></span></div>`);
+        }
+    }
+
+    // KPI value columns
+    for (const col of (roleMap['KPI'] || [])) {
+        const val = _str(row[col.originalName]);
+        const sublabel = _sub(col.displayName, 'KPI');
+        parts.push(`<div style="text-align:center;margin-bottom:.25rem">
+  ${sublabel ? `<div style="font-size:clamp(1rem,3vw,1.4rem);color:var(--muted-foreground,#888);margin-bottom:.2rem">${_esc(sublabel)}</div>` : ''}
+  <div style="font-size:clamp(1.5rem,8vw,2.5rem);font-weight:700;line-height:1.05;color:var(--foreground,#111)">${_esc(val)}</div>
+</div>`);
+    }
+    // PERCENT / COMPARE / TREND / TREND_PERCENT — côte à côte sur une ligne
+    const rowItems: string[] = [];
+    const neutralBg = 'rgba(128,128,128,.12)';
+    const neutralFg = 'var(--foreground,#111)';
+
+    // PERCENT : fond neutre, pas de flèche
     for (const col of (roleMap['PERCENT'] || [])) {
         const val = _num(row[col.originalName]);
-        const color = val >= 75 ? 'text-green-600 dark:text-green-400' : val >= 40 ? 'text-yellow-500 dark:text-yellow-400' : 'text-red-500 dark:text-red-400';
-        parts.push(`<div class="stat">
-            <div class="stat-title">${col.displayName !== 'PERCENT' ? col.displayName : ''}</div>
-            <div class="stat-value ${color}">${val.toFixed(1)}%</div>
-        </div>`);
+        const lbl = _sub(col.displayName, 'PERCENT');
+        const prefix = lbl ? `<span style="color:var(--muted-foreground,#888)">${_esc(lbl)} : </span>` : '';
+        rowItems.push(`<span style="white-space:nowrap;font-size:.8rem">${prefix}<span style="background:${neutralBg};color:${neutralFg};border-radius:.35rem;padding:.1rem .45rem;font-weight:700">${val.toFixed(1)}%</span></span>`);
     }
+
+    // COMPARE : texte neutre, pas de fond ni de flèche, tolère texte
     for (const col of (roleMap['COMPARE'] || [])) {
-        const val = _num(row[col.originalName]);
-        const sign = val >= 0 ? '+' : '';
-        const color = val >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400';
-        const icon = val >= 0
-            ? `<span style="font-size:0.6em">▲</span>`
-            : `<span style="font-size:0.6em">▼</span>`;
-        parts.push(`<div class="stat">
-            <div class="stat-title">${col.displayName !== 'COMPARE' ? col.displayName : 'Comparaison'}</div>
-            <div class="stat-value ${color}">${icon} ${sign}${val}</div>
-        </div>`);
+        const raw = row[col.originalName];
+        const numVal = typeof raw === 'number' ? raw : (raw !== null && raw !== undefined && !isNaN(Number(raw)) ? Number(raw) : null);
+        const display = numVal !== null ? _fmtVal(numVal) : _esc(_str(raw));
+        const lbl = _sub(col.displayName, 'COMPARE');
+        const prefix = lbl ? `<span style="color:var(--muted-foreground,#888)">${_esc(lbl)} : </span>` : '';
+        rowItems.push(`<span style="white-space:nowrap;font-size:.8rem;font-weight:600;color:${neutralFg}">${prefix}${display}</span>`);
     }
+
+    // TREND : fond coloré + flèche
     for (const col of (roleMap['TREND'] || [])) {
         const val = _num(row[col.originalName]);
-        const isUp = val > 0;
-        const isNeutral = val === 0;
+        const isUp = val > 0; const isNeutral = val === 0;
+        const fg = isNeutral ? '#ca8a04' : isUp ? '#16a34a' : '#dc2626';
+        const bg = isNeutral ? '#ca8a0418' : isUp ? '#16a34a18' : '#dc262618';
         const arrow = isNeutral ? '→' : isUp ? '↑' : '↓';
-        const color = isNeutral ? 'text-yellow-500 dark:text-yellow-400' : isUp ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400';
         const sign = isUp ? '+' : '';
-        parts.push(`<div class="stat">
-            <div class="stat-title">${col.displayName !== 'TREND' ? col.displayName : 'Tendance'}</div>
-            <div class="stat-value ${color}">${arrow} ${sign}${val}</div>
-        </div>`);
+        const lbl = _sub(col.displayName, 'TREND');
+        const prefix = lbl ? `<span style="color:var(--muted-foreground,#888)">${_esc(lbl)} : </span>` : '';
+        rowItems.push(`<span style="white-space:nowrap;font-size:.8rem">${prefix}<span style="background:${bg};color:${fg};border-radius:.35rem;padding:.1rem .45rem;font-weight:700">${sign}${val} ${arrow}</span></span>`);
     }
 
-    if (parts.length === 0) return '<div class="p-4 text-muted-foreground text-sm">Aucune donnée</div>';
+    // TREND_PERCENT : fond coloré + flèche + %
+    for (const col of (roleMap['TREND_PERCENT'] || [])) {
+        const val = _num(row[col.originalName]);
+        const isUp = val > 0; const isNeutral = val === 0;
+        const fg = isNeutral ? '#ca8a04' : isUp ? '#16a34a' : '#dc2626';
+        const bg = isNeutral ? '#ca8a0418' : isUp ? '#16a34a18' : '#dc262618';
+        const arrow = isNeutral ? '→' : isUp ? '↑' : '↓';
+        const sign = isUp ? '+' : '';
+        const lbl = _sub(col.displayName, 'TREND_PERCENT');
+        const prefix = lbl ? `<span style="color:var(--muted-foreground,#888)">${_esc(lbl)} : </span>` : '';
+        rowItems.push(`<span style="white-space:nowrap;font-size:.8rem">${prefix}<span style="background:${bg};color:${fg};border-radius:.35rem;padding:.1rem .45rem;font-weight:700">${sign}${val.toFixed(1)}% ${arrow}</span></span>`);
+    }
 
-    return `<div class="stats shadow w-full flex-wrap">${parts.join('')}</div>`;
+    if (rowItems.length > 0) {
+        parts.push(`<div style="display:flex;flex-wrap:wrap;gap:.5rem 1rem;justify-content:center;align-items:center;margin-top:.25rem">${rowItems.join('')}</div>`);
+    }
+
+    if (parts.length === 0) return '<div style="padding:1rem;color:#888;font-size:.875rem;text-align:center">Aucune donnée</div>';
+    return `<div style="text-align:center">${parts.join('\n')}</div>`;
 }
 
 // ─── Table cell HTML builder ──────────────────────────────────────────────────

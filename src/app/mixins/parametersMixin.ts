@@ -21,9 +21,9 @@ export function parametersMixin() {
                         collectFromGroup(group);
                     }
 
-                    // Ajouter la variable {{ loop }} si elle est définie (pendant l'exécution d'une boucle)
+                    // Ajouter la variable {{ _loop }} si elle est définie (pendant l'exécution d'une boucle)
                     if (this._currentLoopValue !== null && this._currentLoopValue !== undefined) {
-                        params['loop'] = this._currentLoopValue;
+                        params['_loop'] = this._currentLoopValue;
                     }
 
                     return params;
@@ -71,7 +71,7 @@ export function parametersMixin() {
                 // Retourne un tableau de {cell, path, cellIndex} pour les types DAG-compatibles
                 findDependentCells(paramName) {
                     const dependents = [];
-                    const dagTypes = ['uiParameter', 'sqlRecursiveParse', 'table', 'perspective', 'sqlStat'];
+                    const dagTypes = ['uiParameter', 'sql', 'table', 'perspective', 'sqlStat'];
 
                     const searchInGroup = (group, path) => {
                         for (let cellIndex = 0; cellIndex < (group.cells || []).length; cellIndex++) {

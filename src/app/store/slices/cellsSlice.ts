@@ -23,7 +23,7 @@ export const createCellsSlice = (set: any, get: any) => ({
     },
 
     isSqlCellWithEditor(type: string) {
-        return ['sqlRecursiveParse', 'table', 'iframe', 'sqlStat', 'perspective', 'pdfme', 'publipostageWord', 'echart'].includes(type)
+        return ['sql', 'iframe', 'sqlStat', 'perspective', 'pdfme', 'publipostageWord'].includes(type)
     },
 
     bodyDisplayShouldShowSkeleton(cell: any) {
@@ -158,8 +158,12 @@ return newCell
     addGroup(cellType: string) {
         const newGroup = get().createNewGroup('row')
         newGroup.cells = [get().createNewCell(cellType)]
-        get().getGroups().push(newGroup)
+        const groups = get().getGroups()
+        const maxOrder = groups.length > 0 ? Math.max(...groups.map((g: any) => g._order ?? 0)) : -1
+        newGroup._order = maxOrder + 1
+        groups.push(newGroup)
         set({ showAddGroupModal: false })
+        set((s: any) => ({ _rev: s._rev + 1 }))
     },
 
     addCellToGroup(pathOrIndex: any, cellType: string) {
@@ -343,8 +347,8 @@ return newCell
 
         if (cell.type === 'source') {
             if (!cell.name) cell.name = get().generateUniqueSourceName()
-            else if (!ConfigManager.getCellQuery(cell, 'main')?.trim()) ConfigManager.setCellQuery(cell, 'main', `CREATE OR REPLACE TABLE ${cell.name} AS SELECT * FROM '{{fileName}}'`)
-            if (!ConfigManager.getCellQuery(cell, 'fallback')?.trim()) ConfigManager.setCellQuery(cell, 'fallback', (CELL_TYPE_SCHEMAS.types.source?.defaults?.queries?.find((q: any) => q.name === 'fallback')?.sql || CELL_TYPE_SCHEMAS.types.source?.defaults?.queries?.[1]?.sql || `CREATE OR REPLACE TABLE ${cell.name} AS SELECT * FROM '{{fileName}}'`))
+            else if (!ConfigManager.getCellQuery(cell, 'main')?.trim()) ConfigManager.setCellQuery(cell, 'main', `CREATE OR REPLACE TABLE ${cell.name} AS SELECT * FROM '{{_fileName}}'`)
+            if (!ConfigManager.getCellQuery(cell, 'fallback')?.trim()) ConfigManager.setCellQuery(cell, 'fallback', (CELL_TYPE_SCHEMAS.types.source?.defaults?.queries?.find((q: any) => q.name === 'fallback')?.sql || CELL_TYPE_SCHEMAS.types.source?.defaults?.queries?.[1]?.sql || `CREATE OR REPLACE TABLE ${cell.name} AS SELECT * FROM '{{_fileName}}'`))
             if (cell._fileName === undefined) cell._fileName = ''
             if (cell._currentFile === undefined) cell._currentFile = null
             if (cell._isDragging === undefined) cell._isDragging = false
@@ -424,9 +428,14 @@ return newCell
             cell.name = get().generateUniqueCellName(cell.type, cell._id)
             return
         }
+        if (currentName.startsWith('_')) {
+            get().setStatus('Le nom ne peut pas commencer par _ (réservé aux variables système {{ _xxx }})', 'error')
+            cell.name = get().generateUniqueCellName(cell.type, cell._id)
+            return
+        }
         if (!ConfigManager.isCellNameValid(cell, currentName)) {
-            get().setStatus('Le nom doit commencer par une lettre ou _ et ne contenir que des lettres, chiffres et _', 'error')
-            cell.name = currentName.replace(/[^a-zA-Z0-9_]/g, '_').replace(/^([0-9])/, '_$1')
+            get().setStatus('Le nom doit commencer par une lettre et ne contenir que des lettres, chiffres et _', 'error')
+            cell.name = currentName.replace(/[^a-zA-Z0-9_]/g, '_').replace(/^[^a-zA-Z]/, 'c')
             return
         }
         if (get().isCellNameUsed(currentName, cell._id)) {
@@ -445,9 +454,14 @@ return newCell
             cell.name = get().generateUniqueSourceName()
             return
         }
-        if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(currentName)) {
-            get().setStatus('Le nom doit commencer par une lettre ou _ et ne contenir que des lettres, chiffres et _', 'error')
-            cell.name = currentName.replace(/[^a-zA-Z0-9_]/g, '_').replace(/^([0-9])/, '_$1')
+        if (currentName.startsWith('_')) {
+            get().setStatus('Le nom ne peut pas commencer par _ (réservé aux variables système)', 'error')
+            cell.name = get().generateUniqueSourceName()
+            return
+        }
+        if (!/^[a-zA-Z][a-zA-Z0-9_]*$/.test(currentName)) {
+            get().setStatus('Le nom doit commencer par une lettre et ne contenir que des lettres, chiffres et _', 'error')
+            cell.name = currentName.replace(/[^a-zA-Z0-9_]/g, '_').replace(/^[^a-zA-Z]/, 's')
             return
         }
         if (!get().isNameUniqueAcrossPages(currentName, 'source', get().activePageIndex, path, cellIndex)) {

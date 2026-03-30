@@ -73,7 +73,8 @@ import { FileHandler } from './FileHandler'
              */
             static normalizeCell(cell) {
                 if (!cell || !cell.type) return cell;
-                const TYPE_IMPORT_ALIASES = { sql: 'sqlRecursiveParse' }
+                // Rétrocompat : anciens exports utilisaient 'sqlRecursiveParse' comme type interne
+                const TYPE_IMPORT_ALIASES = { sqlRecursiveParse: 'sql' }
                 const c = { ...cell, type: TYPE_IMPORT_ALIASES[cell.type] ?? cell.type };
                 if (c.type === 'markdown' && c.content && !ConfigManager.getCellQuery(c, 'main')) {
                     ConfigManager.ensureCellQueries(c, 'main');
@@ -92,6 +93,22 @@ import { FileHandler } from './FileHandler'
                 // pdfme: json objet -> chaîne pour éviter [object Object] dans textarea/modale
                 if (c.type === 'pdfme' && typeof c.json === 'object' && c.json !== null) {
                     c.json = JSON.stringify(c.json, null, 2);
+                }
+                // Rétrocompat : anciens exports utilisaient 'materialize' et 'select'
+                if (c.materialize !== undefined && c.materialized === undefined) {
+                    c.materialized = c.materialize === 'select' ? 'ephemeral' : c.materialize;
+                    delete c.materialize;
+                }
+                if (c.materialized === 'select') c.materialized = 'ephemeral';
+                // Rétrocompat : ast.materialize → ast.materialized dans les queries
+                if (Array.isArray(c.queries)) {
+                    for (const q of c.queries) {
+                        if (q.ast && q.ast.materialize !== undefined && q.ast.materialized === undefined) {
+                            q.ast.materialized = q.ast.materialize === 'select' ? 'ephemeral' : q.ast.materialize;
+                            delete q.ast.materialize;
+                        }
+                        if (q.ast && q.ast.materialized === 'select') q.ast.materialized = 'ephemeral';
+                    }
                 }
 return c;
             }
@@ -118,13 +135,24 @@ return c;
             }
 
             /**
-             * Indique si l'éditeur SQL est visible pour cette requête (clientVisible).
+             * Indique si l'éditeur SQL est visible pour cette requête (showQueryEditor).
              */
-            static getCellQueryClientVisible(cell, nameOrIndex = 'main') {
+            static getCellQueryShowQueryEditor(cell, nameOrIndex = 'main') {
                 if (!cell) return false;
                 const name = typeof nameOrIndex === 'number' ? (ConfigManager.getQueryNameForIndex(cell, nameOrIndex) || 'main') : nameOrIndex;
                 const q = ConfigManager.getQueryByName(cell, name);
-                return q ? q.clientVisible === true : false;
+                return q ? q.showQueryEditor === true : false;
+            }
+
+            /**
+             * Indique si le résultat (datatable/visualisation) doit être affiché en mode client.
+             * Par défaut true (undefined = affiché).
+             */
+            static getCellQueryShowResult(cell, nameOrIndex = 'main') {
+                if (!cell) return true;
+                const name = typeof nameOrIndex === 'number' ? (ConfigManager.getQueryNameForIndex(cell, nameOrIndex) || 'main') : nameOrIndex;
+                const q = ConfigManager.getQueryByName(cell, name);
+                return q ? q.showQueryResult !== false : true;
             }
 
             /** Trouve une requête par nom dans cell.queries. Rétrocompat: si pas de name sur les queries, utilise l'index du schéma. */
@@ -329,7 +357,7 @@ return c;
                         q = cell.queries[idx];
                     } else {
                         const defaultEngine = ConfigManager.getDefaultEngineForType(cell, name);
-                        q = { name, sql: '', engine: defaultEngine, clientVisible: false };
+                        q = { name, sql: '', engine: defaultEngine, showQueryEditor: false };
                         const insertIdx = schema?.queryNames?.indexOf(name) ?? cell.queries.length;
                         if (insertIdx < cell.queries.length) cell.queries.splice(insertIdx, 0, q);
                         else cell.queries.push(q);
@@ -345,7 +373,7 @@ return c;
                 let q = group.queries.find(x => x.name === 'main');
                 if (!q) {
                     if (group.queries[0] && !group.queries[0].name) { group.queries[0].name = 'main'; q = group.queries[0]; }
-                    else { q = { name: 'main', sql: '', engine: 'sql', clientVisible: false }; group.queries.unshift(q); }
+                    else { q = { name: 'main', sql: '', engine: 'sql', showQueryEditor: false }; group.queries.unshift(q); }
                 }
                 return q;
             }
@@ -576,8 +604,9 @@ return c;
                             name: q.name || schema?.queryNames?.[i] || (i === 0 ? 'main' : i === 1 ? 'filename' : 'query' + i),
                             query: q.sql || '',
                             engine: q.engine || ConfigManager.getDefaultEngineForType(cell?.type, i),
-                            clientVisible: q.clientVisible === true,
+                            showQueryEditor: q.showQueryEditor === true,
                         };
+                        entry.showQueryResult = q.showQueryResult !== false; // undefined → true (rétrocompat)
                         if (q.ast !== undefined) entry.ast = q.ast;
                         if (q.degraded) entry.degraded = q.degraded;
                         if (q.manualSql) entry.manualSql = q.manualSql;
@@ -586,15 +615,14 @@ return c;
                 }
                 const arr = [];
                 const qMain = ConfigManager.getCellQuery(cell, 'main');
-                if (qMain) arr.push({ name: 'main', sql: qMain, engine: ConfigManager.getCellEngine(cell, 'main'), clientVisible: ConfigManager.getCellQueryClientVisible(cell, 'main') });
+                if (qMain) arr.push({ name: 'main', sql: qMain, engine: ConfigManager.getCellEngine(cell, 'main'), showQueryEditor: ConfigManager.getCellQueryShowQueryEditor(cell, 'main'), showQueryResult: ConfigManager.getCellQueryShowResult(cell, 'main') });
                 const qFallback = ConfigManager.getCellQuery(cell, 'fallback') || ConfigManager.getCellQuery(cell, 'filename');
-                if (qFallback) arr.push({ name: ConfigManager.getQuery2Name(cell), sql: qFallback, engine: 'sql', clientVisible: false });
+                if (qFallback) arr.push({ name: ConfigManager.getQuery2Name(cell), sql: qFallback, engine: 'sql', showQueryEditor: false });
                 return arr;
             }
 
             static async cleanCell(cell, includeFileData = false) {
-                const TYPE_EXPORT_NAMES = { sqlRecursiveParse: 'sql' }
-                const cleanCell = { type: TYPE_EXPORT_NAMES[cell.type] ?? cell.type };
+                const cleanCell = { type: cell.type };
 
                 const schema = CELL_TYPE_SCHEMAS?.types[cell?.type];
                 const exportFields = schema?.exportFields ?? ['queries'];
@@ -603,7 +631,7 @@ return c;
                     if (field === 'queries') {
                         cleanCell.queries = ConfigManager._buildQueriesForClean(cell);
                         if (cell.type === 'markdown' && (!Array.isArray(cleanCell.queries) || cleanCell.queries.length === 0)) {
-                            cleanCell.queries = [{ name: 'main', query: ConfigManager.getCellEditableContent(cell), engine: ConfigManager.getCellEngine(cell, 'main'), clientVisible: ConfigManager.getCellQueryClientVisible(cell, 'main') }];
+                            cleanCell.queries = [{ name: 'main', query: ConfigManager.getCellEditableContent(cell), engine: ConfigManager.getCellEngine(cell, 'main'), showQueryEditor: ConfigManager.getCellQueryShowQueryEditor(cell, 'main') }];
                         }
                     } else if (field === 'name') {
                         const handler = CELL_TYPE_HANDLERS[cell?.type];
@@ -720,7 +748,7 @@ return c;
                             name: 'main',
                             query: q0.sql.trim(),
                             engine: q0.engine || 'sql',
-                            clientVisible: q0.clientVisible === true
+                            showQueryEditor: q0.showQueryEditor === true
                         }];
                     }
                 }
@@ -789,3 +817,35 @@ return c;
                 };
             }
         }
+
+/**
+ * Sérialise une config export en JSON indenté (indent=2) en compactant les
+ * champs `json` (ex: json.xlsx) sur une seule ligne pour la lisibilité.
+ */
+export function exportConfigToJson(config: any): string {
+    const compacts: [string, string][] = []
+
+    function walk(obj: any): any {
+        if (Array.isArray(obj)) return obj.map(walk)
+        if (obj && typeof obj === 'object') {
+            const result: Record<string, any> = {}
+            for (const [k, v] of Object.entries(obj)) {
+                if (k === 'json' && v && typeof v === 'object') {
+                    const placeholder = `\u0000COMPACT${compacts.length}\u0000`
+                    compacts.push([placeholder, JSON.stringify(v)])
+                    result[k] = placeholder
+                } else {
+                    result[k] = walk(v)
+                }
+            }
+            return result
+        }
+        return obj
+    }
+
+    let json = JSON.stringify(walk(config), null, 2)
+    for (const [placeholder, compactJson] of compacts) {
+        json = json.replace(JSON.stringify(placeholder), compactJson)
+    }
+    return json
+}

@@ -24,7 +24,6 @@ export function useExecution() {
         getSqlResultAsText: s.getSqlResultAsText,
         renderIframeInContainer: s.renderIframeInContainer,
         renderPerspectiveInContainer: s.renderPerspectiveInContainer,
-        renderEchartInContainer: s.renderEchartInContainer,
         // state
         isLoading: s.isLoading,
         _zipMode: s._zipMode,

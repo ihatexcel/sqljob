@@ -49,7 +49,8 @@ export function SqlEditorWidget({
     const iconName = isJs ? 'bolt' : isText ? 'article' : 'storage'
 
     // tableSchemas depuis db.schemaTrees pour l'autocomplétion Monaco DuckDB
-    const tableSchemas = db?.schemaTrees ?? []
+    // Sanitize : columns peut être undefined sur certaines entrées → crash forEach dans le provider
+    const tableSchemas = (db?.schemaTrees ?? []).map((t: any) => ({ ...t, columns: t?.columns ?? [] }))
 
     // Appliquer la requête source par défaut si vide (cellule source)
     useEffect(() => {
@@ -78,9 +79,17 @@ export function SqlEditorWidget({
     function enterUiMode() {
         const fullSql = ConfigManager.getCellQuery(cell, queryName) || ''
         const stripped = stripMaterializePrefix(fullSql)
-        const mat = (cell.materialize && cell.materialize !== 'select') ? cell.materialize : 'view'
+        // Bloquer si plusieurs instructions SQL (hors LABEL prefix) : l'UI visuelle ne supporte qu'une seule instruction
+        const stmts = stripped.split(';').map(s => s.trim()).filter(Boolean)
+        const nonLabelStmts = stmts.filter(s => !/^\s*SELECT\s+.+?::(?:LABEL|SUBLABEL)\b/i.test(s))
+        if (nonLabelStmts.length > 1) {
+            alert("L'édition du SQL via l'UI n'est possible que si une seule instruction SQL est présente.")
+            return
+        }
+        // Préserve le mode de matérialisation réel de la cellule (ne jamais forcer 'view')
+        const mat = (cell.materialized ?? 'ephemeral') as 'view' | 'table' | 'ephemeral'
         const result = sqlToAstSmart(stripped, mat)
-        if (!cell.queries?.length) cell.queries = [{ name: 'main', sql: fullSql, engine: 'sql', clientVisible: false }]
+        if (!cell.queries?.length) cell.queries = [{ name: 'main', sql: fullSql, engine: 'sql', showQueryEditor: false }]
         const q = cell.queries[0]
         if (result.compatible && result.ast) {
             q.ast = result.ast

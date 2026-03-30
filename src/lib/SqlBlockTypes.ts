@@ -2,7 +2,7 @@
 // L'AST est la source de vérité pour les cellules sqlBlock.
 // sql <-> ast <-> ui : toute modification UI ou SQL passe par l'AST.
 
-export type SqlBlockMaterialize = 'view' | 'table' | 'select';
+export type SqlBlockMaterialize = 'view' | 'table' | 'ephemeral';
 
 // ─── P0 — Sélection de colonnes ───────────────────────────────────────────────
 
@@ -32,15 +32,22 @@ export type FilterOp =
     | 'in' | 'not_in' | 'is_null' | 'not_null'
     | 'like' | 'ilike' | 'between';
 
+/** Mode de saisie d'une valeur de filtre : valeur fixe, référence colonne, ou paramètre UI */
+export type FilterValueKind = 'literal' | 'column' | 'param' | 'expression';
+
 export interface FilterCondition {
     column: string;
     op: FilterOp;
     /** Valeur unique (=, !=, >, like…) */
     value?: string;
+    /** Mode de la valeur unique */
+    valueKind?: FilterValueKind;
     /** Valeurs multiples (IN, NOT IN) */
     values?: string[];
     /** Borne haute (BETWEEN) */
     valueTo?: string;
+    /** Mode de la borne haute */
+    valueToKind?: FilterValueKind;
 }
 /** Élément d'un groupe : condition atomique ou sous-groupe (récursif) */
 export type FilterItem =
@@ -211,6 +218,30 @@ export interface CustomSqlStep {
     sql: string;
 }
 
+// ─── Colonne conditionnelle (inspiré Power Query) ─────────────────────────────
+
+/** Une règle WHEN … THEN … dans une colonne conditionnelle */
+export interface ConditionalRule {
+    /** Condition WHEN (groupe de filtres) */
+    when: FilterGroup;
+    /** Valeur résultat THEN */
+    then: string;
+    /** Mode de la valeur THEN */
+    thenKind?: FilterValueKind;
+}
+
+export interface ConditionalColumnStep {
+    type: 'conditional_column';
+    /** Nom de la nouvelle colonne */
+    newColumn: string;
+    /** Liste de règles WHEN … THEN … (dans l'ordre) */
+    rules: ConditionalRule[];
+    /** Valeur ELSE (par défaut NULL si absent) */
+    elseValue?: string;
+    /** Mode de la valeur ELSE */
+    elseKind?: FilterValueKind;
+}
+
 // ─── Métadonnées communes à tous les steps ────────────────────────────────────
 
 export interface SqlBlockStepMeta {
@@ -242,14 +273,34 @@ export type SqlBlockStep = (
     | JsonExtractStep
     | DateTruncStep
     | CustomSqlStep
+    | ConditionalColumnStep
 ) & SqlBlockStepMeta;
+
+// ─── Visualisation graphique (TaleShape) ──────────────────────────────────────
+
+/** Mapping colonne → rôle visuel dans le SELECT final (dernier SELECT du pipeline). */
+export interface ChartColumnRole {
+    column: string;         // valeur source : nom de colonne, littéral ou paramètre
+    role: string;           // XAXIS | BARCHART | KPI | PERCENT | …
+    label?: string;         // alias AS "Label" (légende ECharts)
+    valueKind?: FilterValueKind; // 'column' (défaut) | 'literal' | 'param'
+}
+
+/** Configuration de visualisation graphique associée à l'AST. */
+export interface ChartConfig {
+    chartType: string;          // 'bar' | 'line' | 'bar+line' | 'pie' | 'donut' | 'gauge' | 'boxplot' | 'kpi'
+    columns: ChartColumnRole[]; // rôles dans l'ordre du SELECT final
+    label?: string;             // titre affiché (stat/kpi) — génère SELECT '...'::LABEL; dans le SQL
+    sublabel?: string;          // sous-titre affiché sous la visualisation — génère SELECT '...'::SUBLABEL;
+}
 
 // ─── AST root ─────────────────────────────────────────────────────────────────
 
 export interface SqlBlockAst {
     source: string;
     steps: SqlBlockStep[];
-    materialize: SqlBlockMaterialize;
+    materialized: SqlBlockMaterialize;
+    chartConfig?: ChartConfig;  // optionnel : active le mode graphique sur le dernier SELECT
 }
 
 // ─── Config cellule ───────────────────────────────────────────────────────────
@@ -287,7 +338,8 @@ export const STEP_LABELS: Record<SqlBlockStep['type'], string> = {
     unnest:          'Exploser un tableau (UNNEST)',
     json_extract:    'Extraire du JSON',
     date_trunc:      'Tronquer une date',
-    custom_sql:      'SQL personnalisé',
+    custom_sql:          'SQL personnalisé',
+    conditional_column:  'Colonne conditionnelle',
 };
 
 export const STEP_ICONS: Record<SqlBlockStep['type'], string> = {
@@ -309,7 +361,8 @@ export const STEP_ICONS: Record<SqlBlockStep['type'], string> = {
     unnest:          'material-symbols-light:unarchive',
     json_extract:    'material-symbols-light:data-object',
     date_trunc:      'material-symbols-light:date-range',
-    custom_sql:      'material-symbols-light:code',
+    custom_sql:          'material-symbols-light:code',
+    conditional_column:  'material-symbols-light:account-tree',
 };
 
 export const STEP_CATEGORIES = [
@@ -319,7 +372,7 @@ export const STEP_CATEGORIES = [
     },
     {
         label: 'Colonnes',
-        steps: ['select_columns', 'exclude_columns', 'rename_columns', 'derive', 'change_type', 'fill_null'] as SqlBlockStep['type'][],
+        steps: ['select_columns', 'exclude_columns', 'rename_columns', 'derive', 'conditional_column', 'change_type', 'fill_null'] as SqlBlockStep['type'][],
     },
     {
         label: 'Agrégation & Reshape',
@@ -341,7 +394,7 @@ export const STEP_CATEGORIES = [
 
 export function createDefaultSqlBlockConfig(source = ''): SqlBlockConfig {
     return {
-        ast: { source, steps: [], materialize: 'view' },
+        ast: { source, steps: [], materialized: 'view' },
         degraded: false,
         manualSql: null,
     };
