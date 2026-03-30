@@ -2863,30 +2863,29 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
     // Ouvre la modale de config viz quand le trigger change (déclenché depuis CellBody)
     useEffect(() => {
         if (!openVizConfigTrigger || openVizConfigTrigger <= 0) return
-        // Si le chartConfig est absent ou vide, tenter de l'extraire du SQL brut
+        // Si cfg.sql est renseigné, il fait foi sur l'AST stocké (peut être obsolète).
+        // Re-parser systématiquement depuis le SQL brut pour initialiser le chartConfig.
         const currentCfg = getOrInitConfig(cell)
-        if (!currentCfg.ast?.chartConfig?.columns?.length) {
-            const rawSql = currentCfg.sql || ''
-            if (rawSql.trim()) {
-                const result = sqlToAstSmart(rawSql, currentCfg.ast?.materialized ?? 'ephemeral')
-                const hasCustomSql = result.ast?.steps?.some((s: any) => s.type === 'custom_sql')
-                const hasColumns = (result.ast?.chartConfig?.columns?.length ?? 0) > 0
-                if (result.compatible && result.ast && hasColumns) {
-                    if (!hasCustomSql) {
-                        // Parse propre (ex: SELECT littéraux ::KPI FROM (SELECT 1)) → mettre à jour tout l'AST
-                        currentCfg.ast = result.ast
-                        currentCfg.degraded = false
-                        currentCfg.manualSql = null
-                    } else {
-                        // Parse partiel (fallback CTE) → uniquement le chartConfig,
-                        // sans toucher source/steps pour éviter le double-WITH
-                        currentCfg.ast = { ...currentCfg.ast, chartConfig: result.ast.chartConfig }
-                    }
-                    forceUpdate()
-                    // fetchChartSchema sera rappelé via l'effect stepsKey/source après le re-render
-                    setVizConfigOpen(true)
-                    return
+        const rawSql = currentCfg.sql || ''
+        if (rawSql.trim()) {
+            const result = sqlToAstSmart(rawSql, currentCfg.ast?.materialized ?? 'ephemeral')
+            const hasCustomSql = result.ast?.steps?.some((s: any) => s.type === 'custom_sql')
+            const hasColumns = (result.ast?.chartConfig?.columns?.length ?? 0) > 0
+            if (result.compatible && result.ast && hasColumns) {
+                if (!hasCustomSql) {
+                    // Parse propre (ex: SELECT littéraux ::KPI FROM (SELECT 1)) → mettre à jour tout l'AST
+                    currentCfg.ast = result.ast
+                    currentCfg.degraded = false
+                    currentCfg.manualSql = null
+                } else {
+                    // Parse partiel (fallback CTE) → uniquement le chartConfig,
+                    // sans toucher source/steps pour éviter le double-WITH
+                    currentCfg.ast = { ...currentCfg.ast, chartConfig: result.ast.chartConfig }
                 }
+                forceUpdate()
+                // fetchChartSchema sera rappelé via l'effect stepsKey/source après le re-render
+                setVizConfigOpen(true)
+                return
             }
         }
         setVizConfigOpen(true)
