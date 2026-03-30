@@ -24775,7 +24775,8 @@ FROM v_source LIMIT 10`, engine: "sql", showQueryEditor: !1 },
         _univerReady: !1,
         _univerInstance: null,
         _univerAPI: null,
-        _univerModified: !1
+        _univerModified: !1,
+        _univerScheduled: !1
       },
       commonParams: ["name", "title", "queries"],
       queryCount: 1,
@@ -24793,7 +24794,7 @@ FROM v_source LIMIT 10`, engine: "sql", showQueryEditor: !1 },
       },
       bodyFamily: "univerSheet",
       bodyConfig: { minHeight: "400px" },
-      bodyDisplay: { showSkeleton: { when: "running" } }
+      bodyDisplay: { showSkeleton: { excludeWhenSqlEditor: !0 } }
     },
     perspective: {
       executeHandler: "executePerspectiveCell",
@@ -138713,45 +138714,47 @@ function UniverSheetBody({ cell: At, path: yt, cellIndex: xt }) {
     devMode: wt,
     showSqlEditorVisible: Ct,
     hasCellHeight: St,
-    runCellAt: Et,
-    captureUniverSnapshot: kt,
-    exportUniverToXlsx: Tt,
+    captureUniverSnapshot: Et,
+    exportUniverToXlsx: kt,
+    renderUniverInContainer: Tt,
     _rev: $t
   } = useNotebookStore(useShallow((Bt) => ({
     devMode: Bt.devMode,
     showSqlEditorVisible: Bt.showSqlEditorVisible,
     hasCellHeight: Bt.hasCellHeight,
-    runCellAt: Bt.runCellAt,
     captureUniverSnapshot: Bt.captureUniverSnapshot,
     exportUniverToXlsx: Bt.exportUniverToXlsx,
+    renderUniverInContainer: Bt.renderUniverInContainer,
     _rev: Bt._rev
   }))), Lt = St(At), It = "400px";
   reactExports.useEffect(() => {
-    At._univerReady || !document.getElementById("univer-" + At._id) || At._status === "success" && !At._univerReady && Et(yt, xt);
+    !At._univerReady || !document.getElementById("univer-" + At._id) || At._univerScheduled && !At._univerAPI && Tt(At).catch((zt) => {
+      At._univerReady = !1, At._resultInfo = "❌ " + zt.message;
+    });
   }, [$t]);
   const [Rt, Dt] = reactExports.useState(!1), [jt, Nt] = reactExports.useState(!1), Mt = reactExports.useCallback(async () => {
     if (!Rt) {
       Dt(!0);
       try {
-        await kt(At);
+        await Et(At);
       } catch (Bt) {
         console.error(Bt);
       } finally {
         Dt(!1);
       }
     }
-  }, [At, kt, Rt]), Ot = reactExports.useCallback(async () => {
+  }, [At, Et, Rt]), Ot = reactExports.useCallback(async () => {
     if (!jt) {
       Nt(!0);
       try {
-        await Tt(At);
+        await kt(At);
       } catch (Bt) {
         console.error(Bt);
       } finally {
         Nt(!1);
       }
     }
-  }, [At, Tt, jt]);
+  }, [At, kt, jt]);
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
     (Ct == null ? void 0 : Ct(At)) && /* @__PURE__ */ jsxRuntimeExports.jsx(SqlEditorWidget, { cell: At, path: yt, cellIndex: xt, placeholder: "SELECT * FROM source1" }),
     At._status === "running" && !At._univerReady && /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -146794,57 +146797,82 @@ ${Zt}
     }
   },
   // ─── Univer Sheet ─────────────────────────────────────────────────────────
+  /**
+   * Phase 1 : collecte des données (SQL / snapshot) et signale que le rendu est prêt.
+   * Le rendu DOM effectif est délégué à renderUniverInContainer (appelé ici et depuis
+   * le useEffect du composant, comme Perspective).
+   */
   async executeUniverSheetCell(xt) {
-    var Nt, Mt, Ot, Bt;
-    if (yt().setStatus("Chargement de Univer...", "loading"), await CDNManager.loadUniver(), xt._univerReady = !1, At((zt) => ({ _rev: zt._rev + 1 })), xt._univerInstance) {
+    var wt, Ct, St, Et;
+    if (yt().setStatus("Chargement de Univer...", "loading"), await CDNManager.loadUniver(), xt._univerReady = !1, xt._univerScheduled = !1, xt._univerAPI = null, xt._univerInstance) {
       try {
-        (Mt = (Nt = xt._univerInstance).dispose) == null || Mt.call(Nt);
+        (Ct = (wt = xt._univerInstance).dispose) == null || Ct.call(wt);
       } catch {
       }
-      xt._univerInstance = null, xt._univerAPI = null;
+      xt._univerInstance = null;
     }
-    const wt = "univer-" + xt._id;
-    let Ct = 0;
-    for (; !document.getElementById(wt) && Ct < 2e3; )
-      await new Promise((zt) => setTimeout(zt, 50)), Ct += 50;
-    const St = document.getElementById(wt);
-    if (!St) throw new Error("Container DOM introuvable pour Univer Sheet");
-    const Et = window.UniverPresetSheetsCore;
-    if (!Et) throw new Error("Bibliothèque Univer introuvable (CDN non chargé)");
-    const { createUniver: kt, defaultTheme: Tt, LocaleType: $t, UniverSheetsPreset: Lt } = Et, { univer: It, univerAPI: Rt } = kt({
-      locale: $t.EN_US,
-      theme: Tt,
-      presets: [
-        Lt({ container: St })
-      ]
-    });
-    if (xt._univerInstance = It, xt._univerAPI = Rt, xt.snapshot && String(xt.snapshot).trim()) {
-      yt().setStatus("Chargement du snapshot...", "loading");
-      try {
-        const zt = await ConfigManager.decompressFromGzipBase64(xt.snapshot.trim()), Yt = JSON.parse(zt);
-        Rt.createWorkbook(Yt);
-      } catch (zt) {
-        throw console.error("[univerSheet] Erreur décompression snapshot:", zt), new Error("Snapshot Univer invalide : " + zt.message);
-      }
-    } else {
-      const zt = (Ot = ConfigManager.getCellQuery(xt, 0)) == null ? void 0 : Ot.trim();
-      if (zt) {
+    if ((St = xt.snapshot) != null && St.trim())
+      xt._univerSnapshotPending = xt.snapshot.trim(), xt._univerRows = null;
+    else {
+      const kt = (Et = ConfigManager.getCellQuery(xt, 0)) == null ? void 0 : Et.trim();
+      if (xt._univerSnapshotPending = null, kt) {
         yt().setStatus("Exécution de la requête SQL...", "loading");
-        const Yt = yt().parseQueryWithParameters(zt), { rows: Kt } = await DuckDBManager.executeQueryWithSchema(Yt), Jt = _buildUniverWorkbookFromRows(Kt, xt._id);
-        Rt.createWorkbook(Jt);
+        const Tt = yt().parseQueryWithParameters(kt), { rows: $t } = await DuckDBManager.executeQueryWithSchema(Tt);
+        xt._univerRows = $t;
       } else
-        Rt.createWorkbook({ id: "wb-" + xt._id, name: xt.name || "Sheet", sheets: {} });
+        xt._univerRows = null;
     }
-    if (!yt().devMode && xt.readOnly !== !1)
+    xt._univerReady = !0, xt._univerScheduled = !0, At((kt) => ({ _rev: kt._rev + 1 })), await new Promise((kt) => setTimeout(kt, 0)), await yt().renderUniverInContainer(xt), xt._resultInfo = xt._univerSnapshotPending ? "✅ Sheet prête (snapshot)" : "✅ Sheet prête", yt().setStatus("Univer Sheet prête", "success");
+  },
+  /**
+   * Phase 2 : initialisation de l'instance Univer dans le container DOM.
+   * Retourne gracieusement si le container n'existe pas encore (comme renderPerspectiveInContainer).
+   * Appelé depuis executeUniverSheetCell et depuis le useEffect de UniverSheetBody.
+   */
+  async renderUniverInContainer(xt) {
+    var St, Et, kt, Tt;
+    const wt = "univer-" + xt._id, Ct = document.getElementById(wt);
+    if (!Ct) {
+      xt._univerScheduled = !1;
+      return;
+    }
+    if (!xt._univerRendering) {
+      xt._univerRendering = !0, xt._univerScheduled = !1;
       try {
-        (Bt = Rt.setEditable) == null || Bt.call(Rt, !1);
-      } catch {
+        if (xt._univerAPI) {
+          try {
+            (Et = (St = xt._univerAPI).dispose) == null || Et.call(St);
+          } catch {
+          }
+          xt._univerAPI = null, Ct.innerHTML = "";
+        }
+        const $t = window.UniverPresetSheetsCore;
+        if (!$t) throw new Error("Bibliothèque Univer introuvable (CDN non chargé)");
+        const { createUniver: Lt, defaultTheme: It, LocaleType: Rt, UniverSheetsPreset: Dt } = $t, { univer: jt, univerAPI: Nt } = Lt({
+          locale: Rt.EN_US,
+          theme: It,
+          presets: [Dt({ container: Ct })]
+        });
+        if (xt._univerInstance = jt, xt._univerAPI = Nt, xt._univerSnapshotPending)
+          try {
+            const Mt = await ConfigManager.decompressFromGzipBase64(xt._univerSnapshotPending);
+            Nt.createWorkbook(JSON.parse(Mt));
+          } catch (Mt) {
+            throw new Error("Snapshot Univer invalide : " + Mt.message);
+          }
+        else (kt = xt._univerRows) != null && kt.length ? Nt.createWorkbook(_buildUniverWorkbookFromRows(xt._univerRows, xt._id)) : Nt.createWorkbook({ id: "wb-" + xt._id, name: xt.name || "Sheet", sheets: {} });
+        if (!yt().devMode && xt.readOnly !== !1)
+          try {
+            (Tt = Nt.setEditable) == null || Tt.call(Nt, !1);
+          } catch {
+          }
+        yt().devMode && (jt != null && jt.onCommandExecuted) && jt.onCommandExecuted(() => {
+          xt._univerModified = !0;
+        }), At((Mt) => ({ _rev: Mt._rev + 1 }));
+      } finally {
+        xt._univerRendering = !1;
       }
-    yt().devMode && (It != null && It.onCommandExecuted) && It.onCommandExecuted(() => {
-      xt._univerModified = !0;
-    }), xt._univerReady = !0;
-    const jt = xt.snapshot ? "(snapshot)" : "";
-    xt._resultInfo = "✅ Sheet prête " + jt, yt().setStatus("Univer Sheet prête", "success");
+    }
   },
   async captureUniverSnapshot(xt) {
     var wt, Ct, St;
