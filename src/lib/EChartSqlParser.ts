@@ -1134,7 +1134,7 @@ function _buildKpiHtml(row: any, roleMap: Record<string, ColumnRole[]>, title: s
     if (iconCol) {
         const raw = _str(row[iconCol.originalName]);
         if (raw && raw.toLowerCase() !== 'null') {
-            const iconId = raw.includes(':') ? raw : `lucide:${raw}`;
+            const iconId = raw;
             parts.push(`<div style="display:flex;justify-content:center;margin-bottom:.25rem"><span class="iconify" data-icon="${_esc(iconId)}" style="font-size:clamp(1.5rem,8vw,3rem);color:var(--primary,#555)"></span></div>`);
         }
     }
