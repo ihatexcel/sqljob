@@ -37,7 +37,12 @@ jobs:
             -m "auto-merge: ${{ github.ref_name }} → claude/dev"
 
       - name: Push claude/dev
-        run: git push origin claude/dev
+        run: |
+          for i in 1 2 3 4; do
+            git pull --rebase origin claude/dev && git push origin claude/dev && break
+            echo "Push attempt $i failed, retrying in ${i}s..."
+            sleep $i
+          done
 
   deploy-dev:
     runs-on: ubuntu-latest
