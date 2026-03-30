@@ -101,16 +101,21 @@ const CHART_ROLES_SET = new Set(CHART_ROLES_ORDERED);
 const CHART_AXIS_ROLES = new Set(['XAXIS', 'YAXIS', 'CATEGORY', 'COLOR', 'COLORS']);
 
 export function buildChartFinalSelect(fromSource: string, cfg: ChartConfig): string {
-    // Préfixe LABEL / SUBLABEL si définis
-    let prefix = '';
+    // Préfixe combiné LABEL / SUBLABEL / ICON dans un seul SELECT si au moins un est défini
+    const cfgParts: string[] = [];
     if (cfg.label?.trim()) {
         const escaped = cfg.label.trim().replace(/'/g, "''");
-        prefix += `SELECT '${escaped}'::LABEL;\n`;
+        cfgParts.push(`'${escaped}'::LABEL`);
     }
     if ((cfg as any).sublabel?.trim()) {
         const escaped = (cfg as any).sublabel.trim().replace(/'/g, "''");
-        prefix += `SELECT '${escaped}'::SUBLABEL;\n`;
+        cfgParts.push(`'${escaped}'::SUBLABEL`);
     }
+    if ((cfg as any).icon?.trim()) {
+        const escaped = (cfg as any).icon.trim().replace(/'/g, "''");
+        cfgParts.push(`'${escaped}'::ICON`);
+    }
+    const prefix = cfgParts.length > 0 ? `SELECT ${cfgParts.join(',\n       ')};\n` : '';
     // Axe / catégorie / couleur en premier, puis les données
     const sorted = [...cfg.columns].sort((a, b) => {
         const aAxis = CHART_AXIS_ROLES.has(a.role.toUpperCase()) ? 0 : 1;
@@ -142,13 +147,18 @@ export function buildChartFinalSelect(fromSource: string, cfg: ChartConfig): str
  * Retourne null si aucun rôle chart n'est trouvé.
  */
 export function parseChartFinalSelect(selectSql: string): ChartConfig | null {
-    // Extrait le titre/sous-titre depuis SELECT '...'::LABEL; et SELECT '...'::SUBLABEL;
+    // Extrait le titre/sous-titre/icône depuis les préfixes ::LABEL / ::SUBLABEL / ::ICON
+    // Supporte le format combiné : SELECT 'title'::LABEL, 'sub'::SUBLABEL, 'icon'::ICON;
+    // et le format individuel legacy : SELECT 'title'::LABEL;
     let cfgLabel: string | undefined;
     let cfgSublabel: string | undefined;
-    const labelM = selectSql.match(/SELECT\s+'([^']*)'\s*::LABEL\s*;/i);
+    let cfgIcon: string | undefined;
+    const labelM = selectSql.match(/'([^']*)'\s*::LABEL\b/i);
     if (labelM) cfgLabel = labelM[1];
-    const sublabelM = selectSql.match(/SELECT\s+'([^']*)'\s*::SUBLABEL\s*;/i);
+    const sublabelM = selectSql.match(/'([^']*)'\s*::SUBLABEL\b/i);
     if (sublabelM) cfgSublabel = sublabelM[1];
+    const iconM = selectSql.match(/'([^']*)'\s*::ICON\b/i);
+    if (iconM) cfgIcon = iconM[1];
 
     const rolesPattern = CHART_ROLES_ORDERED.join('|');
     // Match: ("col" | {{param}} | 'literal' | (expression) | unquoted)::ROLE [AS ("label" | label)]
@@ -163,8 +173,8 @@ export function parseChartFinalSelect(selectSql: string): ChartConfig | null {
     while ((m = re.exec(selectSql)) !== null) {
         const role = m[6].toUpperCase();
         const label = m[7] ?? m[8] ?? undefined;
-        // Skip LABEL role — it's a title prefix, not a data column
-        if (!CHART_ROLES_SET.has(role) || role === 'LABEL') continue;
+        // Skip LABEL / SUBLABEL / ICON roles — they are prefix statements, not data columns
+        if (!CHART_ROLES_SET.has(role) || role === 'LABEL' || role === 'SUBLABEL' || role === 'ICON') continue;
 
         let column: string;
         let valueKind: FilterValueKind | undefined;
@@ -195,7 +205,7 @@ export function parseChartFinalSelect(selectSql: string): ChartConfig | null {
         if (valueKind !== 'column') entry.valueKind = valueKind;
         columns.push(entry);
     }
-    if (!columns.length && !cfgLabel) return null;
+    if (!columns.length && !cfgLabel && !cfgIcon) return null;
 
     // Déduire le chartType depuis les rôles présents (même logique que EChartSqlParser)
     const roleSet = new Set(columns.map(c => c.role));
@@ -216,6 +226,7 @@ export function parseChartFinalSelect(selectSql: string): ChartConfig | null {
     const cfg: ChartConfig = { chartType, columns };
     if (cfgLabel) cfg.label = cfgLabel;
     if (cfgSublabel) (cfg as any).sublabel = cfgSublabel;
+    if (cfgIcon) (cfg as any).icon = cfgIcon;
     return cfg;
 }
 
@@ -252,8 +263,8 @@ export function astToSql(ast: SqlBlockAst): string {
     const finalSelect = chartConfig?.columns?.length
         ? buildChartFinalSelect(lastName, chartConfig)
         : `SELECT * FROM ${lastName}`;
-    // Hoist SELECT '...'::LABEL; and SELECT '...'::SUBLABEL; before WITH so DuckDB can parse cleanly
-    const prefixM = finalSelect.match(/^((SELECT\s+'[^']*'\s*::(?:LABEL|SUBLABEL)\s*;\n?)+)/i);
+    // Hoist config prefix SELECTs (LABEL/SUBLABEL/ICON) before WITH so DuckDB can parse cleanly
+    const prefixM = finalSelect.match(/^((SELECT\s+(?:'[^']*'\s*::(?:LABEL|SUBLABEL|ICON)\b\s*(?:,\s*)?)+;\n?)+)/i);
     const hoistPrefix = prefixM ? prefixM[1] : '';
     const body = hoistPrefix ? finalSelect.slice(hoistPrefix.length) : finalSelect;
     return `${hoistPrefix}WITH\n${ctes.join(',\n')}\n${body}`;
@@ -1232,6 +1243,8 @@ function extractSubquerySource(sql: string): string | null {
 /** Parser simple SELECT (hors CTE) étendu aux patterns P1 (WHERE, ORDER BY, LIMIT).
  * Les patterns non reconnus deviennent un step custom_sql (préserve le SQL sans perte). */
 function tryParseSimpleSmart(sql: string, materialize: SqlBlockMaterialize): SqlBlockAst | null {
+    // Ne pas traiter les requêtes WITH (CTEs) — gérées par tryParseCteChainSmart
+    if (/^WITH\b/i.test(sql)) return null;
     const srcM = sql.match(/^SELECT\s+(?:[\s\S]+?)\s+FROM\s+((?:"[^"]*"|\S+))/i);
     if (!srcM) {
         // Pas de FROM — si le SQL contient des annotations ::ROLE, c'est un SELECT sans source
@@ -1300,35 +1313,45 @@ function tryParseSimpleSmart(sql: string, materialize: SqlBlockMaterialize): Sql
  * par CTE (P1+). Les CTEs non parsables deviennent des steps custom_sql.
  */
 export function sqlToAstSmart(sql: string, materialize: SqlBlockMaterialize = 'view'): SqlParseResult {
-    // Extraire SELECT '...'::LABEL; et SELECT '...'::SUBLABEL; en tête avant parsing
-    // → permet d'éditer via l'UI même quand le SQL commence par ces préfixes
+    // Extraire les préfixes de configuration (LABEL, SUBLABEL, ICON) en tête avant parsing
+    // Supporte le format combiné : SELECT 'x'::LABEL, 'y'::SUBLABEL, 'z'::ICON;
+    // et les formats individuels legacy : SELECT 'x'::LABEL; / SELECT 'y'::SUBLABEL; / SELECT 'z'::ICON;
     let labelPrefix: string | null = null;
     let sublabelPrefix: string | null = null;
+    let iconPrefix: string | null = null;
     let sqlBody = sql;
-    const labelM = sqlBody.match(/^(\s*SELECT\s+'[^']*'\s*::LABEL\s*;[ \t]*\r?\n?)/i);
-    if (labelM) {
-        const valM = labelM[1].match(/SELECT\s+'([^']*)'\s*::LABEL/i);
-        if (valM) labelPrefix = valM[1];
-        sqlBody = sqlBody.slice(labelM[1].length);
-    }
-    const sublabelM = sqlBody.match(/^(\s*SELECT\s+'[^']*'\s*::SUBLABEL\s*;[ \t]*\r?\n?)/i);
-    if (sublabelM) {
-        const valM = sublabelM[1].match(/SELECT\s+'([^']*)'\s*::SUBLABEL/i);
-        if (valM) sublabelPrefix = valM[1];
-        sqlBody = sqlBody.slice(sublabelM[1].length);
+    // Extraire un ou plusieurs SELECT de configuration en tête (format combiné ou individuel)
+    let extracted = true;
+    while (extracted) {
+        extracted = false;
+        const cfgM = sqlBody.match(/^(\s*SELECT\s+(?:'[^']*'\s*::(?:LABEL|SUBLABEL|ICON)\b\s*(?:,\s*)?)+;[ \t]*\r?\n?)/i);
+        if (cfgM) {
+            const block = cfgM[1];
+            const lM = block.match(/'([^']*)'\s*::LABEL\b/i);
+            const sM = block.match(/'([^']*)'\s*::SUBLABEL\b/i);
+            const iM = block.match(/'([^']*)'\s*::ICON\b/i);
+            if (lM || sM || iM) {
+                if (lM && labelPrefix === null) labelPrefix = lM[1];
+                if (sM && sublabelPrefix === null) sublabelPrefix = sM[1];
+                if (iM && iconPrefix === null) iconPrefix = iM[1];
+                sqlBody = sqlBody.slice(block.length);
+                extracted = true;
+            }
+        }
     }
 
-    /** Injecte label/sublabel dans l'AST si présents */
+    /** Injecte label/sublabel/icon dans l'AST si présents */
     function withLabel(ast: SqlBlockAst): SqlBlockAst {
-        if (labelPrefix === null && sublabelPrefix === null) return ast;
+        if (labelPrefix === null && sublabelPrefix === null && iconPrefix === null) return ast;
         const base = ast.chartConfig ?? { chartType: 'kpi', columns: [] };
         const chartConfig: ChartConfig = { ...base };
         if (labelPrefix !== null) chartConfig.label = labelPrefix;
         if (sublabelPrefix !== null) (chartConfig as any).sublabel = sublabelPrefix;
+        if (iconPrefix !== null) (chartConfig as any).icon = iconPrefix;
         return { ...ast, chartConfig };
     }
     function withLabelResult(r: SqlParseResult): SqlParseResult {
-        if (labelPrefix === null && sublabelPrefix === null) return r;
+        if (labelPrefix === null && sublabelPrefix === null && iconPrefix === null) return r;
         if (!r.compatible || !r.ast) return r;
         return { ...r, ast: withLabel(r.ast) };
     }
@@ -1348,9 +1371,20 @@ export function sqlToAstSmart(sql: string, materialize: SqlBlockMaterialize = 'v
 
     // 4. Fallback ultime : SQL non reconnu → étape custom_sql sans source
     //    Préserve le SQL intégralement, sans perte de données.
+    //    Pour les requêtes WITH, tente d'extraire le chartConfig depuis le SELECT final.
     if (normalized) {
+        let fallbackChartConfig: ChartConfig | undefined;
+        if (/^WITH\b/i.test(normalized)) {
+            const finalSql = extractFinalSelectFromWithQuery(normalized);
+            if (finalSql) fallbackChartConfig = parseChartFinalSelect(finalSql) ?? undefined;
+        }
         return withLabelResult({
-            ast: { source: '', steps: [{ type: 'custom_sql', sql: normalized }], materialized: materialize },
+            ast: {
+                source: '',
+                steps: [{ type: 'custom_sql', sql: normalized }],
+                materialized: materialize,
+                ...(fallbackChartConfig ? { chartConfig: fallbackChartConfig } : {}),
+            },
             compatible: true,
         });
     }

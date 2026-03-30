@@ -1115,13 +1115,13 @@ function _fmtVal(v: any): string {
  *  - KPI mode (legacy LABEL / PERCENT / COMPARE / TREND):
  *    DaisyUI stat cards side by side
  */
-export function buildKpiHtml(results: any[], parsed: ParsedColumnRoles, label?: string): string {
+export function buildKpiHtml(results: any[], parsed: ParsedColumnRoles, label?: string, icon?: string): string {
     const row = results[0] || {};
-    return _buildKpiHtml(row, parsed.roleMap, label ?? null);
+    return _buildKpiHtml(row, parsed.roleMap, label ?? null, icon ?? null);
 }
 
 /** KPI: centered card — KPI / LABEL (compat) / PERCENT / COMPARE / TREND */
-function _buildKpiHtml(row: any, roleMap: Record<string, ColumnRole[]>, title: string | null): string {
+function _buildKpiHtml(row: any, roleMap: Record<string, ColumnRole[]>, title: string | null, icon: string | null = null): string {
     const parts: string[] = [];
 
     function _sub(display: string, role: string, fallback = ''): string {
@@ -1129,14 +1129,12 @@ function _buildKpiHtml(row: any, roleMap: Record<string, ColumnRole[]>, title: s
         return raw && raw.toLowerCase() !== 'null' ? raw : '';
     }
 
-    // ICON (optional — shown between label and value)
+    // ICON — priorité au paramètre préfixe, fallback sur la colonne ::ICON du SELECT (legacy)
     const iconCol = (roleMap['ICON'] || [])[0];
-    if (iconCol) {
-        const raw = _str(row[iconCol.originalName]);
-        if (raw && raw.toLowerCase() !== 'null') {
-            const iconId = raw;
-            parts.push(`<div style="display:flex;justify-content:center;margin-bottom:.1rem"><span class="iconify" data-icon="${_esc(iconId)}" style="font-size:clamp(1.5rem,8vw,3rem);color:var(--primary,#555)"></span></div>`);
-        }
+    const iconRaw = icon ?? (iconCol ? _str(row[iconCol.originalName]) : null);
+    if (iconRaw && iconRaw.toLowerCase() !== 'null') {
+        const iconId = iconRaw.includes(':') ? iconRaw : `lucide:${iconRaw}`;
+        parts.push(`<div style="display:flex;justify-content:center;margin-bottom:.1rem"><span class="iconify" data-icon="${_esc(iconId)}" style="font-size:clamp(1.5rem,8vw,3rem);color:var(--primary,#555)"></span></div>`);
     }
 
     // KPI value columns

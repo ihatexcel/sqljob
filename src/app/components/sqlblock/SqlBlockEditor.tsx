@@ -2629,7 +2629,7 @@ function ChartPreviewInEditor({ cell }: { cell: any }) {
 
 // ─── SqlBlockEditor (composant principal) ─────────────────────────────────────
 
-export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCell, skipExecution, modalOpen, allowedMaterializeModes }: { cell: any; path: number[]; cellIndex: number; onExitUiMode?: () => void; fromSqlCell?: boolean; skipExecution?: boolean; modalOpen?: boolean; allowedMaterializeModes?: string[] }) {
+export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCell, skipExecution, modalOpen, allowedMaterializeModes, openVizConfigTrigger }: { cell: any; path: number[]; cellIndex: number; onExitUiMode?: () => void; fromSqlCell?: boolean; skipExecution?: boolean; modalOpen?: boolean; allowedMaterializeModes?: string[]; openVizConfigTrigger?: number }) {
     const { forceUpdate, _duckdbTables, db, runCellAt } = useNotebookStore(useShallow(s => ({
         forceUpdate: s.forceUpdate,
         _duckdbTables: s._duckdbTables,
@@ -2794,7 +2794,7 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
         const newSql = stripMaterializePrefix(rawSql)
         // Vérification : plusieurs instructions SQL → UI impossible (hors LABEL prefix)
         const stmts = newSql.split(';').map((s: string) => s.trim()).filter(Boolean)
-        const nonLabelStmts = stmts.filter((s: string) => !/^\s*SELECT\s+.+?::(?:LABEL|SUBLABEL)\b/i.test(s))
+        const nonLabelStmts = stmts.filter((s: string) => !/^\s*SELECT\s+.+?::(?:LABEL|SUBLABEL|ICON)\b/i.test(s))
         if (nonLabelStmts.length > 1) {
             const cfg = getOrInitConfig(cell)
             cfg.degraded = true; cfg.manualSql = newSql
@@ -2831,7 +2831,7 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
         const sql = stripMaterializePrefix(cfg.manualSql || selectSql)
         // Bloquer la restauration si plusieurs instructions SQL (hors LABEL prefix)
         const stmts = sql.split(';').map((s: string) => s.trim()).filter(Boolean)
-        const nonLabelStmts = stmts.filter((s: string) => !/^\s*SELECT\s+.+?::(?:LABEL|SUBLABEL)\b/i.test(s))
+        const nonLabelStmts = stmts.filter((s: string) => !/^\s*SELECT\s+.+?::(?:LABEL|SUBLABEL|ICON)\b/i.test(s))
         if (nonLabelStmts.length > 1) {
             setMultiSqlWarning(true)
             return
@@ -2859,6 +2859,38 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
     const [vizConfigOpen, setVizConfigOpen] = useState(false)
     // Flag : on n'auto-active qu'une seule fois par version du SQL (évite de re-forcer après switch manuel)
     const hasAutoActivatedVizRef = useRef(false)
+
+    // Ouvre la modale de config viz quand le trigger change (déclenché depuis CellBody)
+    useEffect(() => {
+        if (!openVizConfigTrigger || openVizConfigTrigger <= 0) return
+        // Si cfg.sql est renseigné, il fait foi sur l'AST stocké (peut être obsolète).
+        // Re-parser systématiquement depuis le SQL brut pour initialiser le chartConfig.
+        const currentCfg = getOrInitConfig(cell)
+        const rawSql = currentCfg.sql || ''
+        if (rawSql.trim()) {
+            const result = sqlToAstSmart(rawSql, currentCfg.ast?.materialized ?? 'ephemeral')
+            const hasCustomSql = result.ast?.steps?.some((s: any) => s.type === 'custom_sql')
+            const hasColumns = (result.ast?.chartConfig?.columns?.length ?? 0) > 0
+            if (result.compatible && result.ast && hasColumns) {
+                if (!hasCustomSql) {
+                    // Parse propre (ex: SELECT littéraux ::KPI FROM (SELECT 1)) → mettre à jour tout l'AST
+                    currentCfg.ast = result.ast
+                    currentCfg.degraded = false
+                    currentCfg.manualSql = null
+                } else {
+                    // Parse partiel (fallback CTE) → uniquement le chartConfig,
+                    // sans toucher source/steps pour éviter le double-WITH
+                    currentCfg.ast = { ...currentCfg.ast, chartConfig: result.ast.chartConfig }
+                }
+                forceUpdate()
+                // fetchChartSchema sera rappelé via l'effect stepsKey/source après le re-render
+                setVizConfigOpen(true)
+                return
+            }
+        }
+        setVizConfigOpen(true)
+        fetchChartSchema()
+    }, [openVizConfigTrigger]) // eslint-disable-line
 
     // cellule factice pour SqlDataTable quand on affiche un aperçu step ou source
     const displayCell = showingEye && eyeData
