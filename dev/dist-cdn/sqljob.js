@@ -134262,7 +134262,7 @@ function _buildGaugeOption(At, yt, xt, wt, Ct) {
     } catch {
     }
   }
-  const Zt = 40, sr = 180, Er = 0, Ir = ["50%", "94%"], Br = "88%", Qr = { width: Zt };
+  const Zt = 40, sr = 180, Er = 0, Ir = ["50%", "96%"], Br = "91%", Qr = { width: Zt };
   if (zt)
     Qr.color = zt;
   else if (Jt) {
@@ -134397,7 +134397,7 @@ function _buildGaugeOption(At, yt, xt, wt, Ct) {
   return {
     ...wt,
     tooltip: { formatter: "{b}: {c}" + (St ? "%" : "") },
-    _chartHeight: 250,
+    _aspectRatio: "2 / 1",
     series: sn ? [An, Vr, sn, En] : [An, En]
   };
 }
@@ -138071,8 +138071,8 @@ function EChartRenderer({ cell: At, hasHeight: yt }) {
     });
     return Tt.observe(kt), () => Tt.disconnect();
   }, []), At._kpiHtml) return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-full", dangerouslySetInnerHTML: { __html: At._kpiHtml } });
-  const St = (Et = At._echartsOption) == null ? void 0 : Et._chartHeight;
-  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { ref: wt, className: `w-full ${yt ? "flex-1 min-h-0" : ""}`, style: yt ? void 0 : { minHeight: `${St ?? 300}px` } });
+  const St = (Et = At._echartsOption) == null ? void 0 : Et._aspectRatio;
+  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { ref: wt, className: `w-full ${yt ? "flex-1 min-h-0" : ""}`, style: yt ? void 0 : St ? { aspectRatio: St } : { minHeight: "300px" } });
 }
 function SqlTableBody({ cell: At, path: yt, cellIndex: xt, showTextResult: wt = !1 }) {
   var ln, tn;
