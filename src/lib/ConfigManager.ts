@@ -397,30 +397,20 @@ return c;
                 return btoa(unescape(encodeURIComponent(str)));
             }
 
-            /** Compresse une chaîne en gzip puis encode en base64 (pour snapshots Univer) */
+            /** Compresse une chaîne UTF-8 en gzip puis encode en base64 (pour snapshots Univer) */
             static async compressToGzipBase64(str: string): Promise<string> {
-                const encoder = new TextEncoder();
-                const data = encoder.encode(str);
-                const cs = new (window as any).CompressionStream('gzip');
-                const writer = cs.writable.getWriter();
-                writer.write(data);
-                writer.close();
-                const buf = await new Response(cs.readable).arrayBuffer();
-                const bytes = new Uint8Array(buf);
-                let binary = '';
-                for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
-                return btoa(binary);
+                const data = new TextEncoder().encode(str);
+                const compressed = await FileHandler.compressGzip(data.buffer);
+                return FileHandler.arrayBufferToBase64(compressed);
             }
 
-            /** Décompresse un base64 gzip en chaîne (pour snapshots Univer) */
+            /** Décompresse un base64 gzip en chaîne UTF-8 (pour snapshots Univer) */
             static async decompressFromGzipBase64(b64: string): Promise<string> {
-                const binary = atob(b64);
-                const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0));
-                const ds = new (window as any).DecompressionStream('gzip');
-                const writer = ds.writable.getWriter();
-                writer.write(bytes);
-                writer.close();
-                return await new Response(ds.readable).text();
+                const bytes = FileHandler.base64ToUint8Array(b64);
+                const decompressed = await FileHandler.decompressGzip(
+                    bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength)
+                );
+                return new TextDecoder().decode(decompressed);
             }
 
             /**
