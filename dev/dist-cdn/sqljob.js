@@ -134397,7 +134397,8 @@ function _buildGaugeOption(At, yt, xt, wt, Ct) {
   return {
     ...wt,
     tooltip: { formatter: "{b}: {c}" + (St ? "%" : "") },
-    series: sn ? [An, Vr, sn, En] : [An, En]
+    series: sn ? [An, Vr, sn, En] : [An, En],
+    _chartHeight: 200
   };
 }
 function _buildBoxplotOption(At, yt, xt, wt) {
@@ -138051,24 +138052,27 @@ function ButtonRunBody({ cell: At, path: yt, cellIndex: xt }) {
   return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-center p-0", children: /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "inline-flex items-center justify-center px-4 py-1.5 rounded text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50", onClick: () => wt(yt, xt), disabled: Ct, children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: At.buttonLabel || "Exécuter" }) }) });
 }
 function EChartRenderer({ cell: At, hasHeight: yt }) {
-  const { _rev: xt } = useNotebookStore(useShallow((St) => ({ _rev: St._rev }))), wt = reactExports.useRef(null), Ct = reactExports.useRef(null);
-  return reactExports.useEffect(() => {
-    var St;
-    !wt.current || !At._echartsOption || At._echartsOption !== Ct.current && (Ct.current = At._echartsOption, (St = CDNManager.loadECharts) == null || St.call(CDNManager).then(() => {
-      const Et = window.echarts;
-      if (!Et || !wt.current) return;
-      let kt = Et.getInstanceByDom(wt.current) || Et.init(wt.current, null, { renderer: "svg" });
-      kt.clear(), kt.setOption(At._echartsOption);
+  var Et;
+  const { _rev: xt } = useNotebookStore(useShallow((kt) => ({ _rev: kt._rev }))), wt = reactExports.useRef(null), Ct = reactExports.useRef(null);
+  if (reactExports.useEffect(() => {
+    var kt;
+    !wt.current || !At._echartsOption || At._echartsOption !== Ct.current && (Ct.current = At._echartsOption, (kt = CDNManager.loadECharts) == null || kt.call(CDNManager).then(() => {
+      const Tt = window.echarts;
+      if (!Tt || !wt.current) return;
+      let $t = Tt.getInstanceByDom(wt.current) || Tt.init(wt.current, null, { renderer: "svg" });
+      $t.clear(), $t.setOption(At._echartsOption);
     }));
   }, [xt, At._echartsOption]), reactExports.useEffect(() => {
-    const St = wt.current;
-    if (!St) return;
-    const Et = new ResizeObserver(() => {
-      const kt = window.echarts, Tt = kt == null ? void 0 : kt.getInstanceByDom(St);
-      Tt == null || Tt.resize();
+    const kt = wt.current;
+    if (!kt) return;
+    const Tt = new ResizeObserver(() => {
+      const $t = window.echarts, Lt = $t == null ? void 0 : $t.getInstanceByDom(kt);
+      Lt == null || Lt.resize();
     });
-    return Et.observe(St), () => Et.disconnect();
-  }, []), At._kpiHtml ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-full", dangerouslySetInnerHTML: { __html: At._kpiHtml } }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { ref: wt, className: `w-full ${yt ? "flex-1 min-h-0" : "min-h-[300px]"}` });
+    return Tt.observe(kt), () => Tt.disconnect();
+  }, []), At._kpiHtml) return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-full", dangerouslySetInnerHTML: { __html: At._kpiHtml } });
+  const St = (Et = At._echartsOption) == null ? void 0 : Et._chartHeight;
+  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { ref: wt, className: `w-full ${yt ? "flex-1 min-h-0" : ""}`, style: yt ? void 0 : { minHeight: `${St ?? 300}px` } });
 }
 function SqlTableBody({ cell: At, path: yt, cellIndex: xt, showTextResult: wt = !1 }) {
   var ln, tn;
