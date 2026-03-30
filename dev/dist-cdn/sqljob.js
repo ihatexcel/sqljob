@@ -134443,12 +134443,12 @@ function _buildKpiHtml(At, yt, xt) {
     const $t = _str(At[St.originalName]);
     if ($t && $t.toLowerCase() !== "null") {
       const Lt = $t;
-      wt.push(`<div style="display:flex;justify-content:center;margin-bottom:.25rem"><span class="iconify" data-icon="${_esc(Lt)}" style="font-size:clamp(1.5rem,8vw,3rem);color:var(--primary,#555)"></span></div>`);
+      wt.push(`<div style="display:flex;justify-content:center;margin-bottom:.1rem"><span class="iconify" data-icon="${_esc(Lt)}" style="font-size:clamp(1.5rem,8vw,3rem);color:var(--primary,#555)"></span></div>`);
     }
   }
   for (const $t of yt.KPI || []) {
     const Lt = _str(At[$t.originalName]), It = Ct($t.displayName, "KPI");
-    wt.push(`<div style="text-align:center;margin-bottom:.5rem">
+    wt.push(`<div style="text-align:center;margin-bottom:.25rem">
   ${It ? `<div style="font-size:clamp(1rem,3vw,1.4rem);color:var(--muted-foreground,#888);margin-bottom:.2rem">${_esc(It)}</div>` : ""}
   <div style="font-size:clamp(1.5rem,8vw,2.5rem);font-weight:700;line-height:1.05;color:var(--foreground,#111)">${_esc(Lt)}</div>
 </div>`);
