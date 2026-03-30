@@ -238,6 +238,7 @@ function buildInitialState() {
             { type: 'publipostageWord',   label: 'Publipostage Word',        icon: 'description' },
             { type: 'pdfme',              label: 'PDF (pdfme)',               icon: 'picture-as-pdf' },
             { type: 'perspective',        label: 'Perspective Viewer',       icon: 'analytics' },
+            { type: 'univerSheet',        label: 'Univer Sheet',             icon: 'table-chart' },
         ],
 
         _tables: {},

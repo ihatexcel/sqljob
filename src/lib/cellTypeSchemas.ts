@@ -241,6 +241,34 @@ export const CELL_TYPE_SCHEMAS = {
                         defaultButtonLabel: '📑 Générer le PDF'
                     }
                 },
+                univerSheet: {
+                    executeHandler: 'executeUniverSheetCell',
+                    defaultNamePrefix: 'sheet',
+                    exportFields: ['queries', 'snapshot', 'readOnly', 'title'],
+                    initProps: {
+                        _univerReady: false,
+                        _univerInstance: null,
+                        _univerAPI: null,
+                        _univerModified: false,
+                    },
+                    commonParams: ['name', 'title', 'queries'],
+                    queryCount: 1,
+                    queryNames: ['main'],
+                    queryLabels: { main: 'Requête SQL (données initiales, optionnel)' },
+                    specificParams: [
+                        { key: 'queries.main.showQueryEditor', label: "Afficher l'éditeur SQL en mode client", inputType: 'checkbox' },
+                        { key: 'readOnly', label: 'Lecture seule en mode client', tooltip: 'Toujours éditable en mode développeur', inputType: 'checkbox' },
+                        { key: 'snapshot', label: 'Snapshot Univer (base64 gzip)', tooltip: "Snapshot compressé du classeur — généré automatiquement à l'export si modifié", inputType: 'textarea', rows: 4 }
+                    ],
+                    defaults: {
+                        queries: [{ name: 'main', sql: '', engine: 'sql', showQueryEditor: false }],
+                        readOnly: true,
+                        snapshot: ''
+                    },
+                    bodyFamily: 'univerSheet',
+                    bodyConfig: { minHeight: '400px' },
+                    bodyDisplay: { showSkeleton: { when: 'running' } }
+                },
                 perspective: {
                     executeHandler: 'executePerspectiveCell',
                     defaultNamePrefix: 'perspective',
