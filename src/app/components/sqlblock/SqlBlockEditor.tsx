@@ -2863,16 +2863,25 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
     // Ouvre la modale de config viz quand le trigger change (déclenché depuis CellBody)
     useEffect(() => {
         if (!openVizConfigTrigger || openVizConfigTrigger <= 0) return
-        // Si l'AST est vide (cellule jamais ouverte en mode UI), parser le SQL brut d'abord
+        // Si le chartConfig est absent ou vide, tenter de l'extraire du SQL brut
         const currentCfg = getOrInitConfig(cell)
-        if (!currentCfg.ast?.source && !currentCfg.ast?.steps?.length && !currentCfg.ast?.chartConfig) {
+        if (!currentCfg.ast?.chartConfig?.columns?.length) {
             const rawSql = currentCfg.sql || ''
             if (rawSql.trim()) {
                 const result = sqlToAstSmart(rawSql, currentCfg.ast?.materialized ?? 'ephemeral')
-                if (result.compatible && result.ast) {
-                    currentCfg.ast = result.ast
-                    currentCfg.degraded = false
-                    currentCfg.manualSql = null
+                const hasCustomSql = result.ast?.steps?.some((s: any) => s.type === 'custom_sql')
+                const hasColumns = (result.ast?.chartConfig?.columns?.length ?? 0) > 0
+                if (result.compatible && result.ast && hasColumns) {
+                    if (!hasCustomSql) {
+                        // Parse propre (ex: SELECT littéraux ::KPI FROM (SELECT 1)) → mettre à jour tout l'AST
+                        currentCfg.ast = result.ast
+                        currentCfg.degraded = false
+                        currentCfg.manualSql = null
+                    } else {
+                        // Parse partiel (fallback CTE) → uniquement le chartConfig,
+                        // sans toucher source/steps pour éviter le double-WITH
+                        currentCfg.ast = { ...currentCfg.ast, chartConfig: result.ast.chartConfig }
+                    }
                     forceUpdate()
                     // fetchChartSchema sera rappelé via l'effect stepsKey/source après le re-render
                     setVizConfigOpen(true)

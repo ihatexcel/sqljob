@@ -1243,6 +1243,8 @@ function extractSubquerySource(sql: string): string | null {
 /** Parser simple SELECT (hors CTE) étendu aux patterns P1 (WHERE, ORDER BY, LIMIT).
  * Les patterns non reconnus deviennent un step custom_sql (préserve le SQL sans perte). */
 function tryParseSimpleSmart(sql: string, materialize: SqlBlockMaterialize): SqlBlockAst | null {
+    // Ne pas traiter les requêtes WITH (CTEs) — gérées par tryParseCteChainSmart
+    if (/^WITH\b/i.test(sql)) return null;
     const srcM = sql.match(/^SELECT\s+(?:[\s\S]+?)\s+FROM\s+((?:"[^"]*"|\S+))/i);
     if (!srcM) {
         // Pas de FROM — si le SQL contient des annotations ::ROLE, c'est un SELECT sans source
@@ -1369,9 +1371,20 @@ export function sqlToAstSmart(sql: string, materialize: SqlBlockMaterialize = 'v
 
     // 4. Fallback ultime : SQL non reconnu → étape custom_sql sans source
     //    Préserve le SQL intégralement, sans perte de données.
+    //    Pour les requêtes WITH, tente d'extraire le chartConfig depuis le SELECT final.
     if (normalized) {
+        let fallbackChartConfig: ChartConfig | undefined;
+        if (/^WITH\b/i.test(normalized)) {
+            const finalSql = extractFinalSelectFromWithQuery(normalized);
+            if (finalSql) fallbackChartConfig = parseChartFinalSelect(finalSql) ?? undefined;
+        }
         return withLabelResult({
-            ast: { source: '', steps: [{ type: 'custom_sql', sql: normalized }], materialized: materialize },
+            ast: {
+                source: '',
+                steps: [{ type: 'custom_sql', sql: normalized }],
+                materialized: materialize,
+                ...(fallbackChartConfig ? { chartConfig: fallbackChartConfig } : {}),
+            },
             compatible: true,
         });
     }
