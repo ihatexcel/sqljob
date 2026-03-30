@@ -101,20 +101,21 @@ const CHART_ROLES_SET = new Set(CHART_ROLES_ORDERED);
 const CHART_AXIS_ROLES = new Set(['XAXIS', 'YAXIS', 'CATEGORY', 'COLOR', 'COLORS']);
 
 export function buildChartFinalSelect(fromSource: string, cfg: ChartConfig): string {
-    // Préfixe LABEL / SUBLABEL / ICON si définis
-    let prefix = '';
+    // Préfixe combiné LABEL / SUBLABEL / ICON dans un seul SELECT si au moins un est défini
+    const cfgParts: string[] = [];
     if (cfg.label?.trim()) {
         const escaped = cfg.label.trim().replace(/'/g, "''");
-        prefix += `SELECT '${escaped}'::LABEL;\n`;
+        cfgParts.push(`'${escaped}'::LABEL`);
     }
     if ((cfg as any).sublabel?.trim()) {
         const escaped = (cfg as any).sublabel.trim().replace(/'/g, "''");
-        prefix += `SELECT '${escaped}'::SUBLABEL;\n`;
+        cfgParts.push(`'${escaped}'::SUBLABEL`);
     }
     if ((cfg as any).icon?.trim()) {
         const escaped = (cfg as any).icon.trim().replace(/'/g, "''");
-        prefix += `SELECT '${escaped}'::ICON;\n`;
+        cfgParts.push(`'${escaped}'::ICON`);
     }
+    const prefix = cfgParts.length > 0 ? `SELECT ${cfgParts.join(',\n       ')};\n` : '';
     // Axe / catégorie / couleur en premier, puis les données
     const sorted = [...cfg.columns].sort((a, b) => {
         const aAxis = CHART_AXIS_ROLES.has(a.role.toUpperCase()) ? 0 : 1;
@@ -146,15 +147,17 @@ export function buildChartFinalSelect(fromSource: string, cfg: ChartConfig): str
  * Retourne null si aucun rôle chart n'est trouvé.
  */
 export function parseChartFinalSelect(selectSql: string): ChartConfig | null {
-    // Extrait le titre/sous-titre/icône depuis SELECT '...'::LABEL; SELECT '...'::SUBLABEL; SELECT '...'::ICON;
+    // Extrait le titre/sous-titre/icône depuis les préfixes ::LABEL / ::SUBLABEL / ::ICON
+    // Supporte le format combiné : SELECT 'title'::LABEL, 'sub'::SUBLABEL, 'icon'::ICON;
+    // et le format individuel legacy : SELECT 'title'::LABEL;
     let cfgLabel: string | undefined;
     let cfgSublabel: string | undefined;
     let cfgIcon: string | undefined;
-    const labelM = selectSql.match(/SELECT\s+'([^']*)'\s*::LABEL\s*;/i);
+    const labelM = selectSql.match(/'([^']*)'\s*::LABEL\b/i);
     if (labelM) cfgLabel = labelM[1];
-    const sublabelM = selectSql.match(/SELECT\s+'([^']*)'\s*::SUBLABEL\s*;/i);
+    const sublabelM = selectSql.match(/'([^']*)'\s*::SUBLABEL\b/i);
     if (sublabelM) cfgSublabel = sublabelM[1];
-    const iconM = selectSql.match(/SELECT\s+'([^']*)'\s*::ICON\s*;/i);
+    const iconM = selectSql.match(/'([^']*)'\s*::ICON\b/i);
     if (iconM) cfgIcon = iconM[1];
 
     const rolesPattern = CHART_ROLES_ORDERED.join('|');

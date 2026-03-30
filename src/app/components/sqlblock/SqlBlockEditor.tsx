@@ -2794,7 +2794,7 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
         const newSql = stripMaterializePrefix(rawSql)
         // Vérification : plusieurs instructions SQL → UI impossible (hors LABEL prefix)
         const stmts = newSql.split(';').map((s: string) => s.trim()).filter(Boolean)
-        const nonLabelStmts = stmts.filter((s: string) => !/^\s*SELECT\s+.+?::(?:LABEL|SUBLABEL)\b/i.test(s))
+        const nonLabelStmts = stmts.filter((s: string) => !/^\s*SELECT\s+.+?::(?:LABEL|SUBLABEL|ICON)\b/i.test(s))
         if (nonLabelStmts.length > 1) {
             const cfg = getOrInitConfig(cell)
             cfg.degraded = true; cfg.manualSql = newSql
@@ -2831,7 +2831,7 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
         const sql = stripMaterializePrefix(cfg.manualSql || selectSql)
         // Bloquer la restauration si plusieurs instructions SQL (hors LABEL prefix)
         const stmts = sql.split(';').map((s: string) => s.trim()).filter(Boolean)
-        const nonLabelStmts = stmts.filter((s: string) => !/^\s*SELECT\s+.+?::(?:LABEL|SUBLABEL)\b/i.test(s))
+        const nonLabelStmts = stmts.filter((s: string) => !/^\s*SELECT\s+.+?::(?:LABEL|SUBLABEL|ICON)\b/i.test(s))
         if (nonLabelStmts.length > 1) {
             setMultiSqlWarning(true)
             return

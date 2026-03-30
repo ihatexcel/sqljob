@@ -30,12 +30,22 @@ function extractLabelStatement(sql: string): { labelSql: string | null; sublabel
     for (const stmt of stmts) {
         const trimmed = stmt.trim()
         if (!trimmed) continue
-        if (labelSql === null && /^\s*SELECT\s+.+?::LABEL\b/i.test(trimmed)) {
-            labelSql = trimmed
-        } else if (sublabelSql === null && /^\s*SELECT\s+.+?::SUBLABEL\b/i.test(trimmed)) {
-            sublabelSql = trimmed
-        } else if (iconSql === null && /^\s*SELECT\s+.+?::ICON\b/i.test(trimmed)) {
-            iconSql = trimmed
+        // Config statement: SELECT contenant uniquement des rôles LABEL/SUBLABEL/ICON
+        // Supporte le format combiné : SELECT 'a'::LABEL, 'b'::SUBLABEL, 'c'::ICON
+        if (/^\s*SELECT\s+.+?::(?:LABEL|SUBLABEL|ICON)\b/i.test(trimmed)) {
+            // Extrait chaque rôle depuis le statement (individuel ou combiné)
+            if (labelSql === null && /::LABEL\b/i.test(trimmed)) {
+                const m = trimmed.match(/'([^']*)'\s*::LABEL\b/i)
+                if (m) labelSql = `SELECT '${m[1]}'::LABEL`
+            }
+            if (sublabelSql === null && /::SUBLABEL\b/i.test(trimmed)) {
+                const m = trimmed.match(/'([^']*)'\s*::SUBLABEL\b/i)
+                if (m) sublabelSql = `SELECT '${m[1]}'::SUBLABEL`
+            }
+            if (iconSql === null && /::ICON\b/i.test(trimmed)) {
+                const m = trimmed.match(/'([^']*)'\s*::ICON\b/i)
+                if (m) iconSql = `SELECT '${m[1]}'::ICON`
+            }
         } else {
             mainStmts.push(trimmed)
         }
