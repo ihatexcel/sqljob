@@ -134262,7 +134262,7 @@ function _buildGaugeOption(At, yt, xt, wt, Ct) {
     } catch {
     }
   }
-  const Zt = 40, sr = 180, Er = 0, Ir = ["50%", "75%"], Br = "70%", Qr = { width: Zt };
+  const Zt = 40, sr = 180, Er = 0, Ir = ["50%", "85%"], Br = "82%", Qr = { width: Zt };
   if (zt)
     Qr.color = zt;
   else if (Jt) {
