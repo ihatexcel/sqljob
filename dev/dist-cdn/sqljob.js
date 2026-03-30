@@ -133557,7 +133557,21 @@ function ChartConfigEditor({ chartConfig: At, availableColumns: yt, availableCol
       )
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs text-muted-foreground w-28 shrink-0", children: "Icône" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs text-muted-foreground w-28 shrink-0 flex items-center gap-1", children: [
+        "Icône",
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "a",
+          {
+            href: "https://icon-sets.iconify.design/",
+            target: "_blank",
+            rel: "noopener noreferrer",
+            title: "Parcourir les icônes disponibles (ex: lucide:home, mdi:star)",
+            className: "inline-flex items-center text-muted-foreground hover:text-primary transition-colors",
+            tabIndex: -1,
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "iconify", "data-icon": "lucide:circle-help", style: { fontSize: "0.85rem" } })
+          }
+        )
+      ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "input",
         {
