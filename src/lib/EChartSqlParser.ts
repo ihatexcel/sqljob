@@ -1131,9 +1131,9 @@ function _buildKpiHtml(row: any, roleMap: Record<string, ColumnRole[]>, title: s
 
     // ICON — priorité au paramètre préfixe, fallback sur la colonne ::ICON du SELECT (legacy)
     const iconCol = (roleMap['ICON'] || [])[0];
-    const iconId = icon
-        ?? (iconCol ? _str(row[iconCol.originalName]) : null);
-    if (iconId && iconId.toLowerCase() !== 'null') {
+    const iconRaw = icon ?? (iconCol ? _str(row[iconCol.originalName]) : null);
+    if (iconRaw && iconRaw.toLowerCase() !== 'null') {
+        const iconId = iconRaw.includes(':') ? iconRaw : `lucide:${iconRaw}`;
         parts.push(`<div style="display:flex;justify-content:center;margin-bottom:.1rem"><span class="iconify" data-icon="${_esc(iconId)}" style="font-size:clamp(1.5rem,8vw,3rem);color:var(--primary,#555)"></span></div>`);
     }
 
