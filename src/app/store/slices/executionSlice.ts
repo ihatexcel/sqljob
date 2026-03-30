@@ -1290,89 +1290,127 @@ export const createExecutionSlice = (set: any, get: any) => ({
 
     // ─── Univer Sheet ─────────────────────────────────────────────────────────
 
+    /**
+     * Phase 1 : collecte des données (SQL / snapshot) et signale que le rendu est prêt.
+     * Le rendu DOM effectif est délégué à renderUniverInContainer (appelé ici et depuis
+     * le useEffect du composant, comme Perspective).
+     */
     async executeUniverSheetCell(cell) {
         get().setStatus('Chargement de Univer...', 'loading')
         await CDNManager.loadUniver()
 
-        // Réinitialiser l'état de rendu
+        // Réinitialiser l'état sans forcer un re-render tout de suite
         cell._univerReady = false
-        set((s: any) => ({ _rev: s._rev + 1 }))
-
-        // Détruire l'instance précédente si elle existe
+        cell._univerScheduled = false
+        cell._univerAPI = null
         if (cell._univerInstance) {
             try { cell._univerInstance.dispose?.() } catch (_) {}
             cell._univerInstance = null
-            cell._univerAPI = null
         }
 
-        // Attendre le container DOM (pattern identique à Perspective)
-        const containerId = 'univer-' + cell._id
-        let waited = 0
-        while (!document.getElementById(containerId) && waited < 2000) {
-            await new Promise(r => setTimeout(r, 50))
-            waited += 50
-        }
-        const container = document.getElementById(containerId)
-        if (!container) throw new Error('Container DOM introuvable pour Univer Sheet')
-
-        // Initialiser Univer via le preset CDN
-        const univerLib = (window as any).UniverPresetSheetsCore
-        if (!univerLib) throw new Error('Bibliothèque Univer introuvable (CDN non chargé)')
-
-        const { createUniver, defaultTheme, LocaleType, UniverSheetsPreset } = univerLib
-        const { univer, univerAPI } = createUniver({
-            locale: LocaleType.EN_US,
-            theme: defaultTheme,
-            presets: [
-                UniverSheetsPreset({ container }),
-            ],
-        })
-        cell._univerInstance = univer
-        cell._univerAPI = univerAPI
-
-        // Charger les données
-        if (cell.snapshot && String(cell.snapshot).trim()) {
-            // Snapshot gzip+base64 → décompresser et charger
-            get().setStatus('Chargement du snapshot...', 'loading')
-            try {
-                const json = await ConfigManager.decompressFromGzipBase64(cell.snapshot.trim())
-                const workbookData = JSON.parse(json)
-                univerAPI.createWorkbook(workbookData)
-            } catch (e) {
-                console.error('[univerSheet] Erreur décompression snapshot:', e)
-                throw new Error('Snapshot Univer invalide : ' + e.message)
-            }
+        // ── Collecter les données ──────────────────────────────────────────────
+        if (cell.snapshot?.trim()) {
+            // Snapshot stocké → sera décompressé dans renderUniverInContainer
+            cell._univerSnapshotPending = cell.snapshot.trim()
+            cell._univerRows = null
         } else {
             const sql = ConfigManager.getCellQuery(cell, 0)?.trim()
+            cell._univerSnapshotPending = null
             if (sql) {
                 get().setStatus('Exécution de la requête SQL...', 'loading')
                 const finalSql = get().parseQueryWithParameters(sql)
                 const { rows } = await DuckDBManager.executeQueryWithSchema(finalSql)
-                const workbookData = _buildUniverWorkbookFromRows(rows, cell._id)
-                univerAPI.createWorkbook(workbookData)
+                cell._univerRows = rows
             } else {
-                // Feuille vide
-                univerAPI.createWorkbook({ id: 'wb-' + cell._id, name: cell.name || 'Sheet', sheets: {} })
+                cell._univerRows = null
             }
         }
 
-        // Mode lecture seule en mode client
-        const isReadOnly = !get().devMode && (cell.readOnly !== false)
-        if (isReadOnly) {
-            try { univerAPI.setEditable?.(false) } catch (_) {}
-        }
-
-        // Observer les modifications en devMode
-        if (get().devMode && univer?.onCommandExecuted) {
-            univer.onCommandExecuted(() => {
-                cell._univerModified = true
-            })
-        }
-
+        // Signaler que les données sont prêtes → le composant peut rendre le container
         cell._univerReady = true
-        const rowCount = cell.snapshot ? '(snapshot)' : ''
-        cell._resultInfo = '✅ Sheet prête ' + rowCount
+        cell._univerScheduled = true
+        set((s: any) => ({ _rev: s._rev + 1 }))
+
+        // Tenter le rendu immédiatement (si le container est déjà dans le DOM)
+        // Si le container n'existe pas encore (showContent=false pendant running),
+        // renderUniverInContainer retourne gracieusement ; le useEffect retentera
+        // une fois que le statut passe à 'success' et que le composant se monte.
+        await new Promise(r => setTimeout(r, 0))
+        await get().renderUniverInContainer(cell)
+
+        cell._resultInfo = cell._univerSnapshotPending ? '✅ Sheet prête (snapshot)' : '✅ Sheet prête'
         get().setStatus('Univer Sheet prête', 'success')
+    },
+
+    /**
+     * Phase 2 : initialisation de l'instance Univer dans le container DOM.
+     * Retourne gracieusement si le container n'existe pas encore (comme renderPerspectiveInContainer).
+     * Appelé depuis executeUniverSheetCell et depuis le useEffect de UniverSheetBody.
+     */
+    async renderUniverInContainer(cell) {
+        const containerId = 'univer-' + cell._id
+        const container = document.getElementById(containerId)
+
+        if (!container) {
+            // DOM pas encore visible (showContent=false pendant l'exécution)
+            // Le useEffect retentera une fois le composant monté
+            cell._univerScheduled = false
+            return
+        }
+
+        // Éviter le double rendu concurrent
+        if (cell._univerRendering) return
+        cell._univerRendering = true
+        cell._univerScheduled = false
+
+        try {
+            // Détruire l'instance précédente si re-rendu
+            if (cell._univerAPI) {
+                try { cell._univerAPI.dispose?.() } catch (_) {}
+                cell._univerAPI = null
+                container.innerHTML = ''
+            }
+
+            const univerLib = (window as any).UniverPresetSheetsCore
+            if (!univerLib) throw new Error('Bibliothèque Univer introuvable (CDN non chargé)')
+
+            const { createUniver, defaultTheme, LocaleType, UniverSheetsPreset } = univerLib
+            const { univer, univerAPI } = createUniver({
+                locale: LocaleType.EN_US,
+                theme: defaultTheme,
+                presets: [UniverSheetsPreset({ container })],
+            })
+            cell._univerInstance = univer
+            cell._univerAPI = univerAPI
+
+            // Charger les données
+            if (cell._univerSnapshotPending) {
+                try {
+                    const json = await ConfigManager.decompressFromGzipBase64(cell._univerSnapshotPending)
+                    univerAPI.createWorkbook(JSON.parse(json))
+                } catch (e) {
+                    throw new Error('Snapshot Univer invalide : ' + e.message)
+                }
+            } else if (cell._univerRows?.length) {
+                univerAPI.createWorkbook(_buildUniverWorkbookFromRows(cell._univerRows, cell._id))
+            } else {
+                univerAPI.createWorkbook({ id: 'wb-' + cell._id, name: cell.name || 'Sheet', sheets: {} })
+            }
+
+            // Mode lecture seule en client
+            if (!get().devMode && cell.readOnly !== false) {
+                try { univerAPI.setEditable?.(false) } catch (_) {}
+            }
+
+            // Tracker les modifications en devMode
+            if (get().devMode && univer?.onCommandExecuted) {
+                univer.onCommandExecuted(() => { cell._univerModified = true })
+            }
+
+            set((s: any) => ({ _rev: s._rev + 1 }))
+        } finally {
+            cell._univerRendering = false
+        }
     },
 
     async captureUniverSnapshot(cell) {
