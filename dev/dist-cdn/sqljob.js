@@ -132478,48 +132478,47 @@ const CHART_ROLES_ORDERED = [
   "YLINE"
 ], CHART_ROLES_SET = new Set(CHART_ROLES_ORDERED), CHART_AXIS_ROLES = /* @__PURE__ */ new Set(["XAXIS", "YAXIS", "CATEGORY", "COLOR", "COLORS"]);
 function buildChartFinalSelect(At, yt) {
-  var St, Et, kt;
-  let xt = "";
-  if ((St = yt.label) != null && St.trim()) {
-    const Tt = yt.label.trim().replace(/'/g, "''");
-    xt += `SELECT '${Tt}'::LABEL;
-`;
+  var Et, kt, Tt;
+  const xt = [];
+  if ((Et = yt.label) != null && Et.trim()) {
+    const $t = yt.label.trim().replace(/'/g, "''");
+    xt.push(`'${$t}'::LABEL`);
   }
-  if ((Et = yt.sublabel) != null && Et.trim()) {
-    const Tt = yt.sublabel.trim().replace(/'/g, "''");
-    xt += `SELECT '${Tt}'::SUBLABEL;
-`;
+  if ((kt = yt.sublabel) != null && kt.trim()) {
+    const $t = yt.sublabel.trim().replace(/'/g, "''");
+    xt.push(`'${$t}'::SUBLABEL`);
   }
-  if ((kt = yt.icon) != null && kt.trim()) {
-    const Tt = yt.icon.trim().replace(/'/g, "''");
-    xt += `SELECT '${Tt}'::ICON;
-`;
+  if ((Tt = yt.icon) != null && Tt.trim()) {
+    const $t = yt.icon.trim().replace(/'/g, "''");
+    xt.push(`'${$t}'::ICON`);
   }
-  const Ct = [...yt.columns].sort((Tt, $t) => {
-    const Lt = CHART_AXIS_ROLES.has(Tt.role.toUpperCase()) ? 0 : 1, It = CHART_AXIS_ROLES.has($t.role.toUpperCase()) ? 0 : 1;
-    return Lt - It;
-  }).map((Tt) => {
-    var Rt;
-    const $t = Tt.role.toUpperCase(), Lt = (Rt = Tt.label) != null && Rt.trim() ? ` AS "${Tt.label.trim()}"` : "";
-    let It;
-    if (Tt.valueKind === "literal") {
-      const Dt = Number(Tt.column);
-      It = Tt.column.trim() !== "" && !isNaN(Dt) ? Tt.column : `'${Tt.column.replace(/'/g, "''")}'`;
-    } else Tt.valueKind === "param" ? It = Tt.column : Tt.valueKind === "expression" ? It = `(${Tt.column})` : It = quoteId(Tt.column);
-    return `  ${It}::${$t}${Lt}`;
+  const wt = xt.length > 0 ? `SELECT ${xt.join(`,
+       `)};
+` : "", St = [...yt.columns].sort(($t, Lt) => {
+    const It = CHART_AXIS_ROLES.has($t.role.toUpperCase()) ? 0 : 1, Rt = CHART_AXIS_ROLES.has(Lt.role.toUpperCase()) ? 0 : 1;
+    return It - Rt;
+  }).map(($t) => {
+    var Dt;
+    const Lt = $t.role.toUpperCase(), It = (Dt = $t.label) != null && Dt.trim() ? ` AS "${$t.label.trim()}"` : "";
+    let Rt;
+    if ($t.valueKind === "literal") {
+      const jt = Number($t.column);
+      Rt = $t.column.trim() !== "" && !isNaN(jt) ? $t.column : `'${$t.column.replace(/'/g, "''")}'`;
+    } else $t.valueKind === "param" ? Rt = $t.column : $t.valueKind === "expression" ? Rt = `(${$t.column})` : Rt = quoteId($t.column);
+    return `  ${Rt}::${Lt}${It}`;
   });
-  return `${xt}SELECT
-${Ct.join(`,
+  return `${wt}SELECT
+${St.join(`,
 `)}
 FROM ${At}`;
 }
 function parseChartFinalSelect(At) {
   let yt, xt, wt;
-  const Ct = At.match(/SELECT\s+'([^']*)'\s*::LABEL\s*;/i);
+  const Ct = At.match(/'([^']*)'\s*::LABEL\b/i);
   Ct && (yt = Ct[1]);
-  const St = At.match(/SELECT\s+'([^']*)'\s*::SUBLABEL\s*;/i);
+  const St = At.match(/'([^']*)'\s*::SUBLABEL\b/i);
   St && (xt = St[1]);
-  const Et = At.match(/SELECT\s+'([^']*)'\s*::ICON\s*;/i);
+  const Et = At.match(/'([^']*)'\s*::ICON\b/i);
   Et && (wt = Et[1]);
   const kt = CHART_ROLES_ORDERED.join("|"), Tt = new RegExp(
     `(?:"([^"]+)"|\\{\\{([^}]+)\\}\\}|'([^']*)'|\\(((?:[^()]+|\\([^()]*\\))*)\\)|([\\w.]+))\\s*::\\s*(${kt})(?:\\s+AS\\s+(?:"([^"]+)"|([\\w]+)))?`,
@@ -137000,7 +136999,7 @@ LIMIT 0`), sp = {};
   function Rs(Fu) {
     var sp;
     const ks = stripMaterializePrefix(Fu);
-    if (ks.split(";").map((c0) => c0.trim()).filter(Boolean).filter((c0) => !/^\s*SELECT\s+.+?::(?:LABEL|SUBLABEL)\b/i.test(c0)).length > 1) {
+    if (ks.split(";").map((c0) => c0.trim()).filter(Boolean).filter((c0) => !/^\s*SELECT\s+.+?::(?:LABEL|SUBLABEL|ICON)\b/i.test(c0)).length > 1) {
       const c0 = getOrInitConfig(At);
       c0.degraded = !0, c0.manualSql = ks, c0.sql = buildDisplaySql(At.name, ks, ((sp = c0.ast) == null ? void 0 : sp.materialized) ?? "ephemeral"), Qr(!0), $t();
       return;
@@ -137023,7 +137022,7 @@ LIMIT 0`), sp = {};
   }
   function ws() {
     const Fu = getOrInitConfig(At), ks = stripMaterializePrefix(Fu.manualSql || fn);
-    if (ks.split(";").map((sp) => sp.trim()).filter(Boolean).filter((sp) => !/^\s*SELECT\s+.+?::(?:LABEL|SUBLABEL)\b/i.test(sp)).length > 1) {
+    if (ks.split(";").map((sp) => sp.trim()).filter(Boolean).filter((sp) => !/^\s*SELECT\s+.+?::(?:LABEL|SUBLABEL|ICON)\b/i.test(sp)).length > 1) {
       Qr(!0);
       return;
     }
@@ -145819,7 +145818,22 @@ function extractLabelStatement(At) {
   const St = [];
   for (const Et of yt) {
     const kt = Et.trim();
-    kt && (xt === null && /^\s*SELECT\s+.+?::LABEL\b/i.test(kt) ? xt = kt : wt === null && /^\s*SELECT\s+.+?::SUBLABEL\b/i.test(kt) ? wt = kt : Ct === null && /^\s*SELECT\s+.+?::ICON\b/i.test(kt) ? Ct = kt : St.push(kt));
+    if (kt)
+      if (/^\s*SELECT\s+.+?::(?:LABEL|SUBLABEL|ICON)\b/i.test(kt)) {
+        if (xt === null && /::LABEL\b/i.test(kt)) {
+          const Tt = kt.match(/'([^']*)'\s*::LABEL\b/i);
+          Tt && (xt = `SELECT '${Tt[1]}'::LABEL`);
+        }
+        if (wt === null && /::SUBLABEL\b/i.test(kt)) {
+          const Tt = kt.match(/'([^']*)'\s*::SUBLABEL\b/i);
+          Tt && (wt = `SELECT '${Tt[1]}'::SUBLABEL`);
+        }
+        if (Ct === null && /::ICON\b/i.test(kt)) {
+          const Tt = kt.match(/'([^']*)'\s*::ICON\b/i);
+          Tt && (Ct = `SELECT '${Tt[1]}'::ICON`);
+        }
+      } else
+        St.push(kt);
   }
   return { labelSql: xt, sublabelSql: wt, iconSql: Ct, sql: St.join(`;
 `) };
