@@ -353,7 +353,19 @@ export function ChartConfigEditor({ chartConfig, availableColumns, availableColT
             </div>
             {/* Icône */}
             <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground w-28 shrink-0">Icône</span>
+                <span className="text-xs text-muted-foreground w-28 shrink-0 flex items-center gap-1">
+                    Icône
+                    <a
+                        href="https://icon-sets.iconify.design/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="Parcourir les icônes disponibles (ex: lucide:home, mdi:star)"
+                        className="inline-flex items-center text-muted-foreground hover:text-primary transition-colors"
+                        tabIndex={-1}
+                    >
+                        <span className="iconify" data-icon="lucide:circle-help" style={{ fontSize: '0.85rem' }} />
+                    </a>
+                </span>
                 <input
                     type="text"
                     value={cfgIcon}
