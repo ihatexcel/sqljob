@@ -98,6 +98,7 @@ class UniverSheetElement extends LitElement {
             presetOptions.formulaBar = false
             presetOptions.footer = false
         }
+        console.log('[UniverSheet] readonly:', params.readonly, '| presetOptions:', JSON.stringify(presetOptions))
 
         const { univer, univerAPI } = createUniver({
             locale: LocaleType.EN_US,
@@ -122,20 +123,26 @@ class UniverSheetElement extends LitElement {
         }
 
         if (params.readonly) {
+            console.log('[UniverSheet] Registering LifeCycleChanged event for readonly setup')
+            console.log('[UniverSheet] univerAPI.Event keys:', Object.keys(univerAPI.Event || {}))
+            console.log('[UniverSheet] univerAPI.Enum.LifecycleStages:', univerAPI.Enum?.LifecycleStages)
             // Désactiver sélection + édition une fois le rendu terminé
             univerAPI.addEvent(univerAPI.Event.LifeCycleChanged, ({ stage }: any) => {
+                console.log('[UniverSheet] LifeCycleChanged stage:', stage, '| Rendered:', univerAPI.Enum?.LifecycleStages?.Rendered)
                 if (stage === univerAPI.Enum.LifecycleStages.Rendered) {
                     try {
                         const fWorkbook = univerAPI.getActiveWorkbook()
+                        console.log('[UniverSheet] fWorkbook:', fWorkbook, '| disableSelection:', typeof fWorkbook?.disableSelection)
                         if (!fWorkbook) return
                         const unitId = fWorkbook.getId()
                         fWorkbook.disableSelection?.()
                         const permission = fWorkbook.getPermission?.()
+                        console.log('[UniverSheet] permission:', permission, '| unitId:', unitId)
                         if (permission) {
                             permission.setWorkbookEditPermission?.(unitId, false)
                             permission.setPermissionDialogVisible?.(false)
                         }
-                    } catch (_) {}
+                    } catch (e) { console.error('[UniverSheet] readonly setup error:', e) }
                 }
             })
         } else if (params.onModified && univer?.onCommandExecuted) {
