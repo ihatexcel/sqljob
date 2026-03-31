@@ -1312,39 +1312,21 @@ export const createExecutionSlice = (set: any, get: any) => ({
         try {
             const workbook = univerAPI.getActiveWorkbook?.()
             if (!workbook) throw new Error('Classeur actif introuvable')
-            const data = workbook.save?.()
-            if (!data) throw new Error('Impossible de récupérer les données du classeur')
+            const snapshot = workbook.save?.()
+            if (!snapshot) throw new Error('Impossible de récupérer les données du classeur')
 
-            const XLSX = await import('xlsx')
-            const wb = XLSX.utils.book_new()
+            // Import dynamique → chunk Vite séparé, chargé à la demande
+            const { default: LuckyExcel } = await import('@mertdeveci55/univer-import-export')
 
-            for (const [sheetId, sheet] of Object.entries(data.sheets || {})) {
-                const s = sheet as any
-                const cellDataMap = s.cellData || {}
-                const rowNums = Object.keys(cellDataMap).map(Number).sort((a, b) => a - b)
-                const rows: any[][] = []
-                if (rowNums.length > 0) {
-                    const maxRow = Math.max(...rowNums)
-                    for (let ri = 0; ri <= maxRow; ri++) {
-                        const rowObj = cellDataMap[ri] || {}
-                        const colNums = Object.keys(rowObj).map(Number)
-                        const maxCol = colNums.length > 0 ? Math.max(...colNums) : -1
-                        const row: any[] = []
-                        for (let ci = 0; ci <= maxCol; ci++) {
-                            row.push(rowObj[ci]?.v ?? '')
-                        }
-                        rows.push(row)
-                    }
-                }
-                const ws = XLSX.utils.aoa_to_sheet(rows)
-                XLSX.utils.book_append_sheet(wb, ws, (s.name || sheetId).slice(0, 31))
-            }
-
-            const buf = XLSX.write(wb, { bookType: 'xlsx', type: 'array' })
-            const blob = new Blob([buf], {
-                type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            await new Promise<void>((resolve, reject) => {
+                LuckyExcel.transformUniverToExcel({
+                    snapshot,
+                    fileName: `${cellName || 'sheet'}.xlsx`,
+                    success: () => resolve(),
+                    error: (err: any) => reject(new Error(err?.message || String(err))),
+                })
             })
-            FileHandler.downloadFile(blob, (cellName || 'sheet') + '.xlsx')
+
             get().setStatus('Export XLSX terminé', 'success')
         } catch (e) {
             console.error('[univerSheet] Erreur export XLSX:', e)

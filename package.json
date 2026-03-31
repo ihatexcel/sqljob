@@ -33,6 +33,7 @@
     "@codemirror/view": "^6.39.15",
     "@iconify/iconify": "^3.1.1",
     "@marimo-team/codemirror-sql": "^0.2.4",
+    "@mertdeveci55/univer-import-export": "^0.2.1",
     "@pdfme/common": "^5.5.8",
     "@pdfme/generator": "^5.5.8",
     "@pdfme/schemas": "^5.5.8",
