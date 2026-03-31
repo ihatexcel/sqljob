@@ -91,10 +91,18 @@ class UniverSheetElement extends LitElement {
             import('@univerjs/preset-sheets-core/locales/en-US'),
         ])
 
+        const presetOptions: any = { container }
+        if (params.readonly) {
+            presetOptions.toolbar = false
+            presetOptions.contextMenu = false
+            presetOptions.formulaBar = false
+            presetOptions.footer = false
+        }
+
         const { univer, univerAPI } = createUniver({
             locale: LocaleType.EN_US,
             locales: { [LocaleType.EN_US]: sheetsCoreEnUS },
-            presets: [UniverSheetsCorePreset({ container })],
+            presets: [UniverSheetsCorePreset(presetOptions)],
         })
         this._univer = univer
         this._univerAPI = univerAPI
@@ -114,10 +122,23 @@ class UniverSheetElement extends LitElement {
         }
 
         if (params.readonly) {
-            try { univerAPI.setEditable?.(false) } catch (_) {}
-        }
-
-        if (params.onModified && univer?.onCommandExecuted) {
+            // Désactiver sélection + édition une fois le rendu terminé
+            univerAPI.addEvent(univerAPI.Event.LifeCycleChanged, ({ stage }: any) => {
+                if (stage === univerAPI.Enum.LifecycleStages.Rendered) {
+                    try {
+                        const fWorkbook = univerAPI.getActiveWorkbook()
+                        if (!fWorkbook) return
+                        const unitId = fWorkbook.getId()
+                        fWorkbook.disableSelection?.()
+                        const permission = fWorkbook.getPermission?.()
+                        if (permission) {
+                            permission.setWorkbookEditPermission?.(unitId, false)
+                            permission.setPermissionDialogVisible?.(false)
+                        }
+                    } catch (_) {}
+                }
+            })
+        } else if (params.onModified && univer?.onCommandExecuted) {
             univer.onCommandExecuted(params.onModified)
         }
     }
