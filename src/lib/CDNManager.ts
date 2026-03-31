@@ -212,37 +212,8 @@ export class CDNManager {
             }
 
             // ─── Univer Sheet ─────────────────────────────────────────────────────────
-
-            static univerLoaded = false;
-            static univerLoadingPromise = null;
-
-            /**
-             * Charge le preset Univer Sheets depuis CDN (lazy, dédupliqué).
-             * Expose window.UniverPresetSheetsCore après chargement.
-             */
-            static async loadUniver() {
-                if (this.univerLoaded) return;
-                if (this.univerLoadingPromise) return this.univerLoadingPromise;
-
-                this.univerLoadingPromise = (async () => {
-                    const cssUrl = 'https://unpkg.com/@univerjs/preset-sheets-core/lib/index.css';
-                    if (!document.querySelector(`link[href="${cssUrl}"]`)) {
-                        const link = document.createElement('link');
-                        link.rel = 'stylesheet';
-                        link.href = cssUrl;
-                        await new Promise<void>((resolve, reject) => {
-                            link.onload = () => resolve();
-                            link.onerror = () => resolve(); // non-bloquant si CDN indispo
-                            document.head.appendChild(link);
-                        });
-                    }
-
-                    await this.loadScript('https://unpkg.com/@univerjs/preset-sheets-core/lib/umd/index.js');
-                    this.univerLoaded = true;
-                })();
-
-                return this.univerLoadingPromise;
-            }
+            // Note : le preset Univer (JS + CSS) est chargé via import dynamique npm
+            // par UniverSheetElement.ts — plus de chargement CDN/UMD ici.
 
             static univerExportLoaded = false;
             static univerExportLoadingPromise = null;
@@ -256,7 +227,6 @@ export class CDNManager {
                 if (this.univerExportLoadingPromise) return this.univerExportLoadingPromise;
 
                 this.univerExportLoadingPromise = (async () => {
-                    await this.loadUniver(); // dépendance
                     await this.loadScript('https://unpkg.com/@mertdeveci55/univer-import-export/dist/index.umd.js');
                     this.univerExportLoaded = true;
                 })();

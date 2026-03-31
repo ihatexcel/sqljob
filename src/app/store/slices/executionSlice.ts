@@ -9,40 +9,6 @@ import { EChartSqlParser } from '../../../lib/EChartSqlParser'
 import { formatValueForInputType } from '../../../lib/utils'
 import { FileHandler } from '../../../lib/FileHandler'
 
-/**
- * Convertit un tableau de lignes SQL en IWorkbookData Univer.
- * La première ligne contient les noms de colonnes, les suivantes les données.
- */
-function _buildUniverWorkbookFromRows(rows: any[], cellId: string): any {
-    const sheetId = 'sheet-' + cellId
-    const cellData: Record<number, Record<number, { v: any }>> = {}
-    if (!rows || rows.length === 0) {
-        return { id: 'wb-' + cellId, name: 'Sheet', sheets: { [sheetId]: { id: sheetId, name: 'Sheet1', cellData } } }
-    }
-    const columns = Object.keys(rows[0])
-    // En-têtes en ligne 0
-    cellData[0] = {}
-    columns.forEach((col, ci) => { cellData[0][ci] = { v: col } })
-    // Données
-    rows.forEach((row, ri) => {
-        cellData[ri + 1] = {}
-        columns.forEach((col, ci) => {
-            const val = row[col]
-            cellData[ri + 1][ci] = { v: val === null || val === undefined ? '' : val }
-        })
-    })
-    return {
-        id: 'wb-' + cellId,
-        name: 'Sheet',
-        sheets: {
-            [sheetId]: {
-                id: sheetId,
-                name: 'Sheet1',
-                cellData,
-            }
-        }
-    }
-}
 
 /** Détecte si un SQL contient une instruction DDL (CREATE, DROP, ALTER, INSERT, UPDATE, DELETE…).
  *  Utilisé pour décider si le schéma DuckDB doit être rafraîchi après exécution. */
@@ -1289,30 +1255,18 @@ export const createExecutionSlice = (set: any, get: any) => ({
     },
 
     // ─── Univer Sheet ─────────────────────────────────────────────────────────
+    // L'initialisation DOM est déléguée à UniverSheetElement (LitElement).
+    // Ce slice se charge uniquement de la collecte des données.
 
-    /**
-     * Phase 1 : collecte des données (SQL / snapshot) et signale que le rendu est prêt.
-     * Le rendu DOM effectif est délégué à renderUniverInContainer (appelé ici et depuis
-     * le useEffect du composant, comme Perspective).
-     */
     async executeUniverSheetCell(cell) {
-        get().setStatus('Chargement de Univer...', 'loading')
-        await CDNManager.loadUniver()
-
-        // Réinitialiser l'état sans forcer un re-render tout de suite
+        // Réinitialiser
         cell._univerReady = false
-        cell._univerScheduled = false
-        cell._univerAPI = null
-        if (cell._univerInstance) {
-            try { cell._univerInstance.dispose?.() } catch (_) {}
-            cell._univerInstance = null
-        }
+        cell._univerRows = null
+        cell._univerSnapshotPending = null
 
         // ── Collecter les données ──────────────────────────────────────────────
         if (cell.snapshot?.trim()) {
-            // Snapshot stocké → sera décompressé dans renderUniverInContainer
             cell._univerSnapshotPending = cell.snapshot.trim()
-            cell._univerRows = null
         } else {
             const sql = ConfigManager.getCellQuery(cell, 0)?.trim()
             cell._univerSnapshotPending = null
@@ -1321,102 +1275,20 @@ export const createExecutionSlice = (set: any, get: any) => ({
                 const finalSql = get().parseQueryWithParameters(sql)
                 const { rows } = await DuckDBManager.executeQueryWithSchema(finalSql)
                 cell._univerRows = rows
-            } else {
-                cell._univerRows = null
             }
         }
 
-        // Signaler que les données sont prêtes → le composant peut rendre le container
+        // Signaler que les données sont prêtes → UniverSheetBody appellera initialize()
         cell._univerReady = true
-        cell._univerScheduled = true
         set((s: any) => ({ _rev: s._rev + 1 }))
-
-        // Tenter le rendu immédiatement (si le container est déjà dans le DOM)
-        // Si le container n'existe pas encore (showContent=false pendant running),
-        // renderUniverInContainer retourne gracieusement ; le useEffect retentera
-        // une fois que le statut passe à 'success' et que le composant se monte.
-        await new Promise(r => setTimeout(r, 0))
-        await get().renderUniverInContainer(cell)
-
         cell._resultInfo = cell._univerSnapshotPending ? '✅ Sheet prête (snapshot)' : '✅ Sheet prête'
         get().setStatus('Univer Sheet prête', 'success')
     },
 
-    /**
-     * Phase 2 : initialisation de l'instance Univer dans le container DOM.
-     * Retourne gracieusement si le container n'existe pas encore (comme renderPerspectiveInContainer).
-     * Appelé depuis executeUniverSheetCell et depuis le useEffect de UniverSheetBody.
-     */
-    async renderUniverInContainer(cell) {
-        const containerId = 'univer-' + cell._id
-        const container = document.getElementById(containerId)
-
-        if (!container) {
-            // DOM pas encore visible (showContent=false pendant l'exécution)
-            // Le useEffect retentera une fois le composant monté
-            cell._univerScheduled = false
-            return
-        }
-
-        // Éviter le double rendu concurrent
-        if (cell._univerRendering) return
-        cell._univerRendering = true
-        cell._univerScheduled = false
-
+    async captureUniverSnapshot(cell, univerAPI) {
+        if (!univerAPI) return
         try {
-            // Détruire l'instance précédente si re-rendu
-            if (cell._univerAPI) {
-                try { cell._univerAPI.dispose?.() } catch (_) {}
-                cell._univerAPI = null
-                container.innerHTML = ''
-            }
-
-            const univerLib = (window as any).UniverPresetSheetsCore
-            if (!univerLib) throw new Error('Bibliothèque Univer introuvable (CDN non chargé)')
-
-            const { createUniver, defaultTheme, LocaleType, UniverSheetsPreset } = univerLib
-            const { univer, univerAPI } = createUniver({
-                locale: LocaleType.EN_US,
-                theme: defaultTheme,
-                presets: [UniverSheetsPreset({ container })],
-            })
-            cell._univerInstance = univer
-            cell._univerAPI = univerAPI
-
-            // Charger les données
-            if (cell._univerSnapshotPending) {
-                try {
-                    const json = await ConfigManager.decompressFromGzipBase64(cell._univerSnapshotPending)
-                    univerAPI.createWorkbook(JSON.parse(json))
-                } catch (e) {
-                    throw new Error('Snapshot Univer invalide : ' + e.message)
-                }
-            } else if (cell._univerRows?.length) {
-                univerAPI.createWorkbook(_buildUniverWorkbookFromRows(cell._univerRows, cell._id))
-            } else {
-                univerAPI.createWorkbook({ id: 'wb-' + cell._id, name: cell.name || 'Sheet', sheets: {} })
-            }
-
-            // Mode lecture seule en client
-            if (!get().devMode && cell.readOnly !== false) {
-                try { univerAPI.setEditable?.(false) } catch (_) {}
-            }
-
-            // Tracker les modifications en devMode
-            if (get().devMode && univer?.onCommandExecuted) {
-                univer.onCommandExecuted(() => { cell._univerModified = true })
-            }
-
-            set((s: any) => ({ _rev: s._rev + 1 }))
-        } finally {
-            cell._univerRendering = false
-        }
-    },
-
-    async captureUniverSnapshot(cell) {
-        if (!cell._univerAPI) return
-        try {
-            const workbook = cell._univerAPI.getActiveWorkbook?.()
+            const workbook = univerAPI.getActiveWorkbook?.()
             if (!workbook) return
             const snapshot = workbook.save?.()
             if (!snapshot) return
@@ -1433,8 +1305,8 @@ export const createExecutionSlice = (set: any, get: any) => ({
         }
     },
 
-    async exportUniverToXlsx(cell) {
-        if (!cell._univerAPI) throw new Error('Univer non initialisé')
+    async exportUniverToXlsx(univerAPI, cellName) {
+        if (!univerAPI) throw new Error('Univer non initialisé')
         get().setStatus('Chargement du plugin export...', 'loading')
         await CDNManager.loadUniverExport()
 
@@ -1443,8 +1315,8 @@ export const createExecutionSlice = (set: any, get: any) => ({
 
         try {
             const { exportXLSX } = exportLib
-            const blob = await exportXLSX(cell._univerAPI)
-            const fileName = (cell.name || 'sheet') + '.xlsx'
+            const blob = await exportXLSX(univerAPI)
+            const fileName = (cellName || 'sheet') + '.xlsx'
             FileHandler.downloadFile(blob, fileName)
             get().setStatus('Export XLSX terminé', 'success')
         } catch (e) {
