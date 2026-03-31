@@ -19,6 +19,7 @@ import {
 import { DuckDBManager } from '../../lib/DuckDBManager'
 import DataTablePaginated from '@sqlrooms/data-table/dist/DataTablePaginated'
 import { SqlBlockEditor } from './sqlblock/SqlBlockEditor'
+import './UniverSheetElement'
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 function CellBodySkeleton() {
@@ -1055,34 +1056,35 @@ function GenericHtmlBody({ cell, path, cellIndex }: any) {
 function UniverSheetBody({ cell, path, cellIndex }: any) {
     const {
         devMode, showSqlEditorVisible, hasCellHeight,
-        captureUniverSnapshot, exportUniverToXlsx, renderUniverInContainer, _rev,
+        captureUniverSnapshot, exportUniverToXlsx, _rev,
     } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         showSqlEditorVisible: s.showSqlEditorVisible,
         hasCellHeight: s.hasCellHeight,
         captureUniverSnapshot: s.captureUniverSnapshot,
         exportUniverToXlsx: s.exportUniverToXlsx,
-        renderUniverInContainer: s.renderUniverInContainer,
         _rev: s._rev,
     })))
 
     const hasHeight = hasCellHeight(cell)
     const mh = '400px'
+    const elementRef = useRef(null)
 
-    // Pattern identique à PerspectiveBody :
-    // quand le composant se monte (post-running, showContent devient true),
-    // si _univerScheduled=true et _univerAPI=null, relancer le rendu.
+    // Quand les données sont prêtes (_univerReady=true), appeler initialize()
+    // sur le web component Lit qui gère l'initialisation Univer en interne.
     useEffect(() => {
-        if (!cell._univerReady) return
-        const container = document.getElementById('univer-' + cell._id)
-        if (!container) return
-        if (cell._univerScheduled && !cell._univerAPI) {
-            renderUniverInContainer(cell).catch((e: any) => {
-                cell._univerReady = false
-                cell._resultInfo = '❌ ' + e.message
-            })
-        }
-    }, [_rev])
+        if (!cell._univerReady || !elementRef.current) return
+        elementRef.current.initialize({
+            rows: cell._univerRows ?? null,
+            snapshot: cell._univerSnapshotPending ?? null,
+            cellId: cell._id,
+            readonly: !devMode && cell.readOnly !== false,
+            onModified: () => { cell._univerModified = true },
+        }).catch((e: any) => {
+            cell._univerReady = false
+            cell._resultInfo = '❌ ' + e.message
+        })
+    }, [_rev, cell._univerReady])
 
     const [saving, setSaving] = useState(false)
     const [exporting, setExporting] = useState(false)
@@ -1090,13 +1092,13 @@ function UniverSheetBody({ cell, path, cellIndex }: any) {
     const handleSaveSnapshot = useCallback(async () => {
         if (saving) return
         setSaving(true)
-        try { await captureUniverSnapshot(cell) } catch (e) { console.error(e) } finally { setSaving(false) }
+        try { await captureUniverSnapshot(cell, elementRef.current?.getAPI()) } catch (e) { console.error(e) } finally { setSaving(false) }
     }, [cell, captureUniverSnapshot, saving])
 
     const handleExportXlsx = useCallback(async () => {
         if (exporting) return
         setExporting(true)
-        try { await exportUniverToXlsx(cell) } catch (e) { console.error(e) } finally { setExporting(false) }
+        try { await exportUniverToXlsx(elementRef.current?.getAPI(), cell.name) } catch (e) { console.error(e) } finally { setExporting(false) }
     }, [cell, exportUniverToXlsx, exporting])
 
     return (
@@ -1114,11 +1116,10 @@ function UniverSheetBody({ cell, path, cellIndex }: any) {
                 />
             )}
 
-            {/* Container Univer — toujours présent dans le DOM pour que l'effet de
-                PerspectiveBody puisse trouver l'élément */}
-            <div
-                id={`univer-${cell._id}`}
-                className={`rounded-lg border overflow-hidden${hasHeight ? ' flex-1 min-h-0' : ''}`}
+            {/* Web component Lit — initialisation Univer déléguée via ref.initialize() */}
+            <univer-sheet
+                ref={elementRef}
+                class={`rounded-lg border overflow-hidden${hasHeight ? ' flex-1 min-h-0' : ''}`}
                 style={{
                     minHeight: hasHeight ? undefined : mh,
                     display: cell._univerReady ? 'block' : 'none',
