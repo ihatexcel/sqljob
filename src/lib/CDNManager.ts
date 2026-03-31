@@ -215,22 +215,4 @@ export class CDNManager {
             // Note : le preset Univer (JS + CSS) est chargé via import dynamique npm
             // par UniverSheetElement.ts — plus de chargement CDN/UMD ici.
 
-            static univerExportLoaded = false;
-            static univerExportLoadingPromise = null;
-
-            /**
-             * Charge le plugin export XLSX Univer depuis CDN (lazy, dédupliqué).
-             * Expose window.UniverImportExport après chargement.
-             */
-            static async loadUniverExport() {
-                if (this.univerExportLoaded) return;
-                if (this.univerExportLoadingPromise) return this.univerExportLoadingPromise;
-
-                this.univerExportLoadingPromise = (async () => {
-                    await this.loadScript('https://unpkg.com/@mertdeveci55/univer-import-export/dist/index.umd.js');
-                    this.univerExportLoaded = true;
-                })();
-
-                return this.univerExportLoadingPromise;
-            }
         }

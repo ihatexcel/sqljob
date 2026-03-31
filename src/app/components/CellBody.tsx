@@ -1069,11 +1069,16 @@ function UniverSheetBody({ cell, path, cellIndex }: any) {
     const hasHeight = hasCellHeight(cell)
     const mh = '400px'
     const elementRef = useRef(null)
+    const lastInitRunId = useRef(-1)
 
     // Quand les données sont prêtes (_univerReady=true), appeler initialize()
     // sur le web component Lit qui gère l'initialisation Univer en interne.
+    // Guard sur _univerRunId : évite de réinitialiser lors d'un _rev parasite
+    // (ex. captureUniverSnapshot incrémente _rev sans changer les données).
     useEffect(() => {
         if (!cell._univerReady || !elementRef.current) return
+        if (cell._univerRunId === lastInitRunId.current) return
+        lastInitRunId.current = cell._univerRunId ?? 0
         elementRef.current.initialize({
             rows: cell._univerRows ?? null,
             snapshot: cell._univerSnapshotPending ?? null,

@@ -1279,6 +1279,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
         }
 
         // Signaler que les données sont prêtes → UniverSheetBody appellera initialize()
+        cell._univerRunId = (cell._univerRunId || 0) + 1
         cell._univerReady = true
         set((s: any) => ({ _rev: s._rev + 1 }))
         cell._resultInfo = cell._univerSnapshotPending ? '✅ Sheet prête (snapshot)' : '✅ Sheet prête'
@@ -1307,17 +1308,43 @@ export const createExecutionSlice = (set: any, get: any) => ({
 
     async exportUniverToXlsx(univerAPI, cellName) {
         if (!univerAPI) throw new Error('Univer non initialisé')
-        get().setStatus('Chargement du plugin export...', 'loading')
-        await CDNManager.loadUniverExport()
-
-        const exportLib = (window as any).UniverImportExport
-        if (!exportLib) throw new Error('Plugin export Univer introuvable (CDN non chargé)')
-
+        get().setStatus('Export XLSX...', 'loading')
         try {
-            const { exportXLSX } = exportLib
-            const blob = await exportXLSX(univerAPI)
-            const fileName = (cellName || 'sheet') + '.xlsx'
-            FileHandler.downloadFile(blob, fileName)
+            const workbook = univerAPI.getActiveWorkbook?.()
+            if (!workbook) throw new Error('Classeur actif introuvable')
+            const data = workbook.save?.()
+            if (!data) throw new Error('Impossible de récupérer les données du classeur')
+
+            const XLSX = await import('xlsx')
+            const wb = XLSX.utils.book_new()
+
+            for (const [sheetId, sheet] of Object.entries(data.sheets || {})) {
+                const s = sheet as any
+                const cellDataMap = s.cellData || {}
+                const rowNums = Object.keys(cellDataMap).map(Number).sort((a, b) => a - b)
+                const rows: any[][] = []
+                if (rowNums.length > 0) {
+                    const maxRow = Math.max(...rowNums)
+                    for (let ri = 0; ri <= maxRow; ri++) {
+                        const rowObj = cellDataMap[ri] || {}
+                        const colNums = Object.keys(rowObj).map(Number)
+                        const maxCol = colNums.length > 0 ? Math.max(...colNums) : -1
+                        const row: any[] = []
+                        for (let ci = 0; ci <= maxCol; ci++) {
+                            row.push(rowObj[ci]?.v ?? '')
+                        }
+                        rows.push(row)
+                    }
+                }
+                const ws = XLSX.utils.aoa_to_sheet(rows)
+                XLSX.utils.book_append_sheet(wb, ws, (s.name || sheetId).slice(0, 31))
+            }
+
+            const buf = XLSX.write(wb, { bookType: 'xlsx', type: 'array' })
+            const blob = new Blob([buf], {
+                type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            })
+            FileHandler.downloadFile(blob, (cellName || 'sheet') + '.xlsx')
             get().setStatus('Export XLSX terminé', 'success')
         } catch (e) {
             console.error('[univerSheet] Erreur export XLSX:', e)
