@@ -81,13 +81,20 @@ class UniverSheetElement extends LitElement {
         const container = this.renderRoot.querySelector('#uc') as HTMLDivElement
         if (!container) throw new Error('[UniverSheet] Container #uc introuvable')
 
-        // ── Parser la config JSON utilisateur ────────────────────────────────────
+        // ── Parser la config utilisateur (JSON strict ou littéral JS) ─────────────
         let userConfig: any = {}
         if (params.config?.trim()) {
             try {
                 userConfig = JSON.parse(params.config.trim())
-            } catch (e) {
-                console.warn('[UniverSheet] Configuration JSON invalide, ignorée :', e)
+            } catch (_jsonErr) {
+                // Fallback : syntaxe JS (clés sans guillemets, virgules finales, etc.)
+                try {
+                    // eslint-disable-next-line no-new-func
+                    userConfig = (new Function(`return (${params.config.trim()})`))()
+                } catch (e) {
+                    console.warn('[UniverSheet] Configuration invalide, ignorée :', e)
+                }
+            }
             }
         }
 
