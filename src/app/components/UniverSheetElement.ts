@@ -37,6 +37,39 @@ function _buildWorkbookFromRows(rows: any[], cellId: string): any {
     }
 }
 
+// ─── Parseur tolérant pour la syntaxe des docs Univer ─────────────────────────
+// Extrait les clés simples + reconnaît LocaleType.XX_XX.
+// La clé `locales` est ignorée (gérée en interne via le champ `locale`).
+
+const _LOCALE_TYPE_MAP: Record<string, string> = {
+    EN_US: 'en-US', FR_FR: 'fr-FR', ZH_CN: 'zh-CN', ZH_TW: 'zh-TW',
+    RU_RU: 'ru-RU', JA_JP: 'ja-JP', ES_ES: 'es-ES', CA_ES: 'ca-ES',
+    SK_SK: 'sk-SK', FA_IR: 'fa-IR', VI_VN: 'vi-VN', KO_KR: 'ko-KR',
+}
+
+function _parseUniverDocsSyntax(raw: string): Record<string, any> {
+    const result: Record<string, any> = {}
+
+    // locale: LocaleType.XX_XX
+    const localeMatch = raw.match(/\blocale\s*:\s*LocaleType\.(\w+)/)
+    if (localeMatch && _LOCALE_TYPE_MAP[localeMatch[1]]) {
+        result.locale = _LOCALE_TYPE_MAP[localeMatch[1]]
+    }
+
+    // Clés simples : key: true|false|number|"string"|'string'
+    // Exclut `locales` (objet complexe géré en interne)
+    const simpleRe = /\b(\w+)\s*:\s*(true|false|-?\d+(?:\.\d+)?|"[^"]*"|'[^']*')/g
+    let m: RegExpExecArray | null
+    while ((m = simpleRe.exec(raw)) !== null) {
+        const key = m[1]
+        if (key === 'locale' && result.locale) continue
+        if (key === 'locales') continue
+        try { result[key] = JSON.parse(m[2].replace(/'/g, '"')) } catch (_) {}
+    }
+
+    return result
+}
+
 // ─── Web Component ─────────────────────────────────────────────────────────────
 
 export interface UniverInitParams {
@@ -81,20 +114,27 @@ class UniverSheetElement extends LitElement {
         const container = this.renderRoot.querySelector('#uc') as HTMLDivElement
         if (!container) throw new Error('[UniverSheet] Container #uc introuvable')
 
-        // ── Parser la config utilisateur (JSON strict ou littéral JS) ─────────────
+        // ── Parser la config utilisateur ─────────────────────────────────────────
+        // Accepte JSON strict, littéral JS, et la syntaxe copier-collée des docs
+        // Univer (LocaleType.XX_XX, mergeLocales(...), etc.).
         let userConfig: any = {}
         if (params.config?.trim()) {
-            try {
-                userConfig = JSON.parse(params.config.trim())
-            } catch (_jsonErr) {
-                // Fallback : syntaxe JS (clés sans guillemets, virgules finales, etc.)
-                try {
-                    // eslint-disable-next-line no-new-func
-                    userConfig = (new Function(`return (${params.config.trim()})`))()
-                } catch (e) {
-                    console.warn('[UniverSheet] Configuration invalide, ignorée :', e)
-                }
+            const raw = params.config.trim()
+
+            // 1. JSON strict
+            if (!userConfig || Object.keys(userConfig).length === 0) {
+                try { userConfig = JSON.parse(raw) } catch (_) {}
             }
+
+            // 2. Littéral JS pur (clés sans guillemets, virgules finales…)
+            if (!userConfig || Object.keys(userConfig).length === 0) {
+                try { userConfig = (new Function(`return (${raw})`))() } catch (_) {} // eslint-disable-line no-new-func
+            }
+
+            // 3. Extraction tolérante pour la syntaxe docs Univer
+            //    (LocaleType.XX_XX, [LocaleType.XX]: mergeLocales(...), etc.)
+            if (!userConfig || Object.keys(userConfig).length === 0) {
+                userConfig = _parseUniverDocsSyntax(raw)
             }
         }
 
