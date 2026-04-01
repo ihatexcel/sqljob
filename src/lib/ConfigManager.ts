@@ -663,6 +663,10 @@ return c;
                                 let cfg = cell.json.perspectiveConfig;
                                 cleanCell.json.perspectiveConfig = typeof cfg === 'string' ? cfg.replace(/\r\n/g, '\n').replace(/\r/g, '\n') : (cfg != null ? JSON.stringify(cfg, null, 2) : '');
                             }
+                            if (cell.json?.univerConfig !== undefined) {
+                                let cfg = cell.json.univerConfig;
+                                cleanCell.json.univerConfig = typeof cfg === 'string' ? cfg.replace(/\r\n/g, '\n').replace(/\r/g, '\n') : (cfg != null ? JSON.stringify(cfg, null, 2) : '');
+                            }
                         }
                     } else if (cell[field] !== undefined) {
                         cleanCell[field] = cell[field];

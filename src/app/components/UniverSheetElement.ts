@@ -44,6 +44,7 @@ export interface UniverInitParams {
     snapshot: string | null
     cellId: string
     readonly: boolean
+    config?: string | null   // JSON string → options UniverSheetsCorePreset
     onModified?: () => void
 }
 
@@ -92,6 +93,20 @@ class UniverSheetElement extends LitElement {
         ])
 
         const presetOptions: any = { container }
+
+        // Appliquer la config JSON utilisateur (json.univerConfig)
+        if (params.config) {
+            try {
+                const userConfig = typeof params.config === 'string'
+                    ? JSON.parse(params.config.trim())
+                    : params.config
+                Object.assign(presetOptions, userConfig)
+            } catch (e) {
+                console.warn('[UniverSheet] Configuration JSON invalide, ignorée :', e)
+            }
+        }
+
+        // Le mode readonly force certaines options (priorité sur la config utilisateur)
         if (params.readonly) {
             presetOptions.toolbar = false
             presetOptions.contextMenu = false

@@ -244,7 +244,8 @@ export const CELL_TYPE_SCHEMAS = {
                 univerSheet: {
                     executeHandler: 'executeUniverSheetCell',
                     defaultNamePrefix: 'sheet',
-                    exportFields: ['queries', 'snapshot', 'readOnly', 'title'],
+                    exportFields: ['queries', 'snapshot', 'readOnly', 'title', 'json'],
+                    exportJsonMode: 'object',
                     initProps: {
                         _univerReady: false,
                         _univerInstance: null,
@@ -259,12 +260,14 @@ export const CELL_TYPE_SCHEMAS = {
                     specificParams: [
                         { key: 'queries.main.showQueryEditor', label: "Afficher l'éditeur SQL en mode client", inputType: 'checkbox' },
                         { key: 'readOnly', label: 'Lecture seule en mode client', tooltip: 'Toujours éditable en mode développeur', inputType: 'checkbox' },
+                        { key: 'json.univerConfig', label: 'Configuration Univer (JSON optionnel)', tooltip: "Options passées à UniverSheetsCorePreset : toolbar, formulaBar, footer, contextMenu, header, disableAutoFocus, etc.", inputType: 'textarea', rows: 8, placeholder: '{\n  "toolbar": false,\n  "formulaBar": false,\n  "footer": false\n}' },
                         { key: 'snapshot', label: 'Snapshot Univer (base64 gzip)', tooltip: "Snapshot compressé du classeur — généré automatiquement à l'export si modifié", inputType: 'textarea', rows: 4 }
                     ],
                     defaults: {
                         queries: [{ name: 'main', sql: '', engine: 'sql', showQueryEditor: false }],
                         readOnly: true,
-                        snapshot: ''
+                        snapshot: '',
+                        json: { univerConfig: '' }
                     },
                     bodyFamily: 'univerSheet',
                     bodyConfig: { minHeight: '400px' },

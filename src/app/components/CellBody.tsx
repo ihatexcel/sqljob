@@ -1084,6 +1084,7 @@ function UniverSheetBody({ cell, path, cellIndex }: any) {
             snapshot: cell._univerSnapshotPending ?? null,
             cellId: cell._id,
             readonly: cell.readOnly === true || (!devMode && cell.readOnly !== false),
+            config: cell.json?.univerConfig ?? null,
             onModified: () => { cell._univerModified = true },
         }).catch((e: any) => {
             cell._univerReady = false
