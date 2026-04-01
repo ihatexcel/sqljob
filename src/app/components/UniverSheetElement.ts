@@ -81,30 +81,50 @@ class UniverSheetElement extends LitElement {
         const container = this.renderRoot.querySelector('#uc') as HTMLDivElement
         if (!container) throw new Error('[UniverSheet] Container #uc introuvable')
 
-        // Import dynamique → Vite génère des chunks séparés (chargement à la demande)
-        const [
-            { createUniver, LocaleType, mergeLocales },
-            { UniverSheetsCorePreset },
-            { default: sheetsCoreEnUS },
-        ] = await Promise.all([
-            import('@univerjs/presets'),
-            import('@univerjs/preset-sheets-core'),
-            import('@univerjs/preset-sheets-core/locales/en-US'),
-        ])
-
-        const presetOptions: any = { container }
-
-        // Appliquer la config JSON utilisateur (json.univerConfig)
-        if (params.config) {
+        // ── Parser la config JSON utilisateur ────────────────────────────────────
+        let userConfig: any = {}
+        if (params.config?.trim()) {
             try {
-                const userConfig = typeof params.config === 'string'
-                    ? JSON.parse(params.config.trim())
-                    : params.config
-                Object.assign(presetOptions, userConfig)
+                userConfig = JSON.parse(params.config.trim())
             } catch (e) {
                 console.warn('[UniverSheet] Configuration JSON invalide, ignorée :', e)
             }
         }
+
+        // Clé spéciale "locale" → détermine la langue de l'interface (ex. "fr-FR")
+        // Les autres clés vont dans les options de UniverSheetsCorePreset.
+        const localeStr: string = userConfig.locale || 'en-US'
+        const { locale: _localeKey, ...presetConfig } = userConfig
+
+        // Table des locales supportées (format "xx-XX" → {type, loader})
+        type LocaleEntry = { type: string; loader: () => Promise<{ default: any }> }
+        const LOCALE_MAP: Record<string, LocaleEntry> = {
+            'en-US': { type: 'enUS', loader: () => import('@univerjs/preset-sheets-core/locales/en-US') },
+            'fr-FR': { type: 'frFR', loader: () => import('@univerjs/preset-sheets-core/locales/fr-FR') },
+            'zh-CN': { type: 'zhCN', loader: () => import('@univerjs/preset-sheets-core/locales/zh-CN') },
+            'zh-TW': { type: 'zhTW', loader: () => import('@univerjs/preset-sheets-core/locales/zh-TW') },
+            'ru-RU': { type: 'ruRU', loader: () => import('@univerjs/preset-sheets-core/locales/ru-RU') },
+            'ja-JP': { type: 'jaJP', loader: () => import('@univerjs/preset-sheets-core/locales/ja-JP') },
+            'es-ES': { type: 'esES', loader: () => import('@univerjs/preset-sheets-core/locales/es-ES') },
+            'ca-ES': { type: 'caES', loader: () => import('@univerjs/preset-sheets-core/locales/ca-ES') },
+            'sk-SK': { type: 'skSK', loader: () => import('@univerjs/preset-sheets-core/locales/sk-SK') },
+            'fa-IR': { type: 'faIR', loader: () => import('@univerjs/preset-sheets-core/locales/fa-IR') },
+        }
+        const localeEntry = LOCALE_MAP[localeStr] ?? LOCALE_MAP['en-US']
+
+        // Import dynamique → Vite génère des chunks séparés (chargement à la demande)
+        const [
+            { createUniver, mergeLocales },
+            { UniverSheetsCorePreset },
+            { default: localeData },
+        ] = await Promise.all([
+            import('@univerjs/presets'),
+            import('@univerjs/preset-sheets-core'),
+            localeEntry.loader(),
+        ])
+
+        // ── Options du preset ────────────────────────────────────────────────────
+        const presetOptions: any = { container, ...presetConfig }
 
         // Le mode readonly force certaines options (priorité sur la config utilisateur)
         if (params.readonly) {
@@ -113,11 +133,11 @@ class UniverSheetElement extends LitElement {
             presetOptions.formulaBar = false
             presetOptions.footer = false
         }
-        console.log('[UniverSheet] readonly:', params.readonly, '| presetOptions:', JSON.stringify(presetOptions))
+        console.log('[UniverSheet] readonly:', params.readonly, '| locale:', localeStr, '| presetOptions:', JSON.stringify(presetOptions))
 
         const { univer, univerAPI } = createUniver({
-            locale: LocaleType.EN_US,
-            locales: { [LocaleType.EN_US]: sheetsCoreEnUS },
+            locale: localeEntry.type,
+            locales: { [localeEntry.type]: mergeLocales(localeData) },
             presets: [UniverSheetsCorePreset(presetOptions)],
         })
         this._univer = univer
