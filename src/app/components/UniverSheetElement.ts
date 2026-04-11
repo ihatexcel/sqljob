@@ -115,26 +115,30 @@ class UniverSheetElement extends LitElement {
         if (!container) throw new Error('[UniverSheet] Container #uc introuvable')
 
         // ── Parser la config utilisateur ─────────────────────────────────────────
-        // Accepte JSON strict, littéral JS, et la syntaxe copier-collée des docs
-        // Univer (LocaleType.XX_XX, mergeLocales(...), etc.).
+        // Accepte un objet natif (depuis l'UI), JSON strict, littéral JS,
+        // ou la syntaxe copier-collée des docs Univer (LocaleType.XX_XX, etc.).
         let userConfig: any = {}
-        if (params.config?.trim()) {
-            const raw = params.config.trim()
+        const rawConfig = params.config
+        if (rawConfig) {
+            if (typeof rawConfig === 'object') {
+                // Vient de l'UI structurée — objet natif directement
+                userConfig = rawConfig
+            } else if (typeof rawConfig === 'string' && rawConfig.trim()) {
+                const raw = rawConfig.trim()
 
-            // 1. JSON strict
-            if (!userConfig || Object.keys(userConfig).length === 0) {
+                // 1. JSON strict
                 try { userConfig = JSON.parse(raw) } catch (_) {}
-            }
 
-            // 2. Littéral JS pur (clés sans guillemets, virgules finales…)
-            if (!userConfig || Object.keys(userConfig).length === 0) {
-                try { userConfig = (new Function(`return (${raw})`))() } catch (_) {} // eslint-disable-line no-new-func
-            }
+                // 2. Littéral JS pur (clés sans guillemets, virgules finales…)
+                if (!userConfig || Object.keys(userConfig).length === 0) {
+                    try { userConfig = (new Function(`return (${raw})`))() } catch (_) {} // eslint-disable-line no-new-func
+                }
 
-            // 3. Extraction tolérante pour la syntaxe docs Univer
-            //    (LocaleType.XX_XX, [LocaleType.XX]: mergeLocales(...), etc.)
-            if (!userConfig || Object.keys(userConfig).length === 0) {
-                userConfig = _parseUniverDocsSyntax(raw)
+                // 3. Extraction tolérante pour la syntaxe docs Univer
+                //    (LocaleType.XX_XX, [LocaleType.XX]: mergeLocales(...), etc.)
+                if (!userConfig || Object.keys(userConfig).length === 0) {
+                    userConfig = _parseUniverDocsSyntax(raw)
+                }
             }
         }
 
@@ -180,8 +184,6 @@ class UniverSheetElement extends LitElement {
             presetOptions.formulaBar = false
             presetOptions.footer = false
         }
-        console.log('[UniverSheet] readonly:', params.readonly, '| locale:', localeStr, '| presetOptions:', JSON.stringify(presetOptions))
-
         const { univer, univerAPI } = createUniver({
             locale: localeEntry.type,
             locales: { [localeEntry.type]: mergeLocales(localeData) },
@@ -205,21 +207,15 @@ class UniverSheetElement extends LitElement {
         }
 
         if (params.readonly) {
-            console.log('[UniverSheet] Registering LifeCycleChanged event for readonly setup')
-            console.log('[UniverSheet] univerAPI.Event keys:', Object.keys(univerAPI.Event || {}))
-            console.log('[UniverSheet] univerAPI.Enum.LifecycleStages:', univerAPI.Enum?.LifecycleStages)
             // Désactiver sélection + édition une fois le rendu terminé
             univerAPI.addEvent(univerAPI.Event.LifeCycleChanged, ({ stage }: any) => {
-                console.log('[UniverSheet] LifeCycleChanged stage:', stage, '| Rendered:', univerAPI.Enum?.LifecycleStages?.Rendered)
                 if (stage === univerAPI.Enum.LifecycleStages.Rendered) {
                     try {
                         const fWorkbook = univerAPI.getActiveWorkbook()
-                        console.log('[UniverSheet] fWorkbook:', fWorkbook, '| disableSelection:', typeof fWorkbook?.disableSelection)
                         if (!fWorkbook) return
                         const unitId = fWorkbook.getId()
                         fWorkbook.disableSelection?.()
                         const permission = fWorkbook.getPermission?.()
-                        console.log('[UniverSheet] permission:', permission, '| unitId:', unitId)
                         if (permission) {
                             permission.setWorkbookEditPermission?.(unitId, false)
                             permission.setPermissionDialogVisible?.(false)

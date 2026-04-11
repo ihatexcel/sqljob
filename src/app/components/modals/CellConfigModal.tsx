@@ -14,6 +14,153 @@ import {
 } from '@sqlrooms/ui'
 import { Icon } from '../../../lib/icons'
 
+// ─── UniverConfigEditor ────────────────────────────────────────────────────────
+
+const UNIVER_LOCALES = [
+    { value: 'en-US', label: 'English (US)' },
+    { value: 'fr-FR', label: 'Français' },
+    { value: 'zh-CN', label: '中文 (简体)' },
+    { value: 'zh-TW', label: '中文 (繁體)' },
+    { value: 'ru-RU', label: 'Русский' },
+    { value: 'ja-JP', label: '日本語' },
+    { value: 'es-ES', label: 'Español' },
+    { value: 'ca-ES', label: 'Català' },
+    { value: 'sk-SK', label: 'Slovenčina' },
+    { value: 'fa-IR', label: 'فارسی' },
+]
+
+function UniverConfigEditor({ cell, forceUpdate }: any) {
+    const getRawCfg = (): Record<string, any> => {
+        const v = cell.json?.univerConfig
+        if (!v) return {}
+        if (typeof v === 'object') return v
+        try { return JSON.parse(v) } catch { return {} }
+    }
+    const setKey = (key: string, val: any) => {
+        if (!cell.json) cell.json = {}
+        const cur = getRawCfg()
+        if (val === undefined) { delete cur[key] } else { cur[key] = val }
+        cell.json.univerConfig = cur
+        forceUpdate()
+    }
+    const setFooterKey = (key: string, val: boolean) => {
+        const cur = getRawCfg()
+        const footerObj = typeof cur.footer === 'object' ? { ...cur.footer } : {}
+        if (val) { delete footerObj[key] } else { footerObj[key] = false }
+        setKey('footer', footerObj)
+    }
+
+    const cfg = getRawCfg()
+    const toolbarOn = cfg.toolbar !== false
+    const footerEnabled = cfg.footer !== false
+    const footerCfg: Record<string, any> = typeof cfg.footer === 'object' ? cfg.footer : {}
+
+    return (
+        <div className="space-y-3">
+            {/* Locale */}
+            <div className="space-y-1">
+                <Label className="text-sm">Langue</Label>
+                <Select
+                    value={cfg.locale || 'en-US'}
+                    onValueChange={v => setKey('locale', v === 'en-US' ? undefined : v)}
+                >
+                    <SelectTrigger className="h-8 text-sm">
+                        <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {UNIVER_LOCALES.map(l => (
+                            <SelectItem key={l.value} value={l.value}>{l.label}</SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            </div>
+
+            {/* Section Interface */}
+            <div className="space-y-2 border border-border rounded-md p-3">
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Interface</p>
+
+                {/* Toolbar + ribbonType */}
+                <div className="space-y-1">
+                    <div className="flex items-center gap-3">
+                        <Checkbox
+                            checked={toolbarOn}
+                            onCheckedChange={v => setKey('toolbar', v ? undefined : false)}
+                        />
+                        <Label className="cursor-pointer text-sm">Toolbar</Label>
+                    </div>
+                    {toolbarOn && (
+                        <div className="ml-7">
+                            <Select
+                                value={cfg.ribbonType || 'classic'}
+                                onValueChange={v => setKey('ribbonType', v === 'classic' ? undefined : v)}
+                            >
+                                <SelectTrigger className="h-7 text-xs w-36">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="classic">Classic</SelectItem>
+                                    <SelectItem value="collapsed">Collapsed</SelectItem>
+                                    <SelectItem value="simple">Simple</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    )}
+                </div>
+
+                {([
+                    { key: 'formulaBar', label: 'Barre de formule' },
+                    { key: 'header', label: 'En-tête' },
+                    { key: 'contextMenu', label: 'Menu contextuel' },
+                    { key: 'disableAutoFocus', label: "Désactiver l'auto-focus", invert: true },
+                ] as Array<{ key: string; label: string; invert?: boolean }>).map(({ key, label, invert }) => (
+                    <div key={key} className="flex items-center gap-3">
+                        <Checkbox
+                            checked={invert ? !cfg[key] : cfg[key] !== false}
+                            onCheckedChange={v => {
+                                const enabled = invert ? !v : !!v
+                                setKey(key, enabled ? undefined : (invert ? true : false))
+                            }}
+                        />
+                        <Label className="cursor-pointer text-sm">{label}</Label>
+                    </div>
+                ))}
+            </div>
+
+            {/* Section Pied de page */}
+            <div className="space-y-2 border border-border rounded-md p-3">
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Pied de page</p>
+                <div className="flex items-center gap-3">
+                    <Checkbox
+                        checked={footerEnabled}
+                        onCheckedChange={v => setKey('footer', v ? undefined : false)}
+                    />
+                    <Label className="cursor-pointer text-sm">Afficher le pied de page</Label>
+                </div>
+                {footerEnabled && (
+                    <div className="ml-7 space-y-1">
+                        {([
+                            { key: 'sheetBar', label: 'Barre des feuilles' },
+                            { key: 'statisticBar', label: 'Statistiques' },
+                            { key: 'menus', label: 'Menus' },
+                            { key: 'zoomSlider', label: 'Slider de zoom' },
+                        ] as Array<{ key: string; label: string }>).map(({ key, label }) => (
+                            <div key={key} className="flex items-center gap-3">
+                                <Checkbox
+                                    checked={footerCfg[key] !== false}
+                                    onCheckedChange={v => setFooterKey(key, !!v)}
+                                />
+                                <Label className="cursor-pointer text-sm text-muted-foreground">{label}</Label>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+        </div>
+    )
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+
 function getCommonParamDef(paramKey: string, cellType: string) {
     const schema = CELL_TYPE_SCHEMAS?.types?.[cellType]
     return schema?.commonParams?.find((p: any) => p.key === paramKey) || null
@@ -100,6 +247,7 @@ export function CellConfigModal() {
                                     <SelectItem value="publipostageWord">Publipostage Word</SelectItem>
                                     <SelectItem value="pdfme">PDF (pdfme)</SelectItem>
 
+                                    <SelectItem value="univerSheet">Univer Sheet</SelectItem>
                                     <SelectItem value="perspective">Perspective Viewer</SelectItem>
                                 </SelectContent>
                             </Select>
@@ -232,6 +380,8 @@ export function CellConfigModal() {
                                             placeholder={param.placeholder}
                                             min={param.min} step="any" />
                                     </div>
+                                ) : param.inputType === 'univerConfig' ? (
+                                    <UniverConfigEditor cell={cell} forceUpdate={forceUpdate} />
                                 ) : null}
                             </div>
                         ))}
