@@ -126,6 +126,24 @@ function UniverConfigEditor({ cell, forceUpdate }: any) {
                 ))}
             </div>
 
+            {/* Section Apparence de la feuille */}
+            <div className="space-y-2 border border-border rounded-md p-3">
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Apparence de la feuille</p>
+                {([
+                    { key: 'showGridlines', label: 'Quadrillage' },
+                    { key: 'showRowHeader', label: 'Numéros de lignes (1, 2, 3…)' },
+                    { key: 'showColumnHeader', label: 'Lettres de colonnes (A, B, C…)' },
+                ] as Array<{ key: string; label: string }>).map(({ key, label }) => (
+                    <div key={key} className="flex items-center gap-3">
+                        <Checkbox
+                            checked={cfg[key] !== false}
+                            onCheckedChange={v => setKey(key, v ? undefined : false)}
+                        />
+                        <Label className="cursor-pointer text-sm">{label}</Label>
+                    </div>
+                ))}
+            </div>
+
             {/* Section Pied de page */}
             <div className="space-y-2 border border-border rounded-md p-3">
                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Pied de page</p>
@@ -154,6 +172,39 @@ function UniverConfigEditor({ cell, forceUpdate }: any) {
                         ))}
                     </div>
                 )}
+            </div>
+
+            {/* Section Zones éditables (mode client) */}
+            <div className="space-y-2 border border-border rounded-md p-3">
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Zones éditables (mode client)</p>
+                <p className="text-xs text-muted-foreground">Plages que le client peut modifier même en mode lecture seule. Une plage par ligne (ex&nbsp;: A1:C3).</p>
+                <Textarea
+                    className="font-mono text-xs"
+                    rows={3}
+                    placeholder={"A1:C3\nD5:F10"}
+                    value={(Array.isArray(cfg.editableRanges) ? cfg.editableRanges : []).join('\n')}
+                    onChange={e => {
+                        const parsed = e.target.value.split(/[,\n]/).map((s: string) => s.trim()).filter(Boolean)
+                        setKey('editableRanges', parsed.length > 0 ? parsed : undefined)
+                    }}
+                />
+                <div className="space-y-1">
+                    <Label className="text-xs text-muted-foreground">Ombrage des zones protégées</Label>
+                    <Select
+                        value={cfg.protectedRangeShadow === undefined ? 'default' : cfg.protectedRangeShadow === false ? 'false' : String(cfg.protectedRangeShadow)}
+                        onValueChange={v => setKey('protectedRangeShadow', v === 'default' ? undefined : v === 'false' ? false : v)}
+                    >
+                        <SelectTrigger className="h-7 text-xs">
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="default">Par défaut (toujours)</SelectItem>
+                            <SelectItem value="non-editable">Non-éditables uniquement</SelectItem>
+                            <SelectItem value="non-viewable">Non-visibles uniquement</SelectItem>
+                            <SelectItem value="false">Jamais</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
             </div>
         </div>
     )

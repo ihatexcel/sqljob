@@ -77,7 +77,7 @@ export interface UniverInitParams {
     snapshot: string | null
     cellId: string
     readonly: boolean
-    config?: string | null   // JSON string → options UniverSheetsCorePreset
+    config?: any   // Objet ou string JSON → options UniverSheetsCorePreset
     onModified?: () => void
 }
 
@@ -143,9 +143,26 @@ class UniverSheetElement extends LitElement {
         }
 
         // Clé spéciale "locale" → détermine la langue de l'interface (ex. "fr-FR")
-        // Les autres clés vont dans les options de UniverSheetsCorePreset.
+        // showGridlines / showRowHeader / showColumnHeader → appliqués au workbookData
+        // editableRanges → zones éditables en mode client
+        // protectedRangeShadow → option preset sheets
+        // Le reste → options de UniverSheetsCorePreset.
         const localeStr: string = userConfig.locale || 'en-US'
-        const { locale: _localeKey, ...presetConfig } = userConfig
+        const {
+            locale: _localeKey,
+            showGridlines,
+            showRowHeader,
+            showColumnHeader,
+            editableRanges: _rawEditableRanges,
+            protectedRangeShadow,
+            ...presetConfig
+        } = userConfig
+
+        const editableRanges: string[] = Array.isArray(_rawEditableRanges)
+            ? _rawEditableRanges
+            : typeof _rawEditableRanges === 'string'
+                ? _rawEditableRanges.split(/[,\n]/).map((s: string) => s.trim()).filter(Boolean)
+                : []
 
         // Table des locales supportées (format "xx-XX" → {type, loader})
         type LocaleEntry = { type: string; loader: () => Promise<{ default: any }> }
@@ -177,6 +194,11 @@ class UniverSheetElement extends LitElement {
         // ── Options du preset ────────────────────────────────────────────────────
         const presetOptions: any = { container, ...presetConfig }
 
+        // protectedRangeShadow → sous-clé sheets du preset
+        if (protectedRangeShadow !== undefined) {
+            presetOptions.sheets = { ...(presetOptions.sheets || {}), protectedRangeShadow }
+        }
+
         // Le mode readonly force certaines options (priorité sur la config utilisateur)
         if (params.readonly) {
             presetOptions.toolbar = false
@@ -184,6 +206,7 @@ class UniverSheetElement extends LitElement {
             presetOptions.formulaBar = false
             presetOptions.footer = false
         }
+
         const { univer, univerAPI } = createUniver({
             locale: localeEntry.type,
             locales: { [localeEntry.type]: mergeLocales(localeData) },
@@ -192,28 +215,82 @@ class UniverSheetElement extends LitElement {
         this._univer = univer
         this._univerAPI = univerAPI
 
-        // Charger les données
+        // ── Construire le workbook data ───────────────────────────────────────────
+        let workbookData: any
         if (params.snapshot) {
             try {
                 const json = await ConfigManager.decompressFromGzipBase64(params.snapshot)
-                univerAPI.createWorkbook(JSON.parse(json))
+                workbookData = JSON.parse(json)
             } catch (e: any) {
                 throw new Error('Snapshot Univer invalide : ' + e.message)
             }
         } else if (params.rows?.length) {
-            univerAPI.createWorkbook(_buildWorkbookFromRows(params.rows, params.cellId))
+            workbookData = _buildWorkbookFromRows(params.rows, params.cellId)
         } else {
-            univerAPI.createWorkbook({ id: 'wb-' + params.cellId, name: 'Sheet', sheets: {} })
+            workbookData = { id: 'wb-' + params.cellId, name: 'Sheet', sheets: {} }
         }
 
+        // Appliquer les paramètres d'affichage (quadrillage, en-têtes de lignes/colonnes)
+        if (showGridlines === false || showRowHeader === false || showColumnHeader === false) {
+            const sheets = workbookData.sheets || {}
+            for (const sheetId of Object.keys(sheets)) {
+                const sheet = sheets[sheetId]
+                if (showGridlines === false) sheet.showGridlines = 0
+                if (showRowHeader === false) sheet.rowHeader = { ...(sheet.rowHeader || {}), hidden: 1 }
+                if (showColumnHeader === false) sheet.columnHeader = { ...(sheet.columnHeader || {}), hidden: 1 }
+            }
+        }
+
+        univerAPI.createWorkbook(workbookData)
+
+        // ── Gestion du mode readonly ──────────────────────────────────────────────
         if (params.readonly) {
-            // Désactiver sélection + édition une fois le rendu terminé
-            univerAPI.addEvent(univerAPI.Event.LifeCycleChanged, ({ stage }: any) => {
-                if (stage === univerAPI.Enum.LifecycleStages.Rendered) {
+            if (editableRanges.length > 0) {
+                // Readonly partiel : protéger la feuille + ouvrir les zones éditables
+                univerAPI.addEvent(univerAPI.Event.LifeCycleChanged, async ({ stage }: any) => {
+                    if (stage !== univerAPI.Enum.LifecycleStages.Rendered) return
                     try {
                         const fWorkbook = univerAPI.getActiveWorkbook()
                         if (!fWorkbook) return
-                        const unitId = fWorkbook.getId()
+                        const fWorksheet = fWorkbook.getActiveSheet()
+                        if (!fWorksheet) return
+
+                        const worksheetPermission = fWorksheet.getWorksheetPermission?.()
+                        if (worksheetPermission) {
+                            await worksheetPermission.protect?.({ name: 'Protected' })
+                            await worksheetPermission.setMode?.('readOnly')
+
+                            // Créer des exceptions pour chaque zone éditable
+                            for (const rangeStr of editableRanges) {
+                                const fRange = fWorksheet.getRange?.(rangeStr.trim())
+                                if (!fRange) continue
+                                const rangePerm = fRange.getRangePermission?.()
+                                if (rangePerm) {
+                                    await rangePerm.protect?.({
+                                        name: `Editable: ${rangeStr}`,
+                                        allowEdit: true,
+                                        allowViewByOthers: true,
+                                    })
+                                }
+                            }
+                        }
+                        univerAPI.setPermissionDialogVisible?.(false)
+                    } catch (e) {
+                        console.error('[UniverSheet] editable ranges setup error:', e)
+                    }
+                })
+                // Suivre les modifications dans les zones éditables
+                if (params.onModified && univer?.onCommandExecuted) {
+                    univer.onCommandExecuted(params.onModified)
+                }
+            } else {
+                // Readonly total : désactiver sélection + droits d'édition
+                univerAPI.addEvent(univerAPI.Event.LifeCycleChanged, ({ stage }: any) => {
+                    if (stage !== univerAPI.Enum.LifecycleStages.Rendered) return
+                    try {
+                        const fWorkbook = univerAPI.getActiveWorkbook()
+                        if (!fWorkbook) return
+                        const unitId = fWorkbook.getId?.()
                         fWorkbook.disableSelection?.()
                         const permission = fWorkbook.getPermission?.()
                         if (permission) {
@@ -221,8 +298,8 @@ class UniverSheetElement extends LitElement {
                             permission.setPermissionDialogVisible?.(false)
                         }
                     } catch (e) { console.error('[UniverSheet] readonly setup error:', e) }
-                }
-            })
+                })
+            }
         } else if (params.onModified && univer?.onCommandExecuted) {
             univer.onCommandExecuted(params.onModified)
         }
