@@ -174,6 +174,21 @@ function UniverConfigEditor({ cell, forceUpdate }: any) {
                 )}
             </div>
 
+            {/* Section Fonctionnalités */}
+            <div className="space-y-2 border border-border rounded-md p-3">
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Fonctionnalités</p>
+                <div className="flex items-center gap-3">
+                    <Checkbox
+                        checked={!!cfg.enableTable}
+                        onCheckedChange={v => setKey('enableTable', v ? true : undefined)}
+                    />
+                    <Label className="cursor-pointer text-sm">Activer les tableaux</Label>
+                </div>
+                <p className="text-xs text-muted-foreground ml-7">
+                    Active le preset <code>@univerjs/preset-sheets-table</code> (tableaux structurés avec filtres, tri…). Nécessite de ré-exécuter la cellule.
+                </p>
+            </div>
+
             {/* Section Permissions (mode client) */}
             <div className="space-y-2 border border-border rounded-md p-3">
                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Permissions (mode client)</p>

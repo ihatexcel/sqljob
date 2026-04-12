@@ -8,6 +8,7 @@
  */
 import { LitElement, html } from 'lit'
 import '@univerjs/preset-sheets-core/lib/index.css'
+import '@univerjs/preset-sheets-table/lib/index.css'
 import { ConfigManager } from '../../lib/ConfigManager'
 
 // ─── Helper ────────────────────────────────────────────────────────────────────
@@ -155,35 +156,44 @@ class UniverSheetElement extends LitElement {
             showColumnHeader,
             useSheetProtection,
             protectedRangeShadow,
+            enableTable,
             ...presetConfig
         } = userConfig
 
-        // Table des locales supportées (format "xx-XX" → {type, loader})
-        type LocaleEntry = { type: string; loader: () => Promise<{ default: any }> }
+        // Table des locales supportées (format "xx-XX" → {type, loader, tableLoader})
+        type LocaleEntry = {
+            type: string
+            loader: () => Promise<{ default: any }>
+            tableLoader: () => Promise<{ default: any }>
+        }
         const LOCALE_MAP: Record<string, LocaleEntry> = {
-            'en-US': { type: 'enUS', loader: () => import('@univerjs/preset-sheets-core/locales/en-US') },
-            'fr-FR': { type: 'frFR', loader: () => import('@univerjs/preset-sheets-core/locales/fr-FR') },
-            'zh-CN': { type: 'zhCN', loader: () => import('@univerjs/preset-sheets-core/locales/zh-CN') },
-            'zh-TW': { type: 'zhTW', loader: () => import('@univerjs/preset-sheets-core/locales/zh-TW') },
-            'ru-RU': { type: 'ruRU', loader: () => import('@univerjs/preset-sheets-core/locales/ru-RU') },
-            'ja-JP': { type: 'jaJP', loader: () => import('@univerjs/preset-sheets-core/locales/ja-JP') },
-            'es-ES': { type: 'esES', loader: () => import('@univerjs/preset-sheets-core/locales/es-ES') },
-            'ca-ES': { type: 'caES', loader: () => import('@univerjs/preset-sheets-core/locales/ca-ES') },
-            'sk-SK': { type: 'skSK', loader: () => import('@univerjs/preset-sheets-core/locales/sk-SK') },
-            'fa-IR': { type: 'faIR', loader: () => import('@univerjs/preset-sheets-core/locales/fa-IR') },
+            'en-US': { type: 'enUS', loader: () => import('@univerjs/preset-sheets-core/locales/en-US'), tableLoader: () => import('@univerjs/preset-sheets-table/lib/locales/en-US') },
+            'fr-FR': { type: 'frFR', loader: () => import('@univerjs/preset-sheets-core/locales/fr-FR'), tableLoader: () => import('@univerjs/preset-sheets-table/lib/locales/fr-FR') },
+            'zh-CN': { type: 'zhCN', loader: () => import('@univerjs/preset-sheets-core/locales/zh-CN'), tableLoader: () => import('@univerjs/preset-sheets-table/lib/locales/zh-CN') },
+            'zh-TW': { type: 'zhTW', loader: () => import('@univerjs/preset-sheets-core/locales/zh-TW'), tableLoader: () => import('@univerjs/preset-sheets-table/lib/locales/zh-TW') },
+            'ru-RU': { type: 'ruRU', loader: () => import('@univerjs/preset-sheets-core/locales/ru-RU'), tableLoader: () => import('@univerjs/preset-sheets-table/lib/locales/ru-RU') },
+            'ja-JP': { type: 'jaJP', loader: () => import('@univerjs/preset-sheets-core/locales/ja-JP'), tableLoader: () => import('@univerjs/preset-sheets-table/lib/locales/ja-JP') },
+            'es-ES': { type: 'esES', loader: () => import('@univerjs/preset-sheets-core/locales/es-ES'), tableLoader: () => import('@univerjs/preset-sheets-table/lib/locales/es-ES') },
+            'ca-ES': { type: 'caES', loader: () => import('@univerjs/preset-sheets-core/locales/ca-ES'), tableLoader: () => import('@univerjs/preset-sheets-table/lib/locales/ca-ES') },
+            'sk-SK': { type: 'skSK', loader: () => import('@univerjs/preset-sheets-core/locales/sk-SK'), tableLoader: () => import('@univerjs/preset-sheets-table/lib/locales/sk-SK') },
+            'fa-IR': { type: 'faIR', loader: () => import('@univerjs/preset-sheets-core/locales/fa-IR'), tableLoader: () => import('@univerjs/preset-sheets-table/lib/locales/fa-IR') },
         }
         const localeEntry = LOCALE_MAP[localeStr] ?? LOCALE_MAP['en-US']
 
         // Import dynamique → Vite génère des chunks séparés (chargement à la demande)
-        const [
-            { createUniver, mergeLocales },
-            { UniverSheetsCorePreset },
-            { default: localeData },
-        ] = await Promise.all([
-            import('@univerjs/presets'),
-            import('@univerjs/preset-sheets-core'),
-            localeEntry.loader(),
+        const [coreResults, tableResults] = await Promise.all([
+            Promise.all([
+                import('@univerjs/presets'),
+                import('@univerjs/preset-sheets-core'),
+                localeEntry.loader(),
+            ]),
+            enableTable
+                ? Promise.all([import('@univerjs/preset-sheets-table'), localeEntry.tableLoader()])
+                : Promise.resolve([null, null]),
         ])
+        const [{ createUniver, mergeLocales }, { UniverSheetsCorePreset }, { default: localeData }] = coreResults
+        const UniverSheetsTablePreset = tableResults[0]?.UniverSheetsTablePreset ?? null
+        const tableLocaleData = tableResults[1]?.default ?? null
 
         // ── Options du preset ────────────────────────────────────────────────────
         const presetOptions: any = { container, ...presetConfig }
@@ -201,10 +211,19 @@ class UniverSheetElement extends LitElement {
             presetOptions.footer = false
         }
 
+        const presets: any[] = [UniverSheetsCorePreset(presetOptions)]
+        if (enableTable && UniverSheetsTablePreset) {
+            presets.push(UniverSheetsTablePreset())
+        }
+
         const { univer, univerAPI } = createUniver({
             locale: localeEntry.type,
-            locales: { [localeEntry.type]: mergeLocales(localeData) },
-            presets: [UniverSheetsCorePreset(presetOptions)],
+            locales: {
+                [localeEntry.type]: tableLocaleData
+                    ? mergeLocales(localeData, tableLocaleData)
+                    : mergeLocales(localeData),
+            },
+            presets,
         })
         this._univer = univer
         this._univerAPI = univerAPI
