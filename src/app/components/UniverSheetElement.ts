@@ -158,8 +158,6 @@ class UniverSheetElement extends LitElement {
             ...presetConfig
         } = userConfig
 
-        console.log('[dbg] initialize → readonly:', params.readonly, '| useSheetProtection:', useSheetProtection, '| config:', JSON.stringify(params.config))
-
         // Table des locales supportées (format "xx-XX" → {type, loader})
         type LocaleEntry = { type: string; loader: () => Promise<{ default: any }> }
         const LOCALE_MAP: Record<string, LocaleEntry> = {
@@ -241,69 +239,46 @@ class UniverSheetElement extends LitElement {
 
         // ── Gestion du mode readonly / protection ─────────────────────────────────
         if (useSheetProtection) {
-            // Protection sélective des plages.
-            // Problème : Univer initialise les permission points à `true` (Owner) au chargement du snapshot.
-            // Fix en deux étapes :
-            //   1. Forcer Edit=false dans IPermissionService pour chaque règle de protection (via RangeProtectionRuleModel)
-            //   2. Intercepter sheet.mutation.set-range-values via BeforeCommandExecute et vérifier canEditCell
+            // Protection sélective : bloquer les cellules dans une plage protégée.
+            // On ne passe PAS par IPermissionService/canEditCell (ils consultent
+            // IAuthzIoService.batchAllowed qui retourne toujours true pour l'Owner).
+            // On interroge directement RangeProtectionRuleModel pour la géométrie.
             univerAPI.addEvent(univerAPI.Event.LifeCycleChanged, async ({ stage }: any) => {
                 if (stage !== univerAPI.Enum.LifecycleStages.Rendered) return
-                console.log('[dbg] LifeCycleChanged Rendered ✓')
+
+                univerAPI.setPermissionDialogVisible?.(false)
 
                 const fWorkbook = univerAPI.getActiveWorkbook()
                 const fWorksheet = fWorkbook?.getActiveSheet()
-                const wp = fWorksheet?.getWorksheetPermission?.()
                 const unitId = fWorkbook?.getId?.()
                 const subUnitId = fWorksheet?.getSheetId?.()
+                if (!unitId || !subUnitId) return
 
-                univerAPI.setPermissionDialogVisible?.(false)
-                if (!wp || !unitId || !subUnitId) return
+                const { RangeProtectionRuleModel } = await import('@univerjs/sheets')
+                const injector = (univer as any).__getInjector?.() ?? (univer as any)._injector
+                const ruleModel = injector?.get?.(RangeProtectionRuleModel)
+                if (!ruleModel) return
 
-                // ── Étape 1 : forcer Edit=false dans IPermissionService ────────────
-                try {
-                    const injector = (univer as any).__getInjector?.()
-                    const [{ RangeProtectionRuleModel, RangeProtectionPermissionEditPoint }, { IPermissionService }] =
-                        await Promise.all([import('@univerjs/sheets'), import('@univerjs/core')])
-                    const ruleModel = injector?.get?.(RangeProtectionRuleModel)
-                    const ps = injector?.get?.(IPermissionService)
-                    console.log('[dbg] ruleModel:', ruleModel ? 'OK' : 'NULL', '| ps:', ps ? 'OK' : 'NULL')
-
-                    if (ruleModel && ps) {
-                        const rules: any[] = ruleModel.getSubunitRuleList(unitId, subUnitId) ?? []
-                        console.log('[dbg] raw rules count:', rules.length)
-                        for (const rule of rules) {
-                            const editPoint = new RangeProtectionPermissionEditPoint(unitId, subUnitId, rule.permissionId)
-                            const existing = ps.getPermissionPoint(editPoint.id)
-                            if (existing) {
-                                ps.updatePermissionPoint(editPoint.id, false)
-                            } else {
-                                (editPoint as any).value = false
-                                ps.addPermissionPoint(editPoint)
-                            }
-                            console.log('[dbg] permission', editPoint.id, '→ false (was:', existing?.value, ')')
-                        }
-                    }
-                } catch (e) {
-                    console.error('[dbg] permission setup error:', e)
-                }
-
-                // ── Étape 2 : bloquer les mutations ciblant une cellule protégée ──
                 univerAPI.addEvent(univerAPI.Event.BeforeCommandExecute, (event: any) => {
                     if (event.id !== 'sheet.mutation.set-range-values') return
                     const cellValue = event.params?.cellValue
                     if (!cellValue || typeof cellValue !== 'object') return
+                    const rules: any[] = ruleModel.getSubunitRuleList(unitId, subUnitId) ?? []
+                    if (rules.length === 0) return
                     for (const rowStr of Object.keys(cellValue)) {
                         const row = Number(rowStr)
                         const cols = (cellValue as any)[rowStr]
                         if (!cols || typeof cols !== 'object') continue
                         for (const colStr of Object.keys(cols)) {
                             const col = Number(colStr)
-                            const canEdit = wp.canEditCell(row, col)
-                            console.log('[dbg] canEditCell', row, col, '→', canEdit)
-                            if (!canEdit) {
-                                console.log('[dbg] BLOCKED cell', row, col)
-                                event.cancel = true
-                                return
+                            for (const rule of rules) {
+                                for (const range of (rule.ranges ?? [])) {
+                                    if (row >= range.startRow && row <= range.endRow &&
+                                        col >= range.startColumn && col <= range.endColumn) {
+                                        event.cancel = true
+                                        return
+                                    }
+                                }
                             }
                         }
                     }
