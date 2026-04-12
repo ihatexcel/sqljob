@@ -224,30 +224,6 @@ function UniverConfigEditor({ cell, forceUpdate }: any) {
                 </p>
             </div>
 
-            {/* Section Permissions (mode client) */}
-            <div className="space-y-2 border border-border rounded-md p-3">
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Permissions (mode client)</p>
-                <p className="text-xs text-muted-foreground">
-                    Les plages protégées se définissent directement dans la feuille (clic droit → Protéger la plage). En mode client, seules les zones non protégées sont éditables.
-                </p>
-                <div className="space-y-1">
-                    <Label className="text-xs text-muted-foreground">Ombrage des zones protégées</Label>
-                    <Select
-                        value={cfg.protectedRangeShadow === undefined ? 'default' : cfg.protectedRangeShadow === false ? 'false' : String(cfg.protectedRangeShadow)}
-                        onValueChange={v => setKey('protectedRangeShadow', v === 'default' ? undefined : v === 'false' ? false : v)}
-                    >
-                        <SelectTrigger className="h-7 text-xs">
-                            <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="default">Par défaut (toujours)</SelectItem>
-                            <SelectItem value="non-editable">Non-éditables uniquement</SelectItem>
-                            <SelectItem value="non-viewable">Non-visibles uniquement</SelectItem>
-                            <SelectItem value="false">Jamais</SelectItem>
-                        </SelectContent>
-                    </Select>
-                </div>
-            </div>
         </div>
     )
 }

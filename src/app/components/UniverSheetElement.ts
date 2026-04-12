@@ -245,20 +245,27 @@ class UniverSheetElement extends LitElement {
             workbookData = { id: 'wb-' + params.cellId, name: 'Sheet', sheets: {} }
         }
 
-        // Appliquer les paramètres d'affichage et de dimensions
-        if (showGridlines === false || showRowHeader === false || showColumnHeader === false || maxRows !== undefined || maxCols !== undefined) {
+        // Appliquer les paramètres d'affichage (quadrillage, en-têtes de lignes/colonnes)
+        if (showGridlines === false || showRowHeader === false || showColumnHeader === false) {
             const sheets = workbookData.sheets || {}
             for (const sheetId of Object.keys(sheets)) {
                 const sheet = sheets[sheetId]
                 if (showGridlines === false) sheet.showGridlines = 0
                 if (showRowHeader === false) sheet.rowHeader = { ...(sheet.rowHeader || {}), hidden: 1 }
                 if (showColumnHeader === false) sheet.columnHeader = { ...(sheet.columnHeader || {}), hidden: 1 }
-                if (maxRows !== undefined) sheet.rowCount = maxRows
-                if (maxCols !== undefined) sheet.columnCount = maxCols
             }
         }
 
         univerAPI.createWorkbook(workbookData)
+
+        // Appliquer les dimensions max via l'API facade (plus fiable que le workbook data brut)
+        if (maxRows !== undefined || maxCols !== undefined) {
+            const fWorksheet = univerAPI.getActiveWorkbook()?.getActiveSheet()
+            if (fWorksheet) {
+                if (maxCols !== undefined) fWorksheet.setColumnCount(maxCols)
+                if (maxRows !== undefined) fWorksheet.setRowCount(maxRows)
+            }
+        }
 
         // ── Gestion du mode readonly / protection ─────────────────────────────────
         if (params.readonly) {
