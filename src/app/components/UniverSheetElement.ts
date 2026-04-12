@@ -239,71 +239,66 @@ class UniverSheetElement extends LitElement {
 
         univerAPI.createWorkbook(workbookData)
 
-        // ── Gestion du mode readonly ──────────────────────────────────────────────
-        if (params.readonly) {
-            if (useSheetProtection) {
-                // Patch IAuthzIoService.batchAllowed → bloquer toutes les plages protégées.
-                // NOTE : batchAllowed n'est appelé QUE pour les entités ayant des règles de
-                // protection (pas pour les cellules libres) → les zones non protégées restent éditables.
-                // L'AuthzIoLocalService par défaut retourne toujours `true`, contournant toute
-                // protection. On le remplace ici par une implémentation qui retourne `false`.
-                try {
-                    const injector = (univer as any).__getInjector?.() ?? (univer as any)._injector
-                    console.log('[dbg] injector:', injector ? 'OK' : 'NULL')
-                    if (injector) {
-                        const { IAuthzIoService } = await import('@univerjs/core')
-                        const authzService = injector.get?.(IAuthzIoService)
-                        console.log('[dbg] authzService:', authzService ? 'OK' : 'NULL')
-                        if (authzService?.batchAllowed) {
-                            authzService.batchAllowed = async (config: any[]) => {
-                                console.log('[dbg] batchAllowed called! config:', JSON.stringify(config))
-                                return config.map((c: any) => ({
-                                    unitID: c.unitID,
-                                    objectID: c.objectID,
-                                    actions: (c.actions ?? []).map((action: any) => ({ action, allowed: false })),
-                                }))
-                            }
-                            console.log('[dbg] batchAllowed PATCHED ✓')
-                        } else {
-                            console.warn('[dbg] authzService.batchAllowed not found')
+        // ── Gestion du mode readonly / protection ─────────────────────────────────
+        if (useSheetProtection) {
+            // Protection sélective : bloquer les plages protégées, laisser le reste éditable.
+            // Fonctionne que readonly soit true ou false (readOnly peut être false pour permettre la toolbar).
+            // batchAllowed n'est appelé QUE pour les entités ayant des règles de protection
+            // → les cellules libres ne sont pas affectées.
+            try {
+                const injector = (univer as any).__getInjector?.() ?? (univer as any)._injector
+                console.log('[dbg] injector:', injector ? 'OK' : 'NULL')
+                if (injector) {
+                    const { IAuthzIoService } = await import('@univerjs/core')
+                    const authzService = injector.get?.(IAuthzIoService)
+                    console.log('[dbg] authzService:', authzService ? 'OK' : 'NULL')
+                    if (authzService?.batchAllowed) {
+                        authzService.batchAllowed = async (config: any[]) => {
+                            console.log('[dbg] batchAllowed called! config:', JSON.stringify(config))
+                            return config.map((c: any) => ({
+                                unitID: c.unitID,
+                                objectID: c.objectID,
+                                actions: (c.actions ?? []).map((action: any) => ({ action, allowed: false })),
+                            }))
                         }
+                        console.log('[dbg] batchAllowed PATCHED ✓')
+                    } else {
+                        console.warn('[dbg] authzService.batchAllowed not found')
                     }
-                } catch (e) {
-                    console.error('[dbg] patch error:', e)
                 }
-
-                // Masquer la boîte de dialogue de permission + spy commandes
-                univerAPI.addEvent(univerAPI.Event.LifeCycleChanged, ({ stage }: any) => {
-                    if (stage !== univerAPI.Enum.LifecycleStages.Rendered) return
-                    console.log('[dbg] LifeCycleChanged Rendered ✓')
-                    univerAPI.setPermissionDialogVisible?.(false)
-                    // Spy sur toutes les commandes exécutées
-                    univer.onCommandExecuted?.((cmd: any) => {
-                        console.log('[dbg] command:', cmd.id)
-                    })
-                })
-
-                // Tracker les modifications dans les zones non protégées
-                if (params.onModified && univer?.onCommandExecuted) {
-                    univer.onCommandExecuted(params.onModified)
-                }
-            } else {
-                // Readonly total : désactiver sélection + droits d'édition
-                univerAPI.addEvent(univerAPI.Event.LifeCycleChanged, ({ stage }: any) => {
-                    if (stage !== univerAPI.Enum.LifecycleStages.Rendered) return
-                    try {
-                        const fWorkbook = univerAPI.getActiveWorkbook()
-                        if (!fWorkbook) return
-                        const unitId = fWorkbook.getId?.()
-                        fWorkbook.disableSelection?.()
-                        const permission = fWorkbook.getPermission?.()
-                        if (permission) {
-                            permission.setWorkbookEditPermission?.(unitId, false)
-                            permission.setPermissionDialogVisible?.(false)
-                        }
-                    } catch (e) { console.error('[UniverSheet] readonly setup error:', e) }
-                })
+            } catch (e) {
+                console.error('[dbg] patch error:', e)
             }
+
+            // Masquer la boîte de dialogue de permission + spy commandes
+            univerAPI.addEvent(univerAPI.Event.LifeCycleChanged, ({ stage }: any) => {
+                if (stage !== univerAPI.Enum.LifecycleStages.Rendered) return
+                console.log('[dbg] LifeCycleChanged Rendered ✓')
+                univerAPI.setPermissionDialogVisible?.(false)
+                univer.onCommandExecuted?.((cmd: any) => {
+                    console.log('[dbg] command:', cmd.id)
+                })
+            })
+
+            if (params.onModified && univer?.onCommandExecuted) {
+                univer.onCommandExecuted(params.onModified)
+            }
+        } else if (params.readonly) {
+            // Readonly total : désactiver sélection + droits d'édition
+            univerAPI.addEvent(univerAPI.Event.LifeCycleChanged, ({ stage }: any) => {
+                if (stage !== univerAPI.Enum.LifecycleStages.Rendered) return
+                try {
+                    const fWorkbook = univerAPI.getActiveWorkbook()
+                    if (!fWorkbook) return
+                    const unitId = fWorkbook.getId?.()
+                    fWorkbook.disableSelection?.()
+                    const permission = fWorkbook.getPermission?.()
+                    if (permission) {
+                        permission.setWorkbookEditPermission?.(unitId, false)
+                        permission.setPermissionDialogVisible?.(false)
+                    }
+                } catch (e) { console.error('[UniverSheet] readonly setup error:', e) }
+            })
         } else if (params.onModified && univer?.onCommandExecuted) {
             univer.onCommandExecuted(params.onModified)
         }
