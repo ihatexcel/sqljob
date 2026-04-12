@@ -148,15 +148,17 @@ class UniverSheetElement extends LitElement {
         // editableRanges → zones éditables en mode client
         // protectedRangeShadow → option preset sheets
         // Le reste → options de UniverSheetsCorePreset.
-        const localeStr: string = userConfig.locale || 'en-US'
+        const localeStr: string = userConfig.locale || 'fr-FR'
         const {
             locale: _localeKey,
             showGridlines,
             showRowHeader,
             showColumnHeader,
-            useSheetProtection,
+            useSheetProtection: _useSheetProtection,
             protectedRangeShadow,
             enableTable,
+            maxRows,
+            maxCols,
             ...presetConfig
         } = userConfig
 
@@ -243,25 +245,42 @@ class UniverSheetElement extends LitElement {
             workbookData = { id: 'wb-' + params.cellId, name: 'Sheet', sheets: {} }
         }
 
-        // Appliquer les paramètres d'affichage (quadrillage, en-têtes de lignes/colonnes)
-        if (showGridlines === false || showRowHeader === false || showColumnHeader === false) {
+        // Appliquer les paramètres d'affichage et de dimensions
+        if (showGridlines === false || showRowHeader === false || showColumnHeader === false || maxRows !== undefined || maxCols !== undefined) {
             const sheets = workbookData.sheets || {}
             for (const sheetId of Object.keys(sheets)) {
                 const sheet = sheets[sheetId]
                 if (showGridlines === false) sheet.showGridlines = 0
                 if (showRowHeader === false) sheet.rowHeader = { ...(sheet.rowHeader || {}), hidden: 1 }
                 if (showColumnHeader === false) sheet.columnHeader = { ...(sheet.columnHeader || {}), hidden: 1 }
+                if (maxRows !== undefined) sheet.rowCount = maxRows
+                if (maxCols !== undefined) sheet.columnCount = maxCols
             }
         }
 
         univerAPI.createWorkbook(workbookData)
 
         // ── Gestion du mode readonly / protection ─────────────────────────────────
-        if (useSheetProtection) {
-            // Protection sélective : bloquer les cellules dans une plage protégée.
-            // On ne passe PAS par IPermissionService/canEditCell (ils consultent
-            // IAuthzIoService.batchAllowed qui retourne toujours true pour l'Owner).
-            // On interroge directement RangeProtectionRuleModel pour la géométrie.
+        if (params.readonly) {
+            // Readonly total : désactiver sélection + droits d'édition
+            univerAPI.addEvent(univerAPI.Event.LifeCycleChanged, ({ stage }: any) => {
+                if (stage !== univerAPI.Enum.LifecycleStages.Rendered) return
+                try {
+                    const fWorkbook = univerAPI.getActiveWorkbook()
+                    if (!fWorkbook) return
+                    const unitId = fWorkbook.getId?.()
+                    fWorkbook.disableSelection?.()
+                    const permission = fWorkbook.getPermission?.()
+                    if (permission) {
+                        permission.setWorkbookEditPermission?.(unitId, false)
+                        permission.setPermissionDialogVisible?.(false)
+                    }
+                } catch (e) { console.error('[UniverSheet] readonly setup error:', e) }
+            })
+        } else {
+            // Protection des plages toujours active en mode édition.
+            // On interroge RangeProtectionRuleModel pour la géométrie et on bloque
+            // les mutations sur les cellules appartenant à une plage protégée.
             univerAPI.addEvent(univerAPI.Event.LifeCycleChanged, async ({ stage }: any) => {
                 if (stage !== univerAPI.Enum.LifecycleStages.Rendered) return
 
@@ -307,24 +326,6 @@ class UniverSheetElement extends LitElement {
             if (params.onModified && univer?.onCommandExecuted) {
                 univer.onCommandExecuted(params.onModified)
             }
-        } else if (params.readonly) {
-            // Readonly total : désactiver sélection + droits d'édition
-            univerAPI.addEvent(univerAPI.Event.LifeCycleChanged, ({ stage }: any) => {
-                if (stage !== univerAPI.Enum.LifecycleStages.Rendered) return
-                try {
-                    const fWorkbook = univerAPI.getActiveWorkbook()
-                    if (!fWorkbook) return
-                    const unitId = fWorkbook.getId?.()
-                    fWorkbook.disableSelection?.()
-                    const permission = fWorkbook.getPermission?.()
-                    if (permission) {
-                        permission.setWorkbookEditPermission?.(unitId, false)
-                        permission.setPermissionDialogVisible?.(false)
-                    }
-                } catch (e) { console.error('[UniverSheet] readonly setup error:', e) }
-            })
-        } else if (params.onModified && univer?.onCommandExecuted) {
-            univer.onCommandExecuted(params.onModified)
         }
     }
 
