@@ -241,42 +241,42 @@ class UniverSheetElement extends LitElement {
 
         // ── Gestion du mode readonly / protection ─────────────────────────────────
         if (useSheetProtection) {
-            // Protection sélective : bloquer les plages protégées, laisser le reste éditable.
-            // Fonctionne que readonly soit true ou false (readOnly peut être false pour permettre la toolbar).
-            // batchAllowed n'est appelé QUE pour les entités ayant des règles de protection
-            // → les cellules libres ne sont pas affectées.
-            try {
-                const injector = (univer as any).__getInjector?.() ?? (univer as any)._injector
-                console.log('[dbg] injector:', injector ? 'OK' : 'NULL')
-                if (injector) {
-                    const { IAuthzIoService } = await import('@univerjs/core')
-                    const authzService = injector.get?.(IAuthzIoService)
-                    console.log('[dbg] authzService:', authzService ? 'OK' : 'NULL')
-                    if (authzService?.batchAllowed) {
-                        authzService.batchAllowed = async (config: any[]) => {
-                            console.log('[dbg] batchAllowed called! config:', JSON.stringify(config))
-                            return config.map((c: any) => ({
-                                unitID: c.unitID,
-                                objectID: c.objectID,
-                                actions: (c.actions ?? []).map((action: any) => ({ action, allowed: false })),
-                            }))
-                        }
-                        console.log('[dbg] batchAllowed PATCHED ✓')
-                    } else {
-                        console.warn('[dbg] authzService.batchAllowed not found')
-                    }
-                }
-            } catch (e) {
-                console.error('[dbg] patch error:', e)
-            }
-
-            // Masquer la boîte de dialogue de permission + spy commandes
+            // Protection sélective : intercepter les mutations de valeur via BeforeCommandExecute.
+            // batchAllowed (IAuthzIoService) n'est pas appelé en mode standalone → on intercepte
+            // directement la mutation sheet.mutation.set-range-values et on vérifie canEditCell.
             univerAPI.addEvent(univerAPI.Event.LifeCycleChanged, ({ stage }: any) => {
                 if (stage !== univerAPI.Enum.LifecycleStages.Rendered) return
                 console.log('[dbg] LifeCycleChanged Rendered ✓')
+
+                const fWorkbook = univerAPI.getActiveWorkbook()
+                const fWorksheet = fWorkbook?.getActiveSheet()
+                const wp = fWorksheet?.getWorksheetPermission?.()
+                console.log('[dbg] wp:', wp ? 'OK' : 'NULL')
+
                 univerAPI.setPermissionDialogVisible?.(false)
-                univer.onCommandExecuted?.((cmd: any) => {
-                    console.log('[dbg] command:', cmd.id)
+
+                // Intercepter toutes les commandes/mutations pour debug + protection
+                univerAPI.addEvent(univerAPI.Event.BeforeCommandExecute, (event: any) => {
+                    console.log('[dbg] BeforeCommandExecute:', event.id)
+                    if (event.id !== 'sheet.mutation.set-range-values') return
+                    if (!wp) return
+                    const cellValue = event.params?.cellValue
+                    if (!cellValue || typeof cellValue !== 'object') return
+                    for (const rowStr of Object.keys(cellValue)) {
+                        const row = Number(rowStr)
+                        const cols = (cellValue as any)[rowStr]
+                        if (!cols || typeof cols !== 'object') continue
+                        for (const colStr of Object.keys(cols)) {
+                            const col = Number(colStr)
+                            const canEdit = wp.canEditCell(row, col)
+                            console.log('[dbg] canEditCell', row, col, '→', canEdit)
+                            if (!canEdit) {
+                                console.log('[dbg] BLOCKED cell', row, col)
+                                event.cancel = true
+                                return
+                            }
+                        }
+                    }
                 })
             })
 
