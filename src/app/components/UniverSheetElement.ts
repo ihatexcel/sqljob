@@ -240,54 +240,36 @@ class UniverSheetElement extends LitElement {
         // ── Gestion du mode readonly ──────────────────────────────────────────────
         if (params.readonly) {
             if (useSheetProtection) {
-                // Protection native Univer : les règles de plages sont dans le snapshot
-                // mais leurs points de permission (IPermissionService) ne sont pas
-                // restaurés automatiquement → canEditCell() retourne true partout.
-                // On itère sur les règles et on force Edit=false sur chaque plage.
-                univerAPI.addEvent(univerAPI.Event.LifeCycleChanged, async ({ stage }: any) => {
-                    if (stage !== univerAPI.Enum.LifecycleStages.Rendered) return
-                    try {
-                        const fWorkbook = univerAPI.getActiveWorkbook()
-                        const fWorksheet = fWorkbook?.getActiveSheet()
-                        if (!fWorkbook || !fWorksheet) return
-
-                        const wp = fWorksheet.getWorksheetPermission?.()
-                        const rules: any[] = (await wp?.listRangeProtectionRules?.()) ?? []
-                        console.log('[UniverSheet] useSheetProtection: found', rules.length, 'rules')
-
-                        let enforced = 0
-                        for (const rule of rules) {
-                            const ranges: any[] = Array.isArray(rule.ranges) ? rule.ranges : []
-                            console.log('[UniverSheet] rule', rule.id, '— ranges:', ranges.length)
-                            for (const range of ranges) {
-                                try {
-                                    const fRange = fWorksheet.getRange?.(
-                                        range.startRow, range.startColumn,
-                                        range.endRow - range.startRow + 1,
-                                        range.endColumn - range.startColumn + 1
-                                    )
-                                    const rp = fRange?.getRangePermission?.()
-                                    if (!rp) {
-                                        console.warn('[UniverSheet] getRangePermission() returned null')
-                                        continue
-                                    }
-                                    // canEdit avant
-                                    console.log('[UniverSheet] canEdit before setPoint:', rp.canEdit?.())
-                                    await rp.setPoint?.(univerAPI.Enum.RangePermissionPoint.Edit, false)
-                                    console.log('[UniverSheet] canEdit after  setPoint:', rp.canEdit?.())
-                                    enforced++
-                                } catch (e2: any) {
-                                    console.warn('[UniverSheet] setPoint failed:', e2?.message ?? e2)
-                                }
-                            }
+                // Patch IAuthzIoService.batchAllowed → bloquer toutes les plages protégées.
+                // NOTE : batchAllowed n'est appelé QUE pour les entités ayant des règles de
+                // protection (pas pour les cellules libres) → les zones non protégées restent éditables.
+                // L'AuthzIoLocalService par défaut retourne toujours `true`, contournant toute
+                // protection. On le remplace ici par une implémentation qui retourne `false`.
+                try {
+                    const injector = (univer as any).__getInjector?.() ?? (univer as any)._injector
+                    if (injector) {
+                        const { IAuthzIoService } = await import('@univerjs/core')
+                        const authzService = injector.get?.(IAuthzIoService)
+                        if (authzService?.batchAllowed) {
+                            authzService.batchAllowed = async (config: any[]) =>
+                                config.map((c: any) => ({
+                                    unitID: c.unitID,
+                                    objectID: c.objectID,
+                                    actions: (c.actions ?? []).map((action: any) => ({ action, allowed: false })),
+                                }))
                         }
-                        console.log('[UniverSheet] enforced', enforced, 'permission point(s)')
-                    } catch (e) {
-                        console.error('[UniverSheet] useSheetProtection setup error:', e)
                     }
+                } catch (e) {
+                    console.error('[UniverSheet] useSheetProtection patch error:', e)
+                }
+
+                // Masquer la boîte de dialogue de permission
+                univerAPI.addEvent(univerAPI.Event.LifeCycleChanged, ({ stage }: any) => {
+                    if (stage !== univerAPI.Enum.LifecycleStages.Rendered) return
                     univerAPI.setPermissionDialogVisible?.(false)
                 })
-                // Suivre les modifications dans les zones non protégées
+
+                // Tracker les modifications dans les zones non protégées
                 if (params.onModified && univer?.onCommandExecuted) {
                     univer.onCommandExecuted(params.onModified)
                 }
