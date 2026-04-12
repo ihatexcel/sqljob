@@ -241,11 +241,58 @@ class UniverSheetElement extends LitElement {
         if (params.readonly) {
             if (useSheetProtection) {
                 // Readonly partiel : la protection est définie nativement dans Univer
-                // (via l'UI de protection des plages), on se contente de masquer
-                // les dialogues de permission et de laisser Univer l'appliquer.
-                univerAPI.addEvent(univerAPI.Event.LifeCycleChanged, ({ stage }: any) => {
+                // (via l'UI de protection des plages), stockée dans le snapshot.
+                univerAPI.addEvent(univerAPI.Event.LifeCycleChanged, async ({ stage }: any) => {
                     if (stage !== univerAPI.Enum.LifecycleStages.Rendered) return
-                    univerAPI.setPermissionDialogVisible?.(false)
+                    try {
+                        const fWorkbook = univerAPI.getActiveWorkbook()
+                        const fWorksheet = fWorkbook?.getActiveSheet()
+                        console.log('[UniverSheet-debug] useSheetProtection — stage Rendered')
+                        console.log('[UniverSheet-debug] fWorkbook:', !!fWorkbook, '| fWorksheet:', !!fWorksheet)
+
+                        // ── État des permissions workbook ─────────────────────────
+                        const wb = fWorkbook?.getWorkbookPermission?.()
+                        console.log('[UniverSheet-debug] workbookPermission exists:', !!wb)
+                        console.log('[UniverSheet-debug] workbook canEdit():', wb?.canEdit?.())
+                        const wbSnap = wb?.getSnapshot?.()
+                        console.log('[UniverSheet-debug] workbook permission snapshot:', JSON.stringify(wbSnap))
+
+                        // ── État des permissions worksheet ────────────────────────
+                        const wp = fWorksheet?.getWorksheetPermission?.()
+                        console.log('[UniverSheet-debug] worksheetPermission exists:', !!wp)
+                        console.log('[UniverSheet-debug] worksheet isProtected():', wp?.isProtected?.())
+                        console.log('[UniverSheet-debug] worksheet canEdit():', wp?.canEdit?.())
+
+                        // ── Règles de protection de plages ────────────────────────
+                        const rules = await wp?.listRangeProtectionRules?.()
+                        console.log('[UniverSheet-debug] rangeProtectionRules count:', rules?.length ?? 'N/A')
+                        console.log('[UniverSheet-debug] rangeProtectionRules:', JSON.stringify(rules?.slice(0, 5)))
+
+                        // ── Test canEditCell sur quelques cellules ─────────────────
+                        for (const [r, c] of [[0, 0], [0, 1], [1, 0], [1, 1]]) {
+                            const canEdit = wp?.canEditCell?.(r, c)
+                            console.log(`[UniverSheet-debug] canEditCell(${r},${c}):`, canEdit)
+                        }
+
+                        // ── Utilisateur courant via injector ──────────────────────
+                        try {
+                            const injector = (univer as any).__getInjector?.() ?? (univer as any)._injector
+                            if (injector) {
+                                const { UserManagerService } = await import('@univerjs/core')
+                                const ums = injector.get?.(UserManagerService)
+                                const cu = ums?.getCurrentUser?.()
+                                console.log('[UniverSheet-debug] currentUser:', JSON.stringify(cu))
+                            } else {
+                                console.log('[UniverSheet-debug] injector not accessible')
+                            }
+                        } catch (e2) {
+                            console.log('[UniverSheet-debug] UserManagerService access error:', e2)
+                        }
+
+                        univerAPI.setPermissionDialogVisible?.(false)
+                    } catch (e) {
+                        console.error('[UniverSheet] useSheetProtection debug error:', e)
+                    }
                 })
                 // Suivre les modifications dans les zones non protégées
                 if (params.onModified && univer?.onCommandExecuted) {
