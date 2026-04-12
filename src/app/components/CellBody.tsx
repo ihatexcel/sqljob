@@ -1107,11 +1107,41 @@ function UniverSheetBody({ cell, path, cellIndex }: any) {
         try { await exportUniverToXlsx(elementRef.current?.getAPI(), cell.name) } catch (e) { console.error(e) } finally { setExporting(false) }
     }, [cell, exportUniverToXlsx, exporting])
 
+    const univerActions = cell._univerReady ? (
+        <>
+            {devMode && (
+                <button
+                    className="p-1 text-muted-foreground cursor-pointer transition-colors hover:text-foreground disabled:opacity-50 disabled:cursor-not-allowed"
+                    onClick={handleSaveSnapshot}
+                    disabled={saving}
+                    title={saving ? 'Enregistrement...' : 'Enregistrer snapshot'}
+                >
+                    <Icon name={saving ? 'autorenew' : 'save'} size={14} className={saving ? 'animate-spin' : ''} />
+                </button>
+            )}
+            <button
+                className="p-1 text-muted-foreground cursor-pointer transition-colors hover:text-foreground disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={handleExportXlsx}
+                disabled={exporting}
+                title={exporting ? 'Export...' : 'Exporter XLSX'}
+            >
+                <Icon name={exporting ? 'autorenew' : 'download'} size={14} className={exporting ? 'animate-spin' : ''} />
+            </button>
+        </>
+    ) : null
+
     return (
         <div className="flex flex-col gap-2">
-            {/* Éditeur SQL */}
+            {/* Éditeur SQL (avec boutons Univer dans la toolbar) */}
             {showSqlEditorVisible?.(cell) && (
-                <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex} placeholder="SELECT * FROM source1" />
+                <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex} placeholder="SELECT * FROM source1" extraActions={univerActions} />
+            )}
+
+            {/* Toolbar standalone quand l'éditeur SQL n'est pas affiché */}
+            {!showSqlEditorVisible?.(cell) && cell._univerReady && (
+                <div className="flex justify-end gap-1 items-center">
+                    {univerActions}
+                </div>
             )}
 
             {/* Skeleton pendant le chargement initial */}
@@ -1131,30 +1161,6 @@ function UniverSheetBody({ cell, path, cellIndex }: any) {
                     display: cell._univerReady ? 'block' : 'none',
                 }}
             />
-
-            {/* Boutons d'action */}
-            {cell._univerReady && (
-                <div className="flex gap-2 flex-wrap">
-                    {devMode && (
-                        <button
-                            className="flex items-center gap-1 px-3 py-1 rounded bg-muted hover:bg-muted/80 text-sm border"
-                            onClick={handleSaveSnapshot}
-                            disabled={saving}
-                            title="Enregistre l'état actuel du classeur dans le snapshot (écrase la requête SQL)"
-                        >
-                            {saving ? '⏳' : '💾'} {saving ? 'Enregistrement...' : 'Enregistrer snapshot'}
-                        </button>
-                    )}
-                    <button
-                        className="flex items-center gap-1 px-3 py-1 rounded bg-muted hover:bg-muted/80 text-sm border"
-                        onClick={handleExportXlsx}
-                        disabled={exporting}
-                        title="Exporte le classeur actuel au format .xlsx"
-                    >
-                        {exporting ? '⏳' : '📥'} {exporting ? 'Export...' : 'Exporter XLSX'}
-                    </button>
-                </div>
-            )}
 
             <ResultInfo cell={cell} />
         </div>

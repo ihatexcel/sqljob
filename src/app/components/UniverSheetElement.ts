@@ -8,6 +8,7 @@
  */
 import { LitElement, html } from 'lit'
 import '@univerjs/preset-sheets-core/lib/index.css'
+import '@univerjs/preset-sheets-table/lib/index.css'
 import { ConfigManager } from '../../lib/ConfigManager'
 
 // ─── Helper ────────────────────────────────────────────────────────────────────
@@ -155,35 +156,44 @@ class UniverSheetElement extends LitElement {
             showColumnHeader,
             useSheetProtection,
             protectedRangeShadow,
+            enableTable,
             ...presetConfig
         } = userConfig
 
-        // Table des locales supportées (format "xx-XX" → {type, loader})
-        type LocaleEntry = { type: string; loader: () => Promise<{ default: any }> }
+        // Table des locales supportées (format "xx-XX" → {type, loader, tableLoader})
+        type LocaleEntry = {
+            type: string
+            loader: () => Promise<{ default: any }>
+            tableLoader: () => Promise<{ default: any }>
+        }
         const LOCALE_MAP: Record<string, LocaleEntry> = {
-            'en-US': { type: 'enUS', loader: () => import('@univerjs/preset-sheets-core/locales/en-US') },
-            'fr-FR': { type: 'frFR', loader: () => import('@univerjs/preset-sheets-core/locales/fr-FR') },
-            'zh-CN': { type: 'zhCN', loader: () => import('@univerjs/preset-sheets-core/locales/zh-CN') },
-            'zh-TW': { type: 'zhTW', loader: () => import('@univerjs/preset-sheets-core/locales/zh-TW') },
-            'ru-RU': { type: 'ruRU', loader: () => import('@univerjs/preset-sheets-core/locales/ru-RU') },
-            'ja-JP': { type: 'jaJP', loader: () => import('@univerjs/preset-sheets-core/locales/ja-JP') },
-            'es-ES': { type: 'esES', loader: () => import('@univerjs/preset-sheets-core/locales/es-ES') },
-            'ca-ES': { type: 'caES', loader: () => import('@univerjs/preset-sheets-core/locales/ca-ES') },
-            'sk-SK': { type: 'skSK', loader: () => import('@univerjs/preset-sheets-core/locales/sk-SK') },
-            'fa-IR': { type: 'faIR', loader: () => import('@univerjs/preset-sheets-core/locales/fa-IR') },
+            'en-US': { type: 'enUS', loader: () => import('@univerjs/preset-sheets-core/locales/en-US'), tableLoader: () => import('@univerjs/preset-sheets-table/lib/locales/en-US') },
+            'fr-FR': { type: 'frFR', loader: () => import('@univerjs/preset-sheets-core/locales/fr-FR'), tableLoader: () => import('@univerjs/preset-sheets-table/lib/locales/fr-FR') },
+            'zh-CN': { type: 'zhCN', loader: () => import('@univerjs/preset-sheets-core/locales/zh-CN'), tableLoader: () => import('@univerjs/preset-sheets-table/lib/locales/zh-CN') },
+            'zh-TW': { type: 'zhTW', loader: () => import('@univerjs/preset-sheets-core/locales/zh-TW'), tableLoader: () => import('@univerjs/preset-sheets-table/lib/locales/zh-TW') },
+            'ru-RU': { type: 'ruRU', loader: () => import('@univerjs/preset-sheets-core/locales/ru-RU'), tableLoader: () => import('@univerjs/preset-sheets-table/lib/locales/ru-RU') },
+            'ja-JP': { type: 'jaJP', loader: () => import('@univerjs/preset-sheets-core/locales/ja-JP'), tableLoader: () => import('@univerjs/preset-sheets-table/lib/locales/ja-JP') },
+            'es-ES': { type: 'esES', loader: () => import('@univerjs/preset-sheets-core/locales/es-ES'), tableLoader: () => import('@univerjs/preset-sheets-table/lib/locales/es-ES') },
+            'ca-ES': { type: 'caES', loader: () => import('@univerjs/preset-sheets-core/locales/ca-ES'), tableLoader: () => import('@univerjs/preset-sheets-table/lib/locales/ca-ES') },
+            'sk-SK': { type: 'skSK', loader: () => import('@univerjs/preset-sheets-core/locales/sk-SK'), tableLoader: () => import('@univerjs/preset-sheets-table/lib/locales/sk-SK') },
+            'fa-IR': { type: 'faIR', loader: () => import('@univerjs/preset-sheets-core/locales/fa-IR'), tableLoader: () => import('@univerjs/preset-sheets-table/lib/locales/fa-IR') },
         }
         const localeEntry = LOCALE_MAP[localeStr] ?? LOCALE_MAP['en-US']
 
         // Import dynamique → Vite génère des chunks séparés (chargement à la demande)
-        const [
-            { createUniver, mergeLocales },
-            { UniverSheetsCorePreset },
-            { default: localeData },
-        ] = await Promise.all([
-            import('@univerjs/presets'),
-            import('@univerjs/preset-sheets-core'),
-            localeEntry.loader(),
+        const [coreResults, tableResults] = await Promise.all([
+            Promise.all([
+                import('@univerjs/presets'),
+                import('@univerjs/preset-sheets-core'),
+                localeEntry.loader(),
+            ]),
+            enableTable
+                ? Promise.all([import('@univerjs/preset-sheets-table'), localeEntry.tableLoader()])
+                : Promise.resolve([null, null]),
         ])
+        const [{ createUniver, mergeLocales }, { UniverSheetsCorePreset }, { default: localeData }] = coreResults
+        const UniverSheetsTablePreset = tableResults[0]?.UniverSheetsTablePreset ?? null
+        const tableLocaleData = tableResults[1]?.default ?? null
 
         // ── Options du preset ────────────────────────────────────────────────────
         const presetOptions: any = { container, ...presetConfig }
@@ -201,10 +211,19 @@ class UniverSheetElement extends LitElement {
             presetOptions.footer = false
         }
 
+        const presets: any[] = [UniverSheetsCorePreset(presetOptions)]
+        if (enableTable && UniverSheetsTablePreset) {
+            presets.push(UniverSheetsTablePreset())
+        }
+
         const { univer, univerAPI } = createUniver({
             locale: localeEntry.type,
-            locales: { [localeEntry.type]: mergeLocales(localeData) },
-            presets: [UniverSheetsCorePreset(presetOptions)],
+            locales: {
+                [localeEntry.type]: tableLocaleData
+                    ? mergeLocales(localeData, tableLocaleData)
+                    : mergeLocales(localeData),
+            },
+            presets,
         })
         this._univer = univer
         this._univerAPI = univerAPI
@@ -237,59 +256,73 @@ class UniverSheetElement extends LitElement {
 
         univerAPI.createWorkbook(workbookData)
 
-        // ── Gestion du mode readonly ──────────────────────────────────────────────
-        if (params.readonly) {
-            if (useSheetProtection) {
-                // Patch IAuthzIoService.batchAllowed → bloquer toutes les plages protégées.
-                // NOTE : batchAllowed n'est appelé QUE pour les entités ayant des règles de
-                // protection (pas pour les cellules libres) → les zones non protégées restent éditables.
-                // L'AuthzIoLocalService par défaut retourne toujours `true`, contournant toute
-                // protection. On le remplace ici par une implémentation qui retourne `false`.
-                try {
-                    const injector = (univer as any).__getInjector?.() ?? (univer as any)._injector
-                    if (injector) {
-                        const { IAuthzIoService } = await import('@univerjs/core')
-                        const authzService = injector.get?.(IAuthzIoService)
-                        if (authzService?.batchAllowed) {
-                            authzService.batchAllowed = async (config: any[]) =>
-                                config.map((c: any) => ({
-                                    unitID: c.unitID,
-                                    objectID: c.objectID,
-                                    actions: (c.actions ?? []).map((action: any) => ({ action, allowed: false })),
-                                }))
+        // ── Gestion du mode readonly / protection ─────────────────────────────────
+        if (useSheetProtection) {
+            // Protection sélective : bloquer les cellules dans une plage protégée.
+            // On ne passe PAS par IPermissionService/canEditCell (ils consultent
+            // IAuthzIoService.batchAllowed qui retourne toujours true pour l'Owner).
+            // On interroge directement RangeProtectionRuleModel pour la géométrie.
+            univerAPI.addEvent(univerAPI.Event.LifeCycleChanged, async ({ stage }: any) => {
+                if (stage !== univerAPI.Enum.LifecycleStages.Rendered) return
+
+                univerAPI.setPermissionDialogVisible?.(false)
+
+                const fWorkbook = univerAPI.getActiveWorkbook()
+                const fWorksheet = fWorkbook?.getActiveSheet()
+                const unitId = fWorkbook?.getId?.()
+                const subUnitId = fWorksheet?.getSheetId?.()
+                if (!unitId || !subUnitId) return
+
+                const { RangeProtectionRuleModel } = await import('@univerjs/sheets')
+                const injector = (univer as any).__getInjector?.() ?? (univer as any)._injector
+                const ruleModel = injector?.get?.(RangeProtectionRuleModel)
+                if (!ruleModel) return
+
+                univerAPI.addEvent(univerAPI.Event.BeforeCommandExecute, (event: any) => {
+                    if (event.id !== 'sheet.mutation.set-range-values') return
+                    const cellValue = event.params?.cellValue
+                    if (!cellValue || typeof cellValue !== 'object') return
+                    const rules: any[] = ruleModel.getSubunitRuleList(unitId, subUnitId) ?? []
+                    if (rules.length === 0) return
+                    for (const rowStr of Object.keys(cellValue)) {
+                        const row = Number(rowStr)
+                        const cols = (cellValue as any)[rowStr]
+                        if (!cols || typeof cols !== 'object') continue
+                        for (const colStr of Object.keys(cols)) {
+                            const col = Number(colStr)
+                            for (const rule of rules) {
+                                for (const range of (rule.ranges ?? [])) {
+                                    if (row >= range.startRow && row <= range.endRow &&
+                                        col >= range.startColumn && col <= range.endColumn) {
+                                        event.cancel = true
+                                        return
+                                    }
+                                }
+                            }
                         }
                     }
-                } catch (e) {
-                    console.error('[UniverSheet] useSheetProtection patch error:', e)
-                }
-
-                // Masquer la boîte de dialogue de permission
-                univerAPI.addEvent(univerAPI.Event.LifeCycleChanged, ({ stage }: any) => {
-                    if (stage !== univerAPI.Enum.LifecycleStages.Rendered) return
-                    univerAPI.setPermissionDialogVisible?.(false)
                 })
+            })
 
-                // Tracker les modifications dans les zones non protégées
-                if (params.onModified && univer?.onCommandExecuted) {
-                    univer.onCommandExecuted(params.onModified)
-                }
-            } else {
-                // Readonly total : désactiver sélection + droits d'édition
-                univerAPI.addEvent(univerAPI.Event.LifeCycleChanged, ({ stage }: any) => {
-                    if (stage !== univerAPI.Enum.LifecycleStages.Rendered) return
-                    try {
-                        const fWorkbook = univerAPI.getActiveWorkbook()
-                        if (!fWorkbook) return
-                        const unitId = fWorkbook.getId?.()
-                        fWorkbook.disableSelection?.()
-                        const permission = fWorkbook.getPermission?.()
-                        if (permission) {
-                            permission.setWorkbookEditPermission?.(unitId, false)
-                            permission.setPermissionDialogVisible?.(false)
-                        }
-                    } catch (e) { console.error('[UniverSheet] readonly setup error:', e) }
-                })
+            if (params.onModified && univer?.onCommandExecuted) {
+                univer.onCommandExecuted(params.onModified)
             }
+        } else if (params.readonly) {
+            // Readonly total : désactiver sélection + droits d'édition
+            univerAPI.addEvent(univerAPI.Event.LifeCycleChanged, ({ stage }: any) => {
+                if (stage !== univerAPI.Enum.LifecycleStages.Rendered) return
+                try {
+                    const fWorkbook = univerAPI.getActiveWorkbook()
+                    if (!fWorkbook) return
+                    const unitId = fWorkbook.getId?.()
+                    fWorkbook.disableSelection?.()
+                    const permission = fWorkbook.getPermission?.()
+                    if (permission) {
+                        permission.setWorkbookEditPermission?.(unitId, false)
+                        permission.setPermissionDialogVisible?.(false)
+                    }
+                } catch (e) { console.error('[UniverSheet] readonly setup error:', e) }
+            })
         } else if (params.onModified && univer?.onCommandExecuted) {
             univer.onCommandExecuted(params.onModified)
         }
