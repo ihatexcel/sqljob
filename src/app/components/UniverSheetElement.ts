@@ -153,16 +153,10 @@ class UniverSheetElement extends LitElement {
             showGridlines,
             showRowHeader,
             showColumnHeader,
-            editableRanges: _rawEditableRanges,
+            useSheetProtection,
             protectedRangeShadow,
             ...presetConfig
         } = userConfig
-
-        const editableRanges: string[] = Array.isArray(_rawEditableRanges)
-            ? _rawEditableRanges
-            : typeof _rawEditableRanges === 'string'
-                ? _rawEditableRanges.split(/[,\n]/).map((s: string) => s.trim()).filter(Boolean)
-                : []
 
         // Table des locales supportées (format "xx-XX" → {type, loader})
         type LocaleEntry = { type: string; loader: () => Promise<{ default: any }> }
@@ -245,41 +239,15 @@ class UniverSheetElement extends LitElement {
 
         // ── Gestion du mode readonly ──────────────────────────────────────────────
         if (params.readonly) {
-            if (editableRanges.length > 0) {
-                // Readonly partiel : protéger la feuille + ouvrir les zones éditables
-                univerAPI.addEvent(univerAPI.Event.LifeCycleChanged, async ({ stage }: any) => {
+            if (useSheetProtection) {
+                // Readonly partiel : la protection est définie nativement dans Univer
+                // (via l'UI de protection des plages), on se contente de masquer
+                // les dialogues de permission et de laisser Univer l'appliquer.
+                univerAPI.addEvent(univerAPI.Event.LifeCycleChanged, ({ stage }: any) => {
                     if (stage !== univerAPI.Enum.LifecycleStages.Rendered) return
-                    try {
-                        const fWorkbook = univerAPI.getActiveWorkbook()
-                        if (!fWorkbook) return
-                        const fWorksheet = fWorkbook.getActiveSheet()
-                        if (!fWorksheet) return
-
-                        const worksheetPermission = fWorksheet.getWorksheetPermission?.()
-                        if (worksheetPermission) {
-                            await worksheetPermission.protect?.({ name: 'Protected' })
-                            await worksheetPermission.setMode?.('readOnly')
-
-                            // Créer des exceptions pour chaque zone éditable
-                            for (const rangeStr of editableRanges) {
-                                const fRange = fWorksheet.getRange?.(rangeStr.trim())
-                                if (!fRange) continue
-                                const rangePerm = fRange.getRangePermission?.()
-                                if (rangePerm) {
-                                    await rangePerm.protect?.({
-                                        name: `Editable: ${rangeStr}`,
-                                        allowEdit: true,
-                                        allowViewByOthers: true,
-                                    })
-                                }
-                            }
-                        }
-                        univerAPI.setPermissionDialogVisible?.(false)
-                    } catch (e) {
-                        console.error('[UniverSheet] editable ranges setup error:', e)
-                    }
+                    univerAPI.setPermissionDialogVisible?.(false)
                 })
-                // Suivre les modifications dans les zones éditables
+                // Suivre les modifications dans les zones non protégées
                 if (params.onModified && univer?.onCommandExecuted) {
                     univer.onCommandExecuted(params.onModified)
                 }

@@ -174,37 +174,38 @@ function UniverConfigEditor({ cell, forceUpdate }: any) {
                 )}
             </div>
 
-            {/* Section Zones éditables (mode client) */}
+            {/* Section Permissions (mode client) */}
             <div className="space-y-2 border border-border rounded-md p-3">
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Zones éditables (mode client)</p>
-                <p className="text-xs text-muted-foreground">Plages que le client peut modifier même en mode lecture seule. Une plage par ligne (ex&nbsp;: A1:C3).</p>
-                <Textarea
-                    className="font-mono text-xs"
-                    rows={3}
-                    placeholder={"A1:C3\nD5:F10"}
-                    value={(Array.isArray(cfg.editableRanges) ? cfg.editableRanges : []).join('\n')}
-                    onChange={e => {
-                        const parsed = e.target.value.split(/[,\n]/).map((s: string) => s.trim()).filter(Boolean)
-                        setKey('editableRanges', parsed.length > 0 ? parsed : undefined)
-                    }}
-                />
-                <div className="space-y-1">
-                    <Label className="text-xs text-muted-foreground">Ombrage des zones protégées</Label>
-                    <Select
-                        value={cfg.protectedRangeShadow === undefined ? 'default' : cfg.protectedRangeShadow === false ? 'false' : String(cfg.protectedRangeShadow)}
-                        onValueChange={v => setKey('protectedRangeShadow', v === 'default' ? undefined : v === 'false' ? false : v)}
-                    >
-                        <SelectTrigger className="h-7 text-xs">
-                            <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="default">Par défaut (toujours)</SelectItem>
-                            <SelectItem value="non-editable">Non-éditables uniquement</SelectItem>
-                            <SelectItem value="non-viewable">Non-visibles uniquement</SelectItem>
-                            <SelectItem value="false">Jamais</SelectItem>
-                        </SelectContent>
-                    </Select>
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Permissions (mode client)</p>
+                <div className="flex items-center gap-3">
+                    <Checkbox
+                        checked={!!cfg.useSheetProtection}
+                        onCheckedChange={v => setKey('useSheetProtection', v ? true : undefined)}
+                    />
+                    <Label className="cursor-pointer text-sm">Activer la protection des plages</Label>
                 </div>
+                <p className="text-xs text-muted-foreground ml-7">
+                    Les plages protégées sont définies directement dans la feuille Univer (clic droit → Protéger la plage). Quand activé, le client ne peut éditer que les zones non protégées.
+                </p>
+                {!!cfg.useSheetProtection && (
+                    <div className="ml-7 space-y-1">
+                        <Label className="text-xs text-muted-foreground">Ombrage des zones protégées</Label>
+                        <Select
+                            value={cfg.protectedRangeShadow === undefined ? 'default' : cfg.protectedRangeShadow === false ? 'false' : String(cfg.protectedRangeShadow)}
+                            onValueChange={v => setKey('protectedRangeShadow', v === 'default' ? undefined : v === 'false' ? false : v)}
+                        >
+                            <SelectTrigger className="h-7 text-xs">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="default">Par défaut (toujours)</SelectItem>
+                                <SelectItem value="non-editable">Non-éditables uniquement</SelectItem>
+                                <SelectItem value="non-viewable">Non-visibles uniquement</SelectItem>
+                                <SelectItem value="false">Jamais</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                )}
             </div>
         </div>
     )
