@@ -5722,7 +5722,10 @@ function checkDCE() {
 }
 checkDCE(), reactDom.exports = reactDom_production_min;
 var reactDomExports = reactDom.exports;
-const ReactDOM = /* @__PURE__ */ getDefaultExportFromCjs$1(reactDomExports);
+const ReactDOM = /* @__PURE__ */ getDefaultExportFromCjs$1(reactDomExports), index$f = /* @__PURE__ */ _mergeNamespaces({
+  __proto__: null,
+  default: ReactDOM
+}, [reactDomExports]);
 var createRoot$1, m$b = reactDomExports;
 createRoot$1 = m$b.createRoot, m$b.hydrateRoot;
 function _arrayLikeToArray$5(ur, dr) {
@@ -138470,12 +138473,20 @@ class UniverSheetElement extends i$8 {
       "sk-SK": { type: "skSK", umdPath: "sk-SK" },
       "fa-IR": { type: "faIR", umdPath: "fa-IR" }
     }, Tr = kr[gr] ?? kr["en-US"], Lr = "0.19.0", Rr = "https://unpkg.com", Ir = window;
-    CDNManager.loadStyle(`${Rr}/@univerjs/preset-sheets-core@${Lr}/lib/index.css`), await CDNManager.loadScript(`${Rr}/rxjs@7.8.2/dist/bundles/rxjs.umd.min.js`), await CDNManager.loadScript(`${Rr}/@univerjs/presets@${Lr}/lib/umd/index.js`), await CDNManager.loadScript(`${Rr}/@univerjs/preset-sheets-core@${Lr}/lib/umd/index.js`);
-    const Dr = new Set(Object.keys(Ir));
-    await CDNManager.loadScript(
-      `${Rr}/@univerjs/preset-sheets-core@${Lr}/lib/umd/locales/${Tr.umdPath}.js`
-    );
-    const Nr = Object.keys(Ir).filter((tn) => !Dr.has(tn) && Ir[tn] && typeof Ir[tn] == "object").map((tn) => Ir[tn]), { createUniver: zr, mergeLocales: Hr } = Ir.UniverPresets, Vr = Ir.UniverPresetSheetsCore ?? Ir.UniverDesign, { UniverSheetsCorePreset: Wr } = Vr, Xr = { container: mr, ...Sr };
+    CDNManager.loadStyle(`${Rr}/@univerjs/preset-sheets-core@${Lr}/lib/index.css`), Ir.React || (Ir.React = await Promise.resolve().then(() => React$3)), Ir.ReactDOM || (Ir.ReactDOM = await Promise.resolve().then(() => index$f));
+    const Dr = Ir.define;
+    Ir.define = void 0;
+    let Nr = [];
+    try {
+      await CDNManager.loadScript(`${Rr}/rxjs@7.8.2/dist/bundles/rxjs.umd.min.js`), await CDNManager.loadScript(`${Rr}/@univerjs/presets@${Lr}/lib/umd/index.js`), await CDNManager.loadScript(`${Rr}/@univerjs/preset-sheets-core@${Lr}/lib/umd/index.js`);
+      const tn = new Set(Object.keys(Ir));
+      await CDNManager.loadScript(
+        `${Rr}/@univerjs/preset-sheets-core@${Lr}/lib/umd/locales/${Tr.umdPath}.js`
+      ), Nr = Object.keys(Ir).filter((ln) => !tn.has(ln) && Ir[ln] && typeof Ir[ln] == "object").map((ln) => Ir[ln]);
+    } finally {
+      Ir.define = Dr;
+    }
+    const { createUniver: zr, mergeLocales: Hr } = Ir.UniverPresets, Vr = Ir.UniverPresetSheetsCore ?? Ir.UniverDesign, { UniverSheetsCorePreset: Wr } = Vr, Xr = { container: mr, ...Sr };
     Cr !== void 0 && (Xr.sheets = { ...Xr.sheets || {}, protectedRangeShadow: Cr }), pr.readonly && (Xr.toolbar = !1, Xr.contextMenu = !1, Xr.formulaBar = !1, Xr.footer = !1);
     const { univer: rn, univerAPI: Zr } = zr({
       locale: Tr.type,
