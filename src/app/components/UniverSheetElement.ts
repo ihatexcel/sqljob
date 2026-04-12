@@ -240,30 +240,48 @@ class UniverSheetElement extends LitElement {
         // ── Gestion du mode readonly ──────────────────────────────────────────────
         if (params.readonly) {
             if (useSheetProtection) {
-                // Protection native Univer : le user par défaut est "Owner" et bypasse
-                // toutes les règles de protection de plages (batchAllowed → true toujours).
-                // On le passe en UnitRole.Reader (= 2) au rendu : AuthzIoLocalService
-                // retournera false pour les plages protégées, libre pour les autres.
+                // Protection native Univer : les règles de plages sont dans le snapshot
+                // mais leurs points de permission (IPermissionService) ne sont pas
+                // restaurés automatiquement → canEditCell() retourne true partout.
+                // On itère sur les règles et on force Edit=false sur chaque plage.
                 univerAPI.addEvent(univerAPI.Event.LifeCycleChanged, async ({ stage }: any) => {
                     if (stage !== univerAPI.Enum.LifecycleStages.Rendered) return
                     try {
-                        // Accès à l'injecteur Univer (API interne, plusieurs noms possibles)
-                        const injector = (univer as any).__getInjector?.()
-                            ?? (univer as any)._injector
-                            ?? (univer as any).getInjector?.()
-                        if (!injector) {
-                            console.warn('[UniverSheet] injector inaccessible — protections non enforced')
-                        } else {
-                            const { UserManagerService, createDefaultUser } = await import('@univerjs/core')
-                            const ums = injector.get?.(UserManagerService)
-                            if (ums) {
-                                // 2 = UnitRole.Reader (évite d'importer @univerjs/protocol)
-                                ;(ums as any).setCurrentUser((createDefaultUser as any)(2))
-                                console.log('[UniverSheet] user → Reader : protections de plages enforcées')
-                            } else {
-                                console.warn('[UniverSheet] UserManagerService absent — protections non enforced')
+                        const fWorkbook = univerAPI.getActiveWorkbook()
+                        const fWorksheet = fWorkbook?.getActiveSheet()
+                        if (!fWorkbook || !fWorksheet) return
+
+                        const wp = fWorksheet.getWorksheetPermission?.()
+                        const rules: any[] = (await wp?.listRangeProtectionRules?.()) ?? []
+                        console.log('[UniverSheet] useSheetProtection: found', rules.length, 'rules')
+
+                        let enforced = 0
+                        for (const rule of rules) {
+                            const ranges: any[] = Array.isArray(rule.ranges) ? rule.ranges : []
+                            console.log('[UniverSheet] rule', rule.id, '— ranges:', ranges.length)
+                            for (const range of ranges) {
+                                try {
+                                    const fRange = fWorksheet.getRange?.(
+                                        range.startRow, range.startColumn,
+                                        range.endRow - range.startRow + 1,
+                                        range.endColumn - range.startColumn + 1
+                                    )
+                                    const rp = fRange?.getRangePermission?.()
+                                    if (!rp) {
+                                        console.warn('[UniverSheet] getRangePermission() returned null')
+                                        continue
+                                    }
+                                    // canEdit avant
+                                    console.log('[UniverSheet] canEdit before setPoint:', rp.canEdit?.())
+                                    await rp.setPoint?.(univerAPI.Enum.RangePermissionPoint.Edit, false)
+                                    console.log('[UniverSheet] canEdit after  setPoint:', rp.canEdit?.())
+                                    enforced++
+                                } catch (e2: any) {
+                                    console.warn('[UniverSheet] setPoint failed:', e2?.message ?? e2)
+                                }
                             }
                         }
+                        console.log('[UniverSheet] enforced', enforced, 'permission point(s)')
                     } catch (e) {
                         console.error('[UniverSheet] useSheetProtection setup error:', e)
                     }
