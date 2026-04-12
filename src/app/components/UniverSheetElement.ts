@@ -247,26 +247,38 @@ class UniverSheetElement extends LitElement {
                 // protection. On le remplace ici par une implémentation qui retourne `false`.
                 try {
                     const injector = (univer as any).__getInjector?.() ?? (univer as any)._injector
+                    console.log('[dbg] injector:', injector ? 'OK' : 'NULL')
                     if (injector) {
                         const { IAuthzIoService } = await import('@univerjs/core')
                         const authzService = injector.get?.(IAuthzIoService)
+                        console.log('[dbg] authzService:', authzService ? 'OK' : 'NULL')
                         if (authzService?.batchAllowed) {
-                            authzService.batchAllowed = async (config: any[]) =>
-                                config.map((c: any) => ({
+                            authzService.batchAllowed = async (config: any[]) => {
+                                console.log('[dbg] batchAllowed called! config:', JSON.stringify(config))
+                                return config.map((c: any) => ({
                                     unitID: c.unitID,
                                     objectID: c.objectID,
                                     actions: (c.actions ?? []).map((action: any) => ({ action, allowed: false })),
                                 }))
+                            }
+                            console.log('[dbg] batchAllowed PATCHED ✓')
+                        } else {
+                            console.warn('[dbg] authzService.batchAllowed not found')
                         }
                     }
                 } catch (e) {
-                    console.error('[UniverSheet] useSheetProtection patch error:', e)
+                    console.error('[dbg] patch error:', e)
                 }
 
-                // Masquer la boîte de dialogue de permission
+                // Masquer la boîte de dialogue de permission + spy commandes
                 univerAPI.addEvent(univerAPI.Event.LifeCycleChanged, ({ stage }: any) => {
                     if (stage !== univerAPI.Enum.LifecycleStages.Rendered) return
+                    console.log('[dbg] LifeCycleChanged Rendered ✓')
                     univerAPI.setPermissionDialogVisible?.(false)
+                    // Spy sur toutes les commandes exécutées
+                    univer.onCommandExecuted?.((cmd: any) => {
+                        console.log('[dbg] command:', cmd.id)
+                    })
                 })
 
                 // Tracker les modifications dans les zones non protégées
