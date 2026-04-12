@@ -1083,7 +1083,7 @@ function UniverSheetBody({ cell, path, cellIndex }: any) {
             rows: cell._univerRows ?? null,
             snapshot: cell._univerSnapshotPending ?? null,
             cellId: cell._id,
-            readonly: cell.readOnly === true || (!devMode && cell.readOnly !== false),
+            readonly: !devMode && cell.readOnly !== false,
             config: cell.json?.univerConfig ?? null,
             onModified: () => { cell._univerModified = true },
         }).catch((e: any) => {
