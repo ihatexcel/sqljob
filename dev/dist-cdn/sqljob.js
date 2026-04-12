@@ -138473,7 +138473,7 @@ class UniverSheetElement extends i$8 {
       "sk-SK": { type: "skSK", umdPath: "sk-SK" },
       "fa-IR": { type: "faIR", umdPath: "fa-IR" }
     }, Tr = kr[gr] ?? kr["en-US"], Lr = "0.19.0", Rr = "https://unpkg.com", Ir = window;
-    CDNManager.loadStyle(`${Rr}/@univerjs/preset-sheets-core@${Lr}/lib/index.css`), Ir.React || (Ir.React = await Promise.resolve().then(() => React$3)), Ir.ReactDOM || (Ir.ReactDOM = await Promise.resolve().then(() => index$f));
+    CDNManager.loadStyle(`${Rr}/@univerjs/preset-sheets-core@${Lr}/lib/index.css`), Ir.React || (Ir.React = Object.assign({}, await Promise.resolve().then(() => React$3))), Ir.ReactDOM || (Ir.ReactDOM = Object.assign({}, await Promise.resolve().then(() => index$f)));
     const Dr = Ir.define;
     Ir.define = void 0;
     let Nr = [];
