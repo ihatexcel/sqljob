@@ -158,6 +158,8 @@ class UniverSheetElement extends LitElement {
             ...presetConfig
         } = userConfig
 
+        console.log('[dbg] initialize → readonly:', params.readonly, '| useSheetProtection:', useSheetProtection, '| config:', JSON.stringify(params.config))
+
         // Table des locales supportées (format "xx-XX" → {type, loader})
         type LocaleEntry = { type: string; loader: () => Promise<{ default: any }> }
         const LOCALE_MAP: Record<string, LocaleEntry> = {
