@@ -289,7 +289,7 @@ const React$2 = /* @__PURE__ */ getDefaultExportFromCjs$1(reactExports), React$3
   __proto__: null,
   default: React$2
 }, [reactExports]);
-var reactDom = { exports: {} }, reactDom_production_min = {}, scheduler = { exports: {} }, scheduler_production_min = {};
+var client$1 = {}, reactDom = { exports: {} }, reactDom_production_min = {}, scheduler = { exports: {} }, scheduler_production_min = {};
 /**
  * @license React
  * scheduler.production.min.js
@@ -5726,8 +5726,18 @@ const ReactDOM = /* @__PURE__ */ getDefaultExportFromCjs$1(reactDomExports), ind
   __proto__: null,
   default: ReactDOM
 }, [reactDomExports]);
-var createRoot$1, m$b = reactDomExports;
-createRoot$1 = m$b.createRoot, m$b.hydrateRoot;
+var hydrateRoot, createRoot$1, m$b = reactDomExports;
+createRoot$1 = client$1.createRoot = m$b.createRoot, hydrateRoot = client$1.hydrateRoot = m$b.hydrateRoot;
+const client = /* @__PURE__ */ _mergeNamespaces({
+  __proto__: null,
+  get createRoot() {
+    return createRoot$1;
+  },
+  default: client$1,
+  get hydrateRoot() {
+    return hydrateRoot;
+  }
+}, [client$1]);
 function _arrayLikeToArray$5(ur, dr) {
   (dr == null || dr > ur.length) && (dr = ur.length);
   for (var pr = 0, mr = Array(dr); pr < dr; pr++) mr[pr] = ur[pr];
@@ -6284,7 +6294,7 @@ function Ve$1({ defaultValue: ur, defaultLanguage: dr, defaultPath: pr, value: m
   }
   return React$2.createElement(H$4, { width: Sr, height: kr, isEditorReady: zr, loading: xr, _ref: Zr, className: Tr, wrapperProps: Lr });
 }
-var fe$2 = Ve$1, de$5 = reactExports.memo(fe$2), jsxRuntime = { exports: {} }, reactJsxRuntime_production_min = {};
+var fe$2 = Ve$1, de$5 = reactExports.memo(fe$2), jsxRuntime$1 = { exports: {} }, reactJsxRuntime_production_min = {};
 /**
  * @license React
  * react-jsx-runtime.production.min.js
@@ -6305,8 +6315,12 @@ function q$6(ur, dr, pr) {
 reactJsxRuntime_production_min.Fragment = l$5;
 reactJsxRuntime_production_min.jsx = q$6;
 reactJsxRuntime_production_min.jsxs = q$6;
-jsxRuntime.exports = reactJsxRuntime_production_min;
-var jsxRuntimeExports = jsxRuntime.exports;
+jsxRuntime$1.exports = reactJsxRuntime_production_min;
+var jsxRuntimeExports = jsxRuntime$1.exports;
+const jsxRuntime_default = /* @__PURE__ */ getDefaultExportFromCjs$1(jsxRuntimeExports), jsxRuntime = /* @__PURE__ */ _mergeNamespaces({
+  __proto__: null,
+  default: jsxRuntime_default
+}, [jsxRuntimeExports]);
 function createContext2(ur, dr) {
   const pr = reactExports.createContext(dr), mr = (yr) => {
     const { children: gr, ...Ar } = yr, xr = reactExports.useMemo(() => Ar, Object.values(Ar));
@@ -138473,7 +138487,14 @@ class UniverSheetElement extends i$8 {
       "sk-SK": { type: "skSK", umdPath: "sk-SK" },
       "fa-IR": { type: "faIR", umdPath: "fa-IR" }
     }, Tr = kr[gr] ?? kr["en-US"], Lr = "0.19.0", Rr = "https://unpkg.com", Ir = window;
-    CDNManager.loadStyle(`${Rr}/@univerjs/preset-sheets-core@${Lr}/lib/index.css`), Ir.React || (Ir.React = Object.assign({}, await Promise.resolve().then(() => React$3))), Ir.ReactDOM || (Ir.ReactDOM = Object.assign({}, await Promise.resolve().then(() => index$f)));
+    if (CDNManager.loadStyle(`${Rr}/@univerjs/preset-sheets-core@${Lr}/lib/index.css`), !Ir.React) {
+      const [xn, dn] = await Promise.all([Promise.resolve().then(() => React$3), Promise.resolve().then(() => jsxRuntime)]);
+      Ir.React = Object.assign({}, xn, dn);
+    }
+    if (!Ir.ReactDOM) {
+      const [xn, dn] = await Promise.all([Promise.resolve().then(() => index$f), Promise.resolve().then(() => client)]);
+      Ir.ReactDOM = Object.assign({}, xn, dn);
+    }
     const Dr = Ir.define;
     Ir.define = void 0;
     let Nr = [];
