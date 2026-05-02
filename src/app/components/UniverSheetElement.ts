@@ -82,6 +82,7 @@ export interface UniverInitParams {
     rows: any[] | null
     snapshot: string | null
     cellId: string
+    name?: string
     readonly: boolean
     config?: any   // Objet ou string JSON → options UniverSheetsCorePreset
     onModified?: () => void
@@ -328,8 +329,9 @@ class UniverSheetElement extends LitElement {
                 if (columns.length > 0) {
                     const fWorksheet = univerAPI.getActiveWorkbook()?.getActiveSheet()
                     if (fWorksheet) {
+                        const tableName = params.name || ('table-' + params.cellId)
                         await fWorksheet.addTable(
-                            'table-' + params.cellId,
+                            tableName,
                             {
                                 startRow: 0,
                                 startColumn: 0,
