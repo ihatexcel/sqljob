@@ -257,6 +257,17 @@ function UniverConfigEditor({ cell, forceUpdate }: any) {
                 <p className="text-xs text-muted-foreground ml-7">
                     Active le preset <code>@univerjs/preset-sheets-table</code> (tableaux structurés avec filtres, tri…). Nécessite de ré-exécuter la cellule.
                 </p>
+
+                <div className="flex items-center gap-3">
+                    <Checkbox
+                        checked={!!cfg.materializeAsDuckDB}
+                        onCheckedChange={v => setKey('materializeAsDuckDB', v ? true : undefined)}
+                    />
+                    <Label className="cursor-pointer text-sm">Matérialiser en table DuckDB</Label>
+                </div>
+                <p className="text-xs text-muted-foreground ml-7">
+                    Crée/met à jour une table DuckDB (nom = cellule) avec les valeurs évaluées de la feuille. Mise à jour à chaque modification utilisateur.
+                </p>
             </div>
 
         </div>

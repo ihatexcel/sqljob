@@ -1079,6 +1079,8 @@ function UniverSheetBody({ cell, path, cellIndex }: any) {
         if (!cell._univerReady || !elementRef.current) return
         if (cell._univerRunId === lastInitRunId.current) return
         lastInitRunId.current = cell._univerRunId ?? 0
+        const _univerCfg = cell.json?.univerConfig
+        const _materialize = _univerCfg && typeof _univerCfg === 'object' ? !!_univerCfg.materializeAsDuckDB : false
         elementRef.current.initialize({
             rows: cell._univerRows ?? null,
             snapshot: cell._univerSnapshotPending ?? null,
@@ -1087,6 +1089,17 @@ function UniverSheetBody({ cell, path, cellIndex }: any) {
             readonly: !devMode && cell.readOnly !== false,
             config: cell.json?.univerConfig ?? null,
             onModified: () => { cell._univerModified = true },
+            onMaterialize: _materialize ? async (csv: string) => {
+                const tableName = cell.name || ('univer_' + cell._id)
+                const csvFileName = `_univer_${cell._id}.csv`
+                try {
+                    const csvBlob = new Blob([csv], { type: 'text/csv' })
+                    await DuckDBManager.registerFile(csvFileName, csvBlob)
+                    await DuckDBManager.executeQuery(
+                        `CREATE OR REPLACE TABLE "${tableName.replace(/"/g, '""')}" AS SELECT * FROM read_csv('${csvFileName}', HEADER = true, AUTO_DETECT = true, SAMPLE_SIZE = -1)`
+                    )
+                } catch (e) { console.error('[UniverSheet] DuckDB materialize error:', e) }
+            } : undefined,
         }).catch((e: any) => {
             cell._univerReady = false
             cell._resultInfo = '❌ ' + e.message
