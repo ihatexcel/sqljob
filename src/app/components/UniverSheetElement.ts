@@ -261,16 +261,25 @@ class UniverSheetElement extends LitElement {
                 throw new Error('Snapshot Univer invalide : ' + e.message)
             }
         } else if (rawWorkbookJson && params.rows?.length) {
-            // La première cellule du résultat SQL contient un IWorkbookData JSON complet
+            // La première cellule du résultat SQL contient un cellData JSON
             const firstRow = params.rows[0]
             const raw = firstRow[Object.keys(firstRow)[0]]
+            let cellData: any
             try {
-                workbookData = typeof raw === 'string' ? JSON.parse(raw) : raw
-                if (!workbookData || typeof workbookData !== 'object') throw new Error('valeur non-objet')
+                cellData = typeof raw === 'string' ? JSON.parse(raw) : raw
+                if (!cellData || typeof cellData !== 'object') throw new Error('valeur non-objet')
             } catch (e: any) {
-                throw new Error('rawWorkbookJson: JSON IWorkbookData invalide — ' + e.message)
+                throw new Error('rawWorkbookJson: JSON cellData invalide — ' + e.message)
             }
-            if (!workbookData.id) workbookData.id = 'wb-' + params.cellId
+            const sheetId = 'sheet-' + params.cellId
+            workbookData = {
+                id: 'wb-' + params.cellId,
+                name: 'Sheet',
+                sheetOrder: [sheetId],
+                sheets: {
+                    [sheetId]: { id: sheetId, name: 'Sheet1', cellData },
+                },
+            }
         } else if (params.rows?.length) {
             workbookData = _buildWorkbookFromRows(params.rows, params.cellId, !!evalFormulas)
         } else {
