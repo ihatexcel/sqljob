@@ -17,7 +17,7 @@ function _buildWorkbookFromRows(rows: any[], cellId: string, evalFormulas = fals
     const sheetId = 'sheet-' + cellId
     const cellData: Record<number, Record<number, { v?: any; f?: string }>> = {}
     if (!rows || rows.length === 0) {
-        return { id: 'wb-' + cellId, name: 'Sheet', sheets: { [sheetId]: { id: sheetId, name: 'Sheet1', cellData } } }
+        return { id: 'wb-' + cellId, name: 'Sheet', sheets: { [sheetId]: { id: sheetId, name: 'Feuille1', cellData } } }
     }
     const columns = Object.keys(rows[0])
     cellData[0] = {}
@@ -38,7 +38,7 @@ function _buildWorkbookFromRows(rows: any[], cellId: string, evalFormulas = fals
         id: 'wb-' + cellId,
         name: 'Sheet',
         sheets: {
-            [sheetId]: { id: sheetId, name: 'Sheet1', cellData },
+            [sheetId]: { id: sheetId, name: 'Feuille1', cellData },
         },
     }
 }
@@ -282,7 +282,7 @@ class UniverSheetElement extends LitElement {
                 sheetOrder: [sheetId],
                 styles,
                 sheets: {
-                    [sheetId]: { id: sheetId, name: 'Sheet1', cellData },
+                    [sheetId]: { id: sheetId, name: 'Feuille1', cellData },
                 },
             }
         } else if (params.rows?.length) {
