@@ -230,11 +230,11 @@ function UniverConfigEditor({ cell, forceUpdate }: any) {
                         checked={!!cfg.rawWorkbookJson}
                         onCheckedChange={v => setKey('rawWorkbookJson', v ? true : undefined)}
                     />
-                    <Label className="cursor-pointer text-sm">Injection JSON (IWorkbookData)</Label>
+                    <Label className="cursor-pointer text-sm">Injection cellData JSON</Label>
                 </div>
                 <p className="text-xs text-muted-foreground ml-7">
-                    La requête SQL retourne un <code>IWorkbookData</code> JSON complet dans sa première cellule.
-                    Permet d'injecter styles, formats, ressources de plugins, etc.
+                    La première cellule du résultat SQL est un objet <code>cellData</code> JSON (<code>IWorksheetData.cellData</code>).
+                    Permet d'injecter styles, types de valeurs, etc.
                 </p>
 
                 <div className="flex items-center gap-3">
