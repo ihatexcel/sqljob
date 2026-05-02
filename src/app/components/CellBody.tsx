@@ -1100,6 +1100,14 @@ function UniverSheetBody({ cell, path, cellIndex }: any) {
                     const sql = `CREATE OR REPLACE TABLE "${tableName.replace(/"/g, '""')}" AS SELECT * FROM read_csv('${csvFileName}', HEADER = true, AUTO_DETECT = true, SAMPLE_SIZE = -1)`
                     await DuckDBManager.executeQuery(sql)
                     console.info('[UniverSheet] DuckDB table materialized', { tableName })
+                    // Mise à jour de la liste des tables DuckDB dans la sidebar
+                    const store = useNotebookStore.getState()
+                    await store.refreshDuckdbTables?.()
+                    // DAG : ré-exécuter les cellules qui référencent {{ tableName }} dans leur SQL
+                    if (store.directedAcyclicGraph && cell.name) {
+                        console.debug('[UniverSheet] DAG refresh triggered for', cell.name)
+                        await store._executeDAGRefresh?.(cell.name)
+                    }
                 } catch (e) { console.error('[UniverSheet] DuckDB materialize error:', e, { tableName, csvFileName }) }
             } : undefined,
         }).catch((e: any) => {
