@@ -76,6 +76,45 @@ function _parseUniverDocsSyntax(raw: string): Record<string, any> {
     return result
 }
 
+// ─── CSV helpers ───────────────────────────────────────────────────────────────
+
+function _escapeCSV(val: any): string {
+    if (val === null || val === undefined) return ''
+    const s = String(val)
+    if (s.includes(',') || s.includes('"') || s.includes('\n') || s.includes('\r')) {
+        return '"' + s.replace(/"/g, '""') + '"'
+    }
+    return s
+}
+
+function _extractSheetAsCSV(univerAPI: any): string | null {
+    try {
+        const fWorkbook = univerAPI.getActiveWorkbook()
+        if (!fWorkbook) return null
+        const snapshot = fWorkbook.save()
+        const sheetId = snapshot.sheetOrder?.[0] ?? Object.keys(snapshot.sheets ?? {})[0]
+        const sheet = snapshot.sheets?.[sheetId]
+        if (!sheet?.cellData) return null
+        const cellData: Record<number, Record<number, any>> = sheet.cellData
+        const rowKeys = Object.keys(cellData).map(Number)
+        if (rowKeys.length === 0) return null
+        const maxRow = Math.max(...rowKeys)
+        const allColKeys = rowKeys.flatMap(r => Object.keys(cellData[r] ?? {}).map(Number))
+        const maxCol = allColKeys.length > 0 ? Math.max(...allColKeys) : 0
+        const csvRows: string[] = []
+        for (let r = 0; r <= maxRow; r++) {
+            const cols: string[] = []
+            for (let c = 0; c <= maxCol; c++) {
+                cols.push(_escapeCSV(cellData[r]?.[c]?.v))
+            }
+            csvRows.push(cols.join(','))
+        }
+        return csvRows.join('\n')
+    } catch {
+        return null
+    }
+}
+
 // ─── Web Component ─────────────────────────────────────────────────────────────
 
 export interface UniverInitParams {
@@ -86,6 +125,7 @@ export interface UniverInitParams {
     readonly: boolean
     config?: any   // Objet ou string JSON → options UniverSheetsCorePreset
     onModified?: () => void
+    onMaterialize?: (csv: string) => Promise<void>
 }
 
 class UniverSheetElement extends LitElement {
@@ -168,6 +208,7 @@ class UniverSheetElement extends LitElement {
             rawWorkbookJson,
             maxRows,
             maxCols,
+            materializeAsDuckDB,
             ...presetConfig
         } = userConfig
 
@@ -348,7 +389,7 @@ class UniverSheetElement extends LitElement {
         // ── Gestion du mode readonly / protection ─────────────────────────────────
         if (params.readonly) {
             // Readonly total : désactiver sélection + droits d'édition
-            univerAPI.addEvent(univerAPI.Event.LifeCycleChanged, ({ stage }: any) => {
+            univerAPI.addEvent(univerAPI.Event.LifeCycleChanged, async ({ stage }: any) => {
                 if (stage !== univerAPI.Enum.LifecycleStages.Rendered) return
                 try {
                     const fWorkbook = univerAPI.getActiveWorkbook()
@@ -361,6 +402,10 @@ class UniverSheetElement extends LitElement {
                         permission.setPermissionDialogVisible?.(false)
                     }
                 } catch (e) { console.error('[UniverSheet] readonly setup error:', e) }
+                if (materializeAsDuckDB && params.onMaterialize) {
+                    const csv = _extractSheetAsCSV(univerAPI)
+                    if (csv !== null) { try { await params.onMaterialize(csv) } catch (_) {} }
+                }
             })
         } else {
             // Protection des plages toujours active en mode édition.
@@ -406,10 +451,25 @@ class UniverSheetElement extends LitElement {
                         }
                     }
                 })
+
+                if (materializeAsDuckDB && params.onMaterialize) {
+                    const csv = _extractSheetAsCSV(univerAPI)
+                    if (csv !== null) { try { await params.onMaterialize(csv) } catch (_) {} }
+                }
             })
 
-            if (params.onModified && univer?.onCommandExecuted) {
-                univer.onCommandExecuted(params.onModified)
+            if (univer?.onCommandExecuted && (params.onModified || (materializeAsDuckDB && params.onMaterialize))) {
+                let _materializeTimer: any = null
+                univer.onCommandExecuted(() => {
+                    if (params.onModified) params.onModified()
+                    if (materializeAsDuckDB && params.onMaterialize) {
+                        clearTimeout(_materializeTimer)
+                        _materializeTimer = setTimeout(async () => {
+                            const csv = _extractSheetAsCSV(univerAPI)
+                            if (csv !== null) { try { await params.onMaterialize!(csv) } catch (_) {} }
+                        }, 800)
+                    }
+                })
             }
         }
     }
