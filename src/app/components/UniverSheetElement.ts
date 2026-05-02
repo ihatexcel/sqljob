@@ -469,10 +469,9 @@ class UniverSheetElement extends LitElement {
                 univer.onCommandExecuted((commandInfo: any) => {
                     if (params.onModified) params.onModified()
                     if (materializeAsDuckDB && params.onMaterialize) {
-                        // Filtrer sur les mutations de données utilisateur uniquement.
-                        // Les commandes internes (formules, curseur, sélection…) remettent
-                        // le timer à zéro en permanence et empêchent la matérialisation.
                         const id: string = commandInfo?.id ?? ''
+                        // Log ALL commands pour diagnostiquer les IDs réels lors d'une édition
+                        console.debug('[UniverSheet] onCommandExecuted', { id, cellId: params.cellId })
                         const isDataMutation = (
                             id === 'sheet.mutation.set-range-values' ||
                             id.includes('insert-row') || id.includes('remove-row') ||
