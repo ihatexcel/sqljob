@@ -458,16 +458,30 @@ class UniverSheetElement extends LitElement {
                 }
             })
 
-            if (univer?.onCommandExecuted && (params.onModified || (materializeAsDuckDB && params.onMaterialize))) {
+            if (univer?.onCommandExecuted) {
                 let _materializeTimer: any = null
-                univer.onCommandExecuted(() => {
+                univer.onCommandExecuted((commandInfo: any) => {
                     if (params.onModified) params.onModified()
                     if (materializeAsDuckDB && params.onMaterialize) {
-                        clearTimeout(_materializeTimer)
-                        _materializeTimer = setTimeout(async () => {
-                            const csv = _extractSheetAsCSV(univerAPI)
-                            if (csv !== null) { try { await params.onMaterialize!(csv) } catch (_) {} }
-                        }, 800)
+                        // Filtrer sur les mutations de données utilisateur uniquement.
+                        // Les commandes internes (formules, curseur, sélection…) remettent
+                        // le timer à zéro en permanence et empêchent la matérialisation.
+                        const id: string = commandInfo?.id ?? ''
+                        const isDataMutation = (
+                            id === 'sheet.mutation.set-range-values' ||
+                            id.includes('insert-row') || id.includes('remove-row') ||
+                            id.includes('insert-col') || id.includes('remove-col') ||
+                            id.includes('sort-range') || id.includes('move-rows') || id.includes('move-cols')
+                        )
+                        if (isDataMutation) {
+                            clearTimeout(_materializeTimer)
+                            // Délai suffisant pour que le moteur de formules réévalue les cellules
+                            // dépendantes avant qu'on lise les valeurs via save()
+                            _materializeTimer = setTimeout(async () => {
+                                const csv = _extractSheetAsCSV(univerAPI)
+                                if (csv !== null) { try { await params.onMaterialize!(csv) } catch (_) {} }
+                            }, 1500)
+                        }
                     }
                 })
             }
