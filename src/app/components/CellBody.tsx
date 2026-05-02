@@ -1092,13 +1092,15 @@ function UniverSheetBody({ cell, path, cellIndex }: any) {
             onMaterialize: _materialize ? async (csv: string) => {
                 const tableName = cell.name || ('univer_' + cell._id)
                 const csvFileName = `_univer_${cell._id}.csv`
+                console.debug('[UniverSheet] onMaterialize called', { tableName, csvFileName, csvLength: csv.length })
                 try {
                     const csvBlob = new Blob([csv], { type: 'text/csv' })
                     await DuckDBManager.registerFile(csvFileName, csvBlob)
-                    await DuckDBManager.executeQuery(
-                        `CREATE OR REPLACE TABLE "${tableName.replace(/"/g, '""')}" AS SELECT * FROM read_csv('${csvFileName}', HEADER = true, AUTO_DETECT = true, SAMPLE_SIZE = -1)`
-                    )
-                } catch (e) { console.error('[UniverSheet] DuckDB materialize error:', e) }
+                    console.debug('[UniverSheet] CSV registered in DuckDB VFS', { csvFileName })
+                    const sql = `CREATE OR REPLACE TABLE "${tableName.replace(/"/g, '""')}" AS SELECT * FROM read_csv('${csvFileName}', HEADER = true, AUTO_DETECT = true, SAMPLE_SIZE = -1)`
+                    await DuckDBManager.executeQuery(sql)
+                    console.info('[UniverSheet] DuckDB table materialized', { tableName })
+                } catch (e) { console.error('[UniverSheet] DuckDB materialize error:', e, { tableName, csvFileName }) }
             } : undefined,
         }).catch((e: any) => {
             cell._univerReady = false
