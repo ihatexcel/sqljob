@@ -13,9 +13,9 @@ import { ConfigManager } from '../../lib/ConfigManager'
 
 // ─── Helper ────────────────────────────────────────────────────────────────────
 
-function _buildWorkbookFromRows(rows: any[], cellId: string): any {
+function _buildWorkbookFromRows(rows: any[], cellId: string, evalFormulas = false): any {
     const sheetId = 'sheet-' + cellId
-    const cellData: Record<number, Record<number, { v: any }>> = {}
+    const cellData: Record<number, Record<number, { v?: any; f?: string }>> = {}
     if (!rows || rows.length === 0) {
         return { id: 'wb-' + cellId, name: 'Sheet', sheets: { [sheetId]: { id: sheetId, name: 'Sheet1', cellData } } }
     }
@@ -26,7 +26,12 @@ function _buildWorkbookFromRows(rows: any[], cellId: string): any {
         cellData[ri + 1] = {}
         columns.forEach((col, ci) => {
             const val = row[col]
-            cellData[ri + 1][ci] = { v: val === null || val === undefined ? '' : val }
+            const v = val === null || val === undefined ? '' : val
+            if (evalFormulas && typeof v === 'string' && v.startsWith('=')) {
+                cellData[ri + 1][ci] = { f: v }
+            } else {
+                cellData[ri + 1][ci] = { v }
+            }
         })
     })
     return {
@@ -157,6 +162,7 @@ class UniverSheetElement extends LitElement {
             useSheetProtection: _useSheetProtection,
             protectedRangeShadow,
             enableTable,
+            evalFormulas,
             maxRows,
             maxCols,
             ...presetConfig
@@ -240,7 +246,7 @@ class UniverSheetElement extends LitElement {
                 throw new Error('Snapshot Univer invalide : ' + e.message)
             }
         } else if (params.rows?.length) {
-            workbookData = _buildWorkbookFromRows(params.rows, params.cellId)
+            workbookData = _buildWorkbookFromRows(params.rows, params.cellId, !!evalFormulas)
         } else {
             workbookData = { id: 'wb-' + params.cellId, name: 'Sheet', sheets: {} }
         }
