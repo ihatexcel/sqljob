@@ -214,6 +214,16 @@ function UniverConfigEditor({ cell, forceUpdate }: any) {
                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Fonctionnalités</p>
                 <div className="flex items-center gap-3">
                     <Checkbox
+                        checked={!!cfg.evalFormulas}
+                        onCheckedChange={v => setKey('evalFormulas', v ? true : undefined)}
+                    />
+                    <Label className="cursor-pointer text-sm">Évaluer les formules SQL</Label>
+                </div>
+                <p className="text-xs text-muted-foreground ml-7">
+                    Les valeurs commençant par <code>=</code> retournées par la requête SQL sont interprétées comme des formules Univer (ex. <code>=A2+B2</code>).
+                </p>
+                <div className="flex items-center gap-3">
+                    <Checkbox
                         checked={!!cfg.enableTable}
                         onCheckedChange={v => setKey('enableTable', v ? true : undefined)}
                     />
