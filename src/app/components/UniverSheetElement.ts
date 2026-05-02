@@ -273,6 +273,29 @@ class UniverSheetElement extends LitElement {
             }
         }
 
+        // Créer automatiquement un tableau Univer sur la plage de données
+        // Seulement pour les données issues de params.rows (pas les snapshots qui ont déjà leurs tables)
+        if (enableTable && params.rows?.length) {
+            try {
+                const columns = Object.keys(params.rows[0] || {})
+                if (columns.length > 0) {
+                    const fWorksheet = univerAPI.getActiveWorkbook()?.getActiveSheet()
+                    if (fWorksheet) {
+                        await fWorksheet.addTable(
+                            'table-' + params.cellId,
+                            {
+                                startRow: 0,
+                                startColumn: 0,
+                                endRow: params.rows.length,
+                                endColumn: columns.length - 1,
+                            },
+                            'table-' + params.cellId,
+                        )
+                    }
+                }
+            } catch (_) {}
+        }
+
         // ── Gestion du mode readonly / protection ─────────────────────────────────
         if (params.readonly) {
             // Readonly total : désactiver sélection + droits d'édition
