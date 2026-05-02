@@ -11,6 +11,10 @@ export function parametersMixin() {
                             if (cell.type === 'uiParameter' && refName) {
                                 params[refName] = cell._value || '';
                             }
+                            // Cellule Univer matérialisée → {{ cellName }} résout vers le nom de la table DuckDB
+                            if (cell.type === 'univerSheet' && cell.json?.univerConfig?.materializeAsDuckDB && refName) {
+                                params[refName] = refName;
+                            }
                         }
                         for (const child of (group?.children || [])) {
                             collectFromGroup(child);
