@@ -164,6 +164,7 @@ class UniverSheetElement extends LitElement {
             enableTable,
             evalFormulas,
             fitDimensions,
+            rawWorkbookJson,
             maxRows,
             maxCols,
             ...presetConfig
@@ -259,6 +260,17 @@ class UniverSheetElement extends LitElement {
             } catch (e: any) {
                 throw new Error('Snapshot Univer invalide : ' + e.message)
             }
+        } else if (rawWorkbookJson && params.rows?.length) {
+            // La première cellule du résultat SQL contient un IWorkbookData JSON complet
+            const firstRow = params.rows[0]
+            const raw = firstRow[Object.keys(firstRow)[0]]
+            try {
+                workbookData = typeof raw === 'string' ? JSON.parse(raw) : raw
+                if (!workbookData || typeof workbookData !== 'object') throw new Error('valeur non-objet')
+            } catch (e: any) {
+                throw new Error('rawWorkbookJson: JSON IWorkbookData invalide — ' + e.message)
+            }
+            if (!workbookData.id) workbookData.id = 'wb-' + params.cellId
         } else if (params.rows?.length) {
             workbookData = _buildWorkbookFromRows(params.rows, params.cellId, !!evalFormulas)
         } else {
