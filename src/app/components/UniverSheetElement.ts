@@ -168,23 +168,24 @@ class UniverSheetElement extends LitElement {
             ...presetConfig
         } = userConfig
 
-        // Table des locales supportées (format "xx-XX" → {type, loader, tableLoader})
+        // Table des locales supportées (format "xx-XX" → {type, loader, tableLoader, sortLoader})
         type LocaleEntry = {
             type: string
             loader: () => Promise<{ default: any }>
             tableLoader: () => Promise<{ default: any }>
+            sortLoader: () => Promise<{ default: any }>
         }
         const LOCALE_MAP: Record<string, LocaleEntry> = {
-            'en-US': { type: 'enUS', loader: () => import('@univerjs/preset-sheets-core/locales/en-US'), tableLoader: () => import('@univerjs/preset-sheets-table/lib/locales/en-US') },
-            'fr-FR': { type: 'frFR', loader: () => import('@univerjs/preset-sheets-core/locales/fr-FR'), tableLoader: () => import('@univerjs/preset-sheets-table/lib/locales/fr-FR') },
-            'zh-CN': { type: 'zhCN', loader: () => import('@univerjs/preset-sheets-core/locales/zh-CN'), tableLoader: () => import('@univerjs/preset-sheets-table/lib/locales/zh-CN') },
-            'zh-TW': { type: 'zhTW', loader: () => import('@univerjs/preset-sheets-core/locales/zh-TW'), tableLoader: () => import('@univerjs/preset-sheets-table/lib/locales/zh-TW') },
-            'ru-RU': { type: 'ruRU', loader: () => import('@univerjs/preset-sheets-core/locales/ru-RU'), tableLoader: () => import('@univerjs/preset-sheets-table/lib/locales/ru-RU') },
-            'ja-JP': { type: 'jaJP', loader: () => import('@univerjs/preset-sheets-core/locales/ja-JP'), tableLoader: () => import('@univerjs/preset-sheets-table/lib/locales/ja-JP') },
-            'es-ES': { type: 'esES', loader: () => import('@univerjs/preset-sheets-core/locales/es-ES'), tableLoader: () => import('@univerjs/preset-sheets-table/lib/locales/es-ES') },
-            'ca-ES': { type: 'caES', loader: () => import('@univerjs/preset-sheets-core/locales/ca-ES'), tableLoader: () => import('@univerjs/preset-sheets-table/lib/locales/ca-ES') },
-            'sk-SK': { type: 'skSK', loader: () => import('@univerjs/preset-sheets-core/locales/sk-SK'), tableLoader: () => import('@univerjs/preset-sheets-table/lib/locales/sk-SK') },
-            'fa-IR': { type: 'faIR', loader: () => import('@univerjs/preset-sheets-core/locales/fa-IR'), tableLoader: () => import('@univerjs/preset-sheets-table/lib/locales/fa-IR') },
+            'en-US': { type: 'enUS', loader: () => import('@univerjs/preset-sheets-core/locales/en-US'), tableLoader: () => import('@univerjs/preset-sheets-table/lib/locales/en-US'), sortLoader: () => import('@univerjs/sheets-sort-ui/locale/en-US') },
+            'fr-FR': { type: 'frFR', loader: () => import('@univerjs/preset-sheets-core/locales/fr-FR'), tableLoader: () => import('@univerjs/preset-sheets-table/lib/locales/fr-FR'), sortLoader: () => import('@univerjs/sheets-sort-ui/locale/fr-FR') },
+            'zh-CN': { type: 'zhCN', loader: () => import('@univerjs/preset-sheets-core/locales/zh-CN'), tableLoader: () => import('@univerjs/preset-sheets-table/lib/locales/zh-CN'), sortLoader: () => import('@univerjs/sheets-sort-ui/locale/zh-CN') },
+            'zh-TW': { type: 'zhTW', loader: () => import('@univerjs/preset-sheets-core/locales/zh-TW'), tableLoader: () => import('@univerjs/preset-sheets-table/lib/locales/zh-TW'), sortLoader: () => import('@univerjs/sheets-sort-ui/locale/zh-TW') },
+            'ru-RU': { type: 'ruRU', loader: () => import('@univerjs/preset-sheets-core/locales/ru-RU'), tableLoader: () => import('@univerjs/preset-sheets-table/lib/locales/ru-RU'), sortLoader: () => import('@univerjs/sheets-sort-ui/locale/ru-RU') },
+            'ja-JP': { type: 'jaJP', loader: () => import('@univerjs/preset-sheets-core/locales/ja-JP'), tableLoader: () => import('@univerjs/preset-sheets-table/lib/locales/ja-JP'), sortLoader: () => import('@univerjs/sheets-sort-ui/locale/ja-JP') },
+            'es-ES': { type: 'esES', loader: () => import('@univerjs/preset-sheets-core/locales/es-ES'), tableLoader: () => import('@univerjs/preset-sheets-table/lib/locales/es-ES'), sortLoader: () => import('@univerjs/sheets-sort-ui/locale/es-ES') },
+            'ca-ES': { type: 'caES', loader: () => import('@univerjs/preset-sheets-core/locales/ca-ES'), tableLoader: () => import('@univerjs/preset-sheets-table/lib/locales/ca-ES'), sortLoader: () => import('@univerjs/sheets-sort-ui/locale/ca-ES') },
+            'sk-SK': { type: 'skSK', loader: () => import('@univerjs/preset-sheets-core/locales/sk-SK'), tableLoader: () => import('@univerjs/preset-sheets-table/lib/locales/sk-SK'), sortLoader: () => import('@univerjs/sheets-sort-ui/locale/sk-SK') },
+            'fa-IR': { type: 'faIR', loader: () => import('@univerjs/preset-sheets-core/locales/fa-IR'), tableLoader: () => import('@univerjs/preset-sheets-table/lib/locales/fa-IR'), sortLoader: () => import('@univerjs/sheets-sort-ui/locale/fa-IR') },
         }
         const localeEntry = LOCALE_MAP[localeStr] ?? LOCALE_MAP['en-US']
 
@@ -196,12 +197,19 @@ class UniverSheetElement extends LitElement {
                 localeEntry.loader(),
             ]),
             enableTable
-                ? Promise.all([import('@univerjs/preset-sheets-table'), localeEntry.tableLoader()])
-                : Promise.resolve([null, null]),
+                ? Promise.all([
+                    import('@univerjs/preset-sheets-table'),
+                    import('@univerjs/preset-sheets-sort'),
+                    localeEntry.tableLoader(),
+                    localeEntry.sortLoader(),
+                  ])
+                : Promise.resolve([null, null, null, null]),
         ])
         const [{ createUniver, mergeLocales }, { UniverSheetsCorePreset }, { default: localeData }] = coreResults
         const UniverSheetsTablePreset = tableResults[0]?.UniverSheetsTablePreset ?? null
-        const tableLocaleData = tableResults[1]?.default ?? null
+        const UniverSheetsSortPreset  = tableResults[1]?.UniverSheetsSortPreset  ?? null
+        const tableLocaleData         = tableResults[2]?.default ?? null
+        const sortLocaleData          = tableResults[3]?.default ?? null
 
         // ── Options du preset ────────────────────────────────────────────────────
         const presetOptions: any = { container, ...presetConfig }
@@ -223,13 +231,18 @@ class UniverSheetElement extends LitElement {
         if (enableTable && UniverSheetsTablePreset) {
             presets.push(UniverSheetsTablePreset())
         }
+        if (enableTable && UniverSheetsSortPreset) {
+            presets.push(UniverSheetsSortPreset())
+        }
 
         const { univer, univerAPI } = createUniver({
             locale: localeEntry.type,
             locales: {
-                [localeEntry.type]: tableLocaleData
-                    ? mergeLocales(localeData, tableLocaleData)
-                    : mergeLocales(localeData),
+                [localeEntry.type]: mergeLocales(
+                    localeData,
+                    ...(tableLocaleData ? [tableLocaleData] : []),
+                    ...(sortLocaleData  ? [sortLocaleData]  : []),
+                ),
             },
             presets,
         })
