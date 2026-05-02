@@ -233,8 +233,7 @@ function UniverConfigEditor({ cell, forceUpdate }: any) {
                     <Label className="cursor-pointer text-sm">Injection cellData JSON</Label>
                 </div>
                 <p className="text-xs text-muted-foreground ml-7">
-                    La première cellule du résultat SQL est un objet <code>cellData</code> JSON (<code>IWorksheetData.cellData</code>).
-                    Permet d'injecter styles, types de valeurs, etc.
+                    La première cellule retourne <code>{"{ cellData, styles? }"}</code>. Les styles (<code>IWorkbookData.styles</code>) sont référencés par id dans les cellules via la clé <code>s</code>.
                 </p>
 
                 <div className="flex items-center gap-3">

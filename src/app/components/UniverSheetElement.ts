@@ -261,21 +261,25 @@ class UniverSheetElement extends LitElement {
                 throw new Error('Snapshot Univer invalide : ' + e.message)
             }
         } else if (rawWorkbookJson && params.rows?.length) {
-            // La première cellule du résultat SQL contient un cellData JSON
+            // La première cellule du résultat SQL contient un objet { cellData, styles? }
+            // styles est une table de styles IWorkbookData.styles (clé → IStyleData)
             const firstRow = params.rows[0]
             const raw = firstRow[Object.keys(firstRow)[0]]
-            let cellData: any
+            let parsed: any
             try {
-                cellData = typeof raw === 'string' ? JSON.parse(raw) : raw
-                if (!cellData || typeof cellData !== 'object') throw new Error('valeur non-objet')
+                parsed = typeof raw === 'string' ? JSON.parse(raw) : raw
+                if (!parsed || typeof parsed !== 'object') throw new Error('valeur non-objet')
             } catch (e: any) {
-                throw new Error('rawWorkbookJson: JSON cellData invalide — ' + e.message)
+                throw new Error('rawWorkbookJson: JSON invalide — ' + e.message)
             }
+            const cellData = parsed.cellData ?? parsed
+            const styles = parsed.styles ?? {}
             const sheetId = 'sheet-' + params.cellId
             workbookData = {
                 id: 'wb-' + params.cellId,
                 name: 'Sheet',
                 sheetOrder: [sheetId],
+                styles,
                 sheets: {
                     [sheetId]: { id: sheetId, name: 'Sheet1', cellData },
                 },
