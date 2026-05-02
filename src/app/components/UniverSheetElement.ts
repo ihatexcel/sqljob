@@ -403,8 +403,14 @@ class UniverSheetElement extends LitElement {
                     }
                 } catch (e) { console.error('[UniverSheet] readonly setup error:', e) }
                 if (materializeAsDuckDB && params.onMaterialize) {
+                    console.debug('[UniverSheet] initial materialize after Rendered (readonly)', { cellId: params.cellId })
                     const csv = _extractSheetAsCSV(univerAPI)
-                    if (csv !== null) { try { await params.onMaterialize(csv) } catch (_) {} }
+                    if (csv !== null) {
+                        console.debug('[UniverSheet] initial CSV ready (readonly)', { cellId: params.cellId, csvLength: csv.length })
+                        try { await params.onMaterialize(csv) } catch (_) {}
+                    } else {
+                        console.warn('[UniverSheet] initial _extractSheetAsCSV returned null (readonly)', { cellId: params.cellId })
+                    }
                 }
             })
         } else {
@@ -475,11 +481,18 @@ class UniverSheetElement extends LitElement {
                         )
                         if (isDataMutation) {
                             clearTimeout(_materializeTimer)
+                            console.debug('[UniverSheet] data mutation detected, scheduling materialize in 1500ms', { id, cellId: params.cellId })
                             // Délai suffisant pour que le moteur de formules réévalue les cellules
                             // dépendantes avant qu'on lise les valeurs via save()
                             _materializeTimer = setTimeout(async () => {
+                                console.debug('[UniverSheet] extracting CSV for materialization…', { cellId: params.cellId })
                                 const csv = _extractSheetAsCSV(univerAPI)
-                                if (csv !== null) { try { await params.onMaterialize!(csv) } catch (_) {} }
+                                if (csv !== null) {
+                                    console.debug('[UniverSheet] CSV ready, calling onMaterialize', { cellId: params.cellId, csvLength: csv.length })
+                                    try { await params.onMaterialize!(csv) } catch (_) {}
+                                } else {
+                                    console.warn('[UniverSheet] _extractSheetAsCSV returned null, skipping materialize', { cellId: params.cellId })
+                                }
                             }, 1500)
                         }
                     }
