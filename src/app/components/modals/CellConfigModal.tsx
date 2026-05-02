@@ -224,6 +224,19 @@ function UniverConfigEditor({ cell, forceUpdate }: any) {
             {/* Section Fonctionnalités */}
             <div className="space-y-2 border border-border rounded-md p-3">
                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Fonctionnalités</p>
+
+                <div className="flex items-center gap-3">
+                    <Checkbox
+                        checked={!!cfg.rawWorkbookJson}
+                        onCheckedChange={v => setKey('rawWorkbookJson', v ? true : undefined)}
+                    />
+                    <Label className="cursor-pointer text-sm">Injection JSON (IWorkbookData)</Label>
+                </div>
+                <p className="text-xs text-muted-foreground ml-7">
+                    La requête SQL retourne un <code>IWorkbookData</code> JSON complet dans sa première cellule.
+                    Permet d'injecter styles, formats, ressources de plugins, etc.
+                </p>
+
                 <div className="flex items-center gap-3">
                     <Checkbox
                         checked={!!cfg.evalFormulas}
@@ -234,6 +247,7 @@ function UniverConfigEditor({ cell, forceUpdate }: any) {
                 <p className="text-xs text-muted-foreground ml-7">
                     Les valeurs commençant par <code>=</code> retournées par la requête SQL sont interprétées comme des formules Univer (ex. <code>=A2+B2</code>).
                 </p>
+
                 <div className="flex items-center gap-3">
                     <Checkbox
                         checked={!!cfg.enableTable}
