@@ -163,6 +163,7 @@ class UniverSheetElement extends LitElement {
             protectedRangeShadow,
             enableTable,
             evalFormulas,
+            fitDimensions,
             maxRows,
             maxCols,
             ...presetConfig
@@ -277,12 +278,20 @@ class UniverSheetElement extends LitElement {
 
         univerAPI.createWorkbook(workbookData)
 
-        // Appliquer les dimensions max via l'API facade (plus fiable que le workbook data brut)
-        if (maxRows !== undefined || maxCols !== undefined) {
-            const fWorksheet = univerAPI.getActiveWorkbook()?.getActiveSheet()
-            if (fWorksheet) {
-                if (maxCols !== undefined) fWorksheet.setColumnCount(maxCols)
-                if (maxRows !== undefined) fWorksheet.setRowCount(maxRows)
+        // Appliquer les dimensions via l'API facade
+        {
+            let targetRows: number | undefined = maxRows
+            let targetCols: number | undefined = maxCols
+            if (fitDimensions && params.rows?.length) {
+                targetRows = params.rows.length + 1  // données + ligne d'en-tête
+                targetCols = Object.keys(params.rows[0] || {}).length || undefined
+            }
+            if (targetRows !== undefined || targetCols !== undefined) {
+                const fWorksheet = univerAPI.getActiveWorkbook()?.getActiveSheet()
+                if (fWorksheet) {
+                    if (targetCols !== undefined) fWorksheet.setColumnCount(targetCols)
+                    if (targetRows !== undefined) fWorksheet.setRowCount(targetRows)
+                }
             }
         }
 

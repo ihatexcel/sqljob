@@ -147,36 +147,48 @@ function UniverConfigEditor({ cell, forceUpdate }: any) {
             {/* Section Dimensions */}
             <div className="space-y-2 border border-border rounded-md p-3">
                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Dimensions</p>
-                <div className="flex gap-4">
-                    <div className="flex-1 space-y-1">
-                        <Label className="text-xs text-muted-foreground">Lignes max</Label>
-                        <Input
-                            type="number"
-                            className="h-7 text-xs"
-                            min={1}
-                            placeholder="1000"
-                            value={cfg.maxRows ?? ''}
-                            onChange={e => {
-                                const n = parseInt(e.target.value)
-                                setKey('maxRows', isNaN(n) || n <= 0 ? undefined : n)
-                            }}
-                        />
-                    </div>
-                    <div className="flex-1 space-y-1">
-                        <Label className="text-xs text-muted-foreground">Colonnes max</Label>
-                        <Input
-                            type="number"
-                            className="h-7 text-xs"
-                            min={1}
-                            placeholder="20"
-                            value={cfg.maxCols ?? ''}
-                            onChange={e => {
-                                const n = parseInt(e.target.value)
-                                setKey('maxCols', isNaN(n) || n <= 0 ? undefined : n)
-                            }}
-                        />
-                    </div>
+                <div className="flex items-center gap-3">
+                    <Checkbox
+                        checked={!!cfg.fitDimensions}
+                        onCheckedChange={v => setKey('fitDimensions', v ? true : undefined)}
+                    />
+                    <Label className="cursor-pointer text-sm">Adapter aux données SQL</Label>
                 </div>
+                <p className="text-xs text-muted-foreground ml-7">
+                    Fixe exactement le nombre de lignes et de colonnes au résultat de la requête.
+                </p>
+                {!cfg.fitDimensions && (
+                    <div className="flex gap-4">
+                        <div className="flex-1 space-y-1">
+                            <Label className="text-xs text-muted-foreground">Lignes max</Label>
+                            <Input
+                                type="number"
+                                className="h-7 text-xs"
+                                min={1}
+                                placeholder="1000"
+                                value={cfg.maxRows ?? ''}
+                                onChange={e => {
+                                    const n = parseInt(e.target.value)
+                                    setKey('maxRows', isNaN(n) || n <= 0 ? undefined : n)
+                                }}
+                            />
+                        </div>
+                        <div className="flex-1 space-y-1">
+                            <Label className="text-xs text-muted-foreground">Colonnes max</Label>
+                            <Input
+                                type="number"
+                                className="h-7 text-xs"
+                                min={1}
+                                placeholder="20"
+                                value={cfg.maxCols ?? ''}
+                                onChange={e => {
+                                    const n = parseInt(e.target.value)
+                                    setKey('maxCols', isNaN(n) || n <= 0 ? undefined : n)
+                                }}
+                            />
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* Section Pied de page */}
