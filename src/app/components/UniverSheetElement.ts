@@ -414,6 +414,9 @@ class UniverSheetElement extends LitElement {
                 }
             })
         } else {
+            // _materializeTimer déclaré ici pour être partagé entre les closures
+            let _materializeTimer: any = null
+
             // Protection des plages toujours active en mode édition.
             // On interroge RangeProtectionRuleModel pour la géométrie et on bloque
             // les mutations sur les cellules appartenant à une plage protégée.
@@ -434,44 +437,46 @@ class UniverSheetElement extends LitElement {
                 if (!ruleModel) return
 
                 univerAPI.addEvent(univerAPI.Event.BeforeCommandExecute, (event: any) => {
-                    if (event.id !== 'sheet.mutation.set-range-values') return
-                    const cellValue = event.params?.cellValue
-                    if (!cellValue || typeof cellValue !== 'object') return
-                    const rules: any[] = ruleModel.getSubunitRuleList(unitId, subUnitId) ?? []
-                    if (rules.length === 0) return
-                    for (const rowStr of Object.keys(cellValue)) {
-                        const row = Number(rowStr)
-                        const cols = (cellValue as any)[rowStr]
-                        if (!cols || typeof cols !== 'object') continue
-                        for (const colStr of Object.keys(cols)) {
-                            const col = Number(colStr)
-                            for (const rule of rules) {
-                                for (const range of (rule.ranges ?? [])) {
-                                    if (row >= range.startRow && row <= range.endRow &&
-                                        col >= range.startColumn && col <= range.endColumn) {
-                                        event.cancel = true
-                                        return
+                    const id: string = event.id ?? ''
+
+                    // ── Protection ─────────────────────────────────────────────────────
+                    if (id === 'sheet.mutation.set-range-values') {
+                        const cellValue = event.params?.cellValue
+                        if (cellValue && typeof cellValue === 'object') {
+                            const rules: any[] = ruleModel.getSubunitRuleList(unitId, subUnitId) ?? []
+                            if (rules.length > 0) {
+                                for (const rowStr of Object.keys(cellValue)) {
+                                    const row = Number(rowStr)
+                                    const cols = (cellValue as any)[rowStr]
+                                    if (!cols || typeof cols !== 'object') continue
+                                    for (const colStr of Object.keys(cols)) {
+                                        const col = Number(colStr)
+                                        for (const rule of rules) {
+                                            for (const range of (rule.ranges ?? [])) {
+                                                if (row >= range.startRow && row <= range.endRow &&
+                                                    col >= range.startColumn && col <= range.endColumn) {
+                                                    event.cancel = true
+                                                    return
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-                })
 
-                if (materializeAsDuckDB && params.onMaterialize) {
-                    const csv = _extractSheetAsCSV(univerAPI)
-                    if (csv !== null) { try { await params.onMaterialize(csv) } catch (_) {} }
-                }
-            })
-
-            if (univer?.onCommandExecuted) {
-                let _materializeTimer: any = null
-                univer.onCommandExecuted((commandInfo: any) => {
+                    // ── onModified ─────────────────────────────────────────────────────
+                    // univer.onCommandExecuted ne fonctionne pas dans cette version ;
+                    // BeforeCommandExecute est utilisé à la place.
                     if (params.onModified) params.onModified()
+
+                    // ── Matérialisation DuckDB ─────────────────────────────────────────
+                    // BeforeCommandExecute est utilisé car onCommandExecuted ne se
+                    // déclenche jamais lors des éditions UI. Le délai de 1 500 ms laisse
+                    // le temps à la commande de s'appliquer et au moteur de formules de
+                    // recalculer les valeurs avant la lecture via save().
                     if (materializeAsDuckDB && params.onMaterialize) {
-                        const id: string = commandInfo?.id ?? ''
-                        // Log ALL commands pour diagnostiquer les IDs réels lors d'une édition
-                        console.debug('[UniverSheet] onCommandExecuted', { id, cellId: params.cellId })
                         const isDataMutation = (
                             id === 'sheet.mutation.set-range-values' ||
                             id.includes('insert-row') || id.includes('remove-row') ||
@@ -480,9 +485,7 @@ class UniverSheetElement extends LitElement {
                         )
                         if (isDataMutation) {
                             clearTimeout(_materializeTimer)
-                            console.debug('[UniverSheet] data mutation detected, scheduling materialize in 1500ms', { id, cellId: params.cellId })
-                            // Délai suffisant pour que le moteur de formules réévalue les cellules
-                            // dépendantes avant qu'on lise les valeurs via save()
+                            console.debug('[UniverSheet] BeforeCommandExecute data mutation, scheduling materialize in 1500ms', { id, cellId: params.cellId })
                             _materializeTimer = setTimeout(async () => {
                                 console.debug('[UniverSheet] extracting CSV for materialization…', { cellId: params.cellId })
                                 const csv = _extractSheetAsCSV(univerAPI)
@@ -496,7 +499,18 @@ class UniverSheetElement extends LitElement {
                         }
                     }
                 })
-            }
+
+                if (materializeAsDuckDB && params.onMaterialize) {
+                    console.debug('[UniverSheet] initial materialize after Rendered', { cellId: params.cellId })
+                    const csv = _extractSheetAsCSV(univerAPI)
+                    if (csv !== null) {
+                        console.debug('[UniverSheet] initial CSV ready', { cellId: params.cellId, csvLength: csv.length })
+                        try { await params.onMaterialize(csv) } catch (_) {}
+                    } else {
+                        console.warn('[UniverSheet] initial _extractSheetAsCSV returned null', { cellId: params.cellId })
+                    }
+                }
+            })
         }
     }
 
