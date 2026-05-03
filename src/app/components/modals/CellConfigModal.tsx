@@ -30,6 +30,8 @@ const UNIVER_LOCALES = [
 ]
 
 function UniverConfigEditor({ cell, forceUpdate }: any) {
+    const dbEngine = useNotebookStore(s => s.dbEngine)
+    const isDucklings = dbEngine === 'ducklings'
     const getRawCfg = (): Record<string, any> => {
         const v = cell.json?.univerConfig
         if (!v) return {}
@@ -261,13 +263,22 @@ function UniverConfigEditor({ cell, forceUpdate }: any) {
                 <div className="flex items-center gap-3">
                     <Checkbox
                         checked={!!cfg.materializeAsDuckDB}
-                        onCheckedChange={v => setKey('materializeAsDuckDB', v ? true : undefined)}
+                        disabled={isDucklings}
+                        onCheckedChange={v => !isDucklings && setKey('materializeAsDuckDB', v ? true : undefined)}
                     />
-                    <Label className="cursor-pointer text-sm">Matérialiser en table DuckDB</Label>
+                    <Label className={`text-sm ${isDucklings ? 'text-muted-foreground cursor-not-allowed' : 'cursor-pointer'}`}>
+                        Matérialiser en table DuckDB
+                    </Label>
                 </div>
-                <p className="text-xs text-muted-foreground ml-7">
-                    Crée/met à jour une table DuckDB (nom = cellule) avec les valeurs évaluées de la feuille. Mise à jour à chaque modification utilisateur.
-                </p>
+                {isDucklings ? (
+                    <p className="text-xs text-destructive ml-7">
+                        ⚠️ Non disponible avec le moteur Ducklings — utilisez DuckDB WASM.
+                    </p>
+                ) : (
+                    <p className="text-xs text-muted-foreground ml-7">
+                        Crée/met à jour une table DuckDB (nom = cellule) avec les valeurs évaluées de la feuille. Mise à jour à chaque modification utilisateur.
+                    </p>
+                )}
             </div>
 
         </div>
