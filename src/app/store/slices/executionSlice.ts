@@ -647,7 +647,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
         try {
             let mdContent
             if (languageType === 'js') {
-                let jsCode = get().parseQueryWithParameters(cellQuery || '')
+                let jsCode = get().parseQueryWithParameters(cellQuery || '', { _name: cell.name || '' })
                 try {
                     const result = safeEvalJs(jsCode)
                     mdContent = typeof result === 'string' ? result : String(result)
@@ -655,7 +655,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
                     throw new Error(`Erreur JS: ${jsError.message}`)
                 }
             } else {
-                const finalQuery = get().parseQueryWithParameters(cellQuery || '')
+                const finalQuery = get().parseQueryWithParameters(cellQuery || '', { _name: cell.name || '' })
                 get().setStatus('Exécution de la requête...', 'loading')
                 const results = await DuckDBManager.executeQuery(finalQuery)
                 mdContent = results.map(row => Object.values(row).join('')).join('\n')
@@ -681,7 +681,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
                 htmlContent = (cellQuery || '').trim()
                 cell._resultInfo = ''
             } else if (languageType === 'js') {
-                let jsCode = get().parseQueryWithParameters(cellQuery || '')
+                let jsCode = get().parseQueryWithParameters(cellQuery || '', { _name: cell.name || '' })
                 try {
                     const result = safeEvalJs(jsCode)
                     htmlContent = typeof result === 'string' ? result : String(result)
@@ -690,7 +690,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
                 }
                 cell._resultInfo = '✅ HTML généré (JavaScript)'
             } else {
-                const finalQuery = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '')
+                const finalQuery = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '', { _name: cell.name || '' })
                 get().setStatus('Exécution de la requête...', 'loading')
                 const results = await DuckDBManager.executeQuery(finalQuery)
                 htmlContent = results.map(row => Object.values(row).join('')).join('\n')
@@ -721,7 +721,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
         get().setStatus('Exécution de la stat SQL...', 'loading')
 
         try {
-            const finalQuery = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '')
+            const finalQuery = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '', { _name: cell.name || '' })
 
             get().setStatus('Exécution de la requête...', 'loading')
             const results = await DuckDBManager.executeQuery(finalQuery)
@@ -771,7 +771,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
                 get().setStatus('Exécution du code JavaScript...', 'loading')
 
                 let jsCode = ConfigManager.getCellQuery(cell, 0) || ''
-                jsCode = get().parseQueryWithParameters(jsCode)
+                jsCode = get().parseQueryWithParameters(jsCode, { _name: cell.name || '' })
 
                 try {
                     const jsResult = safeEvalJs(jsCode)
@@ -806,7 +806,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
                     // Paramètre date référencé encore vide → skip silencieux
                     return
                 }
-                const finalQuery = get().parseQueryWithParameters(rawQuery)
+                const finalQuery = get().parseQueryWithParameters(rawQuery, { _name: cell.name || '' })
                 get().setStatus('Exécution de la requête...', 'loading')
                 results = await DuckDBManager.executeQuery(finalQuery)
             }
@@ -891,7 +891,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
         get().setStatus('Exécution du publipostage Word...', 'loading')
 
         try {
-            const finalQuery = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '')
+            const finalQuery = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '', { _name: cell.name || '' })
 
             get().setStatus('Récupération des données...', 'loading')
             const dataResults = await DuckDBManager.executeQuery(finalQuery)
@@ -901,7 +901,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
                 return
             }
 
-            const finalQuery2 = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 1) || '')
+            const finalQuery2 = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 1) || '', { _name: cell.name || '' })
 
             get().setStatus('Récupération des noms de fichiers...', 'loading')
             const filenameResults = await DuckDBManager.executeQuery(finalQuery2)
@@ -988,7 +988,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
         get().setStatus('Exécution de la requête SQL...', 'loading')
 
         try {
-            const finalQuery = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '')
+            const finalQuery = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '', { _name: cell.name || '' })
 
             get().setStatus('Récupération des données...', 'loading')
             const data = await DuckDBManager.executeQuery(finalQuery)
@@ -1003,7 +1003,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
             if (ConfigManager.getCellQuery(cell, 1)?.trim()) {
                 get().setStatus('Récupération du nom de fichier...', 'loading')
 
-                const finalQuery2 = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 1) || '')
+                const finalQuery2 = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 1) || '', { _name: cell.name || '' })
                 const filenameResults = await DuckDBManager.executeQuery(finalQuery2)
 
                 if (filenameResults && filenameResults.length > 0) {
@@ -1147,7 +1147,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
         get().setStatus('Parsing de la requête SQL...', 'loading')
 
         try {
-            const finalQuery = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '')
+            const finalQuery = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '', { _name: cell.name || '' })
             cell._perspectiveQuery = finalQuery
 
             get().setStatus('Exécution de la requête...', 'loading')
@@ -1223,7 +1223,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
                 }
             }
 
-            const finalQuery = cell._perspectiveQuery || get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '')
+            const finalQuery = cell._perspectiveQuery || get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '', { _name: cell.name || '' })
 
             const arrowResult = await conn.query(finalQuery)
             const batches = []
@@ -1272,7 +1272,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
             cell._univerSnapshotPending = null
             if (sql) {
                 get().setStatus('Exécution de la requête SQL...', 'loading')
-                const finalSql = get().parseQueryWithParameters(sql)
+                const finalSql = get().parseQueryWithParameters(sql, { _name: cell.name || '' })
                 const { rows } = await DuckDBManager.executeQueryWithSchema(finalSql)
                 cell._univerRows = rows
             }
