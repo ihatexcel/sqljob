@@ -25,6 +25,14 @@ jobs:
           node-version: 20
           cache: npm
 
+      - name: Add swap space
+        run: |
+          sudo fallocate -l 4G /swapfile
+          sudo chmod 600 /swapfile
+          sudo mkswap /swapfile
+          sudo swapon /swapfile
+          free -h
+
       - run: npm ci
 
       - run: npm run build:cdn
