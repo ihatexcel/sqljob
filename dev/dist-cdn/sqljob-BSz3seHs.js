@@ -1,0 +1,37 @@
+import { B as t, a as c, C as p, D as r, M as o, P, b as _, Z as m, c as n, d as T, e as l, f as O, g as i, h as k, i as F, j as g, k as h, l as A, m as D, n as M, o as I, p as f, q as x, r as B, s as N, t as d, u, v as R } from "./sqljob-DJG9JCjO.js";
+import { g as E, p as b, r as y } from "./sqljob-DnN0qi0U.js";
+const a = "5.5.8";
+export {
+  t as BLANK_A4_PDF,
+  c as BLANK_PDF,
+  p as CUSTOM_A4_PDF,
+  r as DEFAULT_FONT_NAME,
+  o as MM_TO_PT_RATIO,
+  a as PDFME_VERSION,
+  P as PT_TO_MM_RATIO,
+  _ as PT_TO_PX_RATIO,
+  m as ZOOM,
+  n as b64toUint8Array,
+  T as checkDesignerProps,
+  l as checkFont,
+  O as checkGenerateProps,
+  i as checkInputs,
+  k as checkPreviewProps,
+  F as checkTemplate,
+  g as checkUIOptions,
+  h as checkUIProps,
+  A as cloneDeep,
+  D as getB64BasePdf,
+  M as getDefaultFont,
+  E as getDynamicTemplate,
+  I as getFallbackFontName,
+  f as getInputFromTemplate,
+  x as isBlankPdf,
+  B as isHexValid,
+  N as mm2pt,
+  b as pluginRegistry,
+  d as pt2mm,
+  u as pt2px,
+  R as px2mm,
+  y as replacePlaceholders
+};
