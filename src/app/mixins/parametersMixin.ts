@@ -12,8 +12,8 @@ export function parametersMixin() {
                                 params[refName] = cell._value || '';
                             }
                             // Cellule Univer matérialisée → {{ cellName }} résout vers le nom de la table DuckDB
-                            if (cell.type === 'univerSheet' && cell.json?.univerConfig?.materializeAsDuckDB && refName) {
-                                params[refName] = refName;
+                            if (cell.type === 'univerSheet' && cell.json?.univerConfig?.materializeAsDuckDB && cell.name) {
+                                params[cell.name] = cell.name;
                             }
                         }
                         for (const child of (group?.children || [])) {
