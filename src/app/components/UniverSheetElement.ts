@@ -9,7 +9,6 @@
 import { LitElement, html } from 'lit'
 import '@univerjs/preset-sheets-core/lib/index.css'
 import '@univerjs/preset-sheets-table/lib/index.css'
-import '@univerjs/sheets-numfmt/facade'
 import { ConfigManager } from '../../lib/ConfigManager'
 
 // ─── Helper ────────────────────────────────────────────────────────────────────
@@ -244,6 +243,7 @@ class UniverSheetElement extends LitElement {
                 import('@univerjs/presets'),
                 import('@univerjs/preset-sheets-core'),
                 localeEntry.loader(),
+                import('@univerjs/sheets-numfmt/facade'),
             ]),
             enableTable
                 ? Promise.all([
