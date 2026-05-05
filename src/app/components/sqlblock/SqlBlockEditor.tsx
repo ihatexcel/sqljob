@@ -2649,8 +2649,16 @@ export function SqlBlockEditor({ cell, path, cellIndex, onExitUiMode, fromSqlCel
     const { dynamicSchemas, fetchSchemaForStep, invalidateFrom } = useStepInputSchemas(ast, cell._id)
 
     // tableSchemas pour l'autocomplétion Monaco
-    // Sanitize : columns peut être undefined sur certaines entrées → crash forEach dans le provider
-    const tableSchemas = (db?.schemaTrees ?? []).map((t: any) => ({ ...t, columns: t?.columns ?? [] }))
+    // Sanitize : noms undefined → crash toLowerCase() dans le Monarch tokenizer de Monaco
+    const tableSchemas = (db?.schemaTrees ?? [])
+        .filter((t: any) => t?.name != null)
+        .map((t: any) => ({
+            ...t,
+            name: String(t.name),
+            columns: (t?.columns ?? [])
+                .filter((c: any) => c?.name != null)
+                .map((c: any) => ({ ...c, name: String(c.name), type: String(c.type ?? '') })),
+        }))
 
     // Œil par étape (aperçus DuckDB)
     const { eyeOpen, toggleEye, loading: eyeLoading, getEyeData } = useStepEyeData(cell, ast, modalOpen)

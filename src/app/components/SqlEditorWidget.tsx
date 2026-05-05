@@ -28,6 +28,7 @@ export function SqlEditorWidget({
     badgeClass = null,
     applySourceDefaultIfEmpty = false,
     onEnterUiMode = null,
+    extraActions = null,
 }: any) {
     const { devMode, isLoading, runCellAt, db } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
@@ -49,8 +50,16 @@ export function SqlEditorWidget({
     const iconName = isJs ? 'bolt' : isText ? 'article' : 'storage'
 
     // tableSchemas depuis db.schemaTrees pour l'autocomplétion Monaco DuckDB
-    // Sanitize : columns peut être undefined sur certaines entrées → crash forEach dans le provider
-    const tableSchemas = (db?.schemaTrees ?? []).map((t: any) => ({ ...t, columns: t?.columns ?? [] }))
+    // Sanitize : noms undefined → crash toLowerCase() dans le Monarch tokenizer de Monaco
+    const tableSchemas = (db?.schemaTrees ?? [])
+        .filter((t: any) => t?.name != null)
+        .map((t: any) => ({
+            ...t,
+            name: String(t.name),
+            columns: (t?.columns ?? [])
+                .filter((c: any) => c?.name != null)
+                .map((c: any) => ({ ...c, name: String(c.name), type: String(c.type ?? '') })),
+        }))
 
     // Appliquer la requête source par défaut si vide (cellule source)
     useEffect(() => {
@@ -157,9 +166,10 @@ export function SqlEditorWidget({
                         >
                             {copyDone
                                 ? <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-600"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                                : <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                : <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2 2v1"></path></svg>
                             }
                         </button>
+                        {extraActions}
                     </div>
                 </div>
 

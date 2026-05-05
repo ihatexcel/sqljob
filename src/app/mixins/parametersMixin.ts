@@ -11,6 +11,10 @@ export function parametersMixin() {
                             if (cell.type === 'uiParameter' && refName) {
                                 params[refName] = cell._value || '';
                             }
+                            // Cellule Univer matérialisée → {{ cellName }} résout vers le nom de la table DuckDB
+                            if (cell.type === 'univerSheet' && cell.json?.univerConfig?.materializeAsDuckDB && cell.name) {
+                                params[cell.name] = cell.name;
+                            }
                         }
                         for (const child of (group?.children || [])) {
                             collectFromGroup(child);
@@ -71,7 +75,7 @@ export function parametersMixin() {
                 // Retourne un tableau de {cell, path, cellIndex} pour les types DAG-compatibles
                 findDependentCells(paramName) {
                     const dependents = [];
-                    const dagTypes = ['uiParameter', 'sql', 'table', 'perspective', 'sqlStat'];
+                    const dagTypes = ['uiParameter', 'sql', 'table', 'perspective', 'sqlStat', 'univerSheet', 'source', 'markdown', 'iframe'];
 
                     const searchInGroup = (group, path) => {
                         for (let cellIndex = 0; cellIndex < (group.cells || []).length; cellIndex++) {
@@ -249,7 +253,6 @@ export function parametersMixin() {
                         return;
                     }
 
-                    if (this.devMode) this.setStatus(`🔄 Rafraîchissement de ${dependentCells.length} cellule(s) et ${dependentGroups.length} groupe(s) dépendant(s) de {{ ${paramName} }}...`, 'loading');
 
                     // Réévaluer les ifQuery des groupes dépendants
                     for (let i = 0; i < dependentGroups.length; i++) {
@@ -268,8 +271,9 @@ export function parametersMixin() {
                         const dep = dependentCells[i];
                         const depCell = dep.cell;
 
-                        // Pour les uiParameter avec preserveUserValue et _userModified, ne pas re-exécuter
-                        if (depCell.type === 'uiParameter' && depCell.preserveUserValue && depCell._userModified) {
+                        // uiParameter: ne skip que si l'utilisateur a saisi manuellement (_userModified)
+                        // autres types: skip toujours si preserveUserValue est vrai
+                        if (depCell.preserveUserValue && (depCell.type !== 'uiParameter' || depCell._userModified)) {
                             continue;
                         }
 
@@ -280,7 +284,6 @@ export function parametersMixin() {
                         }
                     }
 
-                    if (this.devMode) this.setStatus(`✅ ${dependentCells.length} cellule(s) et ${dependentGroups.length} groupe(s) rafraîchi(s)`, 'success');
                 },
 
                 // Générer un nom de paramètre unique (param1, param2, param3...) - vérifie dans TOUTES les pages

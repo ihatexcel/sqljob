@@ -9,6 +9,7 @@ import { EChartSqlParser } from '../../../lib/EChartSqlParser'
 import { formatValueForInputType } from '../../../lib/utils'
 import { FileHandler } from '../../../lib/FileHandler'
 
+
 /** Détecte si un SQL contient une instruction DDL (CREATE, DROP, ALTER, INSERT, UPDATE, DELETE…).
  *  Utilisé pour décider si le schéma DuckDB doit être rafraîchi après exécution. */
 const DDL_RE = /^\s*(CREATE|DROP|ALTER|INSERT|UPDATE|DELETE|TRUNCATE|RENAME|COMMENT)\b/im
@@ -63,6 +64,58 @@ async function executeLabelStatement(labelSql: string): Promise<string | null> {
     } catch {
         return null
     }
+}
+
+// ─── Arrow → Univer rows converter ───────────────────────────────────────────
+// CellValueType : STRING=1, NUMBER=2, BOOLEAN=4
+function _arrowTableToUniverRows(table: any): { rows: any[]; cellTypes: number[]; columnFormats: (string | null)[] } {
+    const fields: any[] = table.schema.fields
+    const cellTypes = fields.map((f: any) => {
+        const t = String(f.type)
+        if (t.startsWith('Bool')) return 4
+        if (/^(Int|Uint|Float|Decimal|Date|Time|Timestamp|Duration)/.test(t)) return 2
+        return 1
+    })
+    const columnFormats: (string | null)[] = fields.map((f: any) => {
+        const t = String(f.type)
+        if (/^Date/.test(t)) return 'yyyy-MM-dd'
+        if (/^Timestamp/.test(t)) return 'yyyy-MM-dd HH:mm:ss'
+        if (/^Time/.test(t)) return 'HH:mm:ss'
+        return null
+    })
+    const isDate = fields.map((f: any) => /^Date/.test(String(f.type)))
+    const isTimestamp = fields.map((f: any) => /^(Timestamp|Time)/.test(String(f.type)))
+
+    const rows = table.toArray().map((row: any) => {
+        const jsRow: Record<string, any> = Object.fromEntries(row)
+        const result: Record<string, any> = {}
+        fields.forEach((f: any, i: number) => {
+            const val = jsRow[f.name]
+            if (val === null || val === undefined) {
+                result[f.name] = null
+            } else if (val instanceof Date) {
+                // Date object → serial Excel
+                result[f.name] = Math.floor(val.getTime() / 86_400_000) + 25569
+            } else if (typeof val === 'number' && isDate[i]) {
+                // DuckDB WASM renvoie Date32 en ms depuis l'epoch (number, pas Date)
+                result[f.name] = Math.floor(val / 86_400_000) + 25569
+            } else if (typeof val === 'number' && isTimestamp[i]) {
+                // Timestamp en ms → serial Excel fractionnaire
+                result[f.name] = val / 86_400_000 + 25569
+            } else if (typeof val === 'bigint') {
+                if (isTimestamp[i]) {
+                    // Timestamp en µs → serial Excel fractionnaire
+                    result[f.name] = Number(val) / 86_400_000_000 + 25569
+                } else {
+                    result[f.name] = Number(val)
+                }
+            } else {
+                result[f.name] = val
+            }
+        })
+        return result
+    })
+    return { rows, cellTypes, columnFormats }
 }
 
 export const createExecutionSlice = (set: any, get: any) => ({
@@ -646,7 +699,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
         try {
             let mdContent
             if (languageType === 'js') {
-                let jsCode = get().parseQueryWithParameters(cellQuery || '')
+                let jsCode = get().parseQueryWithParameters(cellQuery || '', { _name: cell.name || '' })
                 try {
                     const result = safeEvalJs(jsCode)
                     mdContent = typeof result === 'string' ? result : String(result)
@@ -654,7 +707,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
                     throw new Error(`Erreur JS: ${jsError.message}`)
                 }
             } else {
-                const finalQuery = get().parseQueryWithParameters(cellQuery || '')
+                const finalQuery = get().parseQueryWithParameters(cellQuery || '', { _name: cell.name || '' })
                 get().setStatus('Exécution de la requête...', 'loading')
                 const results = await DuckDBManager.executeQuery(finalQuery)
                 mdContent = results.map(row => Object.values(row).join('')).join('\n')
@@ -680,7 +733,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
                 htmlContent = (cellQuery || '').trim()
                 cell._resultInfo = ''
             } else if (languageType === 'js') {
-                let jsCode = get().parseQueryWithParameters(cellQuery || '')
+                let jsCode = get().parseQueryWithParameters(cellQuery || '', { _name: cell.name || '' })
                 try {
                     const result = safeEvalJs(jsCode)
                     htmlContent = typeof result === 'string' ? result : String(result)
@@ -689,7 +742,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
                 }
                 cell._resultInfo = '✅ HTML généré (JavaScript)'
             } else {
-                const finalQuery = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '')
+                const finalQuery = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '', { _name: cell.name || '' })
                 get().setStatus('Exécution de la requête...', 'loading')
                 const results = await DuckDBManager.executeQuery(finalQuery)
                 htmlContent = results.map(row => Object.values(row).join('')).join('\n')
@@ -720,7 +773,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
         get().setStatus('Exécution de la stat SQL...', 'loading')
 
         try {
-            const finalQuery = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '')
+            const finalQuery = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '', { _name: cell.name || '' })
 
             get().setStatus('Exécution de la requête...', 'loading')
             const results = await DuckDBManager.executeQuery(finalQuery)
@@ -770,7 +823,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
                 get().setStatus('Exécution du code JavaScript...', 'loading')
 
                 let jsCode = ConfigManager.getCellQuery(cell, 0) || ''
-                jsCode = get().parseQueryWithParameters(jsCode)
+                jsCode = get().parseQueryWithParameters(jsCode, { _name: cell.name || '' })
 
                 try {
                     const jsResult = safeEvalJs(jsCode)
@@ -805,7 +858,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
                     // Paramètre date référencé encore vide → skip silencieux
                     return
                 }
-                const finalQuery = get().parseQueryWithParameters(rawQuery)
+                const finalQuery = get().parseQueryWithParameters(rawQuery, { _name: cell.name || '' })
                 get().setStatus('Exécution de la requête...', 'loading')
                 results = await DuckDBManager.executeQuery(finalQuery)
             }
@@ -890,7 +943,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
         get().setStatus('Exécution du publipostage Word...', 'loading')
 
         try {
-            const finalQuery = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '')
+            const finalQuery = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '', { _name: cell.name || '' })
 
             get().setStatus('Récupération des données...', 'loading')
             const dataResults = await DuckDBManager.executeQuery(finalQuery)
@@ -900,7 +953,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
                 return
             }
 
-            const finalQuery2 = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 1) || '')
+            const finalQuery2 = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 1) || '', { _name: cell.name || '' })
 
             get().setStatus('Récupération des noms de fichiers...', 'loading')
             const filenameResults = await DuckDBManager.executeQuery(finalQuery2)
@@ -987,7 +1040,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
         get().setStatus('Exécution de la requête SQL...', 'loading')
 
         try {
-            const finalQuery = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '')
+            const finalQuery = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '', { _name: cell.name || '' })
 
             get().setStatus('Récupération des données...', 'loading')
             const data = await DuckDBManager.executeQuery(finalQuery)
@@ -1002,7 +1055,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
             if (ConfigManager.getCellQuery(cell, 1)?.trim()) {
                 get().setStatus('Récupération du nom de fichier...', 'loading')
 
-                const finalQuery2 = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 1) || '')
+                const finalQuery2 = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 1) || '', { _name: cell.name || '' })
                 const filenameResults = await DuckDBManager.executeQuery(finalQuery2)
 
                 if (filenameResults && filenameResults.length > 0) {
@@ -1146,7 +1199,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
         get().setStatus('Parsing de la requête SQL...', 'loading')
 
         try {
-            const finalQuery = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '')
+            const finalQuery = get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '', { _name: cell.name || '' })
             cell._perspectiveQuery = finalQuery
 
             get().setStatus('Exécution de la requête...', 'loading')
@@ -1222,7 +1275,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
                 }
             }
 
-            const finalQuery = cell._perspectiveQuery || get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '')
+            const finalQuery = cell._perspectiveQuery || get().parseQueryWithParameters(ConfigManager.getCellQuery(cell, 0) || '', { _name: cell.name || '' })
 
             const arrowResult = await conn.query(finalQuery)
             const batches = []
@@ -1250,6 +1303,97 @@ export const createExecutionSlice = (set: any, get: any) => ({
             throw error
         } finally {
             cell._perspectiveRendering = false
+        }
+    },
+
+    // ─── Univer Sheet ─────────────────────────────────────────────────────────
+    // L'initialisation DOM est déléguée à UniverSheetElement (LitElement).
+    // Ce slice se charge uniquement de la collecte des données.
+
+    async executeUniverSheetCell(cell) {
+        // Réinitialiser
+        cell._univerReady = false
+        cell._univerRows = null
+        cell._univerCellTypes = null
+        cell._univerColumnFormats = null
+        cell._univerSnapshotPending = null
+
+        // ── Collecter les données ──────────────────────────────────────────────
+        if (cell.snapshot?.trim()) {
+            cell._univerSnapshotPending = cell.snapshot.trim()
+        } else {
+            const sql = ConfigManager.getCellQuery(cell, 0)?.trim()
+            cell._univerSnapshotPending = null
+            if (sql) {
+                get().setStatus('Exécution de la requête SQL...', 'loading')
+                const finalSql = get().parseQueryWithParameters(sql, { _name: cell.name || '' })
+                try {
+                    const arrowTable = await DuckDBManager.executeQueryArrow(finalSql)
+                    const { rows, cellTypes, columnFormats } = _arrowTableToUniverRows(arrowTable)
+                    cell._univerRows = rows
+                    cell._univerCellTypes = cellTypes
+                    cell._univerColumnFormats = columnFormats
+                } catch (_) {
+                    // Fallback ducklings ou erreur Arrow
+                    const { rows } = await DuckDBManager.executeQueryWithSchema(finalSql)
+                    cell._univerRows = rows
+                }
+            }
+        }
+
+        // Signaler que les données sont prêtes → UniverSheetBody appellera initialize()
+        cell._univerRunId = (cell._univerRunId || 0) + 1
+        cell._univerReady = true
+        set((s: any) => ({ _rev: s._rev + 1 }))
+        cell._resultInfo = cell._univerSnapshotPending ? '✅ Sheet prête (snapshot)' : '✅ Sheet prête'
+        get().setStatus('Univer Sheet prête', 'success')
+    },
+
+    async captureUniverSnapshot(cell, univerAPI) {
+        if (!univerAPI) return
+        try {
+            const workbook = univerAPI.getActiveWorkbook?.()
+            if (!workbook) return
+            const snapshot = workbook.save?.()
+            if (!snapshot) return
+            const json = JSON.stringify(snapshot)
+            cell.snapshot = await ConfigManager.compressToGzipBase64(json)
+            // Effacer la query SQL : le snapshot prend le dessus à l'import
+            const q = ConfigManager.ensureCellQueries(cell, 'main')
+            if (q) q.sql = ''
+            cell._univerModified = false
+            set((s: any) => ({ _rev: s._rev + 1 }))
+        } catch (e) {
+            console.error('[univerSheet] Erreur capture snapshot:', e)
+            throw e
+        }
+    },
+
+    async exportUniverToXlsx(univerAPI, cellName) {
+        if (!univerAPI) throw new Error('Univer non initialisé')
+        get().setStatus('Export XLSX...', 'loading')
+        try {
+            const workbook = univerAPI.getActiveWorkbook?.()
+            if (!workbook) throw new Error('Classeur actif introuvable')
+            const snapshot = workbook.save?.()
+            if (!snapshot) throw new Error('Impossible de récupérer les données du classeur')
+
+            // Import dynamique → chunk Vite séparé, chargé à la demande
+            const { default: LuckyExcel } = await import('@mertdeveci55/univer-import-export')
+
+            await new Promise<void>((resolve, reject) => {
+                LuckyExcel.transformUniverToExcel({
+                    snapshot,
+                    fileName: `${cellName || 'sheet'}.xlsx`,
+                    success: () => resolve(),
+                    error: (err: any) => reject(new Error(err?.message || String(err))),
+                })
+            })
+
+            get().setStatus('Export XLSX terminé', 'success')
+        } catch (e) {
+            console.error('[univerSheet] Erreur export XLSX:', e)
+            throw e
         }
     },
 

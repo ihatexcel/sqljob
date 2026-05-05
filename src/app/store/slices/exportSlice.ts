@@ -35,6 +35,29 @@ export const createExportSlice = (set: any, get: any) => ({
         const presetName   = localStorage.getItem(STORAGE_PRESET) || 'default'
         const customLight  = presetName === 'custom' ? (localStorage.getItem(STORAGE_LIGHT) || '') : ''
         const customDark   = presetName === 'custom' ? (localStorage.getItem(STORAGE_DARK)  || '') : ''
+
+        // Capturer les snapshots des cellules univerSheet modifiées avant l'export
+        try {
+            const allCells: any[] = []
+            function collectCells(groups: any[]) {
+                for (const g of (groups || [])) {
+                    for (const c of (g.cells || [])) allCells.push(c)
+                    collectCells(g.children || [])
+                }
+            }
+            for (const page of (s.pages || [])) {
+                collectCells(page.groups || [])
+                collectCells(page.linkGroups || [])
+            }
+            for (const cell of allCells) {
+                if (cell.type === 'univerSheet' && cell._univerModified && cell._univerAPI) {
+                    await (get() as any).captureUniverSnapshot(cell)
+                }
+            }
+        } catch (e) {
+            console.warn('[exportSlice] Erreur capture snapshots Univer:', e)
+        }
+
         return ConfigManager.buildConfigFromState(
             s.pages,
             devMode,

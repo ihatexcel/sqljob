@@ -397,6 +397,22 @@ return c;
                 return btoa(unescape(encodeURIComponent(str)));
             }
 
+            /** Compresse une chaîne UTF-8 en gzip puis encode en base64 (pour snapshots Univer) */
+            static async compressToGzipBase64(str: string): Promise<string> {
+                const data = new TextEncoder().encode(str);
+                const compressed = await FileHandler.compressGzip(data.buffer);
+                return FileHandler.arrayBufferToBase64(compressed);
+            }
+
+            /** Décompresse un base64 gzip en chaîne UTF-8 (pour snapshots Univer) */
+            static async decompressFromGzipBase64(b64: string): Promise<string> {
+                const bytes = FileHandler.base64ToUint8Array(b64);
+                const decompressed = await FileHandler.decompressGzip(
+                    bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength)
+                );
+                return new TextDecoder().decode(decompressed);
+            }
+
             /**
              * Génère un ID unique pour un groupe
              */
@@ -646,6 +662,9 @@ return c;
                             if (cell.json?.perspectiveConfig !== undefined) {
                                 let cfg = cell.json.perspectiveConfig;
                                 cleanCell.json.perspectiveConfig = typeof cfg === 'string' ? cfg.replace(/\r\n/g, '\n').replace(/\r/g, '\n') : (cfg != null ? JSON.stringify(cfg, null, 2) : '');
+                            }
+                            if (cell.json?.univerConfig !== undefined) {
+                                cleanCell.json.univerConfig = cell.json.univerConfig ?? {};
                             }
                         }
                     } else if (cell[field] !== undefined) {

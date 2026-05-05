@@ -47,7 +47,11 @@ export default defineConfig({
             external: [/^monaco-editor/],
             output: {
                 assetFileNames: 'sqljob[extname]',
-                inlineDynamicImports: true,
+                // inlineDynamicImports retiré : avec Univer (~33k modules), inliner tout en mémoire
+                // saturait la RAM du runner CI (OOM à 4 Go). Le code splitting réduit
+                // l'empreinte mémoire de Rollup ; les chunks sont servis depuis le même dossier.
+                chunkFileNames: 'sqljob-[hash].js',
+                entryFileNames: 'sqljob.js',
             },
             onwarn(warning, warn) {
                 if (warning.code === 'EVAL') return

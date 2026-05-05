@@ -210,4 +210,9 @@ export class CDNManager {
 
                 return this.perspectiveLoadingPromise;
             }
+
+            // ─── Univer Sheet ─────────────────────────────────────────────────────────
+            // Note : le preset Univer (JS + CSS) est chargé via import dynamique npm
+            // par UniverSheetElement.ts — plus de chargement CDN/UMD ici.
+
         }

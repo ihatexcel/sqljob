@@ -17,6 +17,10 @@ export const createParametersSlice = (set: any, get: any) => ({
                 if (cell.type === 'uiParameter' && refName) {
                     params[refName] = cell._value || ''
                 }
+                // Cellule Univer matérialisée → {{ cellName }} résout vers le nom de la table DuckDB
+                if (cell.type === 'univerSheet' && cell.json?.univerConfig?.materializeAsDuckDB && cell.name) {
+                    params[cell.name] = cell.name
+                }
             }
             for (const child of (group?.children || [])) collectFromGroup(child)
         }
@@ -43,8 +47,7 @@ export const createParametersSlice = (set: any, get: any) => ({
     findReferencedParams(query: string) {
         if (!query) return []
         const params: string[] = []
-        // Names starting with _ are reserved system variables ({{ _name }}, etc.) — excluded from DAG
-        const regex = /\{\{\s*([a-zA-Z][a-zA-Z0-9_]*)\s*\}\}/g
+        const regex = /\{\{\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*\}\}/g
         let match
         while ((match = regex.exec(query)) !== null) {
             if (!params.includes(match[1])) params.push(match[1])
@@ -55,7 +58,7 @@ export const createParametersSlice = (set: any, get: any) => ({
     findDependentCells(paramName: string) {
         const groups = get().getGroups()
         const dependents: any[] = []
-        const dagTypes = ['uiParameter', 'sql', 'table', 'perspective', 'sqlStat']
+        const dagTypes = ['uiParameter', 'sql', 'table', 'perspective', 'sqlStat', 'univerSheet', 'source', 'markdown', 'iframe']
         const searchInGroup = (group: any, path: number[]) => {
             for (let cellIndex = 0; cellIndex < (group.cells || []).length; cellIndex++) {
                 const cell = group.cells[cellIndex]
@@ -166,7 +169,6 @@ export const createParametersSlice = (set: any, get: any) => ({
         const dependentGroups = get().findDependentGroups(paramName)
         const totalDependents = dependentCells.length + dependentGroups.length
         if (totalDependents === 0) return
-        if (devMode) get().setStatus(`🔄 Rafraîchissement de ${dependentCells.length} cellule(s) et ${dependentGroups.length} groupe(s) dépendant(s) de {{ ${paramName} }}...`, 'loading')
         for (const dep of dependentGroups) {
             try {
                 dep.group._ifQueryResult = await get().evaluateGroupIfQuery(dep.group)
@@ -176,14 +178,15 @@ export const createParametersSlice = (set: any, get: any) => ({
         }
         for (const dep of dependentCells) {
             const depCell = dep.cell
-            if (depCell.type === 'uiParameter' && depCell.preserveUserValue && depCell._userModified) continue
+            // uiParameter: ne skip que si l'utilisateur a saisi manuellement (_userModified)
+            // autres types: skip toujours si preserveUserValue est vrai
+            if (depCell.preserveUserValue && (depCell.type !== 'uiParameter' || depCell._userModified)) continue
             try {
                 await get().runCellAt(dep.path, dep.cellIndex)
             } catch (error) {
                 console.error(`  ❌ [DAG] Erreur cellule:`, error)
             }
         }
-        if (devMode) get().setStatus(`✅ ${dependentCells.length} cellule(s) et ${dependentGroups.length} groupe(s) rafraîchi(s)`, 'success')
     },
 
     generateUniqueParamName() {
