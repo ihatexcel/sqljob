@@ -88,7 +88,48 @@ function _escapeCSV(val: any): string {
     return s
 }
 
-function _extractSheetAsCSV(univerAPI: any): string | null {
+type _ColKind = 'DATE' | 'TIMESTAMP' | 'DOUBLE' | 'BOOLEAN' | 'VARCHAR'
+
+function _excelSerialToISO(serial: number, kind: 'DATE' | 'TIMESTAMP'): string {
+    const date = new Date((serial - 25569) * 86_400_000)
+    const y = date.getUTCFullYear()
+    const m = String(date.getUTCMonth() + 1).padStart(2, '0')
+    const d = String(date.getUTCDate()).padStart(2, '0')
+    if (kind === 'DATE') return `${y}-${m}-${d}`
+    const hh = String(date.getUTCHours()).padStart(2, '0')
+    const mm = String(date.getUTCMinutes()).padStart(2, '0')
+    const ss = String(date.getUTCSeconds()).padStart(2, '0')
+    return `${y}-${m}-${d} ${hh}:${mm}:${ss}`
+}
+
+function _detectColKind(
+    snapshot: any,
+    cellData: Record<number, Record<number, any>>,
+    ci: number,
+    maxRow: number,
+): _ColKind {
+    for (let r = 1; r <= maxRow; r++) {
+        const cell = cellData[r]?.[ci]
+        if (cell == null) continue
+        const t = cell.t ?? 1
+        if (t === 4) return 'BOOLEAN'
+        if (t === 1 || t === 3) return 'VARCHAR'
+        if (t === 2) {
+            const pattern: string | undefined = snapshot.styles?.[cell.s]?.n?.pattern
+            if (pattern) {
+                const hasDate = /[yYdD]/.test(pattern)
+                const hasTime = /[Hh]:[mM]/.test(pattern)
+                if (hasDate && hasTime) return 'TIMESTAMP'
+                if (hasDate) return 'DATE'
+            }
+            return 'DOUBLE'
+        }
+        break
+    }
+    return 'VARCHAR'
+}
+
+function _extractSheetData(univerAPI: any): { csv: string; columnTypes: Record<string, string> } | null {
     try {
         const fWorkbook = univerAPI.getActiveWorkbook()
         if (!fWorkbook) return null
@@ -102,15 +143,36 @@ function _extractSheetAsCSV(univerAPI: any): string | null {
         const maxRow = Math.max(...rowKeys)
         const allColKeys = rowKeys.flatMap(r => Object.keys(cellData[r] ?? {}).map(Number))
         const maxCol = allColKeys.length > 0 ? Math.max(...allColKeys) : 0
+
+        const headerRow = cellData[0] ?? {}
+        const colKinds: _ColKind[] = []
+        const columnTypes: Record<string, string> = {}
+        for (let c = 0; c <= maxCol; c++) {
+            const kind = _detectColKind(snapshot, cellData, c, maxRow)
+            colKinds[c] = kind
+            const header = String(headerRow[c]?.v ?? `col${c}`)
+            columnTypes[header] = kind
+        }
+
         const csvRows: string[] = []
         for (let r = 0; r <= maxRow; r++) {
             const cols: string[] = []
             for (let c = 0; c <= maxCol; c++) {
-                cols.push(_escapeCSV(cellData[r]?.[c]?.v))
+                const val = cellData[r]?.[c]?.v
+                if (r === 0) { cols.push(_escapeCSV(val)); continue }
+                if (val === null || val === undefined) { cols.push(''); continue }
+                const kind = colKinds[c]
+                if ((kind === 'DATE' || kind === 'TIMESTAMP') && typeof val === 'number') {
+                    cols.push(_excelSerialToISO(val, kind))
+                } else if (kind === 'BOOLEAN') {
+                    cols.push(val ? 'true' : 'false')
+                } else {
+                    cols.push(_escapeCSV(val))
+                }
             }
             csvRows.push(cols.join(','))
         }
-        return csvRows.join('\n')
+        return { csv: csvRows.join('\n'), columnTypes }
     } catch {
         return null
     }
@@ -128,7 +190,7 @@ export interface UniverInitParams {
     readonly: boolean
     config?: any   // Objet ou string JSON → options UniverSheetsCorePreset
     onModified?: () => void
-    onMaterialize?: (csv: string) => Promise<void>
+    onMaterialize?: (csv: string, columnTypes: Record<string, string>) => Promise<void>
 }
 
 class UniverSheetElement extends LitElement {
@@ -444,13 +506,9 @@ class UniverSheetElement extends LitElement {
                     }
                 } catch (e) { console.error('[UniverSheet] readonly setup error:', e) }
                 if (materializeAsDuckDB && params.onMaterialize) {
-                    console.debug('[UniverSheet] initial materialize after Rendered (readonly)', { cellId: params.cellId })
-                    const csv = _extractSheetAsCSV(univerAPI)
-                    if (csv !== null) {
-                        console.debug('[UniverSheet] initial CSV ready (readonly)', { cellId: params.cellId, csvLength: csv.length })
-                        try { await params.onMaterialize(csv) } catch (_) {}
-                    } else {
-                        console.warn('[UniverSheet] initial _extractSheetAsCSV returned null (readonly)', { cellId: params.cellId })
+                    const result = _extractSheetData(univerAPI)
+                    if (result !== null) {
+                        try { await params.onMaterialize(result.csv, result.columnTypes) } catch (_) {}
                     }
                 }
             })
@@ -526,15 +584,10 @@ class UniverSheetElement extends LitElement {
                         )
                         if (isDataMutation) {
                             clearTimeout(_materializeTimer)
-                            console.debug('[UniverSheet] BeforeCommandExecute data mutation, scheduling materialize in 1500ms', { id, cellId: params.cellId })
                             _materializeTimer = setTimeout(async () => {
-                                console.debug('[UniverSheet] extracting CSV for materialization…', { cellId: params.cellId })
-                                const csv = _extractSheetAsCSV(univerAPI)
-                                if (csv !== null) {
-                                    console.debug('[UniverSheet] CSV ready, calling onMaterialize', { cellId: params.cellId, csvLength: csv.length })
-                                    try { await params.onMaterialize!(csv) } catch (_) {}
-                                } else {
-                                    console.warn('[UniverSheet] _extractSheetAsCSV returned null, skipping materialize', { cellId: params.cellId })
+                                const result = _extractSheetData(univerAPI)
+                                if (result !== null) {
+                                    try { await params.onMaterialize!(result.csv, result.columnTypes) } catch (_) {}
                                 }
                             }, 1500)
                         }
@@ -542,13 +595,9 @@ class UniverSheetElement extends LitElement {
                 })
 
                 if (materializeAsDuckDB && params.onMaterialize) {
-                    console.debug('[UniverSheet] initial materialize after Rendered', { cellId: params.cellId })
-                    const csv = _extractSheetAsCSV(univerAPI)
-                    if (csv !== null) {
-                        console.debug('[UniverSheet] initial CSV ready', { cellId: params.cellId, csvLength: csv.length })
-                        try { await params.onMaterialize(csv) } catch (_) {}
-                    } else {
-                        console.warn('[UniverSheet] initial _extractSheetAsCSV returned null', { cellId: params.cellId })
+                    const result = _extractSheetData(univerAPI)
+                    if (result !== null) {
+                        try { await params.onMaterialize(result.csv, result.columnTypes) } catch (_) {}
                     }
                 }
             })

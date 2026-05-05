@@ -1091,26 +1091,24 @@ function UniverSheetBody({ cell, path, cellIndex }: any) {
             readonly: !devMode && cell.readOnly !== false,
             config: cell.json?.univerConfig ?? null,
             onModified: () => { cell._univerModified = true },
-            onMaterialize: _materialize ? async (csv: string) => {
+            onMaterialize: _materialize ? async (csv: string, columnTypes: Record<string, string>) => {
                 const tableName = cell.name || ('univer_' + cell._id)
                 const csvFileName = `_univer_${cell._id}.csv`
-                console.debug('[UniverSheet] onMaterialize called', { tableName, csvFileName, csvLength: csv.length })
                 try {
                     const csvBlob = new Blob([csv], { type: 'text/csv' })
                     await DuckDBManager.registerFile(csvFileName, csvBlob)
-                    console.debug('[UniverSheet] CSV registered in DuckDB VFS', { csvFileName })
-                    const sql = `CREATE OR REPLACE TABLE "${tableName.replace(/"/g, '""')}" AS SELECT * FROM read_csv('${csvFileName}', HEADER = true, AUTO_DETECT = true, SAMPLE_SIZE = -1)`
+                    const entries = Object.entries(columnTypes)
+                    const columnsClause = entries.length > 0
+                        ? `, columns={${entries.map(([col, type]) => `'${col.replace(/'/g, "''")}': '${type}'`).join(', ')}}`
+                        : ', AUTO_DETECT = true'
+                    const sql = `CREATE OR REPLACE TABLE "${tableName.replace(/"/g, '""')}" AS SELECT * FROM read_csv('${csvFileName}', HEADER = true${columnsClause})`
                     await DuckDBManager.executeQuery(sql)
-                    console.info('[UniverSheet] DuckDB table materialized', { tableName })
-                    // Mise à jour arborescence (TableStructurePanel + _duckdbTables)
                     const store = useNotebookStore.getState()
                     await store.refreshDuckdbSchema?.()
-                    // DAG : ré-exécuter les cellules qui référencent {{ tableName }} dans leur SQL
                     if (store.directedAcyclicGraph && cell.name) {
-                        console.debug('[UniverSheet] DAG refresh triggered for', cell.name)
                         await store._executeDAGRefresh?.(cell.name)
                     }
-                } catch (e) { console.error('[UniverSheet] DuckDB materialize error:', e, { tableName, csvFileName }) }
+                } catch (e) { console.error('[UniverSheet] DuckDB materialize error:', e) }
             } : undefined,
         }).catch((e: any) => {
             cell._univerReady = false
