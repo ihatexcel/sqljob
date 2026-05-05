@@ -70,6 +70,8 @@ async function executeLabelStatement(labelSql: string): Promise<string | null> {
 // CellValueType : STRING=1, NUMBER=2, BOOLEAN=4
 function _arrowTableToUniverRows(table: any): { rows: any[]; cellTypes: number[]; columnFormats: (string | null)[] } {
     const fields: any[] = table.schema.fields
+    console.debug('[UniverSheet] Arrow schema:', fields.map((f: any) => `${f.name}: ${String(f.type)}`))
+
     const cellTypes = fields.map((f: any) => {
         const t = String(f.type)
         if (t.startsWith('Bool')) return 4
@@ -83,20 +85,33 @@ function _arrowTableToUniverRows(table: any): { rows: any[]; cellTypes: number[]
         if (/^Time/.test(t)) return 'hh:mm:ss'
         return null
     })
+    const isDate = fields.map((f: any) => /^Date/.test(String(f.type)))
     const isTimestamp = fields.map((f: any) => /^(Timestamp|Time)/.test(String(f.type)))
-    const rows = table.toArray().map((row: any) => {
+
+    const rows = table.toArray().map((row: any, rowIdx: number) => {
         const jsRow: Record<string, any> = Object.fromEntries(row)
+        if (rowIdx === 0) {
+            console.debug('[UniverSheet] Arrow row[0] raw:', Object.fromEntries(
+                Object.entries(jsRow).map(([k, v]) => [k, `${v} (${v instanceof Date ? 'Date' : typeof v})`])
+            ))
+        }
         const result: Record<string, any> = {}
         fields.forEach((f: any, i: number) => {
             const val = jsRow[f.name]
             if (val === null || val === undefined) {
                 result[f.name] = null
             } else if (val instanceof Date) {
-                // Date32 → days since epoch → Excel serial (offset 25569 for leap year bug)
+                // Date object → serial Excel
                 result[f.name] = Math.floor(val.getTime() / 86_400_000) + 25569
+            } else if (typeof val === 'number' && isDate[i]) {
+                // DuckDB WASM renvoie Date32 en ms depuis l'epoch (number, pas Date)
+                result[f.name] = Math.floor(val / 86_400_000) + 25569
+            } else if (typeof val === 'number' && isTimestamp[i]) {
+                // Timestamp en ms → serial Excel fractionnaire
+                result[f.name] = val / 86_400_000 + 25569
             } else if (typeof val === 'bigint') {
                 if (isTimestamp[i]) {
-                    // Timestamp en µs → serial Excel (jours fractionnaires)
+                    // Timestamp en µs → serial Excel fractionnaire
                     result[f.name] = Number(val) / 86_400_000_000 + 25569
                 } else {
                     result[f.name] = Number(val)
@@ -107,6 +122,7 @@ function _arrowTableToUniverRows(table: any): { rows: any[]; cellTypes: number[]
         })
         return result
     })
+    if (rows.length > 0) console.debug('[UniverSheet] Arrow row[0] converted:', rows[0])
     return { rows, cellTypes, columnFormats }
 }
 
