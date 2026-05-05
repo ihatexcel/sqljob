@@ -20,7 +20,6 @@ function _buildWorkbookFromRows(rows: any[], cellId: string, evalFormulas = fals
         return { id: 'wb-' + cellId, name: 'Sheet', sheets: { [sheetId]: { id: sheetId, name: 'Feuille1', cellData } } }
     }
     const columns = Object.keys(rows[0])
-    console.debug('[UniverSheet] _buildWorkbookFromRows:', { rows: rows.length, columns, cellTypes })
     cellData[0] = {}
     columns.forEach((col, ci) => { cellData[0][ci] = { v: col, t: 1 } })
     rows.forEach((row, ri) => {
@@ -380,9 +379,7 @@ class UniverSheetElement extends LitElement {
                 if (fws) {
                     params.rowColumnFormats.forEach((fmt: string | null, ci: number) => {
                         if (fmt) {
-                            const localFmt = resolveFormat(fmt)
-                            console.debug('[UniverSheet] setNumberFormat col', ci, localFmt)
-                            fws.getRange(1, ci, params.rows!.length, 1).setNumberFormat(localFmt)
+                            fws.getRange(1, ci, params.rows!.length, 1).setNumberFormat(resolveFormat(fmt))
                         }
                     })
                 }

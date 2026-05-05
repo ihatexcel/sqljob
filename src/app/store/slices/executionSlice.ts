@@ -70,8 +70,6 @@ async function executeLabelStatement(labelSql: string): Promise<string | null> {
 // CellValueType : STRING=1, NUMBER=2, BOOLEAN=4
 function _arrowTableToUniverRows(table: any): { rows: any[]; cellTypes: number[]; columnFormats: (string | null)[] } {
     const fields: any[] = table.schema.fields
-    console.debug('[UniverSheet] Arrow schema:', fields.map((f: any) => `${f.name}: ${String(f.type)}`))
-
     const cellTypes = fields.map((f: any) => {
         const t = String(f.type)
         if (t.startsWith('Bool')) return 4
@@ -88,13 +86,8 @@ function _arrowTableToUniverRows(table: any): { rows: any[]; cellTypes: number[]
     const isDate = fields.map((f: any) => /^Date/.test(String(f.type)))
     const isTimestamp = fields.map((f: any) => /^(Timestamp|Time)/.test(String(f.type)))
 
-    const rows = table.toArray().map((row: any, rowIdx: number) => {
+    const rows = table.toArray().map((row: any) => {
         const jsRow: Record<string, any> = Object.fromEntries(row)
-        if (rowIdx === 0) {
-            console.debug('[UniverSheet] Arrow row[0] raw:', Object.fromEntries(
-                Object.entries(jsRow).map(([k, v]) => [k, `${v} (${v instanceof Date ? 'Date' : typeof v})`])
-            ))
-        }
         const result: Record<string, any> = {}
         fields.forEach((f: any, i: number) => {
             const val = jsRow[f.name]
@@ -122,7 +115,6 @@ function _arrowTableToUniverRows(table: any): { rows: any[]; cellTypes: number[]
         })
         return result
     })
-    if (rows.length > 0) console.debug('[UniverSheet] Arrow row[0] converted:', rows[0])
     return { rows, cellTypes, columnFormats }
 }
 
