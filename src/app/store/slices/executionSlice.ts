@@ -66,6 +66,43 @@ async function executeLabelStatement(labelSql: string): Promise<string | null> {
     }
 }
 
+// ─── Arrow → Univer rows converter ───────────────────────────────────────────
+// CellValueType : STRING=1, NUMBER=2, BOOLEAN=4
+function _arrowTableToUniverRows(table: any): { rows: any[]; cellTypes: number[] } {
+    const fields: any[] = table.schema.fields
+    const cellTypes = fields.map((f: any) => {
+        const t = String(f.type)
+        if (t.startsWith('Bool')) return 4
+        if (/^(Int|Uint|Float|Decimal|Date|Time|Timestamp|Duration)/.test(t)) return 2
+        return 1
+    })
+    const isTimestamp = fields.map((f: any) => /^(Timestamp|Time)/.test(String(f.type)))
+    const rows = table.toArray().map((row: any) => {
+        const jsRow: Record<string, any> = Object.fromEntries(row)
+        const result: Record<string, any> = {}
+        fields.forEach((f: any, i: number) => {
+            const val = jsRow[f.name]
+            if (val === null || val === undefined) {
+                result[f.name] = null
+            } else if (val instanceof Date) {
+                // Date32 → days since epoch → Excel serial (offset 25569 for leap year bug)
+                result[f.name] = Math.floor(val.getTime() / 86_400_000) + 25569
+            } else if (typeof val === 'bigint') {
+                if (isTimestamp[i]) {
+                    // Timestamp en µs → serial Excel (jours fractionnaires)
+                    result[f.name] = Number(val) / 86_400_000_000 + 25569
+                } else {
+                    result[f.name] = Number(val)
+                }
+            } else {
+                result[f.name] = val
+            }
+        })
+        return result
+    })
+    return { rows, cellTypes }
+}
+
 export const createExecutionSlice = (set: any, get: any) => ({
 
     async runGroupAtPath(path) {
@@ -1262,6 +1299,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
         // Réinitialiser
         cell._univerReady = false
         cell._univerRows = null
+        cell._univerCellTypes = null
         cell._univerSnapshotPending = null
 
         // ── Collecter les données ──────────────────────────────────────────────
@@ -1273,8 +1311,16 @@ export const createExecutionSlice = (set: any, get: any) => ({
             if (sql) {
                 get().setStatus('Exécution de la requête SQL...', 'loading')
                 const finalSql = get().parseQueryWithParameters(sql, { _name: cell.name || '' })
-                const { rows } = await DuckDBManager.executeQueryWithSchema(finalSql)
-                cell._univerRows = rows
+                try {
+                    const arrowTable = await DuckDBManager.executeQueryArrow(finalSql)
+                    const { rows, cellTypes } = _arrowTableToUniverRows(arrowTable)
+                    cell._univerRows = rows
+                    cell._univerCellTypes = cellTypes
+                } catch (_) {
+                    // Fallback ducklings ou erreur Arrow
+                    const { rows } = await DuckDBManager.executeQueryWithSchema(finalSql)
+                    cell._univerRows = rows
+                }
             }
         }
 

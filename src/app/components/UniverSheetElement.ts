@@ -13,15 +13,17 @@ import { ConfigManager } from '../../lib/ConfigManager'
 
 // ─── Helper ────────────────────────────────────────────────────────────────────
 
-function _buildWorkbookFromRows(rows: any[], cellId: string, evalFormulas = false): any {
+// cellTypes : CellValueType par colonne (STRING=1, NUMBER=2, BOOLEAN=4)
+function _buildWorkbookFromRows(rows: any[], cellId: string, evalFormulas = false, cellTypes?: number[]): any {
     const sheetId = 'sheet-' + cellId
-    const cellData: Record<number, Record<number, { v?: any; f?: string }>> = {}
+    const cellData: Record<number, Record<number, { v?: any; t?: number; f?: string }>> = {}
     if (!rows || rows.length === 0) {
         return { id: 'wb-' + cellId, name: 'Sheet', sheets: { [sheetId]: { id: sheetId, name: 'Feuille1', cellData } } }
     }
     const columns = Object.keys(rows[0])
+    // En-têtes : STRING (t=1)
     cellData[0] = {}
-    columns.forEach((col, ci) => { cellData[0][ci] = { v: col } })
+    columns.forEach((col, ci) => { cellData[0][ci] = { v: col, t: 1 } })
     rows.forEach((row, ri) => {
         cellData[ri + 1] = {}
         columns.forEach((col, ci) => {
@@ -29,8 +31,12 @@ function _buildWorkbookFromRows(rows: any[], cellId: string, evalFormulas = fals
             const v = val === null || val === undefined ? '' : val
             if (evalFormulas && typeof v === 'string' && v.startsWith('=')) {
                 cellData[ri + 1][ci] = { f: v }
-            } else {
+            } else if (v === '') {
                 cellData[ri + 1][ci] = { v }
+            } else {
+                // Priorité : cellTypes Arrow ; fallback heuristique
+                const t = cellTypes?.[ci] ?? (typeof v === 'boolean' ? 4 : typeof v === 'number' ? 2 : 1)
+                cellData[ri + 1][ci] = { v, t }
             }
         })
     })
@@ -119,6 +125,7 @@ function _extractSheetAsCSV(univerAPI: any): string | null {
 
 export interface UniverInitParams {
     rows: any[] | null
+    rowCellTypes?: number[] | null  // CellValueType par colonne issu d'Arrow (1=STRING, 2=NUMBER, 4=BOOLEAN)
     snapshot: string | null
     cellId: string
     name?: string
@@ -327,7 +334,7 @@ class UniverSheetElement extends LitElement {
                 },
             }
         } else if (params.rows?.length) {
-            workbookData = _buildWorkbookFromRows(params.rows, params.cellId, !!evalFormulas)
+            workbookData = _buildWorkbookFromRows(params.rows, params.cellId, !!evalFormulas, params.rowCellTypes ?? undefined)
         } else {
             workbookData = { id: 'wb-' + params.cellId, name: 'Sheet', sheets: {} }
         }
