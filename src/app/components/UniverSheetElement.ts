@@ -350,6 +350,10 @@ class UniverSheetElement extends LitElement {
 
         univerAPI.createWorkbook(workbookData)
 
+        // Locale pour le formatage des nombres (séparateurs décimaux, format des dates…)
+        // localeStr est au format 'fr-FR', setNumfmtLocal attend 'fr_FR'
+        univerAPI.getActiveWorkbook()?.setNumfmtLocal?.(localeStr.replace('-', '_'))
+
         // Format des colonnes date/timestamp via setNumberFormat (une colonne à la fois)
         if (params.rowColumnFormats?.length && params.rows?.length) {
             try {
