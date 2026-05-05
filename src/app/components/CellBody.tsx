@@ -1084,6 +1084,7 @@ function UniverSheetBody({ cell, path, cellIndex }: any) {
         elementRef.current.initialize({
             rows: cell._univerRows ?? null,
             rowCellTypes: cell._univerCellTypes ?? null,
+            rowColumnFormats: cell._univerColumnFormats ?? null,
             snapshot: cell._univerSnapshotPending ?? null,
             cellId: cell._id,
             name: cell.name || undefined,
