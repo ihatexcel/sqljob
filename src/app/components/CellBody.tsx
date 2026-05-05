@@ -1083,6 +1083,7 @@ function UniverSheetBody({ cell, path, cellIndex }: any) {
         const _materialize = _univerCfg && typeof _univerCfg === 'object' ? !!_univerCfg.materializeAsDuckDB : false
         elementRef.current.initialize({
             rows: cell._univerRows ?? null,
+            rowCellTypes: cell._univerCellTypes ?? null,
             snapshot: cell._univerSnapshotPending ?? null,
             cellId: cell._id,
             name: cell.name || undefined,
