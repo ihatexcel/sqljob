@@ -13,14 +13,14 @@ import { ConfigManager } from '../../lib/ConfigManager'
 
 // ─── Helper ────────────────────────────────────────────────────────────────────
 
-function _buildWorkbookFromRows(rows: any[], cellId: string, evalFormulas = false, cellTypes?: number[], columnFormats?: (string | null)[]): any {
+function _buildWorkbookFromRows(rows: any[], cellId: string, evalFormulas = false, cellTypes?: number[]): any {
     const sheetId = 'sheet-' + cellId
     const cellData: Record<number, Record<number, { v?: any; t?: number; f?: string }>> = {}
     if (!rows || rows.length === 0) {
         return { id: 'wb-' + cellId, name: 'Sheet', sheets: { [sheetId]: { id: sheetId, name: 'Feuille1', cellData } } }
     }
     const columns = Object.keys(rows[0])
-    console.debug('[UniverSheet] _buildWorkbookFromRows:', { rows: rows.length, columns, cellTypes, columnFormats })
+    console.debug('[UniverSheet] _buildWorkbookFromRows:', { rows: rows.length, columns, cellTypes })
     // En-têtes : STRING (t=1)
     cellData[0] = {}
     columns.forEach((col, ci) => { cellData[0][ci] = { v: col, t: 1 } })
@@ -34,32 +34,15 @@ function _buildWorkbookFromRows(rows: any[], cellId: string, evalFormulas = fals
             } else if (v === '') {
                 cellData[ri + 1][ci] = { v }
             } else {
-                // Priorité : cellTypes Arrow ; fallback heuristique
                 const t = cellTypes?.[ci] ?? (typeof v === 'boolean' ? 4 : typeof v === 'number' ? 2 : 1)
                 cellData[ri + 1][ci] = { v, t }
             }
         })
     })
-    // Formats de colonne (dates/timestamps) → styles workbook + columnData
-    const wbStyles: Record<string, any> = {}
-    const columnData: Record<number, { s: string }> = {}
-    if (columnFormats) {
-        columnFormats.forEach((fmt, ci) => {
-            if (fmt) {
-                const styleId = `_col_fmt_${ci}`
-                wbStyles[styleId] = { n: { pattern: fmt } }
-                columnData[ci] = { s: styleId }
-            }
-        })
-    }
-    const sheetDef: any = { id: sheetId, name: 'Feuille1', cellData }
-    if (Object.keys(columnData).length > 0) sheetDef.columnData = columnData
-    console.debug('[UniverSheet] columnData:', columnData, '| cellData[1] sample:', cellData[1])
     return {
         id: 'wb-' + cellId,
         name: 'Sheet',
-        styles: wbStyles,
-        sheets: { [sheetId]: sheetDef },
+        sheets: { [sheetId]: { id: sheetId, name: 'Feuille1', cellData } },
     }
 }
 
@@ -349,7 +332,7 @@ class UniverSheetElement extends LitElement {
                 },
             }
         } else if (params.rows?.length) {
-            workbookData = _buildWorkbookFromRows(params.rows, params.cellId, !!evalFormulas, params.rowCellTypes ?? undefined, params.rowColumnFormats ?? undefined)
+            workbookData = _buildWorkbookFromRows(params.rows, params.cellId, !!evalFormulas, params.rowCellTypes ?? undefined)
         } else {
             workbookData = { id: 'wb-' + params.cellId, name: 'Sheet', sheets: {} }
         }
@@ -366,6 +349,21 @@ class UniverSheetElement extends LitElement {
         }
 
         univerAPI.createWorkbook(workbookData)
+
+        // Appliquer les formats de date/timestamp via FRange.setNumberFormat
+        if (params.rowColumnFormats && params.rows?.length) {
+            try {
+                const fws = univerAPI.getActiveWorkbook()?.getActiveSheet()
+                if (fws) {
+                    params.rowColumnFormats.forEach((fmt: string | null, ci: number) => {
+                        if (fmt) {
+                            console.debug('[UniverSheet] setNumberFormat col', ci, fmt)
+                            fws.getRange(1, ci, params.rows!.length, 1).setNumberFormat(fmt)
+                        }
+                    })
+                }
+            } catch (e) { console.warn('[UniverSheet] setNumberFormat failed:', e) }
+        }
 
         // Appliquer les dimensions via l'API facade
         {
