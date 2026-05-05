@@ -169,7 +169,6 @@ export const createParametersSlice = (set: any, get: any) => ({
         const dependentGroups = get().findDependentGroups(paramName)
         const totalDependents = dependentCells.length + dependentGroups.length
         if (totalDependents === 0) return
-        if (devMode) get().setStatus(`🔄 Rafraîchissement de ${dependentCells.length} cellule(s) et ${dependentGroups.length} groupe(s) dépendant(s) de {{ ${paramName} }}...`, 'loading')
         for (const dep of dependentGroups) {
             try {
                 dep.group._ifQueryResult = await get().evaluateGroupIfQuery(dep.group)
@@ -188,7 +187,6 @@ export const createParametersSlice = (set: any, get: any) => ({
                 console.error(`  ❌ [DAG] Erreur cellule:`, error)
             }
         }
-        if (devMode) get().setStatus(`✅ ${dependentCells.length} cellule(s) et ${dependentGroups.length} groupe(s) rafraîchi(s)`, 'success')
     },
 
     generateUniqueParamName() {
