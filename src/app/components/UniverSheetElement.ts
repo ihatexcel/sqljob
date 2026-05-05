@@ -40,11 +40,16 @@ function _buildWorkbookFromRows(rows: any[], cellId: string, evalFormulas = fals
             }
         })
     })
-    // Formats de colonne (dates/timestamps) → columnData, un style par colonne
-    const columnData: Record<number, { s: { n: { pattern: string } } }> = {}
+    // Formats de colonne (dates/timestamps) → styles workbook + columnData
+    const wbStyles: Record<string, any> = {}
+    const columnData: Record<number, { s: string }> = {}
     if (columnFormats) {
         columnFormats.forEach((fmt, ci) => {
-            if (fmt) columnData[ci] = { s: { n: { pattern: fmt } } }
+            if (fmt) {
+                const styleId = `_col_fmt_${ci}`
+                wbStyles[styleId] = { n: { pattern: fmt } }
+                columnData[ci] = { s: styleId }
+            }
         })
     }
     const sheetDef: any = { id: sheetId, name: 'Feuille1', cellData }
@@ -53,6 +58,7 @@ function _buildWorkbookFromRows(rows: any[], cellId: string, evalFormulas = fals
     return {
         id: 'wb-' + cellId,
         name: 'Sheet',
+        styles: wbStyles,
         sheets: { [sheetId]: sheetDef },
     }
 }
