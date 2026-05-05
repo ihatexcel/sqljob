@@ -13,8 +13,7 @@ import { ConfigManager } from '../../lib/ConfigManager'
 
 // ─── Helper ────────────────────────────────────────────────────────────────────
 
-// cellTypes : CellValueType par colonne (STRING=1, NUMBER=2, BOOLEAN=4)
-function _buildWorkbookFromRows(rows: any[], cellId: string, evalFormulas = false, cellTypes?: number[]): any {
+function _buildWorkbookFromRows(rows: any[], cellId: string, evalFormulas = false, cellTypes?: number[], columnFormats?: (string | null)[]): any {
     const sheetId = 'sheet-' + cellId
     const cellData: Record<number, Record<number, { v?: any; t?: number; f?: string }>> = {}
     if (!rows || rows.length === 0) {
@@ -40,12 +39,19 @@ function _buildWorkbookFromRows(rows: any[], cellId: string, evalFormulas = fals
             }
         })
     })
+    // Formats de colonne (dates/timestamps) → columnData, un style par colonne
+    const columnData: Record<number, { s: { n: { pattern: string } } }> = {}
+    if (columnFormats) {
+        columnFormats.forEach((fmt, ci) => {
+            if (fmt) columnData[ci] = { s: { n: { pattern: fmt } } }
+        })
+    }
+    const sheetDef: any = { id: sheetId, name: 'Feuille1', cellData }
+    if (Object.keys(columnData).length > 0) sheetDef.columnData = columnData
     return {
         id: 'wb-' + cellId,
         name: 'Sheet',
-        sheets: {
-            [sheetId]: { id: sheetId, name: 'Feuille1', cellData },
-        },
+        sheets: { [sheetId]: sheetDef },
     }
 }
 
@@ -125,7 +131,8 @@ function _extractSheetAsCSV(univerAPI: any): string | null {
 
 export interface UniverInitParams {
     rows: any[] | null
-    rowCellTypes?: number[] | null  // CellValueType par colonne issu d'Arrow (1=STRING, 2=NUMBER, 4=BOOLEAN)
+    rowCellTypes?: number[] | null          // CellValueType par colonne issu d'Arrow (1=STRING, 2=NUMBER, 4=BOOLEAN)
+    rowColumnFormats?: (string | null)[] | null  // numFmt par colonne (ex. 'yyyy-mm-dd') — appliqué via columnData
     snapshot: string | null
     cellId: string
     name?: string
@@ -334,7 +341,7 @@ class UniverSheetElement extends LitElement {
                 },
             }
         } else if (params.rows?.length) {
-            workbookData = _buildWorkbookFromRows(params.rows, params.cellId, !!evalFormulas, params.rowCellTypes ?? undefined)
+            workbookData = _buildWorkbookFromRows(params.rows, params.cellId, !!evalFormulas, params.rowCellTypes ?? undefined, params.rowColumnFormats ?? undefined)
         } else {
             workbookData = { id: 'wb-' + params.cellId, name: 'Sheet', sheets: {} }
         }

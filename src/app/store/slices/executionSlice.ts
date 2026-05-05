@@ -68,13 +68,20 @@ async function executeLabelStatement(labelSql: string): Promise<string | null> {
 
 // ─── Arrow → Univer rows converter ───────────────────────────────────────────
 // CellValueType : STRING=1, NUMBER=2, BOOLEAN=4
-function _arrowTableToUniverRows(table: any): { rows: any[]; cellTypes: number[] } {
+function _arrowTableToUniverRows(table: any): { rows: any[]; cellTypes: number[]; columnFormats: (string | null)[] } {
     const fields: any[] = table.schema.fields
     const cellTypes = fields.map((f: any) => {
         const t = String(f.type)
         if (t.startsWith('Bool')) return 4
         if (/^(Int|Uint|Float|Decimal|Date|Time|Timestamp|Duration)/.test(t)) return 2
         return 1
+    })
+    const columnFormats: (string | null)[] = fields.map((f: any) => {
+        const t = String(f.type)
+        if (/^Date/.test(t)) return 'yyyy-mm-dd'
+        if (/^Timestamp/.test(t)) return 'yyyy-mm-dd hh:mm:ss'
+        if (/^Time/.test(t)) return 'hh:mm:ss'
+        return null
     })
     const isTimestamp = fields.map((f: any) => /^(Timestamp|Time)/.test(String(f.type)))
     const rows = table.toArray().map((row: any) => {
@@ -100,7 +107,7 @@ function _arrowTableToUniverRows(table: any): { rows: any[]; cellTypes: number[]
         })
         return result
     })
-    return { rows, cellTypes }
+    return { rows, cellTypes, columnFormats }
 }
 
 export const createExecutionSlice = (set: any, get: any) => ({
@@ -1300,6 +1307,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
         cell._univerReady = false
         cell._univerRows = null
         cell._univerCellTypes = null
+        cell._univerColumnFormats = null
         cell._univerSnapshotPending = null
 
         // ── Collecter les données ──────────────────────────────────────────────
@@ -1313,9 +1321,10 @@ export const createExecutionSlice = (set: any, get: any) => ({
                 const finalSql = get().parseQueryWithParameters(sql, { _name: cell.name || '' })
                 try {
                     const arrowTable = await DuckDBManager.executeQueryArrow(finalSql)
-                    const { rows, cellTypes } = _arrowTableToUniverRows(arrowTable)
+                    const { rows, cellTypes, columnFormats } = _arrowTableToUniverRows(arrowTable)
                     cell._univerRows = rows
                     cell._univerCellTypes = cellTypes
+                    cell._univerColumnFormats = columnFormats
                 } catch (_) {
                     // Fallback ducklings ou erreur Arrow
                     const { rows } = await DuckDBManager.executeQueryWithSchema(finalSql)
