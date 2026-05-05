@@ -351,18 +351,38 @@ class UniverSheetElement extends LitElement {
         univerAPI.createWorkbook(workbookData)
 
         // Locale pour le formatage des nombres (séparateurs décimaux, format des dates…)
-        // localeStr est au format 'fr-FR', setNumfmtLocal attend 'fr_FR'
         univerAPI.getActiveWorkbook()?.setNumfmtLocal?.(localeStr.replace('-', '_'))
 
-        // Format des colonnes date/timestamp via setNumberFormat (une colonne à la fois)
+        // Format des colonnes date/timestamp via setNumberFormat — formats localisés
         if (params.rowColumnFormats?.length && params.rows?.length) {
+            const LOCALE_DATE_FMTS: Record<string, { date: string; datetime: string; time: string }> = {
+                'fr-FR': { date: 'dd/MM/yyyy',   datetime: 'dd/MM/yyyy HH:mm:ss', time: 'HH:mm:ss' },
+                'en-US': { date: 'MM/dd/yyyy',   datetime: 'MM/dd/yyyy HH:mm:ss', time: 'hh:mm:ss' },
+                'de-DE': { date: 'dd.MM.yyyy',   datetime: 'dd.MM.yyyy HH:mm:ss', time: 'HH:mm:ss' },
+                'zh-CN': { date: 'yyyy/MM/dd',   datetime: 'yyyy/MM/dd HH:mm:ss', time: 'HH:mm:ss' },
+                'zh-TW': { date: 'yyyy/MM/dd',   datetime: 'yyyy/MM/dd HH:mm:ss', time: 'HH:mm:ss' },
+                'ru-RU': { date: 'dd.MM.yyyy',   datetime: 'dd.MM.yyyy HH:mm:ss', time: 'HH:mm:ss' },
+                'ja-JP': { date: 'yyyy/MM/dd',   datetime: 'yyyy/MM/dd HH:mm:ss', time: 'HH:mm:ss' },
+                'es-ES': { date: 'dd/MM/yyyy',   datetime: 'dd/MM/yyyy HH:mm:ss', time: 'HH:mm:ss' },
+                'ca-ES': { date: 'dd/MM/yyyy',   datetime: 'dd/MM/yyyy HH:mm:ss', time: 'HH:mm:ss' },
+                'sk-SK': { date: 'dd.MM.yyyy',   datetime: 'dd.MM.yyyy HH:mm:ss', time: 'HH:mm:ss' },
+                'fa-IR': { date: 'yyyy/MM/dd',   datetime: 'yyyy/MM/dd HH:mm:ss', time: 'HH:mm:ss' },
+            }
+            const localeFmts = LOCALE_DATE_FMTS[localeStr] ?? { date: 'yyyy-MM-dd', datetime: 'yyyy-MM-dd HH:mm:ss', time: 'HH:mm:ss' }
+            const resolveFormat = (canonical: string): string => {
+                if (canonical === 'yyyy-MM-dd')         return localeFmts.date
+                if (canonical === 'yyyy-MM-dd HH:mm:ss') return localeFmts.datetime
+                if (canonical === 'HH:mm:ss')           return localeFmts.time
+                return canonical
+            }
             try {
                 const fws = univerAPI.getActiveWorkbook()?.getActiveSheet()
                 if (fws) {
                     params.rowColumnFormats.forEach((fmt: string | null, ci: number) => {
                         if (fmt) {
-                            console.debug('[UniverSheet] setNumberFormat col', ci, fmt)
-                            fws.getRange(1, ci, params.rows!.length, 1).setNumberFormat(fmt)
+                            const localFmt = resolveFormat(fmt)
+                            console.debug('[UniverSheet] setNumberFormat col', ci, localFmt)
+                            fws.getRange(1, ci, params.rows!.length, 1).setNumberFormat(localFmt)
                         }
                     })
                 }
