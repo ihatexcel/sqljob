@@ -75,7 +75,7 @@ export function parametersMixin() {
                 // Retourne un tableau de {cell, path, cellIndex} pour les types DAG-compatibles
                 findDependentCells(paramName) {
                     const dependents = [];
-                    const dagTypes = ['uiParameter', 'sql', 'table', 'perspective', 'sqlStat'];
+                    const dagTypes = ['uiParameter', 'sql', 'table', 'perspective', 'sqlStat', 'univerSheet', 'source', 'markdown', 'iframe'];
 
                     const searchInGroup = (group, path) => {
                         for (let cellIndex = 0; cellIndex < (group.cells || []).length; cellIndex++) {
@@ -272,8 +272,9 @@ export function parametersMixin() {
                         const dep = dependentCells[i];
                         const depCell = dep.cell;
 
-                        // Pour les uiParameter avec preserveUserValue et _userModified, ne pas re-exécuter
-                        if (depCell.type === 'uiParameter' && depCell.preserveUserValue && depCell._userModified) {
+                        // uiParameter: ne skip que si l'utilisateur a saisi manuellement (_userModified)
+                        // autres types: skip toujours si preserveUserValue est vrai
+                        if (depCell.preserveUserValue && (depCell.type !== 'uiParameter' || depCell._userModified)) {
                             continue;
                         }
 

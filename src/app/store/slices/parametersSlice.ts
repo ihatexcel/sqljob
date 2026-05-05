@@ -58,7 +58,7 @@ export const createParametersSlice = (set: any, get: any) => ({
     findDependentCells(paramName: string) {
         const groups = get().getGroups()
         const dependents: any[] = []
-        const dagTypes = ['uiParameter', 'sql', 'table', 'perspective', 'sqlStat']
+        const dagTypes = ['uiParameter', 'sql', 'table', 'perspective', 'sqlStat', 'univerSheet', 'source', 'markdown', 'iframe']
         const searchInGroup = (group: any, path: number[]) => {
             for (let cellIndex = 0; cellIndex < (group.cells || []).length; cellIndex++) {
                 const cell = group.cells[cellIndex]
@@ -179,7 +179,9 @@ export const createParametersSlice = (set: any, get: any) => ({
         }
         for (const dep of dependentCells) {
             const depCell = dep.cell
-            if (depCell.type === 'uiParameter' && depCell.preserveUserValue && depCell._userModified) continue
+            // uiParameter: ne skip que si l'utilisateur a saisi manuellement (_userModified)
+            // autres types: skip toujours si preserveUserValue est vrai
+            if (depCell.preserveUserValue && (depCell.type !== 'uiParameter' || depCell._userModified)) continue
             try {
                 await get().runCellAt(dep.path, dep.cellIndex)
             } catch (error) {

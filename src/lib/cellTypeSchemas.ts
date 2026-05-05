@@ -36,7 +36,7 @@ export const CELL_TYPE_SCHEMAS = {
                     requiresFileBeforeRun: true,
                     exportRuntimeBlob: true,
                     namePattern: /^[a-zA-Z_][a-zA-Z0-9_]*$/,
-                    exportFields: ['name', 'title', 'queries', 'json'],
+                    exportFields: ['name', 'title', 'queries', 'json', 'preserveUserValue'],
                     exportFileSlot: 'source',
                     initProps: { _isDragging: false, _loaded: false },
                     initFileSlot: { slot: 'source', asBlob: true },
@@ -47,7 +47,8 @@ export const CELL_TYPE_SCHEMAS = {
                     titleLabel: "Texte de la zone d'import",
                     titleTooltip: "Texte affiché dans la zone de drag & drop",
                     specificParams: [
-                        { key: 'json.xlsx', label: 'Configuration Excel (JSON)', tooltip: "Options pour la conversion des fichiers .xlsx/.xls", inputType: 'textarea', rows: 5 }
+                        { key: 'json.xlsx', label: 'Configuration Excel (JSON)', tooltip: "Options pour la conversion des fichiers .xlsx/.xls", inputType: 'textarea', rows: 5 },
+                        { key: 'preserveUserValue', label: 'Ne pas ré-exécuter lors du rafraîchissement DAG', tooltip: "Si coché, cette cellule ne sera pas relancée automatiquement par le DAG quand un paramètre dont elle dépend change", inputType: 'checkbox', defaultValue: false }
                     ],
                     defaults: {
                         title: 'Glissez-déposez votre fichier ici',
@@ -55,7 +56,8 @@ export const CELL_TYPE_SCHEMAS = {
                             { name: 'main', sql: "CREATE OR REPLACE TABLE {name} AS SELECT * FROM '{{_fileName}}'", engine: 'sql', showQueryEditor: false },
                             { name: 'fallback', sql: "CREATE OR REPLACE TABLE {name} AS SELECT * FROM query( CASE WHEN lower('{{_fileName}}') LIKE '%.csv' OR lower('{{_fileName}}') LIKE '%.csv.gz' THEN 'SELECT * FROM read_csv(''' || '{{_fileName}}' || ''', HEADER = true, AUTO_DETECT = true, SAMPLE_SIZE = -1, IGNORE_ERRORS = true, store_rejects = true)' WHEN lower('{{_fileName}}') LIKE '%.xlsx' THEN 'SELECT * FROM read_xlsx(''' || '{{_fileName}}' || ''', HEADER = true, STOP_AT_EMPTY = false, EMPTY_AS_VARCHAR = true, IGNORE_ERRORS = true)' WHEN lower('{{_fileName}}') LIKE '%.tsv' OR lower('{{_fileName}}') LIKE '%.tsv.gz' OR lower('{{_fileName}}') LIKE '%.txt' OR lower('{{_fileName}}') LIKE '%.txt.gz' THEN 'SELECT * FROM read_csv(''' || '{{_fileName}}' || ''', HEADER = true, DELIM = ''\t'', AUTO_DETECT = true, SAMPLE_SIZE = -1, IGNORE_ERRORS = true, store_rejects = true)' WHEN lower('{{_fileName}}') LIKE '%.parquet' OR lower('{{_fileName}}') LIKE '%.parquet.gz' THEN 'SELECT * FROM read_parquet(''' || '{{_fileName}}' || ''')' ELSE 'SELECT 1' END );", engine: 'sql', showQueryEditor: false }
                         ],
-                        json: { xlsx: { options: { type: 'array', raw: false, dateNF: 'dd/mm/yyyy', cellDates: true }, toCsvOptions: { dateNF: 'dd/mm/yyyy', FS: ',', RS: '\n' }, sheetSelection: { type: { auto: true }, index: 0, name: '' } } }
+                        json: { xlsx: { options: { type: 'array', raw: false, dateNF: 'dd/mm/yyyy', cellDates: true }, toCsvOptions: { dateNF: 'dd/mm/yyyy', FS: ',', RS: '\n' }, sheetSelection: { type: { auto: true }, index: 0, name: '' } } },
+                        preserveUserValue: false
                     },
                     bodyFamily: 'fileDropZone',
                     bodyConfig: { fileSlot: 'source', fileKey: '_fileName', fileBase64Key: 'fileBase64', fileFileNameKey: 'fileName', accept: '.csv,.parquet,.xlsx,.xls', inputId: 'fileInput_', emptyIcon: 'material-symbols-light:create-new-folder', emptyTitleKey: 'title', emptySubtitle: "→ {name}", handlers: { drop: 'handleSingleSourceDrop', select: 'handleSingleSourceFileSelect', remove: 'removeSingleSourceFile', download: 'downloadSourceFile' }, minHeight: '80px', showQueryInDevMode: true },
@@ -78,16 +80,17 @@ export const CELL_TYPE_SCHEMAS = {
                     defaultNamePrefix: 'sql',
                     showNameInHeader: true,
                     hideInViewMode: true,
-                    exportFields: ['queries', 'materialized'],
+                    exportFields: ['queries', 'materialized', 'preserveUserValue'],
                     initProps: {},
                     commonParams: ['name', 'queries'],
                     queryCount: 1,
                     queryNames: ['main'],
                     specificParams: [
                         { key: 'queries.main.showQueryResult', label: "Afficher le résultat en mode client", tooltip: "Si décoché, le datatable et la visualisation ne seront pas affichés en mode client.", inputType: 'checkbox', defaultValue: true },
-                        { key: 'queries.main.showQueryEditor', label: "Afficher l'éditeur SQL en mode client", tooltip: "Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur. En mode client, seul le résultat sera affiché.", inputType: 'checkbox' }
+                        { key: 'queries.main.showQueryEditor', label: "Afficher l'éditeur SQL en mode client", tooltip: "Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur. En mode client, seul le résultat sera affiché.", inputType: 'checkbox' },
+                        { key: 'preserveUserValue', label: 'Ne pas ré-exécuter lors du rafraîchissement DAG', tooltip: "Si coché, cette cellule ne sera pas relancée automatiquement par le DAG quand un paramètre dont elle dépend change", inputType: 'checkbox', defaultValue: false }
                     ],
-                    defaults: { queries: [{ name: 'main', sql: 'SELECT 1;', engine: 'sql', showQueryEditor: false, showQueryResult: true }] },
+                    defaults: { queries: [{ name: 'main', sql: 'SELECT 1;', engine: 'sql', showQueryEditor: false, showQueryResult: true }], preserveUserValue: false },
                     bodyFamily: 'sqlWithTable',
                     bodyConfig: { queryKey: 'query', showTextResult: true, showResultInfo: true },
                     bodyDisplay: { showSkeleton: { excludeWhenSqlEditor: true }, resultInfo: { showDevOnly: false } }
@@ -115,7 +118,7 @@ export const CELL_TYPE_SCHEMAS = {
                     defaultNamePrefix: 'sqlStat',
                     showNameInHeader: true,
                     showInViewWhenResultOrRunning: true,
-                    exportFields: ['name', 'queries', 'title', 'subtitle', 'icon'],
+                    exportFields: ['name', 'queries', 'title', 'subtitle', 'icon', 'preserveUserValue'],
                     initProps: {},
                     commonParams: ['name', 'title', 'subtitle', 'icon', 'queries'],
                     queryCount: 1,
@@ -124,9 +127,10 @@ export const CELL_TYPE_SCHEMAS = {
                     titleLabel: 'Titre de la stat',
                     titleTooltip: "Titre affiché au-dessus de la valeur statistique",
                     specificParams: [
-                        { key: 'queries.main.showQueryEditor', label: "Afficher l'éditeur SQL en mode client", tooltip: "Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur. En mode client, seul le résultat sera affiché.", inputType: 'checkbox' }
+                        { key: 'queries.main.showQueryEditor', label: "Afficher l'éditeur SQL en mode client", tooltip: "Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur. En mode client, seul le résultat sera affiché.", inputType: 'checkbox' },
+                        { key: 'preserveUserValue', label: 'Ne pas ré-exécuter lors du rafraîchissement DAG', tooltip: "Si coché, cette cellule ne sera pas relancée automatiquement par le DAG quand un paramètre dont elle dépend change", inputType: 'checkbox', defaultValue: false }
                     ],
-                    defaults: { title: 'Total Lignes', subtitle: '', icon: 'material-symbols-light:join-right', queries: [{ name: 'main', sql: 'SELECT COUNT(*) FROM source1', engine: 'sql', showQueryEditor: false }] },
+                    defaults: { title: 'Total Lignes', subtitle: '', icon: 'material-symbols-light:join-right', queries: [{ name: 'main', sql: 'SELECT COUNT(*) FROM source1', engine: 'sql', showQueryEditor: false }], preserveUserValue: false },
                     bodyFamily: 'sqlStat',
                     bodyConfig: { defaultIcon: 'mdi:information-outline', showResultInfoDevOnly: true },
                     bodyDisplay: { showSkeleton: { excludeWhenSqlEditor: true }, resultInfo: { showDevOnly: true } }
@@ -244,7 +248,7 @@ export const CELL_TYPE_SCHEMAS = {
                 univerSheet: {
                     executeHandler: 'executeUniverSheetCell',
                     defaultNamePrefix: 'sheet',
-                    exportFields: ['queries', 'snapshot', 'readOnly', 'title', 'json'],
+                    exportFields: ['queries', 'snapshot', 'readOnly', 'title', 'json', 'preserveUserValue'],
                     exportJsonMode: 'object',
                     initProps: {
                         _univerReady: false,
@@ -261,13 +265,15 @@ export const CELL_TYPE_SCHEMAS = {
                         { key: 'queries.main.showQueryEditor', label: "Afficher l'éditeur SQL en mode client", inputType: 'checkbox' },
                         { key: 'readOnly', label: 'Lecture seule en mode client', tooltip: 'Toujours éditable en mode développeur', inputType: 'checkbox' },
                         { key: 'json.univerConfig', label: 'Interface Univer', inputType: 'univerConfig' },
-                        { key: 'snapshot', label: 'Snapshot Univer (base64 gzip)', tooltip: "Snapshot compressé du classeur — généré automatiquement à l'export si modifié", inputType: 'textarea', rows: 4 }
+                        { key: 'snapshot', label: 'Snapshot Univer (base64 gzip)', tooltip: "Snapshot compressé du classeur — généré automatiquement à l'export si modifié", inputType: 'textarea', rows: 4 },
+                        { key: 'preserveUserValue', label: 'Ne pas ré-exécuter lors du rafraîchissement DAG', tooltip: "Si coché, cette cellule ne sera pas relancée automatiquement par le DAG quand un paramètre dont elle dépend change", inputType: 'checkbox', defaultValue: false }
                     ],
                     defaults: {
                         queries: [{ name: 'main', sql: '', engine: 'sql', showQueryEditor: false }],
                         readOnly: true,
                         snapshot: '',
-                        json: { univerConfig: {} }
+                        json: { univerConfig: {} },
+                        preserveUserValue: false
                     },
                     bodyFamily: 'univerSheet',
                     bodyConfig: { minHeight: '400px' },
@@ -276,7 +282,7 @@ export const CELL_TYPE_SCHEMAS = {
                 perspective: {
                     executeHandler: 'executePerspectiveCell',
                     defaultNamePrefix: 'perspective',
-                    exportFields: ['queries', 'json'],
+                    exportFields: ['queries', 'json', 'preserveUserValue'],
                     exportJsonMode: 'object',
                     initProps: { _perspectiveReady: false, _perspectiveWorker: null, _perspectiveTable: null, _arrowTable: null },
                     commonParams: ['name', 'queries'],
@@ -286,12 +292,14 @@ export const CELL_TYPE_SCHEMAS = {
                     specificParams: [
                         { key: 'json.perspectiveConfig', label: 'Configuration Perspective (JSON optionnel)', tooltip: "Configuration JSON pour le viewer Perspective (group_by, columns, sort, plugin, theme, etc.)", inputType: 'textarea', rows: 10, placeholder: '{"plugin": "Datagrid", "theme": "Pro Dark", ...}' },
                         { key: 'perspectiveCdns', label: 'CDN Perspective.js à charger', tooltip: "Sélectionnez les modules CDN nécessaires", inputType: 'perspectiveCdns' },
-                        { key: 'queries.main.showQueryEditor', label: "Afficher l'éditeur SQL en mode client", tooltip: "Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur.", inputType: 'checkbox' }
+                        { key: 'queries.main.showQueryEditor', label: "Afficher l'éditeur SQL en mode client", tooltip: "Si décoché, l'éditeur SQL ne sera visible qu'en mode développeur.", inputType: 'checkbox' },
+                        { key: 'preserveUserValue', label: 'Ne pas ré-exécuter lors du rafraîchissement DAG', tooltip: "Si coché, cette cellule ne sera pas relancée automatiquement par le DAG quand un paramètre dont elle dépend change", inputType: 'checkbox', defaultValue: false }
                     ],
                     defaults: {
                         queries: [{ name: 'main', sql: 'SELECT * FROM source1', engine: 'sql', showQueryEditor: false }],
                         json: { perspectiveConfig: '' },
-                        perspectiveCdns: { viewer: true, datagrid: true, d3fc: true, openlayers: false }
+                        perspectiveCdns: { viewer: true, datagrid: true, d3fc: true, openlayers: false },
+                        preserveUserValue: false
                     },
                     bodyFamily: 'sqlWithPerspective',
                     bodyConfig: { theme: 'Pro Light', minHeight: '400px' },
