@@ -350,19 +350,22 @@ class UniverSheetElement extends LitElement {
 
         univerAPI.createWorkbook(workbookData)
 
-        // Appliquer les formats de date/timestamp via FRange.setNumberFormat
-        if (params.rowColumnFormats && params.rows?.length) {
-            try {
-                const fws = univerAPI.getActiveWorkbook()?.getActiveSheet()
-                if (fws) {
-                    params.rowColumnFormats.forEach((fmt: string | null, ci: number) => {
-                        if (fmt) {
-                            console.debug('[UniverSheet] setNumberFormat col', ci, fmt)
-                            fws.getRange(1, ci, params.rows!.length, 1).setNumberFormat(fmt)
-                        }
-                    })
-                }
-            } catch (e) { console.warn('[UniverSheet] setNumberFormat failed:', e) }
+        // Appliquer les formats de date/timestamp via FRange.setNumberFormats (2D array, un seul appel)
+        if (params.rowColumnFormats?.length && params.rows?.length) {
+            const hasFormats = params.rowColumnFormats.some((f: string | null) => f)
+            if (hasFormats) {
+                try {
+                    const fws = univerAPI.getActiveWorkbook()?.getActiveSheet()
+                    if (fws) {
+                        const numCols = params.rowColumnFormats.length
+                        const formats = Array.from({ length: params.rows.length }, () =>
+                            (params.rowColumnFormats as (string | null)[]).map(f => f ?? '')
+                        )
+                        console.debug('[UniverSheet] setNumberFormats row0:', formats[0])
+                        fws.getRange(1, 0, params.rows.length, numCols).setNumberFormats(formats)
+                    }
+                } catch (e) { console.warn('[UniverSheet] setNumberFormats failed:', e) }
+            }
         }
 
         // Appliquer les dimensions via l'API facade

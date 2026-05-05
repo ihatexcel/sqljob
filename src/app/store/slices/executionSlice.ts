@@ -80,9 +80,9 @@ function _arrowTableToUniverRows(table: any): { rows: any[]; cellTypes: number[]
     })
     const columnFormats: (string | null)[] = fields.map((f: any) => {
         const t = String(f.type)
-        if (/^Date/.test(t)) return 'yyyy-mm-dd'
-        if (/^Timestamp/.test(t)) return 'yyyy-mm-dd hh:mm:ss'
-        if (/^Time/.test(t)) return 'hh:mm:ss'
+        if (/^Date/.test(t)) return 'yyyy-MM-dd'
+        if (/^Timestamp/.test(t)) return 'yyyy-MM-dd HH:mm:ss'
+        if (/^Time/.test(t)) return 'HH:mm:ss'
         return null
     })
     const isDate = fields.map((f: any) => /^Date/.test(String(f.type)))
