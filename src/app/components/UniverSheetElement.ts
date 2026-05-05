@@ -20,6 +20,7 @@ function _buildWorkbookFromRows(rows: any[], cellId: string, evalFormulas = fals
         return { id: 'wb-' + cellId, name: 'Sheet', sheets: { [sheetId]: { id: sheetId, name: 'Feuille1', cellData } } }
     }
     const columns = Object.keys(rows[0])
+    console.debug('[UniverSheet] _buildWorkbookFromRows:', { rows: rows.length, columns, cellTypes, columnFormats })
     // En-têtes : STRING (t=1)
     cellData[0] = {}
     columns.forEach((col, ci) => { cellData[0][ci] = { v: col, t: 1 } })
@@ -48,6 +49,7 @@ function _buildWorkbookFromRows(rows: any[], cellId: string, evalFormulas = fals
     }
     const sheetDef: any = { id: sheetId, name: 'Feuille1', cellData }
     if (Object.keys(columnData).length > 0) sheetDef.columnData = columnData
+    console.debug('[UniverSheet] columnData:', columnData, '| cellData[1] sample:', cellData[1])
     return {
         id: 'wb-' + cellId,
         name: 'Sheet',
