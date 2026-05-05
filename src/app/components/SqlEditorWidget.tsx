@@ -50,8 +50,16 @@ export function SqlEditorWidget({
     const iconName = isJs ? 'bolt' : isText ? 'article' : 'storage'
 
     // tableSchemas depuis db.schemaTrees pour l'autocomplétion Monaco DuckDB
-    // Sanitize : columns peut être undefined sur certaines entrées → crash forEach dans le provider
-    const tableSchemas = (db?.schemaTrees ?? []).map((t: any) => ({ ...t, columns: t?.columns ?? [] }))
+    // Sanitize : noms undefined → crash toLowerCase() dans le Monarch tokenizer de Monaco
+    const tableSchemas = (db?.schemaTrees ?? [])
+        .filter((t: any) => t?.name != null)
+        .map((t: any) => ({
+            ...t,
+            name: String(t.name),
+            columns: (t?.columns ?? [])
+                .filter((c: any) => c?.name != null)
+                .map((c: any) => ({ ...c, name: String(c.name), type: String(c.type ?? '') })),
+        }))
 
     // Appliquer la requête source par défaut si vide (cellule source)
     useEffect(() => {
