@@ -6,9 +6,8 @@
  * forceUpdate() déclenche un re-render React après des mutations profondes.
  * createRoomShellSlice ajoute le système de layout mosaic (RoomShell).
  */
-import { create } from 'zustand'
 import { setAutoFreeze } from 'immer'
-import { createRoomShellSlice } from '@sqlrooms/room-shell'
+import { createRoomShellSlice, createRoomStore, persistSliceConfigs, LayoutConfig } from '@sqlrooms/room-shell'
 import { createBaseDuckDbConnector } from '@sqlrooms/duckdb-core'
 import { createSqlEditorSlice, createDefaultSqlEditorConfig } from '@sqlrooms/sql-editor'
 import { createCellsSlice as createSqlroomsCellsSlice, createDefaultCellRegistry } from '@sqlrooms/cells'
@@ -271,9 +270,15 @@ const duckdbManagerConnector = createBaseDuckDbConnector(
 )
 
 // ─── Store Zustand ────────────────────────────────────────────────────────────
-export const useNotebookStore = create<any>((set, get, api) => {
+export const { roomStore, useRoomStore: useNotebookStore } = createRoomStore<any>(
+  persistSliceConfigs(
+    {
+      name: 'sqljob-layout-state-v1',
+      sliceConfigSchemas: { layout: LayoutConfig },
+    },
+    (set, get, store) => {
     // === Slice SqlEditor ===
-    const sqlEditorState = createSqlEditorSlice({ config: createDefaultSqlEditorConfig() })(set, get, api)
+    const sqlEditorState = createSqlEditorSlice({ config: createDefaultSqlEditorConfig() })(set, get, store)
 
     // === Slice RoomShell : layout mosaic + panels ===
     const roomShellState = createRoomShellSlice({
@@ -299,12 +304,12 @@ export const useNotebookStore = create<any>((set, get, api) => {
                 },
             },
         },
-    })(set, get, api)
+    })(set, get, store)
 
     // === Slices sqlrooms notebook (requis par SheetsTabBar + Notebook de @sqlrooms/cells / @sqlrooms/notebook) ===
-    const sqlroomsCellsState = createSqlroomsCellsSlice({ cellRegistry: createDefaultCellRegistry() })(set, get, api)
-    const notebookState = createNotebookSlice()(set, get, api)
-    const canvasState = createCanvasSlice()(set, get, api)
+    const sqlroomsCellsState = createSqlroomsCellsSlice({ cellRegistry: createDefaultCellRegistry() })(set, get, store)
+    const notebookState = createNotebookSlice()(set, get, store)
+    const canvasState = createCanvasSlice()(set, get, store)
 
     const initialState = buildInitialState()
 
@@ -440,4 +445,5 @@ export const useNotebookStore = create<any>((set, get, api) => {
             return ap?.linkGroups || []
         },
     }
-})
+  })
+)

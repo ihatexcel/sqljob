@@ -2,16 +2,18 @@
 /**
  * Room — Composant racine utilisant RoomShell de @sqlrooms/room-shell.
  *
- * - RoomShell.Sidebar : boutons de navigation (SQL Editor, Theme, DB Engine, DevMode)
+ * - RoomShell.Sidebar : sidebar avec boutons auto-générés (SidebarButtons) + boutons custom
  * - RoomShell.LayoutComposer : mosaic layout (NotebookPanel + DataSourcesPanel)
+ * - RoomShell.LoadingProgress : barre de progression DuckDB
+ * - RoomShell.CommandPalette : palette de commandes (Ctrl+K)
  * - Modals globaux (portals → document.body, indépendants du layout)
  */
 import { RoomShell } from '@sqlrooms/room-shell'
-import { useDisclosure, useTheme } from '@sqlrooms/ui'
+import { useDisclosure, ThemeSwitch } from '@sqlrooms/ui'
 import { useShallow } from 'zustand/react/shallow'
-import { useNotebookStore } from './store/notebookStore'
+import { roomStore, useNotebookStore } from './store/notebookStore'
 import { SqlEditorModal } from '@sqlrooms/sql-editor'
-import { BookHeartIcon, MessageSquareCodeIcon, MoonIcon, PaintbrushIcon, Settings2Icon, SunIcon, TerminalIcon } from 'lucide-react'
+import { BookHeartIcon, MessageSquareCodeIcon, PaintbrushIcon, Settings2Icon, TerminalIcon } from 'lucide-react'
 import { ThemeCustomModal } from './components/modals/ThemeCustomModal'
 import { ErudaModal } from './components/modals/ErudaModal'
 import { ConfirmModal } from './components/modals/ConfirmModal'
@@ -33,7 +35,6 @@ function SidebarControls() {
         dbEngine: s.dbEngine,
         showLayout: s.showLayout,
     })))
-    const { theme, setTheme } = useTheme()
     const set = useNotebookStore.setState
     const sqlEditorDisclosure = useDisclosure()
     const themeModalDisclosure = useDisclosure()
@@ -43,6 +44,9 @@ function SidebarControls() {
 
     return (
         <>
+            {/* Boutons auto-générés pour les panneaux layout (ex: Sources) */}
+            <RoomShell.SidebarButtons />
+
             {devMode && (
                 <>
                     {/* SQL Editor */}
@@ -66,6 +70,7 @@ function SidebarControls() {
                     <RoomShell.SidebarButton
                         title={`Moteur : ${dbEngine === 'ducklings' ? 'Ducklings 🐤' : 'DuckDB WASM 🦆'}`}
                         onClick={() => set({ showDbEngineModal: true })}
+                        isSelected={false}
                         icon={DbEngineIcon}
                     />
 
@@ -80,21 +85,15 @@ function SidebarControls() {
                 </>
             )}
 
-            {/* Toujours visibles — ancrés en bas via spacer */}
+            {/* Ancrés en bas via spacer */}
             <div className="flex-1" />
 
             {/* Documentation (gist) */}
             <RoomShell.SidebarButton
                 title="Documentation"
                 onClick={() => window.open('https://ihatexcel.github.io/sqljob/?gist=68cd597ba5da05ceba24fb975c05384f', '_blank')}
+                isSelected={false}
                 icon={BookHeartIcon}
-            />
-
-            {/* Theme toggle */}
-            <RoomShell.SidebarButton
-                title={theme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}
-                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                icon={theme === 'dark' ? SunIcon : MoonIcon}
             />
 
             {/* DevMode toggle */}
@@ -104,6 +103,9 @@ function SidebarControls() {
                 isSelected={devMode}
                 icon={Settings2Icon}
             />
+
+            {/* Bascule thème clair/sombre via ThemeSwitch sqlrooms */}
+            <ThemeSwitch />
 
             <SqlEditorModal
                 isOpen={sqlEditorDisclosure.isOpen}
@@ -118,11 +120,13 @@ export function Room() {
 
     return (
         <>
-            <RoomShell roomStore={useNotebookStore} className="h-screen w-screen">
+            <RoomShell roomStore={roomStore} className="h-screen w-screen">
                 <RoomShell.Sidebar className={showLayout ? '' : 'hidden'}>
                     <SidebarControls />
                 </RoomShell.Sidebar>
                 <RoomShell.LayoutComposer tileClassName="p-0" />
+                <RoomShell.LoadingProgress />
+                <RoomShell.CommandPalette />
             </RoomShell>
 
             {/* Modals globaux — portals vers document.body, indépendants du layout */}

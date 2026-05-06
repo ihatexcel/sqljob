@@ -31,17 +31,22 @@
 ## Stack technique
 
 ### Framework UI — sqlrooms
-- **`@sqlrooms/room-shell`** : layout mosaic (panneaux redimensionnables), sidebar avec boutons toggle par panneau, `RoomShell` / `RoomPanel` / `RoomShell.Sidebar` / `RoomShell.LayoutComposer`.
-- **`@sqlrooms/ui`** : composants Shadcn/Radix (Button, Input, Tooltip, useToast…).
+- **`@sqlrooms/room-shell`** : layout mosaic (panneaux redimensionnables), sidebar, `RoomShell` / `RoomPanel` / `RoomShell.Sidebar` / `RoomShell.SidebarButtons` / `RoomShell.LayoutComposer` / `RoomShell.LoadingProgress` / `RoomShell.CommandPalette`.
+- **`@sqlrooms/ui`** : composants Shadcn/Radix (Button, Input, Tooltip, useToast, ThemeSwitch…).
 - **`@sqlrooms/dropzone`** : `FileDropzone` — drag & drop de fichiers.
 - **`@sqlrooms/sql-editor`** : éditeur SQL CodeMirror.
 - **`@sqlrooms/utils`** : utilitaires (`convertToValidColumnOrTableName`…).
 - Version fixée : `0.29.0-rc.1`.
+- ⚠️ **Mise à jour rc.2 bloquée** (mai 2026) : `@sqlrooms/codemirror@0.29.0-rc.2` et `@sqlrooms/pivot@0.29.0-rc.2` ont été publiés avec des références `workspace:*` non résolues, rendant toute la chaîne de dépendances inutilisable hors monorepo. Attendre rc.3 pour l'upgrade.
+- **APIs rc.1 disponibles mais pas encore utilisées** : `createRoomStore`, `createPersistHelpers`, `persistSliceConfigs`, `RoomShell.SidebarButtons`, `RoomShell.LoadingProgress`, `RoomShell.CommandPalette`, `ThemeSwitch`.
 
 ### State management — Zustand
 - Store principal : `src/app/store/notebookStore.ts`
-- Le store fusionne via un proxy `this → get/set` les 9 mixins Alpine migrés : `pagesMixin`, `helpersMixin`, `groupsMixin`, `cellsMixin`, `filesMixin`, `executionMixin`, `parametersMixin`, `editorsMixin`, `exportImportMixin`.
+- Store créé via `createRoomStore<NotebookState>()` de `@sqlrooms/room-shell` — retourne `{ roomStore, useNotebookStore }`.
+- `roomStore` est le store brut passé à `<RoomShell roomStore={roomStore}>` ; `useNotebookStore` est le hook React.
+- Le store fusionne les slices sqlrooms (roomShell, sqlEditor, cells, notebook, canvas) et les 9 slices Zustand purs (pages, helpers, parameters, export, groups, cells, files, execution, copyPaste).
 - La slice RoomShell (`createRoomShellSlice`) gère le layout mosaic et l'état des panneaux.
+- Le layout est persisté via `persistSliceConfigs` (clé localStorage `sqljob-layout-state-v1`).
 
 ### DuckDB
 - **Instance unique** : `src/lib/DuckDBManager.ts` — singleton statique partagé par toutes les cells et le dropzone.
