@@ -2,7 +2,7 @@
 /**
  * Room — Composant racine utilisant RoomShell de @sqlrooms/room-shell.
  *
- * - RoomShell.Sidebar : sidebar avec boutons auto-générés (SidebarButtons) + boutons custom
+ * - RoomShell.Sidebar : sidebar (boutons panels auto-inclus) + boutons custom
  * - RoomShell.LayoutComposer : mosaic layout (NotebookPanel + DataSourcesPanel)
  * - RoomShell.LoadingProgress : barre de progression DuckDB
  * - RoomShell.CommandPalette : palette de commandes (Ctrl+K)
@@ -44,9 +44,6 @@ function SidebarControls() {
 
     return (
         <>
-            {/* Boutons auto-générés pour les panneaux layout (ex: Sources) */}
-            <RoomShell.SidebarButtons />
-
             {devMode && (
                 <>
                     {/* SQL Editor */}
