@@ -180,7 +180,7 @@ export class CDNManager {
 
                 this.perspectiveLoadingPromise = (async () => {
                     // Charger le CSS themes
-                    const themeCssUrl = 'https://cdn.jsdelivr.net/npm/@perspective-dev/viewer/dist/css/themes.css';
+                    const themeCssUrl = 'https://cdn.jsdelivr.net/npm/@perspective-dev/viewer@4.1.0/dist/css/themes.css';
                     if (!document.querySelector(`link[href="${themeCssUrl}"]`)) {
                         const link = document.createElement('link');
                         link.rel = 'stylesheet';
