@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Stores Zustand pour les modals globaux (remplace alpineStores.ts)
  */

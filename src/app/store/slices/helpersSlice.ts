@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * helpersSlice — utilitaires, initialisation, gestion moteur DB, statuts.
  * Converti de helpersMixin.ts (Alpine this-proxy) vers un slice Zustand pur.

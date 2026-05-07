@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * parametersSlice — gestion des paramètres UI et du DAG (Directed Acyclic Graph).
  * Converti de parametersMixin.ts (Alpine this-proxy) vers un slice Zustand pur.

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useShallow } from 'zustand/react/shallow'
 import { useNotebookStore } from '../../store/notebookStore'
 import { ConfigManager } from '../../../lib/ConfigManager'

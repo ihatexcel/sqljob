@@ -1,4 +1,3 @@
-// @ts-nocheck
 
 export const createCopyPasteSlice = (set: any, get: any) => ({
 

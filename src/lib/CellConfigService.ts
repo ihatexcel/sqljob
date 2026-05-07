@@ -1,10 +1,9 @@
-// @ts-nocheck
 import { CELL_TYPE_SCHEMAS, CELL_TYPE_HANDLERS } from './cellTypeSchemas'
 import { ConfigManager } from './ConfigManager'
 import { FileHandler } from './FileHandler'
 
         /** Initialisation partagée d'une cellule (initCell + restore). Utilisé par notebookApp et applyImportedConfig. */
-        export function initializeCell(cell, cellIndex, opts = {}) {
+        export function initializeCell(cell: any, cellIndex: any, opts: any = {}) {
             const generateId = opts.generateId || (() => 'cell_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9));
             const newCell = {
                 ...cell,
@@ -76,7 +75,7 @@ import { FileHandler } from './FileHandler'
                 if (type == null) return [];
                 return CELL_TYPE_SCHEMAS.types[type]?.specificParams || [];
             }
-            static ensureCellFromSchema(cell, type, opts = {}) {
+            static ensureCellFromSchema(cell: any, type: any, opts: any = {}) {
                 const schema = CELL_TYPE_SCHEMAS.types[type];
                 if (!schema || !cell) return;
                 const { baseName } = opts;
@@ -118,7 +117,7 @@ import { FileHandler } from './FileHandler'
                     cell.json = JSON.stringify(cell.json, null, 2);
                 }
             }
-            static applyDefaultsOnTypeChange(cell, newType, opts = {}) {
+            static applyDefaultsOnTypeChange(cell: any, newType: any, opts: any = {}) {
                 if (!cell) return;
                 const schema = CELL_TYPE_SCHEMAS.types[newType];
                 if (!schema) return;

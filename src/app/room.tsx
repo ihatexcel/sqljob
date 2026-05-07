@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Room — Composant racine utilisant RoomShell de @sqlrooms/room-shell.
  *
@@ -66,6 +65,7 @@ function SidebarControls() {
                     <RoomShell.SidebarButton
                         title={`Moteur : ${dbEngine === 'ducklings' ? 'Ducklings 🐤' : 'DuckDB WASM 🦆'}`}
                         onClick={() => set({ showDbEngineModal: true })}
+                        isSelected={false}
                         icon={DbEngineIcon}
                     />
 
@@ -87,6 +87,7 @@ function SidebarControls() {
             <RoomShell.SidebarButton
                 title="Documentation"
                 onClick={() => window.open('https://ihatexcel.github.io/sqljob/?gist=68cd597ba5da05ceba24fb975c05384f', '_blank')}
+                isSelected={false}
                 icon={BookHeartIcon}
             />
 
@@ -94,6 +95,7 @@ function SidebarControls() {
             <RoomShell.SidebarButton
                 title={theme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}
                 onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                isSelected={false}
                 icon={theme === 'dark' ? SunIcon : MoonIcon}
             />
 

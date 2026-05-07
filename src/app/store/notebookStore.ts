@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Store Zustand principal — remplace notebookApp.ts + tous les mixins Alpine.
  *

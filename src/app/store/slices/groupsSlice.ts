@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { ConfigManager } from '../../../lib/ConfigManager'
 import { useConfirmModal } from '../uiStores'
 

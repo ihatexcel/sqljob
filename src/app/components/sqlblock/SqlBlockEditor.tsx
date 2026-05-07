@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * SqlBlockEditor — Éditeur visuel pour les cellules de type sqlBlock.
  *
@@ -1021,7 +1020,7 @@ function FilterGroupUI({ group, onUpdate, onRemove, onMoveUp, onMoveDown, availa
     onMoveDown?: () => void
     availableCols: string[]
     depth?: number
-    fetchDistinctValues?: (col: string, limit: number) => Promise<{ values: string[]; hasMore: boolean }>
+    fetchDistinctValues?: (col: string, selectLimit: number, fromLimit?: number) => Promise<{ values: string[]; hasMore: boolean }>
 }) {
     const g = normalizeFilterGroup(group)
     const items = g.items ?? []
@@ -1075,7 +1074,7 @@ function FilterGroupUI({ group, onUpdate, onRemove, onMoveUp, onMoveDown, availa
                         <FilterConditionRow
                             cond={item.cond}
                             availableCols={availableCols}
-                            onChange={patch => setItems(items.map((it, idx) => idx === i ? { kind: 'cond', cond: { ...it.cond, ...patch } } : it))}
+                            onChange={patch => setItems(items.map((it, idx) => idx === i ? { kind: 'cond', cond: { ...(it as any).cond, ...patch } } : it))}
                             onRemove={() => setItems(items.filter((_, idx) => idx !== i))}
                             onMoveUp={i > 0 ? () => setItems(moveArr(items, i, -1)) : undefined}
                             onMoveDown={i < items.length - 1 ? () => setItems(moveArr(items, i, 1)) : undefined}
@@ -1109,7 +1108,7 @@ function FilterGroupUI({ group, onUpdate, onRemove, onMoveUp, onMoveDown, availa
     )
 }
 
-function FilterRowsStepUI({ step, availableCols, onChange, fetchDistinctValues }: { step: FilterRowsStep; availableCols: string[]; onChange: (s: FilterRowsStep) => void; fetchDistinctValues?: (col: string, limit: number) => Promise<{ values: string[]; hasMore: boolean }> }) {
+function FilterRowsStepUI({ step, availableCols, onChange, fetchDistinctValues }: { step: FilterRowsStep; availableCols: string[]; onChange: (s: FilterRowsStep) => void; fetchDistinctValues?: (col: string, selectLimit: number, fromLimit?: number) => Promise<{ values: string[]; hasMore: boolean }> }) {
     // Normalise rétrocompat : ancien format conditions[] → groups
     const groups: FilterGroup[] = step.groups?.length
         ? step.groups
@@ -1913,7 +1912,7 @@ function StepConfigModal({ step, index, availableCols, availableColTypes, onUpda
     availableCols: string[]; availableColTypes: Record<string, string>
     onUpdate: (idx: number, s: SqlBlockStep) => void
     onClose: () => void
-    fetchDistinctValues?: (col: string, limit: number) => Promise<{ values: string[]; hasMore: boolean }>
+    fetchDistinctValues?: (col: string, selectLimit: number, fromLimit?: number) => Promise<{ values: string[]; hasMore: boolean }>
     otherStepNames: string[]
 }) {
     // Fermeture sur Échap
@@ -2014,7 +2013,7 @@ function StepItem({ step, index, totalSteps, availableCols, availableColTypes,
     configOpen: boolean
     onConfigOpen: () => void
     onConfigClose: () => void
-    fetchDistinctValues?: (col: string, limit: number) => Promise<{ values: string[]; hasMore: boolean }>
+    fetchDistinctValues?: (col: string, selectLimit: number, fromLimit?: number) => Promise<{ values: string[]; hasMore: boolean }>
     otherStepNames: string[]
 }) {
     const [pendingDelete, setPendingDelete] = useState(false)
@@ -2338,7 +2337,7 @@ function AddStepModal({ onAdd, availableCols, availableColTypes, fetchDistinctVa
 
     function handleSelectType(type: string) {
         setSelectedType(type)
-        setDraftStep(defaultStep(type) as SqlBlockStep)
+        setDraftStep(defaultStep(type as any) as SqlBlockStep)
     }
 
     function handleDraftUpdate(_idx: number, s: SqlBlockStep) { setDraftStep(s) }

@@ -1,5 +1,7 @@
-// @ts-nocheck
 import { CDNManager } from './CDNManager'
+
+// XLSX est chargé dynamiquement via CDNManager.loadXlsx() et exposé sur window
+declare const XLSX: any;
 
         export class FileHandler {
             static getMimeTypeFromFileName(fileName) {

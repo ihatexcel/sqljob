@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * ChartConfigEditor — Éditeur de configuration de visualisation graphique.
  * Placé après les étapes SQL dans SqlBlockEditor (mode SELECT uniquement).

@@ -1,4 +1,3 @@
-// @ts-nocheck
 
 /**
  * Évalue une expression JavaScript dans un sandbox restreint.

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { rawTableDataStore as _rawTableDataStore } from '../../../lib/tableDataStore'
 import { ConfigManager } from '../../../lib/ConfigManager'
 import { CellConfigService, initializeCell } from '../../../lib/CellConfigService'

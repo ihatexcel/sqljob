@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Rendu du body d'une cellule selon son type.
  * Remplace les templates Alpine générés par CellBodyRenderer.

@@ -1,4 +1,3 @@
-// @ts-nocheck
 
 export const CELL_TYPE_SCHEMAS = {
             common: {
