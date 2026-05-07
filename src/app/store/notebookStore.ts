@@ -234,6 +234,7 @@ function buildInitialState() {
 
             { type: 'iframe',             label: 'HTML/Iframe',              icon: 'web' },
             { type: 'sqlStat',            label: 'Stat SQL',                 icon: 'monitoring' },
+            { type: 'pivot',              label: 'Pivot',                    icon: 'pivot-table-chart' },
             { type: 'publipostageWord',   label: 'Publipostage Word',        icon: 'description' },
             { type: 'pdfme',              label: 'PDF (pdfme)',               icon: 'picture-as-pdf' },
             { type: 'perspective',        label: 'Perspective Viewer',       icon: 'analytics' },
