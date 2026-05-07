@@ -1193,41 +1193,52 @@ function UniverSheetBody({ cell, path, cellIndex }: any) {
 }
 
 // ─── PivotBody ────────────────────────────────────────────────────────────────
-function PivotBody({ cell, path, cellIndex }: any) {
-    const { devMode, showSqlEditorVisible, _rev } = useNotebookStore(useShallow((s: any) => ({
-        devMode: s.devMode,
-        showSqlEditorVisible: s.showSqlEditorVisible,
-        _rev: s._rev,
+function PivotBody({ cell }: any) {
+    const { _duckdbTables, forceUpdate } = useNotebookStore(useShallow((s: any) => ({
+        _duckdbTables: s._duckdbTables,
+        forceUpdate: s.forceUpdate,
     })))
 
+    const availableTables = useMemo(() => Object.keys(_duckdbTables || {}), [_duckdbTables])
+
+    const selectedTable: string = cell.json?.selectedTable || ''
+
     const querySource = useMemo(() => {
-        if (!cell._pivotReady || !cell._pivotTableName || !cell._pivotColumns?.length) return null
-        return { tableRef: `"${cell._pivotTableName}"`, columns: cell._pivotColumns }
-    }, [cell._pivotReady, cell._pivotTableName, cell._pivotColumns, _rev])
+        if (!selectedTable || !_duckdbTables?.[selectedTable]) return undefined
+        const cols = _duckdbTables[selectedTable].columns || []
+        return { tableRef: `"${selectedTable}"`, columns: cols }
+    }, [selectedTable, _duckdbTables])
+
+    const source = useMemo(() =>
+        selectedTable ? { kind: 'table' as const, tableName: selectedTable } : undefined,
+        [selectedTable]
+    )
+
+    const callbacks = useMemo(() => ({
+        setSource: (src: any) => {
+            if (!cell.json) cell.json = {}
+            cell.json.selectedTable = src?.kind === 'table' ? src.tableName : ''
+            forceUpdate()
+        },
+    }), [cell, forceUpdate])
 
     return (
         <div className="flex flex-col h-full">
-            {devMode && showSqlEditorVisible?.(cell) && (
-                <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
-                    placeholder="SELECT region, mois, montant FROM source1" />
-            )}
-            {querySource ? (
-                <div className="flex-1 min-h-0 overflow-auto">
-                    <PivotEditor
-                        key={cell._pivotTableName}
-                        querySource={querySource}
-                        autoRun
-                        className="h-full"
-                    />
+            {availableTables.length === 0 ? (
+                <div className="text-xs text-muted-foreground p-4 text-center">
+                    Aucune table disponible. Chargez d'abord des données.
                 </div>
             ) : (
-                !cell._status && (
-                    <div className="text-xs text-muted-foreground p-4 text-center">
-                        Exécutez la cellule pour charger les données du pivot.
-                    </div>
-                )
+                <PivotEditor
+                    key={selectedTable || '__no_table'}
+                    source={source}
+                    querySource={querySource}
+                    availableTables={availableTables}
+                    callbacks={callbacks}
+                    autoRun
+                    className="h-full"
+                />
             )}
-            <ResultInfo cell={cell} devOnly />
         </div>
     )
 }
