@@ -1218,6 +1218,12 @@ function PivotBody({ cell }: any) {
         setSource: (src: any) => {
             if (!cell.json) cell.json = {}
             cell.json.selectedTable = src?.kind === 'table' ? src.tableName : ''
+            cell.json.pivotConfig = undefined  // reset config when table changes
+            forceUpdate()
+        },
+        setConfig: (config: any) => {
+            if (!cell.json) cell.json = {}
+            cell.json.pivotConfig = config
             forceUpdate()
         },
     }), [cell, forceUpdate])
@@ -1233,6 +1239,7 @@ function PivotBody({ cell }: any) {
                     key={selectedTable || '__no_table'}
                     source={source}
                     querySource={querySource}
+                    config={cell.json?.pivotConfig}
                     availableTables={availableTables}
                     callbacks={callbacks}
                     autoRun
