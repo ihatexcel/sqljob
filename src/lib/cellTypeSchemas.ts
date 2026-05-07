@@ -135,6 +135,26 @@ export const CELL_TYPE_SCHEMAS = {
                     bodyConfig: { defaultIcon: 'mdi:information-outline', showResultInfoDevOnly: true },
                     bodyDisplay: { showSkeleton: { excludeWhenSqlEditor: true }, resultInfo: { showDevOnly: true } }
                 },
+                pivot: {
+                    executeHandler: 'executePivotCell',
+                    defaultNamePrefix: 'pivot',
+                    exportFields: ['queries', 'preserveUserValue'],
+                    initProps: { _pivotReady: false, _pivotTableName: null, _pivotColumns: null },
+                    commonParams: ['name', 'queries'],
+                    queryCount: 1,
+                    queryNames: ['main'],
+                    queryLabels: { main: 'Requête SQL (données source)' },
+                    specificParams: [
+                        { key: 'queries.main.showQueryEditor', label: "Afficher l'éditeur SQL", inputType: 'checkbox' },
+                        { key: 'preserveUserValue', label: 'Ne pas ré-exécuter si déjà calculé', inputType: 'checkbox', defaultValue: false }
+                    ],
+                    defaults: {
+                        queries: [{ name: 'main', sql: 'SELECT * FROM source1', engine: 'sql', showQueryEditor: false }],
+                        preserveUserValue: false,
+                    },
+                    bodyFamily: 'sqlWithPivot',
+                    bodyDisplay: { showSkeleton: { excludeWhenSqlEditor: true } },
+                },
                 uiParameter: {
                     executeHandler: 'executeUiParameterCell',
                     defaultNamePrefix: 'param',

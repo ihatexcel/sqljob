@@ -798,6 +798,41 @@ export const createExecutionSlice = (set: any, get: any) => ({
         }
     },
 
+    async executePivotCell(cell) {
+        const sourceQuery = ConfigManager.getCellQuery(cell, 'main')?.trim()
+        if (!sourceQuery) return
+
+        get().setStatus('Préparation du pivot...', 'loading')
+
+        try {
+            const finalQuery = get().parseQueryWithParameters(sourceQuery, { _name: cell.name || '' })
+            const viewName = `pivot_src_${cell._id.replace(/[^a-zA-Z0-9_]/g, '_')}`
+
+            // Créer une vue DuckDB temporaire avec les données source
+            await DuckDBManager.executeQuery(`CREATE OR REPLACE VIEW "${viewName}" AS (${finalQuery})`)
+
+            // Décrire les colonnes de la vue
+            const describeResults = await DuckDBManager.executeQuery(`DESCRIBE SELECT * FROM "${viewName}" LIMIT 0`)
+            const columns = (describeResults || []).map((row) => ({
+                name: row.column_name || row.Field || String(Object.values(row)[0]),
+                type: row.column_type || row.Type || String(Object.values(row)[1]),
+            }))
+
+            const rowCountResult = await DuckDBManager.executeQuery(`SELECT COUNT(*) AS n FROM "${viewName}"`)
+            const rowCount = rowCountResult?.[0]?.n ?? 0
+
+            cell._pivotTableName = viewName
+            cell._pivotColumns = columns
+            cell._pivotReady = true
+            cell._resultInfo = `✅ ${rowCount} ligne(s) — ${columns.length} colonne(s) disponibles`
+
+            set((s: any) => ({ _rev: s._rev + 1 }))
+            get().setStatus('Pivot prêt', 'success')
+        } catch (error) {
+            throw error
+        }
+    },
+
     async executeUiParameterCell(cell) {
         cell._paramError = null
 

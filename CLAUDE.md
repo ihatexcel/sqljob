@@ -36,9 +36,9 @@
 - **`@sqlrooms/dropzone`** : `FileDropzone` — drag & drop de fichiers.
 - **`@sqlrooms/sql-editor`** : éditeur SQL CodeMirror.
 - **`@sqlrooms/utils`** : utilitaires (`convertToValidColumnOrTableName`…).
-- Version fixée : `0.29.0-rc.1`.
-- ⚠️ **Mise à jour rc.2 bloquée** (mai 2026) : `@sqlrooms/codemirror@0.29.0-rc.2` et `@sqlrooms/pivot@0.29.0-rc.2` ont été publiés avec des références `workspace:*` non résolues, rendant toute la chaîne de dépendances inutilisable hors monorepo. Attendre rc.3 pour l'upgrade.
-- **APIs rc.1 disponibles mais pas encore utilisées** : `createRoomStore`, `createPersistHelpers`, `persistSliceConfigs`, `RoomShell.SidebarButtons`, `RoomShell.LoadingProgress`, `RoomShell.CommandPalette`, `ThemeSwitch`.
+- Version fixée : `0.29.0-rc.1` (sauf `@sqlrooms/pivot@0.29.0-rc.2` — voir ci-dessous).
+- **`@sqlrooms/pivot`** : `0.29.0-rc.2` installé avec npm `overrides` pour contourner les références `workspace:*` non résolues (les dépendances transitives sont forcées sur rc.1). Fournit `PivotEditor` (drag-and-drop, multi-renderer) + `PivotResults` (useSql). L'exécution crée une VIEW DuckDB `pivot_src_<id>` et `PivotResults` calcule les requêtes pivot directement via `useSql` (bridgé sur `DuckDBManager`).
+- ⚠️ **rc.2 (packages hors pivot) toujours bloqué** : `@sqlrooms/codemirror@0.29.0-rc.2` et les autres packages rc.2 restent inutilisables hors monorepo. Seul `@sqlrooms/pivot` a pu être intégré via overrides.
 
 ### State management — Zustand
 - Store principal : `src/app/store/notebookStore.ts`

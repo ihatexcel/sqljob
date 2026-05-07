@@ -19,6 +19,7 @@ import {
 import { DuckDBManager } from '../../lib/DuckDBManager'
 import DataTablePaginated from '@sqlrooms/data-table/dist/DataTablePaginated'
 import { SqlBlockEditor } from './sqlblock/SqlBlockEditor'
+import { PivotEditor } from '@sqlrooms/pivot'
 import './UniverSheetElement'
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
@@ -1191,6 +1192,46 @@ function UniverSheetBody({ cell, path, cellIndex }: any) {
     )
 }
 
+// ─── PivotBody ────────────────────────────────────────────────────────────────
+function PivotBody({ cell, path, cellIndex }: any) {
+    const { devMode, showSqlEditorVisible, _rev } = useNotebookStore(useShallow((s: any) => ({
+        devMode: s.devMode,
+        showSqlEditorVisible: s.showSqlEditorVisible,
+        _rev: s._rev,
+    })))
+
+    const querySource = useMemo(() => {
+        if (!cell._pivotReady || !cell._pivotTableName || !cell._pivotColumns?.length) return null
+        return { tableRef: `"${cell._pivotTableName}"`, columns: cell._pivotColumns }
+    }, [cell._pivotReady, cell._pivotTableName, cell._pivotColumns, _rev])
+
+    return (
+        <div className="flex flex-col h-full">
+            {devMode && showSqlEditorVisible?.(cell) && (
+                <SqlEditorWidget cell={cell} path={path} cellIndex={cellIndex}
+                    placeholder="SELECT region, mois, montant FROM source1" />
+            )}
+            {querySource ? (
+                <div className="flex-1 min-h-0 overflow-auto">
+                    <PivotEditor
+                        key={cell._pivotTableName}
+                        querySource={querySource}
+                        autoRun
+                        className="h-full"
+                    />
+                </div>
+            ) : (
+                !cell._status && (
+                    <div className="text-xs text-muted-foreground p-4 text-center">
+                        Exécutez la cellule pour charger les données du pivot.
+                    </div>
+                )
+            )}
+            <ResultInfo cell={cell} devOnly />
+        </div>
+    )
+}
+
 // ─── CellBody principal ───────────────────────────────────────────────────────
 export function CellBody({ cell, path, cellIndex, group }: { cell: any, path: number[], cellIndex: number, group: any }) {
     const {
@@ -1223,6 +1264,7 @@ export function CellBody({ cell, path, cellIndex, group }: { cell: any, path: nu
 
             case 'iframe': return <IframeBody cell={cell} path={path} cellIndex={cellIndex} />
             case 'sqlStat': return <SqlStatBody cell={cell} path={path} cellIndex={cellIndex} />
+            case 'pivot': return <PivotBody cell={cell} path={path} cellIndex={cellIndex} />
 
             case 'uiParameter': return <UiParameterBody cell={cell} path={path} cellIndex={cellIndex} />
             case 'publipostageWord':
