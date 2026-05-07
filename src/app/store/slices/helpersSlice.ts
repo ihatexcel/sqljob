@@ -110,13 +110,6 @@ export const createHelpersSlice = (set: any, get: any) => ({
             await get().refreshDuckdbTables()
             if (DuckDBManager.currentEngine !== 'ducklings') {
                 try {
-                    await get().room.initialize()
-                } catch (err) {
-                    console.warn('[sqljob] room.initialize() error:', err)
-                }
-            }
-            if (DuckDBManager.currentEngine !== 'ducklings') {
-                try {
                     await get().db.refreshTableSchemas()
                 } catch (err) {
                     console.warn('[sqljob] refreshTableSchemas error:', err)

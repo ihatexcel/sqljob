@@ -259,6 +259,7 @@ const duckdbManagerConnector = createBaseDuckDbConnector(
         },
         executeQueryInternal: async (sql: string) => {
             if (DuckDBManager.currentEngine === 'ducklings') return null
+            if (!DuckDBManager.connInstance) return null
             try {
                 const result = await DuckDBManager.executeQueryArrow(sql)
                 return result
