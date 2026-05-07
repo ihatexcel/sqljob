@@ -1,8 +1,22 @@
 # sqljob
 
-Client-side SQL notebook powered by DuckDB-WASM. Load files, write SQL, build charts and reports — entirely in the browser, no server required.
+A browser-based tool for building shareable ETL pipelines and calculator interfaces — no server, no GAFAM, no cloud dependency.
 
 **[Try it →](https://ihatexcel.github.io/sqljob)**
+
+---
+
+## Purpose
+
+sqljob is designed for analysts and developers who need to build and share **data processing workflows** ("moulinettes") without relying on cloud infrastructure or proprietary tools.
+
+The typical use case: you write SQL transformations, wire up input parameters, and package the whole thing as a single portable file — a JSON configuration, or a standalone HTML that embeds both the app and the data (Base64-encoded). The recipient opens it in a browser. No login, no server, no Excel.
+
+Use it to build:
+- ETL pipelines that run entirely client-side (DuckDB-WASM)
+- Calculator or simulation interfaces driven by SQL
+- Self-contained data reports shareable as a single HTML file
+- Parameterized notebooks distributed via GitHub Gist (with optional encryption)
 
 ---
 
@@ -12,7 +26,8 @@ Client-side SQL notebook powered by DuckDB-WASM. Load files, write SQL, build ch
 - Write SQL across multiple notebook pages with grouped, auto-executable cells
 - Generate charts using SQL role syntax: `SELECT date::XAXIS, revenue::BARCHART FROM sales`
 - Build dynamic reports with parameters, conditional groups, and Univer spreadsheet cells
-- Export to standalone HTML, PDF, or share via GitHub Gist (with optional encryption)
+- Export to standalone HTML (data embedded as Base64), JSON config, or PDF
+- Share via GitHub Gist with optional passphrase encryption
 - Embed as a web component via CDN: `<sqljob-app>`
 
 ---
@@ -79,4 +94,4 @@ src/
 
 ## License
 
-MIT — © Théo Nobella-Pichonnier
+AGPL-3.0 — © Théo Nobella-Pichonnier
