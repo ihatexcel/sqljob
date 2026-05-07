@@ -1194,9 +1194,10 @@ function UniverSheetBody({ cell, path, cellIndex }: any) {
 
 // ─── PivotBody ────────────────────────────────────────────────────────────────
 function PivotBody({ cell }: any) {
-    const { _duckdbTables, forceUpdate } = useNotebookStore(useShallow((s: any) => ({
+    const { _duckdbTables, forceUpdate, devMode } = useNotebookStore(useShallow((s: any) => ({
         _duckdbTables: s._duckdbTables,
         forceUpdate: s.forceUpdate,
+        devMode: s.devMode,
     })))
 
     const availableTables = useMemo(() => Object.keys(_duckdbTables || {}), [_duckdbTables])
@@ -1228,6 +1229,10 @@ function PivotBody({ cell }: any) {
         },
     }), [cell, forceUpdate])
 
+    if (!selectedTable && !devMode) {
+        return <div className="text-xs text-muted-foreground p-4 text-center">Aucune table sélectionnée.</div>
+    }
+
     return (
         <div className="flex flex-col h-full">
             {availableTables.length === 0 ? (
@@ -1244,7 +1249,9 @@ function PivotBody({ cell }: any) {
                     callbacks={callbacks}
                     autoRun
                     className="h-full"
-                />
+                >
+                    {devMode ? undefined : <PivotEditor.Results />}
+                </PivotEditor>
             )}
         </div>
     )
