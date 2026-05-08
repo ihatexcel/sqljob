@@ -1,33 +1,9 @@
-/**
- * SqlDataTable — remplace SimpleDatatables pour les cellules sql/table.
- * Utilise DataTablePaginated de @sqlrooms/data-table avec tri et pagination
- * client-side. Gère les colonnes spéciales PERCENT et TREND.
- */
 import { useMemo, useState } from 'react'
-import DataTablePaginated from '@sqlrooms/data-table/dist/DataTablePaginated'
+import { DataTablePaginated, QueryDataTableActionsMenu } from '@sqlrooms/data-table'
 import { rawTableDataStore as _rawTableDataStore } from '../../lib/tableDataStore'
 import { parseColumnRoles, getTableColumnDisplayNames } from '../../lib/EChartSqlParser'
-import { DownloadIcon } from 'lucide-react'
+import { ConfigManager } from '../../lib/ConfigManager'
 
-function downloadCsv(data: any[], filename: string) {
-    if (!data.length) return
-    const keys = Object.keys(data[0])
-    const esc = (v: any) => {
-        if (v == null) return ''
-        const s = String(v)
-        return /[,"\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s
-    }
-    const csv = [keys.map(esc).join(','), ...data.map(row => keys.map(k => esc(row[k])).join(','))].join('\n')
-    const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' })
-    const url = URL.createObjectURL(blob)
-    const a = Object.assign(document.createElement('a'), { href: url, download: filename })
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
-}
-
-// Types Arrow numériques tels que retournés par String(field.type) de duckdb-wasm
 const NUMERIC_ARROW_RE = /^(Int|Uint|Float|Decimal)/i
 
 function colMeta(schemaTypes: Record<string, string>, key: string) {
@@ -42,6 +18,7 @@ export function SqlDataTable({ cell, searchable = false }: { cell: any; searchab
 
     const rawResults = _rawTableDataStore.get(cell._id) || cell._results || []
     const schemaTypes: Record<string, string> = cell._schemaTypes || {}
+    const cellQuery = ConfigManager.getCellQuery(cell, 'main') || ''
 
     const { columns, allColKeys } = useMemo(() => {
         if (!rawResults?.length) return { columns: [], allColKeys: [] }
@@ -130,26 +107,16 @@ export function SqlDataTable({ cell, searchable = false }: { cell: any; searchab
     if (!rawResults?.length) return null
 
     return (
-        <div className="relative group/datatable flex flex-col gap-2">
-            <div className="flex items-center gap-2 min-h-0">
-                {searchable && (
-                    <input
-                        type="search"
-                        className="border border-input rounded px-2 py-1 text-sm bg-background max-w-xs"
-                        placeholder="Rechercher..."
-                        value={search}
-                        onChange={e => { setSearch(e.target.value); setPagination(p => ({ ...p, pageIndex: 0 })) }}
-                    />
-                )}
-                <button
-                    onClick={() => downloadCsv(sortedData, `${cell.name || 'export'}.csv`)}
-                    className="ml-auto opacity-0 group-hover/datatable:opacity-100 transition-opacity inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs text-muted-foreground hover:text-foreground hover:bg-muted shrink-0"
-                    title="Télécharger CSV"
-                >
-                    <DownloadIcon className="h-3 w-3" />
-                    CSV
-                </button>
-            </div>
+        <div className="flex flex-col gap-2">
+            {searchable && (
+                <input
+                    type="search"
+                    className="border border-input rounded px-2 py-1 text-sm bg-background max-w-xs"
+                    placeholder="Rechercher..."
+                    value={search}
+                    onChange={e => { setSearch(e.target.value); setPagination(p => ({ ...p, pageIndex: 0 })) }}
+                />
+            )}
             <DataTablePaginated
                 data={pageData}
                 columns={columns}
@@ -159,6 +126,7 @@ export function SqlDataTable({ cell, searchable = false }: { cell: any; searchab
                 onPaginationChange={setPagination}
                 onSortingChange={setSorting}
                 fontSize="text-xs"
+                footerActions={cellQuery ? <QueryDataTableActionsMenu query={cellQuery} /> : null}
             />
         </div>
     )
