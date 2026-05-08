@@ -1,3 +1,4 @@
+import type { StoreApi } from 'zustand'
 import { safeEvalJs } from '../../../lib/safeEval'
 import { rawTableDataStore as _rawTableDataStore } from '../../../lib/tableDataStore'
 import { DuckDBManager } from '../../../lib/DuckDBManager'
@@ -7,6 +8,7 @@ import { CELL_TYPE_SCHEMAS } from '../../../lib/cellTypeSchemas'
 import { EChartSqlParser } from '../../../lib/EChartSqlParser'
 import { formatValueForInputType } from '../../../lib/utils'
 import { FileHandler } from '../../../lib/FileHandler'
+import type { NotebookStoreState } from '../types'
 
 // PizZip est chargé dynamiquement via CDNManager.loadPizZip() et exposé sur window
 declare const PizZip: any;
@@ -120,7 +122,10 @@ function _arrowTableToUniverRows(table: any): { rows: any[]; cellTypes: number[]
     return { rows, cellTypes, columnFormats }
 }
 
-export const createExecutionSlice = (set: any, get: any) => ({
+export const createExecutionSlice = (
+    set: StoreApi<NotebookStoreState>['setState'],
+    get: StoreApi<NotebookStoreState>['getState'],
+) => ({
 
     async runGroupAtPath(path) {
         const group = get().getGroupAtPath(path)
@@ -163,7 +168,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
                 continue
             }
 
-            const cell = item.item
+            const cell = item.item as import('../types').NotebookCell
             if (cell.type === 'buttonRunNextCells') {
                 get().setStatus('Arrêt : bouton "Exécuter les cellules suivantes" rencontré', 'info')
                 return { stopped: true, reason: 'buttonRunNextCells' }
@@ -260,7 +265,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
                         continue
                     }
 
-                    const cell = item.item
+                    const cell = item.item as import('../types').NotebookCell
                     if (cell.type === 'buttonRunNextCells') {
                         get().setStatus('Arrêt : bouton "Exécuter les cellules suivantes" rencontré', 'info')
                         return { stopped: true, reason: 'buttonRunNextCells' }
@@ -362,8 +367,8 @@ export const createExecutionSlice = (set: any, get: any) => ({
         try {
             const schema = CELL_TYPE_SCHEMAS?.types[cell?.type]
             const handler = schema?.executeHandler
-            if (handler && typeof get()[handler] === 'function') {
-                await get()[handler](cell, path, cellIndex)
+            if (handler && typeof (get() as any)[handler] === 'function') {
+                await (get() as any)[handler](cell, path, cellIndex)
             }
 
             cell._status = 'success'
@@ -988,7 +993,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
             for (let i = 0; i < dataResults.length; i++) {
                 const rowData = dataResults[i]
                 const filenameRow = filenameResults[i]
-                const filename = Object.values(filenameRow)[0] || `document_${i + 1}.docx`
+                const filename = String(Object.values(filenameRow)[0] || `document_${i + 1}.docx`)
 
                 let templateData = rowData
 
@@ -1452,7 +1457,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
                 continue
             }
 
-            const cell = item.item
+            const cell = item.item as import('../types').NotebookCell
 
             if (cell.type === 'buttonRunNextCells') {
                 return { stopped: true, reason: 'buttonRunNextCells' }
@@ -1508,7 +1513,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
                 continue
             }
 
-            const cell = item.item
+            const cell = item.item as import('../types').NotebookCell
 
             if (cell.type === 'buttonRunNextCells') {
                 get().setStatus('Arrêt : bouton "Exécuter les cellules suivantes" rencontré', 'info')
@@ -1565,7 +1570,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
                     continue
                 }
 
-                const cell = item.item
+                const cell = item.item as import('../types').NotebookCell
 
                 if (cell.type === 'buttonRunNextCells') {
                     get().setStatus('Arrêt : bouton "Exécuter les cellules suivantes" rencontré', 'info')
@@ -1629,7 +1634,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
                     await get().runGroupAtPath([...path, item.originalIndex])
                     continue
                 }
-                const cell = item.item
+                const cell = item.item as import('../types').NotebookCell
                 if (cell?.type === 'buttonRunNextCells') break
                 if (get().isCellSkippedInAutoFlow(cell)) continue
                 await get().runCellAt(path, item.originalIndex)

@@ -1,10 +1,15 @@
+import type { StoreApi } from 'zustand'
 import { rawTableDataStore as _rawTableDataStore } from '../../../lib/tableDataStore'
 import { ConfigManager } from '../../../lib/ConfigManager'
 import { CellConfigService, initializeCell } from '../../../lib/CellConfigService'
 import { CELL_TYPE_SCHEMAS } from '../../../lib/cellTypeSchemas'
 import { useConfirmModal } from '../uiStores'
+import type { NotebookStoreState } from '../types'
 
-export const createCellsSlice = (set: any, get: any) => ({
+export const createCellsSlice = (
+    set: StoreApi<NotebookStoreState>['setState'],
+    get: StoreApi<NotebookStoreState>['getState'],
+) => ({
 
     hasCellMinSize(cell: any) {
         const v = (x: any) => (x !== undefined && x !== null && String(x).trim() !== '')
@@ -247,7 +252,7 @@ return newCell
                 _rawTableDataStore.delete(cell._id)
                 const { _tables } = get()
                 if (_tables && _tables[cell._id]) {
-                    _tables[cell._id].destroy()
+                    (_tables[cell._id] as any).destroy()
                     delete _tables[cell._id]
                 }
                 group.cells.splice(cellIndex, 1)

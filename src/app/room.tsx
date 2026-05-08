@@ -118,8 +118,7 @@ export function Room() {
 
     return (
         <>
-            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-            <RoomShell roomStore={roomStore as any} className="h-screen w-screen">
+            <RoomShell roomStore={roomStore} className="h-screen w-screen">
                 <RoomShell.Sidebar className={showLayout ? '' : 'hidden'}>
                     <SidebarControls />
                 </RoomShell.Sidebar>

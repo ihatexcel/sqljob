@@ -1,11 +1,17 @@
 /**
  * types.ts — Types partagés pour le store Zustand sqljob.
  *
- * NotebookStoreState est l'interface complète du store, union de tous les slices.
+ * NotebookStoreState est composé par intersection des slice state types sqlrooms
+ * et de CustomNotebookState (état propre à sqljob).
  * Les types NotebookCell, NotebookGroup, NotebookPage modélisent les entités métier.
  */
 
 import type { PivotConfig, PivotField } from '@sqlrooms/pivot'
+import type { RoomShellSliceState } from '@sqlrooms/room-shell'
+import type { SqlEditorSliceState } from '@sqlrooms/sql-editor'
+import type { CellsSliceState } from '@sqlrooms/cells'
+import type { NotebookSliceState } from '@sqlrooms/notebook'
+import type { CanvasSliceState } from '@sqlrooms/canvas'
 
 // ─── Entités métier ────────────────────────────────────────────────────────────
 
@@ -181,20 +187,13 @@ export type ExportModal = {
     includeFiles?: boolean
 }
 
-// ─── Interface complète du store ───────────────────────────────────────────────
+// ─── État custom sqljob (hors slices sqlrooms) ────────────────────────────────
 
 /**
- * NotebookStoreState — état complet du store Zustand sqljob.
- *
- * Union des slices sqlrooms (roomShell, sqlEditor, cells, notebook, canvas)
- * et des 9 slices Zustand purs (pages, helpers, parameters, export, groups,
- * cells, files, execution, copyPaste), plus l'état initial buildInitialState().
- *
- * Les méthodes des slices sont déclarées ici avec leur signature minimale.
- * Un TODO reste en place pour les méthodes dont la signature exacte serait
- * trop complexe à typer sans réécriture du business logic.
+ * CustomNotebookState — propriétés propres à sqljob non couvertes par les slice
+ * state types sqlrooms (buildInitialState + 9 slices Zustand purs).
  */
-export interface NotebookStoreState {
+export interface CustomNotebookState {
     // ── État initial (buildInitialState) ──────────────────────────────────────
     pages: NotebookPage[]
     activePageIndex: number
@@ -274,6 +273,7 @@ export interface NotebookStoreState {
     addRoomFile: (file: File, tableName: string) => Promise<void>
     closeCellConfig: () => void
     forceUpdate: () => void
+    saveToLocalStorage?: () => void
     initFromConfig: (loadedConfig: unknown) => void
     setPages: (pages: NotebookPage[]) => void
     setActivePageIndex: (i: number) => void
@@ -284,33 +284,15 @@ export interface NotebookStoreState {
     getGroups: () => NotebookGroup[]
     getLinkGroups: () => NotebookGroup[]
 
-    // ── db (sqlrooms DuckDb connector) ────────────────────────────────────────
-    db: {
-        schemaTrees: unknown[]
-        refreshTableSchemas: () => Promise<void>
-        [key: string]: unknown
-    }
-
-    // ── layout (sqlrooms RoomShell) ───────────────────────────────────────────
-    layout: {
-        config: { nodes: unknown }
-        togglePanel: (panel: string, show?: boolean) => void
-        [key: string]: unknown
-    }
-
-    // ── room (sqlrooms) ───────────────────────────────────────────────────────
-    // TODO: type this properly — room comes from sqlrooms BaseRoomStoreState
-    room?: { initialized: boolean; initialize: () => Promise<void>; destroy: () => Promise<void>; captureException: (exception: unknown, captureContext?: unknown) => void; [key: string]: unknown }
-
     // ── Slices Zustand purs — méthodes ───────────────────────────────────────
 
     // pagesSlice
     addPage: () => void
     deletePage: (index: number) => Promise<void>
-    startPageDrag: (index: number, event: { dataTransfer: DataTransfer; [key: string]: unknown }) => void
-    onPageDragOver: (index: number, event: { preventDefault: () => void; [key: string]: unknown }) => void
+    startPageDrag: (index: number, event: DragEvent) => void
+    onPageDragOver: (index: number, event: DragEvent) => void
     onPageDragLeave: () => void
-    onPageDrop: (targetIndex: number, event: { preventDefault: () => void; [key: string]: unknown }) => void
+    onPageDrop: (targetIndex: number, event: DragEvent) => void
     endPageDrag: () => void
     switchPage: (index: number) => void
     activatePage: (index: number) => Promise<void>
@@ -378,7 +360,7 @@ export interface NotebookStoreState {
     getGroupAtPath: (path: number[]) => NotebookGroup | null
     getParentGroup: (path: number[]) => NotebookGroup | null
     getCellAtPath: (path: number[], cellIndex: number) => NotebookCell | undefined
-    createNewGroup: (direction?: string) => NotebookGroup
+    createNewGroup: (direction?: 'row' | 'column') => NotebookGroup
     addNestedGroup: (path: number[]) => void
     toggleGroupDirection: (path: number[]) => void
     openLoopConfigModal: (path: number[]) => void
@@ -516,8 +498,26 @@ export interface NotebookStoreState {
     copyGroupAtPath: (pathOrIndex: number | number[]) => void
     pasteToGroup: (pathOrIndex: number | number[]) => void
 
-    // ── Index signature pour compatibilité avec les méthodes sqlrooms ─────────
-    // (sqlEditor, roomShell, cells, notebook, canvas ont leurs propres types
-    // non exportés publiquement — on les laisse en unknown pour éviter any)
+    // ── Index signature pour les méthodes sqlrooms non réexportées ───────────
     [key: string]: unknown
 }
+
+// ─── Type public du store ──────────────────────────────────────────────────────
+
+/**
+ * NotebookStoreState — type complet du store Zustand sqljob.
+ *
+ * Composé par intersection :
+ *   - Slice state types sqlrooms (roomShell, sqlEditor, cells, notebook, canvas)
+ *   - CustomNotebookState (état propre à sqljob)
+ *
+ * Ce pattern suit les exemples officiels sqlrooms (ex: notebook/src/store.ts)
+ * où RoomState = RoomShellSliceState & ArtifactsSliceState & ... & { custom }
+ */
+export type NotebookStoreState =
+    RoomShellSliceState &
+    SqlEditorSliceState &
+    CellsSliceState &
+    NotebookSliceState &
+    CanvasSliceState &
+    CustomNotebookState

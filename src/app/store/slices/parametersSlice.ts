@@ -2,9 +2,14 @@
  * parametersSlice — gestion des paramètres UI et du DAG (Directed Acyclic Graph).
  * Converti de parametersMixin.ts (Alpine this-proxy) vers un slice Zustand pur.
  */
+import type { StoreApi } from 'zustand'
 import { ConfigManager } from '../../../lib/ConfigManager'
+import type { NotebookStoreState } from '../types'
 
-export const createParametersSlice = (set: any, get: any) => ({
+export const createParametersSlice = (
+    set: StoreApi<NotebookStoreState>['setState'],
+    get: StoreApi<NotebookStoreState>['getState'],
+) => ({
 
     getParameters() {
         const { _currentLoopValue } = get()

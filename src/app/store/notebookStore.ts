@@ -6,6 +6,7 @@
  * createRoomShellSlice ajoute le système de layout mosaic (RoomShell).
  */
 import { setAutoFreeze } from 'immer'
+import { z } from 'zod'
 import { createRoomShellSlice, createRoomStore, persistSliceConfigs, LayoutConfig } from '@sqlrooms/room-shell'
 import type { NotebookStoreState } from './types'
 import { createBaseDuckDbConnector } from '@sqlrooms/duckdb-core'
@@ -41,9 +42,10 @@ import { CELL_TYPE_SCHEMAS, CELL_TYPE_HANDLERS } from '../../lib/cellTypeSchemas
 import { formatValueForInputType } from '../../lib/utils'
 
 
-// Les mixins Alpine mutent directement les tableaux du state (this.groups.push(...)).
-// @sqlrooms/duckdb utilise Immer en interne qui freeze le state après chaque produce().
-// setAutoFreeze(false) empêche ce freeze pour que les mutations des mixins fonctionnent.
+// TODO(produce-migration): setAutoFreeze(false) est un workaround pour permettre les
+// mutations directes sur les cellules (cell._status = 'running', cell._results = rows…)
+// dans executionSlice et les autres slices. La migration vers produce() dans chaque slice
+// permettrait de supprimer cette ligne, mais requiert une refonte architecturale complète.
 setAutoFreeze(false)
 
 // ─── Expose globals (nécessaire pour les expressions dans les templates HTML) ─
@@ -194,7 +196,7 @@ function buildInitialState() {
         // DAG
         _dagDebounceTimer: null,
         _dagDebounceDelay: 200,
-        _pagesInitialized: new Set(),
+        _pagesInitialized: new Set<string>(),
 
         // Drag & drop pages
         draggedPageIndex: null,
@@ -248,6 +250,10 @@ function buildInitialState() {
     }
 }
 
+// ─── Panel IDs (Zod enum — typage statique + sécurité à l'exécution) ─────────
+export const PanelTypes = z.enum(['main', 'data'] as const)
+export type PanelTypes = z.infer<typeof PanelTypes>
+
 // ─── Connecteur DuckDB ponté vers DuckDBManager ───────────────────────────────
 // Permet à SqlEditorModal (et state.db) d'utiliser la même instance DuckDB
 // que les cells sqljob, sans dupliquer la connexion.
@@ -276,11 +282,7 @@ const duckdbManagerConnector = createBaseDuckDbConnector(
 )
 
 // ─── Store Zustand ────────────────────────────────────────────────────────────
-// createRoomStore<any> is required because the sqlrooms internal slices
-// (createSqlEditorSlice, createRoomShellSlice, etc.) each expect their own
-// slice-specific set/get types which cannot be unified without a full rewrite.
-// The public API is typed via the typed re-export of useNotebookStore below.
-const { roomStore: _roomStore, useRoomStore: _useNotebookStore } = createRoomStore<any>(
+const { roomStore: _roomStore, useRoomStore: _useNotebookStore } = createRoomStore<NotebookStoreState>(
   persistSliceConfigs(
     {
       name: 'sqljob-layout-state-v1',
@@ -297,16 +299,16 @@ const { roomStore: _roomStore, useRoomStore: _useNotebookStore } = createRoomSto
         layout: {
             config: {
                 type: 'mosaic',
-                nodes: 'main',
-            },
+                nodes: PanelTypes.enum.main,
+            } satisfies LayoutConfig,
             panels: {
-                main: {
+                [PanelTypes.enum.main]: {
                     title: 'Notebook',
                     icon: () => null,
                     component: NotebookPanel,
                     placement: 'main',
                 },
-                data: {
+                [PanelTypes.enum.data]: {
                     title: 'Sources',
                     icon: DatabaseIcon,
                     component: DataSourcesPanel,
@@ -348,14 +350,12 @@ const { roomStore: _roomStore, useRoomStore: _useNotebookStore } = createRoomSto
     const originalTogglePanel = roomShellState.layout.togglePanel
     const mobileTogglePanel = (panel: string, show?: boolean) => {
         const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
-        if (isMobile && panel === 'data') {
+        if (isMobile && panel === PanelTypes.enum.data) {
             const dataVisible = isDataPanelVisible()
             if (dataVisible) {
-                // Fermer → retour au notebook
-                set((s: any) => ({ layout: { ...s.layout, config: { ...s.layout.config, nodes: 'main' } } }))
+                set((s: any) => ({ layout: { ...s.layout, config: { ...s.layout.config, nodes: PanelTypes.enum.main } } }))
             } else {
-                // Ouvrir → plein écran data
-                set((s: any) => ({ layout: { ...s.layout, config: { ...s.layout.config, nodes: 'data' } } }))
+                set((s: any) => ({ layout: { ...s.layout, config: { ...s.layout.config, nodes: PanelTypes.enum.data } } }))
             }
             return
         }
@@ -431,7 +431,7 @@ const { roomStore: _roomStore, useRoomStore: _useNotebookStore } = createRoomSto
                 window._loadedConfig = loadedConfig
             }
             const newState = buildInitialState()
-            set({ ...newState })
+            set(newState as Partial<NotebookStoreState>)
         },
 
         // Setters directs pour le state exposé aux composants React
@@ -458,14 +458,6 @@ const { roomStore: _roomStore, useRoomStore: _useNotebookStore } = createRoomSto
   })
 )
 
-// ─── Typed public API ─────────────────────────────────────────────────────────
-// The internal store is createRoomStore<any> (required by sqlrooms slice type
-// constraints). We re-export a typed wrapper so selectors in components can use
-// (s: NotebookStoreState) instead of (s: any).
-import type { StoreApi, UseBoundStore } from 'zustand'
-
-export const roomStore = _roomStore as unknown as StoreApi<NotebookStoreState>
-
-// Cast the hook to the typed state so all selector callbacks receive
-// NotebookStoreState instead of any.
-export const useNotebookStore = _useNotebookStore as unknown as UseBoundStore<StoreApi<NotebookStoreState>>
+// ─── Exports publics ──────────────────────────────────────────────────────────
+export const roomStore = _roomStore
+export const useNotebookStore = _useNotebookStore
