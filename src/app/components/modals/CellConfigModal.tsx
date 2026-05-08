@@ -430,7 +430,7 @@ export function CellConfigModal() {
                                             <div key={k} className="space-y-1">
                                                 <Label className="text-xs">{k.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase())}</Label>
                                                 <Input className="h-7 text-xs"
-                                                    value={cell[k] || ''}
+                                                    value={(cell[k] as string | undefined) || ''}
                                                     onChange={e => { cell[k] = e.target.value; forceUpdate() }} />
                                             </div>
                                         ))}
@@ -439,7 +439,7 @@ export function CellConfigModal() {
                                             <div key={k} className="space-y-1">
                                                 <Label className="text-xs">{k.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase())}</Label>
                                                 <Input className="h-7 text-xs"
-                                                    value={cell[k] || ''}
+                                                    value={(cell[k] as string | undefined) || ''}
                                                     onChange={e => { cell[k] = e.target.value; forceUpdate() }} />
                                             </div>
                                         ))}

@@ -7,6 +7,7 @@
  */
 import { setAutoFreeze } from 'immer'
 import { createRoomShellSlice, createRoomStore, persistSliceConfigs, LayoutConfig } from '@sqlrooms/room-shell'
+import type { NotebookStoreState } from './types'
 import { createBaseDuckDbConnector } from '@sqlrooms/duckdb-core'
 import { createSqlEditorSlice, createDefaultSqlEditorConfig } from '@sqlrooms/sql-editor'
 import { createCellsSlice as createSqlroomsCellsSlice, createDefaultCellRegistry } from '@sqlrooms/cells'
@@ -275,7 +276,11 @@ const duckdbManagerConnector = createBaseDuckDbConnector(
 )
 
 // ─── Store Zustand ────────────────────────────────────────────────────────────
-export const { roomStore, useRoomStore: useNotebookStore } = createRoomStore<any>(
+// createRoomStore<any> is required because the sqlrooms internal slices
+// (createSqlEditorSlice, createRoomShellSlice, etc.) each expect their own
+// slice-specific set/get types which cannot be unified without a full rewrite.
+// The public API is typed via the typed re-export of useNotebookStore below.
+const { roomStore: _roomStore, useRoomStore: _useNotebookStore } = createRoomStore<any>(
   persistSliceConfigs(
     {
       name: 'sqljob-layout-state-v1',
@@ -421,7 +426,7 @@ export const { roomStore, useRoomStore: useNotebookStore } = createRoomStore<any
         },
 
         // Ré-initialise le store depuis une config chargée (ex: après déchiffrement Gist)
-        initFromConfig(loadedConfig: any) {
+        initFromConfig(loadedConfig: unknown) {
             if (typeof window !== 'undefined') {
                 window._loadedConfig = loadedConfig
             }
@@ -452,3 +457,15 @@ export const { roomStore, useRoomStore: useNotebookStore } = createRoomStore<any
     }
   })
 )
+
+// ─── Typed public API ─────────────────────────────────────────────────────────
+// The internal store is createRoomStore<any> (required by sqlrooms slice type
+// constraints). We re-export a typed wrapper so selectors in components can use
+// (s: NotebookStoreState) instead of (s: any).
+import type { StoreApi, UseBoundStore } from 'zustand'
+
+export const roomStore = _roomStore as unknown as StoreApi<NotebookStoreState>
+
+// Cast the hook to the typed state so all selector callbacks receive
+// NotebookStoreState instead of any.
+export const useNotebookStore = _useNotebookStore as unknown as UseBoundStore<StoreApi<NotebookStoreState>>

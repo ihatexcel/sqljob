@@ -803,7 +803,7 @@ export const createExecutionSlice = (set: any, get: any) => ({
     async executePivotCell(cell) {
         const selectedTable = cell.json?.selectedTable
         if (selectedTable) {
-            const tables = (get() as any)._duckdbTables || {}
+            const tables = get()._duckdbTables || {}
             if (tables[selectedTable]) {
                 cell._resultInfo = `Table: ${selectedTable} — ${tables[selectedTable].columns?.length ?? 0} colonnes`
             } else {

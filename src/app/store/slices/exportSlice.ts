@@ -50,7 +50,7 @@ export const createExportSlice = (set: any, get: any) => ({
             }
             for (const cell of allCells) {
                 if (cell.type === 'univerSheet' && cell._univerModified && cell._univerAPI) {
-                    await (get() as any).captureUniverSnapshot(cell)
+                    await get().captureUniverSnapshot(cell)
                 }
             }
         } catch (e) {

@@ -30,7 +30,8 @@ function AppContent() {
         // déléguer à l'action Zustand du notebookStore
         useTemplateModal.setState({
             _onSelectTemplate: (cellId, queryType, templateIndex, languageType) => {
-                useNotebookStore.getState().applyTemplateToCell?.(cellId, queryType, templateIndex, languageType)
+                // TODO: type applyTemplateToCell — comes from sqlrooms notebook slice
+                ;(useNotebookStore.getState() as any).applyTemplateToCell?.(cellId, queryType, templateIndex, languageType)
             }
         })
 

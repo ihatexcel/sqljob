@@ -11,12 +11,15 @@ import { Canvas } from '@sqlrooms/canvas'
 import { Button } from '@sqlrooms/ui'
 import { ArrowLeftRightIcon } from 'lucide-react'
 import { useNotebookStore } from '../store/notebookStore'
+import type { NotebookStoreState } from '../store/types'
 
 // ─── NotebookPanelSqlrooms ────────────────────────────────────────────────────
 export const NotebookPanelSqlrooms = ({ onSwitchPanel }: { onSwitchPanel: () => void }) => {
-    const currentSheetType = useNotebookStore((s: any) => {
-        const id = s.cells?.config?.currentSheetId
-        return id ? s.cells?.config?.sheets?.[id]?.type : 'notebook'
+    const currentSheetType = useNotebookStore((s: NotebookStoreState) => {
+        // TODO: type this properly — s.cells comes from the sqlrooms cells slice (not in NotebookStoreState)
+        const cells = s.cells as { config?: { currentSheetId?: string; sheets?: Record<string, { type: string }> } } | undefined
+        const id = cells?.config?.currentSheetId
+        return id ? cells?.config?.sheets?.[id]?.type : 'notebook'
     })
 
     return (

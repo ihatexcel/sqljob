@@ -335,6 +335,8 @@ return newCell
         if (!cell) return
 
         _rawTableDataStore.delete(cell._id)
+        // TODO: wrap in produce() once cell references are stored immutably
+        // (currently direct mutation + setAutoFreeze(false) pattern is used project-wide)
         cell._results = null
         cell._resultInfo = null
 
