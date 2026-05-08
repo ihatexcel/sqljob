@@ -19,7 +19,25 @@ import { DuckDBManager } from '../../lib/DuckDBManager'
 import DataTablePaginated from '@sqlrooms/data-table/dist/DataTablePaginated'
 import { SqlBlockEditor } from './sqlblock/SqlBlockEditor'
 import { PivotEditor } from '@sqlrooms/pivot'
+import type { PivotConfig, PivotField, PivotQuerySource, PivotSource } from '@sqlrooms/pivot'
+import { produce } from 'immer'
 import './UniverSheetElement'
+
+// ─── Types locaux ──────────────────────────────────────────────────────────────
+type DuckdbTableInfo = { rowCount: number; columns: PivotField[] }
+
+type PivotCellJson = {
+    selectedTable?: string
+    pivotConfig?: PivotConfig
+}
+
+type NotebookCell = {
+    _id: string
+    type: string
+    name?: string
+    json?: PivotCellJson & Record<string, unknown>
+    [key: string]: unknown
+}
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 function CellBodySkeleton() {
@@ -45,12 +63,14 @@ function TableSkeleton() {
 }
 
 // ─── ResultInfo ───────────────────────────────────────────────────────────────
-function ResultInfo({ cell, devOnly = false }: { cell: any, devOnly?: boolean }) {
+type ResultInfoProps = { cell: NotebookCell; devOnly?: boolean }
+
+const ResultInfo: React.FC<ResultInfoProps> = ({ cell, devOnly = false }) => {
     const devMode = useNotebookStore(s => s.devMode)
     if (!cell._resultInfo) return null
     if (!String(cell._resultInfo).startsWith('❌')) return null
     if (devOnly && !devMode) return null
-    return <div className="mt-2 p-2 bg-muted rounded text-sm text-muted-foreground">{cell._resultInfo}</div>
+    return <div className="mt-2 p-2 bg-muted rounded text-sm text-muted-foreground">{String(cell._resultInfo)}</div>
 }
 
 // ─── MarkdownBody ─────────────────────────────────────────────────────────────
@@ -1192,38 +1212,46 @@ function UniverSheetBody({ cell, path, cellIndex }: any) {
 }
 
 // ─── PivotBody ────────────────────────────────────────────────────────────────
-function PivotBody({ cell }: any) {
-    const { _duckdbTables, forceUpdate, devMode } = useNotebookStore(useShallow((s: any) => ({
+type PivotBodyProps = { cell: NotebookCell }
+
+const PivotBody: React.FC<PivotBodyProps> = ({ cell }) => {
+    const { _duckdbTables, forceUpdate, devMode } = useNotebookStore(useShallow((s: {
+        _duckdbTables: Record<string, DuckdbTableInfo>
+        forceUpdate: () => void
+        devMode: boolean
+    }) => ({
         _duckdbTables: s._duckdbTables,
         forceUpdate: s.forceUpdate,
         devMode: s.devMode,
     })))
 
-    const availableTables = useMemo(() => Object.keys(_duckdbTables || {}), [_duckdbTables])
+    const availableTables = useMemo(() => Object.keys(_duckdbTables), [_duckdbTables])
 
-    const selectedTable: string = cell.json?.selectedTable || ''
+    const selectedTable = cell.json?.selectedTable ?? ''
 
-    const querySource = useMemo(() => {
-        if (!selectedTable || !_duckdbTables?.[selectedTable]) return undefined
-        const cols = _duckdbTables[selectedTable].columns || []
-        return { tableRef: `"${selectedTable}"`, columns: cols }
+    const querySource = useMemo((): PivotQuerySource | undefined => {
+        if (!selectedTable || !_duckdbTables[selectedTable]) return undefined
+        const columns = _duckdbTables[selectedTable].columns
+        return { tableRef: `"${selectedTable}"`, columns }
     }, [selectedTable, _duckdbTables])
 
-    const source = useMemo(() =>
-        selectedTable ? { kind: 'table' as const, tableName: selectedTable } : undefined,
+    const source = useMemo((): PivotSource | undefined =>
+        selectedTable ? { kind: 'table', tableName: selectedTable } : undefined,
         [selectedTable]
     )
 
     const callbacks = useMemo(() => ({
-        setSource: (src: any) => {
-            if (!cell.json) cell.json = {}
-            cell.json.selectedTable = src?.kind === 'table' ? src.tableName : ''
-            cell.json.pivotConfig = undefined  // reset config when table changes
+        setSource: (src: PivotSource | undefined) => {
+            cell.json = produce(cell.json ?? {}, (draft: PivotCellJson) => {
+                draft.selectedTable = src?.kind === 'table' ? src.tableName : ''
+                draft.pivotConfig = undefined
+            })
             forceUpdate()
         },
-        setConfig: (config: any) => {
-            if (!cell.json) cell.json = {}
-            cell.json.pivotConfig = config
+        setConfig: (config: PivotConfig) => {
+            cell.json = produce(cell.json ?? {}, (draft: PivotCellJson) => {
+                draft.pivotConfig = config
+            })
             forceUpdate()
         },
     }), [cell, forceUpdate])
@@ -1288,7 +1316,7 @@ export function CellBody({ cell, path, cellIndex, group }: { cell: any, path: nu
 
             case 'iframe': return <IframeBody cell={cell} path={path} cellIndex={cellIndex} />
             case 'sqlStat': return <SqlStatBody cell={cell} path={path} cellIndex={cellIndex} />
-            case 'pivot': return <PivotBody cell={cell} path={path} cellIndex={cellIndex} />
+            case 'pivot': return <PivotBody cell={cell} />
 
             case 'uiParameter': return <UiParameterBody cell={cell} path={path} cellIndex={cellIndex} />
             case 'publipostageWord':

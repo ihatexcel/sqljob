@@ -113,7 +113,7 @@ function UniverConfigEditor({ cell, forceUpdate }: any) {
                     { key: 'header', label: 'En-tête' },
                     { key: 'contextMenu', label: 'Menu contextuel' },
                     { key: 'disableAutoFocus', label: "Désactiver l'auto-focus", invert: true },
-                ] as Array<{ key: string; label: string; invert?: boolean }>).map(({ key, label, invert }) => (
+                ] as { key: string; label: string; invert?: boolean }[]).map(({ key, label, invert }) => (
                     <div key={key} className="flex items-center gap-3">
                         <Checkbox
                             checked={invert ? !cfg[key] : cfg[key] !== false}
@@ -134,7 +134,7 @@ function UniverConfigEditor({ cell, forceUpdate }: any) {
                     { key: 'showGridlines', label: 'Quadrillage' },
                     { key: 'showRowHeader', label: 'Numéros de lignes (1, 2, 3…)' },
                     { key: 'showColumnHeader', label: 'Lettres de colonnes (A, B, C…)' },
-                ] as Array<{ key: string; label: string }>).map(({ key, label }) => (
+                ] as { key: string; label: string }[]).map(({ key, label }) => (
                     <div key={key} className="flex items-center gap-3">
                         <Checkbox
                             checked={cfg[key] !== false}
@@ -209,7 +209,7 @@ function UniverConfigEditor({ cell, forceUpdate }: any) {
                             { key: 'statisticBar', label: 'Statistiques' },
                             { key: 'menus', label: 'Menus' },
                             { key: 'zoomSlider', label: 'Slider de zoom' },
-                        ] as Array<{ key: string; label: string }>).map(({ key, label }) => (
+                        ] as { key: string; label: string }[]).map(({ key, label }) => (
                             <div key={key} className="flex items-center gap-3">
                                 <Checkbox
                                     checked={footerCfg[key] !== false}
