@@ -1,15 +1,16 @@
 /**
  * Room — Composant racine utilisant RoomShell de @sqlrooms/room-shell.
  *
- * - RoomShell.Sidebar : sidebar (boutons panels auto-inclus) + boutons custom
+ * - Sidebar custom : boutons groupés (datasources en haut du groupe bas)
  * - RoomShell.LayoutComposer : mosaic layout (NotebookPanel + DataSourcesPanel)
  * - RoomShell.LoadingProgress : barre de progression DuckDB
  * - RoomShell.CommandPalette : palette de commandes (Ctrl+K)
  * - Modals globaux (portals → document.body, indépendants du layout)
  */
-import { RoomShell } from '@sqlrooms/room-shell'
+import { RoomShell, useBaseRoomShellStore } from '@sqlrooms/room-shell'
 import { useDisclosure, ThemeSwitch } from '@sqlrooms/ui'
 import { useShallow } from 'zustand/react/shallow'
+import { useMemo } from 'react'
 import { roomStore, useNotebookStore } from './store/notebookStore'
 import { SqlEditorModal } from '@sqlrooms/sql-editor'
 import { BookHeartIcon, MessageSquareCodeIcon, PaintbrushIcon, Settings2Icon, TerminalIcon } from 'lucide-react'
@@ -22,6 +23,33 @@ import { DbEngineModal } from './components/modals/DbEngineModal'
 import { ExportModal, GistTokenModal, GistResultModal, JsonPassphraseModal } from './components/modals/ExportModals'
 import { CellConfigModal } from './components/modals/CellConfigModal'
 import { LoopConfigModal, GroupSettingsModal, ChildGroupModal } from './components/modals/GroupModals'
+
+function getMosaicLeaves(node: any): string[] {
+    if (!node) return []
+    if (typeof node === 'string') return [node]
+    return [...getMosaicLeaves(node.first), ...getMosaicLeaves(node.second)]
+}
+
+function DataPanelSidebarButton() {
+    const togglePanel = useBaseRoomShellStore(s => s.layout.togglePanel)
+    const layoutConfig = useBaseRoomShellStore(s => s.layout.config)
+    const panels = useBaseRoomShellStore(s => s.layout.panels)
+    const initialized = useBaseRoomShellStore(s => s.room.initialized)
+
+    const panel = panels?.['data']
+    const isSelected = useMemo(() => getMosaicLeaves(layoutConfig?.nodes).includes('data'), [layoutConfig])
+
+    if (!panel) return null
+    return (
+        <RoomShell.SidebarButton
+            title={panel.title ?? 'Sources'}
+            isSelected={isSelected}
+            isDisabled={!initialized}
+            icon={panel.icon}
+            onClick={() => togglePanel('data')}
+        />
+    )
+}
 
 function DbEngineIcon({ className }: { className?: string }) {
     const dbEngine = useNotebookStore(s => s.dbEngine)
@@ -84,6 +112,9 @@ function SidebarControls() {
             {/* Ancrés en bas via spacer */}
             <div className="flex-1" />
 
+            {/* Sources de données — en haut du groupe ancré */}
+            <DataPanelSidebarButton />
+
             {/* Documentation (gist) */}
             <RoomShell.SidebarButton
                 title="Documentation"
@@ -119,9 +150,9 @@ export function Room() {
     return (
         <>
             <RoomShell roomStore={roomStore} className="h-screen w-screen">
-                <RoomShell.Sidebar className={showLayout ? '' : 'hidden'}>
+                <div className={`bg-muted/70 flex h-full w-12 flex-col items-center gap-2 px-1 py-4 ${showLayout ? '' : 'hidden'}`}>
                     <SidebarControls />
-                </RoomShell.Sidebar>
+                </div>
                 <RoomShell.LayoutComposer tileClassName="p-0" />
                 <RoomShell.LoadingProgress />
                 <RoomShell.CommandPalette />
