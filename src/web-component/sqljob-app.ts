@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Web Component CDN : <sqljob-app>
  *

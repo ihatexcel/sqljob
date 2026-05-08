@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * helpersSlice — utilitaires, initialisation, gestion moteur DB, statuts.
  * Converti de helpersMixin.ts (Alpine this-proxy) vers un slice Zustand pur.
@@ -108,13 +107,6 @@ export const createHelpersSlice = (set: any, get: any) => ({
             }
             setTimeout(() => setTimeout(() => get().refreshMarkdownCellsForPage(0), 300), 0)
             await get().refreshDuckdbTables()
-            if (DuckDBManager.currentEngine !== 'ducklings') {
-                try {
-                    await get().room.initialize()
-                } catch (err) {
-                    console.warn('[sqljob] room.initialize() error:', err)
-                }
-            }
             if (DuckDBManager.currentEngine !== 'ducklings') {
                 try {
                     await get().db.refreshTableSchemas()

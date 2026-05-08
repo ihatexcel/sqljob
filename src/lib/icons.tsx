@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Icônes centralisées — migration Iconify → lucide-react (système natif sqlrooms).
  * Utilisé uniquement dans les composants React.

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { EditorView } from '@codemirror/view'
 import { EditorState } from '@codemirror/state'
 import { basicSetup } from 'codemirror'
@@ -20,7 +19,7 @@ export class CDNManager {
                     return this.loadingPromises.get(url);
                 }
 
-                const promise = new Promise((resolve, reject) => {
+                const promise = new Promise<void>((resolve, reject) => {
                     const script = document.createElement('script');
                     script.src = url;
                     script.onload = () => {
@@ -118,7 +117,7 @@ export class CDNManager {
             }
 
             // Créer une instance d'éditeur CodeMirror SQL (utilisé par editorsMixin pour les modales de groupe)
-            static createSqlEditor(container, initialValue, onChange, options = {}) {
+            static createSqlEditor(container: any, initialValue: any, onChange: any, options: any = {}) {
                 const isDarkTheme = document.documentElement.classList.contains('dark') ||
                     window.matchMedia('(prefers-color-scheme: dark)').matches;
 

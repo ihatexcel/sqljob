@@ -1,4 +1,3 @@
-// @ts-nocheck
 
 export function ico(name: string, size = '1rem'): string {
     return `<span class="iconify" data-icon="${name}" style="font-size:${size}"></span>`;

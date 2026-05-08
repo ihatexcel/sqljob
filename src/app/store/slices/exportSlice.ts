@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * exportSlice — gestion des exports/imports de configuration + buildExportConfig().
  * Converti de exportImportMixin.ts (Alpine this-proxy) vers un slice Zustand pur.

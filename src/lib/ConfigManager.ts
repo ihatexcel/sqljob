@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { CELL_TYPE_SCHEMAS, CELL_TYPE_HANDLERS } from './cellTypeSchemas'
 import { GistEncrypt } from './GistEncrypt'
 import { FileHandler } from './FileHandler'
@@ -127,7 +126,7 @@ return c;
             }
 
             /** Retourne la requête par nom (ex: 'main', 'fallback', 'filename'). Rétrocompat: index 0->main, 1->fallback/filename. */
-            static getCellQuery(cell, nameOrIndex = 'main') {
+            static getCellQuery(cell: any, nameOrIndex: string | number = 'main') {
                 if (!cell) return '';
                 const name = typeof nameOrIndex === 'number' ? (ConfigManager.getQueryNameForIndex(cell, nameOrIndex) || 'main') : nameOrIndex;
                 const q = ConfigManager.getQueryByName(cell, name);
@@ -137,7 +136,7 @@ return c;
             /**
              * Indique si l'éditeur SQL est visible pour cette requête (showQueryEditor).
              */
-            static getCellQueryShowQueryEditor(cell, nameOrIndex = 'main') {
+            static getCellQueryShowQueryEditor(cell: any, nameOrIndex: string | number = 'main') {
                 if (!cell) return false;
                 const name = typeof nameOrIndex === 'number' ? (ConfigManager.getQueryNameForIndex(cell, nameOrIndex) || 'main') : nameOrIndex;
                 const q = ConfigManager.getQueryByName(cell, name);
@@ -148,7 +147,7 @@ return c;
              * Indique si le résultat (datatable/visualisation) doit être affiché en mode client.
              * Par défaut true (undefined = affiché).
              */
-            static getCellQueryShowResult(cell, nameOrIndex = 'main') {
+            static getCellQueryShowResult(cell: any, nameOrIndex: string | number = 'main') {
                 if (!cell) return true;
                 const name = typeof nameOrIndex === 'number' ? (ConfigManager.getQueryNameForIndex(cell, nameOrIndex) || 'main') : nameOrIndex;
                 const q = ConfigManager.getQueryByName(cell, name);
@@ -334,7 +333,7 @@ return c;
             }
 
             /** Retourne le moteur de la requête (queries[].engine). Valeurs: sql, js, text. Défaut depuis schéma. */
-            static getCellEngine(cell, nameOrIndex = 'main') {
+            static getCellEngine(cell: any, nameOrIndex: string | number = 'main') {
                 if (!cell) return 'sql';
                 const name = typeof nameOrIndex === 'number' ? (ConfigManager.getQueryNameForIndex(cell, nameOrIndex) || 'main') : nameOrIndex;
                 const q = ConfigManager.getQueryByName(cell, name);
@@ -448,7 +447,7 @@ return c;
              */
             static getUIParamsFromURL() {
                 const urlParams = new URLSearchParams(window.location.search);
-                const uiParams = {};
+                const uiParams: Record<string, unknown> = {};
 
                 // devMode: boolean
                 if (urlParams.has('devMode')) {
@@ -566,7 +565,7 @@ return c;
                         const response = await fetch(apiUrl);
                         if (response.ok) {
                             const gistData = await response.json();
-                            const files = Object.values(gistData.files || {});
+                            const files = Object.values(gistData.files || {}) as any[];
                             const jsonFile = files.find(file =>
                                 file.filename.toLowerCase().endsWith('.json') ||
                                 file.type === 'application/json'
@@ -637,8 +636,8 @@ return c;
                 return arr;
             }
 
-            static async cleanCell(cell, includeFileData = false) {
-                const cleanCell = { type: cell.type };
+            static async cleanCell(cell: any, includeFileData = false) {
+                const cleanCell: any = { type: cell.type };
 
                 const schema = CELL_TYPE_SCHEMAS?.types[cell?.type];
                 const exportFields = schema?.exportFields ?? ['queries'];
@@ -737,8 +736,8 @@ return c;
                 return cleanCell;
             }
 
-            static async cleanGroup(group, includeFileData = false) {
-                const cleanGroup = {
+            static async cleanGroup(group: any, includeFileData = false) {
+                const cleanGroup: any = {
                     direction: group.direction || 'row',
                     style: group.style || '',
                     cells: await Promise.all((group.cells || []).map(cell => ConfigManager.cleanCell(cell, includeFileData)))

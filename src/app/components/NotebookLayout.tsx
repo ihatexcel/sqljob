@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useRef, useEffect, useState, useCallback } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import { useNotebookStore } from '../store/notebookStore'

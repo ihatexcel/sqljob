@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * NotebookPanel — Wrapper principal du panneau notebook.
  * Gère le switch entre :

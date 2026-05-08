@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { safeEvalJs } from '../../../lib/safeEval'
 import { rawTableDataStore as _rawTableDataStore } from '../../../lib/tableDataStore'
 import { DuckDBManager } from '../../../lib/DuckDBManager'
@@ -8,6 +7,9 @@ import { CELL_TYPE_SCHEMAS } from '../../../lib/cellTypeSchemas'
 import { EChartSqlParser } from '../../../lib/EChartSqlParser'
 import { formatValueForInputType } from '../../../lib/utils'
 import { FileHandler } from '../../../lib/FileHandler'
+
+// PizZip est chargé dynamiquement via CDNManager.loadPizZip() et exposé sur window
+declare const PizZip: any;
 
 
 /** Détecte si un SQL contient une instruction DDL (CREATE, DROP, ALTER, INSERT, UPDATE, DELETE…).
@@ -757,10 +759,10 @@ export const createExecutionSlice = (set: any, get: any) => ({
         }
     },
 
-    renderIframeInContainer(cell) {
-        const iframe = document.getElementById('iframe-' + cell._id)
+    renderIframeInContainer(cell: any) {
+        const iframe = document.getElementById('iframe-' + cell._id) as HTMLIFrameElement | null
         if (iframe && cell._htmlContent) {
-            const doc = iframe.contentDocument || iframe.contentWindow.document
+            const doc = iframe.contentDocument || iframe.contentWindow!.document
             doc.open()
             doc.write(cell._htmlContent)
             doc.close()
@@ -1247,9 +1249,9 @@ export const createExecutionSlice = (set: any, get: any) => ({
         }
     },
 
-    async renderPerspectiveInContainer(cell) {
+    async renderPerspectiveInContainer(cell: any) {
         const containerId = 'perspective-' + cell._id
-        const viewer = document.getElementById(containerId)
+        const viewer = document.getElementById(containerId) as any
 
         if (!viewer || !cell._arrowTable) {
             // Viewer absent du DOM (ex: showContent=false pendant l'exécution).

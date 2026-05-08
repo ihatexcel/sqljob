@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Éditeur SQL/JS React.
  * Pour les cellules SQL/DuckDB : utilise SqlMonacoEditor de @sqlrooms/sql-editor

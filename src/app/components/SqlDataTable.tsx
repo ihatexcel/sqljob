@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * SqlDataTable — remplace SimpleDatatables pour les cellules sql/table.
  * Utilise DataTablePaginated de @sqlrooms/data-table avec tri et pagination

@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Composant racine React — remplace mount.ts + htmlTemplates.generateAppHTML()
  *

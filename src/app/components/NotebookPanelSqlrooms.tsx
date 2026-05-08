@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * NotebookPanelSqlrooms — Panneau notebook natif sqlrooms.
  * Utilise les composants @sqlrooms/cells (SheetsTabBar) et @sqlrooms/notebook (Notebook).

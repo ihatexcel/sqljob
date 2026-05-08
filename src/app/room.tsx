@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Room — Composant racine utilisant RoomShell de @sqlrooms/room-shell.
  *
@@ -92,6 +91,8 @@ function SidebarControls() {
                 isSelected={false}
                 icon={BookHeartIcon}
             />
+
+
 
             {/* DevMode toggle */}
             <RoomShell.SidebarButton

@@ -346,7 +346,7 @@ class UniverSheetElement extends LitElement {
         }
 
         const { univer, univerAPI } = createUniver({
-            locale: localeEntry.type,
+            locale: localeEntry.type as any,
             locales: {
                 [localeEntry.type]: mergeLocales(
                     localeData,
@@ -412,7 +412,7 @@ class UniverSheetElement extends LitElement {
         univerAPI.createWorkbook(workbookData)
 
         // Locale pour le formatage des nombres (séparateurs décimaux, format des dates…)
-        univerAPI.getActiveWorkbook()?.setNumfmtLocal?.(localeStr.replace('-', '_'))
+        univerAPI.getActiveWorkbook()?.setNumfmtLocal?.(localeStr.replace('-', '_') as any)
 
         // Format des colonnes date/timestamp via setNumberFormat — formats localisés
         if (params.rowColumnFormats?.length && params.rows?.length) {

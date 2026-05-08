@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Store Zustand principal — remplace notebookApp.ts + tous les mixins Alpine.
  *
@@ -259,6 +258,11 @@ const duckdbManagerConnector = createBaseDuckDbConnector(
         },
         executeQueryInternal: async (sql: string) => {
             if (DuckDBManager.currentEngine === 'ducklings') return null
+            if (!DuckDBManager.connInstance) {
+                // DuckDB pas encore prêt : retourne un Arrow table vide pour que
+                // refreshTableSchemas() ne plante pas sur .getChild()
+                return { schema: { fields: [] }, numRows: 0, getChild: () => null, toArray: () => [] }
+            }
             try {
                 const result = await DuckDBManager.executeQueryArrow(sql)
                 return result

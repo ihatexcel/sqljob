@@ -309,6 +309,7 @@ export interface SqlBlockConfig {
     ast: SqlBlockAst;
     degraded: boolean;
     manualSql: string | null;
+    sql?: string;
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────

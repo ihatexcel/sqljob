@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { FileHandler } from '../../../lib/FileHandler'
 import { ConfigManager } from '../../../lib/ConfigManager'
 import { DuckDBManager } from '../../../lib/DuckDBManager'
@@ -6,8 +5,8 @@ import { DuckDBManager } from '../../../lib/DuckDBManager'
 export const createFilesSlice = (set: any, get: any) => ({
 
     async loadEmbeddedFiles() {
-        const sourceFileScripts = document.querySelectorAll('script[id^="sourceFile_"]')
-        const docxTemplateScripts = document.querySelectorAll('script[id^="docxTemplate_"]')
+        const sourceFileScripts = document.querySelectorAll<HTMLElement>('script[id^="sourceFile_"]')
+        const docxTemplateScripts = document.querySelectorAll<HTMLElement>('script[id^="docxTemplate_"]')
 
         if (sourceFileScripts.length === 0 && docxTemplateScripts.length === 0) return
 

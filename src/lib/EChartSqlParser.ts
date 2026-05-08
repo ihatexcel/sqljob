@@ -1,4 +1,3 @@
-// @ts-nocheck
 // EChartSqlParser - Converts SQL query results (with column alias roles)
 // into Apache ECharts option objects.
 //

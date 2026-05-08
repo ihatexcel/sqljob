@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * pagesSlice — gestion des pages (onglets) du notebook.
  * Converti de pagesMixin.ts (Alpine this-proxy) vers un slice Zustand pur.

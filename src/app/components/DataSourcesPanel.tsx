@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * DataSourcesPanel — Panneau latéral de gestion des sources de données.
  * Rendu dans le mosaic layout de RoomShell (placement: 'sidebar').
@@ -56,7 +55,7 @@ function FilesSection() {
                     </div>
                     <div className="flex items-center gap-1 shrink-0">
                         {f.source === 'dropzone' && (
-                            <UploadIcon className="h-3 w-3 text-muted-foreground" title="importé via dropzone" />
+                            <UploadIcon className="h-3 w-3 text-muted-foreground" aria-label="importé via dropzone" />
                         )}
                         {f.size > 0 && (
                             <span className="text-xs text-muted-foreground">
