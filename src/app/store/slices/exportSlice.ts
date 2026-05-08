@@ -1,18 +1,22 @@
-// @ts-nocheck
 /**
  * exportSlice — gestion des exports/imports de configuration + buildExportConfig().
  * Converti de exportImportMixin.ts (Alpine this-proxy) vers un slice Zustand pur.
  *
  * Changement clé : buildExportConfig() utilise get() directement → "config dans le store".
  */
+import type { StoreApi } from 'zustand'
 import { ConfigManager, exportConfigToJson } from '../../../lib/ConfigManager'
 import { GistEncrypt } from '../../../lib/GistEncrypt'
 import { GitHubGistManager } from '../../../lib/GitHubGistManager'
 import { FileHandler } from '../../../lib/FileHandler'
 import { initializeCell } from '../../../lib/CellConfigService'
 import { applyThemeFromConfig, STORAGE_LIGHT, STORAGE_DARK, STORAGE_PRESET } from '../../components/modals/ThemeCustomModal'
+import type { NotebookStoreState } from '../types'
 
-export const createExportSlice = (set: any, get: any) => ({
+export const createExportSlice = (
+    set: StoreApi<NotebookStoreState>['setState'],
+    get: StoreApi<NotebookStoreState>['getState'],
+) => ({
 
     setTheme(themeName: string) {
         const theme = themeName === 'dark' ? 'dark' : 'light'
@@ -51,7 +55,7 @@ export const createExportSlice = (set: any, get: any) => ({
             }
             for (const cell of allCells) {
                 if (cell.type === 'univerSheet' && cell._univerModified && cell._univerAPI) {
-                    await (get() as any).captureUniverSnapshot(cell)
+                    await get().captureUniverSnapshot(cell, cell._univerAPI)
                 }
             }
         } catch (e) {

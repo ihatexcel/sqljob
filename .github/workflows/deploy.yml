@@ -3,22 +3,35 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main, beta, recette, claude/dev]
+  pull_request:
+    branches: [main, beta, recette, claude/dev]
+    types: [closed]
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: deploy-${{ github.ref_name }}
+  group: deploy-${{ github.event_name == 'pull_request' && github.event.pull_request.base.ref || github.ref_name }}
   cancel-in-progress: true
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || github.event.pull_request.merged == true
     steps:
+      - name: Determine target branch
+        id: target
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "branch=${{ github.event.pull_request.base.ref }}" >> $GITHUB_OUTPUT
+          else
+            echo "branch=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          fi
+
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.ref_name }}
+          ref: ${{ steps.target.outputs.branch }}
 
       - uses: actions/setup-node@v4
         with:
@@ -41,7 +54,7 @@ jobs:
 
       # main → racine du site (/)
       - name: Deploy main to /
-        if: github.ref_name == 'main'
+        if: steps.target.outputs.branch == 'main'
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -50,7 +63,7 @@ jobs:
 
       # beta / recette → sous-dossier /beta/
       - name: Deploy beta to /beta/
-        if: github.ref_name == 'beta' || github.ref_name == 'recette'
+        if: steps.target.outputs.branch == 'beta' || steps.target.outputs.branch == 'recette'
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -60,7 +73,7 @@ jobs:
 
       # claude/dev → sous-dossier /dev/
       - name: Deploy claude/dev to /dev/
-        if: github.ref == 'refs/heads/claude/dev'
+        if: steps.target.outputs.branch == 'claude/dev'
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

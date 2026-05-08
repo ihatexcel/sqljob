@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Modals simples : AddGroup, InsertGroup, InsertCell, AddCellToGroup
  */

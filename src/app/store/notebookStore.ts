@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Store Zustand principal — remplace notebookApp.ts + tous les mixins Alpine.
  *
@@ -6,9 +5,10 @@
  * forceUpdate() déclenche un re-render React après des mutations profondes.
  * createRoomShellSlice ajoute le système de layout mosaic (RoomShell).
  */
-import { create } from 'zustand'
 import { setAutoFreeze } from 'immer'
-import { createRoomShellSlice } from '@sqlrooms/room-shell'
+import { z } from 'zod'
+import { createRoomShellSlice, createRoomStore, persistSliceConfigs, LayoutConfig } from '@sqlrooms/room-shell'
+import type { NotebookStoreState } from './types'
 import { createBaseDuckDbConnector } from '@sqlrooms/duckdb-core'
 import { createSqlEditorSlice, createDefaultSqlEditorConfig } from '@sqlrooms/sql-editor'
 import { createCellsSlice as createSqlroomsCellsSlice, createDefaultCellRegistry } from '@sqlrooms/cells'
@@ -42,9 +42,10 @@ import { CELL_TYPE_SCHEMAS, CELL_TYPE_HANDLERS } from '../../lib/cellTypeSchemas
 import { formatValueForInputType } from '../../lib/utils'
 
 
-// Les mixins Alpine mutent directement les tableaux du state (this.groups.push(...)).
-// @sqlrooms/duckdb utilise Immer en interne qui freeze le state après chaque produce().
-// setAutoFreeze(false) empêche ce freeze pour que les mutations des mixins fonctionnent.
+// TODO(produce-migration): setAutoFreeze(false) est un workaround pour permettre les
+// mutations directes sur les cellules (cell._status = 'running', cell._results = rows…)
+// dans executionSlice et les autres slices. La migration vers produce() dans chaque slice
+// permettrait de supprimer cette ligne, mais requiert une refonte architecturale complète.
 setAutoFreeze(false)
 
 // ─── Expose globals (nécessaire pour les expressions dans les templates HTML) ─
@@ -195,7 +196,7 @@ function buildInitialState() {
         // DAG
         _dagDebounceTimer: null,
         _dagDebounceDelay: 200,
-        _pagesInitialized: new Set(),
+        _pagesInitialized: new Set<string>(),
 
         // Drag & drop pages
         draggedPageIndex: null,
@@ -235,6 +236,7 @@ function buildInitialState() {
 
             { type: 'iframe',             label: 'HTML/Iframe',              icon: 'web' },
             { type: 'sqlStat',            label: 'Stat SQL',                 icon: 'monitoring' },
+            { type: 'pivot',              label: 'Pivot',                    icon: 'pivot-table-chart' },
             { type: 'publipostageWord',   label: 'Publipostage Word',        icon: 'description' },
             { type: 'pdfme',              label: 'PDF (pdfme)',               icon: 'picture-as-pdf' },
             { type: 'perspective',        label: 'Perspective Viewer',       icon: 'analytics' },
@@ -243,10 +245,14 @@ function buildInitialState() {
 
         _tables: {},
         _duckdbTables: {} as Record<string, { rowCount: number, columns: {name: string, type: string}[] }>,
-        _roomFiles: [] as Array<{name: string, tableName: string, size: number, source: 'dropzone' | 'source-cell'}>,
+        _roomFiles: [] as {name: string, tableName: string, size: number, source: 'dropzone' | 'source-cell'}[],
         _rev: 0,  // compteur de version pour forcer les re-renders
     }
 }
+
+// ─── Panel IDs (Zod enum — typage statique + sécurité à l'exécution) ─────────
+export const PanelTypes = z.enum(['main', 'data'] as const)
+export type PanelTypes = z.infer<typeof PanelTypes>
 
 // ─── Connecteur DuckDB ponté vers DuckDBManager ───────────────────────────────
 // Permet à SqlEditorModal (et state.db) d'utiliser la même instance DuckDB
@@ -259,6 +265,11 @@ const duckdbManagerConnector = createBaseDuckDbConnector(
         },
         executeQueryInternal: async (sql: string) => {
             if (DuckDBManager.currentEngine === 'ducklings') return null
+            if (!DuckDBManager.connInstance) {
+                // DuckDB pas encore prêt : retourne un Arrow table vide pour que
+                // refreshTableSchemas() ne plante pas sur .getChild()
+                return { schema: { fields: [] }, numRows: 0, getChild: () => null, toArray: () => [] }
+            }
             try {
                 const result = await DuckDBManager.executeQueryArrow(sql)
                 return result
@@ -271,9 +282,15 @@ const duckdbManagerConnector = createBaseDuckDbConnector(
 )
 
 // ─── Store Zustand ────────────────────────────────────────────────────────────
-export const useNotebookStore = create<any>((set, get, api) => {
+const { roomStore: _roomStore, useRoomStore: _useNotebookStore } = createRoomStore<NotebookStoreState>(
+  persistSliceConfigs(
+    {
+      name: 'sqljob-layout-state-v1',
+      sliceConfigSchemas: { layout: LayoutConfig },
+    },
+    (set, get, store) => {
     // === Slice SqlEditor ===
-    const sqlEditorState = createSqlEditorSlice({ config: createDefaultSqlEditorConfig() })(set, get, api)
+    const sqlEditorState = createSqlEditorSlice({ config: createDefaultSqlEditorConfig() })(set, get, store)
 
     // === Slice RoomShell : layout mosaic + panels ===
     const roomShellState = createRoomShellSlice({
@@ -282,16 +299,16 @@ export const useNotebookStore = create<any>((set, get, api) => {
         layout: {
             config: {
                 type: 'mosaic',
-                nodes: 'main',
-            },
+                nodes: PanelTypes.enum.main,
+            } satisfies LayoutConfig,
             panels: {
-                main: {
+                [PanelTypes.enum.main]: {
                     title: 'Notebook',
                     icon: () => null,
                     component: NotebookPanel,
                     placement: 'main',
                 },
-                data: {
+                [PanelTypes.enum.data]: {
                     title: 'Sources',
                     icon: DatabaseIcon,
                     component: DataSourcesPanel,
@@ -299,12 +316,12 @@ export const useNotebookStore = create<any>((set, get, api) => {
                 },
             },
         },
-    })(set, get, api)
+    })(set, get, store)
 
     // === Slices sqlrooms notebook (requis par SheetsTabBar + Notebook de @sqlrooms/cells / @sqlrooms/notebook) ===
-    const sqlroomsCellsState = createSqlroomsCellsSlice({ cellRegistry: createDefaultCellRegistry() })(set, get, api)
-    const notebookState = createNotebookSlice()(set, get, api)
-    const canvasState = createCanvasSlice()(set, get, api)
+    const sqlroomsCellsState = createSqlroomsCellsSlice({ cellRegistry: createDefaultCellRegistry() })(set, get, store)
+    const notebookState = createNotebookSlice()(set, get, store)
+    const canvasState = createCanvasSlice()(set, get, store)
 
     const initialState = buildInitialState()
 
@@ -333,14 +350,12 @@ export const useNotebookStore = create<any>((set, get, api) => {
     const originalTogglePanel = roomShellState.layout.togglePanel
     const mobileTogglePanel = (panel: string, show?: boolean) => {
         const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
-        if (isMobile && panel === 'data') {
+        if (isMobile && panel === PanelTypes.enum.data) {
             const dataVisible = isDataPanelVisible()
             if (dataVisible) {
-                // Fermer → retour au notebook
-                set((s: any) => ({ layout: { ...s.layout, config: { ...s.layout.config, nodes: 'main' } } }))
+                set((s: any) => ({ layout: { ...s.layout, config: { ...s.layout.config, nodes: PanelTypes.enum.main } } }))
             } else {
-                // Ouvrir → plein écran data
-                set((s: any) => ({ layout: { ...s.layout, config: { ...s.layout.config, nodes: 'data' } } }))
+                set((s: any) => ({ layout: { ...s.layout, config: { ...s.layout.config, nodes: PanelTypes.enum.data } } }))
             }
             return
         }
@@ -411,12 +426,12 @@ export const useNotebookStore = create<any>((set, get, api) => {
         },
 
         // Ré-initialise le store depuis une config chargée (ex: après déchiffrement Gist)
-        initFromConfig(loadedConfig: any) {
+        initFromConfig(loadedConfig: unknown) {
             if (typeof window !== 'undefined') {
                 window._loadedConfig = loadedConfig
             }
             const newState = buildInitialState()
-            set({ ...newState })
+            set(newState as Partial<NotebookStoreState>)
         },
 
         // Setters directs pour le state exposé aux composants React
@@ -440,4 +455,9 @@ export const useNotebookStore = create<any>((set, get, api) => {
             return ap?.linkGroups || []
         },
     }
-})
+  })
+)
+
+// ─── Exports publics ──────────────────────────────────────────────────────────
+export const roomStore = _roomStore
+export const useNotebookStore = _useNotebookStore

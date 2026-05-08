@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * NotebookPanelSqljob — Panneau notebook custom sqljob (cells, DAG, pages).
  * Renommé depuis NotebookPanel. Contient la logique propre à sqljob :

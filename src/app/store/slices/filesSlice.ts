@@ -1,13 +1,17 @@
-// @ts-nocheck
+import type { StoreApi } from 'zustand'
 import { FileHandler } from '../../../lib/FileHandler'
 import { ConfigManager } from '../../../lib/ConfigManager'
 import { DuckDBManager } from '../../../lib/DuckDBManager'
+import type { NotebookStoreState } from '../types'
 
-export const createFilesSlice = (set: any, get: any) => ({
+export const createFilesSlice = (
+    set: StoreApi<NotebookStoreState>['setState'],
+    get: StoreApi<NotebookStoreState>['getState'],
+) => ({
 
     async loadEmbeddedFiles() {
-        const sourceFileScripts = document.querySelectorAll('script[id^="sourceFile_"]')
-        const docxTemplateScripts = document.querySelectorAll('script[id^="docxTemplate_"]')
+        const sourceFileScripts = document.querySelectorAll<HTMLElement>('script[id^="sourceFile_"]')
+        const docxTemplateScripts = document.querySelectorAll<HTMLElement>('script[id^="docxTemplate_"]')
 
         if (sourceFileScripts.length === 0 && docxTemplateScripts.length === 0) return
 
@@ -167,7 +171,7 @@ export const createFilesSlice = (set: any, get: any) => ({
 
             if (logicalExt === 'xls') {
                 get().setStatus(`Conversion Excel (.xls) via SheetJS...`, 'loading')
-                const xlsxConf = cell.json?.xlsx || {}
+                const xlsxConf = (cell.json?.xlsx || {}) as Record<string, any>
                 const { csv, csvFileName } = await FileHandler.processExcelFile(file, xlsxConf.options, xlsxConf.toCsvOptions, xlsxConf.sheetSelection)
                 const csvBlob = new Blob([csv], { type: 'text/csv' })
                 await DuckDBManager.registerFile(csvFileName, csvBlob)

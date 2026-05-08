@@ -1,6 +1,10 @@
-// @ts-nocheck
+import type { StoreApi } from 'zustand'
+import type { NotebookStoreState } from '../types'
 
-export const createCopyPasteSlice = (set: any, get: any) => ({
+export const createCopyPasteSlice = (
+    set: StoreApi<NotebookStoreState>['setState'],
+    get: StoreApi<NotebookStoreState>['getState'],
+) => ({
 
     /** Item courant dans le presse-papier interne (cell ou groupe) */
     _clipboardItem: null as { type: 'sqljob-cell' | 'sqljob-group'; data: any } | null,
@@ -36,7 +40,7 @@ export const createCopyPasteSlice = (set: any, get: any) => ({
 
     /** Clone une cell en supprimant les props runtime */
     _cloneCellForCopy(cell: any) {
-        const clone = get()._safeSerialize(cell)
+        const clone = get()._safeSerialize(cell) as Record<string, unknown>
         if (!clone) return {}
         // Props runtime à supprimer
         delete clone._id
@@ -61,11 +65,11 @@ export const createCopyPasteSlice = (set: any, get: any) => ({
 
     /** Clone un groupe en supprimant les props runtime (récursif) */
     _cloneGroupForCopy(group: any) {
-        const clone = get()._safeSerialize(group)
+        const clone = get()._safeSerialize(group) as Record<string, unknown>
         if (!clone) return {}
         delete clone._id
-        clone.cells = (clone.cells || []).map((c: any) => get()._cloneCellForCopy(c))
-        clone.children = (clone.children || []).map((child: any) => get()._cloneGroupForCopy(child))
+        clone.cells = ((clone.cells as any[]) || []).map((c: any) => get()._cloneCellForCopy(c))
+        clone.children = ((clone.children as any[]) || []).map((child: any) => get()._cloneGroupForCopy(child))
         return clone
     },
 
@@ -120,7 +124,7 @@ export const createCopyPasteSlice = (set: any, get: any) => ({
         const cell = get().getCellAtPath(path, cellIndex)
         if (!cell) return
         const clone = get()._cloneCellForCopy(cell)
-        const item = { type: 'sqljob-cell', data: clone }
+        const item = { type: 'sqljob-cell' as const, data: clone }
         set({ _clipboardItem: item })
         try { navigator.clipboard.writeText(JSON.stringify(item)) } catch {}
         get().setStatus('Cellule copiée', 'success')
@@ -132,7 +136,7 @@ export const createCopyPasteSlice = (set: any, get: any) => ({
         const group = get().getGroupAtPath(path)
         if (!group) return
         const clone = get()._cloneGroupForCopy(group)
-        const item = { type: 'sqljob-group', data: clone }
+        const item = { type: 'sqljob-group' as const, data: clone }
         set({ _clipboardItem: item })
         try { navigator.clipboard.writeText(JSON.stringify(item)) } catch {}
         get().setStatus('Groupe copié', 'success')

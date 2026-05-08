@@ -1,260 +1,97 @@
-# 🦆 sqlJob Notebook
+# sqljob
 
-**Client-side SQL notebook powered by DuckDB-WASM**
+A browser-based tool for building shareable ETL pipelines and calculator interfaces — no server, no GAFAM, no cloud dependency.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![DuckDB](https://img.shields.io/badge/DuckDB-WASM-blue)](https://duckdb.org/)
-[![AI-Assisted Development](https://img.shields.io/badge/Development-AI--Assisted-purple)](https://cursor.sh)
-
-> **I Hate Excel, so I built a simple, client-side SQL job runner.** 📊  
-> 📥 Load, 🔄 transform, and 📈 visualize your data directly in the browser—no setup, no fuss. 🚀
+**[Try it →](https://ihatexcel.github.io/sqljob)**
 
 ---
 
-## ✨ Features
+## Purpose
 
-- **🌐 Zero Setup**: Pure client-side execution—no server, no installation
-- **📂 Multi-Source Support**: Load multiple CSV, Parquet, Excel files simultaneously
-- **📓 Notebook Interface**: Organize your analysis in executable cells (Markdown, SQL, Charts, Tables)
-- **📊 Plotly Visualizations**: Create interactive charts with full Plotly.js support
-- **💾 Portable Exports**: Export standalone HTML files with embedded data
-- **🔄 Auto-execution**: Configure cells to run automatically after data loads
-- **🎨 Dark Mode UI**: Modern, responsive interface
-- **📄 PDF Export**: Print-friendly output for reports
+sqljob is designed for analysts and developers who need to build and share **data processing workflows** ("moulinettes") without relying on cloud infrastructure or proprietary tools.
 
----
+The typical use case: you write SQL transformations, wire up input parameters, and package the whole thing as a single portable file — a JSON configuration, or a standalone HTML that embeds both the app and the data (Base64-encoded). The recipient opens it in a browser. No login, no server, no Excel.
 
-## ⚠️ Early Development Notice
-
-**This project started on December 19, 2025 and is far from finalized.**
-
-- 🚧 **Not production-ready** - Active development, APIs may change
-- 🐛 **Expect bugs** - Testing and stabilization ongoing
-- 📝 **Documentation incomplete** - Features being added daily
-- 💡 **Feedback welcome** - Open issues/PRs to help shape the project
-
-**Current status**: Experimental / Proof of concept  
-**Use at your own risk** - Not recommended for critical workflows yet
+Use it to build:
+- ETL pipelines that run entirely client-side (DuckDB-WASM)
+- Calculator or simulation interfaces driven by SQL
+- Self-contained data reports shareable as a single HTML file
+- Parameterized notebooks distributed via GitHub Gist (with optional encryption)
 
 ---
 
-## 🚀 Quick Start
+## What it does
 
-### Option 1: Download & Open
-1. Download [`index.html`](https://github.com/ihatexcel/sqljob/releases/latest)
-2. Open it in your browser
-3. Drag & drop your CSV/Excel file
-4. Start querying with SQL!
+- Load CSV, Parquet, and Excel files directly into DuckDB
+- Write SQL across multiple notebook pages with grouped, auto-executable cells
+- Generate charts using SQL role syntax: `SELECT date::XAXIS, revenue::BARCHART FROM sales`
+- Build dynamic reports with parameters, conditional groups, and Univer spreadsheet cells
+- Export to standalone HTML (data embedded as Base64), JSON config, or PDF
+- Share via GitHub Gist with optional passphrase encryption
+- Embed as a web component via CDN: `<sqljob-app>`
 
-### Option 2: Use Online
-👉 [Try it now](https://ihatexcel.github.io/sqljob)
+---
 
-### Option 3: Build from Source
+## Quick start
+
 ```bash
 git clone https://github.com/ihatexcel/sqljob.git
 cd sqljob
-# Open index.html in your browser - that's it!
-```
----
-
-## 🎯 Use Cases
-
-| Scenario | Solution |
-|----------|----------|
-| 📊 **Replace Excel Data Pipelines** | Distribute SQL-based data processing without requiring end-users to install anything |
-| 🔄 **Power Query Alternative** | Share transformation logic as portable HTML—no Excel license needed |
-| 📤 **Data Products for Non-Technical Users** | Package your SQL workflows into self-service tools colleagues can run in their browser |
-| 🎓 **SQL Training Without Setup** | Give students/analysts a zero-install environment to learn data manipulation |
-| 📈 **Quick Data QA/Validation** | Drop files, run checks, export results—2 minutes from raw data to insights |
-
----
-
-## 🏗️ Architecture
-
-### Cell Types
-
-| Type | Description | Use Case |
-|------|-------------|----------|
-| 📝 **Markdown** | Rich text, HTML, SVG | Documentation, headers |
-| 📂 **Sources** | File upload zones | Load CSV/Excel/Parquet |
-| 🗄️ **SQL** | Execute queries | Data exploration |
-| 📊 **Table** | Display results | Preview datasets |
-| 📈 **Plot** | Plotly charts | Visualizations |
-| 📤 **SQL Export** | Download results | Export transformed data |
-| 🖼️ **Iframe** | Render HTML | Custom reports |
-
-### Technology Stack
-
-**Core:**
-- [DuckDB-WASM](https://github.com/duckdb/duckdb-wasm) - In-browser SQL engine
-- [Alpine.js](https://alpinejs.dev/)- Reactive UI framework
-
-**UI Components:**
-- [Tabulator](https://tabulator.info/) - Interactive tables
-- [Plotly.js](https://plotly.com/javascript/) - Charting library
-- [Marked.js](https://marked.js.org/) - Markdown rendering
-
-**File Processing:**
-- [SheetJS (xlsx)](https://sheetjs.com/) `0.18.5` - Excel parsing
----
-
-## 🎨 Inspiration
-
-This project draws inspiration from:
-
-- [**SQLrooms**](https://sqlrooms.org/) - Production-ready data webapp leveraging DuckDB-WASM
-- [**Perspective.js**](https://perspective.finos.org/) - Streaming data visualization (note: Plotly.js used here requires intermediate arrays, not streaming-capable)
-- [**Huey**](https://github.com/rpbouman/huey) - Vanilla JS approach to DuckDB-WASM (no framework overhead)
-- [**Power Query (Excel)**](https://support.microsoft.com/en-us/office/about-power-query-in-excel-7104fbee-9e62-4cb9-a02e-5bfb1a6c536a) - ETL for the masses
-
-Special thanks to these projects for pioneering accessible data tools!
-
----
-
-## 🤖 AI-Assisted Development
-
-This project contains code generated and refined with:
-- [Claude](https://claude.ai) (Anthropic)
-- [Cursor](https://cursor.sh) (AI-powered IDE)
-
-Human-written architecture, AI-assisted implementation. 🤝
-
----
-
-## 📦 Configuration Format
-
-sqlJob uses a JSON configuration format for cells:
-```json
-{
-  "job": {
-    "autoExecuteWithoutSources": false,
-    "cells": [
-      {
-        "type": "markdown",
-        "content": "# sqlJob ⚡💻\n## I Hate Excel, so I built a simple, client-side SQL job runner. 🛠️\n📥 Load, 🔄 transform, and 📊 visualize your data directly in the browser—no setup, no fuss. 🚀"
-      },
-      {
-        "type": "sources",
-        "autoRunNextCells": true,
-        "sources": [
-          {
-            "name": "source1",
-            "importText": "Glissez-déposez votre fichier ici",
-            "query": "CREATE OR REPLACE TABLE source1 AS SELECT * FROM read_csv_auto('{fileNameUpload}', ALL_VARCHAR=true, HEADER=true)",
-            "xlsx": {
-              "options": {
-                "type": "array",
-                "raw": false,
-                "dateNF": "dd/mm/yyyy",
-                "cellDates": true,
-                "cellNF": false,
-                "cellText": false
-              },
-              "toCsvOptions": {
-                "dateNF": "dd/mm/yyyy",
-                "FS": ",",
-                "RS": "\n"
-              },
-              "sheetSelection": {
-                "type": {
-                  "auto": true,
-                  "index": false,
-                  "name": false
-                },
-                "index": 0,
-                "name": ""
-              }
-            }
-          }
-        ]
-      },
-      {
-        "type": "table",
-        "query": "SELECT * FROM source1 LIMIT 100",
-        "maxRows": 1000
-      },
-      {
-        "type": "sqlExport",
-        "query": "COPY (SELECT * from source1) TO '{fileName}' (FORMAT CSV, HEADER, DELIMITER ';')",
-        "fileNameQuery": "SELECT 'export_' || current_timestamp::text || '.csv' as file_name",
-        "mimeType": ""
-      },
-      {
-        "type": "plot",
-        "query": "// Variables: container, Plotly, + les tables configurées\nconst limitedSource = source1.slice(0, 1000);\nconst x = limitedSource.map(r => Object.values(r)[0]);\nconst y = limitedSource.map(r => Object.values(r)[1]);\n\nPlotly.newPlot(container, [{\n    x: x,\n    y: y,\n    type: \"bar\"\n}], { title: \"Graphique\" });",
-        "tables": "source1"
-      }
-    ]
-  },
-  "ui": {
-    "devMode": true
-  }
-}
+npm install
+npm run dev
 ```
 
-### Export Formats
-
-- **JSON Config**: Portable configuration file
-- **Base64 Config**: Embed in file
-- **Standalone HTML**: Fully self-contained with embedded data
-- **PDF**: Print-ready reports via browser print
+Or use it directly online — no installation needed.
 
 ---
 
-## 🛠️ Development
+## Stack
 
-### File Structure
+| Layer | Technology |
+|---|---|
+| SQL engine | [DuckDB-WASM](https://duckdb.org/docs/api/wasm/overview.html) 1.5.2 |
+| UI framework | React 18 + [sqlrooms](https://sqlrooms.org/) |
+| State | Zustand 5 |
+| Build | Vite 5 + TypeScript |
+| Styling | Tailwind CSS 4 |
+| Charts | ECharts 5 |
+| Spreadsheet | Univer |
+
+---
+
+## Development
+
+```bash
+npm run dev          # dev server (localhost:5173)
+npm run build        # production build → dist/
+npm run dev:cdn      # CDN web-component dev (localhost:5174)
 ```
-sqljob/
-├── index.html              # Main notebook interface
-├── README.md
-├── LICENSE
+
+The CI pipeline (`deploy.yml`) handles the CDN bundle build and GitHub Pages deployment automatically on push to `main`, `beta`, or `claude/dev`.
+
+---
+
+## Project structure
+
+```
+src/
+  app/
+    components/       # React components (panels, cells, modals)
+    store/
+      notebookStore.ts     # Main Zustand store
+      slices/              # Feature slices (cells, execution, export…)
+    room.tsx          # Root layout (RoomShell)
+  lib/
+    DuckDBManager.ts  # DuckDB singleton
+    ConfigManager.ts  # Notebook config (load, save, Gist)
+    EChartSqlParser.ts# SQL → ECharts config
+    CDNManager.ts     # Dynamic CDN library loader
+  web-component/
+    sqljob-app.ts     # <sqljob-app> custom element
 ```
 
-### Key Classes
-```javascript
-ConfigManager    // Configuration handling
-FileHandler      // File I/O & compression
-DuckDBManager    // Database operations
-PlotlyManager    // Chart generation
-```
-
-**Requirements:**
-- Modern browser with WASM support
-- `CompressionStream` API (for exports)
-
 ---
 
-## 📄 License
+## License
 
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 🙏 Acknowledgments
-
-- **DuckDB Team** - For the incredible WASM build
-- **Alpine.js Community** - For the reactive simplicity
-- **Plotly Team** - For open-source charting
-- **Open Source Community** - For the tools that made this possible
-
----
-
-## 📬 Contact
-
-**Théo Nobella-Pichonnier**
-
-- 💼 [Linkedin](https://fr.linkedin.com/in/th%C3%A9o-nobella-97a9b3157)
-
----
-
-## ⭐ Star History
-
-If this project helped you, consider giving it a star! ⭐
-
-[![Star History Chart](https://api.star-history.com/svg?repos=ihatexcel/sqljob&type=Date)](https://star-history.com/#ihatexcel/sqljob&Date)
-
----
-
-**Made with ❤️ by Théo Nobella-Pichonnier**
-*"I hate Excel, so I built this."* 
+AGPL-3.0 — © Théo Nobella-Pichonnier

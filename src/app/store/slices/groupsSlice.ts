@@ -1,8 +1,12 @@
-// @ts-nocheck
+import type { StoreApi } from 'zustand'
 import { ConfigManager } from '../../../lib/ConfigManager'
 import { useConfirmModal } from '../uiStores'
+import type { NotebookStoreState } from '../types'
 
-export const createGroupsSlice = (set: any, get: any) => ({
+export const createGroupsSlice = (
+    set: StoreApi<NotebookStoreState>['setState'],
+    get: StoreApi<NotebookStoreState>['getState'],
+) => ({
 
     getFlattenedGroups() {
         const result = []
@@ -100,7 +104,7 @@ export const createGroupsSlice = (set: any, get: any) => ({
         return group?.cells?.[cellIndex]
     },
 
-    createNewGroup(direction = 'row') {
+    createNewGroup(direction: 'row' | 'column' = 'row') {
         return {
             _id: get().generateGroupId(),
             direction,
@@ -357,7 +361,7 @@ FROM source1 LIMIT 10;`
     moveItemInGroup(path: any, itemType: string, originalIndex: number, direction: number) {
         const activePage = get().getActivePage()
         const group = (!path || path.length === 0)
-            ? { children: activePage?.groups || [] }
+            ? { children: activePage?.groups || [] } as unknown as import('../types').NotebookGroup
             : get().getGroupAtPath(path)
         if (!group) return
 

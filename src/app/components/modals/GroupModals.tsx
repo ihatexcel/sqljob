@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * LoopConfigModal + GroupSettingsModal + ChildGroupModal
  */
@@ -46,7 +45,7 @@ export function LoopConfigModal() {
                             <Label>Activer la boucle sur ce groupe</Label>
                             <Switch
                                 checked={!!group.loop?.enabled}
-                                onCheckedChange={v => { group.loop = group.loop || {}; group.loop.enabled = v; forceUpdate() }}
+                                onCheckedChange={v => { group.loop = group.loop || { enabled: false, query: '', zip: false, zipQuery: '' }; group.loop.enabled = v; forceUpdate() }}
                             />
                         </div>
 

@@ -1,4 +1,3 @@
-// @ts-nocheck
 
         export class GistEncrypt {
             static ENCRYPTED_MARKER = '_encrypted';

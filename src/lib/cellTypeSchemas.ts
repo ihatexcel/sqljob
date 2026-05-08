@@ -1,4 +1,3 @@
-// @ts-nocheck
 
 export const CELL_TYPE_SCHEMAS = {
             common: {
@@ -134,6 +133,22 @@ export const CELL_TYPE_SCHEMAS = {
                     bodyFamily: 'sqlStat',
                     bodyConfig: { defaultIcon: 'mdi:information-outline', showResultInfoDevOnly: true },
                     bodyDisplay: { showSkeleton: { excludeWhenSqlEditor: true }, resultInfo: { showDevOnly: true } }
+                },
+                pivot: {
+                    executeHandler: 'executePivotCell',
+                    defaultNamePrefix: 'pivot',
+                    exportFields: ['json', 'preserveUserValue'],
+                    initProps: {},
+                    commonParams: ['name'],
+                    specificParams: [
+                        { key: 'preserveUserValue', label: 'Ne pas ré-exécuter si déjà calculé', inputType: 'checkbox', defaultValue: false }
+                    ],
+                    defaults: {
+                        json: { selectedTable: '' },
+                        preserveUserValue: false,
+                    },
+                    bodyFamily: 'pivot',
+                    bodyDisplay: {},
                 },
                 uiParameter: {
                     executeHandler: 'executeUiParameterCell',

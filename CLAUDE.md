@@ -31,17 +31,22 @@
 ## Stack technique
 
 ### Framework UI — sqlrooms
-- **`@sqlrooms/room-shell`** : layout mosaic (panneaux redimensionnables), sidebar avec boutons toggle par panneau, `RoomShell` / `RoomPanel` / `RoomShell.Sidebar` / `RoomShell.LayoutComposer`.
-- **`@sqlrooms/ui`** : composants Shadcn/Radix (Button, Input, Tooltip, useToast…).
+- **`@sqlrooms/room-shell`** : layout mosaic (panneaux redimensionnables), sidebar, `RoomShell` / `RoomPanel` / `RoomShell.Sidebar` / `RoomShell.SidebarButtons` / `RoomShell.LayoutComposer` / `RoomShell.LoadingProgress` / `RoomShell.CommandPalette`.
+- **`@sqlrooms/ui`** : composants Shadcn/Radix (Button, Input, Tooltip, useToast, ThemeSwitch…).
 - **`@sqlrooms/dropzone`** : `FileDropzone` — drag & drop de fichiers.
 - **`@sqlrooms/sql-editor`** : éditeur SQL CodeMirror.
 - **`@sqlrooms/utils`** : utilitaires (`convertToValidColumnOrTableName`…).
-- Version fixée : `0.29.0-rc.1`.
+- Version fixée : `0.29.0-rc.1` (sauf `@sqlrooms/pivot@0.29.0-rc.2` — voir ci-dessous).
+- **`@sqlrooms/pivot`** : `0.29.0-rc.2` installé avec npm `overrides` pour contourner les références `workspace:*` non résolues (les dépendances transitives sont forcées sur rc.1). Fournit `PivotEditor` (drag-and-drop, multi-renderer) + `PivotResults` (useSql). L'exécution crée une VIEW DuckDB `pivot_src_<id>` et `PivotResults` calcule les requêtes pivot directement via `useSql` (bridgé sur `DuckDBManager`).
+- ⚠️ **rc.2 (packages hors pivot) toujours bloqué** : `@sqlrooms/codemirror@0.29.0-rc.2` et les autres packages rc.2 restent inutilisables hors monorepo. Seul `@sqlrooms/pivot` a pu être intégré via overrides.
 
 ### State management — Zustand
 - Store principal : `src/app/store/notebookStore.ts`
-- Le store fusionne via un proxy `this → get/set` les 9 mixins Alpine migrés : `pagesMixin`, `helpersMixin`, `groupsMixin`, `cellsMixin`, `filesMixin`, `executionMixin`, `parametersMixin`, `editorsMixin`, `exportImportMixin`.
+- Store créé via `createRoomStore<NotebookState>()` de `@sqlrooms/room-shell` — retourne `{ roomStore, useNotebookStore }`.
+- `roomStore` est le store brut passé à `<RoomShell roomStore={roomStore}>` ; `useNotebookStore` est le hook React.
+- Le store fusionne les slices sqlrooms (roomShell, sqlEditor, cells, notebook, canvas) et les 9 slices Zustand purs (pages, helpers, parameters, export, groups, cells, files, execution, copyPaste).
 - La slice RoomShell (`createRoomShellSlice`) gère le layout mosaic et l'état des panneaux.
+- Le layout est persisté via `persistSliceConfigs` (clé localStorage `sqljob-layout-state-v1`).
 
 ### DuckDB
 - **Instance unique** : `src/lib/DuckDBManager.ts` — singleton statique partagé par toutes les cells et le dropzone.

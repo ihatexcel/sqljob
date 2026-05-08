@@ -1,4 +1,3 @@
-// @ts-nocheck
 // EChartSqlParser - Converts SQL query results (with column alias roles)
 // into Apache ECharts option objects.
 //
@@ -792,7 +791,7 @@ function _buildGaugeOption(results, roleMap, chartType, base, textColor) {
     // LABELS column: [{value, label}, ...] OR simple ['label1', 'label2', ...]
     const labelsCols = roleMap['LABELS'] || [];
     const labelsCol = labelsCols[0]?.originalName;
-    let gaugeAxisLabels: Array<{ value: number; label: string }> | undefined;
+    let gaugeAxisLabels: { value: number; label: string }[] | undefined;
     if (labelsCol && results[0]?.[labelsCol] != null) {
         const raw = results[0][labelsCol];
         try {
@@ -982,7 +981,7 @@ function _buildBoxplotOption(results, roleMap, base, textColor) {
 
     let categories: string[] = [];
     let boxData: number[][] = [];
-    let outlierData: Array<[number, number]> = []; // [catIndex, value]
+    let outlierData: [number, number][] = []; // [catIndex, value]
 
     // If 5+ BOXPLOT columns, treat as direct [min, q1, median, q3, max] — no outlier detection
     if (valueCols.length >= 5) {

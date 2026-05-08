@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useEffect, useRef, useState } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@sqlrooms/ui'
 import { MessageSquareCodeIcon } from 'lucide-react'

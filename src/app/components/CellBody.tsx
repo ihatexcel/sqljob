@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Rendu du body d'une cellule selon son type.
  * Remplace les templates Alpine générés par CellBodyRenderer.
@@ -19,7 +18,25 @@ import {
 import { DuckDBManager } from '../../lib/DuckDBManager'
 import DataTablePaginated from '@sqlrooms/data-table/dist/DataTablePaginated'
 import { SqlBlockEditor } from './sqlblock/SqlBlockEditor'
+import { PivotEditor } from '@sqlrooms/pivot'
+import type { PivotConfig, PivotField, PivotQuerySource, PivotSource } from '@sqlrooms/pivot'
+import { produce } from 'immer'
+import type { NotebookCell, DuckdbTableInfo } from '../store/types'
 import './UniverSheetElement'
+
+// ─── Types locaux ──────────────────────────────────────────────────────────────
+
+type PivotCellJson = {
+    selectedTable?: string
+    pivotConfig?: PivotConfig
+}
+
+// ─── Shared cell body props ────────────────────────────────────────────────────
+type CellBodyBaseProps = {
+    cell: NotebookCell
+    path: number[]
+    cellIndex: number
+}
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 function CellBodySkeleton() {
@@ -45,16 +62,18 @@ function TableSkeleton() {
 }
 
 // ─── ResultInfo ───────────────────────────────────────────────────────────────
-function ResultInfo({ cell, devOnly = false }: { cell: any, devOnly?: boolean }) {
+type ResultInfoProps = { cell: NotebookCell; devOnly?: boolean }
+
+const ResultInfo: React.FC<ResultInfoProps> = ({ cell, devOnly = false }) => {
     const devMode = useNotebookStore(s => s.devMode)
     if (!cell._resultInfo) return null
     if (!String(cell._resultInfo).startsWith('❌')) return null
     if (devOnly && !devMode) return null
-    return <div className="mt-2 p-2 bg-muted rounded text-sm text-muted-foreground">{cell._resultInfo}</div>
+    return <div className="mt-2 p-2 bg-muted rounded text-sm text-muted-foreground">{String(cell._resultInfo)}</div>
 }
 
 // ─── MarkdownBody ─────────────────────────────────────────────────────────────
-function MarkdownBody({ cell, path, cellIndex }: any) {
+const MarkdownBody: React.FC<CellBodyBaseProps> = ({ cell, path, cellIndex }) => {
     const devMode = useNotebookStore(s => s.devMode)
     const easyMDERef = useRef<HTMLTextAreaElement>(null)
     const hasCellHeight = useNotebookStore(s => s.hasCellHeight)
@@ -69,7 +88,7 @@ function MarkdownBody({ cell, path, cellIndex }: any) {
         CDNManager.loadEasyMDE().then(() => {
             if (!el.parentElement) return
             if (cell._easyMDEcli) {
-                try { cell._easyMDEcli.toTextArea() } catch (_) {}
+                try { (cell._easyMDEcli as any).toTextArea() } catch (_) {}
                 cell._easyMDEcli = null
             }
             inst = new (window as any).EasyMDE({
@@ -180,7 +199,7 @@ function RejectErrorsModal({ open, onClose }: { open: boolean; onClose: () => vo
 }
 
 // ─── SourceBody (file drop zone) ─────────────────────────────────────────────
-function SourceBody({ cell, path, cellIndex }: any) {
+const SourceBody: React.FC<CellBodyBaseProps> = ({ cell, path, cellIndex }) => {
     const {
         handleSingleSourceDrop, handleSingleSourceFileSelect,
         downloadSourceFile, removeSingleSourceFile, devMode, forceUpdate
@@ -334,7 +353,7 @@ function SourceBody({ cell, path, cellIndex }: any) {
 }
 
 // ─── ButtonRunBody ────────────────────────────────────────────────────────────
-function ButtonRunBody({ cell, path, cellIndex }: any) {
+const ButtonRunBody: React.FC<CellBodyBaseProps> = ({ cell, path, cellIndex }) => {
     const { runCellsAfter, isLoading } = useNotebookStore(useShallow(s => ({ runCellsAfter: s.runCellsAfter, isLoading: s.isLoading })))
     return (
         <div className="flex justify-center p-0">
@@ -382,7 +401,8 @@ function EChartRenderer({ cell, hasHeight }: { cell: any; hasHeight: boolean }) 
 }
 
 // ─── SqlTableBody ─────────────────────────────────────────────────────────────
-function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
+type SqlTableBodyProps = CellBodyBaseProps & { showTextResult?: boolean }
+const SqlTableBody: React.FC<SqlTableBodyProps> = ({ cell, path, cellIndex, showTextResult = false }) => {
     const {
         devMode, hasCellHeight,
         showSqlEditorVisible, isSqlResultTabular, isSqlResultText,
@@ -567,7 +587,7 @@ function SqlTableBody({ cell, path, cellIndex, showTextResult = false }: any) {
 }
 
 // ─── IframeBody ───────────────────────────────────────────────────────────────
-function IframeBody({ cell, path, cellIndex }: any) {
+const IframeBody: React.FC<CellBodyBaseProps> = ({ cell, path, cellIndex }) => {
     const { devMode, hasCellHeight, showSqlEditorVisible, _rev } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         hasCellHeight: s.hasCellHeight,
@@ -607,7 +627,7 @@ function IframeBody({ cell, path, cellIndex }: any) {
 }
 
 // ─── SqlStatBody ──────────────────────────────────────────────────────────────
-function SqlStatBody({ cell, path, cellIndex }: any) {
+const SqlStatBody: React.FC<CellBodyBaseProps> = ({ cell, path, cellIndex }) => {
     const { devMode, showSqlEditorVisible } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         showSqlEditorVisible: s.showSqlEditorVisible
@@ -649,7 +669,7 @@ function SqlStatBody({ cell, path, cellIndex }: any) {
 }
 
 // ─── UiParameterBody ──────────────────────────────────────────────────────────
-function UiParameterBody({ cell, path, cellIndex }: any) {
+const UiParameterBody: React.FC<CellBodyBaseProps> = ({ cell, path, cellIndex }) => {
     const { devMode, onParameterValueChange } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         onParameterValueChange: s.onParameterValueChange,
@@ -661,11 +681,13 @@ function UiParameterBody({ cell, path, cellIndex }: any) {
     const badgeClass = isJs ? 'badge-warning' : isText ? 'badge-ghost' : 'badge-info'
     const placeholder = isJs ? 'return ["Option 1", "Option 2"];' : isText ? 'Saisir le texte' : 'SELECT * from source1'
 
-    const [localValue, setLocalValue] = useState(cell._value ?? '')
+    const [localValue, setLocalValue] = useState<string | number>(
+        (cell._value as string | number | undefined) ?? ''
+    )
 
     // Sync la valeur locale quand cell._value change suite à une exécution externe
     useEffect(() => {
-        setLocalValue(cell._value ?? '')
+        setLocalValue((cell._value as string | number | undefined) ?? '')
     }, [cell._value])
 
     if (!devMode && cell.userVisible === false) return null
@@ -741,7 +763,7 @@ function UiParameterBody({ cell, path, cellIndex }: any) {
 }
 
 // ─── PublipostageWordBody ─────────────────────────────────────────────────────
-function PublipostageWordBody({ cell, path, cellIndex }: any) {
+const PublipostageWordBody: React.FC<CellBodyBaseProps> = ({ cell, path, cellIndex }) => {
     const {
         handleDocxTemplateDrop, handleDocxTemplateFileSelect,
         downloadDocxTemplate, removeDocxTemplate,
@@ -840,7 +862,7 @@ function PublipostageWordBody({ cell, path, cellIndex }: any) {
 }
 
 // ─── PdfmeBody ────────────────────────────────────────────────────────────────
-function PdfmeBody({ cell, path, cellIndex }: any) {
+const PdfmeBody: React.FC<CellBodyBaseProps> = ({ cell, path, cellIndex }) => {
     const { runCellAt, isLoading, devMode, forceUpdate } = useNotebookStore(useShallow(s => ({
         runCellAt: s.runCellAt,
         isLoading: s.isLoading,
@@ -889,8 +911,8 @@ function PdfmeBody({ cell, path, cellIndex }: any) {
                                 rows={10}
                                 style={{ minHeight: '180px' }}
                                 placeholder='{"basePdf": {...}, "schemas": [...]}'
-                                value={cell.json || ''}
-                                onChange={e => { cell.json = e.target.value; forceUpdate() }}
+                                value={(cell.json as unknown as string | undefined) || ''}
+                                onChange={e => { cell.json = e.target.value as unknown as Record<string, unknown>; forceUpdate() }}
                             />
                         </AccordionContent>
                     </AccordionItem>
@@ -913,7 +935,7 @@ function PdfmeBody({ cell, path, cellIndex }: any) {
 }
 
 // ─── PerspectiveBody ──────────────────────────────────────────────────────────
-function PerspectiveBody({ cell, path, cellIndex }: any) {
+const PerspectiveBody: React.FC<CellBodyBaseProps> = ({ cell, path, cellIndex }) => {
     const { devMode, showSqlEditorVisible, hasCellHeight, renderPerspectiveInContainer, runCellAt, refreshDuckdbTables, _rev } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         showSqlEditorVisible: s.showSqlEditorVisible,
@@ -1027,7 +1049,7 @@ function PerspectiveBody({ cell, path, cellIndex }: any) {
 }
 
 // ─── GenericHtmlBody (fallback) ───────────────────────────────────────────────
-function GenericHtmlBody({ cell, path, cellIndex }: any) {
+const GenericHtmlBody: React.FC<CellBodyBaseProps> = ({ cell, path, cellIndex }) => {
     const { devMode, showSqlEditorVisible } = useNotebookStore(useShallow(s => ({
         devMode: s.devMode,
         showSqlEditorVisible: s.showSqlEditorVisible
@@ -1053,7 +1075,7 @@ function GenericHtmlBody({ cell, path, cellIndex }: any) {
 }
 
 // ─── UniverSheetBody ──────────────────────────────────────────────────────────
-function UniverSheetBody({ cell, path, cellIndex }: any) {
+const UniverSheetBody: React.FC<CellBodyBaseProps> = ({ cell, path, cellIndex }) => {
     const {
         devMode, showSqlEditorVisible, hasCellHeight,
         captureUniverSnapshot, exportUniverToXlsx, _rev,
@@ -1079,7 +1101,7 @@ function UniverSheetBody({ cell, path, cellIndex }: any) {
         if (!cell._univerReady || !elementRef.current) return
         if (cell._univerRunId === lastInitRunId.current) return
         lastInitRunId.current = cell._univerRunId ?? 0
-        const _univerCfg = cell.json?.univerConfig
+        const _univerCfg = cell.json?.univerConfig as { materializeAsDuckDB?: boolean } | undefined
         const _materialize = _univerCfg && typeof _univerCfg === 'object' ? !!_univerCfg.materializeAsDuckDB : false
         elementRef.current.initialize({
             rows: cell._univerRows ?? null,
@@ -1191,8 +1213,88 @@ function UniverSheetBody({ cell, path, cellIndex }: any) {
     )
 }
 
+// ─── PivotBody ────────────────────────────────────────────────────────────────
+type PivotBodyProps = { cell: NotebookCell }
+
+const PivotBody: React.FC<PivotBodyProps> = ({ cell }) => {
+    const { _duckdbTables, forceUpdate, devMode } = useNotebookStore(useShallow((s: {
+        _duckdbTables: Record<string, DuckdbTableInfo>
+        forceUpdate: () => void
+        devMode: boolean
+    }) => ({
+        _duckdbTables: s._duckdbTables,
+        forceUpdate: s.forceUpdate,
+        devMode: s.devMode,
+    })))
+
+    const availableTables = useMemo(() => Object.keys(_duckdbTables), [_duckdbTables])
+
+    const selectedTable = (cell.json?.selectedTable as string | undefined) ?? ''
+
+    const querySource = useMemo((): PivotQuerySource | undefined => {
+        if (!selectedTable || !_duckdbTables[selectedTable]) return undefined
+        const columns = _duckdbTables[selectedTable].columns
+        return { tableRef: `"${selectedTable}"`, columns }
+    }, [selectedTable, _duckdbTables])
+
+    const source = useMemo((): PivotSource | undefined =>
+        selectedTable ? { kind: 'table', tableName: selectedTable } : undefined,
+        [selectedTable]
+    )
+
+    const callbacks = useMemo(() => ({
+        setSource: (src: PivotSource | undefined) => {
+            cell.json = produce(
+                (cell.json as PivotCellJson | undefined) ?? {},
+                (draft: PivotCellJson) => {
+                    draft.selectedTable = src?.kind === 'table' ? src.tableName : ''
+                    draft.pivotConfig = undefined
+                }
+            ) as Record<string, unknown>
+            forceUpdate()
+        },
+        setConfig: (config: PivotConfig) => {
+            cell.json = produce(
+                (cell.json as PivotCellJson | undefined) ?? {},
+                (draft: PivotCellJson) => {
+                    draft.pivotConfig = config
+                }
+            ) as Record<string, unknown>
+            forceUpdate()
+        },
+    }), [cell, forceUpdate])
+
+    if (!selectedTable && !devMode) {
+        return <div className="text-xs text-muted-foreground p-4 text-center">Aucune table sélectionnée.</div>
+    }
+
+    return (
+        <div className="flex flex-col h-full">
+            {availableTables.length === 0 ? (
+                <div className="text-xs text-muted-foreground p-4 text-center">
+                    Aucune table disponible. Chargez d'abord des données.
+                </div>
+            ) : (
+                <PivotEditor
+                    key={selectedTable || '__no_table'}
+                    source={source}
+                    querySource={querySource}
+                    config={cell.json?.pivotConfig}
+                    availableTables={availableTables}
+                    callbacks={callbacks}
+                    autoRun
+                    className="h-full"
+                >
+                    {devMode ? undefined : <PivotEditor.Results />}
+                </PivotEditor>
+            )}
+        </div>
+    )
+}
+
 // ─── CellBody principal ───────────────────────────────────────────────────────
-export function CellBody({ cell, path, cellIndex, group }: { cell: any, path: number[], cellIndex: number, group: any }) {
+type CellBodyProps = CellBodyBaseProps & { group: NotebookCell | Record<string, unknown> }
+export const CellBody: React.FC<CellBodyProps> = ({ cell, path, cellIndex, group }) => {
     const {
         devMode, isLoading,
         hasCellHeight, getCellHeightVars,
@@ -1223,6 +1325,7 @@ export function CellBody({ cell, path, cellIndex, group }: { cell: any, path: nu
 
             case 'iframe': return <IframeBody cell={cell} path={path} cellIndex={cellIndex} />
             case 'sqlStat': return <SqlStatBody cell={cell} path={path} cellIndex={cellIndex} />
+            case 'pivot': return <PivotBody cell={cell} />
 
             case 'uiParameter': return <UiParameterBody cell={cell} path={path} cellIndex={cellIndex} />
             case 'publipostageWord':

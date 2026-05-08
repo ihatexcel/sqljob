@@ -45,12 +45,14 @@
     "@sqlrooms/room-shell": "0.29.0-rc.1",
     "@sqlrooms/sql-editor": "0.29.0-rc.1",
     "@sqlrooms/ui": "0.29.0-rc.1",
+    "@sqlrooms/pivot": "0.29.0-rc.2",
     "@sqlrooms/utils": "0.29.0-rc.1",
     "@univerjs/preset-sheets-core": "^0.19.0",
     "@univerjs/presets": "^0.19.0",
     "codemirror": "^6.0.2",
     "docxtemplater": "^3.67.6",
     "easymde": "^2.20.0",
+    "immer": "^11.1.4",
     "echarts": "^5.5.1",
     "eruda": "^3.4.3",
     "lit": "^3.3.2",
@@ -61,5 +63,13 @@
     "simple-datatables": "^10.2.0",
     "xlsx": "^0.18.5",
     "zustand": "^5.0.11"
+  },
+  "overrides": {
+    "@sqlrooms/cells": "$@sqlrooms/cells",
+    "@sqlrooms/ui": "$@sqlrooms/ui",
+    "@sqlrooms/utils": "$@sqlrooms/utils",
+    "@sqlrooms/duckdb": "0.29.0-rc.1",
+    "@sqlrooms/room-store": "0.29.0-rc.1",
+    "@sqlrooms/vega": "0.29.0-rc.1"
   }
 }

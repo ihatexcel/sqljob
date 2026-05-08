@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useState } from 'react'
 import { ConfigManager } from '../../../lib/ConfigManager'
 import { GistEncrypt } from '../../../lib/GistEncrypt'

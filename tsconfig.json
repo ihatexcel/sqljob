@@ -15,7 +15,7 @@
     "moduleDetection": "force",
     "noEmit": true,
 
-    /* Linting - relâché pour Phase 1 */
+    /* Linting */
     "strict": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false,

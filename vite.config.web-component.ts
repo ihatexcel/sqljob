@@ -11,6 +11,19 @@ export default defineConfig({
         // Avec external: [/^monaco-editor/], cet import devient un bare specifier ESM
         // que le navigateur ne peut pas résoudre. On le supprime par transform (avant la
         // résolution external). sqljob n'utilise pas JsonMonacoEditor.
+        // @sqlrooms/pivot@rc.2 ships files that import symbols only present in @sqlrooms/cells@rc.2
+        // (toDataSourceTable, fromDataSourceTable, resolveSheetSchemaName, findSheetIdForCell…).
+        // We pin cells@rc.1 and never use PivotCellContent / pivotCellRegistryEntry; stub them.
+        {
+            name: 'stub-pivot-cells-rc2-deps',
+            load(id) {
+                if (!id.includes('@sqlrooms/pivot')) return
+                if (id.includes('PivotCellContent'))
+                    return 'export const PivotCellContent = () => null;'
+                if (id.includes('pivotCellRegistryEntry'))
+                    return 'export const pivotCellRegistryEntry = {};'
+            },
+        },
         {
             name: 'patch-json-monaco-editor',
             transform(code, id) {

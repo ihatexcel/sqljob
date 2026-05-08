@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { GistEncrypt } from './GistEncrypt'
 
         export class GitHubGistManager {

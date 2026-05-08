@@ -1,14 +1,18 @@
-// @ts-nocheck
 /**
  * helpersSlice — utilitaires, initialisation, gestion moteur DB, statuts.
  * Converti de helpersMixin.ts (Alpine this-proxy) vers un slice Zustand pur.
  */
+import type { StoreApi } from 'zustand'
 import { DuckDBManager } from '../../../lib/DuckDBManager'
 import { ConfigManager } from '../../../lib/ConfigManager'
 import { safeEvalJs } from '../../../lib/safeEval'
 import { FileHandler } from '../../../lib/FileHandler'
+import type { NotebookStoreState } from '../types'
 
-export const createHelpersSlice = (set: any, get: any) => ({
+export const createHelpersSlice = (
+    set: StoreApi<NotebookStoreState>['setState'],
+    get: StoreApi<NotebookStoreState>['getState'],
+) => ({
 
     hasSourceCells() {
         const { pages } = get()
@@ -110,13 +114,6 @@ export const createHelpersSlice = (set: any, get: any) => ({
             await get().refreshDuckdbTables()
             if (DuckDBManager.currentEngine !== 'ducklings') {
                 try {
-                    await get().room.initialize()
-                } catch (err) {
-                    console.warn('[sqljob] room.initialize() error:', err)
-                }
-            }
-            if (DuckDBManager.currentEngine !== 'ducklings') {
-                try {
                     await get().db.refreshTableSchemas()
                 } catch (err) {
                     console.warn('[sqljob] refreshTableSchemas error:', err)
@@ -189,9 +186,9 @@ export const createHelpersSlice = (set: any, get: any) => ({
         if (!cell || !cell._easyMDE) return
         const engine = ConfigManager.getCellEngine(cell, 'main')
         if (engine === 'sql' || engine === 'js') return
-        const currentValue = cell._easyMDE.value()
+        const currentValue = (cell._easyMDE as any).value()
         const targetContent = ConfigManager.getCellEditableContent(cell)
-        if (currentValue !== targetContent) cell._easyMDE.value(targetContent)
+        if (currentValue !== targetContent) (cell._easyMDE as any).value(targetContent)
     },
 
     getCellIcon(type: string) {

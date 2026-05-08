@@ -1,14 +1,18 @@
-// @ts-nocheck
 /**
  * pagesSlice — gestion des pages (onglets) du notebook.
  * Converti de pagesMixin.ts (Alpine this-proxy) vers un slice Zustand pur.
  * Utilise get()/set() directement au lieu du proxy createThisProxy.
  */
 import { produce } from 'immer'
+import type { StoreApi } from 'zustand'
 import { ConfigManager } from '../../../lib/ConfigManager'
 import { useConfirmModal } from '../uiStores'
+import type { NotebookStoreState } from '../types'
 
-export const createPagesSlice = (set: any, get: any) => ({
+export const createPagesSlice = (
+    set: StoreApi<NotebookStoreState>['setState'],
+    get: StoreApi<NotebookStoreState>['getState'],
+) => ({
 
     addPage() {
         const pages = get().pages
