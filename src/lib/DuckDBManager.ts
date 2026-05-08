@@ -7,7 +7,7 @@
             static workerRef = null;
 
             // Versions et URLs des CDN (chargés dynamiquement selon le moteur)
-            static DUCKDB_WASM_VERSION = '1.5.2';
+            static DUCKDB_WASM_VERSION = '1.32.0';
             static DUCKLINGS_VERSION = '1.4.4';
 
             static getDuckDBWasmUrl() {
