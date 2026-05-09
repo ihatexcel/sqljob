@@ -156,6 +156,7 @@ export function Room() {
                 <RoomShell.LayoutComposer tileClassName="p-0" />
                 <RoomShell.LoadingProgress />
                 <RoomShell.CommandPalette />
+                <ChildGroupModal />
             </RoomShell>
 
             {/* Modals globaux — portals vers document.body, indépendants du layout */}
@@ -166,7 +167,6 @@ export function Room() {
             <InsertCellModal />
             <AddCellToGroupModal />
             <CellConfigModal />
-            <ChildGroupModal />
             <LoopConfigModal />
             <GroupSettingsModal />
             <DbEngineModal />
