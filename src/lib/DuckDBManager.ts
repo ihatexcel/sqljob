@@ -6,6 +6,16 @@
             static currentEngine = 'duckdb-wasm'; // 'duckdb-wasm' | 'ducklings'
             static workerRef = null;
 
+            // Promise résolue une fois que connInstance est établie
+            static _readyResolve: (() => void) | null = null;
+            static _readyPromise: Promise<void> = new Promise(resolve => {
+                DuckDBManager._readyResolve = resolve;
+            });
+
+            static waitUntilReady(): Promise<void> {
+                return DuckDBManager._readyPromise;
+            }
+
             // Versions et URLs des CDN (chargés dynamiquement selon le moteur)
             static DUCKDB_WASM_VERSION = '1.32.0';
             static DUCKLINGS_VERSION = '1.4.4';
@@ -135,6 +145,7 @@
                 await DuckDBManager.connInstance.query('LOAD excel;');
 
                 onStatus?.('DuckDB WASM prêt', 'success');
+                DuckDBManager._readyResolve?.();
 
                 return { db: DuckDBManager.dbInstance, conn: DuckDBManager.connInstance };
             }
@@ -168,6 +179,7 @@
                 DuckDBManager.connInstance = await DuckDBManager.dbInstance.connect();
 
                 onStatus?.('Ducklings prêt', 'success');
+                DuckDBManager._readyResolve?.();
 
                 return { db: DuckDBManager.dbInstance, conn: DuckDBManager.connInstance };
             }

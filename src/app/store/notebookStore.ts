@@ -261,7 +261,8 @@ const duckdbManagerConnector = createBaseDuckDbConnector(
     { dbPath: ':memory:' },
     {
         initializeInternal: async () => {
-            // DuckDB est déjà initialisé par helpersMixin.init() — rien à faire
+            // Attend que DuckDB soit prêt avant que sqlrooms appelle refreshTableSchemas()
+            await DuckDBManager.waitUntilReady()
         },
         executeQueryInternal: async (sql: string) => {
             if (DuckDBManager.currentEngine === 'ducklings') return null
