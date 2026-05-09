@@ -266,9 +266,10 @@ const duckdbManagerConnector = createBaseDuckDbConnector(
         executeQueryInternal: async (sql: string) => {
             if (DuckDBManager.currentEngine === 'ducklings') return null
             if (!DuckDBManager.connInstance) {
-                // DuckDB pas encore prêt : retourne un Arrow table vide pour que
-                // refreshTableSchemas() ne plante pas sur .getChild()
-                return { schema: { fields: [] }, numRows: 0, getChild: () => null, toArray: () => [] }
+                // DuckDB pas encore prêt : retourner null permet à refreshTableSchemas()
+                // de court-circuiter proprement (le mock partiel causait un crash sur
+                // null.getChild() quand sqlrooms itérait les colonnes du résultat Arrow).
+                return null
             }
             try {
                 const result = await DuckDBManager.executeQueryArrow(sql)
