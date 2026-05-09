@@ -126,7 +126,7 @@ export function SqlDataTable({ cell, searchable = false }: { cell: any; searchab
                 onPaginationChange={setPagination}
                 onSortingChange={setSorting}
                 fontSize="text-xs"
-                footerActions={cellQuery ? <QueryDataTableActionsMenu query={cellQuery} /> : null}
+                footerActions={cellQuery ? <QueryDataTableActionsMenu query={cellQuery.replace(/;+\s*$/, '').trim()} /> : null}
             />
         </div>
     )
