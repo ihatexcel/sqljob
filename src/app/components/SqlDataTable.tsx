@@ -1,9 +1,17 @@
 import { useMemo, useState } from 'react'
 import { DataTablePaginated, QueryDataTableActionsMenu } from '@sqlrooms/data-table'
-import { sanitizeQuery } from '@sqlrooms/duckdb'
 import { rawTableDataStore as _rawTableDataStore } from '../../lib/tableDataStore'
 import { parseColumnRoles, getTableColumnDisplayNames } from '../../lib/EChartSqlParser'
 import { ConfigManager } from '../../lib/ConfigManager'
+
+function sanitizeSql(query: string): string {
+    return query
+        .replace(/--.*$/gm, '')          // supprime commentaires --
+        .replace(/\/\*[\s\S]*?\*\//g, '') // supprime commentaires /* */
+        .trim()
+        .replace(/;+$/, '')              // supprime ; finaux
+        .trim()
+}
 
 const NUMERIC_ARROW_RE = /^(Int|Uint|Float|Decimal)/i
 
@@ -19,7 +27,10 @@ export function SqlDataTable({ cell, searchable = false }: { cell: any; searchab
 
     const rawResults = _rawTableDataStore.get(cell._id) || cell._results || []
     const schemaTypes: Record<string, string> = cell._schemaTypes || {}
-    const cellQuery = sanitizeQuery(ConfigManager.getCellQuery(cell, 'main') || '')
+    const rawQuery = ConfigManager.getCellQuery(cell, 'main') || ''
+    const cellQuery = sanitizeSql(rawQuery)
+    console.debug('[SqlDataTable] rawQuery:', JSON.stringify(rawQuery))
+    console.debug('[SqlDataTable] cellQuery (sanitized):', JSON.stringify(cellQuery))
 
     const { columns, allColKeys } = useMemo(() => {
         if (!rawResults?.length) return { columns: [], allColKeys: [] }
