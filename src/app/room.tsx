@@ -146,6 +146,7 @@ function SidebarControls() {
 
 export function Room() {
     const showLayout = useNotebookStore(s => s.showLayout)
+    console.log('hello world')
 
     return (
         <>
