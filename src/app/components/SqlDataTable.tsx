@@ -1,14 +1,10 @@
-/**
- * SqlDataTable — remplace SimpleDatatables pour les cellules sql/table.
- * Utilise DataTablePaginated de @sqlrooms/data-table avec tri et pagination
- * client-side. Gère les colonnes spéciales PERCENT et TREND.
- */
 import { useMemo, useState } from 'react'
-import DataTablePaginated from '@sqlrooms/data-table/dist/DataTablePaginated'
+import { DataTablePaginated, QueryDataTableActionsMenu } from '@sqlrooms/data-table'
+import { sanitizeQuery } from '@sqlrooms/duckdb'
 import { rawTableDataStore as _rawTableDataStore } from '../../lib/tableDataStore'
 import { parseColumnRoles, getTableColumnDisplayNames } from '../../lib/EChartSqlParser'
+import { ConfigManager } from '../../lib/ConfigManager'
 
-// Types Arrow numériques tels que retournés par String(field.type) de duckdb-wasm
 const NUMERIC_ARROW_RE = /^(Int|Uint|Float|Decimal)/i
 
 function colMeta(schemaTypes: Record<string, string>, key: string) {
@@ -23,6 +19,7 @@ export function SqlDataTable({ cell, searchable = false }: { cell: any; searchab
 
     const rawResults = _rawTableDataStore.get(cell._id) || cell._results || []
     const schemaTypes: Record<string, string> = cell._schemaTypes || {}
+    const cellQuery = sanitizeQuery(ConfigManager.getCellQuery(cell, 'main') || '')
 
     const { columns, allColKeys } = useMemo(() => {
         if (!rawResults?.length) return { columns: [], allColKeys: [] }
@@ -130,6 +127,7 @@ export function SqlDataTable({ cell, searchable = false }: { cell: any; searchab
                 onPaginationChange={setPagination}
                 onSortingChange={setSorting}
                 fontSize="text-xs"
+                footerActions={cellQuery ? <QueryDataTableActionsMenu query={cellQuery} /> : null}
             />
         </div>
     )
