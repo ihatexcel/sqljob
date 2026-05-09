@@ -23,6 +23,8 @@ export const createCopyPasteSlice = (
         const seen = new WeakSet()
         const replacer = (_key: string, value: any) => {
             if (typeof value === 'function') return undefined
+            // BigInt n'est pas sérialisable nativement par JSON.stringify
+            if (typeof value === 'bigint') return Number(value)
             if (value !== null && typeof value === 'object') {
                 // Nœuds DOM / EventTarget
                 if (typeof Node !== 'undefined' && value instanceof Node) return undefined
