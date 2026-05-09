@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { DataTablePaginated, QueryDataTableActionsMenu } from '@sqlrooms/data-table'
+import { sanitizeQuery } from '@sqlrooms/duckdb'
 import { rawTableDataStore as _rawTableDataStore } from '../../lib/tableDataStore'
 import { parseColumnRoles, getTableColumnDisplayNames } from '../../lib/EChartSqlParser'
 import { ConfigManager } from '../../lib/ConfigManager'
@@ -18,7 +19,7 @@ export function SqlDataTable({ cell, searchable = false }: { cell: any; searchab
 
     const rawResults = _rawTableDataStore.get(cell._id) || cell._results || []
     const schemaTypes: Record<string, string> = cell._schemaTypes || {}
-    const cellQuery = ConfigManager.getCellQuery(cell, 'main') || ''
+    const cellQuery = sanitizeQuery(ConfigManager.getCellQuery(cell, 'main') || '')
 
     const { columns, allColKeys } = useMemo(() => {
         if (!rawResults?.length) return { columns: [], allColKeys: [] }
@@ -126,7 +127,7 @@ export function SqlDataTable({ cell, searchable = false }: { cell: any; searchab
                 onPaginationChange={setPagination}
                 onSortingChange={setSorting}
                 fontSize="text-xs"
-                footerActions={cellQuery ? <QueryDataTableActionsMenu query={cellQuery.replace(/;+\s*$/, '').trim()} /> : null}
+                footerActions={cellQuery ? <QueryDataTableActionsMenu query={cellQuery} /> : null}
             />
         </div>
     )
