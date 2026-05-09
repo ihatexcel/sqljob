@@ -1,25 +1,14 @@
 import { useMemo, useState } from 'react'
-import { DataTablePaginated } from '@sqlrooms/data-table'
+import { DataTablePaginated, QueryDataTableActionsMenu } from '@sqlrooms/data-table'
 import { rawTableDataStore as _rawTableDataStore } from '../../lib/tableDataStore'
 import { parseColumnRoles, getTableColumnDisplayNames } from '../../lib/EChartSqlParser'
+import { ConfigManager } from '../../lib/ConfigManager'
 
 const NUMERIC_ARROW_RE = /^(Int|Uint|Float|Decimal)/i
 
 function colMeta(schemaTypes: Record<string, string>, key: string) {
     const type = schemaTypes?.[key]
     return { type: type || '', isNumeric: type ? NUMERIC_ARROW_RE.test(type) : false }
-}
-
-function downloadCsv(data: any[], filename: string) {
-    if (!data?.length) return
-    const keys = Object.keys(data[0])
-    const escape = (v: any) => `"${String(v ?? '').replace(/"/g, '""')}"`
-    const csv = [keys.map(escape).join(','), ...data.map(row => keys.map(k => escape(row[k])).join(','))].join('\n')
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url; a.download = filename; a.click()
-    URL.revokeObjectURL(url)
 }
 
 export function SqlDataTable({ cell, searchable = false }: { cell: any; searchable?: boolean }) {
@@ -29,6 +18,7 @@ export function SqlDataTable({ cell, searchable = false }: { cell: any; searchab
 
     const rawResults = _rawTableDataStore.get(cell._id) || cell._results || []
     const schemaTypes: Record<string, string> = cell._schemaTypes || {}
+    const cellQuery = ConfigManager.getCellQuery(cell, 'main') || ''
 
     const { columns, allColKeys } = useMemo(() => {
         if (!rawResults?.length) return { columns: [], allColKeys: [] }
@@ -136,14 +126,7 @@ export function SqlDataTable({ cell, searchable = false }: { cell: any; searchab
                 onPaginationChange={setPagination}
                 onSortingChange={setSorting}
                 fontSize="text-xs"
-                footerActions={rawResults?.length ? (
-                    <button
-                        onClick={() => downloadCsv(sortedData, `${cell._id || 'export'}.csv`)}
-                        className="text-xs text-muted-foreground hover:text-foreground px-2 py-1 rounded border border-input bg-background"
-                    >
-                        ↓ CSV
-                    </button>
-                ) : null}
+                footerActions={cellQuery ? <QueryDataTableActionsMenu query={cellQuery} /> : null}
             />
         </div>
     )
