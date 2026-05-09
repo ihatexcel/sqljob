@@ -18,7 +18,7 @@ export function SqlDataTable({ cell, searchable = false }: { cell: any; searchab
 
     const rawResults = _rawTableDataStore.get(cell._id) || cell._results || []
     const schemaTypes: Record<string, string> = cell._schemaTypes || {}
-    const cellQuery = ConfigManager.getCellQuery(cell, 'main') || ''
+    const cellQuery = (ConfigManager.getCellQuery(cell, 'main') || '').replace(/[;\s]+$/, '').trim()
 
     const { columns, allColKeys } = useMemo(() => {
         if (!rawResults?.length) return { columns: [], allColKeys: [] }
